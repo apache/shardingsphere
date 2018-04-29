@@ -18,13 +18,19 @@
 package io.shardingjdbc.core.rewrite;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
+import io.shardingjdbc.core.optimizer.condition.ShardingCondition;
+import io.shardingjdbc.core.optimizer.insert.InsertShardingCondition;
 import io.shardingjdbc.core.rewrite.placeholder.IndexPlaceholder;
+import io.shardingjdbc.core.rewrite.placeholder.InsertValuesPlaceholder;
 import io.shardingjdbc.core.rewrite.placeholder.SchemaPlaceholder;
 import io.shardingjdbc.core.rewrite.placeholder.ShardingPlaceholder;
 import io.shardingjdbc.core.rewrite.placeholder.TablePlaceholder;
 import io.shardingjdbc.core.routing.SQLUnit;
+import io.shardingjdbc.core.routing.type.TableUnit;
+import io.shardingjdbc.core.rule.DataNode;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.rule.TableRule;
 
@@ -83,11 +89,13 @@ public final class SQLBuilder {
     /**
      * Convert to SQL unit.
      *
+     * @param tableUnit table unit
      * @param logicAndActualTableMap logic and actual map
      * @param shardingRule sharding rule
      * @return SQL unit
      */
-    public SQLUnit toSQL(final Map<String, String> logicAndActualTableMap, final ShardingRule shardingRule) {
+    public SQLUnit toSQL(final TableUnit tableUnit, final Map<String, String> logicAndActualTableMap, final ShardingRule shardingRule) {
+        List<Object> insertParameters = new LinkedList<>();
         StringBuilder result = new StringBuilder();
         for (Object each : segments) {
             if (!(each instanceof ShardingPlaceholder)) {
@@ -106,6 +114,7 @@ public final class SQLBuilder {
                 }
                 // TODO 目前只能找到真实数据源名称. 未来需要在初始化sharding rule时创建connection,并验证连接是否正确,并获取出真实的schema的名字, 然后在这里替换actualDataSourceName为actualSchemaName
                 // TODO 目前actualDataSourceName必须actualSchemaName一样,才能保证替换schema的场景不出错, 如: show columns xxx
+                Preconditions.checkState(tableRule.isPresent());
                 result.append(tableRule.get().getActualDatasourceNames().iterator().next());
             } else if (each instanceof IndexPlaceholder) {
                 IndexPlaceholder indexPlaceholder = (IndexPlaceholder) each;
@@ -114,10 +123,37 @@ public final class SQLBuilder {
                     result.append("_");
                     result.append(actualTableName);
                 }
+            } else if (each instanceof InsertValuesPlaceholder) {
+                InsertValuesPlaceholder insertValuesPlaceholder = (InsertValuesPlaceholder) each;
+                List<String> expressions = new LinkedList<>();
+                for (ShardingCondition shardingCondition : insertValuesPlaceholder.getShardingConditions().getShardingConditions()) {
+                    processInsertShardingCondition(tableUnit, (InsertShardingCondition) shardingCondition, expressions, insertParameters);
+                }
+                int count = 0;
+                for (String s : expressions) {
+                    if (0 != count) {
+                        result.append(", ");
+                    }
+                    result.append(s);
+                    count++;
+                }
             } else {
                 result.append(each);
             }
         }
-        return new SQLUnit(result.toString(), new ArrayList<>(Collections.singleton(parameters)));
+        if (insertParameters.isEmpty()) {
+            return new SQLUnit(result.toString(), new ArrayList<>(Collections.singleton(parameters)));
+        } else {
+            return new SQLUnit(result.toString(), new ArrayList<>(Collections.singleton(insertParameters)));
+        }
+    }
+    
+    private void processInsertShardingCondition(final TableUnit tableUnit, final InsertShardingCondition shardingCondition, final List<String> expressions, final List<Object> parameters) {
+        for (DataNode dataNode : shardingCondition.getDataNodes()) {
+            if (dataNode.getDataSourceName().equals(tableUnit.getDataSourceName()) && dataNode.getTableName().equals(tableUnit.getRoutingTables().iterator().next().getActualTableName())) {
+                expressions.add(shardingCondition.getInsertValueExpression());
+                parameters.addAll(shardingCondition.getParameters());
+            }
+        }
     }
 }

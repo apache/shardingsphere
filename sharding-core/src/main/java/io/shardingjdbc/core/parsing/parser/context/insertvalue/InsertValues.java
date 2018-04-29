@@ -15,26 +15,22 @@
  * </p>
  */
 
-package io.shardingjdbc.core.routing.router.sharding;
+package io.shardingjdbc.core.parsing.parser.context.insertvalue;
 
-import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Generated key.
+ * Insert values.
  *
- * @author zhangliang
  * @author maxiaoguang
  */
-@RequiredArgsConstructor
 @Getter
-public final class GeneratedKey {
+@ToString
+public final class InsertValues {
     
-    private final Column column;
-    
-    private final List<Number> generatedKeys = new LinkedList<>();
+    private final List<InsertValue> insertValues = new LinkedList<>();
 }

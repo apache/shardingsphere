@@ -149,7 +149,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals(sql);
         BatchPreparedStatementUnit batchPreparedStatementUnit = 
-                new BatchPreparedStatementUnit(new SQLExecutionUnit(dataSource, sqlBuilder.toSQL(Collections.<String, String>emptyMap(), null)), preparedStatement);
+                new BatchPreparedStatementUnit(new SQLExecutionUnit(dataSource, sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null)), preparedStatement);
         batchPreparedStatementUnit.getSqlExecutionUnit().getSqlUnit().getParameterSets().clear();
         for (int i = 0; i < addBatchTimes; i++) {
             batchPreparedStatementUnit.getSqlExecutionUnit().getSqlUnit().getParameterSets().add(Collections.<Object>singletonList(i + 1));

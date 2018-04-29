@@ -18,9 +18,9 @@
 package io.shardingjdbc.core.parsing.parser.sql.dml.insert;
 
 import com.google.common.base.Optional;
-import io.shardingjdbc.core.parsing.parser.context.condition.GeneratedKeyCondition;
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
-import io.shardingjdbc.core.parsing.parser.context.condition.Conditions;
+import io.shardingjdbc.core.parsing.parser.context.condition.GeneratedKeyCondition;
+import io.shardingjdbc.core.parsing.parser.context.insertvalue.InsertValues;
 import io.shardingjdbc.core.parsing.parser.sql.dml.DMLStatement;
 import io.shardingjdbc.core.parsing.parser.token.GeneratedKeyToken;
 import io.shardingjdbc.core.parsing.parser.token.ItemsToken;
@@ -38,6 +38,7 @@ import java.util.List;
  * Insert statement.
  *
  * @author zhangliang
+ * @author maxiaoguang
  */
 @Getter
 @Setter
@@ -46,17 +47,15 @@ public final class InsertStatement extends DMLStatement {
     
     private final Collection<Column> columns = new LinkedList<>();
     
-    private final List<Conditions> multipleConditions = new LinkedList<>();
+    private List<GeneratedKeyCondition> generatedKeyConditions = new LinkedList<>();
+    
+    private final InsertValues insertValues = new InsertValues();
     
     private int columnsListLastPosition;
     
     private int generateKeyColumnIndex = -1;
     
-    private int afterValuesPosition;
-    
-    private int valuesListLastPosition;
-    
-    private GeneratedKeyCondition generatedKeyCondition;
+    private int insertValuesListLastPosition;
     
     /**
      * Find generated key token.

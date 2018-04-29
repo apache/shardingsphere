@@ -41,6 +41,8 @@ public final class TokenAssert {
     
     private final MultipleInsertValuesTokenAssert multipleInsertValuesTokenAssert;
     
+    private final InsertValuesTokenAssert insertValuesTokenAssert;
+    
     private final OrderByTokenAssert orderByTokenAssert;
     
     private final OffsetTokenAssert offsetTokenAssert;
@@ -53,6 +55,7 @@ public final class TokenAssert {
         itemsTokenAssert = new ItemsTokenAssert(assertMessage);
         generatedKeyTokenAssert = new GeneratedKeyTokenAssert(sqlCaseType, assertMessage);
         multipleInsertValuesTokenAssert = new MultipleInsertValuesTokenAssert(assertMessage);
+        insertValuesTokenAssert = new InsertValuesTokenAssert(assertMessage);
         orderByTokenAssert = new OrderByTokenAssert(sqlCaseType, assertMessage);
         offsetTokenAssert = new OffsetTokenAssert(sqlCaseType, assertMessage);
         rowCountTokenAssert = new RowCountTokenAssert(sqlCaseType, assertMessage);
@@ -70,6 +73,7 @@ public final class TokenAssert {
         itemsTokenAssert.assertItemsToken(actual, expected);
         generatedKeyTokenAssert.assertGeneratedKeyToken(actual, expected);
         multipleInsertValuesTokenAssert.assertMultipleInsertValuesToken(actual, expected);
+        insertValuesTokenAssert.assertInsertValuesToken(actual, expected);
         orderByTokenAssert.assertOrderByToken(actual, expected);
         offsetTokenAssert.assertOffsetToken(actual, expected);
         rowCountTokenAssert.assertRowCountToken(actual, expected);
