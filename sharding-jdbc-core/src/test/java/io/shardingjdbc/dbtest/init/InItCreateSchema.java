@@ -131,6 +131,9 @@ public class InItCreateSchema {
                 String sql = getCreateTableSql(DatabaseType.H2, AnalyzeDatabase.analyze(InItCreateSchema.class.getClassLoader()
                         .getResource("integrate/dbtest").getPath() + "/" + database + "/database.xml"));
                 for (DatabaseType each : DATABASE_SCHEMAS) {
+                    if (each.equals(DatabaseType.H2)) {
+                        continue;
+                    }
                     if (DatabaseType.Oracle.equals(each)) {
                         String oracleSql = getCreateTableSql(DatabaseType.Oracle, AnalyzeDatabase.analyze(InItCreateSchema.class.getClassLoader()
                                 .getResource("integrate/dbtest").getPath() + "/" + database + "/database.xml"));
@@ -180,7 +183,9 @@ public class InItCreateSchema {
                 String sql = getDropTableSql(DatabaseType.H2, AnalyzeDatabase.analyze(InItCreateSchema.class.getClassLoader()
                         .getResource("integrate/dbtest").getPath() + "/" + database + "/database.xml"));
                 for (DatabaseType each : DATABASE_SCHEMAS) {
-                    
+                    if (each.equals(DatabaseType.H2)) {
+                        continue;
+                    }
                     if (DatabaseType.Oracle.equals(each)) {
                         String oracleSql = getDropTableSql(DatabaseType.Oracle, AnalyzeDatabase.analyze(InItCreateSchema.class.getClassLoader()
                                 .getResource("integrate/dbtest").getPath() + "/" + database + "/database.xml"));
@@ -438,7 +443,7 @@ public class InItCreateSchema {
      * @return
      */
     public static Set<DatabaseType> getDatabaseSchema() throws IOException {
-        Set<DatabaseType> dbset = new HashSet<>( );
+        Set<DatabaseType> dbset = new HashSet<>();
         for (String each : AssertEngine.getDatabases()) {
             DatabaseType databaseType = getDatabaseType(each);
             dbset.add(databaseType);
@@ -481,6 +486,7 @@ public class InItCreateSchema {
     
     /**
      * Get the database type enumeration.
+     *
      * @param type String database type
      * @return database enumeration
      */

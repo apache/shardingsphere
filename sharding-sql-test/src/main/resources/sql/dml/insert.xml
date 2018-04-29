@@ -6,7 +6,7 @@
     <sql-case id="assertInsertWithoutGenerateKeyColumn" value="INSERT INTO t_order_item(order_id, user_id, status) values(%s, %s, 'insert')" />
 
 
-    <!--<sql-case id="assertInsertWithPartialPlaceholders" value="INSERT INTO t_order (order_id, user_id, status) VALUES (#s, #s, %s)"/>-->
+   <!-- <sql-case id="assertInsertWithPartialPlaceholders" value="INSERT INTO t_order (order_id, user_id, status) VALUES (#s, #s, %s)"/>-->
 
     <sql-case id="assertInsertWithJsonAndGeo" value="INSERT INTO t_place(user_new_id, guid, start_point,rule) VALUES (%s, %s, ST_GeographyFromText('SRID=4326;POINT('||%s||' '||%s||')'), %s::jsonb)" db-types="PostgreSQL" />
     <sql-case id="assertInsertWithoutColumnsWithAllPlaceholders" value="INSERT INTO t_order VALUES (%s, %s, %s)" />
