@@ -19,10 +19,11 @@
     <sql-case id="assertSelectCountWithBindingTable" value="SELECT COUNT(*) AS items_count FROM t_order o, t_order_item i WHERE o.user_id = i.user_id AND o.order_id = i.order_id AND o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s" />
     <sql-case id="assertSelectCountWithBindingTableWithJoin" value="SELECT COUNT(*) AS items_count FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s" />
     <sql-case id="assertSelectAliasWithKeyword" value="SELECT length.item_id password FROM t_order_item length where length.item_id = %s " db-types="MySQL,H2,SQLServer,Oracle" />
-
+<!--
 
     <sql-case id="assertSelectEqualsWithSingleTableExpected" value="SELECT * FROM t_order WHERE user_id in (%s,%s,%s,%s,%s,%s,%s,%s,%s) AND order_id in (%s,%s,%s,%s,%s,%s,%s,%s,%s)" />
     <sql-case id="assertSelectUpdateWithoutAliasExpected" value="SELECT * FROM t_order WHERE user_id in (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) AND order_id in (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)" />
+-->
 
     <sql-case id="assertSelectWithJoinForceIndex" value="SELECT i.* FROM t_order o FORCE INDEX(order_index) JOIN t_order_item i WHERE o.order_id = %s" db-types="MySQL" />
     <sql-case id="assertSelectEqualsWithJsonAnGeo" value="SELECT * FROM t_place WHERE rule = %s::jsonb AND start_point=ST_GeographyFromText('SRID=4326;POINT('||%s||' '||%s||')') AND user_new_id = %s" db-types="PostgreSQL" />

@@ -1,6 +1,6 @@
-<asserts sharding-rule-config="./config/test" init-data-file="./init" database="h2,mysql,oracle,sqlserver,postgresql">
+<asserts sharding-rule-config="./config/test" init-data-file="./init" base-config="db" database="h2,mysql,oracle,sqlserver,postgresql">
     <assertDML id="assertInsertWithAllPlaceholders" expected-update="9"
-               sql="assertInsertOrderWithAllPlaceholders"
+               sql="assertInsertWithAllPlaceholders"
                expected-sql="assertSelectEqualsWithSingleTableExpected"
                expected-data-file="./asserts/dml/insert/insert.xml">
         <parameters>
@@ -71,9 +71,8 @@
             <value value="9" type="int"/>
         </expected-parameter>
     </assertDML>
-<!--
     <assertDML id="assertInsertWithoutPlaceholder"  expected-update="9"
-               sql="assertInsertWithoutPlaceholder"
+               sql="assertInsertWithPartialPlaceholder"
                expected-sql="assertSelectEqualsWithSingleTableExpected"
                expected-data-file="./asserts/dml/insert/insert.xml">
         <parameters>
@@ -810,7 +809,7 @@
     </assertDML>
 
     <assertDML id="assertDeleteWithoutAlias"  expected-update="40"
-               sql="assertDeleteWithoutAlias"
+               sql="assertDeleteWithShardingValue"
                expected-sql="assertSelectUpdateWithoutAliasExpected"
                expected-data-file="./asserts/dml/insert/delete.xml">
         <parameters>
@@ -1106,5 +1105,5 @@
             <value value="2900" type="int"/>
             <value value="2901" type="int"/>
         </expected-parameter>
-    </assertDML>-->
+    </assertDML>
 </asserts>

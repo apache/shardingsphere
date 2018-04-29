@@ -2,7 +2,4 @@
 <sql-cases>
     <sql-case id="assertDeleteWithShardingValue" value="DELETE FROM t_order WHERE order_id = %s AND user_id = %s AND status=%s" />
     <sql-case id="assertDeleteWithoutShardingValue" value="DELETE FROM t_order WHERE status=%s" />
-
-    <sql-case id="assertDeleteWithoutAlias" value="DELETE FROM t_order WHERE order_id = %s AND user_id = %s AND status = %s" />
-
 </sql-cases>
