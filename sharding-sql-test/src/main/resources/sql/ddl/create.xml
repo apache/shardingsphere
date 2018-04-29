@@ -8,4 +8,5 @@
     <sql-case id="assertCreateUnloggedTable" value="CREATE UNLOGGED TABLE t_log(id int, status varchar(10))" db-types="PostgreSQL" />
     <sql-case id="assertCreateIndex" value="CREATE INDEX t_log_index ON t_log (id)" />
     <sql-case id="assertCreateUniqueIndex" value="CREATE UNIQUE INDEX t_log_index ON t_log (id)" />
+
 </sql-cases>
