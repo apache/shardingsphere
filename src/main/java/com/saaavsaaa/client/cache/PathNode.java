@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by aaa
- * todo nodeKey can use current node short path: get children.containsKey(path) should be change -> /root/aaa/aaa
+ * todo nodeKey can use current node short path: get children.containsKey(path) should be change ,because path can like /root/aaa/aaa
  */
 public class PathNode {
     private final String nodeKey;
