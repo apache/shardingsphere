@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databases>
+    <database>slave_0</database>
+    <database>slave_1</database>
+    <database>slave_2</database>
+    <database>slave_3</database>
+    <database>slave_4</database>
+    <database>slave_5</database>
+    <database>slave_6</database>
+    <database>slave_7</database>
+    <database>slave_8</database>
+    <database>slave_9</database>
+</databases>
