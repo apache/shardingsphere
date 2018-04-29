@@ -21,6 +21,7 @@
     <sql-case id="assertSelectAliasWithKeyword" value="SELECT length.item_id password FROM t_order_item length where length.item_id = %s " db-types="MySQL,H2,SQLServer,Oracle" />
 
 <!--
+
     <sql-case id="assertSelectEqualsWithSingleTableExpected" value="SELECT * FROM t_order WHERE user_id in (%s,%s,%s,%s,%s,%s,%s,%s,%s) AND order_id in (%s,%s,%s,%s,%s,%s,%s,%s,%s)" />
     <sql-case id="assertSelectUpdateWithoutAliasExpected" value="SELECT * FROM t_order WHERE user_id in (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) AND order_id in (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)" />
 -->
