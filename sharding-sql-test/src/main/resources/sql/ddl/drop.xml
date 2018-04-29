@@ -9,4 +9,5 @@
     <sql-case id="assertDropIndex" value="DROP INDEX t_log_index ON t_log" db-types="MySQL,SQLServer" />
     <sql-case id="assertDropIndexWithoutOn" value="DROP INDEX t_log_index" db-types="PostgreSQL,Oracle" />
     <sql-case id="assertDropIndexIfExists" value="DROP INDEX IF EXISTS t_order_index" db-types="PostgreSQL" />
+
 </sql-cases>
