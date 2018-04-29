@@ -25,6 +25,7 @@ import java.util.*;
 
 import io.shardingjdbc.core.yaml.sharding.YamlShardingConfiguration;
 import io.shardingjdbc.dbtest.StartTest;
+import io.shardingjdbc.dbtest.asserts.AssertEngine;
 import io.shardingjdbc.dbtest.common.DatabaseEnvironment;
 import io.shardingjdbc.dbtest.common.FileUtil;
 import io.shardingjdbc.dbtest.common.PathUtil;
@@ -48,7 +49,7 @@ import javax.xml.xpath.XPathExpressionException;
 
 public class InItCreateSchema {
     
-    private static Set<DatabaseType> DATABASE_SCHEMAS;
+    private static Set<DatabaseType> DATABASE_SCHEMAS = new HashSet<>();
     
     @Getter
     public static final Set<String> DATABASES = new HashSet<>();
@@ -67,7 +68,7 @@ public class InItCreateSchema {
         assertPath = PathUtil.getPath(assertPath);
         List<String> paths = FileUtil.getAllFilePaths(new File(assertPath), "t", "yaml");
         try {
-            Set<DatabaseType> databaseSchemas = InItCreateSchema.getDatabaseSchema(paths);
+            Set<DatabaseType> databaseSchemas = InItCreateSchema.getDatabaseSchema();
             InItCreateSchema.setDatabaseSchemas(databaseSchemas);
         } catch (IOException e) {
             e.printStackTrace();
@@ -411,7 +412,7 @@ public class InItCreateSchema {
         }
     }
     
-    private static BasicDataSource buildDataSource(final String dbName, final DatabaseType type) {
+    public static BasicDataSource buildDataSource(final String dbName, final DatabaseType type) {
         
         DatabaseEnvironment dbEnv = new DatabaseEnvironment(type);
         BasicDataSource result = new BasicDataSource();
@@ -436,17 +437,11 @@ public class InItCreateSchema {
      * @param paths paths
      * @return
      */
-    public static Set<DatabaseType> getDatabaseSchema(final List<String> paths) throws IOException {
-        Set<DatabaseType> dbset = new HashSet<>();
-        DatabaseEnvironment databaseEnvironment = new DatabaseEnvironment(DatabaseType.H2);
-        for (String each : paths) {
-            YamlShardingConfiguration shardingConfiguration = unmarshal(new File(each));
-            Map<String, DataSource> dataSourceMap = shardingConfiguration.getDataSources();
-            for (Map.Entry<String, DataSource> eachDataSourceEntry : dataSourceMap.entrySet()) {
-                BasicDataSource dataSource = (BasicDataSource) eachDataSourceEntry.getValue();
-                DatabaseType databaseType = databaseEnvironment.getDatabaseTypeByJdbcDriver(dataSource.getDriverClassName());
-                dbset.add(databaseType);
-            }
+    public static Set<DatabaseType> getDatabaseSchema() throws IOException {
+        Set<DatabaseType> dbset = new HashSet<>( );
+        for (String each : AssertEngine.getDatabases()) {
+            DatabaseType databaseType = getDatabaseType(each);
+            dbset.add(databaseType);
         }
         return dbset;
     }
@@ -482,5 +477,21 @@ public class InItCreateSchema {
             sqls.add(basesql + database + ";");
         }
         return StringUtils.join(sqls, "\n");
+    }
+    
+    /**
+     * Get the database type enumeration.
+     * @param type String database type
+     * @return database enumeration
+     */
+    public static DatabaseType getDatabaseType(final String type) {
+        
+        DatabaseType[] databaseTypes = DatabaseType.values();
+        for (DatabaseType each : databaseTypes) {
+            if (type.equalsIgnoreCase(each.name())) {
+                return each;
+            }
+        }
+        return DatabaseType.H2;
     }
 }

@@ -31,9 +31,6 @@ public class AssertDMLDefinition implements AssertDefinition {
     @XmlAttribute(name = "id")
     private String id;
 
-    @XmlAttribute(name = "init-data-file")
-    private String initDataFile;
-
     @XmlAttribute(name = "expected-data-file")
     private String expectedDataFile;
 

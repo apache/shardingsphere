@@ -39,8 +39,8 @@ public class AssertsDefinition {
     @XmlAttribute(name = "base-config")
     private String baseConfig;
     
-    @XmlAttribute(name = "base-config-path")
-    private String baseConfigPath;
+    @XmlAttribute(name = "init-data-file")
+    private String initDataFile;
     
     @Setter
     private String path;

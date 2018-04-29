@@ -1,5 +1,5 @@
-<asserts sharding-rule-config="./config/test.yaml" base-config="db" base-config-path="classpath:integrate/dbtest/db">
-    <assertDML id="assertInsertWithAllPlaceholders" init-data-file="./init" expected-update="9"
+<asserts sharding-rule-config="./config/test" init-data-file="./init" database="h2,mysql,oracle,sqlserver,postgresql">
+    <assertDML id="assertInsertWithAllPlaceholders" expected-update="9"
                sql="assertInsertOrderWithAllPlaceholders"
                expected-sql="assertSelectEqualsWithSingleTableExpected"
                expected-data-file="./asserts/dml/insert/insert.xml">
@@ -71,8 +71,8 @@
             <value value="9" type="int"/>
         </expected-parameter>
     </assertDML>
-
-    <assertDML id="assertInsertWithoutPlaceholder" init-data-file="./init" expected-update="9"
+<!--
+    <assertDML id="assertInsertWithoutPlaceholder"  expected-update="9"
                sql="assertInsertWithoutPlaceholder"
                expected-sql="assertSelectEqualsWithSingleTableExpected"
                expected-data-file="./asserts/dml/insert/insert.xml">
@@ -136,7 +136,7 @@
         </expected-parameter>
     </assertDML>
 
-    <assertDML id="assertInsertWithPartialPlaceholders" init-data-file="./init" expected-update="9"
+    <assertDML id="assertInsertWithPartialPlaceholders"  expected-update="9"
                sql="assertInsertWithPartialPlaceholders"
                expected-sql="assertSelectEqualsWithSingleTableExpected"
                expected-data-file="./asserts/dml/insert/insert.xml">
@@ -211,7 +211,7 @@
 
 
 
-    <assertDML id="assertUpdateWithoutAlias" init-data-file="./init" expected-update="40"
+    <assertDML id="assertUpdateWithoutAlias"  expected-update="40"
                sql="assertUpdateWithoutAlias"
                expected-sql="assertSelectUpdateWithoutAliasExpected"
                expected-data-file="./asserts/dml/insert/update.xml">
@@ -510,7 +510,7 @@
         </expected-parameter>
     </assertDML>
 
-    <assertDML id="assertUpdateWithAlias" init-data-file="./init" expected-update="40"
+    <assertDML id="assertUpdateWithAlias"  expected-update="40"
                sql="assertUpdateWithAlias"
                expected-sql="assertSelectUpdateWithoutAliasExpected"
                expected-data-file="./asserts/dml/insert/update.xml">
@@ -809,7 +809,7 @@
         </expected-parameter>
     </assertDML>
 
-    <assertDML id="assertDeleteWithoutAlias" init-data-file="./init" expected-update="40"
+    <assertDML id="assertDeleteWithoutAlias"  expected-update="40"
                sql="assertDeleteWithoutAlias"
                expected-sql="assertSelectUpdateWithoutAliasExpected"
                expected-data-file="./asserts/dml/insert/delete.xml">
@@ -1106,5 +1106,5 @@
             <value value="2900" type="int"/>
             <value value="2901" type="int"/>
         </expected-parameter>
-    </assertDML>
+    </assertDML>-->
 </asserts>

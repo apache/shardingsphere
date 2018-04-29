@@ -21,5 +21,5 @@
     <sql id="tblCreateTOrderItem8"/>
     <sql id="tblCreateTOrderItem9"/>
     <sql id="tblCreateTConfig"/>
-    <sql id="tblCreateTGlobal"/>
+    <!--<sql id="tblCreateTGlobal"/>-->
 </sqls>

@@ -30,13 +30,16 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
 import io.shardingjdbc.core.api.ShardingDataSourceFactory;
+import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.dbtest.StartTest;
+import io.shardingjdbc.dbtest.common.DatabaseEnvironment;
 import io.shardingjdbc.dbtest.config.bean.*;
 import io.shardingjdbc.dbtest.init.InItCreateSchema;
 import io.shardingjdbc.test.sql.SQLCasesLoader;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.xml.sax.SAXException;
 
@@ -52,6 +55,8 @@ public class AssertEngine {
     
     public static final Map<String, AssertsDefinition> ASSERTDEFINITIONMAPS = new HashMap<>();
     
+    public static final List<String> DEFAULT_DATABASES = Arrays.asList("db", "dbtbl", "nullable");
+    
     @Getter
     @Setter
     private static volatile boolean initialized;
@@ -60,9 +65,18 @@ public class AssertEngine {
     @Setter
     private static volatile boolean clean;
     
+    @Getter
+    @Setter
+    private static final List<String> databases = new ArrayList<>();
+    
     static {
         initialized = Boolean.valueOf(StartTest.getString("initialized", "false"));
         clean = Boolean.valueOf(StartTest.getString("initialized", "false"));
+        String databasesStr = StartTest.getString("databases", "h2,mysql,oracle,sqlserver,postgresql");
+        String[] databaseLocals = StringUtils.split(databasesStr, ",");
+        for (String database : databaseLocals) {
+            databases.add(database);
+        }
     }
     
     /**
@@ -88,32 +102,69 @@ public class AssertEngine {
         
         String rootPath = path.substring(0, path.lastIndexOf(File.separator) + 1);
         assertsDefinition.setPath(rootPath);
-        DataSource dataSource = null;
+        
         try {
             String msg = "The file path " + path + ", under which id is " + id;
             
-            dataSource = getDataSource(PathUtil.getPath(assertsDefinition.getShardingRuleConfig(), rootPath));
-            
-            ShardingContext shardingContext = getShardingContext((ShardingDataSource) dataSource);
-            Map<String, DataSource> dataSourceMaps = shardingContext.getDataSourceMap();
-            
-            List<String> dbs = new ArrayList<>(dataSourceMaps.keySet());
-            
-            // dql run
-            dqlRun(path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
-            
-            // dml run
-            dmlRun(path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
-            
-            // ddl run
-            ddlRun(id, assertsDefinition, rootPath, msg, dataSource);
-            
-        } catch (NoSuchFieldException | IllegalAccessException | ParseException | XPathExpressionException | SQLException | ParserConfigurationException | SAXException | IOException e) {
-            throw new DbTestException(e);
-        } finally {
-            if (dataSource != null) {
-                ((ShardingDataSource) dataSource).close();
+            List<String> dbNames = new ArrayList();
+            if (StringUtils.isNotBlank(assertsDefinition.getBaseConfig())) {
+                String[] dbs = StringUtils.split(assertsDefinition.getBaseConfig());
+                for (String each : dbs) {
+                    dbNames.add(each);
+                }
+            } else {
+                dbNames.addAll(AssertEngine.DEFAULT_DATABASES);
             }
+            
+            for (String dbName : dbNames) {
+                String initDataFile = PathUtil.getPath(assertsDefinition.getInitDataFile(), rootPath);
+                String initDataPath = initDataFile + "/" + dbName;
+                File fileDirDatabase = new File(initDataPath);
+                if (fileDirDatabase.exists()) {
+                    File[] fileDatabases = fileDirDatabase.listFiles();
+                    List<String> dbs = new ArrayList<>(fileDatabases.length);
+                    if (fileDatabases != null) {
+                        for (File fileDatabase : fileDatabases) {
+                            String databaseName = fileDatabase.getName();
+                            databaseName = databaseName.substring(0, databaseName.indexOf("."));
+                            dbs.add(databaseName);
+                        }
+                    }
+                    
+                    DataSource dataSource = null;
+                    try {
+                        for (DatabaseType databaseType : InItCreateSchema.getDatabaseSchemas()) {
+                            Map<String, DataSource> dataSourceMaps = new HashMap<>();
+                            for (String db : dbs) {
+                                DataSource subDataSource = InItCreateSchema.buildDataSource(db, databaseType);
+                                dataSourceMaps.put(db, subDataSource);
+                            }
+                            String configPath = PathUtil.getPath(assertsDefinition.getShardingRuleConfig(), rootPath) + "-" + dbName + ".yaml";
+                            dataSource = getDataSource(dataSourceMaps, configPath);
+                            
+                            // dql run
+                            dqlRun(initDataPath, path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
+                            
+                            // dml run
+                            dmlRun(initDataPath, path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
+                            
+                            
+                            // ddl run
+                            ddlRun(id, assertsDefinition, rootPath, msg, dataSource);
+                        }
+                    } finally {
+                        if (dataSource != null) {
+                            if (dataSource instanceof ShardingDataSource) {
+                                ((ShardingDataSource) dataSource).close();
+                            }
+                        }
+                    }
+                }
+            }
+            
+            
+        } catch (ParseException | XPathExpressionException | SQLException | ParserConfigurationException | SAXException | IOException e) {
+            throw new DbTestException(e);
         }
         return true;
     }
@@ -137,13 +188,12 @@ public class AssertEngine {
         }
     }
     
-    private static void dmlRun(final String path, final String id, final AssertsDefinition assertsDefinition, final String rootPath, final String msg, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final List<String> dbs) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
+    private static void dmlRun(final String initDataFile, final String path, final String id, final AssertsDefinition assertsDefinition, final String rootPath, final String msg, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final List<String> dbs) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
         for (AssertDMLDefinition each : assertsDefinition.getAssertDML()) {
             if (id.equals(each.getId())) {
                 AssertDMLDefinition anAssert = each;
                 String rootsql = anAssert.getSql();
                 rootsql = SQLCasesLoader.getInstance().getSQL(rootsql);
-                String initDataFile = PathUtil.getPath(anAssert.getInitDataFile(), rootPath);
                 Map<String, DatasetDefinition> mapDatasetDefinition = new HashMap<>();
                 Map<String, String> sqls = new HashMap<>();
                 getInitDatas(dbs, initDataFile, mapDatasetDefinition, sqls);
@@ -168,14 +218,13 @@ public class AssertEngine {
         }
     }
     
-    private static void dqlRun(final String path, final String id, final AssertsDefinition assertsDefinition, final String rootPath, final String msg, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final List<String> dbs) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
+    private static void dqlRun(final String initDataFile, final String path, final String id, final AssertsDefinition assertsDefinition, final String rootPath, final String msg, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final List<String> dbs) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
         for (AssertDQLDefinition each : assertsDefinition.getAssertDQL()) {
             if (id.equals(each.getId())) {
                 AssertDQLDefinition anAssert = each;
                 
                 String rootsql = anAssert.getSql();
                 rootsql = SQLCasesLoader.getInstance().getSQL(rootsql);
-                String initDataFile = PathUtil.getPath(anAssert.getInitDataFile(), rootPath);
                 Map<String, DatasetDefinition> mapDatasetDefinition = new HashMap<>();
                 Map<String, String> sqls = new HashMap<>();
                 getInitDatas(dbs, initDataFile, mapDatasetDefinition, sqls);
@@ -229,8 +278,6 @@ public class AssertEngine {
     private static void doUpdateUsePreparedStatementToExecuteDDL(final String rootPath, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             try (Connection con = dataSource.getConnection()) {
-                //InItCreateSchema.dropTable();
-                //InItCreateSchema.createTable();
                 ParametersDefinition parametersDefinition = new ParametersDefinition();
                 parametersDefinition.setNewParameter(Arrays.asList(anAssert.getParameter()));
                 
@@ -274,8 +321,6 @@ public class AssertEngine {
     private static void doUpdateUsePreparedStatementToExecuteUpdateDDL(final String rootPath, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             try (Connection con = dataSource.getConnection()) {
-                //InItCreateSchema.dropTable();
-                //InItCreateSchema.createTable();
                 ParametersDefinition parametersDefinition = new ParametersDefinition();
                 parametersDefinition.setNewParameter(Arrays.asList(anAssert.getParameter()));
                 
@@ -549,4 +594,6 @@ public class AssertEngine {
         field.setAccessible(true);
         return (ShardingContext) field.get(shardingDataSource);
     }
+    
+    
 }

@@ -98,8 +98,7 @@ public class StartTest {
                         InItCreateSchema.addDatabase(db);
                     }
                 } else {
-                    String[] dbs = new String[]{"db", "dbtbl", "jdbc", "master", "master_only", "nullable", "slave", "slave_only", "tbl"};
-                    for (String db : dbs) {
+                    for (String db : AssertEngine.DEFAULT_DATABASES) {
                         InItCreateSchema.addDatabase(db);
                     }
                 }
