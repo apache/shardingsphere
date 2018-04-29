@@ -42,7 +42,7 @@ public final class SchemaToken implements SQLToken {
     /**
      * Get schema name.
      * 
-     * @return schema name
+     * @return table name
      */
     public String getSchemaName() {
         return SQLUtil.getExactlyValue(originalLiterals);
