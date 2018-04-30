@@ -341,4 +341,14 @@ public final class ShardingRule {
     public boolean isLogicIndex(final String logicIndexName, final String logicTableName) {
         return logicIndexName.equals(getTableRule(logicTableName).getLogicIndex());
     }
+    
+    /**
+     * Judge whether only using master slave rule.
+     *
+     * @return is only using master-slave or not.
+     */
+    public boolean isOnlyUsingMasterSlave() {
+        return tableRules.isEmpty() && defaultDatabaseShardingStrategy instanceof NoneShardingStrategy
+                && defaultTableShardingStrategy instanceof NoneShardingStrategy && !masterSlaveRules.isEmpty();
+    }
 }

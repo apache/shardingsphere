@@ -48,6 +48,7 @@ import java.util.List;
  *
  * @author zhangliang
  * @author maxiaoguang
+ * @author panjuan
  */
 public class InsertValuesClauseParser implements SQLClauseParser {
     

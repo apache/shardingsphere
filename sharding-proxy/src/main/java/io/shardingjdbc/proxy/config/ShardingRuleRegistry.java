@@ -39,6 +39,8 @@ import java.util.Map;
  * Sharding rule registry.
  *
  * @author zhangliang
+ * @author zhangyonglun
+ * @author panjuan
  */
 @Getter
 public final class ShardingRuleRegistry {
