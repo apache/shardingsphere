@@ -377,7 +377,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         Collection<PreparedStatementUnit> result = new LinkedList<>();
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals(sql);
-        result.add(new PreparedStatementUnit(new SQLExecutionUnit(dataSource, sqlBuilder.toSQL(Collections.<String, String>emptyMap(), null)), preparedStatement));
+        result.add(new PreparedStatementUnit(new SQLExecutionUnit(dataSource, sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null)), preparedStatement));
         return result;
     }
     

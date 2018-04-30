@@ -24,6 +24,7 @@ import io.shardingjdbc.core.hint.HintManagerHolder;
 import io.shardingjdbc.core.hint.ShardingKey;
 import io.shardingjdbc.core.optimizer.condition.ShardingCondition;
 import io.shardingjdbc.core.optimizer.condition.ShardingConditions;
+import io.shardingjdbc.core.optimizer.insert.InsertShardingCondition;
 import io.shardingjdbc.core.routing.type.RoutingEngine;
 import io.shardingjdbc.core.routing.type.RoutingResult;
 import io.shardingjdbc.core.routing.type.RoutingTable;
@@ -64,7 +65,13 @@ public final class StandardRoutingEngine implements RoutingEngine {
         if (HintManagerHolder.isUseShardingHint()) {
             List<ShardingValue> databaseShardingValues = getDatabaseShardingValuesFromHint(databaseShardingColumns);
             List<ShardingValue> tableShardingValues = getTableShardingValuesFromHint(tableShardingColumns);
-            routedDataNodes.addAll(route(tableRule, databaseShardingValues, tableShardingValues));
+            Collection<DataNode> dataNodes = route(tableRule, databaseShardingValues, tableShardingValues);
+            for (ShardingCondition each : shardingConditions.getShardingConditions()) {
+                if (each instanceof InsertShardingCondition) {
+                    ((InsertShardingCondition) each).getDataNodes().addAll(dataNodes);
+                }
+            }
+            routedDataNodes.addAll(dataNodes);
         } else {
             if (shardingConditions.getShardingConditions().isEmpty()) {
                 routedDataNodes.addAll(route(tableRule, Collections.<ShardingValue>emptyList(), Collections.<ShardingValue>emptyList()));
@@ -72,7 +79,11 @@ public final class StandardRoutingEngine implements RoutingEngine {
                 for (ShardingCondition each : shardingConditions.getShardingConditions()) {
                     List<ShardingValue> databaseShardingValues = getShardingValues(databaseShardingColumns, each);
                     List<ShardingValue> tableShardingValues = getShardingValues(tableShardingColumns, each);
-                    routedDataNodes.addAll(route(tableRule, databaseShardingValues, tableShardingValues));
+                    Collection<DataNode> dataNodes = route(tableRule, databaseShardingValues, tableShardingValues);
+                    routedDataNodes.addAll(dataNodes);
+                    if (each instanceof InsertShardingCondition) {
+                        ((InsertShardingCondition) each).getDataNodes().addAll(dataNodes);
+                    }
                 }
             }
         }

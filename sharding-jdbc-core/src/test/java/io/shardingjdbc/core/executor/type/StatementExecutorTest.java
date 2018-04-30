@@ -482,7 +482,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         Collection<StatementUnit> result = new LinkedList<>();
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals(sql);
-        result.add(new StatementUnit(new SQLExecutionUnit(dataSource, sqlBuilder.toSQL(Collections.<String, String>emptyMap(), null)), statement));
+        result.add(new StatementUnit(new SQLExecutionUnit(dataSource, sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null)), statement));
         return result;
     }
     

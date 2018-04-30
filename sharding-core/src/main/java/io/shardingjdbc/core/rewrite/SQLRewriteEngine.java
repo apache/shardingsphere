@@ -20,27 +20,28 @@ package io.shardingjdbc.core.rewrite;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.core.optimizer.condition.ShardingConditions;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
-import io.shardingjdbc.core.parsing.lexer.token.Symbol;
 import io.shardingjdbc.core.parsing.parser.context.OrderItem;
 import io.shardingjdbc.core.parsing.parser.context.limit.Limit;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
+import io.shardingjdbc.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
-import io.shardingjdbc.core.parsing.parser.token.GeneratedKeyToken;
 import io.shardingjdbc.core.parsing.parser.token.IndexToken;
+import io.shardingjdbc.core.parsing.parser.token.InsertColumnToken;
+import io.shardingjdbc.core.parsing.parser.token.InsertValuesToken;
 import io.shardingjdbc.core.parsing.parser.token.ItemsToken;
 import io.shardingjdbc.core.parsing.parser.token.OffsetToken;
 import io.shardingjdbc.core.parsing.parser.token.OrderByToken;
 import io.shardingjdbc.core.parsing.parser.token.RowCountToken;
 import io.shardingjdbc.core.parsing.parser.token.SQLToken;
 import io.shardingjdbc.core.parsing.parser.token.SchemaToken;
-import io.shardingjdbc.core.parsing.parser.token.InsertColumnToken;
 import io.shardingjdbc.core.parsing.parser.token.TableToken;
 import io.shardingjdbc.core.rewrite.placeholder.IndexPlaceholder;
+import io.shardingjdbc.core.rewrite.placeholder.InsertValuesPlaceholder;
 import io.shardingjdbc.core.rewrite.placeholder.SchemaPlaceholder;
 import io.shardingjdbc.core.rewrite.placeholder.TablePlaceholder;
 import io.shardingjdbc.core.routing.SQLUnit;
-import io.shardingjdbc.core.routing.router.sharding.GeneratedKey;
 import io.shardingjdbc.core.routing.type.RoutingTable;
 import io.shardingjdbc.core.routing.type.TableUnit;
 import io.shardingjdbc.core.rule.BindingTableRule;
@@ -74,9 +75,9 @@ public final class SQLRewriteEngine {
     
     private final SQLStatement sqlStatement;
     
-    private final List<Object> parameters;
+    private final ShardingConditions shardingConditions;
     
-    private final GeneratedKey generatedKey;
+    private final List<Object> parameters;
     
     /**
      * Constructs SQL rewrite engine.
@@ -85,16 +86,17 @@ public final class SQLRewriteEngine {
      * @param originalSQL original SQL
      * @param databaseType database type
      * @param sqlStatement SQL statement
-     * @param generatedKey generated key
+     * @param shardingConditions sharding conditions
+     * @param parameters parameters
      */
-    public SQLRewriteEngine(final ShardingRule shardingRule, final String originalSQL, 
-                            final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> parameters, final GeneratedKey generatedKey) {
+    public SQLRewriteEngine(final ShardingRule shardingRule, final String originalSQL, final DatabaseType databaseType,
+                            final SQLStatement sqlStatement, final ShardingConditions shardingConditions, final List<Object> parameters) {
         this.shardingRule = shardingRule;
         this.originalSQL = originalSQL;
         this.databaseType = databaseType;
         this.sqlStatement = sqlStatement;
+        this.shardingConditions = shardingConditions;
         this.parameters = parameters;
-        this.generatedKey = generatedKey;
         sqlTokens.addAll(sqlStatement.getSqlTokens());
     }
     
@@ -124,8 +126,8 @@ public final class SQLRewriteEngine {
                 appendIndexPlaceholder(result, (IndexToken) each, count, sqlTokens);
             } else if (each instanceof ItemsToken) {
                 appendItemsToken(result, (ItemsToken) each, count, sqlTokens);
-            } else if (each instanceof GeneratedKeyToken) {
-                appendGenerateKeyToken(result, (GeneratedKeyToken) each, count, sqlTokens);
+            } else if (each instanceof InsertValuesToken) {
+                appendInsertValuesToken(result, (InsertValuesToken) each, count, sqlTokens);
             } else if (each instanceof RowCountToken) {
                 appendLimitRowCount(result, (RowCountToken) each, count, sqlTokens, isRewriteLimit);
             } else if (each instanceof OffsetToken) {
@@ -185,14 +187,9 @@ public final class SQLRewriteEngine {
         appendRest(sqlBuilder, count, sqlTokens, itemsToken.getBeginPosition());
     }
     
-    private void appendGenerateKeyToken(final SQLBuilder sqlBuilder, final GeneratedKeyToken generatedKeyToken, final int count, final List<SQLToken> sqlTokens) {
-        ItemsToken valuesToken = new ItemsToken(generatedKeyToken.getBeginPosition());
-        if (0 == sqlStatement.getParametersIndex()) {
-            valuesToken.getItems().add(generatedKey.getValue().toString());
-        } else {
-            valuesToken.getItems().add(Symbol.QUESTION.getLiterals());
-        }
-        appendItemsToken(sqlBuilder, valuesToken, count, sqlTokens);
+    private void appendInsertValuesToken(final SQLBuilder sqlBuilder, final InsertValuesToken insertValuesToken, final int count, final List<SQLToken> sqlTokens) {
+        sqlBuilder.appendPlaceholder(new InsertValuesPlaceholder(insertValuesToken.getTableName().toLowerCase(), shardingConditions));
+        appendRest(sqlBuilder, count, sqlTokens, ((InsertStatement) sqlStatement).getInsertValuesListLastPosition());
     }
     
     private void appendLimitRowCount(final SQLBuilder sqlBuilder, final RowCountToken rowCountToken, final int count, final List<SQLToken> sqlTokens, final boolean isRewrite) {
@@ -253,7 +250,7 @@ public final class SQLRewriteEngine {
      * @return SQL unit
      */
     public SQLUnit generateSQL(final TableUnit tableUnit, final SQLBuilder sqlBuilder) {
-        return sqlBuilder.toSQL(getTableTokens(tableUnit), shardingRule);
+        return sqlBuilder.toSQL(tableUnit, getTableTokens(tableUnit), shardingRule);
     }
    
     private Map<String, String> getTableTokens(final TableUnit tableUnit) {
