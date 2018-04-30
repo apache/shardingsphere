@@ -108,7 +108,7 @@ public class AssertEngine {
             
             List<String> dbNames = new ArrayList();
             if (StringUtils.isNotBlank(assertsDefinition.getBaseConfig())) {
-                String[] dbs = StringUtils.split(assertsDefinition.getBaseConfig());
+                String[] dbs = StringUtils.split(assertsDefinition.getBaseConfig(),",");
                 for (String each : dbs) {
                     dbNames.add(each);
                 }
@@ -130,7 +130,7 @@ public class AssertEngine {
                             dbs.add(databaseName);
                         }
                     }
-    
+                    
                     onlyDatabaseRun(each, path, id, assertsDefinition, rootPath, msg, initDataPath, dbs);
                 }
             }
@@ -142,7 +142,7 @@ public class AssertEngine {
         return true;
     }
     
-    private static void onlyDatabaseRun(final String dbName,final String path, final String id, final AssertsDefinition assertsDefinition, final String rootPath, final String msg, final String initDataPath, final List<String> dbs) throws IOException, SQLException, SAXException, ParserConfigurationException, XPathExpressionException, ParseException {
+    private static void onlyDatabaseRun(final String dbName, final String path, final String id, final AssertsDefinition assertsDefinition, final String rootPath, final String msg, final String initDataPath, final List<String> dbs) throws IOException, SQLException, SAXException, ParserConfigurationException, XPathExpressionException, ParseException {
         DataSource dataSource = null;
         try {
             for (DatabaseType each : InItCreateSchema.getDatabaseSchemas()) {
@@ -155,13 +155,13 @@ public class AssertEngine {
                 dataSource = getDataSource(dataSourceMaps, configPath);
                 
                 // dql run
-                dqlRun(initDataPath, path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
+                dqlRun(initDataPath, dbName, path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
                 
                 // dml run
-                dmlRun(initDataPath, path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
+                dmlRun(initDataPath, dbName, path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
                 
                 // ddl run
-                ddlRun(id, assertsDefinition, rootPath, msg, dataSource);
+                ddlRun(id, dbName, assertsDefinition, rootPath, msg, dataSource);
             }
         } finally {
             if (dataSource != null) {
@@ -172,10 +172,24 @@ public class AssertEngine {
         }
     }
     
-    private static void ddlRun(final String id, final AssertsDefinition assertsDefinition, final String rootPath, final String msg, final DataSource dataSource) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private static void ddlRun(final String id, final String dbName, final AssertsDefinition assertsDefinition, final String rootPath, final String msg, final DataSource dataSource) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         for (AssertDDLDefinition each : assertsDefinition.getAssertDDL()) {
             if (id.equals(each.getId())) {
                 AssertDDLDefinition anAssert = each;
+                String baseConfig = anAssert.getBaseConfig();
+                if (StringUtils.isNotBlank(baseConfig)) {
+                    String[] baseConfigs = StringUtils.split(baseConfig, ",");
+                    boolean flag = true;
+                    for (String config : baseConfigs) {
+                        if (dbName.equals(config)) {
+                            flag = false;
+                        }
+                    }
+                    //Skip use cases that do not need to run
+                    if (flag) {
+                        continue;
+                    }
+                }
                 String rootsql = anAssert.getSql();
                 rootsql = SQLCasesLoader.getInstance().getSupportedSQL(rootsql);
                 
@@ -191,10 +205,24 @@ public class AssertEngine {
         }
     }
     
-    private static void dmlRun(final String initDataFile, final String path, final String id, final AssertsDefinition assertsDefinition, final String rootPath, final String msg, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final List<String> dbs) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
+    private static void dmlRun(final String initDataFile, final String dbName, final String path, final String id, final AssertsDefinition assertsDefinition, final String rootPath, final String msg, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final List<String> dbs) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
         for (AssertDMLDefinition each : assertsDefinition.getAssertDML()) {
             if (id.equals(each.getId())) {
                 AssertDMLDefinition anAssert = each;
+                String baseConfig = anAssert.getBaseConfig();
+                if (StringUtils.isNotBlank(baseConfig)) {
+                    String[] baseConfigs = StringUtils.split(baseConfig, ",");
+                    boolean flag = true;
+                    for (String config : baseConfigs) {
+                        if (dbName.equals(config)) {
+                            flag = false;
+                        }
+                    }
+                    //Skip use cases that do not need to run
+                    if (flag) {
+                        continue;
+                    }
+                }
                 String rootsql = anAssert.getSql();
                 rootsql = SQLCasesLoader.getInstance().getSupportedSQL(rootsql);
                 Map<String, DatasetDefinition> mapDatasetDefinition = new HashMap<>();
@@ -221,11 +249,25 @@ public class AssertEngine {
         }
     }
     
-    private static void dqlRun(final String initDataFile, final String path, final String id, final AssertsDefinition assertsDefinition, final String rootPath, final String msg, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final List<String> dbs) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
+    private static void dqlRun(final String initDataFile, final String dbName, final String path, final String id, final AssertsDefinition assertsDefinition, final String rootPath, final String msg, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final List<String> dbs) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
         for (AssertDQLDefinition each : assertsDefinition.getAssertDQL()) {
+            
             if (id.equals(each.getId())) {
                 AssertDQLDefinition anAssert = each;
-                
+                String baseConfig = anAssert.getBaseConfig();
+                if (StringUtils.isNotBlank(baseConfig)) {
+                    String[] baseConfigs = StringUtils.split(baseConfig, ",");
+                    boolean flag = true;
+                    for (String config : baseConfigs) {
+                        if (dbName.equals(config)) {
+                            flag = false;
+                        }
+                    }
+                    //Skip use cases that do not need to run
+                    if (flag) {
+                        continue;
+                    }
+                }
                 String rootsql = anAssert.getSql();
                 rootsql = SQLCasesLoader.getInstance().getSupportedSQL(rootsql);
                 Map<String, DatasetDefinition> mapDatasetDefinition = new HashMap<>();

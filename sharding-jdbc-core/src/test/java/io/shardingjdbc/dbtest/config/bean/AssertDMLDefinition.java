@@ -33,6 +33,9 @@ public class AssertDMLDefinition implements AssertDefinition {
 
     @XmlAttribute(name = "expected-data-file")
     private String expectedDataFile;
+    
+    @XmlAttribute(name = "base-config")
+    private String baseConfig;
 
     @XmlAttribute(name = "expected-update")
     private Integer expectedUpdate;

@@ -93,7 +93,7 @@ public class StartTest {
                 AssertsDefinition assertsDefinition = AnalyzeConfig.analyze(each);
                 
                 if (StringUtils.isNotBlank(assertsDefinition.getBaseConfig())) {
-                    String[] dbs = StringUtils.split(assertsDefinition.getBaseConfig());
+                    String[] dbs = StringUtils.split(assertsDefinition.getBaseConfig(),",");
                     for (String db : dbs) {
                         InItCreateSchema.addDatabase(db);
                     }

@@ -34,6 +34,9 @@ public class AssertDQLDefinition implements AssertDefinition {
     @XmlAttribute(name = "expected-data-file")
     private String expectedDataFile;
     
+    @XmlAttribute(name = "base-config")
+    private String baseConfig;
+    
     @XmlAttribute(name = "sql")
     private String sql;
     

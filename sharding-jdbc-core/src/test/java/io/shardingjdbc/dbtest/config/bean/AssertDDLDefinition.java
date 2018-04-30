@@ -34,6 +34,9 @@ public class AssertDDLDefinition implements AssertDefinition {
     @XmlAttribute(name = "init-sql")
     private String initSql;
     
+    @XmlAttribute(name = "base-config")
+    private String baseConfig;
+    
     @XmlAttribute(name = "clean-sql")
     private String cleanSql;
 

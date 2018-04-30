@@ -1,0 +1,45 @@
+<asserts sharding-rule-config="./config/test" init-data-file="./init" base-config="db,tbl,dbtbl" database="h2,mysql,oracle,sqlserver,postgresql">
+    <assertDQL id="assertSelectOne"
+               sql="assertSelectOne"
+               expected-data-file="./asserts/dql/SelectOne.xml">
+    </assertDQL>
+    <assertDQL id="assertSelectNotEqualsWithSingleTable"
+               sql="assertSelectNotEqualsWithSingleTable" base-config="tbl"
+               expected-data-file="./asserts/dql/SelectNotEqualsWithSingleTable.xml">
+            <parameter>
+                <value value="100000" type="int" />
+            </parameter>
+    </assertDQL>
+    <assertDQL id="assertSelectNotEqualsWithSingleTableForExclamationEqual"
+               sql="assertSelectNotEqualsWithSingleTableForExclamationEqual" base-config="tbl"
+               expected-data-file="./asserts/dql/SelectNotEqualsWithSingleTable.xml">
+        <parameter>
+            <value value="100000" type="int" />
+        </parameter>
+    </assertDQL>
+    <assertDQL id="assertSelectNotEqualsWithSingleTableForNotIn"
+               sql="assertSelectNotEqualsWithSingleTableForNotIn" base-config="tbl"
+               expected-data-file="./asserts/dql/SelectNotEqualsWithSingleTable.xml">
+        <parameter>
+            <value value="100000" type="int" />
+        </parameter>
+    </assertDQL>
+    <assertDQL id="assertSelectEqualsWithSameShardingColumns"
+               sql="assertSelectEqualsWithSameShardingColumns" base-config="tbl"
+               expected-data-file="./asserts/dql/SelectEqualsWithSameShardingColumns.xml">
+        <parameter>
+            <value value="1000" type="int" />
+            <value value="1001" type="int" />
+        </parameter>
+    </assertDQL>
+    <assertDQL id="assertSelectInWithSameShardingColumns"
+               sql="assertSelectInWithSameShardingColumns" base-config="tbl"
+               expected-data-file="./asserts/dql/SelectInWithSameShardingColumns.xml">
+        <parameter>
+            <value value="1000" type="int" />
+            <value value="1001" type="int" />
+            <value value="1001" type="int" />
+            <value value="1100" type="int" />
+        </parameter>
+    </assertDQL>
+</asserts>
