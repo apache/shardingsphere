@@ -15,26 +15,21 @@
  * </p>
  */
 
-package io.shardingjdbc.core.routing.router.sharding;
+package io.shardingjdbc.core.parsing.parser.token;
 
-import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.LinkedList;
-import java.util.List;
-
 /**
- * Generated key.
+ * Insert values token.
  *
- * @author zhangliang
  * @author maxiaoguang
  */
 @RequiredArgsConstructor
 @Getter
-public final class GeneratedKey {
+public final class InsertValuesToken implements SQLToken {
     
-    private final Column column;
+    private final int beginPosition;
     
-    private final List<Number> generatedKeys = new LinkedList<>();
+    private final String tableName;
 }
