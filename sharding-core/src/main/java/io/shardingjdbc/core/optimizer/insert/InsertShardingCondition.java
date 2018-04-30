@@ -15,26 +15,30 @@
  * </p>
  */
 
-package io.shardingjdbc.core.routing.router.sharding;
+package io.shardingjdbc.core.optimizer.insert;
 
-import io.shardingjdbc.core.parsing.parser.context.condition.Column;
+import io.shardingjdbc.core.optimizer.condition.ShardingCondition;
+import io.shardingjdbc.core.rule.DataNode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Generated key.
- *
- * @author zhangliang
+ * Sharding condition.
+ * 
  * @author maxiaoguang
  */
 @RequiredArgsConstructor
 @Getter
-public final class GeneratedKey {
+@ToString
+public class InsertShardingCondition extends ShardingCondition {
     
-    private final Column column;
+    private final String insertValueExpression;
     
-    private final List<Number> generatedKeys = new LinkedList<>();
+    private final List<Object> parameters;
+    
+    private final List<DataNode> dataNodes = new LinkedList<>();
 }

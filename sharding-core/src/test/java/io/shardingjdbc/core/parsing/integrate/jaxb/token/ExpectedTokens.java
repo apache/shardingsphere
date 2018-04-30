@@ -43,8 +43,8 @@ public final class ExpectedTokens {
     @XmlElement(name = "generated-key-token")
     private ExpectedGeneratedKeyToken generatedKeyToken;
     
-    @XmlElement(name = "multiple-insert-values-token")
-    private ExpectedMultipleInsertValuesToken multipleInsertValuesToken;
+    @XmlElement(name = "insert-values-token")
+    private ExpectedInsertValuesToken insertValuesToken;
     
     @XmlElement(name = "order-by-token")
     private ExpectedOrderByToken orderByToken;

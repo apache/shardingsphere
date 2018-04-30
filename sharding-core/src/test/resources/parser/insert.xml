@@ -6,6 +6,7 @@
         </tables>
         <tokens>
             <table-token begin-position="12" original-literals="t_order" />
+            <insert-values-token begin-position="55" table-name="t_order"/>
         </tokens>
         <or-condition>
             <and-condition>
@@ -25,6 +26,7 @@
         </tables>
         <tokens>
             <table-token begin-position="12" original-literals="t_order" />
+            <insert-values-token begin-position="55" table-name="t_order"/>
         </tokens>
         <or-condition>
             <and-condition>
@@ -44,6 +46,7 @@
         </tables>
         <tokens>
             <table-token begin-position="12" original-literals="t_order_item" />
+            <insert-values-token begin-position="68" table-name="t_order_item"/>
         </tokens>
         <or-condition>
             <and-condition>
@@ -71,7 +74,7 @@
                     <item>item_id</item>
                 </items>
             </items-token>
-            <generated-key-token placeholder-begin-position="73" literal-begin-position="77" />
+            <insert-values-token begin-position="59" table-name="t_order_item"/>
         </tokens>
         <or-condition>
             <and-condition>
@@ -84,6 +87,73 @@
             </and-condition>
         </or-condition>
     </parser-result>
+
+    <parser-result sql-case-id="assertBatchInsertWithGenerateKeyColumn" parameters="10000 1000 10 10010 1001 10">
+        <tables>
+            <table name="t_order_item" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order_item" />
+            <insert-values-token begin-position="68" table-name="t_order_item"/>
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="item_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="0" literal="10000" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="1" literal="1000" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="2" literal="10" type="int" />
+                </condition>
+            </and-condition>
+            <and-condition>
+                <condition column-name="item_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="3" literal="10010" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="4" literal="1001" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="5" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+
+    <parser-result sql-case-id="assertBatchInsertWithoutGenerateKeyColumn" parameters="1000 10 1001 10">
+        <tables>
+            <table name="t_order_item" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order_item" />
+            <items-token begin-position="50">
+                <items>
+                    <item>item_id</item>
+                </items>
+            </items-token>
+            <insert-values-token begin-position="59" table-name="t_order_item"/>
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="0" literal="1000" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="1" literal="10" type="int" />
+                </condition>
+            </and-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="2" literal="1001" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="3" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
     
     <parser-result sql-case-id="assertInsertWithJsonAndGeo" parameters="7 200 100 200 '{&quot;rule&quot;:&quot;null&quot;}'">
         <tables>assertInsertWithJsonAndGeo
@@ -91,6 +161,7 @@
         </tables>
         <tokens>
             <table-token begin-position="12" original-literals="t_place" />
+            <insert-values-token begin-position="64" table-name="t_place"/>
         </tokens>
         <or-condition>
             <and-condition>
@@ -118,6 +189,7 @@
                 </items>
             </items-token>
             <insert-column-token begin-position="19" column-name=")" />
+            <insert-values-token begin-position="27" table-name="t_order"/>
         </tokens>
         <or-condition>
             <and-condition>
@@ -145,6 +217,7 @@
                 </items>
             </items-token>
             <insert-column-token begin-position="19" column-name=")" />
+            <insert-values-token begin-position="27" table-name="t_order"/>
         </tokens>
         <or-condition>
             <and-condition>
@@ -175,6 +248,7 @@
                 </items>
             </items-token>
             <insert-column-token begin-position="24" column-name=")" />
+            <insert-values-token begin-position="31" table-name="t_order_item"/>
         </tokens>
         <or-condition>
             <and-condition>
@@ -208,7 +282,7 @@
                 </items>
             </items-token>
             <insert-column-token begin-position="24" column-name=")" />
-            <generated-key-token placeholder-begin-position="60" literal-begin-position="64" />
+            <insert-values-token begin-position="31" table-name="t_order_item"/>
         </tokens>
         <or-condition>
             <and-condition>
