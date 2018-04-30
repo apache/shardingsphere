@@ -24,6 +24,7 @@ import io.shardingjdbc.core.parsing.parser.sql.dml.DMLStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingjdbc.core.routing.router.sharding.GeneratedKey;
+import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -33,6 +34,7 @@ import java.util.List;
  * Optimize engine factory.
  *
  * @author zhangliang
+ * @author maxiaoguang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OptimizeEngineFactory {
@@ -40,14 +42,15 @@ public final class OptimizeEngineFactory {
     /**
      * Create optimize engine instance.
      * 
+     * @param shardingRule sharding rule
      * @param sqlStatement SQL statement
      * @param parameters parameters
      * @param generatedKey generated key
      * @return optimize engine instance
      */
-    public static OptimizeEngine newInstance(final SQLStatement sqlStatement, final List<Object> parameters, final GeneratedKey generatedKey) {
+    public static OptimizeEngine newInstance(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<Object> parameters, final GeneratedKey generatedKey) {
         if (sqlStatement instanceof InsertStatement) {
-            return new InsertOptimizeEngine(sqlStatement.getConditions().getOrCondition(), parameters, generatedKey); 
+            return new InsertOptimizeEngine(shardingRule, (InsertStatement) sqlStatement, parameters, generatedKey);
         }
         if (sqlStatement instanceof SelectStatement || sqlStatement instanceof DMLStatement) {
             return new QueryOptimizeEngine(sqlStatement.getConditions().getOrCondition(), parameters);

@@ -15,26 +15,23 @@
  * </p>
  */
 
-package io.shardingjdbc.core.routing.router.sharding;
+package io.shardingjdbc.core.parsing.integrate.jaxb.token;
 
-import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
-import java.util.LinkedList;
-import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
-/**
- * Generated key.
- *
- * @author zhangliang
- * @author maxiaoguang
- */
-@RequiredArgsConstructor
 @Getter
-public final class GeneratedKey {
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedInsertValuesToken {
     
-    private final Column column;
+    @XmlAttribute(name = "begin-position")
+    private int beginPosition;
     
-    private final List<Number> generatedKeys = new LinkedList<>();
+    @XmlAttribute(name = "table-name")
+    private String tableName;
 }

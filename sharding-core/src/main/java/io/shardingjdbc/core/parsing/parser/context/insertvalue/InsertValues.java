@@ -15,28 +15,22 @@
  * </p>
  */
 
-package io.shardingjdbc.core.parsing.integrate.jaxb.token;
+package io.shardingjdbc.core.parsing.parser.context.insertvalue;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.ToString;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Insert values.
+ *
+ * @author maxiaoguang
+ */
 @Getter
-@Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedMultipleInsertValuesToken {
+@ToString
+public final class InsertValues {
     
-    @XmlAttribute(name = "begin-position")
-    private int beginPosition;
-    
-    @XmlElementWrapper(name = "values")
-    @XmlElement(name = "value")
-    private List<String> values = new LinkedList<>();
+    private final List<InsertValue> insertValues = new LinkedList<>();
 }

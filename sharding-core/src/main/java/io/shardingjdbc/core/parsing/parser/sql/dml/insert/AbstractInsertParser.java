@@ -26,7 +26,6 @@ import io.shardingjdbc.core.parsing.parser.clause.facade.AbstractInsertClausePar
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import io.shardingjdbc.core.parsing.parser.sql.SQLParser;
 import io.shardingjdbc.core.parsing.parser.sql.dml.DMLStatement;
-import io.shardingjdbc.core.parsing.parser.token.GeneratedKeyToken;
 import io.shardingjdbc.core.parsing.parser.token.ItemsToken;
 import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.AccessLevel;
@@ -37,6 +36,7 @@ import lombok.Getter;
  *
  * @author zhangliang
  * @author panjuan
+ * @author maxiaoguang
  */
 public abstract class AbstractInsertParser implements SQLParser {
     
@@ -51,7 +51,8 @@ public abstract class AbstractInsertParser implements SQLParser {
     
     private final AbstractInsertClauseParserFacade insertClauseParserFacade;
     
-    public AbstractInsertParser(final ShardingRule shardingRule, final ShardingMetaData shardingMetaData, final LexerEngine lexerEngine, final AbstractInsertClauseParserFacade insertClauseParserFacade) {
+    public AbstractInsertParser(final ShardingRule shardingRule, final ShardingMetaData shardingMetaData,
+                                final LexerEngine lexerEngine, final AbstractInsertClauseParserFacade insertClauseParserFacade) {
         this.shardingRule = shardingRule;
         this.shardingMetaData = shardingMetaData;
         this.lexerEngine = lexerEngine;
@@ -69,14 +70,14 @@ public abstract class AbstractInsertParser implements SQLParser {
         }
         insertClauseParserFacade.getInsertValuesClauseParser().parse(result, shardingMetaData);
         insertClauseParserFacade.getInsertSetClauseParser().parse(result);
-        appendGenerateKeyToken(result);
+        processGeneratedKey(result);
         return result;
     }
     
-    private void appendGenerateKeyToken(final InsertStatement insertStatement) {
+    private void processGeneratedKey(final InsertStatement insertStatement) {
         String tableName = insertStatement.getTables().getSingleTableName();
         Optional<Column> generateKeyColumn = shardingRule.getGenerateKeyColumn(tableName);
-        if (!generateKeyColumn.isPresent() || null != insertStatement.getGeneratedKeyCondition()) {
+        if (-1 != insertStatement.getGenerateKeyColumnIndex() || !generateKeyColumn.isPresent()) {
             return;
         }
         if (!insertStatement.getItemsTokens().isEmpty()) {
@@ -86,6 +87,5 @@ public abstract class AbstractInsertParser implements SQLParser {
             columnsToken.getItems().add(generateKeyColumn.get().getName());
             insertStatement.getSqlTokens().add(columnsToken);
         }
-        insertStatement.getSqlTokens().add(new GeneratedKeyToken(insertStatement.getValuesListLastPosition()));
     }
 }
