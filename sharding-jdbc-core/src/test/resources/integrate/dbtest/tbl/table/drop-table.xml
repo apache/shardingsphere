@@ -20,6 +20,6 @@
     <sql id="tblDropTOrderItem7"/>
     <sql id="tblDropTOrderItem8"/>
     <sql id="tblDropTOrderItem9"/>
-    <sql id="tblDropTConfig"/>
-    <sql id="tblDropTGlobal"/>
+    <sql id="tblDropTOrderConfig"/>
+    <sql id="tblDropTOrderGlobal"/>
 </sqls>
