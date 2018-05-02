@@ -1,0 +1,1141 @@
+<asserts sharding-rule-config="./config/test" init-data-file="./init" base-config="db" database="h2,mysql,oracle,sqlserver,postgresql">
+    <assertDML id="assertInsertWithAllPlaceholders" expected-update="9"
+               sql="assertInsertWithAllPlaceholders" base-config="db"
+               expected-sql="assertSelectEqualsWithSingleTable"
+               >
+        <subAssert expected-data-file="db_1.xml">
+            <parameter>
+                <value value="1" type="int"/>
+                <value value="1" type="int"/>
+                <value value="insert"/>
+            </parameter>
+            <expected-parameter>
+                <value value="1" type="int"/>
+                <value value="1" type="int"/>
+            </expected-parameter>
+        </subAssert>
+        <subAssert expected-data-file="db_2.xml">
+            <parameter>
+                <value value="2" type="int"/>
+                <value value="2" type="int"/>
+                <value value="insert"/>
+            </parameter>
+            <expected-parameter>
+                <value value="2" type="int"/>
+                <value value="2" type="int"/>
+            </expected-parameter>
+        </subAssert>
+        <subAssert expected-data-file="db_3.xml">
+            <parameter>
+                <value value="3" type="int"/>
+                <value value="3" type="int"/>
+                <value value="insert"/>
+            </parameter>
+            <expected-parameter>
+                <value value="3" type="int"/>
+                <value value="3" type="int"/>
+            </expected-parameter>
+        </subAssert>
+        <subAssert expected-data-file="db_4.xml">
+            <parameter>
+                <value value="4" type="int"/>
+                <value value="4" type="int"/>
+                <value value="insert"/>
+            </parameter>
+            <expected-parameter>
+                <value value="4" type="int"/>
+                <value value="4" type="int"/>
+            </expected-parameter>
+        </subAssert>
+        <subAssert expected-data-file="db_5.xml">
+            <parameter>
+                <value value="5" type="int"/>
+                <value value="5" type="int"/>
+                <value value="insert"/>
+            </parameter>
+            <expected-parameter>
+                <value value="5" type="int"/>
+                <value value="5" type="int"/>
+            </expected-parameter>
+        </subAssert>
+        <subAssert expected-data-file="db_6.xml">
+            <parameter>
+                <value value="6" type="int"/>
+                <value value="6" type="int"/>
+                <value value="insert"/>
+            </parameter>
+            <expected-parameter>
+                <value value="6" type="int"/>
+                <value value="6" type="int"/>
+            </expected-parameter>
+        </subAssert>
+        <subAssert expected-data-file="db_7.xml">
+            <parameter>
+                <value value="7" type="int"/>
+                <value value="7" type="int"/>
+                <value value="insert"/>
+            </parameter>
+            <expected-parameter>
+                <value value="7" type="int"/>
+                <value value="7" type="int"/>
+            </expected-parameter>
+        </subAssert>
+        <subAssert expected-data-file="db_8.xml">
+            <parameter>
+                <value value="8" type="int"/>
+                <value value="8" type="int"/>
+                <value value="insert"/>
+            </parameter>
+            <expected-parameter>
+                <value value="8" type="int"/>
+                <value value="8" type="int"/>
+            </expected-parameter>
+        </subAssert>
+        <subAssert expected-data-file="db_9.xml">
+            <parameter>
+                <value value="9" type="int"/>
+                <value value="9" type="int"/>
+                <value value="insert"/>
+            </parameter>
+            <expected-parameter>
+                <value value="9" type="int"/>
+                <value value="9" type="int"/>
+            </expected-parameter>
+        </subAssert>
+    </assertDML>
+    <!--<assertDML id="assertInsertWithoutPlaceholder"  expected-update="9"
+               sql="assertInsertWithPartialPlaceholder"
+               expected-sql="assertSelectEqualsWithSingleTableExpected"
+               expected-data-file="./asserts/dml/insert/insert.xml">
+        <parameters>
+            <parameter>
+                <value value="1" type="int"/>
+                <value value="1" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="2" type="int"/>
+                <value value="2" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="3" type="int"/>
+                <value value="3" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="4" type="int"/>
+                <value value="4" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="5" type="int"/>
+                <value value="5" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="6" type="int"/>
+                <value value="6" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="7" type="int"/>
+                <value value="7" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="8" type="int"/>
+                <value value="8" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="9" type="int"/>
+                <value value="9" type="int"/>
+            </parameter>
+        </parameters>
+        <expected-parameter>
+            <value value="1" type="int"/>
+            <value value="2" type="int"/>
+            <value value="3" type="int"/>
+            <value value="4" type="int"/>
+            <value value="5" type="int"/>
+            <value value="6" type="int"/>
+            <value value="7" type="int"/>
+            <value value="8" type="int"/>
+            <value value="9" type="int"/>
+            <value value="1" type="int"/>
+            <value value="2" type="int"/>
+            <value value="3" type="int"/>
+            <value value="4" type="int"/>
+            <value value="5" type="int"/>
+            <value value="6" type="int"/>
+            <value value="7" type="int"/>
+            <value value="8" type="int"/>
+            <value value="9" type="int"/>
+        </expected-parameter>
+    </assertDML>
+
+    <assertDML id="assertInsertWithPartialPlaceholders"  expected-update="9"
+               sql="assertInsertWithPartialPlaceholders"
+               expected-sql="assertSelectEqualsWithSingleTableExpected"
+               expected-data-file="./asserts/dml/insert/insert.xml">
+        <parameters>
+            <parameter>
+                <valueReplace value="1" type="int"/>
+                <valueReplace value="1" type="int"/>
+                <value value="insert"/>
+            </parameter>
+            <parameter>
+                <valueReplace value="2" type="int"/>
+                <valueReplace value="2" type="int"/>
+                <value value="insert"/>
+            </parameter>
+            <parameter>
+                <valueReplace value="3" type="int"/>
+                <valueReplace value="3" type="int"/>
+                <value value="insert"/>
+            </parameter>
+            <parameter>
+                <valueReplace value="4" type="int"/>
+                <valueReplace value="4" type="int"/>
+                <value value="insert"/>
+            </parameter>
+            <parameter>
+                <valueReplace value="5" type="int"/>
+                <valueReplace value="5" type="int"/>
+                <value value="insert"/>
+            </parameter>
+            <parameter>
+                <valueReplace value="6" type="int"/>
+                <valueReplace value="6" type="int"/>
+                <value value="insert"/>
+            </parameter>
+            <parameter>
+                <valueReplace value="7" type="int"/>
+                <valueReplace value="7" type="int"/>
+                <value value="insert"/>
+            </parameter>
+            <parameter>
+                <valueReplace value="8" type="int"/>
+                <valueReplace value="8" type="int"/>
+                <value value="insert"/>
+            </parameter>
+            <parameter>
+                <valueReplace value="9" type="int"/>
+                <valueReplace value="9" type="int"/>
+                <value value="insert"/>
+            </parameter>
+        </parameters>
+        <expected-parameter>
+            <value value="1" type="int"/>
+            <value value="2" type="int"/>
+            <value value="3" type="int"/>
+            <value value="4" type="int"/>
+            <value value="5" type="int"/>
+            <value value="6" type="int"/>
+            <value value="7" type="int"/>
+            <value value="8" type="int"/>
+            <value value="9" type="int"/>
+            <value value="1" type="int"/>
+            <value value="2" type="int"/>
+            <value value="3" type="int"/>
+            <value value="4" type="int"/>
+            <value value="5" type="int"/>
+            <value value="6" type="int"/>
+            <value value="7" type="int"/>
+            <value value="8" type="int"/>
+            <value value="9" type="int"/>
+        </expected-parameter>
+    </assertDML>
+
+
+
+    <assertDML id="assertUpdateWithoutAlias"  expected-update="40"
+               sql="assertUpdateWithoutAlias"
+               expected-sql="assertSelectUpdateWithoutAliasExpected"
+               expected-data-file="./asserts/dml/insert/update.xml">
+        <parameters>
+            <parameter>
+                <value value="updated" />
+                <value value="1000" type="int"/>
+                <value value="10" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="1001" type="int"/>
+                <value value="10" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2000" type="int"/>
+                <value value="20" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2001" type="int"/>
+                <value value="20" type="int"/>
+            </parameter>
+
+            <parameter>
+                <value value="updated" />
+                <value value="1100" type="int"/>
+                <value value="11" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="1101" type="int"/>
+                <value value="11" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2100" type="int"/>
+                <value value="21" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2101" type="int"/>
+                <value value="21" type="int"/>
+            </parameter>
+
+            <parameter>
+                <value value="updated" />
+                <value value="1200" type="int"/>
+                <value value="12" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="1201" type="int"/>
+                <value value="12" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2200" type="int"/>
+                <value value="22" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2201" type="int"/>
+                <value value="22" type="int"/>
+            </parameter>
+
+            <parameter>
+                <value value="updated" />
+                <value value="1300" type="int"/>
+                <value value="13" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="1301" type="int"/>
+                <value value="13" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2300" type="int"/>
+                <value value="23" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2301" type="int"/>
+                <value value="23" type="int"/>
+            </parameter>
+
+            <parameter>
+                <value value="updated" />
+                <value value="1400" type="int"/>
+                <value value="14" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="1401" type="int"/>
+                <value value="14" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2400" type="int"/>
+                <value value="24" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2401" type="int"/>
+                <value value="24" type="int"/>
+            </parameter>
+
+            <parameter>
+                <value value="updated" />
+                <value value="1500" type="int"/>
+                <value value="15" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="1501" type="int"/>
+                <value value="15" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2500" type="int"/>
+                <value value="25" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2501" type="int"/>
+                <value value="25" type="int"/>
+            </parameter>
+
+            <parameter>
+                <value value="updated" />
+                <value value="1600" type="int"/>
+                <value value="16" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="1601" type="int"/>
+                <value value="16" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2600" type="int"/>
+                <value value="26" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2601" type="int"/>
+                <value value="26" type="int"/>
+            </parameter>
+
+            <parameter>
+                <value value="updated" />
+                <value value="1700" type="int"/>
+                <value value="17" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="1701" type="int"/>
+                <value value="17" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2700" type="int"/>
+                <value value="27" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2701" type="int"/>
+                <value value="27" type="int"/>
+            </parameter>
+
+            <parameter>
+                <value value="updated" />
+                <value value="1800" type="int"/>
+                <value value="18" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="1801" type="int"/>
+                <value value="18" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2800" type="int"/>
+                <value value="28" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2801" type="int"/>
+                <value value="28" type="int"/>
+            </parameter>
+
+            <parameter>
+                <value value="updated" />
+                <value value="1900" type="int"/>
+                <value value="19" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="1901" type="int"/>
+                <value value="19" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2900" type="int"/>
+                <value value="29" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2901" type="int"/>
+                <value value="29" type="int"/>
+            </parameter>
+        </parameters>
+        <expected-parameter>
+            <value value="10" type="int"/>
+            <value value="10" type="int"/>
+            <value value="20" type="int"/>
+            <value value="20" type="int"/>
+            <value value="11" type="int"/>
+            <value value="11" type="int"/>
+            <value value="21" type="int"/>
+            <value value="21" type="int"/>
+            <value value="12" type="int"/>
+            <value value="12" type="int"/>
+            <value value="22" type="int"/>
+            <value value="22" type="int"/>
+            <value value="13" type="int"/>
+            <value value="13" type="int"/>
+            <value value="23" type="int"/>
+            <value value="23" type="int"/>
+            <value value="14" type="int"/>
+            <value value="14" type="int"/>
+            <value value="24" type="int"/>
+            <value value="24" type="int"/>
+            <value value="15" type="int"/>
+            <value value="15" type="int"/>
+            <value value="25" type="int"/>
+            <value value="25" type="int"/>
+            <value value="16" type="int"/>
+            <value value="16" type="int"/>
+            <value value="26" type="int"/>
+            <value value="26" type="int"/>
+            <value value="17" type="int"/>
+            <value value="17" type="int"/>
+            <value value="27" type="int"/>
+            <value value="27" type="int"/>
+            <value value="18" type="int"/>
+            <value value="18" type="int"/>
+            <value value="28" type="int"/>
+            <value value="28" type="int"/>
+            <value value="19" type="int"/>
+            <value value="19" type="int"/>
+            <value value="29" type="int"/>
+            <value value="29" type="int"/>
+            <value value="1000" type="int"/>
+            <value value="1001" type="int"/>
+            <value value="2000" type="int"/>
+            <value value="2001" type="int"/>
+            <value value="1100" type="int"/>
+            <value value="1101" type="int"/>
+            <value value="2100" type="int"/>
+            <value value="2101" type="int"/>
+            <value value="1200" type="int"/>
+            <value value="1201" type="int"/>
+            <value value="2200" type="int"/>
+            <value value="2201" type="int"/>
+            <value value="1300" type="int"/>
+            <value value="1301" type="int"/>
+            <value value="2300" type="int"/>
+            <value value="2301" type="int"/>
+            <value value="1400" type="int"/>
+            <value value="1401" type="int"/>
+            <value value="2400" type="int"/>
+            <value value="2401" type="int"/>
+            <value value="1500" type="int"/>
+            <value value="1501" type="int"/>
+            <value value="2500" type="int"/>
+            <value value="2501" type="int"/>
+            <value value="1600" type="int"/>
+            <value value="1601" type="int"/>
+            <value value="2600" type="int"/>
+            <value value="2601" type="int"/>
+            <value value="1700" type="int"/>
+            <value value="1701" type="int"/>
+            <value value="2700" type="int"/>
+            <value value="2701" type="int"/>
+            <value value="1800" type="int"/>
+            <value value="1801" type="int"/>
+            <value value="2800" type="int"/>
+            <value value="2801" type="int"/>
+            <value value="1900" type="int"/>
+            <value value="1901" type="int"/>
+            <value value="2900" type="int"/>
+            <value value="2901" type="int"/>
+        </expected-parameter>
+    </assertDML>
+
+    <assertDML id="assertUpdateWithAlias"  expected-update="40"
+               sql="assertUpdateWithAlias"
+               expected-sql="assertSelectUpdateWithoutAliasExpected"
+               expected-data-file="./asserts/dml/insert/update.xml">
+        <parameters>
+            <parameter>
+                <value value="updated" />
+                <value value="1000" type="int"/>
+                <value value="10" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="1001" type="int"/>
+                <value value="10" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2000" type="int"/>
+                <value value="20" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2001" type="int"/>
+                <value value="20" type="int"/>
+            </parameter>
+
+            <parameter>
+                <value value="updated" />
+                <value value="1100" type="int"/>
+                <value value="11" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="1101" type="int"/>
+                <value value="11" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2100" type="int"/>
+                <value value="21" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2101" type="int"/>
+                <value value="21" type="int"/>
+            </parameter>
+
+            <parameter>
+                <value value="updated" />
+                <value value="1200" type="int"/>
+                <value value="12" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="1201" type="int"/>
+                <value value="12" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2200" type="int"/>
+                <value value="22" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2201" type="int"/>
+                <value value="22" type="int"/>
+            </parameter>
+
+            <parameter>
+                <value value="updated" />
+                <value value="1300" type="int"/>
+                <value value="13" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="1301" type="int"/>
+                <value value="13" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2300" type="int"/>
+                <value value="23" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2301" type="int"/>
+                <value value="23" type="int"/>
+            </parameter>
+
+            <parameter>
+                <value value="updated" />
+                <value value="1400" type="int"/>
+                <value value="14" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="1401" type="int"/>
+                <value value="14" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2400" type="int"/>
+                <value value="24" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2401" type="int"/>
+                <value value="24" type="int"/>
+            </parameter>
+
+            <parameter>
+                <value value="updated" />
+                <value value="1500" type="int"/>
+                <value value="15" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="1501" type="int"/>
+                <value value="15" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2500" type="int"/>
+                <value value="25" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2501" type="int"/>
+                <value value="25" type="int"/>
+            </parameter>
+
+            <parameter>
+                <value value="updated" />
+                <value value="1600" type="int"/>
+                <value value="16" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="1601" type="int"/>
+                <value value="16" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2600" type="int"/>
+                <value value="26" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2601" type="int"/>
+                <value value="26" type="int"/>
+            </parameter>
+
+            <parameter>
+                <value value="updated" />
+                <value value="1700" type="int"/>
+                <value value="17" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="1701" type="int"/>
+                <value value="17" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2700" type="int"/>
+                <value value="27" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2701" type="int"/>
+                <value value="27" type="int"/>
+            </parameter>
+
+            <parameter>
+                <value value="updated" />
+                <value value="1800" type="int"/>
+                <value value="18" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="1801" type="int"/>
+                <value value="18" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2800" type="int"/>
+                <value value="28" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2801" type="int"/>
+                <value value="28" type="int"/>
+            </parameter>
+
+            <parameter>
+                <value value="updated" />
+                <value value="1900" type="int"/>
+                <value value="19" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="1901" type="int"/>
+                <value value="19" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2900" type="int"/>
+                <value value="29" type="int"/>
+            </parameter>
+            <parameter>
+                <value value="updated" />
+                <value value="2901" type="int"/>
+                <value value="29" type="int"/>
+            </parameter>
+        </parameters>
+        <expected-parameter>
+            <value value="10" type="int"/>
+            <value value="10" type="int"/>
+            <value value="20" type="int"/>
+            <value value="20" type="int"/>
+            <value value="11" type="int"/>
+            <value value="11" type="int"/>
+            <value value="21" type="int"/>
+            <value value="21" type="int"/>
+            <value value="12" type="int"/>
+            <value value="12" type="int"/>
+            <value value="22" type="int"/>
+            <value value="22" type="int"/>
+            <value value="13" type="int"/>
+            <value value="13" type="int"/>
+            <value value="23" type="int"/>
+            <value value="23" type="int"/>
+            <value value="14" type="int"/>
+            <value value="14" type="int"/>
+            <value value="24" type="int"/>
+            <value value="24" type="int"/>
+            <value value="15" type="int"/>
+            <value value="15" type="int"/>
+            <value value="25" type="int"/>
+            <value value="25" type="int"/>
+            <value value="16" type="int"/>
+            <value value="16" type="int"/>
+            <value value="26" type="int"/>
+            <value value="26" type="int"/>
+            <value value="17" type="int"/>
+            <value value="17" type="int"/>
+            <value value="27" type="int"/>
+            <value value="27" type="int"/>
+            <value value="18" type="int"/>
+            <value value="18" type="int"/>
+            <value value="28" type="int"/>
+            <value value="28" type="int"/>
+            <value value="19" type="int"/>
+            <value value="19" type="int"/>
+            <value value="29" type="int"/>
+            <value value="29" type="int"/>
+            <value value="1000" type="int"/>
+            <value value="1001" type="int"/>
+            <value value="2000" type="int"/>
+            <value value="2001" type="int"/>
+            <value value="1100" type="int"/>
+            <value value="1101" type="int"/>
+            <value value="2100" type="int"/>
+            <value value="2101" type="int"/>
+            <value value="1200" type="int"/>
+            <value value="1201" type="int"/>
+            <value value="2200" type="int"/>
+            <value value="2201" type="int"/>
+            <value value="1300" type="int"/>
+            <value value="1301" type="int"/>
+            <value value="2300" type="int"/>
+            <value value="2301" type="int"/>
+            <value value="1400" type="int"/>
+            <value value="1401" type="int"/>
+            <value value="2400" type="int"/>
+            <value value="2401" type="int"/>
+            <value value="1500" type="int"/>
+            <value value="1501" type="int"/>
+            <value value="2500" type="int"/>
+            <value value="2501" type="int"/>
+            <value value="1600" type="int"/>
+            <value value="1601" type="int"/>
+            <value value="2600" type="int"/>
+            <value value="2601" type="int"/>
+            <value value="1700" type="int"/>
+            <value value="1701" type="int"/>
+            <value value="2700" type="int"/>
+            <value value="2701" type="int"/>
+            <value value="1800" type="int"/>
+            <value value="1801" type="int"/>
+            <value value="2800" type="int"/>
+            <value value="2801" type="int"/>
+            <value value="1900" type="int"/>
+            <value value="1901" type="int"/>
+            <value value="2900" type="int"/>
+            <value value="2901" type="int"/>
+        </expected-parameter>
+    </assertDML>
+
+    <assertDML id="assertDeleteWithoutAlias"  expected-update="40"
+               sql="assertDeleteWithShardingValue"
+               expected-sql="assertSelectUpdateWithoutAliasExpected"
+               expected-data-file="./asserts/dml/insert/delete.xml">
+        <parameters>
+            <parameter>
+                <value value="1000" type="int"/>
+                <value value="10" type="int"/>
+                <value value="init" />
+            </parameter>
+            <parameter>
+                <value value="1001" type="int"/>
+                <value value="10" type="int"/>
+                <value value="init" />
+            </parameter>
+            <parameter>
+                <value value="2000" type="int"/>
+                <value value="20" type="int"/>
+                <value value="init" />
+            </parameter>
+            <parameter>
+                <value value="2001" type="int"/>
+                <value value="20" type="int"/>
+                <value value="init" />
+            </parameter>
+
+            <parameter>
+                <value value="1100" type="int"/>
+                <value value="11" type="int"/>
+                <value value="init" />
+            </parameter>
+            <parameter>
+                <value value="1101" type="int"/>
+                <value value="11" type="int"/>
+                <value value="init" />
+            </parameter>
+            <parameter>
+                <value value="2100" type="int"/>
+                <value value="21" type="int"/>
+                <value value="init" />
+            </parameter>
+            <parameter>
+                <value value="2101" type="int"/>
+                <value value="21" type="int"/>
+                <value value="init" />
+            </parameter>
+
+            <parameter>
+                <value value="1200" type="int"/>
+                <value value="12" type="int"/>
+                <value value="init" />
+            </parameter>
+            <parameter>
+                <value value="1201" type="int"/>
+                <value value="12" type="int"/>
+                <value value="init" />
+            </parameter>
+            <parameter>
+                <value value="2200" type="int"/>
+                <value value="22" type="int"/>
+                <value value="init" />
+            </parameter>
+            <parameter>
+                <value value="2201" type="int"/>
+                <value value="22" type="int"/>
+                <value value="init" />
+            </parameter>
+
+            <parameter>
+                <value value="1300" type="int"/>
+                <value value="13" type="int"/>
+                <value value="init" />
+            </parameter>
+            <parameter>
+                <value value="1301" type="int"/>
+                <value value="13" type="int"/>
+                <value value="init" />
+            </parameter>
+            <parameter>
+                <value value="2300" type="int"/>
+                <value value="23" type="int"/>
+                <value value="init" />
+            </parameter>
+            <parameter>
+                <value value="2301" type="int"/>
+                <value value="23" type="int"/>
+                <value value="init" />
+            </parameter>
+
+            <parameter>
+                <value value="1400" type="int"/>
+                <value value="14" type="int"/>
+                <value value="init" />
+            </parameter>
+            <parameter>
+                <value value="1401" type="int"/>
+                <value value="14" type="int"/>
+                <value value="init" />
+            </parameter>
+            <parameter>
+                <value value="2400" type="int"/>
+                <value value="24" type="int"/>
+                <value value="init" />
+            </parameter>
+            <parameter>
+                <value value="2401" type="int"/>
+                <value value="24" type="int"/>
+                <value value="init" />
+            </parameter>
+
+            <parameter>
+                <value value="1500" type="int"/>
+                <value value="15" type="int"/>
+                <value value="init" />
+            </parameter>
+            <parameter>
+                <value value="1501" type="int"/>
+                <value value="15" type="int"/>
+                <value value="init" />
+            </parameter>
+            <parameter>
+                <value value="2500" type="int"/>
+                <value value="25" type="int"/>
+                <value value="init" />
+            </parameter>
+            <parameter>
+                <value value="2501" type="int"/>
+                <value value="25" type="int"/>
+                <value value="init" />
+            </parameter>
+
+            <parameter>
+                <value value="1600" type="int"/>
+                <value value="16" type="int"/>
+                <value value="init" />
+            </parameter>
+            <parameter>
+                <value value="1601" type="int"/>
+                <value value="16" type="int"/>
+                <value value="init" />
+            </parameter>
+            <parameter>
+                <value value="2600" type="int"/>
+                <value value="26" type="int"/>
+                <value value="init" />
+            </parameter>
+            <parameter>
+                <value value="2601" type="int"/>
+                <value value="26" type="int"/>
+                <value value="init" />
+            </parameter>
+
+            <parameter>
+                <value value="1700" type="int"/>
+                <value value="17" type="int"/>
+                <value value="init" />
+            </parameter>
+            <parameter>
+                <value value="1701" type="int"/>
+                <value value="17" type="int"/>
+                <value value="init" />
+            </parameter>
+            <parameter>
+                <value value="2700" type="int"/>
+                <value value="27" type="int"/>
+                <value value="init" />
+            </parameter>
+            <parameter>
+                <value value="2701" type="int"/>
+                <value value="27" type="int"/>
+                <value value="init" />
+            </parameter>
+
+            <parameter>
+                <value value="1800" type="int"/>
+                <value value="18" type="int"/>
+                <value value="init" />
+            </parameter>
+            <parameter>
+                <value value="1801" type="int"/>
+                <value value="18" type="int"/>
+                <value value="init" />
+            </parameter>
+            <parameter>
+                <value value="2800" type="int"/>
+                <value value="28" type="int"/>
+                <value value="init" />
+            </parameter>
+            <parameter>
+                <value value="2801" type="int"/>
+                <value value="28" type="int"/>
+                <value value="init" />
+            </parameter>
+
+            <parameter>
+                <value value="1900" type="int"/>
+                <value value="19" type="int"/>
+                <value value="init" />
+            </parameter>
+            <parameter>
+                <value value="1901" type="int"/>
+                <value value="19" type="int"/>
+                <value value="init" />
+            </parameter>
+            <parameter>
+                <value value="2900" type="int"/>
+                <value value="29" type="int"/>
+                <value value="init" />
+            </parameter>
+            <parameter>
+                <value value="2901" type="int"/>
+                <value value="29" type="int"/>
+                <value value="init" />
+            </parameter>
+        </parameters>
+        <expected-parameter>
+            <value value="10" type="int"/>
+            <value value="10" type="int"/>
+            <value value="20" type="int"/>
+            <value value="20" type="int"/>
+            <value value="11" type="int"/>
+            <value value="11" type="int"/>
+            <value value="21" type="int"/>
+            <value value="21" type="int"/>
+            <value value="12" type="int"/>
+            <value value="12" type="int"/>
+            <value value="22" type="int"/>
+            <value value="22" type="int"/>
+            <value value="13" type="int"/>
+            <value value="13" type="int"/>
+            <value value="23" type="int"/>
+            <value value="23" type="int"/>
+            <value value="14" type="int"/>
+            <value value="14" type="int"/>
+            <value value="24" type="int"/>
+            <value value="24" type="int"/>
+            <value value="15" type="int"/>
+            <value value="15" type="int"/>
+            <value value="25" type="int"/>
+            <value value="25" type="int"/>
+            <value value="16" type="int"/>
+            <value value="16" type="int"/>
+            <value value="26" type="int"/>
+            <value value="26" type="int"/>
+            <value value="17" type="int"/>
+            <value value="17" type="int"/>
+            <value value="27" type="int"/>
+            <value value="27" type="int"/>
+            <value value="18" type="int"/>
+            <value value="18" type="int"/>
+            <value value="28" type="int"/>
+            <value value="28" type="int"/>
+            <value value="19" type="int"/>
+            <value value="19" type="int"/>
+            <value value="29" type="int"/>
+            <value value="29" type="int"/>
+            <value value="1000" type="int"/>
+            <value value="1001" type="int"/>
+            <value value="2000" type="int"/>
+            <value value="2001" type="int"/>
+            <value value="1100" type="int"/>
+            <value value="1101" type="int"/>
+            <value value="2100" type="int"/>
+            <value value="2101" type="int"/>
+            <value value="1200" type="int"/>
+            <value value="1201" type="int"/>
+            <value value="2200" type="int"/>
+            <value value="2201" type="int"/>
+            <value value="1300" type="int"/>
+            <value value="1301" type="int"/>
+            <value value="2300" type="int"/>
+            <value value="2301" type="int"/>
+            <value value="1400" type="int"/>
+            <value value="1401" type="int"/>
+            <value value="2400" type="int"/>
+            <value value="2401" type="int"/>
+            <value value="1500" type="int"/>
+            <value value="1501" type="int"/>
+            <value value="2500" type="int"/>
+            <value value="2501" type="int"/>
+            <value value="1600" type="int"/>
+            <value value="1601" type="int"/>
+            <value value="2600" type="int"/>
+            <value value="2601" type="int"/>
+            <value value="1700" type="int"/>
+            <value value="1701" type="int"/>
+            <value value="2700" type="int"/>
+            <value value="2701" type="int"/>
+            <value value="1800" type="int"/>
+            <value value="1801" type="int"/>
+            <value value="2800" type="int"/>
+            <value value="2801" type="int"/>
+            <value value="1900" type="int"/>
+            <value value="1901" type="int"/>
+            <value value="2900" type="int"/>
+            <value value="2901" type="int"/>
+        </expected-parameter>
+    </assertDML>-->
+</asserts>

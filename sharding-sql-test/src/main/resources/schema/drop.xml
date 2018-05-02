@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql-cases>
+
+    <sql-case id="dbDropTOrder" value="DROP TABLE t_order" />
+    <sql-case id="dbDropTOrderItem" value="DROP TABLE t_order_item" />
+
+    <sql-case id="dbtblDropTOrder0" value="DROP TABLE t_order_0" />
+    <sql-case id="dbtblDropTOrder1" value="DROP TABLE t_order_1" />
+    <sql-case id="dbtblDropTOrder2" value="DROP TABLE t_order_2" />
+    <sql-case id="dbtblDropTOrder3" value="DROP TABLE t_order_3" />
+    <sql-case id="dbtblDropTOrder4" value="DROP TABLE t_order_4" />
+    <sql-case id="dbtblDropTOrder5" value="DROP TABLE t_order_5" />
+    <sql-case id="dbtblDropTOrder6" value="DROP TABLE t_order_6" />
+    <sql-case id="dbtblDropTOrder7" value="DROP TABLE t_order_7" />
+    <sql-case id="dbtblDropTOrder8" value="DROP TABLE t_order_8" />
+    <sql-case id="dbtblDropTOrder9" value="DROP TABLE t_order_9" />
+    <sql-case id="dbtblDropTOrderItem0" value="DROP TABLE t_order_item_0" />
+    <sql-case id="dbtblDropTOrderItem1" value="DROP TABLE t_order_item_1" />
+    <sql-case id="dbtblDropTOrderItem2" value="DROP TABLE t_order_item_2" />
+    <sql-case id="dbtblDropTOrderItem3" value="DROP TABLE t_order_item_3" />
+    <sql-case id="dbtblDropTOrderItem4" value="DROP TABLE t_order_item_4" />
+    <sql-case id="dbtblDropTOrderItem5" value="DROP TABLE t_order_item_5" />
+    <sql-case id="dbtblDropTOrderItem6" value="DROP TABLE t_order_item_6" />
+    <sql-case id="dbtblDropTOrderItem7" value="DROP TABLE t_order_item_7" />
+    <sql-case id="dbtblDropTOrderItem8" value="DROP TABLE t_order_item_8" />
+    <sql-case id="dbtblDropTOrderItem9" value="DROP TABLE t_order_item_9" />
+    <sql-case id="dbtblDropTOrderConfig" value="DROP TABLE t_config" />
+    <sql-case id="dbtblDropTOrderGlobal" value="DROP TABLE t_global" />
+
+    <sql-case id="jdbcDropTOrder0" value="DROP TABLE t_order_0" />
+    <sql-case id="jdbcDropTOrder1" value="DROP TABLE t_order_1" />
+    <sql-case id="jdbcDropTOrderItem0" value="DROP TABLE t_order_item_0" />
+    <sql-case id="jdbcDropTOrderItem1" value="DROP TABLE t_order_item_1" />
+    <sql-case id="jdbcDropTOrderConfig" value="DROP TABLE t_config" />
+    <sql-case id="jdbcDropTOrderGlobal" value="DROP TABLE t_global" />
+
+    <sql-case id="masterDropTOrder0" value="DROP TABLE t_order_0" />
+    <sql-case id="masterDropTOrder1" value="DROP TABLE t_order_1" />
+    <sql-case id="masterDropTOrder2" value="DROP TABLE t_order_2" />
+    <sql-case id="masterDropTOrder3" value="DROP TABLE t_order_3" />
+    <sql-case id="masterDropTOrder4" value="DROP TABLE t_order_4" />
+    <sql-case id="masterDropTOrder5" value="DROP TABLE t_order_5" />
+    <sql-case id="masterDropTOrder6" value="DROP TABLE t_order_6" />
+    <sql-case id="masterDropTOrder7" value="DROP TABLE t_order_7" />
+    <sql-case id="masterDropTOrder8" value="DROP TABLE t_order_8" />
+    <sql-case id="masterDropTOrder9" value="DROP TABLE t_order_9" />
+    <sql-case id="masterDropTOrderItem0" value="DROP TABLE t_order_item_0" />
+    <sql-case id="masterDropTOrderItem1" value="DROP TABLE t_order_item_1" />
+    <sql-case id="masterDropTOrderItem2" value="DROP TABLE t_order_item_2" />
+    <sql-case id="masterDropTOrderItem3" value="DROP TABLE t_order_item_3" />
+    <sql-case id="masterDropTOrderItem4" value="DROP TABLE t_order_item_4" />
+    <sql-case id="masterDropTOrderItem5" value="DROP TABLE t_order_item_5" />
+    <sql-case id="masterDropTOrderItem6" value="DROP TABLE t_order_item_6" />
+    <sql-case id="masterDropTOrderItem7" value="DROP TABLE t_order_item_7" />
+    <sql-case id="masterDropTOrderItem8" value="DROP TABLE t_order_item_8" />
+    <sql-case id="masterDropTOrderItem9" value="DROP TABLE t_order_item_9" />
+    <sql-case id="masterDropTOrderConfig" value="DROP TABLE t_config" />
+    <sql-case id="masterDropTOrderGlobal" value="DROP TABLE t_global" />
+
+    <sql-case id="masterOnlyDropTOrder" value="DROP TABLE t_order" />
+    <sql-case id="masterOnlyDropTOrderItem" value="DROP TABLE t_order_item" />
+    <sql-case id="masterOnlyDropTOrderConfig" value="DROP TABLE t_config" />
+    <sql-case id="masterOnlyDropTOrderGlobal" value="DROP TABLE t_global" />
+
+    <sql-case id="nullableDropTOrder" value="DROP TABLE t_order" />
+
+    <sql-case id="slaveDropTOrder0" value="DROP TABLE t_order_0" />
+    <sql-case id="slaveDropTOrder1" value="DROP TABLE t_order_1" />
+    <sql-case id="slaveDropTOrder2" value="DROP TABLE t_order_2" />
+    <sql-case id="slaveDropTOrder3" value="DROP TABLE t_order_3" />
+    <sql-case id="slaveDropTOrder4" value="DROP TABLE t_order_4" />
+    <sql-case id="slaveDropTOrder5" value="DROP TABLE t_order_5" />
+    <sql-case id="slaveDropTOrder6" value="DROP TABLE t_order_6" />
+    <sql-case id="slaveDropTOrder7" value="DROP TABLE t_order_7" />
+    <sql-case id="slaveDropTOrder8" value="DROP TABLE t_order_8" />
+    <sql-case id="slaveDropTOrder9" value="DROP TABLE t_order_9" />
+    <sql-case id="slaveDropTOrderItem0" value="DROP TABLE t_order_item_0" />
+    <sql-case id="slaveDropTOrderItem1" value="DROP TABLE t_order_item_1" />
+    <sql-case id="slaveDropTOrderItem2" value="DROP TABLE t_order_item_2" />
+    <sql-case id="slaveDropTOrderItem3" value="DROP TABLE t_order_item_3" />
+    <sql-case id="slaveDropTOrderItem4" value="DROP TABLE t_order_item_4" />
+    <sql-case id="slaveDropTOrderItem5" value="DROP TABLE t_order_item_5" />
+    <sql-case id="slaveDropTOrderItem6" value="DROP TABLE t_order_item_6" />
+    <sql-case id="slaveDropTOrderItem7" value="DROP TABLE t_order_item_7" />
+    <sql-case id="slaveDropTOrderItem8" value="DROP TABLE t_order_item_8" />
+    <sql-case id="slaveDropTOrderItem9" value="DROP TABLE t_order_item_9" />
+    <sql-case id="slaveDropTOrderConfig" value="DROP TABLE t_config" />
+    <sql-case id="slaveDropTOrderGlobal" value="DROP TABLE t_global" />
+
+    <sql-case id="slaveOnlyDropTOrder" value="DROP TABLE t_order" />
+    <sql-case id="slaveOnlyDropTOrderItem" value="DROP TABLE t_order_item" />
+    <sql-case id="slaveOnlyDropTOrderConfig" value="DROP TABLE t_config" />
+    <sql-case id="slaveOnlyDropTOrderGlobal" value="DROP TABLE t_global" />
+
+    <sql-case id="tblDropTOrder0" value="DROP TABLE t_order_0" />
+    <sql-case id="tblDropTOrder1" value="DROP TABLE t_order_1" />
+    <sql-case id="tblDropTOrder2" value="DROP TABLE t_order_2" />
+    <sql-case id="tblDropTOrder3" value="DROP TABLE t_order_3" />
+    <sql-case id="tblDropTOrder4" value="DROP TABLE t_order_4" />
+    <sql-case id="tblDropTOrder5" value="DROP TABLE t_order_5" />
+    <sql-case id="tblDropTOrder6" value="DROP TABLE t_order_6" />
+    <sql-case id="tblDropTOrder7" value="DROP TABLE t_order_7" />
+    <sql-case id="tblDropTOrder8" value="DROP TABLE t_order_8" />
+    <sql-case id="tblDropTOrder9" value="DROP TABLE t_order_9" />
+    <sql-case id="tblDropTOrderItem0" value="DROP TABLE t_order_item_0" />
+    <sql-case id="tblDropTOrderItem1" value="DROP TABLE t_order_item_1" />
+    <sql-case id="tblDropTOrderItem2" value="DROP TABLE t_order_item_2" />
+    <sql-case id="tblDropTOrderItem3" value="DROP TABLE t_order_item_3" />
+    <sql-case id="tblDropTOrderItem4" value="DROP TABLE t_order_item_4" />
+    <sql-case id="tblDropTOrderItem5" value="DROP TABLE t_order_item_5" />
+    <sql-case id="tblDropTOrderItem6" value="DROP TABLE t_order_item_6" />
+    <sql-case id="tblDropTOrderItem7" value="DROP TABLE t_order_item_7" />
+    <sql-case id="tblDropTOrderItem8" value="DROP TABLE t_order_item_8" />
+    <sql-case id="tblDropTOrderItem9" value="DROP TABLE t_order_item_9" />
+    <sql-case id="tblDropTOrderConfig" value="DROP TABLE t_config" />
+    <sql-case id="tblDropTOrderGlobal" value="DROP TABLE t_global" />
+
+    <sql-case id="dropTLog" value="DROP TABLE t_log"/>
+</sql-cases>
