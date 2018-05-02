@@ -143,6 +143,7 @@ public class StartTest {
             AssertEngine.setInitialized(false);
         } else {
             InItCreateSchema.dropTable();
+            InItCreateSchema.createTable();
         }
     }
     
