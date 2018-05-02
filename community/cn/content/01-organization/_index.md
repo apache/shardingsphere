@@ -52,6 +52,10 @@ Sharding在很多情况下需要投票。选票可以视情况通过手机、电
 
 * 潘娟, Juan Pan, [@tristaZero](https://github.com/tristaZero) 高级DBA, 京东
 
+* 王凯，Kai Wang，[@oracle219](https://github.com/oracle219) 架构师，当当
+
+* 林嘉琦，Jiaqi Lin，[@chidaodezhongsheng](https://github.com/chidaodezhongsheng) 工程师，当当
+
 ## 邮件列表
 
 * [Google Groups](mailto:sharding+subscribe@googlegroups.com)
