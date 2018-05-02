@@ -105,15 +105,6 @@ public class InItCreateSchema {
     /**
      * Initialize the database table.
      */
-    public static synchronized void dropTableAll() {
-        for (DatabaseType db : DATABASE_SCHEMAS) {
-            dropShardingSchemaAll(db);
-        }
-    }
-    
-    /**
-     * Initialize the database table.
-     */
     public static synchronized void dropTable() {
         for (DatabaseType db : DATABASE_SCHEMAS) {
             dropSchema(db);
@@ -339,55 +330,6 @@ public class InItCreateSchema {
         }
     }
     
-    private static void dropShardingSchemaAll(final DatabaseType dbType) {
-        Connection conn = null;
-        ResultSet resultSet = null;
-        StringReader sr = null;
-        try {
-            for (String each : DATABASES) {
-                List<String> databases = AnalyzeDatabase.analyze(InItCreateSchema.class.getClassLoader()
-                        .getResource("integrate/dbtest").getPath() + "/" + each + "/database.xml");
-                for (String database : databases) {
-                    conn = initialConnection(database, dbType);
-                    List<String> tableSqlIds = AnalyzeSql.analyze(InItCreateSchema.class.getClassLoader()
-                            .getResource("integrate/dbtest").getPath() + "/" + each + "/table/drop-table.xml");
-                    List<String> tableSqls = new ArrayList<>();
-                    for (String tableSqlId : tableSqlIds) {
-                        tableSqls.add(SQLCasesLoader.getInstance().getSchemaSQLCaseMap(tableSqlId));
-                    }
-                    sr = new StringReader(StringUtils.join(tableSqls, ";\n"));
-                    try{
-                        resultSet = RunScript.execute(conn, sr);
-                    }catch (SQLException e) {
-                        // The table may not exist at the time of deletion（删除时可能表不存在），这个错误可以忽略
-                    }
-                }
-            }
-            
-        } catch (SQLException | ParserConfigurationException | IOException | XPathExpressionException | SAXException e) {
-            // The table may not exist at the time of deletion（删除时可能表不存在），这个错误可以忽略
-            //e.printStackTrace();
-        } finally {
-            if (sr != null) {
-                sr.close();
-            }
-            if (resultSet != null) {
-                try {
-                    resultSet.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-    
     private static void dropShardingSchema(final DatabaseType dbType) {
         Connection conn = null;
         ResultSet resultSet = null;
@@ -411,7 +353,7 @@ public class InItCreateSchema {
             }
             
         } catch (SQLException | ParserConfigurationException | IOException | XPathExpressionException | SAXException e) {
-            // The table may not exist at the time of deletion（删除时可能表不存在），这个错误可以忽略
+            // The table may not exist at the time of deletion（删除时可能表不存在）
             //e.printStackTrace();
         } finally {
             if (sr != null) {
@@ -454,8 +396,7 @@ public class InItCreateSchema {
             }
             
         } catch (SQLException | ParserConfigurationException | IOException | XPathExpressionException | SAXException e) {
-            // The table may not exist at the time of deletion（删除时可能表不存在），这个错误可以忽略
-            //e.printStackTrace();
+            e.printStackTrace();
         } finally {
             if (sr != null) {
                 sr.close();
