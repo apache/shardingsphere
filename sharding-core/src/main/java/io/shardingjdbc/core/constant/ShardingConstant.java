@@ -28,7 +28,7 @@ public interface ShardingConstant {
      * Logic database schema name.
      * 
      * <p>
-     * Sharding-JDBC just have one logic database schema. 
+     * Sharding-JDBC just have one logic database table.
      * Default: sharding_db
      * </p>
      */
