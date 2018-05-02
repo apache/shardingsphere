@@ -38,7 +38,7 @@ public abstract class Client implements IClient{
         this.sessionTimeOut = sessionTimeoutMilliseconds;
     }
     
-    public void start() throws IOException, InterruptedException {
+    public synchronized void start() throws IOException, InterruptedException {
         zooKeeper = new ZooKeeper(servers, sessionTimeOut, startWatcher());
         CONNECTED.await();
     }

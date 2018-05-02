@@ -9,24 +9,9 @@ import java.io.IOException;
 /**
  * Created by aaa
  */
-public class CacheClientTest {
-    private Client client = null;
-    
-    public void createClient() throws IOException, InterruptedException {
-        ClientFactory creator = new ClientFactory();
-        client = creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes()).newCacheClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).start();
-    }
-    
-    @Before
-    public void start() throws IOException, InterruptedException {
-        ClientFactory creator = new ClientFactory();
-        Listener listener = TestSupport.buildListener();
-        client = creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes()).newCacheClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).watch(listener).start();
-    }
-    
-    @After
-    public void stop() throws InterruptedException {
-        client.close();
-        client = null;
+public class CacheClientTest extends UsualClientTest {
+    @Override
+    protected Client createClient(ClientFactory creator) throws IOException, InterruptedException {
+        return creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes()).newCacheClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).start();
     }
 }

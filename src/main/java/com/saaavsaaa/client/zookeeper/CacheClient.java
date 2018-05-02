@@ -34,7 +34,7 @@ public final class CacheClient extends UsualClient {
     }
     
     @Override
-    public void start() throws IOException, InterruptedException {
+    public synchronized void start() throws IOException, InterruptedException {
         super.start();
         pathTree = new PathTree(rootNode);
         usualClient = this.getClientFactory().newUsualClient().start();
