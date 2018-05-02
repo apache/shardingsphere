@@ -75,6 +75,7 @@ SELECT COUNT(*) FROM (SELECT * FROM t_order o WHERE o.id IN (SELECT id FROM t_or
 | SELECT COUNT(col1) FROM tbl_name WHERE col2 = ? GROUP BY col1 ORDER BY col3 DESC LIMIT ?, ? |                            |
 | INSERT INTO tbl_name (col1, col2,...) VALUES (?, ?, ....)                                   |                            |
 | INSERT INTO tbl_name VALUES (?, ?,....)                                                     |                            |
+| INSERT INTO tbl_name (col1, col2, ...) VALUES (?, ?, ....), (?, ?, ....)                    |                            |
 | UPDATE tbl_name SET col1 = ? WHERE col2 = ?                                                 |                            |
 | DELETE FROM tbl_name WHERE col1 = ?                                                         |                            |
 | CREATE TABLE tbl_name (col1 int, ...)                                                       |                            |
@@ -89,7 +90,6 @@ SELECT COUNT(*) FROM (SELECT * FROM t_order o WHERE o.id IN (SELECT id FROM t_or
 
 | SQL                                                                                         | 不支持原因        |
 | ------------------------------------------------------------------------------------------- |----------------- |
-| INSERT INTO tbl_name (col1, col2, ...) VALUES (?, ?,....), (?, ?,....)                      | 批量插入          |
 | INSERT INTO tbl_name (col1, col2, ...) SELECT col1, col2, ... FROM tbl_name WHERE col3 = ?  | INSERT .. SELECT |
 | INSERT INTO tbl_name SET col1 = ?                                                           | INSERT .. SET    |
 | SELECT DISTINCT * FROM tbl_name WHERE column1 = ?                                           | DISTINCT         |

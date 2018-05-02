@@ -73,6 +73,7 @@ In addition, subquery containing aggregate functions are not supported currently
 | SELECT COUNT(col1) FROM tbl_name WHERE col2 = ? GROUP BY col1 ORDER BY col3 DESC LIMIT ?, ? |                                     |
 | INSERT INTO tbl_name (col1, col2,...) VALUES (?, ?, ....)                                   |                                     |
 | INSERT INTO tbl_name VALUES (?, ?,....)                                                     |                                     |
+| INSERT INTO tbl_name (col1, col2, ...) VALUES (?, ?, ....), (?, ?, ....)                    |                                     |
 | UPDATE tbl_name SET col1 = ? WHERE col2 = ?                                                 |                                     |
 | DELETE FROM tbl_name WHERE col1 = ?                                                         |                                     |
 | CREATE TABLE tbl_name (col1 int, ...)                                                       |                                     |
@@ -87,7 +88,6 @@ In addition, subquery containing aggregate functions are not supported currently
 
 | SQL                                                                                         | Unsupported reason  |
 | ------------------------------------------------------------------------------------------- |-------------------- |
-| INSERT INTO tbl_name (col1, col2, ...) VALUES (?, ?,....), (?, ?,....)                      | Multiple INSERT     |
 | INSERT INTO tbl_name (col1, col2, ...) SELECT col1, col2, ... FROM tbl_name WHERE col3 = ?  | INSERT .. SELECT    |
 | INSERT INTO tbl_name SET col1 = ?                                                           | INSERT .. SET       |
 | SELECT DISTINCT * FROM tbl_name WHERE column1 = ?                                           | DISTINCT            |
