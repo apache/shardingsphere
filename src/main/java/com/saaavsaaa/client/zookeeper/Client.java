@@ -33,7 +33,7 @@ public abstract class Client implements IClient{
     protected boolean rootExist = false;
     private ClientFactory clientFactory;
     
-    protected Client(String servers, int sessionTimeoutMilliseconds) {
+    protected Client(final String servers, final int sessionTimeoutMilliseconds) {
         this.servers = servers;
         this.sessionTimeOut = sessionTimeoutMilliseconds;
     }
