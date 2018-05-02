@@ -898,6 +898,7 @@ public class AssertEngine {
     
     private static void initTableData(final Map<String, DataSource> dataSourceMaps, final Map<String, String> sqls,
                                       final Map<String, DatasetDefinition> mapDatasetDefinition) throws SQLException, ParseException {
+        clearTableData(dataSourceMaps,mapDatasetDefinition);
         for (Map.Entry<String, DataSource> eachDataSourceEntry : dataSourceMaps.entrySet()) {
             DataSource dataSource1 = eachDataSourceEntry.getValue();
             DatasetDefinition datasetDefinition = mapDatasetDefinition.get(eachDataSourceEntry.getKey());
