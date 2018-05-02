@@ -115,5 +115,5 @@
     <sql-case id="tblDropTOrderConfig" value="DROP TABLE t_config" />
     <sql-case id="tblDropTOrderGlobal" value="DROP TABLE t_global" />
 
-
+    <sql-case id="dropTLog" value="DROP TABLE t_log"/>
 </sql-cases>

@@ -108,7 +108,7 @@ public class AssertEngine {
             
             List<String> dbNames = new ArrayList();
             if (StringUtils.isNotBlank(assertsDefinition.getBaseConfig())) {
-                String[] dbs = StringUtils.split(assertsDefinition.getBaseConfig(),",");
+                String[] dbs = StringUtils.split(assertsDefinition.getBaseConfig(), ",");
                 for (String each : dbs) {
                     dbNames.add(each);
                 }
@@ -155,13 +155,13 @@ public class AssertEngine {
                 dataSource = getDataSource(dataSourceMaps, configPath);
                 
                 // dql run
-                dqlRun(initDataPath, dbName, path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
+                dqlRun(each, initDataPath, dbName, path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
                 
                 // dml run
-                dmlRun(initDataPath, dbName, path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
+                dmlRun(each, initDataPath, dbName, path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
                 
                 // ddl run
-                ddlRun(id, dbName, assertsDefinition, rootPath, msg, dataSource);
+                ddlRun(each, id, dbName, assertsDefinition, rootPath, msg, dataSource);
             }
         } finally {
             if (dataSource != null) {
@@ -172,9 +172,14 @@ public class AssertEngine {
         }
     }
     
-    private static void ddlRun(final String id, final String dbName, final AssertsDefinition assertsDefinition, final String rootPath, final String msg, final DataSource dataSource) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private static void ddlRun(final DatabaseType databaseType, final String id, final String dbName, final AssertsDefinition assertsDefinition, final String rootPath, final String msg, final DataSource dataSource) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         for (AssertDDLDefinition each : assertsDefinition.getAssertDDL()) {
             if (id.equals(each.getId())) {
+                List<DatabaseType> databaseTypes = InItCreateSchema.getDatabaseTypes(each.getDatabaseConfig());
+                if (!databaseTypes.contains(databaseType)) {
+                    break;
+                }
+                
                 AssertDDLDefinition anAssert = each;
                 String baseConfig = anAssert.getBaseConfig();
                 if (StringUtils.isNotBlank(baseConfig)) {
@@ -192,22 +197,104 @@ public class AssertEngine {
                 }
                 String rootsql = anAssert.getSql();
                 rootsql = SQLCasesLoader.getInstance().getSupportedSQL(rootsql);
+                String expectedDataFile = PathUtil.getPath("asserts/ddl/" + dbName + "/" + anAssert.getExpectedDataFile(), rootPath);
+                if (!new File(expectedDataFile).exists()) {
+                    expectedDataFile = PathUtil.getPath("asserts/ddl/" + anAssert.getExpectedDataFile(), rootPath);
+                }
+                if (anAssert.getParameter().getValues().isEmpty() && anAssert.getParameter().getValueReplaces().isEmpty()) {
+                    List<AssertSubDefinition> subAsserts = anAssert.getSubAsserts();
+                    if (subAsserts.isEmpty()) {
+                        doUpdateUseStatementToExecuteUpdateDDL(rootPath, expectedDataFile, dataSource, anAssert, rootsql, msg);
+                        
+                        doUpdateUseStatementToExecuteDDL(rootPath, expectedDataFile, dataSource, anAssert, rootsql, msg);
+                        
+                        doUpdateUsePreparedStatementToExecuteUpdateDDL(rootPath, expectedDataFile, dataSource, anAssert, rootsql, msg);
+                        
+                        doUpdateUsePreparedStatementToExecuteDDL(rootPath, expectedDataFile, dataSource, anAssert, rootsql, msg);
+                    } else {
+                        
+                        ddlSubRun(databaseType, dbName, rootPath, msg, dataSource, anAssert, rootsql, expectedDataFile, subAsserts);
+                    }
+                    
+                } else {
+                    doUpdateUseStatementToExecuteUpdateDDL(rootPath, expectedDataFile, dataSource, anAssert, rootsql, msg);
+                    
+                    doUpdateUseStatementToExecuteDDL(rootPath, expectedDataFile, dataSource, anAssert, rootsql, msg);
+                    
+                    doUpdateUsePreparedStatementToExecuteUpdateDDL(rootPath, expectedDataFile, dataSource, anAssert, rootsql, msg);
+                    
+                    doUpdateUsePreparedStatementToExecuteDDL(rootPath, expectedDataFile, dataSource, anAssert, rootsql, msg);
+                    
+                    List<AssertSubDefinition> subAsserts = anAssert.getSubAsserts();
+                    if (!subAsserts.isEmpty()) {
+                        ddlSubRun(databaseType, dbName, rootPath, msg, dataSource, anAssert, rootsql, expectedDataFile, subAsserts);
+                    }
+                }
                 
-                doUpdateUseStatementToExecuteUpdateDDL(rootPath, dataSource, anAssert, rootsql, msg);
-                
-                doUpdateUseStatementToExecuteDDL(rootPath, dataSource, anAssert, rootsql, msg);
-                
-                doUpdateUsePreparedStatementToExecuteUpdateDDL(rootPath, dataSource, anAssert, rootsql, msg);
-                
-                doUpdateUsePreparedStatementToExecuteDDL(rootPath, dataSource, anAssert, rootsql, msg);
-                
+                break;
             }
         }
     }
     
-    private static void dmlRun(final String initDataFile, final String dbName, final String path, final String id, final AssertsDefinition assertsDefinition, final String rootPath, final String msg, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final List<String> dbs) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
+    private static void ddlSubRun(final DatabaseType databaseType, final String dbName, final String rootPath, final String msg, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String expectedDataFile, final List<AssertSubDefinition> subAsserts) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+        for (AssertSubDefinition subAssert : subAsserts) {
+            List<DatabaseType> databaseSubTypes = InItCreateSchema.getDatabaseTypes(subAssert.getDatabaseConfig());
+            
+            if (!databaseSubTypes.contains(databaseType)) {
+                break;
+            }
+            String baseConfig = subAssert.getBaseConfig();
+            if (StringUtils.isNotBlank(baseConfig)) {
+                String[] baseConfigs = StringUtils.split(baseConfig, ",");
+                boolean flag = true;
+                for (String config : baseConfigs) {
+                    if (dbName.equals(config)) {
+                        flag = false;
+                    }
+                }
+                //Skip use cases that do not need to run
+                if (flag) {
+                    continue;
+                }
+            }
+            
+            String expectedDataFileSub = subAssert.getExpectedDataFile();
+            ParameterDefinition parameter = subAssert.getParameter();
+            String expectedDataFileTmp = expectedDataFile;
+            if (StringUtils.isBlank(expectedDataFileSub)) {
+                expectedDataFileSub = anAssert.getExpectedDataFile();
+            } else {
+                expectedDataFileTmp = PathUtil.getPath("asserts/ddl/" + dbName + "/" + expectedDataFileSub, rootPath);
+                if (!new File(expectedDataFileTmp).exists()) {
+                    expectedDataFileTmp = PathUtil.getPath("asserts/ddl/" + expectedDataFileSub, rootPath);
+                }
+            }
+            if (parameter == null) {
+                parameter = anAssert.getParameter();
+            }
+            AssertDDLDefinition anAssertSub = new AssertDDLDefinition(anAssert.getId(), anAssert.getInitSql(),
+                    anAssert.getBaseConfig(), anAssert.getCleanSql(), expectedDataFileSub,
+                    anAssert.getDatabaseConfig(), anAssert.getSql(), anAssert.getTable(),
+                    parameter, anAssert.getSubAsserts());
+            
+            doUpdateUseStatementToExecuteUpdateDDL(rootPath, expectedDataFileTmp, dataSource, anAssertSub, rootsql, msg);
+            
+            doUpdateUseStatementToExecuteDDL(rootPath, expectedDataFileTmp, dataSource, anAssertSub, rootsql, msg);
+            
+            doUpdateUsePreparedStatementToExecuteUpdateDDL(rootPath, expectedDataFileTmp, dataSource, anAssertSub, rootsql, msg);
+            
+            doUpdateUsePreparedStatementToExecuteDDL(rootPath, expectedDataFileTmp, dataSource, anAssertSub, rootsql, msg);
+        }
+    }
+    
+    private static void dmlRun(final DatabaseType databaseType, final String initDataFile, final String dbName, final String path, final String id, final AssertsDefinition assertsDefinition, final String rootPath, final String msg, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final List<String> dbs) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
         for (AssertDMLDefinition each : assertsDefinition.getAssertDML()) {
             if (id.equals(each.getId())) {
+                List<DatabaseType> databaseTypes = InItCreateSchema.getDatabaseTypes(each.getDatabaseConfig());
+                if (!databaseTypes.contains(databaseType)) {
+                    break;
+                }
+                
                 AssertDMLDefinition anAssert = each;
                 String baseConfig = anAssert.getBaseConfig();
                 if (StringUtils.isNotBlank(baseConfig)) {
@@ -236,23 +323,167 @@ public class AssertEngine {
                 if (sqls.isEmpty()) {
                     throw new DbTestException(path + "  The use case cannot initialize the data");
                 }
+                String expectedDataFile = PathUtil.getPath("asserts/dml/" + dbName + "/" + anAssert.getExpectedDataFile(), rootPath);
+                if (!new File(expectedDataFile).exists()) {
+                    expectedDataFile = PathUtil.getPath("asserts/dml/" + anAssert.getExpectedDataFile(), rootPath);
+                }
                 
-                doUpdateUseStatementToExecuteUpdate(rootPath, dataSource, dataSourceMaps, anAssert, rootsql, mapDatasetDefinition, sqls, msg);
-                
-                doUpdateUseStatementToExecute(rootPath, dataSource, dataSourceMaps, anAssert, rootsql, mapDatasetDefinition, sqls, msg);
-                
-                doUpdateUsePreparedStatementToExecuteUpdate(rootPath, dataSource, dataSourceMaps, anAssert, rootsql, mapDatasetDefinition, sqls, msg);
-                
-                doUpdateUsePreparedStatementToExecute(rootPath, dataSource, dataSourceMaps, anAssert, rootsql, mapDatasetDefinition, sqls, msg);
+                int resultDoUpdateUseStatementToExecuteUpdate = 0;
+                int resultDoUpdateUseStatementToExecute = 0;
+                int resultDoUpdateUsePreparedStatementToExecuteUpdate = 0;
+                int resultDoUpdateUsePreparedStatementToExecute = 0;
+                if (anAssert.getParameter().getValues().isEmpty() && anAssert.getParameter().getValueReplaces().isEmpty()) {
+                    List<AssertSubDefinition> subAsserts = anAssert.getSubAsserts();
+                    if (subAsserts.isEmpty()) {
+                        resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(rootPath, expectedDataFile, dataSource, dataSourceMaps, anAssert, rootsql, mapDatasetDefinition, sqls, msg);
+                        
+                        resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(rootPath, expectedDataFile, dataSource, dataSourceMaps, anAssert, rootsql, mapDatasetDefinition, sqls, msg);
+                        
+                        resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(rootPath, expectedDataFile, dataSource, dataSourceMaps, anAssert, rootsql, mapDatasetDefinition, sqls, msg);
+                        
+                        resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(rootPath, expectedDataFile, dataSource, dataSourceMaps, anAssert, rootsql, mapDatasetDefinition, sqls, msg);
+                        
+                        
+                    } else {
+                        for (AssertSubDefinition subAssert : subAsserts) {
+                            List<DatabaseType> databaseSubTypes = InItCreateSchema.getDatabaseTypes(subAssert.getDatabaseConfig());
+                            
+                            if (!databaseSubTypes.contains(databaseType)) {
+                                break;
+                            }
+                            String baseConfigSub = subAssert.getBaseConfig();
+                            if (StringUtils.isNotBlank(baseConfigSub)) {
+                                String[] baseConfigs = StringUtils.split(baseConfigSub, ",");
+                                boolean flag = true;
+                                for (String config : baseConfigs) {
+                                    if (dbName.equals(config)) {
+                                        flag = false;
+                                    }
+                                }
+                                //Skip use cases that do not need to run
+                                if (flag) {
+                                    continue;
+                                }
+                            }
+                            
+                            String expectedDataFileSub = subAssert.getExpectedDataFile();
+                            ParameterDefinition parameter = subAssert.getParameter();
+                            ParameterDefinition expectedParameter = subAssert.getExpectedParameter();
+                            String expectedDataFileTmp = expectedDataFile;
+                            if (StringUtils.isBlank(expectedDataFileSub)) {
+                                expectedDataFileSub = anAssert.getExpectedDataFile();
+                            } else {
+                                expectedDataFileTmp = PathUtil.getPath("asserts/dml/" + dbName + "/" + expectedDataFileSub, rootPath);
+                                if (!new File(expectedDataFileTmp).exists()) {
+                                    expectedDataFileTmp = PathUtil.getPath("asserts/dml/" + expectedDataFileSub, rootPath);
+                                }
+                            }
+                            if (parameter == null) {
+                                parameter = anAssert.getParameter();
+                            }
+                            if (expectedParameter == null) {
+                                expectedParameter = anAssert.getParameter();
+                            }
+                            AssertDMLDefinition anAssertSub = new AssertDMLDefinition(anAssert.getId(),
+                                    expectedDataFileSub, anAssert.getBaseConfig(), subAssert.getExpectedUpdate(), anAssert.getDatabaseConfig(), anAssert.getSql(),
+                                    anAssert.getExpectedSql(), parameter, expectedParameter, anAssert.getSubAsserts());
+                            
+                            resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(rootPath, expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootsql, mapDatasetDefinition, sqls, msg);
+                            
+                            resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(rootPath, expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootsql, mapDatasetDefinition, sqls, msg);
+                            
+                            resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(rootPath, expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootsql, mapDatasetDefinition, sqls, msg);
+                            
+                            resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(rootPath, expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootsql, mapDatasetDefinition, sqls, msg);
+                        }
+                    }
+                    
+                } else {
+                    resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(rootPath, expectedDataFile, dataSource, dataSourceMaps, anAssert, rootsql, mapDatasetDefinition, sqls, msg);
+                    
+                    resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(rootPath, expectedDataFile, dataSource, dataSourceMaps, anAssert, rootsql, mapDatasetDefinition, sqls, msg);
+                    
+                    resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(rootPath, expectedDataFile, dataSource, dataSourceMaps, anAssert, rootsql, mapDatasetDefinition, sqls, msg);
+                    
+                    resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(rootPath, expectedDataFile, dataSource, dataSourceMaps, anAssert, rootsql, mapDatasetDefinition, sqls, msg);
+                    
+                    List<AssertSubDefinition> subAsserts = anAssert.getSubAsserts();
+                    if (!subAsserts.isEmpty()) {
+                        for (AssertSubDefinition subAssert : subAsserts) {
+                            List<DatabaseType> databaseSubTypes = InItCreateSchema.getDatabaseTypes(subAssert.getDatabaseConfig());
+                            
+                            if (!databaseSubTypes.contains(databaseType)) {
+                                break;
+                            }
+                            String baseConfigSub = subAssert.getBaseConfig();
+                            if (StringUtils.isNotBlank(baseConfigSub)) {
+                                String[] baseConfigs = StringUtils.split(baseConfigSub, ",");
+                                boolean flag = true;
+                                for (String config : baseConfigs) {
+                                    if (dbName.equals(config)) {
+                                        flag = false;
+                                    }
+                                }
+                                //Skip use cases that do not need to run
+                                if (flag) {
+                                    continue;
+                                }
+                            }
+                            
+                            String expectedDataFileSub = subAssert.getExpectedDataFile();
+                            ParameterDefinition parameter = subAssert.getParameter();
+                            ParameterDefinition expectedParameter = subAssert.getExpectedParameter();
+                            String expectedDataFileTmp = expectedDataFile;
+                            if (StringUtils.isBlank(expectedDataFileSub)) {
+                                expectedDataFileSub = anAssert.getExpectedDataFile();
+                            } else {
+                                expectedDataFileTmp = PathUtil.getPath("asserts/dml/" + dbName + "/" + expectedDataFileSub, rootPath);
+                                if (!new File(expectedDataFileTmp).exists()) {
+                                    expectedDataFileTmp = PathUtil.getPath("asserts/dml/" + expectedDataFileSub, rootPath);
+                                }
+                            }
+                            if (parameter == null) {
+                                parameter = anAssert.getParameter();
+                            }
+                            if (expectedParameter == null) {
+                                expectedParameter = anAssert.getParameter();
+                            }
+                            AssertDMLDefinition anAssertSub = new AssertDMLDefinition(anAssert.getId(),
+                                    expectedDataFileSub, anAssert.getBaseConfig(), subAssert.getExpectedUpdate(), anAssert.getDatabaseConfig(), anAssert.getSql(),
+                                    anAssert.getExpectedSql(), parameter, expectedParameter, anAssert.getSubAsserts());
+                            
+                            resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(rootPath, expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootsql, mapDatasetDefinition, sqls, msg);
+                            
+                            resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(rootPath, expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootsql, mapDatasetDefinition, sqls, msg);
+                            
+                            resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(rootPath, expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootsql, mapDatasetDefinition, sqls, msg);
+                            
+                            resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(rootPath, expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootsql, mapDatasetDefinition, sqls, msg);
+                        }
+                    }
+                }
+                if (anAssert.getExpectedUpdate() != null) {
+                    Assert.assertEquals("Update row number error UpdateUseStatementToExecuteUpdate" + msg, anAssert.getExpectedUpdate().intValue(), resultDoUpdateUseStatementToExecuteUpdate);
+                    Assert.assertEquals("Update row number error UpdateUseStatementToExecute" + msg, anAssert.getExpectedUpdate().intValue(), resultDoUpdateUseStatementToExecute);
+                    Assert.assertEquals("Update row number error UpdateUsePreparedStatementToExecuteUpdate" + msg, anAssert.getExpectedUpdate().intValue(), resultDoUpdateUsePreparedStatementToExecuteUpdate);
+                    Assert.assertEquals("Update row number error UpdateUsePreparedStatementToExecute" + msg, anAssert.getExpectedUpdate().intValue(), resultDoUpdateUsePreparedStatementToExecute);
+                }
+                break;
                 
             }
         }
     }
     
-    private static void dqlRun(final String initDataFile, final String dbName, final String path, final String id, final AssertsDefinition assertsDefinition, final String rootPath, final String msg, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final List<String> dbs) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
+    
+    private static void dqlRun(final DatabaseType databaseType, final String initDataFile, final String dbName, final String path, final String id, final AssertsDefinition assertsDefinition, final String rootPath, final String msg, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final List<String> dbs) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
         for (AssertDQLDefinition each : assertsDefinition.getAssertDQL()) {
             
             if (id.equals(each.getId())) {
+                List<DatabaseType> databaseTypes = InItCreateSchema.getDatabaseTypes(each.getDatabaseConfig());
+                if (!databaseTypes.contains(databaseType)) {
+                    break;
+                }
+                
                 AssertDQLDefinition anAssert = each;
                 String baseConfig = anAssert.getBaseConfig();
                 if (StringUtils.isNotBlank(baseConfig)) {
@@ -285,11 +516,33 @@ public class AssertEngine {
                 try {
                     initTableData(dataSourceMaps, sqls, mapDatasetDefinition);
                     
-                    doSelectUsePreparedStatement(rootPath, dataSource, anAssert, rootsql, msg);
-                    doSelectUsePreparedStatementToExecuteSelect(rootPath, dataSource, anAssert, rootsql, msg);
+                    String expectedDataFile = PathUtil.getPath("asserts/dql/" + dbName + "/" + anAssert.getExpectedDataFile(), rootPath);
+                    if (!new File(expectedDataFile).exists()) {
+                        expectedDataFile = PathUtil.getPath("asserts/dql/" + anAssert.getExpectedDataFile(), rootPath);
+                    }
                     
-                    doSelectUseStatement(rootPath, dataSource, anAssert, rootsql, msg);
-                    doSelectUseStatementToExecuteSelect(rootPath, dataSource, anAssert, rootsql, msg);
+                    if (anAssert.getParameter().getValues().isEmpty() && anAssert.getParameter().getValueReplaces().isEmpty()) {
+                        List<AssertSubDefinition> subAsserts = anAssert.getSubAsserts();
+                        if (subAsserts.isEmpty()) {
+                            doSelectUsePreparedStatement(rootPath, expectedDataFile, dataSource, anAssert, rootsql, msg);
+                            doSelectUsePreparedStatementToExecuteSelect(rootPath, expectedDataFile, dataSource, anAssert, rootsql, msg);
+                            doSelectUseStatement(rootPath, expectedDataFile, dataSource, anAssert, rootsql, msg);
+                            doSelectUseStatementToExecuteSelect(rootPath, expectedDataFile, dataSource, anAssert, rootsql, msg);
+                        } else {
+                            dqlSubRun(databaseType, dbName, rootPath, msg, dataSource, anAssert, rootsql, expectedDataFile, subAsserts);
+                        }
+                        
+                    } else {
+                        doSelectUsePreparedStatement(rootPath, expectedDataFile, dataSource, anAssert, rootsql, msg);
+                        doSelectUsePreparedStatementToExecuteSelect(rootPath, expectedDataFile, dataSource, anAssert, rootsql, msg);
+                        doSelectUseStatement(rootPath, expectedDataFile, dataSource, anAssert, rootsql, msg);
+                        doSelectUseStatementToExecuteSelect(rootPath, expectedDataFile, dataSource, anAssert, rootsql, msg);
+                        
+                        List<AssertSubDefinition> subAsserts = anAssert.getSubAsserts();
+                        if (!subAsserts.isEmpty()) {
+                            dqlSubRun(databaseType, dbName, rootPath, msg, dataSource, anAssert, rootsql, expectedDataFile, subAsserts);
+                        }
+                    }
                 } finally {
                     clearTableData(dataSourceMaps, mapDatasetDefinition);
                 }
@@ -298,81 +551,146 @@ public class AssertEngine {
         }
     }
     
-    private static void doUpdateUsePreparedStatementToExecute(final String rootPath, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final AssertDMLDefinition anAssert, final String rootsql, final Map<String, DatasetDefinition> mapDatasetDefinition, final Map<String, String> sqls, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private static void dqlSubRun(final DatabaseType databaseType, final String dbName, final String rootPath, final String msg, final DataSource dataSource, final AssertDQLDefinition anAssert, final String rootsql, final String expectedDataFile, final List<AssertSubDefinition> subAsserts) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+        for (AssertSubDefinition subAssert : subAsserts) {
+            List<DatabaseType> databaseSubTypes = InItCreateSchema.getDatabaseTypes(subAssert.getDatabaseConfig());
+            
+            if (!databaseSubTypes.contains(databaseType)) {
+                break;
+            }
+            String baseSubConfig = subAssert.getBaseConfig();
+            if (StringUtils.isNotBlank(baseSubConfig)) {
+                String[] baseConfigs = StringUtils.split(baseSubConfig, ",");
+                boolean flag = true;
+                for (String config : baseConfigs) {
+                    if (dbName.equals(config)) {
+                        flag = false;
+                    }
+                }
+                //Skip use cases that do not need to run
+                if (flag) {
+                    continue;
+                }
+            }
+            
+            String expectedDataFileSub = subAssert.getExpectedDataFile();
+            ParameterDefinition parameter = subAssert.getParameter();
+            String expectedDataFileTmp = expectedDataFile;
+            if (StringUtils.isBlank(expectedDataFileSub)) {
+                expectedDataFileSub = anAssert.getExpectedDataFile();
+            } else {
+                expectedDataFileTmp = PathUtil.getPath("asserts/dql/" + dbName + "/" + expectedDataFileSub, rootPath);
+                if (!new File(expectedDataFileTmp).exists()) {
+                    expectedDataFileTmp = PathUtil.getPath("asserts/dql/" + expectedDataFileSub, rootPath);
+                }
+            }
+            if (parameter == null) {
+                parameter = anAssert.getParameter();
+            }
+            AssertDQLDefinition anAssertSub = new AssertDQLDefinition(anAssert.getId(),
+                    anAssert.getBaseConfig(), expectedDataFileSub,
+                    anAssert.getDatabaseConfig(), anAssert.getSql(),
+                    parameter, anAssert.getSubAsserts());
+            
+            doSelectUsePreparedStatement(rootPath, expectedDataFileTmp, dataSource, anAssertSub, rootsql, msg);
+            doSelectUsePreparedStatementToExecuteSelect(rootPath, expectedDataFileTmp, dataSource, anAssertSub, rootsql, msg);
+            doSelectUseStatement(rootPath, expectedDataFileTmp, dataSource, anAssertSub, rootsql, msg);
+            doSelectUseStatementToExecuteSelect(rootPath, expectedDataFileTmp, dataSource, anAssertSub, rootsql, msg);
+        }
+    }
+    
+    private static int doUpdateUsePreparedStatementToExecute(final String rootPath, final String expectedDataFile, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final AssertDMLDefinition anAssert, final String rootsql, final Map<String, DatasetDefinition> mapDatasetDefinition, final Map<String, String> sqls, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             initTableData(dataSourceMaps, sqls, mapDatasetDefinition);
             try (Connection con = dataSource.getConnection();) {
                 int actual = DatabaseUtil.updateUsePreparedStatementToExecute(con, rootsql,
-                        anAssert.getParameters());
-                String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
-                DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile));
+                        anAssert.getParameter());
+                //String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
+                DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile), "data");
                 
-                Assert.assertEquals("Update row number error", anAssert.getExpectedUpdate().intValue(), actual);
+                if (anAssert.getExpectedUpdate() != null) {
+                    Assert.assertEquals("Update row number error", anAssert.getExpectedUpdate().intValue(), actual);
+                }
                 
                 String checksql = anAssert.getExpectedSql();
                 checksql = SQLCasesLoader.getInstance().getSupportedSQL(checksql);
                 DatasetDatabase ddPreparedStatement = DatabaseUtil.selectUsePreparedStatement(con, checksql,
                         anAssert.getExpectedParameter());
                 DatabaseUtil.assertDatas(checkDataset, ddPreparedStatement, msg);
+                return actual;
             }
         } finally {
             clearTableData(dataSourceMaps, mapDatasetDefinition);
         }
     }
     
-    private static void doUpdateUsePreparedStatementToExecuteDDL(final String rootPath, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private static void doUpdateUsePreparedStatementToExecuteDDL(final String rootPath, final String expectedDataFile, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             try (Connection con = dataSource.getConnection()) {
-                ParametersDefinition parametersDefinition = new ParametersDefinition();
-                parametersDefinition.setNewParameter(Arrays.asList(anAssert.getParameter()));
-                
+                if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
+                    InItCreateSchema.dropTable(anAssert.getCleanSql());
+                }
+                if (StringUtils.isNotBlank(anAssert.getInitSql())) {
+                    InItCreateSchema.createTable(anAssert.getInitSql());
+                }
                 DatabaseUtil.updateUsePreparedStatementToExecute(con, rootsql,
-                        parametersDefinition);
-                String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
-                DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile));
+                        anAssert.getParameter());
+                //String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
+                DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile), "data");
                 
                 String table = anAssert.getTable();
                 List<ColumnDefinition> columnDefinitions = DatabaseUtil.getColumnDefinitions(con, table);
                 DatabaseUtil.assertConfigs(checkDataset, columnDefinitions, table, msg);
             }
         } finally {
-            InItCreateSchema.dropTable();
-            InItCreateSchema.createTable();
+            if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
+                InItCreateSchema.dropTable(anAssert.getCleanSql());
+            }
+            if (StringUtils.isNotBlank(anAssert.getInitSql())) {
+                InItCreateSchema.createTable(anAssert.getInitSql());
+            }
         }
     }
     
-    private static void doUpdateUsePreparedStatementToExecuteUpdate(final String rootPath, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final AssertDMLDefinition anAssert, final String rootsql, final Map<String, DatasetDefinition> mapDatasetDefinition, final Map<String, String> sqls, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private static int doUpdateUsePreparedStatementToExecuteUpdate(final String rootPath, final String expectedDataFile, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final AssertDMLDefinition anAssert, final String rootsql, final Map<String, DatasetDefinition> mapDatasetDefinition, final Map<String, String> sqls, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             initTableData(dataSourceMaps, sqls, mapDatasetDefinition);
             try (Connection con = dataSource.getConnection();) {
                 int actual = DatabaseUtil.updateUsePreparedStatementToExecuteUpdate(con, rootsql,
-                        anAssert.getParameters());
-                String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
-                DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile));
+                        anAssert.getParameter());
+                //String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
+                DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile), "data");
                 
-                Assert.assertEquals("Update row number error", anAssert.getExpectedUpdate().intValue(), actual);
+                if (anAssert.getExpectedUpdate() != null) {
+                    Assert.assertEquals("Update row number error", anAssert.getExpectedUpdate().intValue(), actual);
+                }
                 
                 String checksql = anAssert.getExpectedSql();
                 checksql = SQLCasesLoader.getInstance().getSupportedSQL(checksql);
                 DatasetDatabase ddPreparedStatement = DatabaseUtil.selectUsePreparedStatement(con, checksql,
                         anAssert.getExpectedParameter());
                 DatabaseUtil.assertDatas(checkDataset, ddPreparedStatement, msg);
+                
+                return actual;
             }
         } finally {
             clearTableData(dataSourceMaps, mapDatasetDefinition);
         }
     }
     
-    private static void doUpdateUsePreparedStatementToExecuteUpdateDDL(final String rootPath, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private static void doUpdateUsePreparedStatementToExecuteUpdateDDL(final String rootPath, final String expectedDataFile, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             try (Connection con = dataSource.getConnection()) {
-                ParametersDefinition parametersDefinition = new ParametersDefinition();
-                parametersDefinition.setNewParameter(Arrays.asList(anAssert.getParameter()));
-                
+                if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
+                    InItCreateSchema.dropTable(anAssert.getCleanSql());
+                }
+                if (StringUtils.isNotBlank(anAssert.getInitSql())) {
+                    InItCreateSchema.createTable(anAssert.getInitSql());
+                }
                 DatabaseUtil.updateUsePreparedStatementToExecuteUpdate(con, rootsql,
-                        parametersDefinition);
-                String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
-                DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile));
+                        anAssert.getParameter());
+                //String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
+                DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile), "data");
                 
                 
                 String table = anAssert.getTable();
@@ -380,138 +698,162 @@ public class AssertEngine {
                 DatabaseUtil.assertConfigs(checkDataset, columnDefinitions, table, msg);
             }
         } finally {
-            InItCreateSchema.dropTable();
-            InItCreateSchema.createTable();
+            if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
+                InItCreateSchema.dropTable(anAssert.getCleanSql());
+            }
+            if (StringUtils.isNotBlank(anAssert.getInitSql())) {
+                InItCreateSchema.createTable(anAssert.getInitSql());
+            }
         }
     }
     
-    private static void doUpdateUseStatementToExecute(final String rootPath, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final AssertDMLDefinition anAssert, final String rootsql, final Map<String, DatasetDefinition> mapDatasetDefinition, final Map<String, String> sqls, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private static int doUpdateUseStatementToExecute(final String rootPath, final String expectedDataFile, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final AssertDMLDefinition anAssert, final String rootsql, final Map<String, DatasetDefinition> mapDatasetDefinition, final Map<String, String> sqls, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             initTableData(dataSourceMaps, sqls, mapDatasetDefinition);
             try (Connection con = dataSource.getConnection();) {
-                int actual = DatabaseUtil.updateUseStatementToExecute(con, rootsql, anAssert.getParameters());
+                int actual = DatabaseUtil.updateUseStatementToExecute(con, rootsql, anAssert.getParameter());
                 
-                String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
-                DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile));
+                //String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
+                DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile), "data");
                 
-                Assert.assertEquals("Update row number error", anAssert.getExpectedUpdate().intValue(), actual);
+                if (anAssert.getExpectedUpdate() != null) {
+                    Assert.assertEquals("Update row number error", anAssert.getExpectedUpdate().intValue(), actual);
+                }
+                
                 
                 String checksql = anAssert.getExpectedSql();
                 checksql = SQLCasesLoader.getInstance().getSupportedSQL(checksql);
                 DatasetDatabase ddPreparedStatement = DatabaseUtil.selectUsePreparedStatement(con, checksql,
                         anAssert.getExpectedParameter());
                 DatabaseUtil.assertDatas(checkDataset, ddPreparedStatement, msg);
+                return actual;
             }
         } finally {
             clearTableData(dataSourceMaps, mapDatasetDefinition);
         }
     }
     
-    private static void doUpdateUseStatementToExecuteDDL(final String rootPath, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private static void doUpdateUseStatementToExecuteDDL(final String rootPath, final String expectedDataFile, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             try (Connection con = dataSource.getConnection()) {
-                ParametersDefinition parametersDefinition = new ParametersDefinition();
-                parametersDefinition.setNewParameter(Arrays.asList(anAssert.getParameter()));
+                if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
+                    InItCreateSchema.dropTable(anAssert.getCleanSql());
+                }
+                if (StringUtils.isNotBlank(anAssert.getInitSql())) {
+                    InItCreateSchema.createTable(anAssert.getInitSql());
+                }
+                DatabaseUtil.updateUseStatementToExecute(con, rootsql, anAssert.getParameter());
                 
-                DatabaseUtil.updateUseStatementToExecute(con, rootsql, parametersDefinition);
-                
-                String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
-                DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile));
+                //String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
+                DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile), "data");
                 
                 String table = anAssert.getTable();
                 List<ColumnDefinition> columnDefinitions = DatabaseUtil.getColumnDefinitions(con, table);
                 DatabaseUtil.assertConfigs(checkDataset, columnDefinitions, table, msg);
             }
         } finally {
-            InItCreateSchema.dropTable();
-            InItCreateSchema.createTable();
+            if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
+                InItCreateSchema.dropTable(anAssert.getCleanSql());
+            }
+            if (StringUtils.isNotBlank(anAssert.getInitSql())) {
+                InItCreateSchema.createTable(anAssert.getInitSql());
+            }
         }
     }
     
-    private static void doUpdateUseStatementToExecuteUpdate(final String rootPath, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final AssertDMLDefinition anAssert, final String rootsql, final Map<String, DatasetDefinition> mapDatasetDefinition, final Map<String, String> sqls, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private static int doUpdateUseStatementToExecuteUpdate(final String rootPath, final String expectedDataFile, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final AssertDMLDefinition anAssert, final String rootsql, final Map<String, DatasetDefinition> mapDatasetDefinition, final Map<String, String> sqls, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             initTableData(dataSourceMaps, sqls, mapDatasetDefinition);
             try (Connection con = dataSource.getConnection();) {
-                int actual = DatabaseUtil.updateUseStatementToExecuteUpdate(con, rootsql, anAssert.getParameters());
-                String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
-                DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile));
+                int actual = DatabaseUtil.updateUseStatementToExecuteUpdate(con, rootsql, anAssert.getParameter());
+                //String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
+                DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile), "data");
                 
-                Assert.assertEquals("Update row number error" + msg, anAssert.getExpectedUpdate().intValue(), actual);
+                if (anAssert.getExpectedUpdate() != null) {
+                    Assert.assertEquals("Update row number error" + msg, anAssert.getExpectedUpdate().intValue(), actual);
+                }
+                
                 
                 String checksql = anAssert.getExpectedSql();
                 checksql = SQLCasesLoader.getInstance().getSupportedSQL(checksql);
                 DatasetDatabase ddPreparedStatement = DatabaseUtil.selectUsePreparedStatement(con, checksql,
                         anAssert.getExpectedParameter());
                 DatabaseUtil.assertDatas(checkDataset, ddPreparedStatement, msg);
-                
+                return actual;
             }
         } finally {
             clearTableData(dataSourceMaps, mapDatasetDefinition);
         }
     }
     
-    private static void doUpdateUseStatementToExecuteUpdateDDL(final String rootPath, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private static void doUpdateUseStatementToExecuteUpdateDDL(final String rootPath, final String expectedDataFile, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             try (Connection con = dataSource.getConnection()) {
-                
-                ParametersDefinition parametersDefinition = new ParametersDefinition();
-                parametersDefinition.setNewParameter(Arrays.asList(anAssert.getParameter()));
-                
-                DatabaseUtil.updateUseStatementToExecuteUpdate(con, rootsql, parametersDefinition);
-                String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
-                DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile));
+                if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
+                    InItCreateSchema.dropTable(anAssert.getCleanSql());
+                }
+                if (StringUtils.isNotBlank(anAssert.getInitSql())) {
+                    InItCreateSchema.createTable(anAssert.getInitSql());
+                }
+                DatabaseUtil.updateUseStatementToExecuteUpdate(con, rootsql, anAssert.getParameter());
+                //String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
+                DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile), "data");
                 
                 String table = anAssert.getTable();
                 List<ColumnDefinition> columnDefinitions = DatabaseUtil.getColumnDefinitions(con, table);
                 DatabaseUtil.assertConfigs(checkDataset, columnDefinitions, table, msg);
             }
         } finally {
-            InItCreateSchema.dropTable(anAssert.getCleanSql());
-            InItCreateSchema.createTable(anAssert.getInitSql());
+            if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
+                InItCreateSchema.dropTable(anAssert.getCleanSql());
+            }
+            if (StringUtils.isNotBlank(anAssert.getInitSql())) {
+                InItCreateSchema.createTable(anAssert.getInitSql());
+            }
         }
     }
     
-    private static void doSelectUseStatement(final String rootPath, final DataSource dataSource, final AssertDQLDefinition anAssert, final String rootsql, final String msg) throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private static void doSelectUseStatement(final String rootPath, final String expectedDataFile, final DataSource dataSource, final AssertDQLDefinition anAssert, final String rootsql, final String msg) throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try (Connection con = dataSource.getConnection();) {
             DatasetDatabase ddStatement = DatabaseUtil.selectUseStatement(con, rootsql,
-                    anAssert.getParameters());
-            String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
-            DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile));
+                    anAssert.getParameter());
+            //String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
+            DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile), "data");
             
             DatabaseUtil.assertDatas(checkDataset, ddStatement, msg);
         }
     }
     
-    private static void doSelectUseStatementToExecuteSelect(final String rootPath, final DataSource dataSource, final AssertDQLDefinition anAssert, final String rootsql, final String msg) throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private static void doSelectUseStatementToExecuteSelect(final String rootPath, final String expectedDataFile, final DataSource dataSource, final AssertDQLDefinition anAssert, final String rootsql, final String msg) throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try (Connection con = dataSource.getConnection();) {
             DatasetDatabase ddStatement = DatabaseUtil.selectUseStatementToExecuteSelect(con, rootsql,
-                    anAssert.getParameters());
-            String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
-            DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile));
+                    anAssert.getParameter());
+            //String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
+            DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile), "data");
             
             DatabaseUtil.assertDatas(checkDataset, ddStatement, msg);
         }
     }
     
-    private static void doSelectUsePreparedStatement(final String rootPath, final DataSource dataSource, final AssertDQLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private static void doSelectUsePreparedStatement(final String rootPath, final String expectedDataFile, final DataSource dataSource, final AssertDQLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try (Connection con = dataSource.getConnection();) {
             DatasetDatabase ddPreparedStatement = DatabaseUtil.selectUsePreparedStatement(con, rootsql,
-                    anAssert.getParameters());
+                    anAssert.getParameter());
             
-            String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
-            DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile));
+            //String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
+            DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile), "data");
             
             DatabaseUtil.assertDatas(checkDataset, ddPreparedStatement, msg);
         }
     }
     
-    private static void doSelectUsePreparedStatementToExecuteSelect(final String rootPath, final DataSource dataSource, final AssertDQLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private static void doSelectUsePreparedStatementToExecuteSelect(final String rootPath, final String expectedDataFile, final DataSource dataSource, final AssertDQLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try (Connection con = dataSource.getConnection();) {
             DatasetDatabase ddPreparedStatement = DatabaseUtil.selectUsePreparedStatementToExecuteSelect(con, rootsql,
-                    anAssert.getParameters());
+                    anAssert.getParameter());
             
-            String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
-            DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile));
+            //String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
+            DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile), "data");
             
             DatabaseUtil.assertDatas(checkDataset, ddPreparedStatement, msg);
         }
@@ -524,7 +866,7 @@ public class AssertEngine {
             String tempPath = initDataFile + "/" + each + ".xml";
             File file = new File(tempPath);
             if (file.exists()) {
-                DatasetDefinition datasetDefinition = AnalyzeDataset.analyze(file);
+                DatasetDefinition datasetDefinition = AnalyzeDataset.analyze(file, null);
                 mapDatasetDefinition.put(each, datasetDefinition);
                 
                 Map<String, List<Map<String, String>>> datas = datasetDefinition.getDatas();

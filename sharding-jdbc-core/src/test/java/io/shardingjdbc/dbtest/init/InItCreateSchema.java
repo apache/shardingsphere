@@ -353,7 +353,8 @@ public class InItCreateSchema {
             }
             
         } catch (SQLException | ParserConfigurationException | IOException | XPathExpressionException | SAXException e) {
-            e.printStackTrace();
+            // The table may not exist at the time of deletion（删除时可能表不存在），这个错误可以忽略
+            //e.printStackTrace();
         } finally {
             if (sr != null) {
                 sr.close();
@@ -395,7 +396,8 @@ public class InItCreateSchema {
             }
             
         } catch (SQLException | ParserConfigurationException | IOException | XPathExpressionException | SAXException e) {
-            e.printStackTrace();
+            // The table may not exist at the time of deletion（删除时可能表不存在），这个错误可以忽略
+            //e.printStackTrace();
         } finally {
             if (sr != null) {
                 sr.close();
@@ -439,7 +441,7 @@ public class InItCreateSchema {
     }
     
     /**
-     * @param paths paths
+     *
      * @return
      */
     public static Set<DatabaseType> getDatabaseSchema() throws IOException {
@@ -499,5 +501,29 @@ public class InItCreateSchema {
             }
         }
         return DatabaseType.H2;
+    }
+    
+    /**
+     * Get the database type enumeration.
+     *
+     * @param typeStrs String database type
+     * @return database enumeration
+     */
+    public static List<DatabaseType> getDatabaseTypes(final String typeStrs) {
+        if (StringUtils.isBlank(typeStrs)) {
+            return Arrays.asList(DatabaseType.values());
+        }
+        
+        String[] types = StringUtils.split(typeStrs, ",");
+        List<DatabaseType> databaseTypes = new ArrayList<>();
+        for (String eachType : types) {
+            DatabaseType[] databaseTypeSrcs = DatabaseType.values();
+            for (DatabaseType each : databaseTypeSrcs) {
+                if (eachType.equalsIgnoreCase(each.name())) {
+                    databaseTypes.add(each);
+                }
+            }
+        }
+        return databaseTypes;
     }
 }

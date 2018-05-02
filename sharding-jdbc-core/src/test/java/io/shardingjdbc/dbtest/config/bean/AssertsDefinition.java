@@ -39,6 +39,9 @@ public class AssertsDefinition {
     @XmlAttribute(name = "base-config")
     private String baseConfig;
     
+    @XmlAttribute(name = "database-config")
+    private String databaseConfig;
+    
     @XmlAttribute(name = "init-data-file")
     private String initDataFile;
     

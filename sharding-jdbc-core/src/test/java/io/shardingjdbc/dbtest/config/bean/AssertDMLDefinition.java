@@ -17,14 +17,20 @@
 
 package io.shardingjdbc.dbtest.config.bean;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 @XmlAccessorType(XmlAccessType.FIELD)
 public class AssertDMLDefinition implements AssertDefinition {
 
@@ -40,15 +46,21 @@ public class AssertDMLDefinition implements AssertDefinition {
     @XmlAttribute(name = "expected-update")
     private Integer expectedUpdate;
     
+    @XmlAttribute(name = "database-config")
+    private String databaseConfig;
+    
     @XmlAttribute(name = "sql")
     private String sql;
     
     @XmlAttribute(name = "expected-sql")
     private String expectedSql;
 
-    @XmlElement(name = "parameters")
-    private ParametersDefinition parameters;
+    @XmlElement(name = "parameter")
+    private ParameterDefinition parameter = new ParameterDefinition();
     
     @XmlElement(name = "expected-parameter")
-    private ParameterDefinition expectedParameter;
+    private ParameterDefinition expectedParameter = new ParameterDefinition();
+    
+    @XmlElement(name = "subAssert")
+    private List<AssertSubDefinition> subAsserts = new ArrayList<>();
 }

@@ -22,9 +22,16 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 @XmlAccessorType(XmlAccessType.FIELD)
 public class AssertDQLDefinition implements AssertDefinition {
     
@@ -37,10 +44,15 @@ public class AssertDQLDefinition implements AssertDefinition {
     @XmlAttribute(name = "base-config")
     private String baseConfig;
     
+    @XmlAttribute(name = "database-config")
+    private String databaseConfig;
+    
     @XmlAttribute(name = "sql")
     private String sql;
     
     @XmlElement(name = "parameter")
-    private ParameterDefinition parameters = new ParameterDefinition();
+    private ParameterDefinition parameter = new ParameterDefinition();
     
+    @XmlElement(name = "subAssert")
+    private List<AssertSubDefinition> subAsserts = new ArrayList<>();
 }

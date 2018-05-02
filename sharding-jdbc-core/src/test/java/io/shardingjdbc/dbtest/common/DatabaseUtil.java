@@ -179,20 +179,17 @@ public class DatabaseUtil {
      *
      * @param conn       Jdbc connection
      * @param sql        sql
-     * @param parameters parameters
+     * @param parameterDefinition parameter
      * @return Number of rows as a result of execution
      * @throws SQLException SQL executes exceptions
      */
     public static int updateUseStatementToExecuteUpdate(final Connection conn, final String sql,
-                                                        final ParametersDefinition parameters) throws SQLException {
-        List<ParameterDefinition> parameter = parameters.getParameter();
+                                                        final ParameterDefinition parameterDefinition) throws SQLException {
         int result = 0;
         try (Statement pstmt = conn.createStatement()) {
-            for (ParameterDefinition parameterDefinition : parameter) {
                 String newSql = sqlReplaceStatement(sql, parameterDefinition.getValueReplaces());
                 newSql = sqlStatement(newSql, parameterDefinition.getValues());
                 result = result + pstmt.executeUpdate(newSql);
-            }
         }
         return result;
     }
@@ -292,22 +289,20 @@ public class DatabaseUtil {
      *
      * @param conn       Jdbc connection
      * @param sql        sql
-     * @param parameters parameters
+     * @param parameterDefinition parameter
      * @return Implementation results
      * @throws SQLException SQL executes exceptions
      */
     public static int updateUseStatementToExecute(final Connection conn, final String sql,
-                                                  final ParametersDefinition parameters) throws SQLException {
-        List<ParameterDefinition> parameter = parameters.getParameter();
+                                                  final ParameterDefinition parameterDefinition) throws SQLException {
         int result = 0;
         try (Statement pstmt = conn.createStatement()) {
-            for (ParameterDefinition parameterDefinition : parameter) {
                 String newSql = sqlReplaceStatement(sql, parameterDefinition.getValueReplaces());
                 newSql = sqlStatement(newSql, parameterDefinition.getValues());
                 if (!pstmt.execute(newSql)) {
                     result = result + pstmt.getUpdateCount();
                 }
-            }
+            
         }
         return result;
     }
@@ -317,23 +312,20 @@ public class DatabaseUtil {
      *
      * @param conn       Jdbc connection
      * @param sql        sql
-     * @param parameters parameters
+     * @param parameterDefinition parameter
      * @return Number of rows as a result of execution
      * @throws SQLException   SQL executes exceptions
      * @throws ParseException ParseException
      */
     public static int updateUsePreparedStatementToExecuteUpdate(final Connection conn, final String sql,
-                                                                final ParametersDefinition parameters) throws SQLException, ParseException {
-        List<ParameterDefinition> parameter = parameters.getParameter();
+                                                                final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
         int result = 0;
-        for (ParameterDefinition parameterDefinition : parameter) {
             String newSql = sql.replaceAll("\\%s", "?");
             newSql = sqlReplaceStatement(newSql, parameterDefinition.getValueReplaces());
             try (PreparedStatement pstmt = conn.prepareStatement(newSql)) {
                 sqlPreparedStatement(parameterDefinition.getValues(), pstmt);
                 result = result + pstmt.executeUpdate();
             }
-        }
         return result;
     }
     
@@ -342,17 +334,14 @@ public class DatabaseUtil {
      *
      * @param conn       Jdbc connection
      * @param sql        sql
-     * @param parameters parameters
+     * @param parameterDefinition parameter
      * @return Implementation results
      * @throws SQLException   SQL executes exceptions
      * @throws ParseException ParseException
      */
     public static int updateUsePreparedStatementToExecute(final Connection conn, final String sql,
-                                                          final ParametersDefinition parameters) throws SQLException, ParseException {
-        List<ParameterDefinition> parameter = parameters.getParameter();
-       
+                                                          final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
         int result = 0;
-        for (ParameterDefinition parameterDefinition : parameter) {
             String newSql = sql.replaceAll("\\%s", "?");
             newSql = sqlReplaceStatement(newSql, parameterDefinition.getValueReplaces());
             try (PreparedStatement pstmt = conn.prepareStatement(newSql)) {
@@ -361,7 +350,6 @@ public class DatabaseUtil {
                     result = result + pstmt.getUpdateCount();
                 }
             }
-        }
        
         return result;
     }
@@ -753,6 +741,8 @@ public class DatabaseUtil {
         for (Map.Entry<String, List<Map<String, String>>> stringListEntry : expectDedatas.entrySet()) {
             List<Map<String, String>> data = stringListEntry.getValue();
             List<Map<String, String>> actualDatas = actualDatass.get(stringListEntry.getKey());
+            
+            assertTrue(msg + " result set validation failed , The number of validation data and query data is not equal", data.size() == actualDatas.size());
             
             for (int i = 0; i < data.size(); i++) {
                 Map<String, String> expectData = data.get(i);

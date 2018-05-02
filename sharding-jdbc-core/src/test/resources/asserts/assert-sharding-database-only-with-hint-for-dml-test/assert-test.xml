@@ -1,77 +1,109 @@
 <asserts sharding-rule-config="./config/test" init-data-file="./init" base-config="db" database="h2,mysql,oracle,sqlserver,postgresql">
-    <!--<assertDML id="assertInsertWithAllPlaceholders" expected-update="9"
-               sql="assertInsertWithAllPlaceholders"
-               expected-sql="assertSelectEqualsWithSingleTableExpected"
-               expected-data-file="./asserts/dml/insert/insert.xml">
-        <parameters>
+    <assertDML id="assertInsertWithAllPlaceholders" expected-update="9"
+               sql="assertInsertWithAllPlaceholders" base-config="db"
+               expected-sql="assertSelectEqualsWithSingleTable"
+               >
+        <subAssert expected-data-file="db_1.xml">
             <parameter>
                 <value value="1" type="int"/>
                 <value value="1" type="int"/>
                 <value value="insert"/>
             </parameter>
+            <expected-parameter>
+                <value value="1" type="int"/>
+                <value value="1" type="int"/>
+            </expected-parameter>
+        </subAssert>
+        <subAssert expected-data-file="db_2.xml">
             <parameter>
                 <value value="2" type="int"/>
                 <value value="2" type="int"/>
                 <value value="insert"/>
             </parameter>
+            <expected-parameter>
+                <value value="2" type="int"/>
+                <value value="2" type="int"/>
+            </expected-parameter>
+        </subAssert>
+        <subAssert expected-data-file="db_3.xml">
             <parameter>
                 <value value="3" type="int"/>
                 <value value="3" type="int"/>
                 <value value="insert"/>
             </parameter>
+            <expected-parameter>
+                <value value="3" type="int"/>
+                <value value="3" type="int"/>
+            </expected-parameter>
+        </subAssert>
+        <subAssert expected-data-file="db_4.xml">
             <parameter>
                 <value value="4" type="int"/>
                 <value value="4" type="int"/>
                 <value value="insert"/>
             </parameter>
+            <expected-parameter>
+                <value value="4" type="int"/>
+                <value value="4" type="int"/>
+            </expected-parameter>
+        </subAssert>
+        <subAssert expected-data-file="db_5.xml">
             <parameter>
                 <value value="5" type="int"/>
                 <value value="5" type="int"/>
                 <value value="insert"/>
             </parameter>
+            <expected-parameter>
+                <value value="5" type="int"/>
+                <value value="5" type="int"/>
+            </expected-parameter>
+        </subAssert>
+        <subAssert expected-data-file="db_6.xml">
             <parameter>
                 <value value="6" type="int"/>
                 <value value="6" type="int"/>
                 <value value="insert"/>
             </parameter>
+            <expected-parameter>
+                <value value="6" type="int"/>
+                <value value="6" type="int"/>
+            </expected-parameter>
+        </subAssert>
+        <subAssert expected-data-file="db_7.xml">
             <parameter>
                 <value value="7" type="int"/>
                 <value value="7" type="int"/>
                 <value value="insert"/>
             </parameter>
+            <expected-parameter>
+                <value value="7" type="int"/>
+                <value value="7" type="int"/>
+            </expected-parameter>
+        </subAssert>
+        <subAssert expected-data-file="db_8.xml">
             <parameter>
                 <value value="8" type="int"/>
                 <value value="8" type="int"/>
                 <value value="insert"/>
             </parameter>
+            <expected-parameter>
+                <value value="8" type="int"/>
+                <value value="8" type="int"/>
+            </expected-parameter>
+        </subAssert>
+        <subAssert expected-data-file="db_9.xml">
             <parameter>
                 <value value="9" type="int"/>
                 <value value="9" type="int"/>
                 <value value="insert"/>
             </parameter>
-        </parameters>
-        <expected-parameter>
-            <value value="1" type="int"/>
-            <value value="2" type="int"/>
-            <value value="3" type="int"/>
-            <value value="4" type="int"/>
-            <value value="5" type="int"/>
-            <value value="6" type="int"/>
-            <value value="7" type="int"/>
-            <value value="8" type="int"/>
-            <value value="9" type="int"/>
-            <value value="1" type="int"/>
-            <value value="2" type="int"/>
-            <value value="3" type="int"/>
-            <value value="4" type="int"/>
-            <value value="5" type="int"/>
-            <value value="6" type="int"/>
-            <value value="7" type="int"/>
-            <value value="8" type="int"/>
-            <value value="9" type="int"/>
-        </expected-parameter>
+            <expected-parameter>
+                <value value="9" type="int"/>
+                <value value="9" type="int"/>
+            </expected-parameter>
+        </subAssert>
     </assertDML>
-    <assertDML id="assertInsertWithoutPlaceholder"  expected-update="9"
+    <!--<assertDML id="assertInsertWithoutPlaceholder"  expected-update="9"
                sql="assertInsertWithPartialPlaceholder"
                expected-sql="assertSelectEqualsWithSingleTableExpected"
                expected-data-file="./asserts/dml/insert/insert.xml">

@@ -54,9 +54,9 @@ public class AnalyzeDataset {
      * @throws ParserConfigurationException ParserConfigurationException
      * @throws XPathExpressionException     XPathExpressionException
      */
-    public static DatasetDefinition analyze(final String path)
+    public static DatasetDefinition analyze(final String path, String tableName)
             throws IOException, SAXException, ParserConfigurationException, XPathExpressionException {
-        return analyze(new File(path));
+        return analyze(new File(path), tableName);
     }
     
     /**
@@ -69,7 +69,7 @@ public class AnalyzeDataset {
      * @throws ParserConfigurationException ParserConfigurationException
      * @throws XPathExpressionException     XPathExpressionException
      */
-    public static DatasetDefinition analyze(final File file)
+    public static DatasetDefinition analyze(final File file, String tableName)
             throws IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         
         Document doc = parseFile(file);
@@ -83,7 +83,7 @@ public class AnalyzeDataset {
                 if ("metadata".equals(firstNode.getNodeName())) {
                     analyzeTableConfig(result, firstNode);
                 } else if ("dataset".equals(firstNode.getNodeName())) {
-                    analyzeDataset(result, firstNode);
+                    analyzeDataset(result, tableName, firstNode);
                 }
             }
         }
@@ -153,17 +153,20 @@ public class AnalyzeDataset {
         return "";
     }
     
-    private static void analyzeDataset(final DatasetDefinition result, final Node firstNode) {
+    private static void analyzeDataset(final DatasetDefinition result, final String tableName1, final Node firstNode) {
         NodeList secondNodeList = firstNode.getChildNodes();
         for (int n = 0; n < secondNodeList.getLength(); n++) {
             Node secondNode = secondNodeList.item(n);
             if (secondNode.getNodeType() == Node.ELEMENT_NODE) {
                 Map<String, List<Map<String, String>>> datas = result.getDatas();
-                String tableName = secondNode.getNodeName();
-                List<Map<String, String>> datalists = datas.get(tableName);
+                String tableNameTmp = tableName1;
+                if (StringUtils.isBlank(tableNameTmp)) {
+                    tableNameTmp = secondNode.getNodeName();
+                }
+                List<Map<String, String>> datalists = datas.get(tableNameTmp);
                 if (datalists == null) {
                     datalists = new ArrayList<>();
-                    datas.put(tableName, datalists);
+                    datas.put(tableNameTmp, datalists);
                 }
                 
                 NamedNodeMap attrMap = secondNode.getAttributes();

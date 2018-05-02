@@ -80,6 +80,7 @@ public class AnalyzeDatabase {
                 }
             }
         }
+        
         return result;
     }
     
