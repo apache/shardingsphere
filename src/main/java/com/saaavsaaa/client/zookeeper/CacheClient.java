@@ -1,6 +1,5 @@
 package com.saaavsaaa.client.zookeeper;
 
-import com.saaavsaaa.client.cache.PathNode;
 import com.saaavsaaa.client.cache.PathStatus;
 import com.saaavsaaa.client.cache.PathTree;
 import com.saaavsaaa.client.election.LeaderElection;
@@ -8,24 +7,21 @@ import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.utility.constant.Properties;
 import com.saaavsaaa.client.utility.section.ClientTask;
-import com.saaavsaaa.client.utility.section.Listener;
-import org.apache.zookeeper.*;
+import org.apache.zookeeper.AsyncCallback;
+import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.KeeperException;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.Stack;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 /**
  * Created by aaa
  * todo restructure the three clients to strategies
  *  todo log
- *  todo currentNodes
  */
 public final class CacheClient extends UsualClient {
     private final ScheduledExecutorService cacheService = Executors.newSingleThreadScheduledExecutor();
@@ -93,67 +89,94 @@ public final class CacheClient extends UsualClient {
             super.createCurrentOnly(key, value, createMode);
             return;
         }
-        Transaction transaction = zooKeeper.transaction();
 
         List<String> nodes = PathUtil.getPathOrderNodes(rootNode, key);
         for (int i = 0; i < nodes.size(); i++) {
-            // todo not good
             if (super.checkExists(nodes.get(i))){
-                System.out.println("exist:" + nodes.get(i));
+                System.out.println("create :" + nodes.get(i));
                 continue;
             }
-            System.out.println("not exist:" + nodes.get(i));
+            System.out.println("create not exist:" + nodes.get(i));
             if (i == nodes.size() - 1){
-                createInTransaction(nodes.get(i), value.getBytes(Constants.UTF_8), createMode, transaction);
+                super.createCurrentOnly(nodes.get(i), value, createMode);
             } else {
-                createInTransaction(nodes.get(i), Constants.NOTHING_DATA, createMode, transaction);
+                this.createCurrentOnly(nodes.get(i), Constants.NOTHING_VALUE, createMode);
             }
         }
-        
-        transaction.commit();
     }
-    
-    private Transaction createInTransaction(final String key, byte[] data, final CreateMode createMode, final Transaction transaction){
-        return transaction.create(PathUtil.getRealPath(rootNode, key), data, authorities, createMode);
-    }
+
     
     @Override
     public void deleteAllChildren(final String key) throws KeeperException, InterruptedException {
-        Transaction transaction = zooKeeper.transaction();
-        this.deleteAllChildren(key, transaction);
-        transaction.commit();
-    }
-    
-    private void deleteAllChildren(final String key, final Transaction transaction) throws KeeperException, InterruptedException {
+        LeaderElection election = new LeaderElection() {
+            @Override
+            public void actionWhenUnreached() throws KeeperException, InterruptedException {
+                deleteAllChildren(key);
+            }
         
+            @Override
+            public void action() throws KeeperException, InterruptedException {
+                String path = PathUtil.getRealPath(rootNode, key);
+                deleteChildren(path);
+                pathTree.delete(path);
+            }
+        };
+        election.executeContention(rootNode, this);
     }
     
-    private void deleteOnlyCurrent(final String key, final Transaction transaction) throws KeeperException, InterruptedException {
-        transaction.delete(PathUtil.getRealPath(rootNode, key), Constants.VERSION);
+    private void deleteChildren(final String key) throws KeeperException, InterruptedException {
+        List<String> children = super.getChildren(key);
+        if (children.isEmpty()){
+            if (key.indexOf(Constants.PATH_SEPARATOR) < -1){
+                super.deleteOnlyCurrent(key);
+                return;
+            }
+            return;
+        }
+        for (int i = 0; i < children.size(); i++) {
+            if (!super.checkExists(children.get(i))){
+                System.out.println("delete not exist:" + children.get(i));
+                continue;
+            }
+            this.deleteChildren(key);
+        }
     }
-    
     
     @Override
     public void deleteCurrentBranch(final String key) throws KeeperException, InterruptedException {
-        if (key.indexOf(Constants.PATH_SEPARATOR) < -1){
-            this.deleteOnlyCurrent(key);
-            return;
-        }
-        Transaction transaction = zooKeeper.transaction();
-        //todo branch check
+        LeaderElection election = new LeaderElection() {
+            @Override
+            public void actionWhenUnreached() throws KeeperException, InterruptedException {
+                deleteCurrentBranch(key);
+            }
+        
+            @Override
+            public void action() throws KeeperException, InterruptedException {
+                String path = PathUtil.getRealPath(rootNode, key);
+                try {
+                    deleteBranch(path);
+                } catch (KeeperException.NotEmptyException ee){
+                    System.out.println(path + " exist other children");
+                    pathTree.delete(path);
+                    return;
+                }
+            }
+        };
+        election.executeContention(rootNode, this);
+    }
+    
+    private void deleteBranch(String key) throws KeeperException, InterruptedException {
+        deleteChildren(PathUtil.getRealPath(rootNode, key));
         Stack<String> pathStack = PathUtil.getPathReverseNodes(rootNode, key);
         while (!pathStack.empty()){
             String node = pathStack.pop();
             // contrast cache
             if (checkExists(node)){
-                transaction.delete(node, Constants.VERSION);
+                super.deleteOnlyCurrent(key);
                 System.out.println("delete : " + node);
             }
         }
-        transaction.commit();
     }
-    
-    //===========================================================================================================
     
     private boolean cacheReady(){
         return PathStatus.RELEASE == pathTree.getStatus();

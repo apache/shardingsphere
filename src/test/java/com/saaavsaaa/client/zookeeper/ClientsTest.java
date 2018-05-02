@@ -1,5 +1,6 @@
 package com.saaavsaaa.client.zookeeper;
 
+import com.saaavsaaa.client.utility.section.Listener;
 import org.apache.zookeeper.KeeperException;
 import org.junit.Test;
 
@@ -12,16 +13,38 @@ import java.util.List;
  */
 public class ClientsTest extends BaseClientTest {
     private List<Client> clients;
+    private final int count = 5;
+    private final int shard = 2;
     
     @Override
     public void start() throws IOException, InterruptedException {
-        clients = new ArrayList<>(5);
+        clients = new ArrayList<>(count);
         ClientFactory creator = new ClientFactory();
-        clients.add(createClient(creator));
-        clients.add(createClient(creator));
-        clients.add(createClient(creator));
-        clients.add(createClient(creator));
-        clients.add(createWatchClient(creator));
+        for (int i = 0; i < count; i++) {
+            clients.add(createClient(creator));
+        }
+    }
+    
+    @Override
+    protected Client createClient(ClientFactory creator) throws IOException, InterruptedException {
+        Client client;
+        if (clients.size() % shard == 1){
+            System.out.println("create client");
+            client = newClient(creator);
+        } else {
+            System.out.println("create watch client");
+            client = newWatchClient(creator);
+        }
+        return client;
+    }
+    
+    private Client newClient(ClientFactory creator) throws IOException, InterruptedException {
+        return creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes()).newUsualClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).start();
+    }
+    
+    protected Client newWatchClient(ClientFactory creator) throws IOException, InterruptedException {
+        Listener listener = TestSupport.buildListener();
+        return creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes()).newUsualClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).watch(listener).start();
     }
     
     @Override

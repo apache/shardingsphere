@@ -9,11 +9,12 @@ import java.io.IOException;
 /**
  * Created by aaa
  */
-public class UsualClientTest extends BaseClientTest {
+public class UsualWatchClientTest extends BaseClientTest {
     
     @Override
     protected Client createClient(final ClientFactory creator) throws IOException, InterruptedException {
-        return creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes()).newUsualClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).start();
+        Listener listener = TestSupport.buildListener();
+        return creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes()).newUsualClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).watch(listener).start();
     }
     
     @Test

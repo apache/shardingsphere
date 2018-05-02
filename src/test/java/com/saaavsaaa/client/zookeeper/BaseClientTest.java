@@ -20,24 +20,16 @@ import java.util.concurrent.CountDownLatch;
 /**
  * Created by aaa
  */
-public class BaseClientTest {
+public abstract class BaseClientTest {
     protected Client testClient = null;
     
     @Before
     public void start() throws IOException, InterruptedException {
         ClientFactory creator = new ClientFactory();
-//        testClient = createClient(creator);
-        testClient = createWatchClient(creator);
+        testClient = createClient(creator);
     }
     
-    protected Client createClient(ClientFactory creator) throws IOException, InterruptedException {
-        return creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes()).newUsualClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).start();
-    }
-    
-    protected Client createWatchClient(ClientFactory creator) throws IOException, InterruptedException {
-        Listener listener = TestSupport.buildListener();
-        return creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes()).newUsualClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).watch(listener).start();
-    }
+    protected abstract Client createClient(ClientFactory creator) throws IOException, InterruptedException;
     
     @After
     public void stop() throws InterruptedException {
