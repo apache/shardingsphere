@@ -34,6 +34,7 @@ import javax.xml.xpath.XPathFactory;
 
 import io.shardingjdbc.dbtest.config.bean.ColumnDefinition;
 import io.shardingjdbc.dbtest.config.bean.DatasetDefinition;
+import io.shardingjdbc.dbtest.exception.DbTestException;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -74,6 +75,9 @@ public class AnalyzeDataset {
         
         Document doc = parseFile(file);
         Node rootNode = getNode(doc, "/init");
+        if (rootNode == null) {
+            throw new DbTestException("file :" + file.getPath() + "analyze error,Missing init tag");
+        }
         NodeList firstNodeList = rootNode.getChildNodes();
         DatasetDefinition result = new DatasetDefinition();
         for (int i = 0; i < firstNodeList.getLength(); i++) {

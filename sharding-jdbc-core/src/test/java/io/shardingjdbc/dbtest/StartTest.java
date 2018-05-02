@@ -136,7 +136,6 @@ public class StartTest {
     
     @BeforeClass
     public static void beforeClass() {
-        
         if (AssertEngine.isInitialized()) {
             InItCreateSchema.createDatabase();
             InItCreateSchema.createTable();
