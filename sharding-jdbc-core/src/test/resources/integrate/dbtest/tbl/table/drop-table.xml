@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+    <sql id="tblDropTOrder0"/>
+    <sql id="tblDropTOrder1"/>
+    <sql id="tblDropTOrder2"/>
+    <sql id="tblDropTOrder3"/>
+    <sql id="tblDropTOrder4"/>
+    <sql id="tblDropTOrder5"/>
+    <sql id="tblDropTOrder6"/>
+    <sql id="tblDropTOrder7"/>
+    <sql id="tblDropTOrder8"/>
+    <sql id="tblDropTOrder9"/>
+    <sql id="tblDropTOrderItem0"/>
+    <sql id="tblDropTOrderItem1"/>
+    <sql id="tblDropTOrderItem2"/>
+    <sql id="tblDropTOrderItem3"/>
+    <sql id="tblDropTOrderItem4"/>
+    <sql id="tblDropTOrderItem5"/>
+    <sql id="tblDropTOrderItem6"/>
+    <sql id="tblDropTOrderItem7"/>
+    <sql id="tblDropTOrderItem8"/>
+    <sql id="tblDropTOrderItem9"/>
+    <sql id="tblDropTOrderConfig"/>
+    <sql id="tblDropTOrderGlobal"/>
+</sqls>

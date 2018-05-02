@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+    <sql id="masterOnlyDropTOrder"/>
+    <sql id="masterOnlyDropTOrderItem"/>
+    <sql id="masterOnlyDropTConfig"/>
+    <sql id="masterOnlyDropTGlobal"/>
+</sqls>

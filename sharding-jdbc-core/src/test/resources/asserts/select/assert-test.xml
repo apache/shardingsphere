@@ -1,0 +1,103 @@
+<asserts sharding-rule-config="./config/test" init-data-file="./init" base-config="db,tbl,dbtbl" database="h2,mysql,oracle,sqlserver,postgresql">
+    <assertDQL id="assertSelectOne"
+               sql="assertSelectOne"
+               expected-data-file="SelectOne.xml">
+    </assertDQL>
+    <assertDQL id="assertSelectNotEqualsWithSingleTable"
+               sql="assertSelectNotEqualsWithSingleTable" base-config="tbl"
+               expected-data-file="SelectNotEqualsWithSingleTable.xml">
+            <parameter>
+                <value value="100000" type="int" />
+            </parameter>
+    </assertDQL>
+    <assertDQL id="assertSelectNotEqualsWithSingleTableForExclamationEqual"
+               sql="assertSelectNotEqualsWithSingleTableForExclamationEqual" base-config="tbl"
+               expected-data-file="SelectNotEqualsWithSingleTable.xml">
+        <parameter>
+            <value value="100000" type="int" />
+        </parameter>
+    </assertDQL>
+    <assertDQL id="assertSelectNotEqualsWithSingleTableForNotIn"
+               sql="assertSelectNotEqualsWithSingleTableForNotIn" base-config="tbl"
+               expected-data-file="SelectNotEqualsWithSingleTable.xml">
+        <parameter>
+            <value value="100000" type="int" />
+        </parameter>
+    </assertDQL>
+    <assertDQL id="assertSelectEqualsWithSameShardingColumns"
+               sql="assertSelectEqualsWithSameShardingColumns" base-config="tbl"
+               expected-data-file="SelectEqualsWithSameShardingColumns.xml">
+        <parameter>
+            <value value="1000" type="int" />
+            <value value="1001" type="int" />
+        </parameter>
+    </assertDQL>
+    <assertDQL id="assertSelectInWithSameShardingColumns"
+               sql="assertSelectInWithSameShardingColumns" base-config="tbl"
+               expected-data-file="SelectInWithSameShardingColumns.xml">
+        <parameter>
+            <value value="1000" type="int" />
+            <value value="1001" type="int" />
+            <value value="1001" type="int" />
+            <value value="1100" type="int" />
+        </parameter>
+    </assertDQL>
+    <assertDQL id="assertSelectEqualsWithSingleTable"
+               sql="assertSelectEqualsWithSingleTable" base-config="tbl,db,dbtbl"
+               expected-data-file="SelectEqualsWithSingleTable_1.xml">
+        <subAssert expected-data-file="SelectEqualsWithSingleTable_0.xml">
+            <parameter>
+                <value value="10" type="int" />
+                <value value="1000" type="int" />
+            </parameter>
+        </subAssert>
+        <subAssert expected-data-file="SelectEqualsWithSingleTable_1.xml" base-config="tbl">
+            <parameter>
+                <value value="11" type="int" />
+                <value value="1109" type="int" />
+            </parameter>
+        </subAssert>
+        <subAssert expected-data-file="SelectEqualsWithSingleTable_1.xml" base-config="db,dbtbl">
+            <parameter>
+                <value value="12" type="int" />
+                <value value="1201" type="int" />
+            </parameter>
+        </subAssert>
+        <subAssert expected-data-file="Empty.xml">
+            <parameter>
+                <value value="12" type="int" />
+                <value value="1000" type="int" />
+            </parameter>
+        </subAssert>
+    </assertDQL>
+
+    <!--<assertDQL id="assertSelectBetweenWithSingleTable"
+               sql="assertSelectBetweenWithSingleTable" base-config="tbl,db,dbtbl"
+               >
+        <subAssert expected-data-file="SelectBetweenWithSingleTable.xml" base-config="tbl,dbtbl">
+            <parameter>
+                <value value="10" type="int" />
+                <value value="12" type="int" />
+                <value value="1009" type="int" />
+                <value value="1108" type="int" />
+            </parameter>
+        </subAssert>
+        <subAssert expected-data-file="SelectBetweenWithSingleTable.xml" base-config="db">
+            <parameter>
+                <value value="10" type="int" />
+                <value value="12" type="int" />
+                <value value="1001" type="int" />
+                <value value="1200" type="int" />
+            </parameter>
+        </subAssert>
+        <subAssert expected-data-file="Empty.xml">
+            <parameter>
+                <value value="10" type="int" />
+                <value value="12" type="int" />
+                <value value="1309" type="int" />
+                <value value="1408" type="int" />
+            </parameter>
+        </subAssert>
+    </assertDQL>-->
+
+</asserts>
