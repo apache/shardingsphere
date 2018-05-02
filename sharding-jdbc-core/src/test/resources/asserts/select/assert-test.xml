@@ -70,7 +70,7 @@
             </parameter>
         </subAssert>
     </assertDQL>
-
+    
     <!--<assertDQL id="assertSelectBetweenWithSingleTable"
                sql="assertSelectBetweenWithSingleTable" base-config="tbl,db,dbtbl"
                >
@@ -99,5 +99,4 @@
             </parameter>
         </subAssert>
     </assertDQL>-->
-
 </asserts>
