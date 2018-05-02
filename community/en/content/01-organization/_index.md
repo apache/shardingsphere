@@ -52,6 +52,10 @@ In various situations the Sharding shall hold a vote. These votes can happen on 
 
 * 潘娟, Juan Pan, [@tristaZero](https://github.com/tristaZero) Senior DBA, Jingdong
 
+* 王凯，Kai Wang，[@oracle219](https://github.com/oracle219) 架构师，当当
+
+* 林嘉琦，Jiaqi Lin，[@chidaodezhongsheng](https://github.com/chidaodezhongsheng) 工程师，当当
+
 ## Mailing List
 
 * [Google Groups](mailto:sharding+subscribe@googlegroups.com)
