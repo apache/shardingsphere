@@ -1,0 +1,8 @@
+<init>
+    <metadata>
+        <table name="t_log">
+            <cloumn name="id" type="integer" />
+            <cloumn name="status" type="varchar"/>
+        </table>
+    </metadata>
+</init>

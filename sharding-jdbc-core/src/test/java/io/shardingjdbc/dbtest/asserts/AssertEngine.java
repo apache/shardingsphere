@@ -204,26 +204,26 @@ public class AssertEngine {
                 if (anAssert.getParameter().getValues().isEmpty() && anAssert.getParameter().getValueReplaces().isEmpty()) {
                     List<AssertSubDefinition> subAsserts = anAssert.getSubAsserts();
                     if (subAsserts.isEmpty()) {
-                        doUpdateUseStatementToExecuteUpdateDDL(rootPath, expectedDataFile, dataSource, anAssert, rootsql, msg);
+                        doUpdateUseStatementToExecuteUpdateDDL(rootPath, databaseType, dbName, expectedDataFile, dataSource, anAssert, rootsql, msg);
                         
-                        doUpdateUseStatementToExecuteDDL(rootPath, expectedDataFile, dataSource, anAssert, rootsql, msg);
+                        doUpdateUseStatementToExecuteDDL(rootPath, databaseType, dbName, expectedDataFile, dataSource, anAssert, rootsql, msg);
                         
-                        doUpdateUsePreparedStatementToExecuteUpdateDDL(rootPath, expectedDataFile, dataSource, anAssert, rootsql, msg);
+                        doUpdateUsePreparedStatementToExecuteUpdateDDL(rootPath, databaseType, dbName, expectedDataFile, dataSource, anAssert, rootsql, msg);
                         
-                        doUpdateUsePreparedStatementToExecuteDDL(rootPath, expectedDataFile, dataSource, anAssert, rootsql, msg);
+                        doUpdateUsePreparedStatementToExecuteDDL(rootPath, databaseType, dbName, expectedDataFile, dataSource, anAssert, rootsql, msg);
                     } else {
                         
                         ddlSubRun(databaseType, dbName, rootPath, msg, dataSource, anAssert, rootsql, expectedDataFile, subAsserts);
                     }
                     
                 } else {
-                    doUpdateUseStatementToExecuteUpdateDDL(rootPath, expectedDataFile, dataSource, anAssert, rootsql, msg);
+                    doUpdateUseStatementToExecuteUpdateDDL(rootPath, databaseType, dbName, expectedDataFile, dataSource, anAssert, rootsql, msg);
                     
-                    doUpdateUseStatementToExecuteDDL(rootPath, expectedDataFile, dataSource, anAssert, rootsql, msg);
+                    doUpdateUseStatementToExecuteDDL(rootPath, databaseType, dbName, expectedDataFile, dataSource, anAssert, rootsql, msg);
                     
-                    doUpdateUsePreparedStatementToExecuteUpdateDDL(rootPath, expectedDataFile, dataSource, anAssert, rootsql, msg);
+                    doUpdateUsePreparedStatementToExecuteUpdateDDL(rootPath, databaseType, dbName, expectedDataFile, dataSource, anAssert, rootsql, msg);
                     
-                    doUpdateUsePreparedStatementToExecuteDDL(rootPath, expectedDataFile, dataSource, anAssert, rootsql, msg);
+                    doUpdateUsePreparedStatementToExecuteDDL(rootPath, databaseType, dbName, expectedDataFile, dataSource, anAssert, rootsql, msg);
                     
                     List<AssertSubDefinition> subAsserts = anAssert.getSubAsserts();
                     if (!subAsserts.isEmpty()) {
@@ -277,13 +277,13 @@ public class AssertEngine {
                     anAssert.getDatabaseConfig(), anAssert.getSql(), anAssert.getTable(),
                     parameter, anAssert.getSubAsserts());
             
-            doUpdateUseStatementToExecuteUpdateDDL(rootPath, expectedDataFileTmp, dataSource, anAssertSub, rootsql, msg);
+            doUpdateUseStatementToExecuteUpdateDDL(rootPath, databaseType, dbName, expectedDataFileTmp, dataSource, anAssertSub, rootsql, msg);
             
-            doUpdateUseStatementToExecuteDDL(rootPath, expectedDataFileTmp, dataSource, anAssertSub, rootsql, msg);
+            doUpdateUseStatementToExecuteDDL(rootPath, databaseType, dbName, expectedDataFileTmp, dataSource, anAssertSub, rootsql, msg);
             
-            doUpdateUsePreparedStatementToExecuteUpdateDDL(rootPath, expectedDataFileTmp, dataSource, anAssertSub, rootsql, msg);
+            doUpdateUsePreparedStatementToExecuteUpdateDDL(rootPath, databaseType, dbName, expectedDataFileTmp, dataSource, anAssertSub, rootsql, msg);
             
-            doUpdateUsePreparedStatementToExecuteDDL(rootPath, expectedDataFileTmp, dataSource, anAssertSub, rootsql, msg);
+            doUpdateUsePreparedStatementToExecuteDDL(rootPath, databaseType, dbName, expectedDataFileTmp, dataSource, anAssertSub, rootsql, msg);
         }
     }
     
@@ -624,14 +624,14 @@ public class AssertEngine {
         }
     }
     
-    private static void doUpdateUsePreparedStatementToExecuteDDL(final String rootPath, final String expectedDataFile, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private static void doUpdateUsePreparedStatementToExecuteDDL(final String rootPath, final DatabaseType databaseType, final String dbName, final String expectedDataFile, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             try (Connection con = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
-                    InItCreateSchema.dropTable(anAssert.getCleanSql());
+                    InItCreateSchema.dropTable(databaseType, anAssert.getCleanSql(), dbName);
                 }
                 if (StringUtils.isNotBlank(anAssert.getInitSql())) {
-                    InItCreateSchema.createTable(anAssert.getInitSql());
+                    InItCreateSchema.createTable(databaseType, anAssert.getInitSql(), dbName);
                 }
                 DatabaseUtil.updateUsePreparedStatementToExecute(con, rootsql,
                         anAssert.getParameter());
@@ -644,10 +644,10 @@ public class AssertEngine {
             }
         } finally {
             if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
-                InItCreateSchema.dropTable(anAssert.getCleanSql());
+                InItCreateSchema.dropTable(databaseType, anAssert.getCleanSql(), dbName);
             }
             if (StringUtils.isNotBlank(anAssert.getInitSql())) {
-                InItCreateSchema.createTable(anAssert.getInitSql());
+                InItCreateSchema.createTable(databaseType, anAssert.getInitSql(), dbName);
             }
         }
     }
@@ -678,14 +678,14 @@ public class AssertEngine {
         }
     }
     
-    private static void doUpdateUsePreparedStatementToExecuteUpdateDDL(final String rootPath, final String expectedDataFile, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private static void doUpdateUsePreparedStatementToExecuteUpdateDDL(final String rootPath, final DatabaseType databaseType, final String dbName, final String expectedDataFile, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             try (Connection con = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
-                    InItCreateSchema.dropTable(anAssert.getCleanSql());
+                    InItCreateSchema.dropTable(databaseType, anAssert.getCleanSql(), dbName);
                 }
                 if (StringUtils.isNotBlank(anAssert.getInitSql())) {
-                    InItCreateSchema.createTable(anAssert.getInitSql());
+                    InItCreateSchema.createTable(databaseType, anAssert.getInitSql(), dbName);
                 }
                 DatabaseUtil.updateUsePreparedStatementToExecuteUpdate(con, rootsql,
                         anAssert.getParameter());
@@ -699,10 +699,10 @@ public class AssertEngine {
             }
         } finally {
             if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
-                InItCreateSchema.dropTable(anAssert.getCleanSql());
+                InItCreateSchema.dropTable(databaseType, anAssert.getCleanSql(), dbName);
             }
             if (StringUtils.isNotBlank(anAssert.getInitSql())) {
-                InItCreateSchema.createTable(anAssert.getInitSql());
+                InItCreateSchema.createTable(databaseType, anAssert.getInitSql(), dbName);
             }
         }
     }
@@ -733,14 +733,14 @@ public class AssertEngine {
         }
     }
     
-    private static void doUpdateUseStatementToExecuteDDL(final String rootPath, final String expectedDataFile, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private static void doUpdateUseStatementToExecuteDDL(final String rootPath, final DatabaseType databaseType, final String dbName, final String expectedDataFile, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             try (Connection con = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
-                    InItCreateSchema.dropTable(anAssert.getCleanSql());
+                    InItCreateSchema.dropTable(databaseType, anAssert.getCleanSql(), dbName);
                 }
                 if (StringUtils.isNotBlank(anAssert.getInitSql())) {
-                    InItCreateSchema.createTable(anAssert.getInitSql());
+                    InItCreateSchema.createTable(databaseType, anAssert.getInitSql(), dbName);
                 }
                 DatabaseUtil.updateUseStatementToExecute(con, rootsql, anAssert.getParameter());
                 
@@ -753,10 +753,10 @@ public class AssertEngine {
             }
         } finally {
             if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
-                InItCreateSchema.dropTable(anAssert.getCleanSql());
+                InItCreateSchema.dropTable(databaseType, anAssert.getCleanSql(), dbName);
             }
             if (StringUtils.isNotBlank(anAssert.getInitSql())) {
-                InItCreateSchema.createTable(anAssert.getInitSql());
+                InItCreateSchema.createTable(databaseType, anAssert.getInitSql(), dbName);
             }
         }
     }
@@ -786,14 +786,14 @@ public class AssertEngine {
         }
     }
     
-    private static void doUpdateUseStatementToExecuteUpdateDDL(final String rootPath, final String expectedDataFile, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private static void doUpdateUseStatementToExecuteUpdateDDL(final String rootPath, final DatabaseType databaseType, final String dbName, final String expectedDataFile, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             try (Connection con = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
-                    InItCreateSchema.dropTable(anAssert.getCleanSql());
+                    InItCreateSchema.dropTable(databaseType, anAssert.getCleanSql(), dbName);
                 }
                 if (StringUtils.isNotBlank(anAssert.getInitSql())) {
-                    InItCreateSchema.createTable(anAssert.getInitSql());
+                    InItCreateSchema.createTable(databaseType, anAssert.getInitSql(), dbName);
                 }
                 DatabaseUtil.updateUseStatementToExecuteUpdate(con, rootsql, anAssert.getParameter());
                 //String expectedDataFile = PathUtil.getPath(anAssert.getExpectedDataFile(), rootPath);
@@ -805,10 +805,10 @@ public class AssertEngine {
             }
         } finally {
             if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
-                InItCreateSchema.dropTable(anAssert.getCleanSql());
+                InItCreateSchema.dropTable(databaseType, anAssert.getCleanSql(), dbName);
             }
             if (StringUtils.isNotBlank(anAssert.getInitSql())) {
-                InItCreateSchema.createTable(anAssert.getInitSql());
+                InItCreateSchema.createTable(databaseType, anAssert.getInitSql(), dbName);
             }
         }
     }
@@ -898,7 +898,7 @@ public class AssertEngine {
     
     private static void initTableData(final Map<String, DataSource> dataSourceMaps, final Map<String, String> sqls,
                                       final Map<String, DatasetDefinition> mapDatasetDefinition) throws SQLException, ParseException {
-        clearTableData(dataSourceMaps,mapDatasetDefinition);
+        clearTableData(dataSourceMaps, mapDatasetDefinition);
         for (Map.Entry<String, DataSource> eachDataSourceEntry : dataSourceMaps.entrySet()) {
             DataSource dataSource1 = eachDataSourceEntry.getValue();
             DatasetDefinition datasetDefinition = mapDatasetDefinition.get(eachDataSourceEntry.getKey());
