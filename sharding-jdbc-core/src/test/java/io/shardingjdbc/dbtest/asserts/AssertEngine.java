@@ -29,6 +29,7 @@ import javax.sql.DataSource;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
+import io.shardingjdbc.core.api.MasterSlaveDataSourceFactory;
 import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.dbtest.StartTest;
@@ -147,12 +148,20 @@ public class AssertEngine {
         try {
             for (DatabaseType each : InItCreateSchema.getDatabaseSchemas()) {
                 Map<String, DataSource> dataSourceMaps = new HashMap<>();
+                
                 for (String db : dbs) {
                     DataSource subDataSource = InItCreateSchema.buildDataSource(db, each);
                     dataSourceMaps.put(db, subDataSource);
                 }
-                String configPath = PathUtil.getPath(assertsDefinition.getShardingRuleConfig(), rootPath) + "-" + dbName + ".yaml";
-                dataSource = getDataSource(dataSourceMaps, configPath);
+                
+                if ("true".equals(assertsDefinition.getMasterslave())) {
+                    String configPath = PathUtil.getPath(assertsDefinition.getShardingRuleConfig(), rootPath) + "-" + dbName + ".yaml";
+                    dataSource = getMasterSlaveDataSource(dataSourceMaps, configPath);
+                } else {
+                    String configPath = PathUtil.getPath(assertsDefinition.getShardingRuleConfig(), rootPath) + "-" + dbName + ".yaml";
+                    dataSource = getDataSource(dataSourceMaps, configPath);
+                }
+                
                 
                 // dql run
                 dqlRun(each, initDataPath, dbName, path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
@@ -930,6 +939,10 @@ public class AssertEngine {
     
     public static DataSource getDataSource(final Map<String, DataSource> dataSourceMap, final String path) throws IOException, SQLException {
         return ShardingDataSourceFactory.createDataSource(dataSourceMap, new File(path));
+    }
+    
+    public static DataSource getMasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final String path) throws IOException, SQLException {
+        return MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new File(path));
     }
     
     /**
