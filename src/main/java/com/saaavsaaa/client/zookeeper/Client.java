@@ -3,8 +3,8 @@ package com.saaavsaaa.client.zookeeper;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.StringUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
-import com.saaavsaaa.client.utility.constant.Properties;
 import com.saaavsaaa.client.utility.section.Listener;
+import com.saaavsaaa.client.utility.section.Properties;
 import com.saaavsaaa.client.utility.section.WatcherCreator;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.ACL;
@@ -58,7 +58,7 @@ public abstract class Client implements IClient{
                 if (globalListenerRegistered){
                     watchers.get(Constants.GLOBAL_LISTENER_KEY).process(event);
                 }
-                if (Properties.WATCH_ON && watchers.containsKey(event.getPath())){
+                if (Properties.INSTANCE.watchOn() && watchers.containsKey(event.getPath())){
                      watchers.get(event.getPath()).process(event);
                 }
             }

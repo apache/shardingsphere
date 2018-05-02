@@ -5,8 +5,8 @@ import com.saaavsaaa.client.cache.PathTree;
 import com.saaavsaaa.client.election.LeaderElection;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
-import com.saaavsaaa.client.utility.constant.Properties;
 import com.saaavsaaa.client.utility.section.ClientTask;
+import com.saaavsaaa.client.utility.section.Properties;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -45,7 +45,7 @@ public final class CacheClient extends UsualClient {
                     loadCache(client);
                 }
             }
-        }, Properties.THREAD_INITIAL_DELAY, Properties.THREAD_PERIOD, TimeUnit.MILLISECONDS);
+        }, Properties.INSTANCE.getThreadInitialDelay(), Properties.INSTANCE.getThreadPeriod(), TimeUnit.MILLISECONDS);
     }
     
     //用替换整树的方式更新

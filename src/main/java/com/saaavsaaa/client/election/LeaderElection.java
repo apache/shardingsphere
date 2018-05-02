@@ -3,7 +3,7 @@ package com.saaavsaaa.client.election;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.utility.section.Listener;
-import com.saaavsaaa.client.utility.section.Property;
+import com.saaavsaaa.client.utility.section.Properties;
 import com.saaavsaaa.client.utility.section.WatcherCreator;
 import com.saaavsaaa.client.zookeeper.Client;
 import org.apache.zookeeper.CreateMode;
@@ -18,7 +18,7 @@ public abstract class LeaderElection {
     private boolean contend(final String path, final Client client, final Listener listener) throws KeeperException, InterruptedException {
         boolean success = false;
         try {
-            client.createCurrentOnly(Constants.CHANGING_KEY, Property.INSTANCE.getClientId(), CreateMode.EPHEMERAL);
+            client.createCurrentOnly(Constants.CHANGING_KEY, Properties.INSTANCE.getClientId(), CreateMode.EPHEMERAL);
             success = true;
         } catch (KeeperException.NodeExistsException e) {
             // TODO: or changing_key node value == current client id
