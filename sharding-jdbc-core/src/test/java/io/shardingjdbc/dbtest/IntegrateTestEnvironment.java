@@ -31,9 +31,9 @@ import java.util.Properties;
  * @author zhangliang
  */
 @Getter
-public final class IntegrateTestRunningEnvironment {
+public final class IntegrateTestEnvironment {
     
-    private static final IntegrateTestRunningEnvironment INSTANCE = new IntegrateTestRunningEnvironment();
+    private static final IntegrateTestEnvironment INSTANCE = new IntegrateTestEnvironment();
     
     private final boolean initialized;
     
@@ -41,7 +41,7 @@ public final class IntegrateTestRunningEnvironment {
     
     private final Collection<DatabaseType> databaseTypes;
     
-    private IntegrateTestRunningEnvironment() {
+    private IntegrateTestEnvironment() {
         Properties prop = new Properties();
         try {
             prop.load(StartTest.class.getClassLoader().getResourceAsStream("integrate/env.properties"));
@@ -61,7 +61,7 @@ public final class IntegrateTestRunningEnvironment {
      * 
      * @return singleton instance
      */
-    public static IntegrateTestRunningEnvironment getInstance() {
+    public static IntegrateTestEnvironment getInstance() {
         return INSTANCE;
     }
 }

@@ -48,9 +48,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class StartTest {
     
-    private static boolean isInitialized = IntegrateTestRunningEnvironment.getInstance().isInitialized();
+    private static boolean isInitialized = IntegrateTestEnvironment.getInstance().isInitialized();
     
-    private static boolean isCleaned = IntegrateTestRunningEnvironment.getInstance().isInitialized();
+    private static boolean isCleaned = IntegrateTestEnvironment.getInstance().isInitialized();
     
     private static final List<String[]> RESULT_ASSERT = new ArrayList<>();
     
@@ -60,7 +60,7 @@ public final class StartTest {
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<String[]> getParameters() throws IOException, JAXBException {
-        String assertPath = IntegrateTestRunningEnvironment.getInstance().getAssertPath();
+        String assertPath = IntegrateTestEnvironment.getInstance().getAssertPath();
         assertPath = PathUtil.getPath(assertPath);
         List<String> paths = FileUtil.getAllFilePaths(new File(assertPath), "assert-", "xml");
         for (String each : paths) {

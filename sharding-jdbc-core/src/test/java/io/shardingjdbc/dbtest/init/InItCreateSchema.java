@@ -18,7 +18,7 @@
 package io.shardingjdbc.dbtest.init;
 
 import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.dbtest.IntegrateTestRunningEnvironment;
+import io.shardingjdbc.dbtest.IntegrateTestEnvironment;
 import io.shardingjdbc.dbtest.common.DatabaseEnvironment;
 import io.shardingjdbc.dbtest.config.AnalyzeDatabase;
 import io.shardingjdbc.dbtest.config.AnalyzeSql;
@@ -61,7 +61,7 @@ public final class InItCreateSchema {
      * Initialize the database table.
      */
     public static synchronized void createTable() {
-        for (DatabaseType each : IntegrateTestRunningEnvironment.getInstance().getDatabaseTypes()) {
+        for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
             createSchema(each);
         }
     }
@@ -76,7 +76,7 @@ public final class InItCreateSchema {
             for (String database : DATABASES) {
                 String sql = getCreateTableSql(DatabaseType.H2, AnalyzeDatabase.analyze(InItCreateSchema.class.getClassLoader()
                         .getResource("integrate/dbtest").getPath() + "/" + database + "/database.xml"));
-                for (DatabaseType each : IntegrateTestRunningEnvironment.getInstance().getDatabaseTypes()) {
+                for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
                     if (each.equals(DatabaseType.H2)) {
                         continue;
                     }
@@ -128,7 +128,7 @@ public final class InItCreateSchema {
             for (String database : DATABASES) {
                 String sql = getDropTableSql(DatabaseType.H2, AnalyzeDatabase.analyze(InItCreateSchema.class.getClassLoader()
                         .getResource("integrate/dbtest").getPath() + "/" + database + "/database.xml"));
-                for (DatabaseType each : IntegrateTestRunningEnvironment.getInstance().getDatabaseTypes()) {
+                for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
                     if (each.equals(DatabaseType.H2)) {
                         continue;
                     }
