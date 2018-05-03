@@ -312,15 +312,15 @@ weight = 4
 
 #### \<sharding:sharding-rule />
 
-| *名称*                            | *类型* | *说明*                                                                    |
-| --------------------------------- | ----- | ------------------------------------------------------------------------- |
-| data-source-names                 | 属性  | 数据源Bean列表，多个Bean以逗号分隔                                            | 
-| table-rules                       | 标签  | 表分片规则配置对象                                                           |
-| binding-table-rules (?)           | 标签  | 绑定表规则列表                                                              |
-| default-data-source-name (?)      | 属性  | 未配置分片规则的表将通过默认数据源定位                                         |
-| default-database-strategy-ref (?) | 属性  | 默认数据库分片策略，对应\<sharding:xxx-strategy>中的策略Id，缺省表示不分库      |
-| default-table-strategy-ref (?)    | 属性  | 默认表分片策略，对应\<sharding:xxx-strategy>中的策略Id，缺省表示不分表          |
-| default-key-generator (?)         | 属性  | 默认自增列值生成器，缺省使用`io.shardingjdbc.core.keygen.DefaultKeyGenerator` |
+| *名称*                            | *类型* | *说明*                                                                                                  |
+| --------------------------------- | ----- | ------------------------------------------------------------------------------------------------------ |
+| data-source-names                 | 属性  | 数据源Bean列表，多个Bean以逗号分隔                                                                         | 
+| table-rules                       | 标签  | 表分片规则配置对象                                                                                        |
+| binding-table-rules (?)           | 标签  | 绑定表规则列表                                                                                            |
+| default-data-source-name (?)      | 属性  | 未配置分片规则的表将通过默认数据源定位                                                                       |
+| default-database-strategy-ref (?) | 属性  | 默认数据库分片策略，对应\<sharding:xxx-strategy>中的策略Id，缺省表示不分库                                    |
+| default-table-strategy-ref (?)    | 属性  | 默认表分片策略，对应\<sharding:xxx-strategy>中的策略Id，缺省表示不分表                                       |
+| default-key-generator-ref (?)     | 属性  | 默认自增列值生成器引用，缺省使用`io.shardingjdbc.core.keygen.DefaultKeyGenerator`。该类需实现KeyGenerator接口 |
 
 #### \<sharding:table-rules />
 
@@ -337,7 +337,7 @@ weight = 4
 | database-strategy-ref (?)    | 属性  | 数据库分片策略，对应\<sharding:xxx-strategy>中的策略Id，缺省表示使用\<sharding:sharding-rule />配置的默认数据库分片策略                                                                                             |
 | table-strategy-ref (?)       | 属性  | 表分片策略，对应\<sharding:xxx-strategy>中的策略Id，缺省表示使用\<sharding:sharding-rule />配置的默认表分片策略                                                                                                    |
 | generate-key-column-name (?) | 属性  | 自增列名称，缺省表示不使用自增主键生成器                                                                                                                                                                         |
-| key-generator (?)            | 属性  | 自增列值生成器，缺省表示使用默认自增列值生成器                                                                                                                                                                    |
+| key-generator-ref (?)        | 属性  | 自增列值生成器引用，缺省表示使用默认自增列值生成器.该类需实现KeyGenerator接口                                                                                                                                       |
 | logic-index (?)              | 属性  | 逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表                                                                                                   |
 
 #### \<sharding:binding-table-rules />

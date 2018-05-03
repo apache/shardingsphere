@@ -141,7 +141,7 @@ shardingRule:
       tableStrategy: #分表策略，同分库策略
         
       keyGeneratorColumnName: #自增列名称，缺省表示不使用自增主键生成器
-      keyGeneratorClass: #自增列值生成器类名称。该类需提供无参数的构造器
+      keyGeneratorClass: #自增列值生成器类名称。该类需实现KeyGenerator接口并提供无参数的构造器
         
       logicIndex: #逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表
   bindingTables: #绑定表规则列表
@@ -152,7 +152,7 @@ shardingRule:
   defaultDataSourceName: #未配置分片规则的表将通过默认数据源定位  
   defaultDatabaseStrategy: #默认数据库分片策略，同分库策略
   defaultTableStrategy: #默认表分片策略，同分库策略
-  defaultKeyGeneratorClass: #默认自增列值生成器类名称，缺省使用io.shardingjdbc.core.keygen.DefaultKeyGenerator。该类需提供无参数的构造器
+  defaultKeyGeneratorClass: #默认自增列值生成器类名称，缺省使用io.shardingjdbc.core.keygen.DefaultKeyGenerator。该类需实现KeyGenerator接口并提供无参数的构造器
   
   masterSlaveRules: #读写分离规则，详见读写分离部分
     <data_source_name>: #数据源名称，需要与真实数据源匹配，可配置多个data_source_name
