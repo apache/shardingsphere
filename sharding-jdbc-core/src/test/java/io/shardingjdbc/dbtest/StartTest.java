@@ -46,11 +46,11 @@ import java.util.List;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public class StartTest {
+public final class StartTest {
     
     private static boolean isInitialized = IntegrateTestRunningEnvironment.getInstance().isInitialized();
     
-    private static boolean isClean = IntegrateTestRunningEnvironment.getInstance().isInitialized();
+    private static boolean isCleaned = IntegrateTestRunningEnvironment.getInstance().isInitialized();
     
     private static final List<String[]> RESULT_ASSERT = new ArrayList<>();
     
@@ -59,35 +59,30 @@ public class StartTest {
     private final String id;
     
     @Parameters(name = "{0} ({2}) -> {1}")
-    public static Collection<String[]> getParameters() {
+    public static Collection<String[]> getParameters() throws IOException, JAXBException {
         String assertPath = IntegrateTestRunningEnvironment.getInstance().getAssertPath();
         assertPath = PathUtil.getPath(assertPath);
         List<String> paths = FileUtil.getAllFilePaths(new File(assertPath), "assert-", "xml");
+        for (String each : paths) {
+            AssertsDefinition assertsDefinition = AnalyzeConfig.analyze(each);
         
-        try {
-            for (String each : paths) {
-                AssertsDefinition assertsDefinition = AnalyzeConfig.analyze(each);
-                
-                if (StringUtils.isNotBlank(assertsDefinition.getBaseConfig())) {
-                    String[] dbs = StringUtils.split(assertsDefinition.getBaseConfig(), ",");
-                    for (String db : dbs) {
-                        InItCreateSchema.addDatabase(db);
-                    }
-                } else {
-                    for (String db : AssertEngine.DEFAULT_DATABASES) {
-                        InItCreateSchema.addDatabase(db);
-                    }
+            if (StringUtils.isNotBlank(assertsDefinition.getBaseConfig())) {
+                String[] dbs = StringUtils.split(assertsDefinition.getBaseConfig(), ",");
+                for (String db : dbs) {
+                    InItCreateSchema.addDatabase(db);
                 }
-                List<AssertDQLDefinition> assertDQLs = assertsDefinition.getAssertDQL();
-                collateData(RESULT_ASSERT, each, assertDQLs);
-                List<AssertDMLDefinition> assertDMLs = assertsDefinition.getAssertDML();
-                collateData(RESULT_ASSERT, each, assertDMLs);
-                List<AssertDDLDefinition> assertDDLs = assertsDefinition.getAssertDDL();
-                collateData(RESULT_ASSERT, each, assertDDLs);
-                AssertEngine.addAssertDefinition(each, assertsDefinition);
+            } else {
+                for (String db : AssertEngine.DEFAULT_DATABASES) {
+                    InItCreateSchema.addDatabase(db);
+                }
             }
-        } catch (JAXBException | IOException e) {
-            e.printStackTrace();
+            List<AssertDQLDefinition> assertDQLs = assertsDefinition.getAssertDQL();
+            collateData(RESULT_ASSERT, each, assertDQLs);
+            List<AssertDMLDefinition> assertDMLs = assertsDefinition.getAssertDML();
+            collateData(RESULT_ASSERT, each, assertDMLs);
+            List<AssertDDLDefinition> assertDDLs = assertsDefinition.getAssertDDL();
+            collateData(RESULT_ASSERT, each, assertDDLs);
+            AssertEngine.addAssertDefinition(each, assertsDefinition);
         }
         return RESULT_ASSERT;
     }
@@ -126,9 +121,9 @@ public class StartTest {
     
     @AfterClass
     public static void afterClass() {
-        if (isClean) {
+        if (isCleaned) {
             InItCreateSchema.dropDatabase();
-            isClean = false;
+            isCleaned = false;
         }
     }
 }

@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.dbtest;
 
+import io.shardingjdbc.core.constant.DatabaseType;
 import lombok.Getter;
 
 import java.io.IOException;
@@ -38,7 +39,7 @@ public final class IntegrateTestRunningEnvironment {
     
     private final String assertPath;
     
-    private final Collection<String> databaseTypes;
+    private final Collection<DatabaseType> databaseTypes;
     
     private IntegrateTestRunningEnvironment() {
         Properties prop = new Properties();
@@ -50,8 +51,8 @@ public final class IntegrateTestRunningEnvironment {
         initialized = Boolean.valueOf(prop.getProperty("initialized", Boolean.FALSE.toString()));
         assertPath = prop.getProperty("assert.path");
         databaseTypes = new LinkedList<>();
-        for (String each : prop.getProperty("databases", "h2").split(",")) {
-            databaseTypes.add(each.trim());
+        for (String each : prop.getProperty("databases", DatabaseType.H2.name()).split(",")) {
+            databaseTypes.add(DatabaseType.valueOf(each.trim()));
         }
     }
     

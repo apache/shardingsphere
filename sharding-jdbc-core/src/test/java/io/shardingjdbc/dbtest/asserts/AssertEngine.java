@@ -21,6 +21,7 @@ import io.shardingjdbc.core.api.MasterSlaveDataSourceFactory;
 import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingjdbc.dbtest.IntegrateTestRunningEnvironment;
 import io.shardingjdbc.dbtest.common.DatabaseUtil;
 import io.shardingjdbc.dbtest.common.PathUtil;
 import io.shardingjdbc.dbtest.config.AnalyzeDataset;
@@ -126,7 +127,7 @@ public class AssertEngine {
     private static void onlyDatabaseRun(final String dbName, final String path, final String id, final AssertsDefinition assertsDefinition, final String rootPath, final String msg, final String initDataPath, final List<String> dbs) throws IOException, SQLException, SAXException, ParserConfigurationException, XPathExpressionException, ParseException {
         DataSource dataSource = null;
         try {
-            for (DatabaseType each : InItCreateSchema.getDatabaseSchemas()) {
+            for (DatabaseType each : IntegrateTestRunningEnvironment.getInstance().getDatabaseTypes()) {
                 Map<String, DataSource> dataSourceMaps = new HashMap<>();
                 
                 for (String db : dbs) {
@@ -141,15 +142,8 @@ public class AssertEngine {
                     String configPath = PathUtil.getPath(assertsDefinition.getShardingRuleConfig(), rootPath) + "-" + dbName + ".yaml";
                     dataSource = getDataSource(dataSourceMaps, configPath);
                 }
-                
-                
-                // dql run
                 dqlRun(each, initDataPath, dbName, path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
-                
-                // dml run
                 dmlRun(each, initDataPath, dbName, path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
-                
-                // ddl run
                 ddlRun(each, id, dbName, assertsDefinition, rootPath, msg, dataSource);
             }
         } finally {
@@ -168,7 +162,6 @@ public class AssertEngine {
                 if (!databaseTypes.contains(databaseType)) {
                     break;
                 }
-                
                 AssertDDLDefinition anAssert = each;
                 String baseConfig = anAssert.getBaseConfig();
                 if (StringUtils.isNotBlank(baseConfig)) {

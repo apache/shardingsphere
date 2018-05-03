@@ -43,12 +43,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class InItCreateSchema {
-    
-    private static Set<DatabaseType> DATABASE_SCHEMAS = new HashSet<>();
+public final class InItCreateSchema {
     
     @Getter
-    public static final Set<String> DATABASES = new HashSet<>();
+    private static final Set<String> DATABASES = new HashSet<>();
     
     /**
      * add database.
@@ -59,25 +57,12 @@ public class InItCreateSchema {
         DATABASES.add(database);
     }
     
-    static {
-        Set<DatabaseType> databaseSchemas = InItCreateSchema.getDatabaseSchema();
-        InItCreateSchema.setDatabaseSchemas(databaseSchemas);
-    }
-    
-    public static Set<DatabaseType> getDatabaseSchemas() {
-        return DATABASE_SCHEMAS;
-    }
-    
-    public static void setDatabaseSchemas(final Set<DatabaseType> databaseSchemas) {
-        DATABASE_SCHEMAS = databaseSchemas;
-    }
-    
     /**
      * Initialize the database table.
      */
     public static synchronized void createTable() {
-        for (DatabaseType db : DATABASE_SCHEMAS) {
-            createSchema(db);
+        for (DatabaseType each : IntegrateTestRunningEnvironment.getInstance().getDatabaseTypes()) {
+            createSchema(each);
         }
     }
     
@@ -91,7 +76,7 @@ public class InItCreateSchema {
             for (String database : DATABASES) {
                 String sql = getCreateTableSql(DatabaseType.H2, AnalyzeDatabase.analyze(InItCreateSchema.class.getClassLoader()
                         .getResource("integrate/dbtest").getPath() + "/" + database + "/database.xml"));
-                for (DatabaseType each : DATABASE_SCHEMAS) {
+                for (DatabaseType each : IntegrateTestRunningEnvironment.getInstance().getDatabaseTypes()) {
                     if (each.equals(DatabaseType.H2)) {
                         continue;
                     }
@@ -143,7 +128,7 @@ public class InItCreateSchema {
             for (String database : DATABASES) {
                 String sql = getDropTableSql(DatabaseType.H2, AnalyzeDatabase.analyze(InItCreateSchema.class.getClassLoader()
                         .getResource("integrate/dbtest").getPath() + "/" + database + "/database.xml"));
-                for (DatabaseType each : DATABASE_SCHEMAS) {
+                for (DatabaseType each : IntegrateTestRunningEnvironment.getInstance().getDatabaseTypes()) {
                     if (each.equals(DatabaseType.H2)) {
                         continue;
                     }
@@ -365,15 +350,6 @@ public class InItCreateSchema {
         return buildDataSource(dbName, type).getConnection();
     }
     
-    public static Set<DatabaseType> getDatabaseSchema() {
-        Set<DatabaseType> dbset = new HashSet<>();
-        for (String each : IntegrateTestRunningEnvironment.getInstance().getDatabaseTypes()) {
-            DatabaseType databaseType = getDatabaseType(each);
-            dbset.add(databaseType);
-        }
-        return dbset;
-    }
-    
     private static String getCreateTableSql(final DatabaseType databaseType, final List<String> databases) {
         String basesql = "CREATE DATABASE ";
         if (DatabaseType.Oracle == databaseType) {
@@ -396,22 +372,6 @@ public class InItCreateSchema {
             sqls.add(basesql + database + ";");
         }
         return StringUtils.join(sqls, "\n");
-    }
-    
-    /**
-     * Get the database type enumeration.
-     *
-     * @param type String database type
-     * @return database enumeration
-     */
-    public static DatabaseType getDatabaseType(final String type) {
-        DatabaseType[] databaseTypes = DatabaseType.values();
-        for (DatabaseType each : databaseTypes) {
-            if (type.equalsIgnoreCase(each.name())) {
-                return each;
-            }
-        }
-        return DatabaseType.H2;
     }
     
     /**
