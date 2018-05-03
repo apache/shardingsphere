@@ -17,9 +17,26 @@
 
 package io.shardingjdbc.dbtest.common;
 
-import static org.junit.Assert.assertTrue;
+import io.shardingjdbc.dbtest.config.bean.ColumnDefinition;
+import io.shardingjdbc.dbtest.config.bean.DatasetDatabase;
+import io.shardingjdbc.dbtest.config.bean.DatasetDefinition;
+import io.shardingjdbc.dbtest.config.bean.ParameterDefinition;
+import io.shardingjdbc.dbtest.config.bean.ParameterValueDefinition;
+import io.shardingjdbc.dbtest.exception.DbTestException;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.commons.lang3.time.FastDateFormat;
+import org.junit.Assert;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,13 +45,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import io.shardingjdbc.dbtest.config.bean.*;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateFormatUtils;
-import org.apache.commons.lang3.time.FastDateFormat;
-
-import io.shardingjdbc.dbtest.exception.DbTestException;
-import org.junit.Assert;
+import static org.junit.Assert.assertTrue;
 
 public class DatabaseUtil {
     
@@ -150,28 +161,6 @@ public class DatabaseUtil {
         try (Statement pstmt = conn.createStatement();) {
             pstmt.execute("DELETE from " + table);
         }
-    }
-    
-    /**
-     * To determine if it is a query statement.
-     *
-     * @param sql sql
-     * @return true select
-     */
-    public static boolean isSelect(final String sql) {
-        String newSql = sql.trim();
-        return newSql.startsWith("select");
-    }
-    
-    /**
-     * To determine whether the statement is an update.
-     *
-     * @param sql sql
-     * @return true update
-     */
-    public static boolean isInsertOrUpdateOrDelete(final String sql) {
-        String newSql = sql.trim();
-        return newSql.startsWith("insert") || newSql.startsWith("update") || newSql.startsWith("delete");
     }
     
     /**
@@ -605,7 +594,7 @@ public class DatabaseUtil {
      * @return java type
      */
     private static String getDataType(final int type, final int scale) {
-        String result = null;
+        String result;
         switch (type) {
             case Types.INTEGER:
                 result = "int";

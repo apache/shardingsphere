@@ -78,16 +78,12 @@ public class StartTest {
                         InItCreateSchema.addDatabase(db);
                     }
                 }
-                
                 List<AssertDQLDefinition> assertDQLs = assertsDefinition.getAssertDQL();
                 collateData(RESULT_ASSERT, each, assertDQLs);
-                
                 List<AssertDMLDefinition> assertDMLs = assertsDefinition.getAssertDML();
                 collateData(RESULT_ASSERT, each, assertDMLs);
-                
                 List<AssertDDLDefinition> assertDDLs = assertsDefinition.getAssertDDL();
                 collateData(RESULT_ASSERT, each, assertDDLs);
-                
                 AssertEngine.addAssertDefinition(each, assertsDefinition);
             }
         } catch (JAXBException | IOException e) {

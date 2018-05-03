@@ -124,29 +124,4 @@ public final class DatabaseEnvironment {
     public String getPassword() {
         return PASSWORD.get(databaseType);
     }
-    
-    /**
-     * Get table.
-     *
-     * @param dbName database name
-     * @return table
-     */
-    public String getSchema(final String dbName) {
-        return null == SCHEMA.get(databaseType) ? null : String.format(SCHEMA.get(databaseType), dbName);
-    }
-    
-    /**
-     * Get the database type enumeration.
-     *
-     * @param type String database type
-     * @return database enumeration
-     */
-    public DatabaseType getDatabaseTypeByJdbcDriver(final String type) {
-        for (Map.Entry<DatabaseType, String> each : DRIVER_CLASS_NAME.entrySet()) {
-            if (type.equals(each.getValue())) {
-                return each.getKey();
-            }
-        }
-        return DatabaseType.H2;
-    }
 }

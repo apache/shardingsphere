@@ -18,11 +18,8 @@
 package io.shardingjdbc.dbtest.init;
 
 import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.core.yaml.sharding.YamlShardingConfiguration;
 import io.shardingjdbc.dbtest.IntegrateTestRunningEnvironment;
 import io.shardingjdbc.dbtest.common.DatabaseEnvironment;
-import io.shardingjdbc.dbtest.common.FileUtil;
-import io.shardingjdbc.dbtest.common.PathUtil;
 import io.shardingjdbc.dbtest.config.AnalyzeDatabase;
 import io.shardingjdbc.dbtest.config.AnalyzeSql;
 import io.shardingjdbc.test.sql.SQLCasesLoader;
@@ -31,15 +28,10 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.h2.tools.RunScript;
 import org.xml.sax.SAXException;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -68,16 +60,8 @@ public class InItCreateSchema {
     }
     
     static {
-        String assertPath = IntegrateTestRunningEnvironment.getInstance().getAssertPath();
-        assertPath = PathUtil.getPath(assertPath);
-        List<String> paths = FileUtil.getAllFilePaths(new File(assertPath), "t", "yaml");
-        try {
-            Set<DatabaseType> databaseSchemas = InItCreateSchema.getDatabaseSchema();
-            InItCreateSchema.setDatabaseSchemas(databaseSchemas);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        
+        Set<DatabaseType> databaseSchemas = InItCreateSchema.getDatabaseSchema();
+        InItCreateSchema.setDatabaseSchemas(databaseSchemas);
     }
     
     public static Set<DatabaseType> getDatabaseSchemas() {
@@ -94,33 +78,6 @@ public class InItCreateSchema {
     public static synchronized void createTable() {
         for (DatabaseType db : DATABASE_SCHEMAS) {
             createSchema(db);
-        }
-    }
-    
-    /**
-     * Initialize the database table.
-     */
-    public static synchronized void createTable(final String sqlId) {
-        for (DatabaseType db : DATABASE_SCHEMAS) {
-            createSchema(db, sqlId);
-        }
-    }
-    
-    /**
-     * Initialize the database table.
-     */
-    public static synchronized void dropTable() {
-        for (DatabaseType db : DATABASE_SCHEMAS) {
-            dropSchema(db);
-        }
-    }
-    
-    /**
-     * Initialize the database table.
-     */
-    public static synchronized void dropTable(final String sqlId) {
-        for (DatabaseType db : DATABASE_SCHEMAS) {
-            dropSchema(db, sqlId);
         }
     }
     
@@ -233,18 +190,6 @@ public class InItCreateSchema {
         createShardingSchema(dbType);
     }
     
-    private static void createSchema(final DatabaseType dbType, final String sqlId) {
-        createShardingSchema(dbType, sqlId, null);
-    }
-    
-    private static void dropSchema(final DatabaseType dbType) {
-        dropShardingSchema(dbType, null);
-    }
-    
-    private static void dropSchema(final DatabaseType dbType, final String sqlId) {
-        dropShardingSchema(dbType, sqlId);
-    }
-    
     private static void createShardingSchema(final DatabaseType dbType) {
         Connection conn = null;
         ResultSet resultSet = null;
@@ -305,7 +250,6 @@ public class InItCreateSchema {
         createShardingSchema(dbType, sqlId, dbname);
     }
     
-    
     private static void createShardingSchema(final DatabaseType dbType, final String sqlId, final String dbname) {
         Connection conn = null;
         ResultSet resultSet = null;
@@ -333,57 +277,6 @@ public class InItCreateSchema {
             
         } catch (SQLException | ParserConfigurationException | IOException | XPathExpressionException | SAXException e) {
             e.printStackTrace();
-        } finally {
-            if (sr != null) {
-                sr.close();
-            }
-            if (resultSet != null) {
-                try {
-                    resultSet.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-    
-    private static void dropShardingSchema(final DatabaseType dbType, final String dbname) {
-        Connection conn = null;
-        ResultSet resultSet = null;
-        StringReader sr = null;
-        try {
-            for (String each : DATABASES) {
-                if (dbname != null) {
-                    if (each != dbname) {
-                        continue;
-                    }
-                }
-                List<String> databases = AnalyzeDatabase.analyze(InItCreateSchema.class.getClassLoader()
-                        .getResource("integrate/dbtest").getPath() + "/" + each + "/database.xml");
-                for (String database : databases) {
-                    conn = initialConnection(database, dbType);
-                    List<String> tableSqlIds = AnalyzeSql.analyze(InItCreateSchema.class.getClassLoader()
-                            .getResource("integrate/dbtest").getPath() + "/" + each + "/table/drop-table.xml");
-                    List<String> tableSqls = new ArrayList<>();
-                    for (String tableSqlId : tableSqlIds) {
-                        tableSqls.add(SQLCasesLoader.getInstance().getSchemaSQLCaseMap(tableSqlId));
-                    }
-                    sr = new StringReader(StringUtils.join(tableSqls, ";\n"));
-                    
-                    resultSet = RunScript.execute(conn, sr);
-                }
-            }
-            
-        } catch (SQLException | ParserConfigurationException | IOException | XPathExpressionException | SAXException e) {
-            // The table may not exist at the time of deletion（删除时可能表不存在）
-            //e.printStackTrace();
         } finally {
             if (sr != null) {
                 sr.close();
@@ -462,8 +355,6 @@ public class InItCreateSchema {
         result.setUrl(dbEnv.getURL(dbName));
         result.setUsername(dbEnv.getUsername());
         result.setPassword(dbEnv.getPassword());
-        
-        //result.setMaxActive(1);
         if (DatabaseType.Oracle == type) {
             result.setConnectionInitSqls(Collections.singleton("ALTER SESSION SET CURRENT_SCHEMA = " + dbName));
         }
@@ -474,25 +365,13 @@ public class InItCreateSchema {
         return buildDataSource(dbName, type).getConnection();
     }
     
-    /**
-     * @return
-     */
-    public static Set<DatabaseType> getDatabaseSchema() throws IOException {
+    public static Set<DatabaseType> getDatabaseSchema() {
         Set<DatabaseType> dbset = new HashSet<>();
         for (String each : IntegrateTestRunningEnvironment.getInstance().getDatabaseTypes()) {
             DatabaseType databaseType = getDatabaseType(each);
             dbset.add(databaseType);
         }
         return dbset;
-    }
-    
-    private static YamlShardingConfiguration unmarshal(final File yamlFile) throws IOException {
-        try (
-                FileInputStream fileInputStream = new FileInputStream(yamlFile);
-                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")
-        ) {
-            return new Yaml(new Constructor(YamlShardingConfiguration.class)).loadAs(inputStreamReader, YamlShardingConfiguration.class);
-        }
     }
     
     private static String getCreateTableSql(final DatabaseType databaseType, final List<String> databases) {
@@ -526,7 +405,6 @@ public class InItCreateSchema {
      * @return database enumeration
      */
     public static DatabaseType getDatabaseType(final String type) {
-        
         DatabaseType[] databaseTypes = DatabaseType.values();
         for (DatabaseType each : databaseTypes) {
             if (type.equalsIgnoreCase(each.name())) {
