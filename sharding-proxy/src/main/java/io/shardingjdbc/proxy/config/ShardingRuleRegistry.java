@@ -59,7 +59,7 @@ public final class ShardingRuleRegistry {
             throw new ShardingJdbcException(ex);
         }
         dataSourceMap = new HashMap<>(128, 1);
-        Map<String, DataSourceParameter> dataSourceParameters = yamlShardingConfigurationForProxy.getDataSourceParameters();
+        Map<String, DataSourceParameter> dataSourceParameters = yamlShardingConfigurationForProxy.getDataSources();
         for (String each : dataSourceParameters.keySet()) {
             dataSourceMap.put(each, getDataSource(dataSourceParameters.get(each)));
         }

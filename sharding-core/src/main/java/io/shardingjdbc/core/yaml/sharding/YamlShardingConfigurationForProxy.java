@@ -42,7 +42,7 @@ import java.util.Map;
 @Setter
 public class YamlShardingConfigurationForProxy {
     
-    private Map<String, DataSourceParameter> dataSourceParameters = new HashMap<>();
+    private Map<String, DataSourceParameter> dataSources = new HashMap<>();
     
     private YamlShardingRuleConfiguration shardingRule;
     
@@ -82,6 +82,6 @@ public class YamlShardingConfigurationForProxy {
      * @return sharding rule from yaml
      */
     public ShardingRule getShardingRule(final Collection<String> dataSourceNames) {
-        return new ShardingRule(shardingRule.getShardingRuleConfiguration(), dataSourceNames.isEmpty() ? dataSourceParameters.keySet() : dataSourceNames);
+        return new ShardingRule(shardingRule.getShardingRuleConfiguration(), dataSourceNames.isEmpty() ? dataSources.keySet() : dataSourceNames);
     }
 }
