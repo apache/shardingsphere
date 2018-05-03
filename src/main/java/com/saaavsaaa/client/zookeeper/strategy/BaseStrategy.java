@@ -1,9 +1,13 @@
 package com.saaavsaaa.client.zookeeper.strategy;
 
-import com.saaavsaaa.client.utility.PathUtil;
+import com.saaavsaaa.client.action.IStrategy;
 import com.saaavsaaa.client.utility.constant.Constants;
-import org.apache.zookeeper.*;
-import org.apache.zookeeper.data.ACL;
+import com.saaavsaaa.client.zookeeper.Provider;
+import com.saaavsaaa.client.zookeeper.transaction.ZKTransaction;
+import org.apache.zookeeper.AsyncCallback;
+import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.Watcher;
 
 import java.util.List;
 
@@ -11,16 +15,9 @@ import java.util.List;
  * Created by aaa on 18-5-2.
  */
 public class BaseStrategy implements IStrategy {
-    protected final ZooKeeper zooKeeper;
-    protected final boolean watched;
-    protected final List<ACL> authorities;
-    protected final String rootNode;
-    
-    public BaseStrategy(final String rootNode, final ZooKeeper zooKeeper, final boolean watched, final List<ACL> authorities){
-        this.rootNode = rootNode;
-        this.zooKeeper = zooKeeper;
-        this.watched = watched;
-        this.authorities = authorities;
+    protected final Provider provider;
+    public BaseStrategy(final Provider provider){
+        this.provider = provider;
     }
     
     @Override
@@ -30,61 +27,58 @@ public class BaseStrategy implements IStrategy {
     
     @Override
     public byte[] getData(final String key) throws KeeperException, InterruptedException {
-        return zooKeeper.getData(key, watched, null);
+        return provider.getData(key);
     }
     
     @Override
     public void getData(final String key, final AsyncCallback.DataCallback callback, final Object ctx) throws KeeperException, InterruptedException {
-        zooKeeper.getData(key, watched, callback, ctx);
+        provider.getData(key, callback, ctx);
     }
     
     @Override
     public boolean checkExists(final String key) throws KeeperException, InterruptedException {
-        return null != zooKeeper.exists(key, watched);
+        return provider.checkExists(key);
     }
     
     @Override
     public boolean checkExists(final String key, final Watcher watcher) throws KeeperException, InterruptedException {
-        return null != zooKeeper.exists(key, watcher);
+        return provider.checkExists(key, watcher);
     }
     
     @Override
     public List<String> getChildren(final String key) throws KeeperException, InterruptedException {
-        return zooKeeper.getChildren(key, watched);
+        return provider.getChildren(key);
     }
     
     @Override
     public void createCurrentOnly(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
-        if (rootNode.equals(key)){
-            return;
-        }
-        try {
-            zooKeeper.create(key, value.getBytes(Constants.UTF_8), authorities, createMode);
-        } catch (KeeperException.NoNodeException e) {
-            // I don't know whether it will happen or not, if root watcher don't update rootExist timely
-            if (e.getMessage().contains(key)) {
-                System.out.println("rootExist : " + e.getMessage());
-                Thread.sleep(50);
-                this.createCurrentOnly(key, value, createMode);
-            }
-        }
+        provider.createCurrentOnly(key, value, createMode);
+    }
+    
+    @Override
+    public void update(final String key, final String value) throws KeeperException, InterruptedException {
+        provider.update(key, value);
+    }
+    
+    @Override
+    public void deleteOnlyCurrent(final String key) throws KeeperException, InterruptedException {
+        provider.deleteOnlyCurrent(key);
+    }
+    
+    @Override
+    public void deleteOnlyCurrent(final String key, final AsyncCallback.VoidCallback callback, final Object ctx) throws KeeperException, InterruptedException {
+        provider.deleteOnlyCurrent(key, callback, ctx);
     }
     
     @Override
     public void createAllNeedPath(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
-        if (key.indexOf(Constants.PATH_SEPARATOR) < -1){
-            this.createCurrentOnly(key, value, createMode);
-            return;
-        }
-        
-        List<String> nodes = PathUtil.getPathOrderNodes(rootNode, key);
-        nodes.remove(rootNode);
+        List<String> nodes = provider.getNecessaryPaths(key);
         for (int i = 0; i < nodes.size(); i++) {
             try {
+//                this.deleteAllChildren(nodes.get(i));
                 if (i == nodes.size() - 1){
                     this.createCurrentOnly(nodes.get(i), value, createMode);
                 } else {
-//                    this.deleteAllChildren(nodes.get(i));
                     this.createCurrentOnly(nodes.get(i), Constants.NOTHING_VALUE, createMode);
                 }
                 System.out.println("not exist and create:" + nodes.get(i));
@@ -96,32 +90,17 @@ public class BaseStrategy implements IStrategy {
     }
     
     @Override
-    public void update(final String key, final String value) throws KeeperException, InterruptedException {
-        zooKeeper.setData(key, value.getBytes(Constants.UTF_8), Constants.VERSION);
-    }
-    
-    @Override
-    public void updateWithCheck(final String key, final String value) throws KeeperException, InterruptedException {
-        zooKeeper.transaction().check(key, Constants.VERSION).setData(key, value.getBytes(Constants.UTF_8), Constants.VERSION).commit();
-    }
-    
-    @Override
-    public void deleteOnlyCurrent(final String key) throws KeeperException, InterruptedException {
-        zooKeeper.delete(key, Constants.VERSION);
-        System.out.println("delete : " + key);
-    }
-    
-    @Override
-    public void deleteOnlyCurrent(final String key, final AsyncCallback.VoidCallback callback, final Object ctx) throws KeeperException, InterruptedException {
-        zooKeeper.delete(key, Constants.VERSION, callback, ctx);
-    }
-    
-    @Override
     public void deleteAllChildren(final String key) throws KeeperException, InterruptedException {
         try {
             this.deleteOnlyCurrent(key);
         }catch (KeeperException.NotEmptyException ee){
-            List<String> children = this.getChildren(key);
+            List<String> children;
+            try{
+                children = this.getChildren(key);
+            } catch (KeeperException.NoNodeException e) {
+                // someone else has deleted the node since we checked
+                return;
+            }
             for (String child : children) {
                 child = key + Constants.PATH_SEPARATOR + child;
                 this.deleteAllChildren(child);
@@ -161,5 +140,10 @@ public class BaseStrategy implements IStrategy {
             children.forEach((c) -> System.out.println(path + " exist other children " + c));
             return;
         }
+    }
+    
+    @Override
+    public ZKTransaction transaction() {
+        return provider.transaction();
     }
 }

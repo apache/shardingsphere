@@ -142,18 +142,18 @@ public abstract class BaseClientTest {
         if (!isExisted(key, client)) {
             client.createAllNeedPath(key, value, CreateMode.PERSISTENT);
         } else {
-            update(key, value, client);
+            updateWithCheck(key, value, client);
         }
         
         assert getDirectly(key, client).equals(value);
-        
-        update(key, newValue, client);
+    
+        updateWithCheck(key, newValue, client);
         assert getDirectly(key, client).equals(newValue);
         client.deleteCurrentBranch(key);
     }
     
-    private void update(String key, String value, Client client) throws KeeperException, InterruptedException {
-        client.updateWithCheck(key, value);
+    private void updateWithCheck(String key, String value, Client client) throws KeeperException, InterruptedException {
+        client.transaction().check(key, Constants.VERSION).setData(key, value.getBytes(Constants.UTF_8), Constants.VERSION).commit();
     }
     
     protected void persistEphemeral(Client client) throws KeeperException, InterruptedException {
@@ -200,12 +200,12 @@ public abstract class BaseClientTest {
         Watcher watcher = client.registerWatch(key, listener);
         client.createCurrentOnly(key, "aaa", CreateMode.EPHEMERAL);
         client.checkExists(key, watcher);
-        client.updateWithCheck(key, "value");
+        client.update(key, "value");
         System.out.println(new String(client.getData(key)));
         assert client.getDataString(key).equals("value");
-        client.updateWithCheck(key, "value1");
+        client.update(key, "value1");
         assert client.getDataString(key).equals("value1");
-        client.updateWithCheck(key, "value2");
+        client.update(key, "value2");
         assert client.getDataString(key).equals("value2");
         client.deleteCurrentBranch(key);
         Thread.sleep(100);

@@ -36,7 +36,7 @@ public abstract class LeaderElection {
             @Override
             public void process(WatchedEvent event) {
                 try {
-                    actionWhenUnreached();
+                    executeContention(path, client);
                 } catch (Exception ee){
                     System.out.println("Listener Exception " + path);
                     ee.printStackTrace();
@@ -55,6 +55,6 @@ public abstract class LeaderElection {
         }
     }
     
-    public abstract void actionWhenUnreached() throws KeeperException, InterruptedException;
+//    public abstract void actionWhenUnreached() throws KeeperException, InterruptedException;
     public abstract void action() throws KeeperException, InterruptedException;
 }

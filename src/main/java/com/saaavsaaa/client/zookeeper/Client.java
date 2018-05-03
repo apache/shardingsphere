@@ -1,5 +1,6 @@
 package com.saaavsaaa.client.zookeeper;
 
+import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.StringUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
@@ -18,13 +19,15 @@ import java.util.concurrent.CountDownLatch;
 /**
  * Created by aaa
  */
-public abstract class Client implements IClient{
+public abstract class Client implements IClient {
     private static final CountDownLatch CONNECTED = new CountDownLatch(1);
     protected static final Map<String, Watcher> watchers = new ConcurrentHashMap<>();
     
     protected final boolean watched = true; //false
     private final String servers;
     private final int sessionTimeOut;
+    private String scheme;
+    private byte[] auth;
     
     protected ZooKeeper zooKeeper;
     protected List<ACL> authorities;
@@ -40,6 +43,7 @@ public abstract class Client implements IClient{
     
     public synchronized void start() throws IOException, InterruptedException {
         zooKeeper = new ZooKeeper(servers, sessionTimeOut, startWatcher());
+        zooKeeper.addAuthInfo(scheme , auth);
         CONNECTED.await();
     }
     
@@ -113,7 +117,12 @@ public abstract class Client implements IClient{
         if (rootExist){
             return;
         }
-        zooKeeper.create(rootNode, date, authorities, CreateMode.PERSISTENT);
+        try {
+            zooKeeper.create(rootNode, date, authorities, CreateMode.PERSISTENT);
+        } catch (KeeperException.NodeExistsException ee){
+            System.out.println("root create : " + ee.getMessage());
+            return;
+        }
         rootExist = true;
         zooKeeper.exists(rootNode, WatcherCreator.deleteWatcher(rootNode, new Listener() {
             @Override
@@ -128,12 +137,13 @@ public abstract class Client implements IClient{
         zooKeeper.delete(rootNode, Constants.VERSION);
     }
     
-    void setRootNode(String rootNode) {
+    void setRootNode(final String rootNode) {
         this.rootNode = rootNode;
     }
     
-    void setAuthorities(String scheme, byte[] auth) {
-        zooKeeper.addAuthInfo(scheme , auth);
+    void setAuthorities(final String scheme, final byte[] auth) {
+        this.scheme = scheme;
+        this.auth = auth;
         this.authorities = ZooDefs.Ids.CREATOR_ALL_ACL;
     }
     

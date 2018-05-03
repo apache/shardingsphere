@@ -28,16 +28,11 @@ public class ClientFactory {
         client = new CacheClient(servers, sessionTimeoutMilliseconds);
         return this;
     }
-    
-    ClientFactory newCacheClient() {
-        client = new CacheClient(servers, sessionTimeoutMilliseconds);
-        return this;
-    }
 
     public ClientFactory newUsualClient(final String servers, final int sessionTimeoutMilliseconds) {
         this.servers = servers;
         this.sessionTimeoutMilliseconds = sessionTimeoutMilliseconds;
-        client = new UsualClient(servers, sessionTimeoutMilliseconds);
+        client = new BlendClient(servers, sessionTimeoutMilliseconds);
         return this;
     }
     
@@ -54,8 +49,8 @@ public class ClientFactory {
     public synchronized Client start() throws IOException, InterruptedException {
         client.setClientFactory(this);
         client.setRootNode(namespace);
-        client.start();
         client.setAuthorities(scheme , auth);
+        client.start();
         if (globalListener != null) {
             client.registerWatch(globalListener);
         }

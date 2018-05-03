@@ -5,6 +5,7 @@ package com.saaavsaaa.client.zookeeper;
 
 import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.utility.PathUtil;
+import com.saaavsaaa.client.zookeeper.transaction.ZKTransaction;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -101,11 +102,12 @@ public class UsualClient extends Client {
         zooKeeper.setData(PathUtil.getRealPath(rootNode, key), value.getBytes(Constants.UTF_8), Constants.VERSION);
     }
     
-    @Override
+    /*@Override
     public void updateWithCheck(final String key, final String value) throws KeeperException, InterruptedException {
         String realPath = PathUtil.getRealPath(rootNode, key);
         zooKeeper.transaction().check(realPath, Constants.VERSION).setData(realPath, value.getBytes(Constants.UTF_8), Constants.VERSION).commit();
-    }
+//        transaction().check(realPath, Constants.VERSION).setData(realPath, value.getBytes(Constants.UTF_8), Constants.VERSION).commit();
+    }*/
     
     @Override
     public void deleteOnlyCurrent(final String key) throws KeeperException, InterruptedException {
@@ -116,6 +118,11 @@ public class UsualClient extends Client {
     @Override
     public void deleteOnlyCurrent(final String key, final AsyncCallback.VoidCallback callback, final Object ctx) throws KeeperException, InterruptedException {
         zooKeeper.delete(PathUtil.getRealPath(rootNode, key), Constants.VERSION, callback, ctx);
+    }
+    
+    @Override
+    public ZKTransaction transaction() {
+        return new ZKTransaction(rootNode, this.getZooKeeper());
     }
     
     @Override

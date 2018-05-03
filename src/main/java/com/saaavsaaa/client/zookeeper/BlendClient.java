@@ -1,9 +1,12 @@
 package com.saaavsaaa.client.zookeeper;
 
 import com.saaavsaaa.client.utility.PathUtil;
+import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.zookeeper.strategy.BaseStrategy;
-import com.saaavsaaa.client.zookeeper.strategy.IStrategy;
+import com.saaavsaaa.client.zookeeper.strategy.ContentionStrategy;
+import com.saaavsaaa.client.action.IStrategy;
 import com.saaavsaaa.client.zookeeper.strategy.StrategyType;
+import com.saaavsaaa.client.zookeeper.transaction.ZKTransaction;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -11,23 +14,37 @@ import org.apache.zookeeper.Watcher;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by aaa on 18-5-2.
  */
 public class BlendClient extends Client {
+    private final Map<StrategyType, IStrategy> strategies = new ConcurrentHashMap<>();
     private IStrategy strategy;
     
     BlendClient(final String servers, final int sessionTimeoutMilliseconds) {
         super(servers, sessionTimeoutMilliseconds);
     }
 
+    @Override
+    public synchronized void start() throws IOException, InterruptedException {
+        super.start();
+        UseStrategy(StrategyType.BASE);
+    }
+    
     public synchronized void UseStrategy(StrategyType strategyType) {
-        if (StrategyType.BASE == strategyType){
-            strategy = new BaseStrategy(rootNode, zooKeeper, watched, authorities);
-        } else {
-            
+        if (strategies.containsKey(strategyType)){
+            strategy = strategies.get(strategyType);
+            return;
         }
+        if (StrategyType.BASE == strategyType){
+            strategy = new BaseStrategy(new Provider(rootNode, this, watched, authorities));
+        } else {
+            strategy = new ContentionStrategy(new Provider(rootNode, this, watched, authorities));
+        }
+        strategies.put(strategyType, strategy);
     }
     
     @Override
@@ -62,7 +79,6 @@ public class BlendClient extends Client {
     
     @Override
     public void createCurrentOnly(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
-        createNamespace();
         strategy.createCurrentOnly(PathUtil.getRealPath(rootNode, key), value, createMode);
     }
     
@@ -74,11 +90,6 @@ public class BlendClient extends Client {
     @Override
     public void update(final String key, final String value) throws KeeperException, InterruptedException {
         strategy.update(PathUtil.getRealPath(rootNode, key), value);
-    }
-    
-    @Override
-    public void updateWithCheck(final String key, final String value) throws KeeperException, InterruptedException {
-        strategy.updateWithCheck(PathUtil.getRealPath(rootNode, key), value);
     }
     
     @Override
@@ -99,5 +110,10 @@ public class BlendClient extends Client {
     @Override
     public void deleteCurrentBranch(final String key) throws KeeperException, InterruptedException {
         strategy.deleteCurrentBranch(PathUtil.getRealPath(rootNode, key));
+    }
+    
+    @Override
+    public ZKTransaction transaction() {
+        return strategy.transaction();
     }
 }

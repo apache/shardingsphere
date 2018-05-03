@@ -50,10 +50,10 @@ public final class CacheAllClient extends UsualClient {
     //用替换整树的方式更新
     private synchronized void loadCache(final Client client) throws KeeperException, InterruptedException {
         LeaderElection election = new LeaderElection() {
-            @Override
+            /*@Override
             public void actionWhenUnreached() throws KeeperException, InterruptedException {
                 loadCache(client);
-            }
+            }*/
     
             @Override
             public void action() throws KeeperException, InterruptedException {
@@ -69,10 +69,10 @@ public final class CacheAllClient extends UsualClient {
     @Override
     public void createAllNeedPath(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
         LeaderElection election = new LeaderElection() {
-            @Override
+            /*@Override
             public void actionWhenUnreached() throws KeeperException, InterruptedException {
                 createAllNeedPath(key, value, createMode);
-            }
+            }*/
         
             @Override
             public void action() throws KeeperException, InterruptedException {
@@ -108,10 +108,10 @@ public final class CacheAllClient extends UsualClient {
     @Override
     public void deleteAllChildren(final String key) throws KeeperException, InterruptedException {
         LeaderElection election = new LeaderElection() {
-            @Override
+            /*@Override
             public void actionWhenUnreached() throws KeeperException, InterruptedException {
                 deleteAllChildren(key);
-            }
+            }*/
         
             @Override
             public void action() throws KeeperException, InterruptedException {
@@ -144,10 +144,10 @@ public final class CacheAllClient extends UsualClient {
     @Override
     public void deleteCurrentBranch(final String key) throws KeeperException, InterruptedException {
         LeaderElection election = new LeaderElection() {
-            @Override
+            /*@Override
             public void actionWhenUnreached() throws KeeperException, InterruptedException {
                 deleteCurrentBranch(key);
-            }
+            }*/
         
             @Override
             public void action() throws KeeperException, InterruptedException {
@@ -215,11 +215,11 @@ public final class CacheAllClient extends UsualClient {
     public void createCurrentOnly(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
 //        super.createCurrentOnly(key, value, createMode);
         LeaderElection election = new LeaderElection() {
-            @Override
+/*            @Override
             public void actionWhenUnreached() throws KeeperException, InterruptedException {
                 createCurrentOnly(key, value, createMode);
             }
-        
+        */
             @Override
             public void action() throws KeeperException, InterruptedException {
                 usualClient.createCurrentOnly(key, value, createMode);
@@ -233,10 +233,10 @@ public final class CacheAllClient extends UsualClient {
     public void deleteOnlyCurrent(final String key) throws KeeperException, InterruptedException {
 //        super.deleteOnlyCurrent(key);
         LeaderElection election = new LeaderElection() {
-            @Override
+            /*@Override
             public void actionWhenUnreached() throws KeeperException, InterruptedException {
                 deleteOnlyCurrent(key);
-            }
+            }*/
         
             @Override
             public void action() throws KeeperException, InterruptedException {
@@ -251,10 +251,10 @@ public final class CacheAllClient extends UsualClient {
     public void deleteOnlyCurrent(final String key, final AsyncCallback.VoidCallback callback, final Object ctx) throws KeeperException, InterruptedException {
 //        super.deleteOnlyCurrent(key, callback, ctx);
         LeaderElection election = new LeaderElection() {
-            @Override
+            /*@Override
             public void actionWhenUnreached() throws KeeperException, InterruptedException {
                 deleteOnlyCurrent(key, callback, ctx);
-            }
+            }*/
         
             @Override
             public void action() throws KeeperException, InterruptedException {
