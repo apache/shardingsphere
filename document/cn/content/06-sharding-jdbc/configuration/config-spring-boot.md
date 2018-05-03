@@ -225,19 +225,19 @@ sharding.jdbc.config.sharding.tables.<logic_table_name>.actual-data-nodes= #由�
 
 #用于单分片键的标准分片场景
 sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.standard.sharding-column= #分片列名称
-sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.standard.precise-algorithm-class-name= #精确分片算法类名称，用于=和IN。该类需提供无参数构造器
-sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.standard.range-algorithm-class-name= #范围分片算法类名称，用于BETWEEN，可选。该类提供无参数构造器
+sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.standard.precise-algorithm-class-name= #精确分片算法类名称，用于=和IN。该类需实现PreciseShardingAlgorithm接口并提供无参数的构造器
+sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.standard.range-algorithm-class-name= #范围分片算法类名称，用于BETWEEN，可选。该类需实现RangeShardingAlgorithm接口并提供无参数的构造器
 
 #用于多分片键的复合分片场景
 sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.complex.sharding-columns= #分片列名称，多个列以逗号分隔
-sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.complex.algorithm-class-name= #复合分片算法类名称。该类需提供无参数构造器
+sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.complex.algorithm-class-name= #复合分片算法类名称。该类需实现ComplexKeysShardingAlgorithm接口并提供无参数的构造器
 
 #行表达式分片策略
 sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.inline.sharding-column= #分片列名称
 sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.inline.algorithm-inline-expression= #分片算法行表达式，需符合groovy语法
 
 #Hint分片策略
-sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.hint.algorithm-class-name= #Hint分片算法类名称。该类需提供无参数的构造器
+sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.hint.algorithm-class-name= #Hint分片算法类名称。该类需实现HintShardingAlgorithm接口并提供无参数的构造器
 
 #分表策略，同分库策略
 sharding.jdbc.config.sharding.tables.<logic_table_name>.table-strategy.xxx= #省略

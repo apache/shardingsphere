@@ -127,16 +127,16 @@ shardingRule:
       databaseStrategy: #Databases sharding strategy, use default databases sharding strategy if absent. sharding strategy below can choose only one.
         standard: #Standard sharding scenario for single sharding column
           shardingColumn: #Name of sharding column
-            preciseAlgorithmClassName: #Precise algorithm class name used for `=` and `IN`. No argument constructor required
-            rangeAlgorithmClassName: #Range algorithm class name used for `BETWEEN`. No argument constructor required
+            preciseAlgorithmClassName: #Precise algorithm class name used for `=` and `IN`. This class need to implements PreciseShardingAlgorithm, and require a no argument constructor
+            rangeAlgorithmClassName: #Range algorithm class name used for `BETWEEN`. This class need to implements RangeShardingAlgorithm, and require a no argument constructor
           complex: #Complex sharding scenario for multiple sharding columns
             shardingColumns: #Names of sharding columns. Multiple columns separated with comma
-            algorithmClassName: #Complex sharding algorithm class name. No argument constructor required
+            algorithmClassName: #Complex sharding algorithm class name. This class need to implements ComplexKeysShardingAlgorithm, and require a no argument constructor
           inline: #Inline expression sharding scenario for single sharding column
             shardingColumn: #Name of sharding column
             algorithmInlineExpression: #Inline expression for sharding algorithm
           hint: #Hint sharding strategy
-            algorithmClassName: #Hint sharding algorithm class name. No argument constructor required
+            algorithmClassName: #Hint sharding algorithm class name. This class need to implements HintShardingAlgorithm, and require a no argument constructor
            none: #Do not sharding
       tableStrategy: #Tables sharding strategy, Same as databases sharding strategy
         

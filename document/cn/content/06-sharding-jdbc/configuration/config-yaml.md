@@ -127,16 +127,16 @@ shardingRule:
       databaseStrategy: #分库策略，缺省表示使用默认分库策略，以下的分片策略只能选其一
         standard: #用于单分片键的标准分片场景
           shardingColumn: #分片列名称
-          preciseAlgorithmClassName: #精确分片算法类名称，用于=和IN。该类需提供无参数构造器
-          rangeAlgorithmClassName: #范围分片算法类名称，用于BETWEEN，可选。该类提供无参数构造器
+          preciseAlgorithmClassName: #精确分片算法类名称，用于=和IN。。该类需实现PreciseShardingAlgorithm接口并提供无参数的构造器
+          rangeAlgorithmClassName: #范围分片算法类名称，用于BETWEEN，可选。。该类需实现RangeShardingAlgorithm接口并提供无参数的构造器
         complex: #用于多分片键的复合分片场景
           shardingColumns: #分片列名称，多个列以逗号分隔
-          algorithmClassName: #复合分片算法类名称。该类需提供无参数构造器
+          algorithmClassName: #复合分片算法类名称。该类需实现ComplexKeysShardingAlgorithm接口并提供无参数的构造器
         inline: #行表达式分片策略
           shardingColumn: #分片列名称
           algorithmInlineExpression: #分片算法行表达式，需符合groovy语法
         hint: #Hint分片策略
-          algorithmClassName: #Hint分片算法类名称。该类需提供无参数的构造器
+          algorithmClassName: #Hint分片算法类名称。该类需实现HintShardingAlgorithm接口并提供无参数的构造器
         none: #不分片
       tableStrategy: #分表策略，同分库策略
         

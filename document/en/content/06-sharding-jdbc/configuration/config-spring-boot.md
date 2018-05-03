@@ -225,19 +225,19 @@ sharding.jdbc.config.sharding.tables.<logic_table_name>.actual-data-nodes= #Desc
 
 #Standard sharding scenario for single sharding column
 sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.standard.sharding-column= #Name of sharding column
-sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.standard.precise-algorithm-class-name= #Precise algorithm class name used for `=` and `IN`. No argument constructor required
-sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.standard.range-algorithm-class-name= #Range algorithm class name used for `BETWEEN`. No argument constructor required
+sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.standard.precise-algorithm-class-name= #Precise algorithm class name used for `=` and `IN`. This class need to implements PreciseShardingAlgorithm, and require a no argument constructor
+sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.standard.range-algorithm-class-name= #Range algorithm class name used for `BETWEEN`. This class need to implements RangeShardingAlgorithm, and require a no argument constructor
 
 #Complex sharding scenario for multiple sharding columns
 sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.complex.sharding-columns= #Names of sharding columns. Multiple columns separated with comma
-sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.complex.algorithm-class-name= #Complex sharding algorithm class name. No argument constructor required
+sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.complex.algorithm-class-name= #Complex sharding algorithm class name. This class need to implements ComplexKeysShardingAlgorithm, and require a no argument constructor
 
 #Inline expression sharding scenario for single sharding column
 sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.inline.sharding-column= #Name of sharding column
 sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.inline.algorithm-inline-expression= #Inline expression for sharding algorithm
 
 #Hint sharding strategy
-sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.hint.algorithm-class-name= #Hint sharding algorithm class name. No argument constructor required
+sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.hint.algorithm-class-name= #Hint sharding algorithm class name. This class need to implements HintShardingAlgorithm, and require a no argument constructor
 
 #Tables sharding strategy, Same as databases sharding strategy
 sharding.jdbc.config.sharding.tables.<logic_table_name>.table-strategy.xxx= #Ignore

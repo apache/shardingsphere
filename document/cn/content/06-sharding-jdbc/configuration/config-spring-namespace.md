@@ -354,20 +354,20 @@ weight = 4
 
 #### \<sharding:standard-strategy />
 
-| *名称*                   | *类型* | *说明*                     |
-| ----------------------- | ------ | -------------------------- |
-| id                      | 属性   | Spring Bean Id             |
-| sharding-column         | 属性   | 分片列名称                  |
-| precise-algorithm-ref   | 属性   | 精确分片算法引用，用于=和IN   |
-| range-algorithm-ref (?) | 属性   | 范围分片算法引用，用于BETWEEN |
+| *名称*                   | *类型* | *说明*                                                         |
+| ----------------------- | ------ | ------------------------------------------------------------- |
+| id                      | 属性   | Spring Bean Id                                                 |
+| sharding-column         | 属性   | 分片列名称                                                      |
+| precise-algorithm-ref   | 属性   | 精确分片算法引用，用于=和IN。该类需实现PreciseShardingAlgorithm接口 |
+| range-algorithm-ref (?) | 属性   | 范围分片算法引用，用于BETWEEN。该类需实现RangeShardingAlgorithm接口 |
 
 #### \<sharding:complex-strategy />
 
-| *名称*           | *类型* | *说明*                   |
-| --------------- | ------ | ------------------------ |
-| id               | 属性  | Spring Bean Id           |
-| sharding-columns | 属性  | 分片列名称，多个列以逗号分隔 |
-| algorithm-ref    | 属性  | 复合分片算法引用           |
+| *名称*           | *类型* | *说明*                                                   |
+| --------------- | ------ | -------------------------------------------------------- |
+| id               | 属性  | Spring Bean Id                                           |
+| sharding-columns | 属性  | 分片列名称，多个列以逗号分隔                                |
+| algorithm-ref    | 属性  | 复合分片算法引用。该类需实现ComplexKeysShardingAlgorithm接口 |
 
 #### \<sharding:inline-strategy />
 
@@ -379,10 +379,10 @@ weight = 4
 
 #### \<sharding:hint-database-strategy />
 
-| *名称*        | *类型* | *说明*         |
-| ------------- | ----- | ------------- |
-| id            | 属性  | Spring Bean Id |
-| algorithm-ref | 属性  | Hint分片算法    |
+| *名称*        | *类型* | *说明*                                         |
+| ------------- | ----- | ---------------------------------------------- |
+| id            | 属性  | Spring Bean Id                                 |
+| algorithm-ref | 属性  | Hint分片算法。该类需实现HintShardingAlgorithm接口 |
 
 #### \<sharding:none-strategy />
 

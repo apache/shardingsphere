@@ -354,20 +354,20 @@ Namespace: http://shardingjdbc.io/schema/shardingjdbc/sharding/sharding.xsd
 
 #### \<sharding:standard-strategy />
 
-| *Name*                  | *Type*    | *Description*                                        |
-| ----------------------- | --------- | ---------------------------------------------------- |
-| id                      | Attribute | Spring Bean Id                                       |
-| sharding-column         | Attribute | Name of sharding column                              |
-| precise-algorithm-ref   | Attribute | Reference of precise algorithm used for `=` and `IN` |
-| range-algorithm-ref (?) | Attribute | Reference of range algorithm used for `BETWEEN`      |
+| *Name*                  | *Type*    | *Description*                                                                                              |
+| ----------------------- | --------- | ---------------------------------------------------------------------------------------------------------- |
+| id                      | Attribute | Spring Bean Id                                                                                             |
+| sharding-column         | Attribute | Name of sharding column                                                                                    |
+| precise-algorithm-ref   | Attribute | Reference of precise algorithm used for `=` and `IN`. This class need to implements RangeShardingAlgorithm |
+| range-algorithm-ref (?) | Attribute | Reference of range algorithm used for `BETWEEN`. This class need to implements RangeShardingAlgorithm      |
 
 #### \<sharding:complex-strategy />
 
-| *Name*           | *Type*    | *Description*                                                    |
-| ---------------- | --------- | ---------------------------------------------------------------- |
-| id               | Attribute | Spring Bean Id                                                   |
-| sharding-columns | Attribute | Names of sharding columns. Multiple columns separated with comma |
-| algorithm-ref    | Attribute | Reference of complex sharding algorithm                          |
+| *Name*           | *Type*    | *Description*                                                                                       |
+| ---------------- | --------- | --------------------------------------------------------------------------------------------------- |
+| id               | Attribute | Spring Bean Id                                                                                      |
+| sharding-columns | Attribute | Names of sharding columns. Multiple columns separated with comma                                    |
+| algorithm-ref    | Attribute | Reference of complex sharding algorithm. This class need to implements ComplexKeysShardingAlgorithm |
 
 #### \<sharding:inline-strategy />
 
@@ -379,10 +379,10 @@ Namespace: http://shardingjdbc.io/schema/shardingjdbc/sharding/sharding.xsd
 
 #### \<sharding:hint-database-strategy />
 
-| *Name*        | *Type*    | *Description*                        |
-| ------------- | --------- | ------------------------------------ |
-| id            | Attribute | Spring Bean Id                       |
-| algorithm-ref | Attribute | Reference of hint sharding algorithm |
+| *Name*        | *Type*    | *Description*                                                                             |
+| ------------- | --------- | ----------------------------------------------------------------------------------------- |
+| id            | Attribute | Spring Bean Id                                                                            |
+| algorithm-ref | Attribute | Reference of hint sharding algorithm. This class need to implements HintShardingAlgorithm |
 
 #### \<sharding:none-strategy />
 
