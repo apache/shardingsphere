@@ -53,17 +53,8 @@ public final class InItCreateSchema {
      *
      * @param database database name
      */
-    public static void addDatabase(String database) {
+    public static void addDatabase(final String database) {
         DATABASES.add(database);
-    }
-    
-    /**
-     * Initialize the database table.
-     */
-    public static synchronized void createTable() {
-        for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
-            createSchema(each);
-        }
     }
     
     /**
@@ -171,6 +162,15 @@ public final class InItCreateSchema {
         }
     }
     
+    /**
+     * Initialize the database table.
+     */
+    public static synchronized void createTable() {
+        for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
+            createSchema(each);
+        }
+    }
+    
     private static void createSchema(final DatabaseType dbType) {
         createShardingSchema(dbType);
     }
@@ -191,15 +191,12 @@ public final class InItCreateSchema {
                     for (String tableSqlId : tableSqlIds) {
                         tableSqls.add(SQLCasesLoader.getInstance().getSchemaSQLCaseMap(tableSqlId));
                     }
-                    
                     sr = new StringReader(StringUtils.join(tableSqls, ";\n"));
-                    
                     resultSet = RunScript.execute(conn, sr);
                 }
             }
-            
-        } catch (SQLException | ParserConfigurationException | IOException | XPathExpressionException | SAXException e) {
-            e.printStackTrace();
+        } catch (final SQLException | ParserConfigurationException | IOException | XPathExpressionException | SAXException ex) {
+            ex.printStackTrace();
         } finally {
             if (sr != null) {
                 sr.close();
@@ -243,7 +240,7 @@ public final class InItCreateSchema {
             
             for (String each : DATABASES) {
                 if (dbname != null) {
-                    if (each != dbname) {
+                    if (!each.equals(dbname)) {
                         continue;
                     }
                 }
@@ -253,15 +250,12 @@ public final class InItCreateSchema {
                     conn = initialConnection(database, dbType);
                     List<String> tableSqls = new ArrayList<>();
                     tableSqls.add(SQLCasesLoader.getInstance().getSchemaSQLCaseMap(sqlId));
-                    
                     sr = new StringReader(StringUtils.join(tableSqls, ";\n"));
-                    
                     resultSet = RunScript.execute(conn, sr);
                 }
             }
-            
-        } catch (SQLException | ParserConfigurationException | IOException | XPathExpressionException | SAXException e) {
-            e.printStackTrace();
+        } catch (final SQLException | ParserConfigurationException | IOException | XPathExpressionException | SAXException ex) {
+            ex.printStackTrace();
         } finally {
             if (sr != null) {
                 sr.close();
@@ -290,7 +284,7 @@ public final class InItCreateSchema {
         try {
             for (String each : DATABASES) {
                 if (dbname != null) {
-                    if (each != dbname) {
+                    if (!each.equals(dbname)) {
                         continue;
                     }
                 }
@@ -384,17 +378,16 @@ public final class InItCreateSchema {
         if (StringUtils.isBlank(typeStrs)) {
             return Arrays.asList(DatabaseType.values());
         }
-        
         String[] types = StringUtils.split(typeStrs, ",");
-        List<DatabaseType> databaseTypes = new ArrayList<>();
+        List<DatabaseType> result = new ArrayList<>();
         for (String eachType : types) {
             DatabaseType[] databaseTypeSrcs = DatabaseType.values();
             for (DatabaseType each : databaseTypeSrcs) {
                 if (eachType.equalsIgnoreCase(each.name())) {
-                    databaseTypes.add(each);
+                    result.add(each);
                 }
             }
         }
-        return databaseTypes;
+        return result;
     }
 }

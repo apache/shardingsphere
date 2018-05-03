@@ -65,7 +65,6 @@ public final class StartTest {
         List<String> paths = FileUtil.getAllFilePaths(new File(assertPath), "assert-", "xml");
         for (String each : paths) {
             AssertsDefinition assertsDefinition = AnalyzeConfig.analyze(each);
-        
             if (StringUtils.isNotBlank(assertsDefinition.getBaseConfig())) {
                 String[] dbs = StringUtils.split(assertsDefinition.getBaseConfig(), ",");
                 for (String db : dbs) {
