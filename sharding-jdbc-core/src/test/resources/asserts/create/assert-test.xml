@@ -1,6 +1,6 @@
 <asserts sharding-rule-config="./config/test" init-data-file="./init" database="h2,mysql,oracle,sqlserver,postgresql">
-    <assertDDL id="assertCreateTable" clean-sql="dropTLog" expected-update="1" sql="assertCreateTable"
+    <!--<assertDDL id="assertCreateTable" clean-sql="dropTLog" expected-update="1" sql="assertCreateTable"
                table="t_log"
                expected-data-file="assertCreateTable.xml">
-    </assertDDL>
+    </assertDDL>-->
 </asserts>
