@@ -199,4 +199,4 @@ sharding.jdbc.config.masterslave.slave-data-source-names=ds_slave_0,ds_slave_1
 private DataSource dataSource;
 ```
 
-更多的详细配置请参考[配置手册](/06-sharding-jdbc/configuration/)。
+更多的详细配置请参考[配置手册](/manual/sharding-jdbc/configuration/)。

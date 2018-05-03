@@ -1,6 +1,6 @@
 +++
 toc = true
-title = "Spring namespace"
+title = "Spring Namespace"
 weight = 4
 +++
 

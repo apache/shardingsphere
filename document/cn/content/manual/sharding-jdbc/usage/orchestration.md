@@ -100,4 +100,4 @@ sharding.jdbc.config.orchestration.zookeeper.namespace=sharding-jdbc-orchestrati
 </beans>
 ```
 
-更多的详细配置请参考[配置手册](/06-sharding-jdbc/configuration/)。
+更多的详细配置请参考[配置手册](/manual/sharding-jdbc/configuration/)。

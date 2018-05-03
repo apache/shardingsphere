@@ -7,7 +7,7 @@ weight = 2
 
 ## 1. Configure sharding rule
 
-Edit `%SHARDING_PROXY_HOME%\conf\sharding-config.yaml`. More details please reference [Configuration Manual](/07-sharding-proxy/configuration/). 
+Edit `%SHARDING_PROXY_HOME%\conf\sharding-config.yaml`. More details please reference [Configuration Manual](/manual/sharding-proxy/configuration/). 
 
 ## 2. Start server
 

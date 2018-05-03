@@ -199,4 +199,4 @@ Just inject or configure data source to JPA, Hibernate orMyBatis.
 private DataSource dataSource;
 ```
 
-More details please reference [configuration manual](/06-sharding-jdbc/configuration/).
+More details please reference [configuration manual](/manual/sharding-jdbc/configuration/).

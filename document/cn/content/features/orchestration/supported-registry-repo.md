@@ -9,8 +9,8 @@ weight = 3
 
 ## Zookeeper
 
-请使用Zookeeper 3.4.6及其以上版本。[详情参见](https://zookeeper.apache.org/)
+请使用Zookeeper 3.4.6及其以上版本。详情请参见[官方网站](https://zookeeper.apache.org/)。
 
 ## Etcd
 
-请使用Etcd V3及其以上版本。[详情参见](https://coreos.com/etcd/docs/latest)
+请使用Etcd V3及其以上版本。详情请参见[官方网站](https://coreos.com/etcd/docs/latest)。

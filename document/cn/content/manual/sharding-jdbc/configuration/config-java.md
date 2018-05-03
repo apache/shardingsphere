@@ -223,10 +223,10 @@ ShardingStrategyConfiguration的实现类，用于多分片键的复合分片场
 
 ShardingStrategyConfiguration的实现类，用于配置行表达式分片策略。
 
-| *名称*               | *数据类型*  | *说明*     |
-| ------------------- | ----------- | --------- |
-| shardingColumn      |  String     | 分片列名称 |
-| algorithmExpression |  String     | 分片算法行表达式，需符合groovy语法，详情请参考[行表达式](/02-sharding/other-features/inline-expression) |
+| *名称*               | *数据类型*  | *说明*                                                                                                   |
+| ------------------- | ----------- | ------------------------------------------------------------------------------------------------------- |
+| shardingColumn      |  String     | 分片列名称                                                                                               |
+| algorithmExpression |  String     | 分片算法行表达式，需符合groovy语法，详情请参考[行表达式](/features/sharding/other-features/inline-expression) |
 
 #### HintShardingStrategyConfiguration
 

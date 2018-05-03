@@ -217,10 +217,10 @@ Subclass of ShardingStrategyConfiguration.
 
 Subclass of ShardingStrategyConfiguration.
 
-| *Name*              | *DataType*  | *Description*                                                                                                                              |
-| ------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| shardingColumn      |  String     | Name of sharding column                                                                                                                    |
-| algorithmExpression |  String     | Inline expression for sharding algorithm, more details please reference [Inline expression](/02-sharding/other-features/inline-expression) |
+| *Name*              | *DataType*  | *Description*                                                                                                                                    |
+| ------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| shardingColumn      |  String     | Name of sharding column                                                                                                                          |
+| algorithmExpression |  String     | Inline expression for sharding algorithm, more details please reference [Inline expression](/features/sharding/other-features/inline-expression) |
 
 #### HintShardingStrategyConfiguration
 

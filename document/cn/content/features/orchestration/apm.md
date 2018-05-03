@@ -9,7 +9,7 @@ weight = 4
 
 `APM`是应用性能监控的缩写。目前`APM`的主要功能着眼于分布式系统的性能诊断，其主要功能包括调用链展示，应用拓扑分析等。
 
-[Sharding-Sphere](http://shardingjdbc.io)团队与[SkyWalking](http://skywalking.io)团队共同合作，推出了`Sharding-Sphere`自动探针，可以将`Sharding-Sphere`的性能数据发送到`SkyWalking`中。
+[Sharding-Sphere](http://shardingsphere.io)团队与[SkyWalking](http://skywalking.io)团队共同合作，推出了`Sharding-Sphere`自动探针，可以将`Sharding-Sphere`的性能数据发送到`SkyWalking`中。
 
 ## 使用方法
 
