@@ -1,4 +1,4 @@
-baseURL = "http://shardingjdbc.io/document/en/"
+baseURL = "http://shardingsphere.io/document/en/"
 canonifyurls = true
 languageCode = "en-us"
 title = "Sharding-Sphere"
