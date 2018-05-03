@@ -23,7 +23,6 @@ import io.shardingjdbc.dbtest.common.DatabaseEnvironment;
 import io.shardingjdbc.dbtest.config.AnalyzeDatabase;
 import io.shardingjdbc.dbtest.config.AnalyzeSql;
 import io.shardingjdbc.test.sql.SQLCasesLoader;
-import lombok.Getter;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.h2.tools.RunScript;
@@ -45,11 +44,10 @@ import java.util.Set;
 
 public final class InItCreateSchema {
     
-    @Getter
     private static final Set<String> DATABASES = new HashSet<>();
     
     /**
-     * add database.
+     * Add database.
      *
      * @param database database name
      */
