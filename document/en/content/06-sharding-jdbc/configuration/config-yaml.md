@@ -47,7 +47,7 @@ shardingRule:
   
   defaultTableStrategy:
     none:
-  defaultKeyGeneratorClass: io.shardingjdbc.core.keygen.DefaultKeyGenerator
+  defaultKeyGeneratorClassName: io.shardingjdbc.core.keygen.DefaultKeyGenerator
   
   props:
     sql.show: true
@@ -141,7 +141,7 @@ shardingRule:
       tableStrategy: #Tables sharding strategy, Same as databases sharding strategy
         
       keyGeneratorColumnName: #Column name of key generator, do not use Key generator if absent
-      keyGeneratorClass: #Key generator, use default key generator if absent. This class need to implements KeyGenerator, and require a no argument constructor
+      keyGeneratorClassName: #Key generator, use default key generator if absent. This class need to implements KeyGenerator, and require a no argument constructor
         
       logicIndex: #Name if logic index. If use `DROP INDEX XXX` SQL in Oracle/PostgreSQL, This property needs to be set for finding the actual tables
   bindingTables: #Binding table rule configurations
@@ -152,7 +152,7 @@ shardingRule:
   defaultDataSourceName: #If table not configure at table rule, will route to defaultDataSourceName  
   defaultDatabaseStrategy: #Default strategy for sharding databases, same as databases sharding strategy
   defaultTableStrategy: #Default strategy for sharding tables, same as tables sharding strategy
-  defaultKeyGeneratorClass: #Default key generator class name, default value is `io.shardingjdbc.core.keygen.DefaultKeyGenerator`. This class need to implements KeyGenerator, and require a no argument constructor
+  defaultKeyGeneratorClassName: #Default key generator class name, default value is `io.shardingjdbc.core.keygen.DefaultKeyGenerator`. This class need to implements KeyGenerator, and require a no argument constructor
   
   masterSlaveRules: #Read-write splitting rule configuration, more details can reference Read-write splitting part
     <data_source_name>: #Data sources configuration, need consist with data source map, multiple `data_source_name` available

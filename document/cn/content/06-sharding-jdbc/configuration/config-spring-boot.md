@@ -243,7 +243,7 @@ sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.hint.a
 sharding.jdbc.config.sharding.tables.<logic_table_name>.table-strategy.xxx= #省略
 
 sharding.jdbc.config.sharding.tables.<logic_table_name>.key-generator-column-name= #自增列名称，缺省表示不使用自增主键生成器
-sharding.jdbc.config.sharding.tables.<logic_table_name>.key-generator-class= #自增列值生成器类名称，缺省表示使用默认自增列值生成器。该类需提供无参数的构造器
+sharding.jdbc.config.sharding.tables.<logic_table_name>.key-generator-class-name= #自增列值生成器类名称，缺省表示使用默认自增列值生成器。该类需提供无参数的构造器
 
 sharding.jdbc.config.sharding.tables.<logic_table_name>.logic-index= #逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表
 
@@ -254,7 +254,7 @@ sharding.jdbc.config.sharding.binding-tables[x]= #绑定表规则列表
 sharding.jdbc.config.sharding.default-data-source-name= #未配置分片规则的表将通过默认数据源定位
 sharding.jdbc.config.sharding.default-database-strategy.xxx= #默认数据库分片策略，同分库策略
 sharding.jdbc.config.sharding.default-table-strategy.xxx= #默认表分片策略，同分表策略
-sharding.jdbc.config.sharding.default-key-generator-class.xxx= #默认自增列值生成器类名称，缺省使用io.shardingjdbc.core.keygen.DefaultKeyGenerator。该类需实现KeyGenerator接口并提供无参数的构造器
+sharding.jdbc.config.sharding.default-key-generator-class-name= #默认自增列值生成器类名称，缺省使用io.shardingjdbc.core.keygen.DefaultKeyGenerator。该类需实现KeyGenerator接口并提供无参数的构造器
 
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.master-data-source-name= #详见读写分离部分
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.slave-data-source-names[0]= #详见读写分离部分
