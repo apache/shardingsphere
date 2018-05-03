@@ -312,15 +312,15 @@ Namespace: http://shardingjdbc.io/schema/shardingjdbc/sharding/sharding.xsd
 
 #### \<sharding:sharding-rule />
 
-| *Name*                            | *Type*    | *Description*                                                                                          |
-| --------------------------------- | --------- | ------------------------------------------------------------------------------------------------------ |
-| data-source-names                 | Attribute | Data source bean list. Multiple data sources names separated with comma                                | 
-| table-rules                       | Tag       | Table rule configurations                                                                              |
-| binding-table-rules (?)           | Tag       | Binding table rule configurations                                                                      |
-| default-data-source-name (?)      | Attribute | If table not configure at table rule, will route to defaultDataSourceName                              |
-| default-database-strategy-ref (?) | Attribute | Default database sharding strategy, reference id of \<sharding:xxx-strategy>, Default for not sharding |
-| default-table-strategy-ref (?)    | Attribute | Default table sharding strategy, reference id of \<sharding:xxx-strategy>, Default for not sharding    |
-| default-key-generator (?)         | Attribute | Default key generator, default value is `io.shardingjdbc.core.keygen.DefaultKeyGenerator`              |
+| *Name*                            | *Type*    | *Description*                                                                                                                         |
+| --------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| data-source-names                 | Attribute | Data source bean list. Multiple data sources names separated with comma                                                               | 
+| table-rules                       | Tag       | Table rule configurations                                                                                                             |
+| binding-table-rules (?)           | Tag       | Binding table rule configurations                                                                                                     |
+| default-data-source-name (?)      | Attribute | If table not configure at table rule, will route to defaultDataSourceName                                                             |
+| default-database-strategy-ref (?) | Attribute | Default database sharding strategy, reference id of \<sharding:xxx-strategy>, Default for not sharding                                |
+| default-table-strategy-ref (?)    | Attribute | Default table sharding strategy, reference id of \<sharding:xxx-strategy>, Default for not sharding                                   |
+| default-key-generator (?)         | Attribute | Default key generator, default value is `io.shardingjdbc.core.keygen.DefaultKeyGenerator`. This class need to implements KeyGenerator |
 
 #### \<sharding:table-rules />
 
@@ -337,7 +337,7 @@ Namespace: http://shardingjdbc.io/schema/shardingjdbc/sharding/sharding.xsd
 | database-strategy-ref (?)    | Attribute | Databases sharding strategy, use default databases sharding strategy if absent                                                                                                                              |
 | table-strategy-ref (?)       | Attribute | Tables sharding strategy, use default tables sharding strategy if absent                                                                                                                                    |
 | generate-key-column-name (?) | Attribute | Column name of key generator, do not use Key generator if absent                                                                                                                                            |
-| key-generator (?)            | Attribute | Key generator, use default key generator if absent. No argument constructor required                                                                                                                        |
+| key-generator (?)            | Attribute | Key generator, use default key generator if absent. This class need to implements KeyGenerator                                                                                                              |
 | logic-index (?)              | Attribute | Name if logic index. If use `DROP INDEX XXX` SQL in Oracle/PostgreSQL, This property needs to be set for finding the actual tables                                                                          |
 
 #### \<sharding:binding-table-rules />

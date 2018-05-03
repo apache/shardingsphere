@@ -243,7 +243,7 @@ sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.hint.a
 sharding.jdbc.config.sharding.tables.<logic_table_name>.table-strategy.xxx= #Ignore
 
 sharding.jdbc.config.sharding.tables.<logic_table_name>.key-generator-column-name= #Column name of key generator, do not use Key generator if absent
-sharding.jdbc.config.sharding.tables.<logic_table_name>.key-generator-class= #Key generator, use default key generator if absent. No argument constructor required
+sharding.jdbc.config.sharding.tables.<logic_table_name>.key-generator-class= #Key generator, use default key generator if absent. This class need to implements KeyGenerator, and require a no argument constructor
 
 sharding.jdbc.config.sharding.tables.<logic_table_name>.logic-index= #Name if logic index. If use `DROP INDEX XXX` SQL in Oracle/PostgreSQL, This property needs to be set for finding the actual tables
 
@@ -254,7 +254,7 @@ sharding.jdbc.config.sharding.binding-tables[x]= #Binding table rule configurati
 sharding.jdbc.config.sharding.default-data-source-name= #If table not configure at table rule, will route to defaultDataSourceName
 sharding.jdbc.config.sharding.default-database-strategy.xxx= #Default strategy for sharding databases, same as databases sharding strategy
 sharding.jdbc.config.sharding.default-table-strategy.xxx= #Default strategy for sharding tables, same as tables sharding strategy
-sharding.jdbc.config.sharding.default-key-generator-class.xxx= #Default key generator class name, default value is `io.shardingjdbc.core.keygen.DefaultKeyGenerator`. No argument constructor required
+sharding.jdbc.config.sharding.default-key-generator-class.xxx= #Default key generator class name, default value is `io.shardingjdbc.core.keygen.DefaultKeyGenerator`. This class need to implements KeyGenerator, and require a no argument constructor
 
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.master-data-source-name= #more details can reference Read-write splitting part
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.slave-data-source-names[0]= #more details can reference Read-write splitting part
