@@ -131,19 +131,19 @@ sharding.jdbc.config.sharding.master-slave-rules.ds_1.slave-data-source-names=ds
 ```properties
 sharding.jdbc.datasource.names=ds,ds_0,ds_1
 sharding.jdbc.datasource.ds.type=org.apache.commons.dbcp.BasicDataSource
-sharding.jdbc.datasource.ds.driverClassName=org.h2.Driver
+sharding.jdbc.datasource.ds.driver-class-name=org.h2.Driver
 sharding.jdbc.datasource.ds.url=jdbc:mysql://localhost:3306/ds
 sharding.jdbc.datasource.ds.username=root
 sharding.jdbc.datasource.ds.password=
 
 sharding.jdbc.datasource.ds_0.type=org.apache.commons.dbcp.BasicDataSource
-sharding.jdbc.datasource.ds_0.driverClassName=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_0.driver-class-name=com.mysql.jdbc.Driver
 sharding.jdbc.datasource.ds_0.url=jdbc:mysql://localhost:3306/ds_0
 sharding.jdbc.datasource.ds_0.username=root
 sharding.jdbc.datasource.ds_0.password=
 
 sharding.jdbc.datasource.ds_1.type=org.apache.commons.dbcp.BasicDataSource
-sharding.jdbc.datasource.ds_1.driverClassName=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_1.driver-class-name=com.mysql.jdbc.Driver
 sharding.jdbc.datasource.ds_1.url=jdbc:mysql://localhost:3306/ds_1
 sharding.jdbc.datasource.ds_1.username=root
 sharding.jdbc.datasource.ds_1.password=
@@ -151,14 +151,14 @@ sharding.jdbc.datasource.ds_1.password=
 sharding.jdbc.config.sharding.default-data-source-name=ds
 sharding.jdbc.config.sharding.default-database-strategy.inline.sharding-column=user_id
 sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-inline-expression=ds_$->{user_id % 2}
-sharding.jdbc.config.sharding.tables.t_order.actualDataNodes=ds_$->{0..1}.t_order_$->{0..1}
-sharding.jdbc.config.sharding.tables.t_order.tableStrategy.inline.shardingColumn=order_id
-sharding.jdbc.config.sharding.tables.t_order.tableStrategy.inline.algorithmInlineExpression=t_order_$->{order_id % 2}
-sharding.jdbc.config.sharding.tables.t_order.keyGeneratorColumnName=order_id
-sharding.jdbc.config.sharding.tables.t_order_item.actualDataNodes=ds_$->{0..1}.t_order_item_$->{0..1}
-sharding.jdbc.config.sharding.tables.t_order_item.tableStrategy.inline.shardingColumn=order_id
-sharding.jdbc.config.sharding.tables.t_order_item.tableStrategy.inline.algorithmInlineExpression=t_order_item_$->{order_id % 2}
-sharding.jdbc.config.sharding.tables.t_order_item.keyGeneratorColumnName=order_item_id
+sharding.jdbc.config.sharding.tables.t_order.actual-data-nodes=ds_$->{0..1}.t_order_$->{0..1}
+sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id
+sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.algorithm-inline-expression=t_order_$->{order_id % 2}
+sharding.jdbc.config.sharding.tables.t_order.key-generator-column-name=order_id
+sharding.jdbc.config.sharding.tables.t_order_item.actual-data-nodes=ds_$->{0..1}.t_order_item_$->{0..1}
+sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id
+sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.algorithm-inline-expression=t_order_item_$->{order_id % 2}
+sharding.jdbc.config.sharding.tables.t_order_item.key-generator-column-name=order_item_id
 
 sharding.jdbc.config.orchestration.name=spring_boot_ds_sharding
 sharding.jdbc.config.orchestration.overwrite=true
@@ -171,19 +171,19 @@ sharding.jdbc.config.orchestration.zookeeper.server-lists=localhost:2181
 ```properties
 sharding.jdbc.datasource.names=ds,ds_0,ds_1
 sharding.jdbc.datasource.ds.type=org.apache.commons.dbcp.BasicDataSource
-sharding.jdbc.datasource.ds.driverClassName=org.h2.Driver
+sharding.jdbc.datasource.ds.driver-class-name=org.h2.Driver
 sharding.jdbc.datasource.ds.url=jdbc:mysql://localhost:3306/ds
 sharding.jdbc.datasource.ds.username=root
 sharding.jdbc.datasource.ds.password=
 
 sharding.jdbc.datasource.ds_0.type=org.apache.commons.dbcp.BasicDataSource
-sharding.jdbc.datasource.ds_0.driverClassName=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_0.driver-class-name=com.mysql.jdbc.Driver
 sharding.jdbc.datasource.ds_0.url=jdbc:mysql://localhost:3306/ds_0
 sharding.jdbc.datasource.ds_0.username=root
 sharding.jdbc.datasource.ds_0.password=
 
 sharding.jdbc.datasource.ds_1.type=org.apache.commons.dbcp.BasicDataSource
-sharding.jdbc.datasource.ds_1.driverClassName=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_1.driver-class-name=com.mysql.jdbc.Driver
 sharding.jdbc.datasource.ds_1.url=jdbc:mysql://localhost:3306/ds_1
 sharding.jdbc.datasource.ds_1.username=root
 sharding.jdbc.datasource.ds_1.password=
@@ -191,14 +191,14 @@ sharding.jdbc.datasource.ds_1.password=
 sharding.jdbc.config.sharding.default-data-source-name=ds
 sharding.jdbc.config.sharding.default-database-strategy.inline.sharding-column=user_id
 sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-inline-expression=ds_$->{user_id % 2}
-sharding.jdbc.config.sharding.tables.t_order.actualDataNodes=ds_$->{0..1}.t_order_$->{0..1}
-sharding.jdbc.config.sharding.tables.t_order.tableStrategy.inline.shardingColumn=order_id
-sharding.jdbc.config.sharding.tables.t_order.tableStrategy.inline.algorithmInlineExpression=t_order_$->{order_id % 2}
-sharding.jdbc.config.sharding.tables.t_order.keyGeneratorColumnName=order_id
-sharding.jdbc.config.sharding.tables.t_order_item.actualDataNodes=ds_$->{0..1}.t_order_item_$->{0..1}
-sharding.jdbc.config.sharding.tables.t_order_item.tableStrategy.inline.shardingColumn=order_id
-sharding.jdbc.config.sharding.tables.t_order_item.tableStrategy.inline.algorithmInlineExpression=t_order_item_$->{order_id % 2}
-sharding.jdbc.config.sharding.tables.t_order_item.keyGeneratorColumnName=order_item_id
+sharding.jdbc.config.sharding.tables.t_order.actual-data-nodes=ds_$->{0..1}.t_order_$->{0..1}
+sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id
+sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.algorithm-inline-expression=t_order_$->{order_id % 2}
+sharding.jdbc.config.sharding.tables.t_order.key-generator-column-name=order_id
+sharding.jdbc.config.sharding.tables.t_order_item.actual-data-nodes=ds_$->{0..1}.t_order_item_$->{0..1}
+sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id
+sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.algorithm-inline-expression=t_order_item_$->{order_id % 2}
+sharding.jdbc.config.sharding.tables.t_order_item.key-generator-column-name=order_item_id
 
 sharding.jdbc.config.orchestration.name=spring_boot_ds_sharding
 sharding.jdbc.config.orchestration.overwrite=true
@@ -225,19 +225,19 @@ sharding.jdbc.config.sharding.tables.<logic_table_name>.actual-data-nodes= #Desc
 
 #Standard sharding scenario for single sharding column
 sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.standard.sharding-column= #Name of sharding column
-sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.standard.preciseAlgorithmClassName= #Precise algorithm class name used for `=` and `IN`. No argument constructor required
-sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.standard.rangeAlgorithmClassName= #Range algorithm class name used for `BETWEEN`. No argument constructor required
+sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.standard.precise-algorithm-class-name= #Precise algorithm class name used for `=` and `IN`. No argument constructor required
+sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.standard.range-algorithm-class-name= #Range algorithm class name used for `BETWEEN`. No argument constructor required
 
 #Complex sharding scenario for multiple sharding columns
-sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.complex.shardingColumns= #Names of sharding columns. Multiple columns separated with comma
-sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.complex.algorithmClassName= #Complex sharding algorithm class name. No argument constructor required
+sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.complex.sharding-columns= #Names of sharding columns. Multiple columns separated with comma
+sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.complex.algorithm-class-name= #Complex sharding algorithm class name. No argument constructor required
 
 #Inline expression sharding scenario for single sharding column
-sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.inline.shardingColumn= #Name of sharding column
-sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.inline.algorithmInlineExpression= #Inline expression for sharding algorithm
+sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.inline.sharding-column= #Name of sharding column
+sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.inline.algorithm-inline-expression= #Inline expression for sharding algorithm
 
 #Hint sharding strategy
-sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.hint.algorithmClassName= #Hint sharding algorithm class name. No argument constructor required
+sharding.jdbc.config.sharding.tables.<logic_table_name>.database-strategy.hint.algorithm-class-name= #Hint sharding algorithm class name. No argument constructor required
 
 #Tables sharding strategy, Same as databases sharding strategy
 sharding.jdbc.config.sharding.tables.<logic_table_name>.table-strategy.xxx= #Ignore
