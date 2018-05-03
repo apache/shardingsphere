@@ -17,15 +17,18 @@
 
 package io.shardingjdbc.dbtest;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-
-import javax.xml.bind.JAXBException;
-
-import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.dbtest.config.bean.*;
-import lombok.AllArgsConstructor;
+import io.shardingjdbc.dbtest.asserts.AssertEngine;
+import io.shardingjdbc.dbtest.common.FileUtil;
+import io.shardingjdbc.dbtest.common.PathUtil;
+import io.shardingjdbc.dbtest.config.AnalyzeConfig;
+import io.shardingjdbc.dbtest.config.bean.AssertDDLDefinition;
+import io.shardingjdbc.dbtest.config.bean.AssertDMLDefinition;
+import io.shardingjdbc.dbtest.config.bean.AssertDQLDefinition;
+import io.shardingjdbc.dbtest.config.bean.AssertDefinition;
+import io.shardingjdbc.dbtest.config.bean.AssertsDefinition;
+import io.shardingjdbc.dbtest.exception.DbTestException;
+import io.shardingjdbc.dbtest.init.InItCreateSchema;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -34,57 +37,30 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import io.shardingjdbc.dbtest.asserts.AssertEngine;
-import io.shardingjdbc.dbtest.common.FileUtil;
-import io.shardingjdbc.dbtest.common.PathUtil;
-import io.shardingjdbc.dbtest.config.AnalyzeConfig;
-import io.shardingjdbc.dbtest.exception.DbTestException;
-import io.shardingjdbc.dbtest.init.InItCreateSchema;
+import javax.xml.bind.JAXBException;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
-@RunWith(value = Parameterized.class)
-@AllArgsConstructor
+@RunWith(Parameterized.class)
+@RequiredArgsConstructor
 public class StartTest {
     
-    private String path;
+    private static boolean isInitialized = IntegrateTestRunningEnvironment.getInstance().isInitialized();
     
-    private String id;
-    
-    private static Properties config = new Properties();
+    private static boolean isClean = IntegrateTestRunningEnvironment.getInstance().isInitialized();
     
     private static final List<String[]> RESULT_ASSERT = new ArrayList<>();
     
-    static {
-        try {
-            config.load(StartTest.class.getClassLoader().getResourceAsStream("integrate/env.properties"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+    private final String path;
     
-    /**
-     * query value.
-     *
-     * @param key          key
-     * @param defaultValue default Value
-     * @return value
-     */
-    public static String getString(final String key, final String defaultValue) {
-        return config.getProperty(key, defaultValue);
-    }
+    private final String id;
     
-    /**
-     * query Assert Path.
-     *
-     * @return Assert Path
-     */
-    public static String getAssertPath() {
-        return getString("assert.path", null);
-    }
-    
-    
-    @Parameters
+    @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<String[]> getParameters() {
-        String assertPath = getAssertPath();
+        String assertPath = IntegrateTestRunningEnvironment.getInstance().getAssertPath();
         assertPath = PathUtil.getPath(assertPath);
         List<String> paths = FileUtil.getAllFilePaths(new File(assertPath), "assert-", "xml");
         
@@ -136,10 +112,10 @@ public class StartTest {
     
     @BeforeClass
     public static void beforeClass() {
-        if (AssertEngine.isInitialized()) {
+        if (isInitialized) {
             InItCreateSchema.createDatabase();
             InItCreateSchema.createTable();
-            AssertEngine.setInitialized(false);
+            isInitialized = false;
         } else {
             InItCreateSchema.dropDatabase();
             InItCreateSchema.createDatabase();
@@ -154,10 +130,9 @@ public class StartTest {
     
     @AfterClass
     public static void afterClass() {
-        if (AssertEngine.isClean()) {
+        if (isClean) {
             InItCreateSchema.dropDatabase();
-            AssertEngine.setClean(false);
+            isClean = false;
         }
     }
-    
 }

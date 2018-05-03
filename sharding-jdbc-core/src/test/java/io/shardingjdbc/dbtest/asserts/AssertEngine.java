@@ -17,68 +17,51 @@
 
 package io.shardingjdbc.dbtest.asserts;
 
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.text.ParseException;
-import java.util.*;
-
-import javax.sql.DataSource;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathExpressionException;
-
 import io.shardingjdbc.core.api.MasterSlaveDataSourceFactory;
 import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.dbtest.StartTest;
-import io.shardingjdbc.dbtest.common.DatabaseEnvironment;
-import io.shardingjdbc.dbtest.config.bean.*;
-import io.shardingjdbc.dbtest.init.InItCreateSchema;
-import io.shardingjdbc.test.sql.SQLCasesLoader;
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-import org.xml.sax.SAXException;
-
 import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.dbtest.common.DatabaseUtil;
 import io.shardingjdbc.dbtest.common.PathUtil;
 import io.shardingjdbc.dbtest.config.AnalyzeDataset;
+import io.shardingjdbc.dbtest.config.bean.AssertDDLDefinition;
+import io.shardingjdbc.dbtest.config.bean.AssertDMLDefinition;
+import io.shardingjdbc.dbtest.config.bean.AssertDQLDefinition;
+import io.shardingjdbc.dbtest.config.bean.AssertSubDefinition;
+import io.shardingjdbc.dbtest.config.bean.AssertsDefinition;
+import io.shardingjdbc.dbtest.config.bean.ColumnDefinition;
+import io.shardingjdbc.dbtest.config.bean.DatasetDatabase;
+import io.shardingjdbc.dbtest.config.bean.DatasetDefinition;
+import io.shardingjdbc.dbtest.config.bean.ParameterDefinition;
 import io.shardingjdbc.dbtest.exception.DbTestException;
+import io.shardingjdbc.dbtest.init.InItCreateSchema;
+import io.shardingjdbc.test.sql.SQLCasesLoader;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.Assert;
+import org.xml.sax.SAXException;
+
+import javax.sql.DataSource;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AssertEngine {
     
     public static final Map<String, AssertsDefinition> ASSERTDEFINITIONMAPS = new HashMap<>();
     
     public static final List<String> DEFAULT_DATABASES = Arrays.asList("db", "dbtbl", "nullable");
-    
-    @Getter
-    @Setter
-    private static volatile boolean initialized;
-    
-    @Getter
-    @Setter
-    private static volatile boolean clean;
-    
-    @Getter
-    @Setter
-    private static final List<String> databases = new ArrayList<>();
-    
-    static {
-        initialized = Boolean.valueOf(StartTest.getString("initialized", "false"));
-        clean = Boolean.valueOf(StartTest.getString("initialized", "false"));
-        String databasesStr = StartTest.getString("databases", "h2,mysql,oracle,sqlserver,postgresql");
-        String[] databaseLocals = StringUtils.split(databasesStr, ",");
-        for (String database : databaseLocals) {
-            databases.add(database);
-        }
-    }
     
     /**
      * add check use cases.

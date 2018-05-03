@@ -17,15 +17,9 @@
 
 package io.shardingjdbc.dbtest.init;
 
-import java.io.*;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.*;
-
+import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.yaml.sharding.YamlShardingConfiguration;
-import io.shardingjdbc.dbtest.StartTest;
-import io.shardingjdbc.dbtest.asserts.AssertEngine;
+import io.shardingjdbc.dbtest.IntegrateTestRunningEnvironment;
 import io.shardingjdbc.dbtest.common.DatabaseEnvironment;
 import io.shardingjdbc.dbtest.common.FileUtil;
 import io.shardingjdbc.dbtest.common.PathUtil;
@@ -33,19 +27,29 @@ import io.shardingjdbc.dbtest.config.AnalyzeDatabase;
 import io.shardingjdbc.dbtest.config.AnalyzeSql;
 import io.shardingjdbc.test.sql.SQLCasesLoader;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.h2.tools.RunScript;
-
-import io.shardingjdbc.core.constant.DatabaseType;
 import org.xml.sax.SAXException;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
-import javax.sql.DataSource;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class InItCreateSchema {
     
@@ -64,7 +68,7 @@ public class InItCreateSchema {
     }
     
     static {
-        String assertPath = StartTest.getAssertPath();
+        String assertPath = IntegrateTestRunningEnvironment.getInstance().getAssertPath();
         assertPath = PathUtil.getPath(assertPath);
         List<String> paths = FileUtil.getAllFilePaths(new File(assertPath), "t", "yaml");
         try {
@@ -475,7 +479,7 @@ public class InItCreateSchema {
      */
     public static Set<DatabaseType> getDatabaseSchema() throws IOException {
         Set<DatabaseType> dbset = new HashSet<>();
-        for (String each : AssertEngine.getDatabases()) {
+        for (String each : IntegrateTestRunningEnvironment.getInstance().getDatabaseTypes()) {
             DatabaseType databaseType = getDatabaseType(each);
             dbset.add(databaseType);
         }
