@@ -666,7 +666,7 @@ public class DatabaseUtil {
      * @param table    table
      * @param msg      msg
      */
-    public static void assertConfigs(final DatasetDefinition expected, final List<ColumnDefinition> actual,final String table,final String msg) {
+    public static void assertConfigs(final DatasetDefinition expected, final List<ColumnDefinition> actual, final String table, final String msg) {
         Map<String, List<ColumnDefinition>> configs = expected.getMetadatas();
         List<ColumnDefinition> columnDefinitions = configs.get(table);
         for (ColumnDefinition each : columnDefinitions) {
