@@ -59,14 +59,14 @@ Database Mesh的关注重点在于如何将分布式的数据访问应用与数�
 
 ![Sharding-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sharding-sidecar-brief.png)
 
-|         | *Sharding-JDBC* | *Sharding-Proxy* | *Sharding-Sidecar* |
-| ------- | --------------- | ---------------- | ------------------ |
-| 数据库   | 任意            | MySQL            | MySQL               |
-| 连接数   | 高              | 低               | 高                  |
-| 异构语言 | 仅Java          | 任意              | 任意                |
-| 性能     | 损耗低          | 损耗略高          | 损耗低               |
-| 无中心化 | 是              | 否               | 是                   |
-| 静态入口 | 无              | 有               | 无                   |
+|           | *Sharding-JDBC* | *Sharding-Proxy* | *Sharding-Sidecar* |
+| --------- | --------------- | ---------------- | ------------------ |
+| 数据库     | 任意            | MySQL            | MySQL               |
+| 连接消耗数 | 高              | 低               | 高                  |
+| 异构语言   | 仅Java          | 任意              | 任意                |
+| 性能       | 损耗低          | 损耗略高          | 损耗低               |
+| 无中心化   | 是              | 否               | 是                   |
+| 静态入口   | 无              | 有               | 无                   |
 
 ## 功能列表
 

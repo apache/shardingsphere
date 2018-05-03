@@ -44,7 +44,7 @@ weight = 2
 
 - 行表达式分片策略
 
-对应InlineShardingStrategy。使用Groovy的表达式，提供对SQL语句中的=和IN的分片操作支持，只支持单分片键。对于简单的分片算法，可以通过简单的配置使用，从而避免繁琐的Java代码开发，如: t_user_${u_id % 8} 表示t_user表按照u_id按8取模分成8个表，表名称为t_user_0到t_user_7。
+对应InlineShardingStrategy。使用Groovy的表达式，提供对SQL语句中的=和IN的分片操作支持，只支持单分片键。对于简单的分片算法，可以通过简单的配置使用，从而避免繁琐的Java代码开发，如: `t_user_${u_id % 8}` 表示t_user表按照u_id按8取模分成8个表，表名称为`t_user_0`到`t_user_7`。
 
 - Hint分片策略
 

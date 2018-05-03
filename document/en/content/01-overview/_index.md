@@ -60,7 +60,7 @@ Database Mesh is focused on how to connect the distributed data-access-layer and
 |                        | *Sharding-JDBC* | *Sharding-Proxy* | *Sharding-Sidecar* |
 | ---------------------- | --------------- | ---------------- | ------------------ |
 | Database               | Any             | MySQL            | MySQL              |
-| Connections            | More            | Less             | More               |
+| Connections Cost       | More            | Less             | More               |
 | Heterogeneous Language | Java Only       | Any              | Any                |
 | Performance            | Low loss        | High loss        | Low loss           |
 | Centre-less            | Yes             | No               | No                 |

@@ -21,7 +21,7 @@ It use JDBC connect databases without redirect cost for java application, best p
 |                        | *Sharding-JDBC* | *Sharding-Proxy* | *Sharding-Sidecar* |
 | ---------------------- | --------------- | ---------------- | ------------------ |
 | Database               | `Any`           | MySQL            | MySQL              |
-| Connections            | `More`          | Less             | More               |
+| Connections Cost       | `More`          | Less             | More               |
 | Heterogeneous Language | `Java Only`     | Any              | Any                |
 | Performance            | `Low loss`      | High loss        | Low loss           |
 | Centre-less            | `Yes`           | No               | No                 |
