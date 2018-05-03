@@ -18,7 +18,6 @@
 package io.shardingjdbc.dbtest;
 
 import io.shardingjdbc.dbtest.asserts.AssertEngine;
-import io.shardingjdbc.dbtest.common.FileUtil;
 import io.shardingjdbc.dbtest.config.AnalyzeConfig;
 import io.shardingjdbc.dbtest.config.bean.AssertDDLDefinition;
 import io.shardingjdbc.dbtest.config.bean.AssertDMLDefinition;
@@ -37,11 +36,17 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import javax.xml.bind.JAXBException;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
@@ -66,8 +71,7 @@ public final class StartTest {
     public static Collection<String[]> getParameters() throws IOException, JAXBException {
         URL integrateResources = StartTest.class.getClassLoader().getResource(INTEGRATION_RESOURCES_PATH);
         assertNotNull(integrateResources);
-        List<String> paths = FileUtil.getAllFilePaths(new File(integrateResources.getPath()), "assert-", "xml");
-        for (String each : paths) {
+        for (String each : getAssertFiles(integrateResources)) {
             AssertsDefinition assertsDefinition = AnalyzeConfig.analyze(each);
             if (StringUtils.isNotBlank(assertsDefinition.getBaseConfig())) {
                 String[] dbs = StringUtils.split(assertsDefinition.getBaseConfig(), ",");
@@ -88,6 +92,21 @@ public final class StartTest {
             AssertEngine.addAssertDefinition(each, assertsDefinition);
         }
         return RESULT_ASSERT;
+    }
+    
+    private static List<String> getAssertFiles(final URL integrateResources) throws IOException {
+        final List<String> result = new LinkedList<>();
+        Files.walkFileTree(Paths.get(integrateResources.getPath()), new SimpleFileVisitor<Path>() {
+            
+            @Override
+            public FileVisitResult visitFile(final Path file, final BasicFileAttributes basicFileAttributes) {
+                if (file.getFileName().toString().startsWith("assert-") && file.getFileName().toString().endsWith(".xml")) {
+                    result.add(file.toFile().getPath());
+                }
+                return FileVisitResult.CONTINUE;
+            }
+        });
+        return result;
     }
     
     private static <T extends AssertDefinition> void collateData(final List<String[]> result, final String path, final List<T> asserts) {
