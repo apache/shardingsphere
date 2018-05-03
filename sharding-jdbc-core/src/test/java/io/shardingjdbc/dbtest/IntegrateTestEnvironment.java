@@ -37,8 +37,6 @@ public final class IntegrateTestEnvironment {
     
     private final boolean initialized;
     
-    private final String assertPath;
-    
     private final Collection<DatabaseType> databaseTypes;
     
     private IntegrateTestEnvironment() {
@@ -49,7 +47,6 @@ public final class IntegrateTestEnvironment {
             ex.printStackTrace();
         }
         initialized = Boolean.valueOf(prop.getProperty("initialized", Boolean.FALSE.toString()));
-        assertPath = prop.getProperty("assert.path");
         databaseTypes = new LinkedList<>();
         for (String each : prop.getProperty("databases", DatabaseType.H2.name()).split(",")) {
             databaseTypes.add(DatabaseType.valueOf(each.trim()));

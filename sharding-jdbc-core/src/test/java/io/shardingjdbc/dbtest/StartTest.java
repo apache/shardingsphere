@@ -19,7 +19,6 @@ package io.shardingjdbc.dbtest;
 
 import io.shardingjdbc.dbtest.asserts.AssertEngine;
 import io.shardingjdbc.dbtest.common.FileUtil;
-import io.shardingjdbc.dbtest.common.PathUtil;
 import io.shardingjdbc.dbtest.config.AnalyzeConfig;
 import io.shardingjdbc.dbtest.config.bean.AssertDDLDefinition;
 import io.shardingjdbc.dbtest.config.bean.AssertDMLDefinition;
@@ -40,13 +39,18 @@ import org.junit.runners.Parameterized.Parameters;
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static org.junit.Assert.assertNotNull;
+
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
 public final class StartTest {
+    
+    private static final String INTEGRATION_RESOURCES_PATH = "asserts";
     
     private static boolean isInitialized = IntegrateTestEnvironment.getInstance().isInitialized();
     
@@ -60,9 +64,9 @@ public final class StartTest {
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<String[]> getParameters() throws IOException, JAXBException {
-        String assertPath = IntegrateTestEnvironment.getInstance().getAssertPath();
-        assertPath = PathUtil.getPath(assertPath);
-        List<String> paths = FileUtil.getAllFilePaths(new File(assertPath), "assert-", "xml");
+        URL integrateResources = StartTest.class.getClassLoader().getResource(INTEGRATION_RESOURCES_PATH);
+        assertNotNull(integrateResources);
+        List<String> paths = FileUtil.getAllFilePaths(new File(integrateResources.getPath()), "assert-", "xml");
         for (String each : paths) {
             AssertsDefinition assertsDefinition = AnalyzeConfig.analyze(each);
             if (StringUtils.isNotBlank(assertsDefinition.getBaseConfig())) {

@@ -21,7 +21,7 @@ import io.shardingjdbc.dbtest.exception.DbTestException;
 
 public class PathUtil {
 
-    private static final String BASEPATH = PathUtil.class.getClassLoader().getResource("").getPath();
+    private static final String BASE_PATH = PathUtil.class.getClassLoader().getResource("").getPath();
 
     /**
      * Get the resource path.
@@ -34,11 +34,10 @@ public class PathUtil {
         if (path == null) {
             throw new DbTestException("The path cannot be empty");
         }
-
         String result = path;
         if (result.startsWith("classpath:")) {
             result = result.substring("classpath:".length());
-            result = BASEPATH + result;
+            result = BASE_PATH + result;
             return result;
         }
         if (parent != null) {
@@ -46,15 +45,4 @@ public class PathUtil {
         }
         return result;
     }
-
-    /**
-     * Get the resource path.
-     *
-     * @param path path
-     * @return path
-     */
-    public static String getPath(final String path) {
-        return getPath(path, null);
-    }
-
 }
