@@ -43,7 +43,7 @@ public class YamlTableRuleConfiguration {
     
     private String keyGeneratorColumnName;
     
-    private String keyGeneratorClass;
+    private String keyGeneratorClassName;
     
     private String logicIndex;
     
@@ -63,8 +63,8 @@ public class YamlTableRuleConfiguration {
         if (null != tableStrategy) {
             result.setTableShardingStrategyConfig(tableStrategy.build());
         }
-        if (!Strings.isNullOrEmpty(keyGeneratorClass)) {
-            result.setKeyGenerator(KeyGeneratorFactory.newInstance(keyGeneratorClass));
+        if (!Strings.isNullOrEmpty(keyGeneratorClassName)) {
+            result.setKeyGenerator(KeyGeneratorFactory.newInstance(keyGeneratorClassName));
         }
         result.setKeyGeneratorColumnName(keyGeneratorColumnName);
         result.setLogicIndex(logicIndex);

@@ -34,4 +34,4 @@ shardingRule:
           algorithmClassName: io.shardingjdbc.core.api.algorithm.fixture.TestComplexKeysShardingAlgorithm
   bindingTables:
     - t_order, t_order_item
-  defaultKeyGeneratorClass: io.shardingjdbc.core.keygen.fixture.IncrementKeyGenerator
+  defaultKeyGeneratorClassName: io.shardingjdbc.core.keygen.fixture.IncrementKeyGenerator

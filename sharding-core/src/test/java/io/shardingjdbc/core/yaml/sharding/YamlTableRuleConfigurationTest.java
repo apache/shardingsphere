@@ -54,7 +54,7 @@ public final class YamlTableRuleConfigurationTest {
         result.setLogicTable("t_order");
         result.setActualDataNodes("ds_${0..1}.t_order_${0..1}");
         result.setKeyGeneratorColumnName("order_id");
-        result.setKeyGeneratorClass(DefaultKeyGenerator.class.getName());
+        result.setKeyGeneratorClassName(DefaultKeyGenerator.class.getName());
         result.setLogicIndex("order_index");
         return result;
     }
