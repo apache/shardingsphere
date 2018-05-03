@@ -10,7 +10,6 @@
         <t_order_7 order_id="1607" user_id="16" status="init_slave"/>
         <t_order_8 order_id="1608" user_id="16" status="init_slave"/>
         <t_order_9 order_id="1609" user_id="16" status="init_slave"/>
-
         <t_order_item_0 item_id="160000" order_id="1600" user_id="16" status="init_slave"/>
         <t_order_item_0 item_id="160001" order_id="1600" user_id="16" status="init_slave"/>
         <t_order_item_1 item_id="160100" order_id="1601" user_id="16" status="init_slave"/>
@@ -31,7 +30,6 @@
         <t_order_item_8 item_id="160801" order_id="1608" user_id="16" status="init_slave"/>
         <t_order_item_9 item_id="160900" order_id="1609" user_id="16" status="init_slave"/>
         <t_order_item_9 item_id="160901" order_id="1609" user_id="16" status="init_slave"/>
-
         <t_config id="1" status="init_slave"/>
     </dataset>
 </init>

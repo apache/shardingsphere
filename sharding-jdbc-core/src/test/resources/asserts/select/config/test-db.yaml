@@ -1,10 +1,8 @@
 shardingRule:
   defaultDataSourceName: db_0
-
-  defaultKeyGeneratorClass: io.shardingjdbc.dbtest.core.yaml.fixture.IncrementKeyGenerator
+  defaultKeyGeneratorClassName: io.shardingjdbc.dbtest.core.yaml.fixture.IncrementKeyGenerator
 
   tables:
-
     t_order:
       actualDataNodes: db_${0..9}.t_order
       databaseStrategy:
@@ -19,7 +17,7 @@ shardingRule:
     t_order_item:
       actualDataNodes: db_${0..9}.t_order_item
       keyGeneratorColumnName: order_item_id
-      keyGeneratorClass: io.shardingjdbc.dbtest.core.yaml.fixture.DecrementKeyGenerator
+      keyGeneratorClassName: io.shardingjdbc.dbtest.core.yaml.fixture.DecrementKeyGenerator
       databaseStrategy:
         standard:
           shardingColumn: user_id
