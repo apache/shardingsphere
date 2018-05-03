@@ -1,8 +1,5 @@
 <asserts sharding-rule-config="./config/test" init-data-file="./init" base-config="db" database="h2,mysql,oracle,sqlserver,postgresql">
-   <assertDML id="assertInsertWithAllPlaceholders" expected-update="9"
-               sql="assertInsertWithAllPlaceholders" base-config="db"
-               expected-sql="assertSelectEqualsWithSingleTable"
-               >
+   <assertDML id="assertInsertWithAllPlaceholders" expected-update="9" sql="assertInsertWithAllPlaceholders" base-config="db" expected-sql="assertSelectEqualsWithSingleTable">
         <subAssert expected-data-file="insert/db_1.xml">
             <parameter>
                 <value value="1" type="int"/>
@@ -103,11 +100,7 @@
             </expected-parameter>
         </subAssert>
     </assertDML>
-
-    <assertDML id="assertInsertWithoutPlaceholder" expected-update="9"
-               sql="assertInsertWithPartialPlaceholder" base-config="db"
-               expected-sql="assertSelectEqualsWithSingleTable"
-    >
+    <assertDML id="assertInsertWithoutPlaceholder" expected-update="9" sql="assertInsertWithPartialPlaceholder" base-config="db" expected-sql="assertSelectEqualsWithSingleTable">
         <subAssert expected-data-file="insert/db_1.xml">
             <parameter>
                 <value value="1" type="int"/>
@@ -998,5 +991,4 @@
             </expected-parameter>
         </subAssert>
     </assertDML>
-
 </asserts>

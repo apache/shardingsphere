@@ -103,7 +103,7 @@ public final class YamlShardingConfigurationTest {
         assertThat(actual.getShardingRule().getTables().get("t_order").getTableStrategy().getInline().getShardingColumn(), is("order_id"));
         assertThat(actual.getShardingRule().getTables().get("t_order").getTableStrategy().getInline().getAlgorithmExpression(), is("t_order_${order_id % 2}"));
         assertThat(actual.getShardingRule().getTables().get("t_order").getKeyGeneratorColumnName(), is("order_id"));
-        assertThat(actual.getShardingRule().getTables().get("t_order").getKeyGeneratorClass(), is("io.shardingjdbc.core.keygen.DefaultKeyGenerator"));
+        assertThat(actual.getShardingRule().getTables().get("t_order").getKeyGeneratorClassName(), is("io.shardingjdbc.core.keygen.DefaultKeyGenerator"));
         assertThat(actual.getShardingRule().getTables().get("t_order").getLogicIndex(), is("order_index"));
     }
     
@@ -123,7 +123,7 @@ public final class YamlShardingConfigurationTest {
         assertThat(actual.getShardingRule().getDefaultDataSourceName(), is("default_ds"));
         assertThat(actual.getShardingRule().getDefaultDatabaseStrategy().getInline().getShardingColumn(), is("order_id"));
         assertThat(actual.getShardingRule().getDefaultDatabaseStrategy().getInline().getAlgorithmExpression(), is("ds_${order_id % 2}"));
-        assertThat(actual.getShardingRule().getDefaultKeyGeneratorClass(), is("io.shardingjdbc.core.keygen.DefaultKeyGenerator"));
+        assertThat(actual.getShardingRule().getDefaultKeyGeneratorClassName(), is("io.shardingjdbc.core.keygen.DefaultKeyGenerator"));
     }
     
     private void assertMasterSlaveRules(final YamlShardingConfiguration actual) {

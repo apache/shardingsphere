@@ -1,10 +1,8 @@
 shardingRule:
   defaultDataSourceName: nullable_0
-
-  defaultKeyGeneratorClass: io.shardingjdbc.dbtest.core.yaml.fixture.IncrementKeyGenerator
+  defaultKeyGeneratorClassName: io.shardingjdbc.dbtest.core.yaml.fixture.IncrementKeyGenerator
 
   tables:
-
     t_order:
       actualDataNodes: nullable_${0..9}.t_order
       databaseStrategy:

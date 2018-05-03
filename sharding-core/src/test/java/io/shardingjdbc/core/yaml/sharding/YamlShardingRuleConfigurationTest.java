@@ -60,7 +60,7 @@ public final class YamlShardingRuleConfigurationTest {
         result.getTables().put("t_order", new YamlTableRuleConfiguration());
         result.getTables().put("t_order_item", new YamlTableRuleConfiguration());
         result.getBindingTables().add("t_order, t_order_item");
-        result.setDefaultKeyGeneratorClass(DefaultKeyGenerator.class.getName());
+        result.setDefaultKeyGeneratorClassName(DefaultKeyGenerator.class.getName());
         result.getMasterSlaveRules().put("master_slave_ds", createYamlMasterSlaveRuleConfig());
         return result;
     }

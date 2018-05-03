@@ -20,7 +20,6 @@
         <t_order_7 order_id="1107" user_id="11" status="init" />
         <t_order_8 order_id="1108" user_id="11" status="init" />
         <t_order_9 order_id="1109" user_id="11" status="init" />
-        
         <t_order_item_0 item_id="100000" order_id="1000" user_id="10" status="init" c_date="2017-08-08" />
         <t_order_item_0 item_id="100001" order_id="1000" user_id="10" status="init" c_date="2017-08-08" />
         <t_order_item_1 item_id="100100" order_id="1001" user_id="10" status="init" c_date="2017-08-08" />
@@ -61,7 +60,6 @@
         <t_order_item_8 item_id="110801" order_id="1108" user_id="11" status="init" c_date="2017-08-19" />
         <t_order_item_9 item_id="110900" order_id="1109" user_id="11" status="init" c_date="2017-08-19" />
         <t_order_item_9 item_id="110901" order_id="1109" user_id="11" status="init" c_date="2017-08-19" />
-        
         <t_config id="1" status="init" />
     </dataset>
 </init>

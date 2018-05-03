@@ -31,7 +31,7 @@ shardingRule:
       algorithmExpression: demo_ds_${user_id % 2}
   defaultTableStrategy:
     none:
-  defaultKeyGeneratorClass: io.shardingjdbc.core.keygen.DefaultKeyGenerator
+  defaultKeyGeneratorClassName: io.shardingjdbc.core.keygen.DefaultKeyGenerator
 
   props:
     sql.show: true
