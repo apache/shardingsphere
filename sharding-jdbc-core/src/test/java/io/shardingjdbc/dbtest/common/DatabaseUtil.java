@@ -177,8 +177,8 @@ public class DatabaseUtil {
     /**
      * Use Statement Test data update.
      *
-     * @param conn       Jdbc connection
-     * @param sql        sql
+     * @param conn                Jdbc connection
+     * @param sql                 sql
      * @param parameterDefinition parameter
      * @return Number of rows as a result of execution
      * @throws SQLException SQL executes exceptions
@@ -187,9 +187,9 @@ public class DatabaseUtil {
                                                         final ParameterDefinition parameterDefinition) throws SQLException {
         int result = 0;
         try (Statement pstmt = conn.createStatement()) {
-                String newSql = sqlReplaceStatement(sql, parameterDefinition.getValueReplaces());
-                newSql = sqlStatement(newSql, parameterDefinition.getValues());
-                result = result + pstmt.executeUpdate(newSql);
+            String newSql = sqlReplaceStatement(sql, parameterDefinition.getValueReplaces());
+            newSql = sqlStatement(newSql, parameterDefinition.getValues());
+            result = result + pstmt.executeUpdate(newSql);
         }
         return result;
     }
@@ -287,8 +287,8 @@ public class DatabaseUtil {
     /**
      * Use Statement Test data update.
      *
-     * @param conn       Jdbc connection
-     * @param sql        sql
+     * @param conn                Jdbc connection
+     * @param sql                 sql
      * @param parameterDefinition parameter
      * @return Implementation results
      * @throws SQLException SQL executes exceptions
@@ -297,11 +297,11 @@ public class DatabaseUtil {
                                                   final ParameterDefinition parameterDefinition) throws SQLException {
         int result = 0;
         try (Statement pstmt = conn.createStatement()) {
-                String newSql = sqlReplaceStatement(sql, parameterDefinition.getValueReplaces());
-                newSql = sqlStatement(newSql, parameterDefinition.getValues());
-                if (!pstmt.execute(newSql)) {
-                    result = result + pstmt.getUpdateCount();
-                }
+            String newSql = sqlReplaceStatement(sql, parameterDefinition.getValueReplaces());
+            newSql = sqlStatement(newSql, parameterDefinition.getValues());
+            if (!pstmt.execute(newSql)) {
+                result = result + pstmt.getUpdateCount();
+            }
             
         }
         return result;
@@ -310,8 +310,8 @@ public class DatabaseUtil {
     /**
      * Use PreparedStatement Test data update.
      *
-     * @param conn       Jdbc connection
-     * @param sql        sql
+     * @param conn                Jdbc connection
+     * @param sql                 sql
      * @param parameterDefinition parameter
      * @return Number of rows as a result of execution
      * @throws SQLException   SQL executes exceptions
@@ -320,20 +320,20 @@ public class DatabaseUtil {
     public static int updateUsePreparedStatementToExecuteUpdate(final Connection conn, final String sql,
                                                                 final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
         int result = 0;
-            String newSql = sql.replaceAll("\\%s", "?");
-            newSql = sqlReplaceStatement(newSql, parameterDefinition.getValueReplaces());
-            try (PreparedStatement pstmt = conn.prepareStatement(newSql)) {
-                sqlPreparedStatement(parameterDefinition.getValues(), pstmt);
-                result = result + pstmt.executeUpdate();
-            }
+        String newSql = sql.replaceAll("\\%s", "?");
+        newSql = sqlReplaceStatement(newSql, parameterDefinition.getValueReplaces());
+        try (PreparedStatement pstmt = conn.prepareStatement(newSql)) {
+            sqlPreparedStatement(parameterDefinition.getValues(), pstmt);
+            result = result + pstmt.executeUpdate();
+        }
         return result;
     }
     
     /**
      * Use PreparedStatement Test data update.
      *
-     * @param conn       Jdbc connection
-     * @param sql        sql
+     * @param conn                Jdbc connection
+     * @param sql                 sql
      * @param parameterDefinition parameter
      * @return Implementation results
      * @throws SQLException   SQL executes exceptions
@@ -342,15 +342,15 @@ public class DatabaseUtil {
     public static int updateUsePreparedStatementToExecute(final Connection conn, final String sql,
                                                           final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
         int result = 0;
-            String newSql = sql.replaceAll("\\%s", "?");
-            newSql = sqlReplaceStatement(newSql, parameterDefinition.getValueReplaces());
-            try (PreparedStatement pstmt = conn.prepareStatement(newSql)) {
-                sqlPreparedStatement(parameterDefinition.getValues(), pstmt);
-                if (!pstmt.execute()) {
-                    result = result + pstmt.getUpdateCount();
-                }
+        String newSql = sql.replaceAll("\\%s", "?");
+        newSql = sqlReplaceStatement(newSql, parameterDefinition.getValueReplaces());
+        try (PreparedStatement pstmt = conn.prepareStatement(newSql)) {
+            sqlPreparedStatement(parameterDefinition.getValues(), pstmt);
+            if (!pstmt.execute()) {
+                result = result + pstmt.getUpdateCount();
             }
-       
+        }
+        
         return result;
     }
     
@@ -663,8 +663,10 @@ public class DatabaseUtil {
      *
      * @param expected expected
      * @param actual   actual
+     * @param table    table
+     * @param msg      msg
      */
-    public static void assertConfigs(final DatasetDefinition expected, final List<ColumnDefinition> actual, String table, String msg) {
+    public static void assertConfigs(final DatasetDefinition expected, final List<ColumnDefinition> actual, final String table, final String msg) {
         Map<String, List<ColumnDefinition>> configs = expected.getMetadatas();
         List<ColumnDefinition> columnDefinitions = configs.get(table);
         for (ColumnDefinition each : columnDefinitions) {
@@ -748,7 +750,11 @@ public class DatabaseUtil {
                 Map<String, String> expectData = data.get(i);
                 Map<String, String> actualData = actualDatas.get(i);
                 for (Map.Entry<String, String> stringStringEntry : expectData.entrySet()) {
-                    assertTrue(msg + " result set validation failed", stringStringEntry.getValue().equals(actualData.get(stringStringEntry.getKey())));
+                    if (!stringStringEntry.getValue().equals(actualData.get(stringStringEntry.getKey()))) {
+                        String actualMsg = actualDatas.toString();
+                        String expectMsg = data.toString();
+                        assertTrue(msg + " result set validation failed . describe : actual = " + actualMsg + " . expect = " + expectMsg, stringStringEntry.getValue().equals(actualData.get(stringStringEntry.getKey())));
+                    }
                 }
                 
             }

@@ -230,11 +230,11 @@ public class InItCreateSchema {
     }
     
     private static void createSchema(final DatabaseType dbType, final String sqlId) {
-        createShardingSchema(dbType, sqlId);
+        createShardingSchema(dbType, sqlId, null);
     }
     
     private static void dropSchema(final DatabaseType dbType) {
-        dropShardingSchema(dbType);
+        dropShardingSchema(dbType, null);
     }
     
     private static void dropSchema(final DatabaseType dbType, final String sqlId) {
@@ -287,13 +287,33 @@ public class InItCreateSchema {
         }
     }
     
-    private static void createShardingSchema(final DatabaseType dbType, final String sqlId) {
+    /**
+     * @param dbType
+     */
+    public static void dropTable(final DatabaseType dbType, final String sqlId, final String dbname) {
+        dropShardingSchema(dbType, sqlId, dbname);
+    }
+    
+    /**
+     * @param dbType
+     */
+    public static void createTable(final DatabaseType dbType, final String sqlId, final String dbname) {
+        createShardingSchema(dbType, sqlId, dbname);
+    }
+    
+    
+    private static void createShardingSchema(final DatabaseType dbType, final String sqlId, final String dbname) {
         Connection conn = null;
         ResultSet resultSet = null;
         StringReader sr = null;
         try {
             
             for (String each : DATABASES) {
+                if (dbname != null) {
+                    if (each != dbname) {
+                        continue;
+                    }
+                }
                 List<String> databases = AnalyzeDatabase.analyze(InItCreateSchema.class.getClassLoader()
                         .getResource("integrate/dbtest").getPath() + "/" + each + "/database.xml");
                 for (String database : databases) {
@@ -330,12 +350,17 @@ public class InItCreateSchema {
         }
     }
     
-    private static void dropShardingSchema(final DatabaseType dbType) {
+    private static void dropShardingSchema(final DatabaseType dbType, final String dbname) {
         Connection conn = null;
         ResultSet resultSet = null;
         StringReader sr = null;
         try {
             for (String each : DATABASES) {
+                if (dbname != null) {
+                    if (each != dbname) {
+                        continue;
+                    }
+                }
                 List<String> databases = AnalyzeDatabase.analyze(InItCreateSchema.class.getClassLoader()
                         .getResource("integrate/dbtest").getPath() + "/" + each + "/database.xml");
                 for (String database : databases) {
@@ -376,12 +401,17 @@ public class InItCreateSchema {
         }
     }
     
-    private static void dropShardingSchema(final DatabaseType dbType, final String sqlId) {
+    private static void dropShardingSchema(final DatabaseType dbType, final String sqlId, final String dbname) {
         Connection conn = null;
         ResultSet resultSet = null;
         StringReader sr = null;
         try {
             for (String each : DATABASES) {
+                if (dbname != null) {
+                    if (each != dbname) {
+                        continue;
+                    }
+                }
                 List<String> databases = AnalyzeDatabase.analyze(InItCreateSchema.class.getClassLoader()
                         .getResource("integrate/dbtest").getPath() + "/" + each + "/database.xml");
                 for (String database : databases) {
@@ -396,7 +426,8 @@ public class InItCreateSchema {
             }
             
         } catch (SQLException | ParserConfigurationException | IOException | XPathExpressionException | SAXException e) {
-            e.printStackTrace();
+            // The table may not exist at the time of deletion（删除时可能表不存在）
+            //e.printStackTrace();
         } finally {
             if (sr != null) {
                 sr.close();
@@ -440,7 +471,6 @@ public class InItCreateSchema {
     }
     
     /**
-     *
      * @return
      */
     public static Set<DatabaseType> getDatabaseSchema() throws IOException {
