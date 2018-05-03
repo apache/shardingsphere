@@ -187,7 +187,7 @@ masterSlaveRule:
     - <data_source_name_1>
     - <data_source_name_2>
     - <data_source_name_x>
-  loadBalanceAlgorithmClassName: #Load balance algorithm class name. No argument constructor required
+  loadBalanceAlgorithmClassName: #Load balance algorithm class name. This class need to implements MasterSlaveLoadBalanceAlgorithm, and require a no argument constructor
   loadBalanceAlgorithmType: #Load balance algorithm type, values should be: `ROUND_ROBIN` or `RANDOM`. Ignore if `loadBalanceAlgorithmClassName` is present
   
   configMap: #User-defined arguments

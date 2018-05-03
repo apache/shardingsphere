@@ -283,7 +283,7 @@ sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.slave-data-source-names[0]= #从库数据源名称列表
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.slave-data-source-names[1]= #从库数据源名称列表
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.slave-data-source-names[x]= #从库数据源名称列表
-sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.load-balance-algorithm-class-name= #从库负载均衡算法类名称。该类提供无参数构造器
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.load-balance-algorithm-class-name= #从库负载均衡算法类名称。该类需实现MasterSlaveLoadBalanceAlgorithm接口且提供无参数构造器
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.load-balance-algorithm-type= #从库负载均衡算法类型，可选值：ROUND_ROBIN，RANDOM。若`load-balance-algorithm-class-name`存在则忽略该配置
 
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data_source_name>.config.map.key1= #用户自定义配置

@@ -187,7 +187,7 @@ masterSlaveRule:
     - <data_source_name_1>
     - <data_source_name_2>
     - <data_source_name_x>
-  loadBalanceAlgorithmClassName: #从库负载均衡算法类名称。该类提供无参数构造器
+  loadBalanceAlgorithmClassName: #从库负载均衡算法类名称。该类需实现MasterSlaveLoadBalanceAlgorithm接口且提供无参数构造器
   loadBalanceAlgorithmType: #从库负载均衡算法类型，可选值：ROUND_ROBIN，RANDOM。若`loadBalanceAlgorithmClassName`存在则忽略该配置
   
   configMap: #用户自定义配置

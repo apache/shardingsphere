@@ -410,7 +410,7 @@ Namespace: http://shardingjdbc.io/schema/shardingjdbc/masterslave/master-slave.x
 | id                      | Attribute | Spring Bean Id                                                                                                |
 | master-data-source-name | Attribute | Reference of master data source                                                                               |
 | slave-data-source-names | Attribute | Reference of slave data sources. Multiple columns separated with comma                                        |
-| strategy-ref (?)        | Attribute | Reference of load balance algorithm                                                                           |
+| strategy-ref (?)        | Attribute | Reference of load balance algorithm. This class need to implements MasterSlaveLoadBalanceAlgorithm            |
 | strategy-type (?)       | Attribute | Load balance algorithm type, values should be: `ROUND_ROBIN` or `RANDOM`. Ignore if `strategy-ref` is present |
 | config-map (?)          | Attribute | User-defined arguments                                                                                        |
 

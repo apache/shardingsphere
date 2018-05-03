@@ -410,7 +410,7 @@ weight = 4
 | id                      | 属性  | Spring Bean Id                                                                |
 | master-data-source-name | 属性  | 主库数据源Bean Id                                                              |
 | slave-data-source-names | 属性  | 从库数据源Bean Id列表，多个Bean以逗号分隔                                        |
-| strategy-ref (?)        | 属性  | 从库负载均衡算法引用                                                            |
+| strategy-ref (?)        | 属性  | 从库负载均衡算法引用。该类需实现MasterSlaveLoadBalanceAlgorithm接口               |
 | strategy-type (?)       | 属性  | 从库负载均衡算法类型，可选值：ROUND_ROBIN，RANDOM。若`strategy-ref`存在则忽略该配置 |
 | config-map (?)          | 标签  | 用户自定义配置                                                                 |
 
