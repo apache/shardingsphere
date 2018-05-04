@@ -22,7 +22,7 @@ import lombok.Getter;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 @Getter
@@ -45,12 +45,12 @@ public class AssertsDefinition {
     private String initDataFile;
     
     @XmlElement(name = "assertDQL")
-    private List<AssertDQLDefinition> assertDQL = new ArrayList<>();
+    private List<AssertDQLDefinition> assertDQL = new LinkedList<>();
     
     @XmlElement(name = "assertDML")
-    private List<AssertDMLDefinition> assertDML = new ArrayList<>();
+    private List<AssertDMLDefinition> assertDML = new LinkedList<>();
     
     @XmlElement(name = "assertDDL")
-    private List<AssertDDLDefinition> assertDDL = new ArrayList<>();
+    private List<AssertDDLDefinition> assertDDL = new LinkedList<>();
     
 }
