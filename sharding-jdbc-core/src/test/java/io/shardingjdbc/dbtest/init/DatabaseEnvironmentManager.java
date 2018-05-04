@@ -85,7 +85,7 @@ public final class DatabaseEnvironmentManager {
                     continue;
                 }
                 try (
-                        Connection conn = initialConnection(null, each);
+                        Connection conn = createDataSource(null, each).getConnection();
                         StringReader stringReader = new StringReader(Joiner.on("\n").skipNulls().join(generateCreateDatabaseSQLs(each, databaseInitialization.getDatabases())))) {
                     ResultSet resultSet = RunScript.execute(conn, stringReader);
                     resultSet.close();
@@ -110,11 +110,7 @@ public final class DatabaseEnvironmentManager {
         return result;
     }
     
-    private static Connection initialConnection(final String dbName, final DatabaseType type) throws SQLException {
-        return buildDataSource(dbName, type).getConnection();
-    }
-    
-    public static DataSource buildDataSource(final String dbName, final DatabaseType type) {
+    public static DataSource createDataSource(final String dbName, final DatabaseType type) {
         BasicDataSource result = new BasicDataSource();
         DatabaseEnvironment dbEnv = new DatabaseEnvironment(type);
         result.setDriverClassName(dbEnv.getDriverClassName());
@@ -147,14 +143,12 @@ public final class DatabaseEnvironmentManager {
                         String oracleSql = getDropTableSql(DatabaseType.Oracle, AnalyzeDatabase.analyze(DatabaseEnvironmentManager.class.getClassLoader()
                                 .getResource("integrate/dbtest").getPath() + "/" + database + "/database.xml"));
                         sr = new StringReader(oracleSql);
-                        conn = initialConnection(null, each);
-                        
+                        conn = createDataSource(null, each).getConnection();
                         resultSet = RunScript.execute(conn, sr);
                         
                     } else {
                         sr = new StringReader(sql);
-                        conn = initialConnection(null, each);
-                        
+                        conn = createDataSource(null, each).getConnection();
                         resultSet = RunScript.execute(conn, sr);
                     }
                 }
@@ -204,7 +198,7 @@ public final class DatabaseEnvironmentManager {
                 List<String> databases = AnalyzeDatabase.analyze(DatabaseEnvironmentManager.class.getClassLoader()
                         .getResource("integrate/dbtest").getPath() + "/" + each + "/database.xml");
                 for (String database : databases) {
-                    conn = initialConnection(database, dbType);
+                    conn = createDataSource(database, dbType).getConnection();
                     List<String> tableSqlIds = AnalyzeSql.analyze(DatabaseEnvironmentManager.class.getClassLoader()
                             .getResource("integrate/dbtest").getPath() + "/" + each + "/table/create-table.xml");
                     List<String> tableSqls = new ArrayList<>();
@@ -257,7 +251,6 @@ public final class DatabaseEnvironmentManager {
         ResultSet resultSet = null;
         StringReader sr = null;
         try {
-            
             for (String each : DATABASES) {
                 if (dbname != null) {
                     if (!each.equals(dbname)) {
@@ -267,7 +260,7 @@ public final class DatabaseEnvironmentManager {
                 List<String> databases = AnalyzeDatabase.analyze(DatabaseEnvironmentManager.class.getClassLoader()
                         .getResource("integrate/dbtest").getPath() + "/" + each + "/database.xml");
                 for (String database : databases) {
-                    conn = initialConnection(database, dbType);
+                    conn = createDataSource(database, dbType).getConnection();
                     List<String> tableSqls = new ArrayList<>();
                     tableSqls.add(SQLCasesLoader.getInstance().getSchemaSQLCaseMap(sqlId));
                     sr = new StringReader(StringUtils.join(tableSqls, ";\n"));
@@ -311,12 +304,10 @@ public final class DatabaseEnvironmentManager {
                 List<String> databases = AnalyzeDatabase.analyze(DatabaseEnvironmentManager.class.getClassLoader()
                         .getResource("integrate/dbtest").getPath() + "/" + each + "/database.xml");
                 for (String database : databases) {
-                    conn = initialConnection(database, dbType);
+                    conn = createDataSource(database, dbType).getConnection();
                     List<String> tableSqls = new ArrayList<>();
                     tableSqls.add(SQLCasesLoader.getInstance().getSchemaSQLCaseMap(sqlId));
-                    
                     sr = new StringReader(StringUtils.join(tableSqls, ";\n"));
-                    
                     resultSet = RunScript.execute(conn, sr);
                 }
             }

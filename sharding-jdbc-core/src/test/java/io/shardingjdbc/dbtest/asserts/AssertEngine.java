@@ -106,7 +106,7 @@ public class AssertEngine {
             for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
                 Map<String, DataSource> dataSourceMaps = new HashMap<>();
                 for (String db : dbs) {
-                    DataSource subDataSource = DatabaseEnvironmentManager.buildDataSource(db, each);
+                    DataSource subDataSource = DatabaseEnvironmentManager.createDataSource(db, each);
                     dataSourceMaps.put(db, subDataSource);
                 }
                 if ("true".equals(assertsDefinition.getMasterslave())) {
