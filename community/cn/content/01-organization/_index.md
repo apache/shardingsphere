@@ -55,6 +55,8 @@ Sharding在很多情况下需要投票。选票可以视情况通过手机、电
 
 * 林嘉琦, Jiaqi Lin, [@chidaodezhongsheng](https://github.com/chidaodezhongsheng) 工程师, 当当
 
+* 岳令, Ling Yue, [@ling.yue](https://github.com/yue530tom) 测试工程师, 当当
+
 ## 邮件列表
 
 * [Google Groups](mailto:sharding+subscribe@googlegroups.com)

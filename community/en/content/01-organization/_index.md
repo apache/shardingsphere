@@ -55,6 +55,8 @@ In various situations the Sharding shall hold a vote. These votes can happen on 
 
 * 林嘉琦, Jiaqi Lin, [@chidaodezhongsheng](https://github.com/chidaodezhongsheng) Engineer, Dangdang
 
+* 岳令, Ling Yue, [@ling.yue](https://github.com/yue530tom) QA Engineer, Dangdang
+
 ## Mailing List
 
 * [Google Groups](mailto:sharding+subscribe@googlegroups.com)
