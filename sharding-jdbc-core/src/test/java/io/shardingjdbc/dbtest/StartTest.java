@@ -18,7 +18,6 @@
 package io.shardingjdbc.dbtest;
 
 import io.shardingjdbc.dbtest.asserts.AssertEngine;
-import io.shardingjdbc.dbtest.config.AnalyzeConfig;
 import io.shardingjdbc.dbtest.config.bean.AssertDDLDefinition;
 import io.shardingjdbc.dbtest.config.bean.AssertDMLDefinition;
 import io.shardingjdbc.dbtest.config.bean.AssertDQLDefinition;
@@ -35,7 +34,10 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -73,7 +75,7 @@ public final class StartTest {
         URL integrateResources = StartTest.class.getClassLoader().getResource(INTEGRATION_RESOURCES_PATH);
         assertNotNull(integrateResources);
         for (String each : getAssertFiles(integrateResources)) {
-            AssertsDefinition assertsDefinition = AnalyzeConfig.analyze(each);
+            AssertsDefinition assertsDefinition = unmarshal(each);
             if (StringUtils.isNotBlank(assertsDefinition.getBaseConfig())) {
                 String[] dbs = StringUtils.split(assertsDefinition.getBaseConfig(), ",");
                 for (String db : dbs) {
@@ -108,6 +110,13 @@ public final class StartTest {
             }
         });
         return result;
+    }
+    
+    private static AssertsDefinition unmarshal(final String assertFilePath) throws IOException, JAXBException {
+        Unmarshaller unmarshal = JAXBContext.newInstance(AssertsDefinition.class).createUnmarshaller();
+        try (FileReader reader = new FileReader(assertFilePath)) {
+            return (AssertsDefinition) unmarshal.unmarshal(reader);
+        }
     }
     
     private static <T extends AssertDefinition> void collateData(final List<String[]> result, final String path, final List<T> asserts) {

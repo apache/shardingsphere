@@ -81,7 +81,6 @@ public class AssertEngine {
     public static boolean runAssert(final String path, final String id) {
         AssertsDefinition assertsDefinition = ASSERT_DEFINITION_MAPS.get(path);
         String rootPath = path.substring(0, path.lastIndexOf(File.separator) + 1);
-        assertsDefinition.setPath(rootPath);
         try {
             String msg = "The file path " + path + ", under which id is " + id;
             

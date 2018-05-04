@@ -17,17 +17,13 @@
 
 package io.shardingjdbc.dbtest.config.bean;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import io.shardingjdbc.core.constant.DatabaseType;
-import lombok.Getter;
-import lombok.Setter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @XmlRootElement(name = "asserts")
@@ -47,12 +43,6 @@ public class AssertsDefinition {
     
     @XmlAttribute(name = "init-data-file")
     private String initDataFile;
-    
-    @Setter
-    private String path;
-    
-    @Setter
-    private String pathBaseCofig;
     
     @XmlElement(name = "assertDQL")
     private List<AssertDQLDefinition> assertDQL = new ArrayList<>();
