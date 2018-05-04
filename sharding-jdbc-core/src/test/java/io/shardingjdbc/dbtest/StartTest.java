@@ -17,15 +17,16 @@
 
 package io.shardingjdbc.dbtest;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-
-import javax.xml.bind.JAXBException;
-
-import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.dbtest.config.bean.*;
-import lombok.AllArgsConstructor;
+import io.shardingjdbc.dbtest.asserts.AssertEngine;
+import io.shardingjdbc.dbtest.config.AnalyzeConfig;
+import io.shardingjdbc.dbtest.config.bean.AssertDDLDefinition;
+import io.shardingjdbc.dbtest.config.bean.AssertDMLDefinition;
+import io.shardingjdbc.dbtest.config.bean.AssertDQLDefinition;
+import io.shardingjdbc.dbtest.config.bean.AssertDefinition;
+import io.shardingjdbc.dbtest.config.bean.AssertsDefinition;
+import io.shardingjdbc.dbtest.exception.DbTestException;
+import io.shardingjdbc.dbtest.init.InItCreateSchema;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -34,90 +35,78 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import io.shardingjdbc.dbtest.asserts.AssertEngine;
-import io.shardingjdbc.dbtest.common.FileUtil;
-import io.shardingjdbc.dbtest.common.PathUtil;
-import io.shardingjdbc.dbtest.config.AnalyzeConfig;
-import io.shardingjdbc.dbtest.exception.DbTestException;
-import io.shardingjdbc.dbtest.init.InItCreateSchema;
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
-@RunWith(value = Parameterized.class)
-@AllArgsConstructor
-public class StartTest {
+import static org.junit.Assert.assertNotNull;
+
+@RunWith(Parameterized.class)
+@RequiredArgsConstructor
+public final class StartTest {
     
-    private String path;
+    private static final String INTEGRATION_RESOURCES_PATH = "asserts";
     
-    private String id;
+    private static boolean isInitialized = IntegrateTestEnvironment.getInstance().isInitialized();
     
-    private static Properties config = new Properties();
+    private static boolean isCleaned = IntegrateTestEnvironment.getInstance().isInitialized();
     
     private static final List<String[]> RESULT_ASSERT = new ArrayList<>();
     
-    static {
-        try {
-            config.load(StartTest.class.getClassLoader().getResourceAsStream("integrate/env.properties"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+    private final String path;
     
-    /**
-     * query value.
-     *
-     * @param key          key
-     * @param defaultValue default Value
-     * @return value
-     */
-    public static String getString(final String key, final String defaultValue) {
-        return config.getProperty(key, defaultValue);
-    }
+    private final String id;
     
-    /**
-     * query Assert Path.
-     *
-     * @return Assert Path
-     */
-    public static String getAssertPath() {
-        return getString("assert.path", null);
-    }
-    
-    
-    @Parameters
-    public static Collection<String[]> getParameters() {
-        String assertPath = getAssertPath();
-        assertPath = PathUtil.getPath(assertPath);
-        List<String> paths = FileUtil.getAllFilePaths(new File(assertPath), "assert-", "xml");
-        
-        try {
-            for (String each : paths) {
-                AssertsDefinition assertsDefinition = AnalyzeConfig.analyze(each);
-                
-                if (StringUtils.isNotBlank(assertsDefinition.getBaseConfig())) {
-                    String[] dbs = StringUtils.split(assertsDefinition.getBaseConfig(), ",");
-                    for (String db : dbs) {
-                        InItCreateSchema.addDatabase(db);
-                    }
-                } else {
-                    for (String db : AssertEngine.DEFAULT_DATABASES) {
-                        InItCreateSchema.addDatabase(db);
-                    }
+    @Parameters(name = "{0} ({2}) -> {1}")
+    public static Collection<String[]> getParameters() throws IOException, JAXBException {
+        URL integrateResources = StartTest.class.getClassLoader().getResource(INTEGRATION_RESOURCES_PATH);
+        assertNotNull(integrateResources);
+        for (String each : getAssertFiles(integrateResources)) {
+            AssertsDefinition assertsDefinition = AnalyzeConfig.analyze(each);
+            if (StringUtils.isNotBlank(assertsDefinition.getBaseConfig())) {
+                String[] dbs = StringUtils.split(assertsDefinition.getBaseConfig(), ",");
+                for (String db : dbs) {
+                    InItCreateSchema.addDatabase(db);
                 }
-                
-                List<AssertDQLDefinition> assertDQLs = assertsDefinition.getAssertDQL();
-                collateData(RESULT_ASSERT, each, assertDQLs);
-                
-                List<AssertDMLDefinition> assertDMLs = assertsDefinition.getAssertDML();
-                collateData(RESULT_ASSERT, each, assertDMLs);
-                
-                List<AssertDDLDefinition> assertDDLs = assertsDefinition.getAssertDDL();
-                collateData(RESULT_ASSERT, each, assertDDLs);
-                
-                AssertEngine.addAssertDefinition(each, assertsDefinition);
+            } else {
+                for (String db : AssertEngine.DEFAULT_DATABASES) {
+                    InItCreateSchema.addDatabase(db);
+                }
             }
-        } catch (JAXBException | IOException e) {
-            e.printStackTrace();
+            List<AssertDQLDefinition> assertDQLs = assertsDefinition.getAssertDQL();
+            collateData(RESULT_ASSERT, each, assertDQLs);
+            List<AssertDMLDefinition> assertDMLs = assertsDefinition.getAssertDML();
+            collateData(RESULT_ASSERT, each, assertDMLs);
+            List<AssertDDLDefinition> assertDDLs = assertsDefinition.getAssertDDL();
+            collateData(RESULT_ASSERT, each, assertDDLs);
+            AssertEngine.addAssertDefinition(each, assertsDefinition);
         }
         return RESULT_ASSERT;
+    }
+    
+    private static List<String> getAssertFiles(final URL integrateResources) throws IOException {
+        final List<String> result = new LinkedList<>();
+        Files.walkFileTree(Paths.get(integrateResources.getPath()), new SimpleFileVisitor<Path>() {
+            
+            @Override
+            public FileVisitResult visitFile(final Path file, final BasicFileAttributes basicFileAttributes) {
+                if (file.getFileName().toString().startsWith("assert-") && file.getFileName().toString().endsWith(".xml")) {
+                    result.add(file.toFile().getPath());
+                }
+                return FileVisitResult.CONTINUE;
+            }
+        });
+        return result;
     }
     
     private static <T extends AssertDefinition> void collateData(final List<String[]> result, final String path, final List<T> asserts) {
@@ -136,10 +125,10 @@ public class StartTest {
     
     @BeforeClass
     public static void beforeClass() {
-        if (AssertEngine.isInitialized()) {
+        if (isInitialized) {
             InItCreateSchema.createDatabase();
             InItCreateSchema.createTable();
-            AssertEngine.setInitialized(false);
+            isInitialized = false;
         } else {
             InItCreateSchema.dropDatabase();
             InItCreateSchema.createDatabase();
@@ -154,10 +143,9 @@ public class StartTest {
     
     @AfterClass
     public static void afterClass() {
-        if (AssertEngine.isClean()) {
+        if (isCleaned) {
             InItCreateSchema.dropDatabase();
-            AssertEngine.setClean(false);
+            isCleaned = false;
         }
     }
-    
 }

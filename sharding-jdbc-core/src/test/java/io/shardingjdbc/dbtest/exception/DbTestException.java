@@ -25,10 +25,6 @@ public class DbTestException extends RuntimeException {
         super(message);
     }
 
-    public DbTestException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
-
     public DbTestException(final Throwable cause) {
         super(cause);
     }
