@@ -1,0 +1,10 @@
+<init>
+    <metadata>
+        <table name="t_log">
+            <cloumn name="id" type="integer" >
+                <index name="t_log_index_t_log" type="3" unique="false"/>
+            </cloumn>
+            <cloumn name="status" type="varchar"/>
+        </table>
+    </metadata>
+</init>

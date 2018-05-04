@@ -37,6 +37,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -68,7 +69,7 @@ public final class StartTest {
     private final String id;
     
     @Parameters(name = "{0} ({2}) -> {1}")
-    public static Collection<String[]> getParameters() throws IOException, JAXBException {
+    public static Collection<String[]> getParameters() throws IOException, JAXBException, URISyntaxException {
         URL integrateResources = StartTest.class.getClassLoader().getResource(INTEGRATION_RESOURCES_PATH);
         assertNotNull(integrateResources);
         for (String each : getAssertFiles(integrateResources)) {
@@ -94,9 +95,9 @@ public final class StartTest {
         return RESULT_ASSERT;
     }
     
-    private static List<String> getAssertFiles(final URL integrateResources) throws IOException {
+    private static List<String> getAssertFiles(final URL integrateResources) throws IOException, URISyntaxException {
         final List<String> result = new LinkedList<>();
-        Files.walkFileTree(Paths.get(integrateResources.getPath()), new SimpleFileVisitor<Path>() {
+        Files.walkFileTree(Paths.get(integrateResources.toURI()), new SimpleFileVisitor<Path>() {
             
             @Override
             public FileVisitResult visitFile(final Path file, final BasicFileAttributes basicFileAttributes) {

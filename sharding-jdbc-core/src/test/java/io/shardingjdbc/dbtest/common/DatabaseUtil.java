@@ -17,17 +17,6 @@
 
 package io.shardingjdbc.dbtest.common;
 
-import io.shardingjdbc.dbtest.config.bean.ColumnDefinition;
-import io.shardingjdbc.dbtest.config.bean.DatasetDatabase;
-import io.shardingjdbc.dbtest.config.bean.DatasetDefinition;
-import io.shardingjdbc.dbtest.config.bean.ParameterDefinition;
-import io.shardingjdbc.dbtest.config.bean.ParameterValueDefinition;
-import io.shardingjdbc.dbtest.exception.DbTestException;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateFormatUtils;
-import org.apache.commons.lang3.time.FastDateFormat;
-import org.junit.Assert;
-
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.Date;
@@ -45,7 +34,22 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.shardingjdbc.dbtest.config.bean.ColumnDefinition;
+import io.shardingjdbc.dbtest.config.bean.DatasetDatabase;
+import io.shardingjdbc.dbtest.config.bean.DatasetDefinition;
+import io.shardingjdbc.dbtest.config.bean.IndexDefinition;
+import io.shardingjdbc.dbtest.config.bean.ParameterDefinition;
+import io.shardingjdbc.dbtest.config.bean.ParameterValueDefinition;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.commons.lang3.time.FastDateFormat;
+
+import io.shardingjdbc.dbtest.exception.DbTestException;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class DatabaseUtil {
     
@@ -94,60 +98,64 @@ public class DatabaseUtil {
             throws SQLException, ParseException {
         try (PreparedStatement pstmt = conn.prepareStatement(sql);) {
             for (Map<String, String> data : datas) {
-                int index = 1;
-                for (Map.Entry<String, String> each : data.entrySet()) {
-                    String key = each.getKey();
-                    String datacol = each.getValue();
-                    String type = "String";
-                    if (config != null) {
-                        for (ColumnDefinition eachColumnDefinition : config) {
-                            if (key.equals(eachColumnDefinition.getName())) {
-                                type = eachColumnDefinition.getType();
-                            }
-                        }
-                    }
-                    if (type == null) {
-                        type = "String";
-                    }
-                    switch (type) {
-                        case "byte":
-                            pstmt.setByte(index, Byte.valueOf(datacol));
-                            break;
-                        case "short":
-                            pstmt.setShort(index, Short.valueOf(datacol));
-                            break;
-                        case "int":
-                            pstmt.setInt(index, Integer.valueOf(datacol));
-                            break;
-                        case "long":
-                            pstmt.setLong(index, Long.valueOf(datacol));
-                            break;
-                        case "float":
-                            pstmt.setFloat(index, Float.valueOf(datacol));
-                            break;
-                        case "double":
-                            pstmt.setDouble(index, Double.valueOf(datacol));
-                            break;
-                        case "boolean":
-                            pstmt.setBoolean(index, Boolean.valueOf(datacol));
-                            break;
-                        case "Date":
-                            FastDateFormat fdf = FastDateFormat.getInstance("yyyy-MM-dd");
-                            pstmt.setDate(index, new Date(fdf.parse(datacol).getTime()));
-                            break;
-                        case "String":
-                            pstmt.setString(index, datacol);
-                            break;
-                        default:
-                            pstmt.setString(index, datacol);
-                            break;
-                    }
-                    index++;
-                }
+                sqlParameterProcessing(config, pstmt, data);
                 pstmt.executeUpdate();
             }
         }
         return true;
+    }
+    
+    private static void sqlParameterProcessing(final List<ColumnDefinition> config, final PreparedStatement pstmt, final Map<String, String> data) throws SQLException, ParseException {
+        int index = 1;
+        for (Map.Entry<String, String> each : data.entrySet()) {
+            String key = each.getKey();
+            String datacol = each.getValue();
+            String type = "String";
+            if (config != null) {
+                for (ColumnDefinition eachColumnDefinition : config) {
+                    if (key.equals(eachColumnDefinition.getName())) {
+                        type = eachColumnDefinition.getType();
+                    }
+                }
+            }
+            if (type == null) {
+                type = "String";
+            }
+            switch (type) {
+                case "byte":
+                    pstmt.setByte(index, Byte.valueOf(datacol));
+                    break;
+                case "short":
+                    pstmt.setShort(index, Short.valueOf(datacol));
+                    break;
+                case "int":
+                    pstmt.setInt(index, Integer.valueOf(datacol));
+                    break;
+                case "long":
+                    pstmt.setLong(index, Long.valueOf(datacol));
+                    break;
+                case "float":
+                    pstmt.setFloat(index, Float.valueOf(datacol));
+                    break;
+                case "double":
+                    pstmt.setDouble(index, Double.valueOf(datacol));
+                    break;
+                case "boolean":
+                    pstmt.setBoolean(index, Boolean.valueOf(datacol));
+                    break;
+                case "Date":
+                    FastDateFormat fdf = FastDateFormat.getInstance("yyyy-MM-dd");
+                    pstmt.setDate(index, new Date(fdf.parse(datacol).getTime()));
+                    break;
+                case "String":
+                    pstmt.setString(index, datacol);
+                    break;
+                default:
+                    pstmt.setString(index, datacol);
+                    break;
+            }
+            index++;
+        }
     }
     
     /**
@@ -161,6 +169,28 @@ public class DatabaseUtil {
         try (Statement pstmt = conn.createStatement();) {
             pstmt.execute("DELETE from " + table);
         }
+    }
+    
+    /**
+     * To determine if it is a query statement.
+     *
+     * @param sql sql
+     * @return true select
+     */
+    public static boolean isSelect(final String sql) {
+        String newSql = sql.trim();
+        return newSql.startsWith("select");
+    }
+    
+    /**
+     * To determine whether the statement is an update.
+     *
+     * @param sql sql
+     * @return true update
+     */
+    public static boolean isInsertOrUpdateOrDelete(final String sql) {
+        String newSql = sql.trim();
+        return newSql.startsWith("insert") || newSql.startsWith("update") || newSql.startsWith("delete");
     }
     
     /**
@@ -384,7 +414,7 @@ public class DatabaseUtil {
         try (PreparedStatement pstmt = conn.prepareStatement(newSql)) {
             sqlPreparedStatement(parameter, pstmt);
             boolean flag = pstmt.execute();
-            Assert.assertTrue("Not a query statement.", flag);
+            assertTrue("Not a query statement.", flag);
             try (ResultSet resultSet = pstmt.getResultSet()) {
                 return usePreparedStatementBackResultSet(resultSet);
             }
@@ -594,7 +624,7 @@ public class DatabaseUtil {
      * @return java type
      */
     private static String getDataType(final int type, final int scale) {
-        String result;
+        String result = null;
         switch (type) {
             case Types.INTEGER:
                 result = "int";
@@ -659,46 +689,49 @@ public class DatabaseUtil {
         Map<String, List<ColumnDefinition>> configs = expected.getMetadatas();
         List<ColumnDefinition> columnDefinitions = configs.get(table);
         for (ColumnDefinition each : columnDefinitions) {
-            
-            for (ColumnDefinition definition : actual) {
-                if (each.getName().equals(definition.getName())) {
-                    boolean flag2 = true;
-                    if (StringUtils.isNotEmpty(each.getType())) {
-                        if (!each.getType().equals(definition.getType())) {
-                            flag2 = false;
+            checkActual(actual, msg, each);
+        }
+    }
+    
+    private static void checkActual(final List<ColumnDefinition> actual, final String msg, final ColumnDefinition expect) {
+        for (ColumnDefinition each : actual) {
+            if (expect.getName().equals(each.getName())) {
+                if (StringUtils.isNotEmpty(expect.getType())) {
+                    assertEquals(msg, expect.getType(), each.getType());
+                }
+                if (expect.getDecimalDigits() != null && !expect.getDecimalDigits().equals(each.getDecimalDigits())) {
+                    fail(msg);
+                }
+                if (expect.getNullAble() != null && !expect.getNullAble().equals(each.getNullAble())) {
+                    fail(msg);
+                }
+                if (expect.getNumPrecRadix() != null && !expect.getNumPrecRadix().equals(each.getNumPrecRadix())) {
+                    fail(msg);
+                }
+                if (expect.getSize() != null && !expect.getSize().equals(each.getSize())) {
+                    fail(msg);
+                }
+                if (expect.getIsAutoincrement() != 0 && expect.getIsAutoincrement() != each.getIsAutoincrement()) {
+                    fail(msg);
+                }
+                List<IndexDefinition> indexs = expect.getIndexs();
+                if (indexs != null && !indexs.isEmpty()) {
+                    for (IndexDefinition expectIndex : indexs) {
+                        for (IndexDefinition actualIndex : each.getIndexs()) {
+                            if (expectIndex.getName().equals(actualIndex.getName())) {
+                                if (expectIndex.getType() != null && !expectIndex.getType().equals(actualIndex.getType())) {
+                                    fail(msg);
+                                }
+                                
+                                if (expectIndex.isUnique() != actualIndex.isUnique()) {
+                                    fail(msg);
+                                }
+                                
+                            }
                         }
-                    }
-                    if (flag2 && each.getDecimalDigits() != null) {
-                        if (!each.getDecimalDigits().equals(definition.getDecimalDigits())) {
-                            flag2 = false;
-                        }
-                    }
-                    if (flag2 && each.getNullAble() != null) {
-                        if (!each.getNullAble().equals(definition.getNullAble())) {
-                            flag2 = false;
-                        }
-                    }
-                    if (flag2 && each.getNumPrecRadix() != null) {
-                        if (!each.getNumPrecRadix().equals(definition.getNumPrecRadix())) {
-                            flag2 = false;
-                        }
-                    }
-                    if (flag2 && each.getSize() != null) {
-                        if (!each.getSize().equals(definition.getSize())) {
-                            flag2 = false;
-                        }
-                    }
-                    if (flag2 && each.getIsAutoincrement() != 0) {
-                        if (each.getIsAutoincrement() != definition.getIsAutoincrement()) {
-                            flag2 = false;
-                        }
-                    }
-                    if (!flag2) {
-                        assertTrue(msg, false);
                     }
                 }
             }
-            
         }
     }
     
@@ -707,15 +740,16 @@ public class DatabaseUtil {
      *
      * @param expected expected
      * @param actual   actual
+     * @param msg      error msg
      */
-    public static void assertDatas(final DatasetDefinition expected, final DatasetDatabase actual, String msg) {
+    public static void assertDatas(final DatasetDefinition expected, final DatasetDatabase actual, final String msg) {
         Map<String, List<ColumnDefinition>> actualConfigs = actual.getMetadatas();
         Map<String, List<ColumnDefinition>> expectedConfigs = expected.getMetadatas();
         
         for (Map.Entry<String, List<ColumnDefinition>> each : expectedConfigs.entrySet()) {
             List<ColumnDefinition> config = each.getValue();
             List<ColumnDefinition> actualConfig = actualConfigs.get(each.getKey());
-            assertTrue(actualConfig != null);
+            assertNotNull(msg, actualConfig);
             for (ColumnDefinition eachColumn : config) {
                 boolean flag = false;
                 for (ColumnDefinition eachActualColumn : actualConfig) {
@@ -733,7 +767,7 @@ public class DatabaseUtil {
             List<Map<String, String>> data = stringListEntry.getValue();
             List<Map<String, String>> actualDatas = actualDatass.get(stringListEntry.getKey());
             
-            assertTrue(msg + " result set validation failed , The number of validation data and query data is not equal", data.size() == actualDatas.size());
+            assertEquals(msg + " result set validation failed , The number of validation data and query data is not equal", actualDatas.size(), data.size());
             
             for (int i = 0; i < data.size(); i++) {
                 Map<String, String> expectData = data.get(i);
@@ -742,7 +776,7 @@ public class DatabaseUtil {
                     if (!stringStringEntry.getValue().equals(actualData.get(stringStringEntry.getKey()))) {
                         String actualMsg = actualDatas.toString();
                         String expectMsg = data.toString();
-                        assertTrue(msg + " result set validation failed . describe : actual = " + actualMsg + " . expect = " + expectMsg, stringStringEntry.getValue().equals(actualData.get(stringStringEntry.getKey())));
+                        fail(msg + " result set validation failed . describe : actual = " + actualMsg + " . expect = " + expectMsg);
                     }
                 }
                 
@@ -766,23 +800,62 @@ public class DatabaseUtil {
             while (rs.next()) {
                 ColumnDefinition col = new ColumnDefinition();
                 String column = rs.getString("COLUMN_NAME");
-                int size = rs.getInt("COLUMN_SIZE");
-                String columnType = rs.getString("TYPE_NAME").toLowerCase();
-                int decimalDigits = rs.getInt("DECIMAL_DIGITS");
-                int numPrecRadix = rs.getInt("NUM_PREC_RADIX");
-                int nullAble = rs.getInt("NULLABLE");
-                String isAutoincrement = rs.getString("IS_AUTOINCREMENT");
+                col.setName(column);
                 
+                int size = rs.getInt("COLUMN_SIZE");
                 col.setSize(size);
+                
+                String columnType = rs.getString("TYPE_NAME").toLowerCase();
+                col.setType(columnType);
+                
+                int decimalDigits = rs.getInt("DECIMAL_DIGITS");
                 col.setDecimalDigits(decimalDigits);
+                
+                int numPrecRadix = rs.getInt("NUM_PREC_RADIX");
                 col.setNumPrecRadix(numPrecRadix);
+                
+                int nullAble = rs.getInt("NULLABLE");
                 col.setNullAble(nullAble);
+                
+                String isAutoincrement = rs.getString("IS_AUTOINCREMENT");
                 if (StringUtils.isNotEmpty(isAutoincrement)) {
                     col.setIsAutoincrement(1);
                 }
-                col.setName(column);
-                col.setType(columnType);
+                
                 cols.add(col);
+            }
+            geIndexDefinitions(stmt, cols, table);
+            return cols;
+        }
+    }
+    
+    private static List<ColumnDefinition> geIndexDefinitions(final DatabaseMetaData stmt, final List<ColumnDefinition> cols, final String table) throws SQLException, ParseException {
+        try (ResultSet rs = stmt.getIndexInfo(null, null, table, false, false)) {
+            while (rs.next()) {
+                IndexDefinition index = new IndexDefinition();
+                
+                String name = rs.getString("COLUMN_NAME");
+                String nameIndex = rs.getString("INDEX_NAME");
+                if (StringUtils.isNotEmpty(nameIndex)) {
+                    index.setName(nameIndex);
+                }
+                
+                String typeIndex = rs.getString("TYPE");
+                if (StringUtils.isNotEmpty(typeIndex)) {
+                    index.setType(typeIndex);
+                }
+                
+                String uniqueIndex = rs.getString("NON_UNIQUE");
+                if (StringUtils.isNotEmpty(uniqueIndex)) {
+                    index.setUnique(!"TRUE".equalsIgnoreCase(uniqueIndex));
+                }
+                
+                for (ColumnDefinition col : cols) {
+                    if (name.equals(col.getName())) {
+                        col.getIndexs().add(index);
+                        break;
+                    }
+                }
             }
             return cols;
         }

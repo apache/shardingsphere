@@ -1,6 +1,14 @@
 <asserts sharding-rule-config="./config/test" init-data-file="./init" database="h2,mysql,oracle,sqlserver,postgresql">
-    <!--<assertDDL id="assertCreateTable" clean-sql="dropTLog" expected-update="1" sql="assertCreateTable"
+    <assertDDL id="assertCreateTable" clean-sql="dropTLog" expected-update="1" sql="assertCreateTable"
                table="t_log"
                expected-data-file="assertCreateTable.xml">
-    </assertDDL>-->
+    </assertDDL>
+    <assertDDL id="assertCreateIndex" init-sql="createTLog" clean-sql="dropTLog" expected-update="1" sql="assertCreateIndex"
+               table="t_log"
+               expected-data-file="assertCreateIndex.xml">
+    </assertDDL>
+    <assertDDL id="assertCreateUniqueIndex" init-sql="createTLog" clean-sql="dropTLog" expected-update="1" sql="assertCreateUniqueIndex"
+               table="t_log"
+               expected-data-file="assertCreateUniqueIndex.xml">
+    </assertDDL>
 </asserts>
