@@ -101,7 +101,7 @@ public final class DatabaseEnvironment {
      */
     public String getURL(final String dbName) {
         String nowDbName = dbName;
-        if (nowDbName == null) {
+        if (null == nowDbName) {
             nowDbName = DBNAME.get(databaseType);
         }
         return String.format(URL.get(databaseType), nowDbName);

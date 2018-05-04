@@ -42,6 +42,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -112,16 +113,14 @@ public final class StartTest {
     }
     
     @BeforeClass
-    public static void beforeClass() {
+    public static void beforeClass() throws JAXBException, IOException, SQLException {
         if (isInitialized) {
-            DatabaseEnvironmentManager.createDatabase();
-            DatabaseEnvironmentManager.createTable();
             isInitialized = false;
         } else {
             DatabaseEnvironmentManager.dropDatabase();
-            DatabaseEnvironmentManager.createDatabase();
-            DatabaseEnvironmentManager.createTable();
         }
+        DatabaseEnvironmentManager.createDatabase();
+        DatabaseEnvironmentManager.createTable();
     }
     
     @Test
