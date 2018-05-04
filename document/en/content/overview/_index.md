@@ -69,25 +69,29 @@ Database Mesh is focused on how to connect the distributed data-access-layer and
 ## Features
 
 ### Data sharding
+
 * Both databases and tables sharding.
-* Standard aggregation functions, GROUP BY, ORDER BY, LIMIT and JOIN DQL supported.
-* Standard DML, DDL, TCL and database administrator command supported.
+* Aggregation functions, GROUP BY, ORDER BY, LIMIT, OR, and JOIN DQL supported.
+* DML, DDL, TCL and database administrator command supported.
 * Sharding operator `=`, `BETWEEN` and `IN` supported.
 * Sharding algorithm customization and inline expression supported.
 * Force route by hint.
 * Distributed sequence.
 
 ### Read-write splitting
+
 * Multiple slaves replica. 
 * Data consistency guarantee in same thread.
 * Mix read-write splitting and data sharding.
 * Force route by hint.
 
 ### BASE Transaction
+
 * Best efforts delivery transaction.
 * Try confirm cancel transaction (TBD).
 
 ### Orchestration
+
 * Configuration center, can refresh dynamically.
 * Circuit breaker.
 * Open tracing supported.
