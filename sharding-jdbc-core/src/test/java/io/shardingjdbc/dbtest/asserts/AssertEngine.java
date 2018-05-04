@@ -49,8 +49,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,8 +56,6 @@ import java.util.Map;
 public class AssertEngine {
     
     public static final Map<String, AssertsDefinition> ASSERT_DEFINITION_MAPS = new HashMap<>();
-    
-    public static final List<String> DEFAULT_DATABASES = Arrays.asList("db", "dbtbl", "nullable");
     
     /**
      * add check use cases.
@@ -83,15 +79,7 @@ public class AssertEngine {
         String rootPath = path.substring(0, path.lastIndexOf(File.separator) + 1);
         try {
             String msg = "The file path " + path + ", under which id is " + id;
-            
-            List<String> dbNames = new ArrayList<>();
-            if (StringUtils.isNotBlank(assertsDefinition.getBaseConfig())) {
-                String[] dbs = StringUtils.split(assertsDefinition.getBaseConfig(), ",");
-                Collections.addAll(dbNames, dbs);
-            } else {
-                dbNames.addAll(AssertEngine.DEFAULT_DATABASES);
-            }
-            for (String each : dbNames) {
+            for (String each : assertsDefinition.getBaseConfig().split(",")) {
                 String initDataFile = rootPath + assertsDefinition.getInitDataFile();
                 String initDataPath = initDataFile + "/" + each;
                 File fileDirDatabase = new File(initDataPath);

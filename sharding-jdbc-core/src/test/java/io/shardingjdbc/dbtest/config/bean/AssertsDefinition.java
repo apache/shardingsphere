@@ -33,7 +33,7 @@ public class AssertsDefinition {
     private String shardingRuleConfig;
     
     @XmlAttribute(name = "base-config")
-    private String baseConfig;
+    private String baseConfig = "db,dbtbl,nullable";
     
     @XmlAttribute(name = "database-config")
     private String databaseConfig;

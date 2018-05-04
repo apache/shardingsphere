@@ -17,7 +17,6 @@
 
 package io.shardingjdbc.dbtest;
 
-import com.google.common.base.Strings;
 import io.shardingjdbc.dbtest.asserts.AssertEngine;
 import io.shardingjdbc.dbtest.config.bean.AssertDDLDefinition;
 import io.shardingjdbc.dbtest.config.bean.AssertDMLDefinition;
@@ -76,15 +75,9 @@ public final class StartTest {
         assertNotNull(integrateResources);
         for (String each : getAssertFiles(integrateResources)) {
             AssertsDefinition assertsDefinition = unmarshal(each);
-            if (!Strings.isNullOrEmpty(assertsDefinition.getBaseConfig())) {
-                String[] dbs = assertsDefinition.getBaseConfig().split(",");
-                for (String db : dbs) {
-                    InItCreateSchema.addDatabase(db);
-                }
-            } else {
-                for (String db : AssertEngine.DEFAULT_DATABASES) {
-                    InItCreateSchema.addDatabase(db);
-                }
+            String[] dbs = assertsDefinition.getBaseConfig().split(",");
+            for (String db : dbs) {
+                InItCreateSchema.addDatabase(db);
             }
             List<AssertDQLDefinition> assertDQLs = assertsDefinition.getAssertDQL();
             collateData(RESULT_ASSERT, each, assertDQLs);
