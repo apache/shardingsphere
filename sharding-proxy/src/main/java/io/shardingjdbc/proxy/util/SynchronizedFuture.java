@@ -37,7 +37,7 @@ public class SynchronizedFuture<T> implements Future<List<T>> {
     
     private long beginTime = System.currentTimeMillis();
     
-    public SynchronizedFuture(int resultSize){
+    public SynchronizedFuture(int resultSize) {
         latch = new CountDownLatch(resultSize);
         responses = Lists.newArrayListWithCapacity(resultSize);
     }
@@ -46,10 +46,12 @@ public class SynchronizedFuture<T> implements Future<List<T>> {
     public boolean cancel(boolean mayInterruptIfRunning) {
         return false;
     }
+    
     @Override
     public boolean isCancelled() {
         return false;
     }
+    
     @Override
     public boolean isDone() {
         if (null != responses && responses.size() > 0) {

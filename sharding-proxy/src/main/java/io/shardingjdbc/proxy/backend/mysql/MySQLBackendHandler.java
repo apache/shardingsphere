@@ -20,7 +20,6 @@ package io.shardingjdbc.proxy.backend.mysql;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.shardingjdbc.proxy.backend.common.CommandResponsePacketsHandler;
-import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.handshake.AuthPluginData;
 import io.shardingjdbc.proxy.transport.mysql.packet.handshake.HandshakePacket;
 import io.shardingjdbc.proxy.util.MySQLResultCache;
@@ -39,9 +38,9 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
         //TODO if OKPacket or ERRPacket, then log.
         if (true) {
             auth(context, (ByteBuf) message);
-        } else if(true){
+        } else if (true) {
         
-        } else{
+        } else {
         
         }
     }
@@ -49,7 +48,7 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
     //TODO message to handshakePacket; send handshakeResponse back.
     @Override
     protected void auth(ChannelHandlerContext context, ByteBuf message) {
-        HandshakePacket handshakePacket = new HandshakePacket(1,new AuthPluginData());
+        HandshakePacket handshakePacket = new HandshakePacket(1, new AuthPluginData());
     }
     
     //TODO

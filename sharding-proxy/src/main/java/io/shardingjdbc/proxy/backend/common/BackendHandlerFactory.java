@@ -17,13 +17,8 @@
 
 package io.shardingjdbc.proxy.backend.common;
 
-import io.netty.channel.EventLoopGroup;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.proxy.backend.mysql.MySQLBackendHandler;
-import io.shardingjdbc.proxy.frontend.common.FrontendHandler;
-import io.shardingjdbc.proxy.frontend.mysql.MySQLFrontendHandler;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 
 /**
  * Backend handler factory.

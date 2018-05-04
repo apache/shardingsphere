@@ -61,8 +61,8 @@ public class MySQLResultCache {
     }
     
     /**
-     * @param channelId netty channel id.
-     * @param connectionId    mysql connection id.
+     * @param channelId    netty channel id.
+     * @param connectionId mysql connection id.
      */
     public void putConnectionMap(String channelId, int connectionId) {
         connectionCache.put(channelId, connectionId);
