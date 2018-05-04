@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
-    <sql id="masterCreateTOrder0"/>
-    <sql id="masterCreateTOrder1"/>
-    <sql id="masterCreateTOrder2"/>
-    <sql id="masterCreateTOrder3"/>
-    <sql id="masterCreateTOrder4"/>
-    <sql id="masterCreateTOrder5"/>
-    <sql id="masterCreateTOrder6"/>
-    <sql id="masterCreateTOrder7"/>
-    <sql id="masterCreateTOrder8"/>
-    <sql id="masterCreateTOrder9"/>
-    <sql id="masterCreateTOrderItem0"/>
-    <sql id="masterCreateTOrderItem1"/>
-    <sql id="masterCreateTOrderItem2"/>
-    <sql id="masterCreateTOrderItem3"/>
-    <sql id="masterCreateTOrderItem4"/>
-    <sql id="masterCreateTOrderItem5"/>
-    <sql id="masterCreateTOrderItem6"/>
-    <sql id="masterCreateTOrderItem7"/>
-    <sql id="masterCreateTOrderItem8"/>
-    <sql id="masterCreateTOrderItem9"/>
-    <sql id="masterCreateTConfig"/>
-    <sql id="masterCreateTGlobal"/>
+    <sql id="masterCreateTOrder0 "/>
+    <sql id="masterCreateTOrder1 "/>
+    <sql id="masterCreateTOrder2 "/>
+    <sql id="masterCreateTOrder3 "/>
+    <sql id="masterCreateTOrder4 "/>
+    <sql id="masterCreateTOrder5 "/>
+    <sql id="masterCreateTOrder6 "/>
+    <sql id="masterCreateTOrder7 "/>
+    <sql id="masterCreateTOrder8 "/>
+    <sql id="masterCreateTOrder9 "/>
+    <sql id="masterCreateTOrderItem0 "/>
+    <sql id="masterCreateTOrderItem1 "/>
+    <sql id="masterCreateTOrderItem2 "/>
+    <sql id="masterCreateTOrderItem3 "/>
+    <sql id="masterCreateTOrderItem4 "/>
+    <sql id="masterCreateTOrderItem5 "/>
+    <sql id="masterCreateTOrderItem6 "/>
+    <sql id="masterCreateTOrderItem7 "/>
+    <sql id="masterCreateTOrderItem8 "/>
+    <sql id="masterCreateTOrderItem9 "/>
+    <sql id="masterCreateTConfig "/>
+    <sql id="masterCreateTGlobal "/>
 </sqls>

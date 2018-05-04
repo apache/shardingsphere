@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.dbtest;
 
+import com.google.common.base.Strings;
 import io.shardingjdbc.dbtest.asserts.AssertEngine;
 import io.shardingjdbc.dbtest.config.bean.AssertDDLDefinition;
 import io.shardingjdbc.dbtest.config.bean.AssertDMLDefinition;
@@ -26,7 +27,6 @@ import io.shardingjdbc.dbtest.config.bean.AssertsDefinition;
 import io.shardingjdbc.dbtest.exception.DbTestException;
 import io.shardingjdbc.dbtest.init.InItCreateSchema;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -76,8 +76,8 @@ public final class StartTest {
         assertNotNull(integrateResources);
         for (String each : getAssertFiles(integrateResources)) {
             AssertsDefinition assertsDefinition = unmarshal(each);
-            if (StringUtils.isNotBlank(assertsDefinition.getBaseConfig())) {
-                String[] dbs = StringUtils.split(assertsDefinition.getBaseConfig(), ",");
+            if (!Strings.isNullOrEmpty(assertsDefinition.getBaseConfig())) {
+                String[] dbs = assertsDefinition.getBaseConfig().split(",");
                 for (String db : dbs) {
                     InItCreateSchema.addDatabase(db);
                 }

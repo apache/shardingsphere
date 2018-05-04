@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
-    <sql id="masterDropTOrder0"/>
-    <sql id="masterDropTOrder1"/>
-    <sql id="masterDropTOrder2"/>
-    <sql id="masterDropTOrder3"/>
-    <sql id="masterDropTOrder4"/>
-    <sql id="masterDropTOrder5"/>
-    <sql id="masterDropTOrder6"/>
-    <sql id="masterDropTOrder7"/>
-    <sql id="masterDropTOrder8"/>
-    <sql id="masterDropTOrder9"/>
-    <sql id="masterDropTOrderItem0"/>
-    <sql id="masterDropTOrderItem1"/>
-    <sql id="masterDropTOrderItem2"/>
-    <sql id="masterDropTOrderItem3"/>
-    <sql id="masterDropTOrderItem4"/>
-    <sql id="masterDropTOrderItem5"/>
-    <sql id="masterDropTOrderItem6"/>
-    <sql id="masterDropTOrderItem7"/>
-    <sql id="masterDropTOrderItem8"/>
-    <sql id="masterDropTOrderItem9"/>
-    <sql id="masterDropTConfig"/>
-    <sql id="masterDropTGlobal"/>
+    <sql id="masterDropTOrder0 "/>
+    <sql id="masterDropTOrder1 "/>
+    <sql id="masterDropTOrder2 "/>
+    <sql id="masterDropTOrder3 "/>
+    <sql id="masterDropTOrder4 "/>
+    <sql id="masterDropTOrder5 "/>
+    <sql id="masterDropTOrder6 "/>
+    <sql id="masterDropTOrder7 "/>
+    <sql id="masterDropTOrder8 "/>
+    <sql id="masterDropTOrder9 "/>
+    <sql id="masterDropTOrderItem0 "/>
+    <sql id="masterDropTOrderItem1 "/>
+    <sql id="masterDropTOrderItem2 "/>
+    <sql id="masterDropTOrderItem3 "/>
+    <sql id="masterDropTOrderItem4 "/>
+    <sql id="masterDropTOrderItem5 "/>
+    <sql id="masterDropTOrderItem6 "/>
+    <sql id="masterDropTOrderItem7 "/>
+    <sql id="masterDropTOrderItem8 "/>
+    <sql id="masterDropTOrderItem9 "/>
+    <sql id="masterDropTConfig "/>
+    <sql id="masterDropTGlobal "/>
 </sqls>
