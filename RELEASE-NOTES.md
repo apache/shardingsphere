@@ -317,7 +317,7 @@
 
 ### 新功能
 
-1. [ISSUE #53](https://github.com/shardingjdbc/sharding-jdbc/issues/53) 动态表配置
+1. [ISSUE #53](https://github.com/shardingjdbc/sharding-jdbc/issues/53) 可以不配置真实表和逻辑表的对应关系，通过分片算法动态计算真实表
 1. [ISSUE #58](https://github.com/shardingjdbc/sharding-jdbc/issues/58) 柔性事务：最大努力送达型初始版本
 
 ### 结构调整
@@ -329,7 +329,7 @@
 
 1. [ISSUE #43](https://github.com/shardingjdbc/sharding-jdbc/issues/43) yaml文件中包含中文，且操作系统模式不是utf-8编码导致的yaml不能解析
 1. [ISSUE #48](https://github.com/shardingjdbc/sharding-jdbc/issues/48) yaml文件读取后未关闭
-1. [ISSUE #57](https://github.com/shardingjdbc/sharding-jdbc/issues/57) SQL解析子查询改进
+1. [ISSUE #57](https://github.com/shardingjdbc/sharding-jdbc/issues/57) 在解析层面对子查询进行识别，保证补充列行为可以进行精准定位
 
 ## 1.1.0
 
