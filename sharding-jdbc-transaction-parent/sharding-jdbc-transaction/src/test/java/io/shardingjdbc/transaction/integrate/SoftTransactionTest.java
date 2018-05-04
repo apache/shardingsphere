@@ -18,7 +18,6 @@
 package io.shardingjdbc.transaction.integrate;
 
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.transaction.api.SoftTransactionManager;
 import io.shardingjdbc.transaction.api.config.SoftTransactionConfiguration;
 import io.shardingjdbc.transaction.base.AbstractSoftTransactionIntegrationTest;
@@ -50,7 +49,7 @@ public final class SoftTransactionTest extends AbstractSoftTransactionIntegratio
     private void insert() {
         String dbSchema = "insert into transaction_test(id) values (1)";
         try (
-                Connection conn = getShardingDataSource().getConnection().getConnection("db_trans", SQLType.DML);
+                Connection conn = getShardingDataSource().getConnection().getConnection("db_trans");
                 PreparedStatement preparedStatement = conn.prepareStatement(dbSchema)) {
             preparedStatement.executeUpdate();
         } catch (final SQLException e) {
@@ -62,7 +61,7 @@ public final class SoftTransactionTest extends AbstractSoftTransactionIntegratio
         String dbSchema = "select * from `transaction_test`;";
         int id = 0;
         try (
-                Connection conn = getShardingDataSource().getConnection().getConnection("db_trans", SQLType.DQL);
+                Connection conn = getShardingDataSource().getConnection().getConnection("db_trans");
                 PreparedStatement preparedStatement = conn.prepareStatement(dbSchema)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {

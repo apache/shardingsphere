@@ -61,13 +61,37 @@ import java.util.List;
  */
 public final class StatementExecuteBackendHandler implements BackendHandler {
     
+    private static final Integer FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
+    
     private final List<PreparedStatementParameter> preparedStatementParameters;
     
     private final PreparedStatementRoutingEngine routingEngine;
     
+    private List<Connection> connections;
+    
+    private List<ResultSet> resultSets;
+    
+    private MergedResult mergedResult;
+    
+    private int currentSequenceId;
+    
+    private int columnCount;
+    
+    private final List<ColumnType> columnTypes;
+    
+    private boolean isMerged;
+    
+    private boolean hasMoreResultValueFlag;
+    
     public StatementExecuteBackendHandler(final List<PreparedStatementParameter> preparedStatementParameters, final int statementId, final DatabaseType databaseType, final boolean showSQL) {
         this.preparedStatementParameters = preparedStatementParameters;
-        routingEngine = new PreparedStatementRoutingEngine(PreparedStatementRegistry.getInstance().getSQL(statementId), ShardingRuleRegistry.getInstance().getShardingRule(), databaseType, showSQL);
+        routingEngine = new PreparedStatementRoutingEngine(PreparedStatementRegistry.getInstance().getSQL(statementId), 
+                ShardingRuleRegistry.getInstance().getShardingRule(), ShardingRuleRegistry.getInstance().getShardingMetaData(), databaseType, showSQL);
+        connections = new ArrayList<>(1024);
+        resultSets = new ArrayList<>(1024);
+        columnTypes = new ArrayList<>(32);
+        isMerged = false;
+        hasMoreResultValueFlag = true;
     }
     
     @Override
@@ -77,24 +101,24 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
         if (routeResult.getExecutionUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
         }
-        List<ColumnType> columnTypes = new ArrayList<>(32);
         List<CommandResponsePackets> result = new LinkedList<>();
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             // TODO multiple threads
-            result.add(execute(routeResult.getSqlStatement(), each, columnTypes));
+            result.add(execute(routeResult.getSqlStatement(), each));
         }
-        return merge(routeResult.getSqlStatement(), result, columnTypes);
+        return merge(routeResult.getSqlStatement(), result);
     }
     
-    private CommandResponsePackets execute(final SQLStatement sqlStatement, final SQLExecutionUnit sqlExecutionUnit, final List<ColumnType> columnTypes) {
+    private CommandResponsePackets execute(final SQLStatement sqlStatement, final SQLExecutionUnit sqlExecutionUnit) {
         switch (sqlStatement.getType()) {
             case DQL:
-                return executeQuery(ShardingRuleRegistry.getInstance().getDataSourceMap().get(sqlExecutionUnit.getDataSource()), sqlExecutionUnit.getSql(), columnTypes);
+            case DAL:
+                return executeQuery(ShardingRuleRegistry.getInstance().getDataSourceMap().get(sqlExecutionUnit.getDataSource()), sqlExecutionUnit.getSqlUnit().getSql());
             case DML:
             case DDL:
-                return executeUpdate(ShardingRuleRegistry.getInstance().getDataSourceMap().get(sqlExecutionUnit.getDataSource()), sqlExecutionUnit.getSql(), sqlStatement);
+                return executeUpdate(ShardingRuleRegistry.getInstance().getDataSourceMap().get(sqlExecutionUnit.getDataSource()), sqlExecutionUnit.getSqlUnit().getSql(), sqlStatement);
             default:
-                return executeCommon(ShardingRuleRegistry.getInstance().getDataSourceMap().get(sqlExecutionUnit.getDataSource()), sqlExecutionUnit.getSql(), columnTypes);
+                return executeCommon(ShardingRuleRegistry.getInstance().getDataSourceMap().get(sqlExecutionUnit.getDataSource()), sqlExecutionUnit.getSqlUnit().getSql());
         }
     }
     
@@ -112,13 +136,15 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
         }
     }
     
-    private CommandResponsePackets executeQuery(final DataSource dataSource, final String sql, final List<ColumnType> columnTypes) {
-        try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+    private CommandResponsePackets executeQuery(final DataSource dataSource, final String sql) {
+        try {
+            Connection connection = dataSource.getConnection();
+            connections.add(connection);
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setFetchSize(FETCH_ONE_ROW_A_TIME);
             setJDBCPreparedStatementParameters(preparedStatement);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            return getDatabaseProtocolPackets(resultSet, columnTypes);
+            resultSets.add(preparedStatement.executeQuery());
+            return getQueryDatabaseProtocolPackets();
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
         }
@@ -144,24 +170,23 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
         } finally {
-            if (preparedStatement != null) {
+            if (null != preparedStatement) {
                 try {
                     preparedStatement.close();
                 } catch (final SQLException ignore) {
                 }
             }
         }
-        
     }
     
-    private CommandResponsePackets executeCommon(final DataSource dataSource, final String sql, final List<ColumnType> columnTypes) {
+    private CommandResponsePackets executeCommon(final DataSource dataSource, final String sql) {
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             setJDBCPreparedStatementParameters(preparedStatement);
             boolean hasResultSet = preparedStatement.execute();
             if (hasResultSet) {
-                return getDatabaseProtocolPackets(preparedStatement.getResultSet(), columnTypes);
+                return getCommonDatabaseProtocolPackets(preparedStatement.getResultSet());
             } else {
                 return new CommandResponsePackets(new OKPacket(1, preparedStatement.getUpdateCount(), 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
             }
@@ -170,11 +195,32 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
         }
     }
     
-    private CommandResponsePackets getDatabaseProtocolPackets(final ResultSet resultSet, final List<ColumnType> columnTypes) throws SQLException {
+    private CommandResponsePackets getQueryDatabaseProtocolPackets() throws SQLException {
+        CommandResponsePackets result = new CommandResponsePackets();
+        int currentSequenceId = 0;
+        ResultSetMetaData resultSetMetaData = resultSets.get(resultSets.size() - 1).getMetaData();
+        columnCount = resultSetMetaData.getColumnCount();
+        if (0 == columnCount) {
+            result.addPacket(new OKPacket(++currentSequenceId, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+            return result;
+        }
+        result.addPacket(new FieldCountPacket(++currentSequenceId, columnCount));
+        for (int i = 1; i <= columnCount; i++) {
+            ColumnType columnType = ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(i));
+            ColumnDefinition41Packet columnDefinition41Packet = new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData.getSchemaName(i), resultSetMetaData.getTableName(i),
+                resultSetMetaData.getTableName(i), resultSetMetaData.getColumnLabel(i), resultSetMetaData.getColumnName(i), resultSetMetaData.getColumnDisplaySize(i), columnType, 0);
+            result.addPacket(columnDefinition41Packet);
+            columnTypes.add(columnType);
+        }
+        result.addPacket(new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
+        return result;
+    }
+    
+    private CommandResponsePackets getCommonDatabaseProtocolPackets(final ResultSet resultSet) throws SQLException {
         CommandResponsePackets result = new CommandResponsePackets();
         int currentSequenceId = 0;
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-        int columnCount = resultSetMetaData.getColumnCount();
+        columnCount = resultSetMetaData.getColumnCount();
         if (0 == columnCount) {
             result.addPacket(new OKPacket(++currentSequenceId, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
             return result;
@@ -208,10 +254,7 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
         return result;
     }
     
-    private CommandResponsePackets merge(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets, final List<ColumnType> columnTypes) {
-        if (1 == packets.size()) {
-            return packets.iterator().next();
-        }
+    private CommandResponsePackets merge(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets) {
         CommandResponsePackets headPackets = new CommandResponsePackets();
         for (CommandResponsePackets each : packets) {
             headPackets.addPacket(each.getHeadPacket());
@@ -225,7 +268,7 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
             return mergeDML(headPackets);
         }
         if (SQLType.DQL == sqlStatement.getType() || SQLType.DAL == sqlStatement.getType()) {
-            return mergeDQLorDAL(sqlStatement, packets, columnTypes);
+            return mergeDQLorDAL(sqlStatement, packets);
         }
         return packets.get(0);
     }
@@ -241,44 +284,89 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
         return new CommandResponsePackets(new OKPacket(1, affectedRows, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
     }
     
-    private CommandResponsePackets mergeDQLorDAL(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets, final List<ColumnType> columnTypes) {
+    private CommandResponsePackets mergeDQLorDAL(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets) {
         List<QueryResult> queryResults = new ArrayList<>(packets.size());
-        for (CommandResponsePackets each : packets) {
+        for (int i = 0; i < packets.size(); i++) {
             // TODO replace to a common PacketQueryResult
-            queryResults.add(new MySQLPacketStatementExecuteQueryResult(each));
+            queryResults.add(new MySQLPacketStatementExecuteQueryResult(packets.get(i), resultSets.get(i), columnTypes));
         }
-        MergedResult mergedResult;
         try {
             mergedResult = MergeEngineFactory.newInstance(ShardingRuleRegistry.getInstance().getShardingRule(), queryResults, sqlStatement).merge();
+            isMerged = true;
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
         }
-        return buildPackets(packets, mergedResult, columnTypes);
+        return buildPackets(packets);
     }
     
-    private CommandResponsePackets buildPackets(final List<CommandResponsePackets> packets, final MergedResult mergedResult, final List<ColumnType> columnTypes) {
+    private CommandResponsePackets buildPackets(final List<CommandResponsePackets> packets) {
         CommandResponsePackets result = new CommandResponsePackets();
         Iterator<DatabaseProtocolPacket> databaseProtocolPacketsSampling = packets.iterator().next().getDatabaseProtocolPackets().iterator();
         FieldCountPacket fieldCountPacketSampling = (FieldCountPacket) databaseProtocolPacketsSampling.next();
         result.addPacket(fieldCountPacketSampling);
-        int columnCount = fieldCountPacketSampling.getColumnCount();
+        ++currentSequenceId;
         for (int i = 0; i < columnCount; i++) {
             result.addPacket(databaseProtocolPacketsSampling.next());
+            ++currentSequenceId;
         }
         result.addPacket(databaseProtocolPacketsSampling.next());
-        int currentSequenceId = result.size();
-        try {
-            while (mergedResult.next()) {
-                List<Object> data = new ArrayList<>(columnCount);
-                for (int i = 1; i <= columnCount; i++) {
-                    data.add(mergedResult.getValue(i, Object.class));
-                }
-                result.addPacket(new BinaryResultSetRowPacket(++currentSequenceId, columnCount, data, columnTypes));
-            }
-        } catch (final SQLException ex) {
-            return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
-        }
-        result.addPacket(new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
+        ++currentSequenceId;
         return result;
+    }
+    
+    /**
+     * Has more Result value.
+     *
+     * @return has more result value
+     * @throws SQLException sql exception
+     */
+    public boolean hasMoreResultValue() throws SQLException {
+        if (!isMerged || !hasMoreResultValueFlag) {
+            return false;
+        }
+        if (!mergedResult.next()) {
+            hasMoreResultValueFlag = false;
+            cleanJDBCResources();
+        }
+        return true;
+    }
+    
+    /**
+     * Get result value.
+     *
+     * @return database protocol packet
+     */
+    public DatabaseProtocolPacket getResultValue() {
+        if (!hasMoreResultValueFlag) {
+            return new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
+        }
+        try {
+            List<Object> data = new ArrayList<>(columnCount);
+            for (int i = 1; i <= columnCount; i++) {
+                data.add(mergedResult.getValue(i, Object.class));
+            }
+            return new BinaryResultSetRowPacket(++currentSequenceId, columnCount, data, columnTypes);
+        } catch (final SQLException ex) {
+            return new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage());
+        }
+    }
+    
+    private void cleanJDBCResources() {
+        for (ResultSet each : resultSets) {
+            if (null != each) {
+                try {
+                    each.close();
+                } catch (final SQLException ignore) {
+                }
+            }
+        }
+        for (Connection each : connections) {
+            if (null != each) {
+                try {
+                    each.close();
+                } catch (final SQLException ignore) {
+                }
+            }
+        }
     }
 }

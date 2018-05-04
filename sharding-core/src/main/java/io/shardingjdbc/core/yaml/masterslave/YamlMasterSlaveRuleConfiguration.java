@@ -58,10 +58,10 @@ public class YamlMasterSlaveRuleConfiguration {
      */
     public MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() {
         MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm = null;
-        if (null != loadBalanceAlgorithmType) {
-            loadBalanceAlgorithm = loadBalanceAlgorithmType.getAlgorithm();
-        } else if (!Strings.isNullOrEmpty(loadBalanceAlgorithmClassName)) {
+        if (!Strings.isNullOrEmpty(loadBalanceAlgorithmClassName)) {
             loadBalanceAlgorithm = newInstance(loadBalanceAlgorithmClassName);
+        } else if (null != loadBalanceAlgorithmType) {
+            loadBalanceAlgorithm = loadBalanceAlgorithmType.getAlgorithm();
         }
         return new MasterSlaveRuleConfiguration(name, masterDataSourceName, slaveDataSourceNames, loadBalanceAlgorithm);
     }

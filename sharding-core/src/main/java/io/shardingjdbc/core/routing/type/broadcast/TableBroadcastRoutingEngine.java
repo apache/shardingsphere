@@ -23,6 +23,7 @@ import io.shardingjdbc.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingjdbc.core.parsing.parser.token.IndexToken;
 import io.shardingjdbc.core.routing.type.RoutingEngine;
 import io.shardingjdbc.core.routing.type.RoutingResult;
+import io.shardingjdbc.core.routing.type.RoutingTable;
 import io.shardingjdbc.core.routing.type.TableUnit;
 import io.shardingjdbc.core.rule.DataNode;
 import io.shardingjdbc.core.rule.ShardingRule;
@@ -37,6 +38,7 @@ import java.util.LinkedList;
  * Broadcast routing engine for tables.
  * 
  * @author zhangliang
+ * @author maxiaoguang
  */
 @RequiredArgsConstructor
 public final class TableBroadcastRoutingEngine implements RoutingEngine {
@@ -74,7 +76,9 @@ public final class TableBroadcastRoutingEngine implements RoutingEngine {
         Collection<TableUnit> result = new LinkedList<>();
         TableRule tableRule = shardingRule.getTableRule(logicTableName);
         for (DataNode each : tableRule.getActualDataNodes()) {
-            result.add(new TableUnit(each.getDataSourceName(), logicTableName, each.getTableName()));
+            TableUnit tableUnit = new TableUnit(each.getDataSourceName());
+            tableUnit.getRoutingTables().add(new RoutingTable(logicTableName, each.getTableName()));
+            result.add(tableUnit);
         }
         return result;
     }

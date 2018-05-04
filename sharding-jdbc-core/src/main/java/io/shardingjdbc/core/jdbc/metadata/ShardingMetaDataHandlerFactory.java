@@ -18,13 +18,14 @@
 package io.shardingjdbc.core.jdbc.metadata;
 
 import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.core.jdbc.metadata.dialect.DefaultShardingMetaDataHandler;
+import io.shardingjdbc.core.jdbc.metadata.dialect.H2ShardingMetaDataHandler;
 import io.shardingjdbc.core.jdbc.metadata.dialect.MySQLShardingMetaDataHandler;
 import io.shardingjdbc.core.jdbc.metadata.dialect.ShardingMetaDataHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 
 /**
  * Table metadata handler factory.
@@ -37,18 +38,19 @@ public final class ShardingMetaDataHandlerFactory {
     /**
      * To generate table metadata handler by data type.
      *
-     * @param dataSource data source.
-     * @param actualTableName actual table name.
-     * @return abstract table metadata handler.
-     * @throws SQLException SQL exception.
+     * @param dataSource data source
+     * @param actualTableName actual table name
+     * @param databaseType database type
+     * @return sharding meta data handler
      */
-    public static ShardingMetaDataHandler newInstance(final DataSource dataSource, final String actualTableName) throws SQLException {
-        DatabaseType databaseType = DatabaseType.valueFrom(dataSource.getConnection().getMetaData().getDatabaseProductName());
+    public static ShardingMetaDataHandler newInstance(final DataSource dataSource, final String actualTableName, final DatabaseType databaseType) {
         switch (databaseType) {
             case MySQL:
                 return new MySQLShardingMetaDataHandler(dataSource, actualTableName);
+            case H2:
+                return new H2ShardingMetaDataHandler(dataSource, actualTableName);
             default:
-                throw new UnsupportedOperationException(String.format("Cannot support database [%s].", databaseType));
+                return new DefaultShardingMetaDataHandler(dataSource, actualTableName);
         }
     }
 }

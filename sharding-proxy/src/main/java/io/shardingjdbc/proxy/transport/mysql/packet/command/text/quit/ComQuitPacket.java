@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.proxy.transport.mysql.packet.command.text.quit;
 
+import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingjdbc.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacket;
@@ -44,5 +45,15 @@ public final class ComQuitPacket extends CommandPacket {
     @Override
     public void write(final MySQLPacketPayload mysqlPacketPayload) {
         mysqlPacketPayload.writeInt1(CommandPacketType.COM_QUIT.getValue());
+    }
+    
+    @Override
+    public boolean hasMoreResultValue() {
+        return false;
+    }
+    
+    @Override
+    public DatabaseProtocolPacket getResultValue() {
+        return null;
     }
 }

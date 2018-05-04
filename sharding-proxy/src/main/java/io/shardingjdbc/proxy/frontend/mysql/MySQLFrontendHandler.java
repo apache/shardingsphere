@@ -73,9 +73,11 @@ public final class MySQLFrontendHandler extends FrontendHandler {
                 int connectionId = MySQLResultCache.getInstance().getonnectionMap(context.channel().id().asShortText());
                 CommandPacket commandPacket = CommandPacketFactory.getCommandPacket(sequenceId, connectionId, mysqlPacketPayload);
                 for (DatabaseProtocolPacket each : commandPacket.execute().getDatabaseProtocolPackets()) {
-                    context.write(each);
+                    context.writeAndFlush(each);
                 }
-                context.flush();
+                while (commandPacket.hasMoreResultValue()) {
+                    context.writeAndFlush(commandPacket.getResultValue());
+                }
             }
         });
     }

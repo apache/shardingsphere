@@ -15,30 +15,24 @@
  * </p>
  */
 
-package io.shardingjdbc.core.routing.type.complex;
+package io.shardingjdbc.core.rewrite.placeholder;
 
+import io.shardingjdbc.core.optimizer.condition.ShardingConditions;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 /**
- * Cartesian data source.
- * 
- * @author zhangliang
+ * Insert values placeholder for rewrite.
+ *
+ * @author maxiaoguang
  */
+@RequiredArgsConstructor
 @Getter
 @ToString
-public final class CartesianDataSource {
+public final class InsertValuesPlaceholder implements ShardingPlaceholder {
     
-    private final String dataSource;
+    private final String logicTableName;
     
-    private final List<CartesianTableReference> routingTableReferences;
-    
-    CartesianDataSource(final String dataSource, final CartesianTableReference routingTableReference) {
-        this.dataSource = dataSource;
-        routingTableReferences = new ArrayList<>(Collections.singletonList(routingTableReference));
-    }
+    private final ShardingConditions shardingConditions;
 }

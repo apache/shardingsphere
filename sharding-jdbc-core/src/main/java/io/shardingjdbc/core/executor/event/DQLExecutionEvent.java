@@ -17,16 +17,19 @@
 
 package io.shardingjdbc.core.executor.event;
 
+import io.shardingjdbc.core.routing.SQLUnit;
+
 import java.util.List;
 
 /**
  * DQL execution event.
  * 
  * @author gaohongtao
+ * @author maxiaoguang
  */
 public final class DQLExecutionEvent extends AbstractSQLExecutionEvent {
     
-    public DQLExecutionEvent(final String dataSource, final String sql, final List<Object> parameters) {
-        super(dataSource, sql, parameters);
+    public DQLExecutionEvent(final String dataSource, final SQLUnit sqlUnit, final List<Object> parameters) {
+        super(dataSource, sqlUnit, parameters);
     }
 }

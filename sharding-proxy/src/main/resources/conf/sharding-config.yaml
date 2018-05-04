@@ -1,11 +1,9 @@
 dataSources:
-  demo_ds_0: !!org.apache.commons.dbcp2.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
+  demo_ds_0:
     url: jdbc:mysql://localhost:3306/demo_ds_0
     username: root
     password:
-  demo_ds_1: !!org.apache.commons.dbcp2.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
+  demo_ds_1:
     url: jdbc:mysql://localhost:3306/demo_ds_1
     username: root
     password:
@@ -33,7 +31,7 @@ shardingRule:
       algorithmExpression: demo_ds_${user_id % 2}
   defaultTableStrategy:
     none:
-  defaultKeyGeneratorClass: io.shardingjdbc.core.keygen.DefaultKeyGenerator
+  defaultKeyGeneratorClassName: io.shardingjdbc.core.keygen.DefaultKeyGenerator
 
   props:
     sql.show: true

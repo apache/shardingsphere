@@ -15,31 +15,34 @@
  * </p>
  */
 
-package io.shardingjdbc.core.routing.router;
+package io.shardingjdbc.core.routing.router.sharding;
 
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.hint.HintManagerHolder;
+import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * SQL router factory.
+ * Sharding router factory.
  * 
  * @author zhangiang
+ * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SQLRouterFactory {
+public final class ShardingRouterFactory {
     
     /**
-     * Create SQL router.
+     * Create sharding router.
      * 
-     * @param shardingRule Sharding rule
+     * @param shardingRule sharding rule
+     * @param shardingMetaData sharding meta data
      * @param databaseType database type
-     * @param showSQL is log SQL
-     * @return SQL router instance
+     * @param showSQL show SQL or not
+     * @return sharding router instance
      */
-    public static SQLRouter createSQLRouter(final ShardingRule shardingRule, final DatabaseType databaseType, final boolean showSQL) {
-        return HintManagerHolder.isDatabaseShardingOnly() ? new DatabaseHintSQLRouter(shardingRule, showSQL) : new ParsingSQLRouter(shardingRule, databaseType, showSQL);
+    public static ShardingRouter createSQLRouter(final ShardingRule shardingRule, final ShardingMetaData shardingMetaData, final DatabaseType databaseType, final boolean showSQL) {
+        return HintManagerHolder.isDatabaseShardingOnly() ? new DatabaseHintSQLRouter(shardingRule, showSQL) : new ParsingSQLRouter(shardingRule, shardingMetaData, databaseType, showSQL);
     }
 }

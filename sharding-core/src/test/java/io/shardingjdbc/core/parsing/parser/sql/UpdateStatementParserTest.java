@@ -44,7 +44,7 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
     @Test
     public void parseWithoutCondition() {
         ShardingRule shardingRule = createShardingRule();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "UPDATE TABLE_XXX SET field1=field1+1", shardingRule);
+        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "UPDATE TABLE_XXX SET field1=field1+1", shardingRule, null);
         DMLStatement updateStatement = (DMLStatement) statementParser.parse(false);
         assertThat(updateStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
     }
@@ -53,7 +53,7 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
     public void parseWithoutParameter() {
         ShardingRule shardingRule = createShardingRule();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "UPDATE TABLE_XXX xxx SET TABLE_XXX.field1=field1+1,xxx.field2=2 WHERE TABLE_XXX.field4<10 AND"
-                + " TABLE_XXX.field1=1 AND xxx.field5>10 AND TABLE_XXX.field2 IN (1,3) AND xxx.field6<=10 AND TABLE_XXX.field3 BETWEEN 5 AND 20 AND xxx.field7>=10", shardingRule);
+                + " TABLE_XXX.field1=1 AND xxx.field5>10 AND TABLE_XXX.field2 IN (1,3) AND xxx.field6<=10 AND TABLE_XXX.field3 BETWEEN 5 AND 20 AND xxx.field7>=10", shardingRule, null);
         DMLStatement updateStatement = (DMLStatement) statementParser.parse(false);
         assertUpdateStatementWithoutParameter(updateStatement);
     }
@@ -81,7 +81,7 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
     public void parseWithParameter() {
         String sql = "UPDATE TABLE_XXX AS xxx SET field1=field1+? WHERE field4<? AND xxx.field1=? AND field5>? AND xxx.field2 IN (?, ?) AND field6<=? AND xxx.field3 BETWEEN ? AND ? AND field7>=?";
         ShardingRule shardingRule = createShardingRule();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, sql, shardingRule);
+        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, sql, shardingRule, null);
         DMLStatement updateStatement = (DMLStatement) statementParser.parse(false);
         assertUpdateStatementWitParameter(updateStatement);
     }
@@ -109,7 +109,8 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
     @Test
     public void parseWithOr() {
         ShardingRule shardingRule = createShardingRule();
-        DMLStatement updateStatement = (DMLStatement) new SQLParsingEngine(DatabaseType.Oracle, "UPDATE TABLE_XXX AS xxx SET field1=1 WHERE field1<1 AND (field1 >2 OR xxx.field2 =1)", shardingRule).parse(false);
+        DMLStatement updateStatement = (DMLStatement) new SQLParsingEngine(
+                DatabaseType.Oracle, "UPDATE TABLE_XXX AS xxx SET field1=1 WHERE field1<1 AND (field1 >2 OR xxx.field2 =1)", shardingRule, null).parse(false);
         assertUpdateStatementWitOr(updateStatement);
     }
     
@@ -117,6 +118,7 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
         assertThat(updateStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
         assertThat(updateStatement.getTables().find("TABLE_XXX").get().getAlias().get(), is("xxx"));
         assertTrue(updateStatement.getConditions().getOrCondition().getAndConditions().isEmpty());
+
     }
     
     @Test
@@ -130,7 +132,7 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
     
     private void parseWithSpecialSyntax(final DatabaseType dbType, final String actualSQL) {
         ShardingRule shardingRule = createShardingRule();
-        DMLStatement updateStatement = (DMLStatement) new SQLParsingEngine(dbType, actualSQL, shardingRule).parse(false);
+        DMLStatement updateStatement = (DMLStatement) new SQLParsingEngine(dbType, actualSQL, shardingRule, null).parse(false);
         assertThat(updateStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
         assertFalse(updateStatement.getTables().find("TABLE_XXX").get().getAlias().isPresent());
         Condition condition = updateStatement.getConditions().find(new Column("field1", "TABLE_XXX")).get();

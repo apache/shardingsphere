@@ -14,7 +14,7 @@ shardingRule:
           shardingColumn: order_id
           algorithmExpression: t_order_${order_id % 2}
       keyGeneratorColumnName: order_id
-      keyGeneratorClass: io.shardingjdbc.core.integrate.api.yaml.fixture.IncrementKeyGenerator
+      keyGeneratorClassName: io.shardingjdbc.core.integrate.api.yaml.fixture.IncrementKeyGenerator
       logicIndex: t_order_index
     
     t_order_item:
@@ -39,13 +39,11 @@ shardingRule:
   
   masterSlaveRules:
     db_ms_0:
-      masterDataSourceName:
-        db0_master
+      masterDataSourceName: db0_master
       slaveDataSourceNames:
         - db0_slave
     db_ms_1:
-      masterDataSourceName:
-        db1_master
+      masterDataSourceName: db1_master
       slaveDataSourceNames:
         - db1_slave
   props:

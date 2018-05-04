@@ -22,12 +22,18 @@ import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.Date;
+
 /**
  * Payload operation for MySQL packet data types.
  *
  * @see <a href="https://dev.mysql.com/doc/internals/en/describing-packets.html">describing packets</a>
+ * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html">binary protocol value</a>
  * 
  * @author zhangliang
+ * @author zhangyonglun
  */
 @RequiredArgsConstructor
 @Getter
@@ -339,6 +345,195 @@ public final class MySQLPacketPayload {
     public void writeReserved(final int length) {
         for (int i = 0; i < length; i++) {
             byteBuf.writeByte(0);
+        }
+    }
+    
+    /**
+     * Read 4 byte float from byte buffers.
+     * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html#ProtocolBinary::MYSQL_TYPE_FLOAT">MYSQL_TYPE_FLOAT</a>
+     *
+     * @return 4 byte float
+     */
+    public float readFloat() {
+        return byteBuf.readFloatLE();
+    }
+    
+    /**
+     * Write 4 byte float to byte buffers.
+     * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html#ProtocolBinary::MYSQL_TYPE_FLOAT">MYSQL_TYPE_FLOAT</a>
+     *
+     * @param value 4 byte float
+     */
+    public void writeFloat(final float value) {
+        byteBuf.writeFloatLE(value);
+    }
+    
+    /**
+     * Read 8 byte double from byte buffers.
+     * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html#ProtocolBinary::MYSQL_TYPE_DOUBLE">MYSQL_TYPE_DOUBLE</a>
+     *
+     * @return 8 byte double
+     */
+    public double readDouble() {
+        return byteBuf.readDoubleLE();
+    }
+    
+    /**
+     * Write 8 byte double to byte buffers.
+     * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html#ProtocolBinary::MYSQL_TYPE_DOUBLE">MYSQL_TYPE_DOUBLE</a>
+     *
+     * @param value 8 byte double
+     */
+    public void writeDouble(final double value) {
+        byteBuf.writeDoubleLE(value);
+    }
+    
+    /**
+     * Read date from byte buffers.
+     * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html#ProtocolBinary::MYSQL_TYPE_DATE">MYSQL_TYPE_DATE</a>
+     *
+     * @return timestamp
+     */
+    public Timestamp readDate() {
+        Timestamp timestamp;
+        Calendar calendar = Calendar.getInstance();
+        int length = readInt1();
+        switch (length) {
+            case 0:
+                timestamp = new Timestamp(0);
+                break;
+            case 4:
+                calendar.set(readInt2(), readInt1() - 1, readInt1());
+                timestamp = new Timestamp(calendar.getTimeInMillis());
+                break;
+            case 7:
+                calendar.set(readInt2(), readInt1() - 1, readInt1(),
+                    readInt1(), readInt1(), readInt1());
+                timestamp = new Timestamp(calendar.getTimeInMillis());
+                break;
+            case 11:
+                calendar.set(readInt2(), readInt1() - 1, readInt1(),
+                    readInt1(), readInt1(), readInt1());
+                timestamp = new Timestamp(calendar.getTimeInMillis());
+                timestamp.setNanos(readInt4());
+                break;
+            default:
+                throw new IllegalArgumentException(String.format("Wrong length '%d' of MYSQL_TYPE_TIME", length));
+        }
+        return timestamp;
+    }
+    
+    /**
+     * Write date to byte buffers.
+     * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html#ProtocolBinary::MYSQL_TYPE_DATE">MYSQL_TYPE_DATE</a>
+     *
+     * @param timestamp timestamp
+     */
+    public void writeDate(final Timestamp timestamp) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timestamp.getTime());
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH) + 1;
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+        int second = calendar.get(Calendar.SECOND);
+        int millisecond = timestamp.getNanos();
+        boolean isDateValueAbsent = 0 == year && 0 == month && 0 == day;
+        boolean isTimeValueAbsent = 0 == hour && 0 == minute && 0 == second;
+        boolean isMillisecondValueAbsent = 0 == millisecond;
+        if (isDateValueAbsent && isTimeValueAbsent && isMillisecondValueAbsent) {
+            writeInt1(0);
+        } else if (isTimeValueAbsent && isMillisecondValueAbsent) {
+            writeInt1(4);
+            writeInt2(year);
+            writeInt1(month);
+            writeInt1(day);
+        } else if (isMillisecondValueAbsent) {
+            writeInt1(7);
+            writeInt2(year);
+            writeInt1(month);
+            writeInt1(day);
+            writeInt1(hour);
+            writeInt1(minute);
+            writeInt1(second);
+        } else {
+            writeInt1(11);
+            writeInt2(year);
+            writeInt1(month);
+            writeInt1(day);
+            writeInt1(hour);
+            writeInt1(minute);
+            writeInt1(second);
+            writeInt4(millisecond);
+        }
+    }
+    
+    /**
+     * Read time from byte buffers.
+     * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html#ProtocolBinary::MYSQL_TYPE_TIME">MYSQL_TYPE_TIME</a>
+     *
+     * @return timestamp
+     */
+    public Timestamp readTime() {
+        Timestamp timestamp;
+        Calendar calendar = Calendar.getInstance();
+        int length = readInt1();
+        readInt1();
+        readInt4();
+        switch (length) {
+            case 0:
+                timestamp = new Timestamp(0);
+                break;
+            case 8:
+                calendar.set(0, 0, 0, readInt1(), readInt1(), readInt1());
+                timestamp = new Timestamp(calendar.getTimeInMillis());
+                timestamp.setNanos(0);
+                break;
+            case 12:
+                calendar.set(0, 0, 0, readInt1(), readInt1(), readInt1());
+                timestamp = new Timestamp(calendar.getTimeInMillis());
+                timestamp.setNanos(readInt4());
+                break;
+            default:
+                throw new IllegalArgumentException(String.format("Wrong length '%d' of MYSQL_TYPE_DATE", length));
+        }
+        return timestamp;
+    }
+    
+    /**
+     * Write time to byte buffers.
+     * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html#ProtocolBinary::MYSQL_TYPE_TIME">MYSQL_TYPE_TIME</a>
+     *
+     * @param date date
+     */
+    public void writeTime(final Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(date.getTime());
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+        int second = calendar.get(Calendar.SECOND);
+        Timestamp timestamp = new Timestamp(date.getTime());
+        int millisecond = timestamp.getNanos();
+        boolean isTimeValueAbsent = 0 == hour && 0 == minute && 0 == second;
+        boolean isMillisecondValueAbsent = 0 == millisecond;
+        if (isTimeValueAbsent && isMillisecondValueAbsent) {
+            writeInt1(0);
+        } else if (isMillisecondValueAbsent) {
+            writeInt1(8);
+            writeInt1(0);
+            writeInt4(0);
+            writeInt1(hour);
+            writeInt1(minute);
+            writeInt1(second);
+        } else {
+            writeInt1(12);
+            writeInt1(0);
+            writeInt4(0);
+            writeInt1(hour);
+            writeInt1(minute);
+            writeInt1(second);
+            writeInt4(millisecond);
         }
     }
 }

@@ -26,9 +26,13 @@ import io.shardingjdbc.proxy.transport.mysql.packet.command.text.query.ColumnDef
 import lombok.RequiredArgsConstructor;
 
 import java.io.InputStream;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -45,11 +49,13 @@ public final class MySQLPacketQueryResult implements QueryResult {
     
     private final Map<String, Integer> columnLabelAndIndexMap;
     
-    private final Iterator<DatabaseProtocolPacket> data;
+    private final ResultSet resultSet;
+    
+    private int currentSequenceId;
     
     private TextResultSetRowPacket currentRow;
     
-    public MySQLPacketQueryResult(final CommandResponsePackets packets) {
+    public MySQLPacketQueryResult(final CommandResponsePackets packets, final ResultSet resultSet) {
         Iterator<DatabaseProtocolPacket> packetIterator = packets.getDatabaseProtocolPackets().iterator();
         columnCount = ((FieldCountPacket) packetIterator.next()).getColumnCount();
         columnIndexAndLabelMap = new HashMap<>(columnCount, 1);
@@ -60,14 +66,17 @@ public final class MySQLPacketQueryResult implements QueryResult {
             columnLabelAndIndexMap.put(columnDefinition41Packet.getName(), i);
         }
         packetIterator.next();
-        data = packetIterator;
+        this.resultSet = resultSet;
     }
     
     @Override
-    public boolean next() {
-        DatabaseProtocolPacket databaseProtocolPacket = data.next();
-        if (databaseProtocolPacket instanceof TextResultSetRowPacket) {
-            currentRow = (TextResultSetRowPacket) databaseProtocolPacket;
+    public boolean next() throws SQLException {
+        if (resultSet.next()) {
+            List<Object> data = new ArrayList<>(columnCount);
+            for (int i = 1; i <= columnCount; i++) {
+                data.add(resultSet.getObject(i));
+            }
+            currentRow = new TextResultSetRowPacket(++currentSequenceId, data);
             return true;
         }
         return false;

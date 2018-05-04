@@ -18,6 +18,7 @@
 package io.shardingjdbc.core.rule;
 
 import com.google.common.collect.Sets;
+import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
 import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.api.config.strategy.NoneShardingStrategyConfiguration;
 import io.shardingjdbc.core.keygen.fixture.IncrementKeyGenerator;
@@ -29,11 +30,11 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 
 public final class TableRuleTest {
     
@@ -41,7 +42,7 @@ public final class TableRuleTest {
     public void assertCreateMinTableRule() {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("LOGIC_TABLE");
-        TableRule actual = new TableRule(tableRuleConfig, createDataSourceNames());
+        TableRule actual = new TableRule(tableRuleConfig, createShardingDataSourceNames());
         assertThat(actual.getLogicTable(), is("logic_table"));
         assertThat(actual.getActualDataNodes().size(), is(2));
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", "LOGIC_TABLE")));
@@ -61,7 +62,7 @@ public final class TableRuleTest {
         tableRuleConfig.setKeyGeneratorColumnName("col_1");
         tableRuleConfig.setKeyGenerator(new IncrementKeyGenerator());
         tableRuleConfig.setLogicIndex("LOGIC_INDEX");
-        TableRule actual = new TableRule(tableRuleConfig, createDataSourceNames());
+        TableRule actual = new TableRule(tableRuleConfig, createShardingDataSourceNames());
         assertThat(actual.getLogicTable(), is("logic_table"));
         assertThat(actual.getActualDataNodes().size(), is(6));
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", "table_0")));
@@ -82,7 +83,7 @@ public final class TableRuleTest {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("LOGIC_TABLE");
         tableRuleConfig.setActualDataNodes("ds${0..1}.table_${0..2}");
-        TableRule actual = new TableRule(tableRuleConfig, createDataSourceNames());
+        TableRule actual = new TableRule(tableRuleConfig, createShardingDataSourceNames());
         assertThat(actual.getActualDatasourceNames(), is((Collection<String>) Sets.newLinkedHashSet(Arrays.asList("ds0", "ds1"))));
     }
     
@@ -91,7 +92,7 @@ public final class TableRuleTest {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("LOGIC_TABLE");
         tableRuleConfig.setActualDataNodes("ds${0..1}.table_${0..2}");
-        TableRule actual = new TableRule(tableRuleConfig, createDataSourceNames());
+        TableRule actual = new TableRule(tableRuleConfig, createShardingDataSourceNames());
         assertThat(actual.getActualTableNames("ds0"), is((Collection<String>) Sets.newLinkedHashSet(Arrays.asList("table_0", "table_1", "table_2"))));
         assertThat(actual.getActualTableNames("ds1"), is((Collection<String>) Sets.newLinkedHashSet(Arrays.asList("table_0", "table_1", "table_2"))));
         assertThat(actual.getActualTableNames("ds2"), is((Collection<String>) Collections.<String>emptySet()));
@@ -102,7 +103,7 @@ public final class TableRuleTest {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("LOGIC_TABLE");
         tableRuleConfig.setActualDataNodes("ds${0..1}.table_${0..2}");
-        TableRule actual = new TableRule(tableRuleConfig, createDataSourceNames());
+        TableRule actual = new TableRule(tableRuleConfig, createShardingDataSourceNames());
         assertThat(actual.findActualTableIndex("ds1", "table_1"), is(4));
     }
     
@@ -111,25 +112,25 @@ public final class TableRuleTest {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("LOGIC_TABLE");
         tableRuleConfig.setActualDataNodes("ds${0..1}.table_${0..2}");
-        TableRule actual = new TableRule(tableRuleConfig, createDataSourceNames());
+        TableRule actual = new TableRule(tableRuleConfig, createShardingDataSourceNames());
         assertThat(actual.findActualTableIndex("ds2", "table_2"), is(-1));
     }
     
     @Test
     public void assertActualTableNameExisted() {
-        TableRule actual = new TableRule(createTableRuleConfig(), createDataSourceNames());
+        TableRule actual = new TableRule(createTableRuleConfig(), createShardingDataSourceNames());
         assertTrue(actual.isExisted("table_2"));
     }
     
     @Test
     public void assertActualTableNameNotExisted() {
-        TableRule actual = new TableRule(createTableRuleConfig(), createDataSourceNames());
+        TableRule actual = new TableRule(createTableRuleConfig(), createShardingDataSourceNames());
         assertFalse(actual.isExisted("table_3"));
     }
     
     @Test
     public void assertToString() {
-        TableRule actual = new TableRule(createTableRuleConfig(), createDataSourceNames());
+        TableRule actual = new TableRule(createTableRuleConfig(), createShardingDataSourceNames());
         String actualString = "TableRule(logicTable=logic_table, actualDataNodes=[DataNode(dataSourceName=ds0, tableName=table_0), DataNode(dataSourceName=ds0, tableName=table_1), "
                 + "DataNode(dataSourceName=ds0, tableName=table_2), DataNode(dataSourceName=ds1, tableName=table_0), DataNode(dataSourceName=ds1, tableName=table_1), "
                 + "DataNode(dataSourceName=ds1, tableName=table_2)], databaseShardingStrategy=null, tableShardingStrategy=null, generateKeyColumn=null, keyGenerator=null, logicIndex=null)";
@@ -143,7 +144,7 @@ public final class TableRuleTest {
         return result;
     }
     
-    private Collection<String> createDataSourceNames() {
-        return Arrays.asList("ds0", "ds1");
+    private ShardingDataSourceNames createShardingDataSourceNames() {
+        return new ShardingDataSourceNames(new ShardingRuleConfiguration(), Arrays.asList("ds0", "ds1"));
     }
 }

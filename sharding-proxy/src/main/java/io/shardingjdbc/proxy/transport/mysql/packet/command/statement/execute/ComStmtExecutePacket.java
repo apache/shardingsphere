@@ -23,6 +23,7 @@ import io.shardingjdbc.core.parsing.SQLParsingEngine;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import io.shardingjdbc.proxy.backend.common.StatementExecuteBackendHandler;
 import io.shardingjdbc.proxy.config.ShardingRuleRegistry;
+import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingjdbc.proxy.transport.mysql.constant.ColumnType;
 import io.shardingjdbc.proxy.transport.mysql.constant.NewParametersBoundFlag;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
@@ -32,6 +33,7 @@ import io.shardingjdbc.proxy.transport.mysql.packet.command.statement.PreparedSt
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,13 +65,15 @@ public final class ComStmtExecutePacket extends CommandPacket {
     
     private final List<PreparedStatementParameter> preparedStatementParameters = new ArrayList<>(32);
     
+    private final StatementExecuteBackendHandler statementExecuteBackendHandler;
+    
     public ComStmtExecutePacket(final int sequenceId, final MySQLPacketPayload mysqlPacketPayload) {
         super(sequenceId);
         statementId = mysqlPacketPayload.readInt4();
         flags = mysqlPacketPayload.readInt1();
         Preconditions.checkArgument(iterationCount == mysqlPacketPayload.readInt4());
         SQLStatement sqlStatement = new SQLParsingEngine(DatabaseType.MySQL, PreparedStatementRegistry.getInstance().getSQL(statementId),
-            ShardingRuleRegistry.getInstance().getShardingRule()).parse(true);
+            ShardingRuleRegistry.getInstance().getShardingRule(), null).parse(true);
         int numParameters = sqlStatement.getParametersIndex();
         nullBitmap = new NullBitmap(numParameters, RESERVED_BIT_LENGTH);
         for (int i = 0; i < nullBitmap.getNullBitmap().length; i++) {
@@ -77,6 +81,7 @@ public final class ComStmtExecutePacket extends CommandPacket {
         }
         newParametersBoundFlag = NewParametersBoundFlag.valueOf(mysqlPacketPayload.readInt1());
         setParameterList(mysqlPacketPayload, numParameters, newParametersBoundFlag);
+        statementExecuteBackendHandler = new StatementExecuteBackendHandler(preparedStatementParameters, statementId, DatabaseType.MySQL, true);
     }
     
     private void setParameterList(final MySQLPacketPayload mysqlPacketPayload, final int numParameters, final NewParametersBoundFlag newParametersBoundFlag) {
@@ -120,12 +125,8 @@ public final class ComStmtExecutePacket extends CommandPacket {
                 continue;
             }
             PreparedStatementParameter preparedStatementParameter = preparedStatementParameters.get(i);
-            // TODO add more types
-            if (ColumnType.MYSQL_TYPE_LONG == preparedStatementParameter.getColumnType()) {
-                preparedStatementParameter.setValue(String.valueOf(mysqlPacketPayload.readInt4()));
-            } else {
-                preparedStatementParameter.setValue(String.valueOf(mysqlPacketPayload.readStringLenenc()));
-            }
+            ColumnType columnType = preparedStatementParameter.getColumnType();
+            preparedStatementParameter.setValue(BinaryProtocolValueUtility.getInstance().readBinaryProtocolValue(columnType, mysqlPacketPayload));
         }
     }
     
@@ -148,6 +149,28 @@ public final class ComStmtExecutePacket extends CommandPacket {
     @Override
     public CommandResponsePackets execute() {
         log.debug("COM_STMT_EXECUTE received for Sharding-Proxy: {}", statementId);
-        return new StatementExecuteBackendHandler(preparedStatementParameters, statementId, DatabaseType.MySQL, true).execute();
+        return statementExecuteBackendHandler.execute();
+    }
+    
+    /**
+     * Has more Result value.
+     *
+     * @return has more result value
+     */
+    public boolean hasMoreResultValue() {
+        try {
+            return statementExecuteBackendHandler.hasMoreResultValue();
+        } catch (final SQLException ex) {
+            return false;
+        }
+    }
+    
+    /**
+     * Get result value.
+     *
+     * @return database protocol packet
+     */
+    public DatabaseProtocolPacket getResultValue() {
+        return statementExecuteBackendHandler.getResultValue();
     }
 }

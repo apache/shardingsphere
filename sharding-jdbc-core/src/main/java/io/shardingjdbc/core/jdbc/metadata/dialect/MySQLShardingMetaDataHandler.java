@@ -19,6 +19,7 @@ package io.shardingjdbc.core.jdbc.metadata.dialect;
 
 import io.shardingjdbc.core.metadata.ColumnMetaData;
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -40,9 +41,9 @@ public final class MySQLShardingMetaDataHandler extends ShardingMetaDataHandler 
     @Override
     public Collection<ColumnMetaData> getColumnMetaDataList() throws SQLException {
         List<ColumnMetaData> result = new LinkedList<>();
-        try (Statement statement = getDataSource().getConnection().createStatement()) {
-            statement.executeQuery(String.format("desc %s;", getActualTableName()));
-            ResultSet resultSet = statement.getResultSet();
+        try (Connection connection = getDataSource().getConnection();
+            Statement statement = connection.createStatement()) {
+            ResultSet resultSet = statement.executeQuery(String.format("desc %s", getActualTableName()));
             while (resultSet.next()) {
                 result.add(new ColumnMetaData(resultSet.getString("Field"), resultSet.getString("Type"), resultSet.getString("Key")));
             }

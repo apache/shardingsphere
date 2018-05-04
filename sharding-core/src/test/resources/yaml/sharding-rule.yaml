@@ -62,7 +62,7 @@ shardingRule:
           shardingColumn: order_id
           algorithmExpression: t_order_${order_id % 2}
       keyGeneratorColumnName: order_id
-      keyGeneratorClass: io.shardingjdbc.core.keygen.DefaultKeyGenerator
+      keyGeneratorClassName: io.shardingjdbc.core.keygen.DefaultKeyGenerator
       logicIndex: order_index
     t_order_item:
       actualDataNodes: ds_${0..1}.t_order_item_${0..1}
@@ -80,25 +80,29 @@ shardingRule:
       algorithmExpression: ds_${order_id % 2}
   defaultTableStrategy: 
     none:
-  defaultKeyGeneratorClass: io.shardingjdbc.core.keygen.DefaultKeyGenerator
-
+  defaultKeyGeneratorClassName: io.shardingjdbc.core.keygen.DefaultKeyGenerator
+  
   masterSlaveRules:
     ds_0:
       masterDataSourceName: master_ds_0
-      slaveDataSourceNames: [master_ds_0_slave_0, master_ds_0_slave_1]
+      slaveDataSourceNames:
+        - master_ds_0_slave_0
+        - master_ds_0_slave_1
       loadBalanceAlgorithmType: ROUND_ROBIN
       configMap:
         master-slave-key0: master-slave-value0
     ds_1:
       masterDataSourceName: master_ds_1
-      slaveDataSourceNames: [master_ds_1_slave_0, master_ds_1_slave_1]
+      slaveDataSourceNames: 
+        - master_ds_1_slave_0
+        - master_ds_1_slave_1
       loadBalanceAlgorithmClassName: TestAlgorithmClass
       configMap:
         master-slave-key1: master-slave-value1
-
+  
   configMap:
     sharding-key1: sharding-value1
     sharding-key2: sharding-value2
-
+  
   props:
     sql.show: true

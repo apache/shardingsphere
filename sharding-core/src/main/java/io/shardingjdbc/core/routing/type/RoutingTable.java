@@ -15,25 +15,25 @@
  * </p>
  */
 
-package io.shardingjdbc.core.routing.type.unicast;
+package io.shardingjdbc.core.routing.type;
 
-import io.shardingjdbc.core.routing.type.RoutingResult;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 /**
- * Unicast routing result.
+ * Routing table.
  * 
  * @author maxiaoguang
  */
 @RequiredArgsConstructor
 @Getter
-public class UnicastRoutingResult extends RoutingResult {
+@EqualsAndHashCode
+@ToString
+public final class RoutingTable {
     
-    private final String dataSource;
+    private final String logicTableName;
     
-    @Override
-    public boolean isSingleRouting() {
-        return true;
-    }
+    private final String actualTableName;
 }

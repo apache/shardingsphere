@@ -15,24 +15,23 @@
  * </p>
  */
 
-package io.shardingjdbc.core.routing.type.complex;
+package io.shardingjdbc.core.parsing.parser.token;
 
-import io.shardingjdbc.core.routing.type.TableUnit;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import java.util.List;
-
 /**
- * Cartesian table reference.
- * 
- * @author zhangliang
+ * Symbol token.
+ *
+ * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class CartesianTableReference {
+public final class InsertColumnToken implements SQLToken {
     
-    private final List<TableUnit> tableUnits;
+    private final int beginPosition;
+    
+    private final String columnName;
 }

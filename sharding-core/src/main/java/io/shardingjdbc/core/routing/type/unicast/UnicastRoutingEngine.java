@@ -19,20 +19,21 @@ package io.shardingjdbc.core.routing.type.unicast;
 
 import io.shardingjdbc.core.routing.type.RoutingEngine;
 import io.shardingjdbc.core.routing.type.RoutingResult;
+import io.shardingjdbc.core.routing.type.RoutingTable;
 import io.shardingjdbc.core.routing.type.TableUnit;
 import io.shardingjdbc.core.rule.DataNode;
 import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.List;
 
 /**
  * Unicast routing engine.
  * 
  * @author zhangliang
+ * @author maxiaoguang
  */
 @RequiredArgsConstructor
 public final class UnicastRoutingEngine implements RoutingEngine {
@@ -43,29 +44,28 @@ public final class UnicastRoutingEngine implements RoutingEngine {
     
     @Override
     public RoutingResult route() {
-        RoutingResult result;
+        RoutingResult result = new RoutingResult();
         if (logicTables.isEmpty()) {
-            result = new RoutingResult();
-            result.getTableUnits().getTableUnits().add(new TableUnit(shardingRule.getDataSourceNames().iterator().next(), "", ""));
+            result.getTableUnits().getTableUnits().add(new TableUnit(shardingRule.getShardingDataSourceNames().getDataSourceNames().iterator().next()));
         } else if (1 == logicTables.size()) {
             String logicTableName = logicTables.iterator().next();
             DataNode dataNode = shardingRule.findDataNode(logicTableName);
-            result = new RoutingResult();
-            result.getTableUnits().getTableUnits().add(new TableUnit(dataNode.getDataSourceName(), logicTableName, dataNode.getTableName()));
+            TableUnit tableUnit = new TableUnit(dataNode.getDataSourceName());
+            tableUnit.getRoutingTables().add(new RoutingTable(logicTableName, dataNode.getTableName()));
+            result.getTableUnits().getTableUnits().add(tableUnit);
         } else {
             String dataSourceName = null;
-            Map<String, DataNode> dataNodeMap = new LinkedHashMap<>(logicTables.size(), 1);
+            List<RoutingTable> routingTables = new ArrayList<>(logicTables.size());
             for (String each : logicTables) {
                 DataNode dataNode = shardingRule.findDataNode(dataSourceName, each);
-                dataNodeMap.put(each, dataNode);
+                routingTables.add(new RoutingTable(each, dataNode.getTableName()));
                 if (null == dataSourceName) {
                     dataSourceName = dataNode.getDataSourceName();
                 }
             }
-            result = new UnicastRoutingResult(dataSourceName);
-            for (Entry<String, DataNode> entry : dataNodeMap.entrySet()) {
-                result.getTableUnits().getTableUnits().add(new TableUnit(entry.getValue().getDataSourceName(), entry.getKey(), entry.getValue().getTableName()));
-            }
+            TableUnit tableUnit = new TableUnit(dataSourceName);
+            tableUnit.getRoutingTables().addAll(routingTables);
+            result.getTableUnits().getTableUnits().add(tableUnit);
         }
         return result;
     }

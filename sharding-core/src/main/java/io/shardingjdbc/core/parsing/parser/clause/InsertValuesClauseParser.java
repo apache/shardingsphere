@@ -17,22 +17,26 @@
 
 package io.shardingjdbc.core.parsing.parser.clause;
 
+import com.google.common.base.Optional;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
+import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.parsing.lexer.LexerEngine;
 import io.shardingjdbc.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingjdbc.core.parsing.lexer.token.Keyword;
 import io.shardingjdbc.core.parsing.lexer.token.Symbol;
 import io.shardingjdbc.core.parsing.parser.clause.expression.BasicExpressionParser;
-import io.shardingjdbc.core.parsing.parser.context.condition.GeneratedKeyCondition;
+import io.shardingjdbc.core.parsing.parser.context.condition.AndCondition;
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import io.shardingjdbc.core.parsing.parser.context.condition.Condition;
-import io.shardingjdbc.core.parsing.parser.context.condition.Conditions;
+import io.shardingjdbc.core.parsing.parser.context.condition.GeneratedKeyCondition;
+import io.shardingjdbc.core.parsing.parser.context.insertvalue.InsertValue;
 import io.shardingjdbc.core.parsing.parser.dialect.ExpressionParserFactory;
 import io.shardingjdbc.core.parsing.parser.expression.SQLExpression;
 import io.shardingjdbc.core.parsing.parser.expression.SQLNumberExpression;
 import io.shardingjdbc.core.parsing.parser.expression.SQLPlaceholderExpression;
 import io.shardingjdbc.core.parsing.parser.sql.dml.insert.InsertStatement;
-import io.shardingjdbc.core.parsing.parser.token.MultipleInsertValuesToken;
+import io.shardingjdbc.core.parsing.parser.token.InsertValuesToken;
+import io.shardingjdbc.core.parsing.parser.token.ItemsToken;
 import io.shardingjdbc.core.rule.ShardingRule;
 
 import java.util.Arrays;
@@ -64,17 +68,14 @@ public class InsertValuesClauseParser implements SQLClauseParser {
      * Parse insert values.
      *
      * @param insertStatement insert statement
+     * @param shardingMetaData sharding meta data
      */
-    public void parse(final InsertStatement insertStatement) {
+    public void parse(final InsertStatement insertStatement, final ShardingMetaData shardingMetaData) {
         Collection<Keyword> valueKeywords = new LinkedList<>();
         valueKeywords.add(DefaultKeyword.VALUES);
         valueKeywords.addAll(Arrays.asList(getSynonymousKeywordsForValues()));
         if (lexerEngine.skipIfEqual(valueKeywords.toArray(new Keyword[valueKeywords.size()]))) {
-            insertStatement.setAfterValuesPosition(lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length());
             parseValues(insertStatement);
-            if (lexerEngine.equalAny(Symbol.COMMA)) {
-                parseMultipleValues(insertStatement);
-            }
         }
     }
     
@@ -82,24 +83,60 @@ public class InsertValuesClauseParser implements SQLClauseParser {
         return new Keyword[0];
     }
     
+    /**
+     * Parse insert values.
+     *
+     * @param insertStatement insert statement
+     */
     private void parseValues(final InsertStatement insertStatement) {
-        lexerEngine.accept(Symbol.LEFT_PAREN);
-        List<SQLExpression> sqlExpressions = new LinkedList<>();
+        int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
+        int endPosition;
+        insertStatement.getSqlTokens().add(new InsertValuesToken(beginPosition, insertStatement.getTables().getSingleTableName()));
         do {
-            sqlExpressions.add(basicExpressionParser.parse(insertStatement));
-            skipsDoubleColon();
-        } while (lexerEngine.skipIfEqual(Symbol.COMMA));
-        insertStatement.setValuesListLastPosition(lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length());
-        int count = 0;
-        for (Column each : insertStatement.getColumns()) {
-            SQLExpression sqlExpression = sqlExpressions.get(count);
-            insertStatement.getConditions().add(new Condition(each, sqlExpression), shardingRule);
-            if (insertStatement.getGenerateKeyColumnIndex() == count) {
-                insertStatement.setGeneratedKeyCondition(createGeneratedKeyCondition(each, sqlExpression));
+            beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
+            lexerEngine.accept(Symbol.LEFT_PAREN);
+            List<SQLExpression> sqlExpressions = new LinkedList<>();
+            int columnsCount = 0;
+            do {
+                sqlExpressions.add(basicExpressionParser.parse(insertStatement));
+                skipsDoubleColon();
+                columnsCount++;
+            } while (lexerEngine.skipIfEqual(Symbol.COMMA));
+            removeGenerateKeyColumn(insertStatement, columnsCount);
+            columnsCount = 0;
+            int parametersCount = 0;
+            AndCondition andCondition = new AndCondition();
+            for (Column each : insertStatement.getColumns()) {
+                SQLExpression sqlExpression = sqlExpressions.get(columnsCount);
+                if (shardingRule.isShardingColumn(each)) {
+                    andCondition.getConditions().add(new Condition(each, sqlExpression));
+                }
+                if (insertStatement.getGenerateKeyColumnIndex() == columnsCount) {
+                    insertStatement.getGeneratedKeyConditions().add(createGeneratedKeyCondition(each, sqlExpression));
+                }
+                columnsCount++;
+                if (sqlExpression instanceof SQLPlaceholderExpression) {
+                    parametersCount++;
+                }
             }
-            count++;
+            lexerEngine.accept(Symbol.RIGHT_PAREN);
+            endPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
+            insertStatement.getInsertValues().getInsertValues().add(new InsertValue(lexerEngine.getInput().substring(beginPosition, endPosition), parametersCount));
+            insertStatement.getConditions().getOrCondition().getAndConditions().add(andCondition);
+        } while (lexerEngine.skipIfEqual(Symbol.COMMA));
+        insertStatement.setInsertValuesListLastPosition(endPosition);
+    }
+    
+    private void removeGenerateKeyColumn(final InsertStatement insertStatement, final int valueCount) {
+        Optional<Column> generateKeyColumn = shardingRule.getGenerateKeyColumn(insertStatement.getTables().getSingleTableName());
+        if (generateKeyColumn.isPresent() && valueCount < insertStatement.getColumns().size()) {
+            List<ItemsToken> itemsTokens = insertStatement.getItemsTokens();
+            insertStatement.getColumns().remove(new Column(generateKeyColumn.get().getName(), insertStatement.getTables().getSingleTableName()));
+            for (ItemsToken each : itemsTokens) {
+                each.getItems().remove(generateKeyColumn.get().getName());
+                insertStatement.setGenerateKeyColumnIndex(-1);
+            }
         }
-        lexerEngine.accept(Symbol.RIGHT_PAREN);
     }
     
     private GeneratedKeyCondition createGeneratedKeyCondition(final Column column, final SQLExpression sqlExpression) {
@@ -112,22 +149,6 @@ public class InsertValuesClauseParser implements SQLClauseParser {
             throw new ShardingJdbcException("Generated key only support number.");
         }
         return result;
-    }
-    
-    private void parseMultipleValues(final InsertStatement insertStatement) {
-        insertStatement.getMultipleConditions().add(new Conditions(insertStatement.getConditions()));
-        MultipleInsertValuesToken valuesToken = new MultipleInsertValuesToken(insertStatement.getAfterValuesPosition());
-        valuesToken.getValues().add(
-                lexerEngine.getInput().substring(insertStatement.getAfterValuesPosition(), lexerEngine.getCurrentToken().getEndPosition() - Symbol.COMMA.getLiterals().length()));
-        while (lexerEngine.skipIfEqual(Symbol.COMMA)) {
-            int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
-            parseValues(insertStatement);
-            insertStatement.getMultipleConditions().add(new Conditions(insertStatement.getConditions()));
-            int endPosition = lexerEngine.equalAny(Symbol.COMMA)
-                    ? lexerEngine.getCurrentToken().getEndPosition() - Symbol.COMMA.getLiterals().length() : lexerEngine.getCurrentToken().getEndPosition();
-            valuesToken.getValues().add(lexerEngine.getInput().substring(beginPosition, endPosition));
-        }
-        insertStatement.getSqlTokens().add(valuesToken);
     }
     
     private void skipsDoubleColon() {

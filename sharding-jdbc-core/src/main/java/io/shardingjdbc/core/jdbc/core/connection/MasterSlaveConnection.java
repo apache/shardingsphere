@@ -17,24 +17,19 @@
 
 package io.shardingjdbc.core.jdbc.core.connection;
 
-import io.shardingjdbc.core.constant.SQLType;
-import io.shardingjdbc.core.hint.HintManagerHolder;
 import io.shardingjdbc.core.jdbc.adapter.AbstractConnectionAdapter;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.statement.MasterSlavePreparedStatement;
 import io.shardingjdbc.core.jdbc.core.statement.MasterSlaveStatement;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Connection that support master-slave.
@@ -42,45 +37,19 @@ import java.util.Map.Entry;
  * @author zhangliang
  */
 @RequiredArgsConstructor
+@Getter
 public final class MasterSlaveConnection extends AbstractConnectionAdapter {
     
     private final MasterSlaveDataSource masterSlaveDataSource;
     
-    private SQLType cachedSQLType;
-    
-    /**
-     * Get database connections via SQL type.
-     *
-     * <p>DDL will return master connection; DQL will return slave connection; DML or updated before in same thread will return master connection.</p>
-     * 
-     * @param sqlType SQL type
-     * @return database connections via SQL type
-     * @throws SQLException SQL exception
-     */
-    public Collection<Connection> getConnections(final SQLType sqlType) throws SQLException {
-        cachedSQLType = sqlType;
-        Map<String, DataSource> dataSources = SQLType.DDL == sqlType ? masterSlaveDataSource.getMasterDataSource() : masterSlaveDataSource.getDataSource(sqlType).toMap();
-        Collection<Connection> result = new LinkedList<>();
-        for (Entry<String, DataSource> each : dataSources.entrySet()) {
-            String dataSourceName = each.getKey();
-            if (getCachedConnections().containsKey(dataSourceName)) {
-                result.add(getCachedConnections().get(dataSourceName));
-                continue;
-            }
-            Connection connection = each.getValue().getConnection();
-            getCachedConnections().put(dataSourceName, connection);
-            result.add(connection);
-            replayMethodsInvocation(connection);
-        }
-        return result;
+    @Override
+    protected Map<String, DataSource> getDataSourceMap() {
+        return masterSlaveDataSource.getDataSourceMap();
     }
     
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {
-        if (!getCachedConnections().isEmpty()) {
-            return getCachedConnections().values().iterator().next().getMetaData();
-        }
-        return getConnections(null == cachedSQLType ? SQLType.DML : cachedSQLType).iterator().next().getMetaData();
+        return getConnection(masterSlaveDataSource.getMasterSlaveRule().getMasterDataSourceName()).getMetaData();
     }
     
     @Override
@@ -126,12 +95,5 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
     @Override
     public PreparedStatement prepareStatement(final String sql, final String[] columnNames) throws SQLException {
         return new MasterSlavePreparedStatement(this, sql, columnNames);
-    }
-    
-    @Override
-    public void close() throws SQLException {
-        HintManagerHolder.clear();
-        MasterSlaveDataSource.resetDMLFlag();
-        super.close();
     }
 }

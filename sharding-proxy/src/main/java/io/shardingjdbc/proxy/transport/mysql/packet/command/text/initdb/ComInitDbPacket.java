@@ -18,6 +18,7 @@
 package io.shardingjdbc.proxy.transport.mysql.packet.command.text.initdb;
 
 import io.shardingjdbc.core.constant.ShardingConstant;
+import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingjdbc.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacket;
@@ -56,5 +57,15 @@ public final class ComInitDbPacket extends CommandPacket {
             return new CommandResponsePackets(new OKPacket(getSequenceId() + 1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
         }
         return new CommandResponsePackets(new ErrPacket(getSequenceId() + 1, 1049, "", "", String.format("Unknown database '%s'", schemaName)));
+    }
+    
+    @Override
+    public boolean hasMoreResultValue() {
+        return false;
+    }
+    
+    @Override
+    public DatabaseProtocolPacket getResultValue() {
+        return null;
     }
 }

@@ -17,92 +17,121 @@
 
 package io.shardingjdbc.core.optimizer;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import io.shardingjdbc.core.api.algorithm.sharding.ListShardingValue;
 import io.shardingjdbc.core.optimizer.condition.ShardingConditions;
 import io.shardingjdbc.core.optimizer.insert.InsertOptimizeEngine;
+import io.shardingjdbc.core.optimizer.insert.InsertShardingCondition;
 import io.shardingjdbc.core.parsing.parser.context.condition.AndCondition;
 import io.shardingjdbc.core.parsing.parser.context.condition.Column;
 import io.shardingjdbc.core.parsing.parser.context.condition.Condition;
-import io.shardingjdbc.core.parsing.parser.context.condition.OrCondition;
-import io.shardingjdbc.core.parsing.parser.expression.SQLNumberExpression;
+import io.shardingjdbc.core.parsing.parser.context.insertvalue.InsertValue;
+import io.shardingjdbc.core.parsing.parser.context.table.Table;
 import io.shardingjdbc.core.parsing.parser.expression.SQLPlaceholderExpression;
-import io.shardingjdbc.core.routing.router.GeneratedKey;
+import io.shardingjdbc.core.parsing.parser.sql.dml.insert.InsertStatement;
+import io.shardingjdbc.core.parsing.parser.token.InsertValuesToken;
+import io.shardingjdbc.core.parsing.parser.token.TableToken;
+import io.shardingjdbc.core.routing.router.sharding.GeneratedKey;
+import io.shardingjdbc.core.rule.ShardingRule;
+import io.shardingjdbc.core.yaml.sharding.YamlShardingConfiguration;
+import org.hamcrest.CoreMatchers;
+import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collections;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class InsertOptimizeEngineTest {
     
-    @Test
-    public void assertOptimizeWithoutConditionsAndGeneratedKey() {
-        ShardingConditions shardingConditions = new InsertOptimizeEngine(new OrCondition(), Collections.emptyList(), null).optimize();
-        assertFalse(shardingConditions.isAlwaysFalse());
-        assertTrue(shardingConditions.getShardingConditions().isEmpty());
+    private ShardingRule shardingRule;
+    
+    private InsertStatement insertStatement;
+    
+    private List<Object> parameters;
+    
+    @Before
+    public void setUp() throws IOException {
+        URL url = InsertOptimizeEngineTest.class.getClassLoader().getResource("yaml/optimize-rule.yaml");
+        Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
+        YamlShardingConfiguration yamlShardingConfig = YamlShardingConfiguration.unmarshal(new File(url.getFile()));
+        shardingRule = yamlShardingConfig.getShardingRule(yamlShardingConfig.getDataSources().keySet());
+        insertStatement = new InsertStatement();
+        insertStatement.getTables().add(new Table("t_order", Optional.<String>absent()));
+        insertStatement.setParametersIndex(4);
+        insertStatement.setInsertValuesListLastPosition(45);
+        insertStatement.getSqlTokens().add(new TableToken(12, "t_order"));
+        insertStatement.getSqlTokens().add(new InsertValuesToken(39, "t_order"));
+        AndCondition andCondition1 = new AndCondition();
+        andCondition1.getConditions().add(new Condition(new Column("user_id", "t_order"), new SQLPlaceholderExpression(0)));
+        insertStatement.getConditions().getOrCondition().getAndConditions().add(andCondition1);
+        AndCondition andCondition2 = new AndCondition();
+        andCondition2.getConditions().add(new Condition(new Column("user_id", "t_order"), new SQLPlaceholderExpression(2)));
+        insertStatement.getConditions().getOrCondition().getAndConditions().add(andCondition2);
+        insertStatement.getInsertValues().getInsertValues().add(new InsertValue("(?, ?)", 2));
+        insertStatement.getInsertValues().getInsertValues().add(new InsertValue("(?, ?)", 2));
+        parameters = new ArrayList<>(4);
+        parameters.add(10);
+        parameters.add("init");
+        parameters.add(11);
+        parameters.add("init");
     }
     
     @Test
-    public void assertOptimizeWithConditionsOnly() {
-        Condition condition1 = new Condition(new Column("column1", "tbl"), new SQLNumberExpression(1000L));
-        Condition condition2 = new Condition(new Column("column2", "tbl"), new SQLPlaceholderExpression(0));
-        AndCondition andCondition = new AndCondition();
-        andCondition.getConditions().add(condition1);
-        andCondition.getConditions().add(condition2);
-        OrCondition orCondition = new OrCondition();
-        orCondition.getAndConditions().add(andCondition);
-        ShardingConditions actual = new InsertOptimizeEngine(orCondition, Collections.<Object>singletonList(2000L), null).optimize();
+    public void assertOptimizeWithGeneratedKey() {
+        GeneratedKey generatedKey = new GeneratedKey(new Column("order_id", "t_order"));
+        generatedKey.getGeneratedKeys().add(1);
+        generatedKey.getGeneratedKeys().add(2);
+        ShardingConditions actual = new InsertOptimizeEngine(shardingRule, insertStatement, parameters, generatedKey).optimize();
         assertFalse(actual.isAlwaysFalse());
-        assertThat(actual.getShardingConditions().size(), is(1));
+        assertThat(actual.getShardingConditions().size(), is(2));
+        assertThat(((InsertShardingCondition) actual.getShardingConditions().get(0)).getParameters().size(), is(3));
+        assertThat(((InsertShardingCondition) actual.getShardingConditions().get(1)).getParameters().size(), is(3));
+        assertThat(((InsertShardingCondition) actual.getShardingConditions().get(0)).getParameters().get(0), CoreMatchers.<Object>is(10));
+        assertThat(((InsertShardingCondition) actual.getShardingConditions().get(0)).getParameters().get(1), CoreMatchers.<Object>is("init"));
+        assertThat(((InsertShardingCondition) actual.getShardingConditions().get(0)).getParameters().get(2), CoreMatchers.<Object>is(1));
+        assertThat(((InsertShardingCondition) actual.getShardingConditions().get(1)).getParameters().get(0), CoreMatchers.<Object>is(11));
+        assertThat(((InsertShardingCondition) actual.getShardingConditions().get(1)).getParameters().get(1), CoreMatchers.<Object>is("init"));
+        assertThat(((InsertShardingCondition) actual.getShardingConditions().get(1)).getParameters().get(2), CoreMatchers.<Object>is(2));
+        assertThat(((InsertShardingCondition) actual.getShardingConditions().get(0)).getInsertValueExpression(), is("(?, ?, ?)"));
+        assertThat(((InsertShardingCondition) actual.getShardingConditions().get(1)).getInsertValueExpression(), is("(?, ?, ?)"));
         assertThat(actual.getShardingConditions().get(0).getShardingValues().size(), is(2));
-        assertShardingValue((ListShardingValue) actual.getShardingConditions().get(0).getShardingValues().get(0), 1000L);
-        assertShardingValue((ListShardingValue) actual.getShardingConditions().get(0).getShardingValues().get(1), 2000L);
+        assertThat(actual.getShardingConditions().get(1).getShardingValues().size(), is(2));
+        assertShardingValue((ListShardingValue) actual.getShardingConditions().get(0).getShardingValues().get(0), 10);
+        assertShardingValue((ListShardingValue) actual.getShardingConditions().get(0).getShardingValues().get(1), 1);
+        assertShardingValue((ListShardingValue) actual.getShardingConditions().get(1).getShardingValues().get(0), 11);
+        assertShardingValue((ListShardingValue) actual.getShardingConditions().get(1).getShardingValues().get(1), 2);
     }
     
     @Test
-    public void assertOptimizeWithGeneratedKeyOnly() {
-        ShardingConditions actual = new InsertOptimizeEngine(new OrCondition(), Collections.emptyList(), new GeneratedKey(new Column("column3", "tbl"), -1, 3000L)).optimize();
+    public void assertOptimizeWithoutGeneratedKey() {
+        insertStatement.setGenerateKeyColumnIndex(1);
+        ShardingConditions actual = new InsertOptimizeEngine(shardingRule, insertStatement, parameters, null).optimize();
         assertFalse(actual.isAlwaysFalse());
-        assertThat(actual.getShardingConditions().size(), is(1));
+        assertThat(actual.getShardingConditions().size(), is(2));
+        assertThat(((InsertShardingCondition) actual.getShardingConditions().get(0)).getParameters().size(), is(2));
+        assertThat(((InsertShardingCondition) actual.getShardingConditions().get(1)).getParameters().size(), is(2));
+        assertThat(((InsertShardingCondition) actual.getShardingConditions().get(0)).getParameters().get(0), CoreMatchers.<Object>is(10));
+        assertThat(((InsertShardingCondition) actual.getShardingConditions().get(0)).getParameters().get(1), CoreMatchers.<Object>is("init"));
+        assertThat(((InsertShardingCondition) actual.getShardingConditions().get(1)).getParameters().get(0), CoreMatchers.<Object>is(11));
+        assertThat(((InsertShardingCondition) actual.getShardingConditions().get(1)).getParameters().get(1), CoreMatchers.<Object>is("init"));
+        assertThat(((InsertShardingCondition) actual.getShardingConditions().get(0)).getInsertValueExpression(), is("(?, ?)"));
+        assertThat(((InsertShardingCondition) actual.getShardingConditions().get(1)).getInsertValueExpression(), is("(?, ?)"));
         assertThat(actual.getShardingConditions().get(0).getShardingValues().size(), is(1));
-        assertShardingValue((ListShardingValue) actual.getShardingConditions().get(0).getShardingValues().get(0), 3000L);
+        assertThat(actual.getShardingConditions().get(1).getShardingValues().size(), is(1));
+        assertShardingValue((ListShardingValue) actual.getShardingConditions().get(0).getShardingValues().get(0), 10);
+        assertShardingValue((ListShardingValue) actual.getShardingConditions().get(1).getShardingValues().get(0), 11);
     }
     
-    @Test
-    public void assertOptimizeWithConditionsAndGeneratedKey() {
-        Condition condition1 = new Condition(new Column("column1", "tbl"), new SQLNumberExpression(1000L));
-        Condition condition2 = new Condition(new Column("column2", "tbl"), new SQLPlaceholderExpression(0));
-        AndCondition andCondition = new AndCondition();
-        andCondition.getConditions().add(condition1);
-        andCondition.getConditions().add(condition2);
-        OrCondition orCondition = new OrCondition();
-        orCondition.getAndConditions().add(andCondition);
-        ShardingConditions actual = new InsertOptimizeEngine(orCondition, Collections.<Object>singletonList(2000L), new GeneratedKey(new Column("column3", "tbl"), -1, 3000L)).optimize();
-        assertFalse(actual.isAlwaysFalse());
-        assertThat(actual.getShardingConditions().size(), is(1));
-        assertThat(actual.getShardingConditions().get(0).getShardingValues().size(), is(3));
-        assertShardingValue((ListShardingValue) actual.getShardingConditions().get(0).getShardingValues().get(0), 1000L);
-        assertShardingValue((ListShardingValue) actual.getShardingConditions().get(0).getShardingValues().get(1), 2000L);
-        assertShardingValue((ListShardingValue) actual.getShardingConditions().get(0).getShardingValues().get(2), 3000L);
-    }
-    
-    private void assertShardingValue(final ListShardingValue actual, final long expected) {
+    private void assertShardingValue(final ListShardingValue actual, final int expected) {
         assertThat(actual.getValues().size(), is(1));
-        assertThat((Long) actual.getValues().iterator().next(), is(expected));
+        assertThat((int) actual.getValues().iterator().next(), is(expected));
     }
-    
-    //    @SuppressWarnings("unchecked")
-//    @Test
-//    public void assertOptimizeGeneratedKeyCondition() {
-//        ShardingConditions shardingConditions = new OptimizeEngine().optimize(new OrCondition(), Collections.emptyList(), new GeneratedKey(new Column("test", "test"), 0, 1));
-//        assertFalse(shardingConditions.isAlwaysFalse());
-//        ShardingCondition shardingCondition = shardingConditions.getShardingConditions().get(0);
-//        ShardingValue shardingValue = shardingCondition.getShardingValues().get(0);
-//        Collection<Comparable<?>> values = ((ListShardingValue<Comparable<?>>) shardingValue).getValues();
-//        assertThat(values.size(), is(1));
-//        assertTrue(values.contains(1));
-//    }
 }

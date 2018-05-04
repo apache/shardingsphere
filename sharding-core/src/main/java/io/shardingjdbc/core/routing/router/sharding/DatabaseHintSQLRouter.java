@@ -15,12 +15,13 @@
  * </p>
  */
 
-package io.shardingjdbc.core.routing.router;
+package io.shardingjdbc.core.routing.router.sharding;
 
 import io.shardingjdbc.core.parsing.SQLJudgeEngine;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import io.shardingjdbc.core.routing.SQLExecutionUnit;
 import io.shardingjdbc.core.routing.SQLRouteResult;
+import io.shardingjdbc.core.routing.SQLUnit;
 import io.shardingjdbc.core.routing.strategy.hint.HintShardingStrategy;
 import io.shardingjdbc.core.routing.type.RoutingResult;
 import io.shardingjdbc.core.routing.type.TableUnit;
@@ -29,15 +30,18 @@ import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.util.SQLLogger;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * SQL router for hint database only.
+ * Sharding router for hint database only.
  * 
  * @author zhangiang
+ * @author maxiaoguang
  */
 @RequiredArgsConstructor
-public final class DatabaseHintSQLRouter implements SQLRouter {
+public final class DatabaseHintSQLRouter implements ShardingRouter {
     
     private final ShardingRule shardingRule;
     
@@ -52,12 +56,13 @@ public final class DatabaseHintSQLRouter implements SQLRouter {
     // TODO insert SQL need parse gen key
     public SQLRouteResult route(final String logicSQL, final List<Object> parameters, final SQLStatement sqlStatement) {
         SQLRouteResult result = new SQLRouteResult(sqlStatement, null);
-        RoutingResult routingResult = new DatabaseHintRoutingEngine(shardingRule.getDataSourceNames(), (HintShardingStrategy) shardingRule.getDefaultDatabaseShardingStrategy()).route();
+        RoutingResult routingResult = new DatabaseHintRoutingEngine(
+                shardingRule.getShardingDataSourceNames().getDataSourceNames(), (HintShardingStrategy) shardingRule.getDefaultDatabaseShardingStrategy()).route();
         for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
-            result.getExecutionUnits().add(new SQLExecutionUnit(each.getDataSourceName(), logicSQL));
+            result.getExecutionUnits().add(new SQLExecutionUnit(each.getDataSourceName(), new SQLUnit(logicSQL, new ArrayList<>(Collections.singleton(parameters)))));
         }
         if (showSQL) {
-            SQLLogger.logSQL(logicSQL, sqlStatement, result.getExecutionUnits(), parameters);
+            SQLLogger.logSQL(logicSQL, sqlStatement, result.getExecutionUnits());
         }
         return result;
     }

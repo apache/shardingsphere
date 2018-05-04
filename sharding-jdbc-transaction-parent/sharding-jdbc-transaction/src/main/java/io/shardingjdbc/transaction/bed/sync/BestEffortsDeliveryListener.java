@@ -17,17 +17,16 @@
 
 package io.shardingjdbc.transaction.bed.sync;
 
-import io.shardingjdbc.core.constant.SQLType;
+import com.google.common.eventbus.AllowConcurrentEvents;
+import com.google.common.eventbus.Subscribe;
 import io.shardingjdbc.core.executor.event.DMLExecutionEvent;
 import io.shardingjdbc.transaction.api.SoftTransactionManager;
 import io.shardingjdbc.transaction.api.config.SoftTransactionConfiguration;
 import io.shardingjdbc.transaction.bed.BEDSoftTransaction;
+import io.shardingjdbc.transaction.constants.SoftTransactionType;
 import io.shardingjdbc.transaction.storage.TransactionLog;
 import io.shardingjdbc.transaction.storage.TransactionLogStorage;
 import io.shardingjdbc.transaction.storage.TransactionLogStorageFactory;
-import com.google.common.eventbus.AllowConcurrentEvents;
-import com.google.common.eventbus.Subscribe;
-import io.shardingjdbc.transaction.constants.SoftTransactionType;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
@@ -39,6 +38,7 @@ import java.sql.SQLException;
  * Best efforts delivery B.A.S.E transaction listener.
  * 
  * @author zhangliang
+ * @author maxiaoguang
  */
 @Slf4j
 public final class BestEffortsDeliveryListener {
@@ -61,7 +61,7 @@ public final class BestEffortsDeliveryListener {
             case BEFORE_EXECUTE:
                 //TODO for batch SQL need split to 2-level records
                 transactionLogStorage.add(new TransactionLog(event.getId(), bedSoftTransaction.getTransactionId(), bedSoftTransaction.getTransactionType(), 
-                        event.getDataSource(), event.getSql(), event.getParameters(), System.currentTimeMillis(), 0));
+                        event.getDataSource(), event.getSqlUnit().getSql(), event.getParameters(), System.currentTimeMillis(), 0));
                 return;
             case EXECUTE_SUCCESS: 
                 transactionLogStorage.remove(event.getId());
@@ -76,13 +76,13 @@ public final class BestEffortsDeliveryListener {
                     Connection conn = null;
                     PreparedStatement preparedStatement = null;
                     try {
-                        conn = bedSoftTransaction.getConnection().getConnection(event.getDataSource(), SQLType.DML);
+                        conn = bedSoftTransaction.getConnection().getConnection(event.getDataSource());
                         if (!isValidConnection(conn)) {
                             bedSoftTransaction.getConnection().release(conn);
-                            conn = bedSoftTransaction.getConnection().getConnection(event.getDataSource(), SQLType.DML);
+                            conn = bedSoftTransaction.getConnection().getConnection(event.getDataSource());
                             isNewConnection = true;
                         }
-                        preparedStatement = conn.prepareStatement(event.getSql());
+                        preparedStatement = conn.prepareStatement(event.getSqlUnit().getSql());
                         //TODO for batch event need split to 2-level records
                         for (int parameterIndex = 0; parameterIndex < event.getParameters().size(); parameterIndex++) {
                             preparedStatement.setObject(parameterIndex + 1, event.getParameters().get(parameterIndex));

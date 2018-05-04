@@ -17,18 +17,22 @@
 
 package io.shardingjdbc.core.jdbc.metadata;
 
+import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.metadata.ColumnMetaData;
 import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.rule.DataNode;
+import io.shardingjdbc.core.rule.ShardingDataSourceNames;
+import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 
 /**
- * Sharding metadata.
+ * Sharding metadata for JDBC.
  *
  * @author panjuan
  */
@@ -38,10 +42,13 @@ public final class JDBCShardingMetaData extends ShardingMetaData {
     
     private final Map<String, DataSource> dataSourceMap;
     
+    private final ShardingRule shardingRule;
+    
+    private final DatabaseType databaseType;
+    
     @Override
-    protected Collection<ColumnMetaData> getColumnMetaDataList(final DataNode dataNode) throws SQLException {
-        return ShardingMetaDataHandlerFactory.newInstance(dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName()).getColumnMetaDataList();
+    protected Collection<ColumnMetaData> getColumnMetaDataList(final DataNode dataNode, final ShardingDataSourceNames shardingDataSourceNames) throws SQLException {
+        return ShardingMetaDataHandlerFactory.newInstance(
+                dataSourceMap.get(shardingDataSourceNames.getRawMasterDataSourceName(dataNode.getDataSourceName())), dataNode.getTableName(), databaseType).getColumnMetaDataList();
     }
 }
-
-
