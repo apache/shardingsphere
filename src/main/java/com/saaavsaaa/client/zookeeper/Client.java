@@ -7,6 +7,7 @@ import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.utility.section.Listener;
 import com.saaavsaaa.client.utility.section.Properties;
 import com.saaavsaaa.client.utility.section.WatcherCreator;
+import com.saaavsaaa.client.zookeeper.strategy.StrategyType;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.ACL;
 
@@ -46,6 +47,8 @@ public abstract class Client implements IClient {
         zooKeeper.addAuthInfo(scheme , auth);
         CONNECTED.await();
     }
+    
+    public abstract void useStrategy(StrategyType strategyType);
     
     ZooKeeper getZooKeeper(){
         return zooKeeper;
@@ -148,11 +151,10 @@ public abstract class Client implements IClient {
         this.authorities = ZooDefs.Ids.CREATOR_ALL_ACL;
     }
     
-    public ClientFactory getClientFactory() {
-        return clientFactory;
-    }
-    
     void setClientFactory(ClientFactory clientFactory) {
         this.clientFactory = clientFactory;
+    }
+    public ClientFactory getClientFactory() {
+        return clientFactory;
     }
 }
