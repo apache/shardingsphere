@@ -70,12 +70,12 @@ public final class SQLPacketsBackendHandler extends SQLExecuteBackendHandler {
         MySQLResultCache.getInstance().putConnectionMap(channel.id().asShortText(), connectionId);
         switch (sqlStatement.getType()) {
             case DQL:
-                executeQuery(channel, sqlExecutionUnit.getSql());
+                executeQuery(channel, sqlExecutionUnit.getSqlUnit().getSql());
             case DML:
             case DDL:
-                executeUpdate(channel, sqlExecutionUnit.getSql(), sqlStatement);
+                executeUpdate(channel, sqlExecutionUnit.getSqlUnit().getSql(), sqlStatement);
             default:
-                executeCommon(channel, sqlExecutionUnit.getSql());
+                executeCommon(channel, sqlExecutionUnit.getSqlUnit().getSql());
         }
         return null;
     }

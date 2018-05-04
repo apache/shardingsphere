@@ -20,12 +20,9 @@ package io.shardingjdbc.proxy.transport.mysql.packet.command.text.fieldlist;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.constant.ShardingConstant;
 import io.shardingjdbc.proxy.backend.common.SQLExecuteBackendHandler;
-<<<<<<< HEAD
 import io.shardingjdbc.proxy.backend.common.SQLPacketsBackendHandler;
 import io.shardingjdbc.proxy.config.ShardingRuleRegistry;
-=======
 import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
->>>>>>> upstream/dev
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacketType;
@@ -67,7 +64,7 @@ public final class ComFieldListPacket extends CommandPacket {
         // TODO use common database type
         if (ShardingRuleRegistry.WITHOUT_JDBC) {
             return new SQLPacketsBackendHandler(sql, connectionId, DatabaseType.MySQL, true).execute();
-        }else {
+        } else {
             return new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, true).execute();
         }
     }

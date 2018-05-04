@@ -19,12 +19,9 @@ package io.shardingjdbc.proxy.transport.mysql.packet.command.text.query;
 
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.proxy.backend.common.SQLExecuteBackendHandler;
-<<<<<<< HEAD
 import io.shardingjdbc.proxy.backend.common.SQLPacketsBackendHandler;
 import io.shardingjdbc.proxy.config.ShardingRuleRegistry;
-=======
 import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
->>>>>>> upstream/dev
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandResponsePackets;
@@ -44,17 +41,15 @@ public final class ComQueryPacket extends CommandPacket {
     
     private final String sql;
     
-<<<<<<< HEAD
-    public ComQueryPacket(final int sequenceId, final int connectionId, MySQLPacketPayload mysqlPacketPayload) {
-        super(sequenceId, connectionId);
-=======
     private final SQLExecuteBackendHandler sqlExecuteBackendHandler;
     
-    public ComQueryPacket(final int sequenceId, final MySQLPacketPayload mysqlPacketPayload) {
-        super(sequenceId);
->>>>>>> upstream/dev
+    private final SQLPacketsBackendHandler sqlPacketsBackendHandler;
+    
+    public ComQueryPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload mysqlPacketPayload) {
+        super(sequenceId, connectionId);
         sql = mysqlPacketPayload.readStringEOF();
         sqlExecuteBackendHandler = new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, true);
+        sqlPacketsBackendHandler = new SQLPacketsBackendHandler(sql, connectionId, DatabaseType.MySQL, true);
     }
     
     @Override
@@ -65,14 +60,11 @@ public final class ComQueryPacket extends CommandPacket {
     @Override
     public CommandResponsePackets execute() {
         log.debug("COM_QUERY received for Sharding-Proxy: {}", sql);
-<<<<<<< HEAD
         if (ShardingRuleRegistry.WITHOUT_JDBC) {
-            return new SQLPacketsBackendHandler(sql, connectionId, DatabaseType.MySQL, true).execute();
+            return sqlPacketsBackendHandler.execute();
         } else {
-            return new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, true).execute();
+            return sqlExecuteBackendHandler.execute();
         }
-=======
-        return sqlExecuteBackendHandler.execute();
     }
     
     /**
@@ -82,7 +74,11 @@ public final class ComQueryPacket extends CommandPacket {
      */
     public boolean hasMoreResultValue() {
         try {
-            return sqlExecuteBackendHandler.hasMoreResultValue();
+            if (ShardingRuleRegistry.WITHOUT_JDBC) {
+                return false;
+            } else {
+                return sqlExecuteBackendHandler.hasMoreResultValue();
+            }
         } catch (final SQLException ex) {
             return false;
         }
@@ -95,6 +91,5 @@ public final class ComQueryPacket extends CommandPacket {
      */
     public DatabaseProtocolPacket getResultValue() {
         return sqlExecuteBackendHandler.getResultValue();
->>>>>>> upstream/dev
     }
 }
