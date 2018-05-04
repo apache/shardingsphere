@@ -1,8 +1,7 @@
 +++
+pre = "<b>3. </b>"
 title = "采用公司"
 weight = 3
-prev = "/02-contribute/convention/"
-next = "/01-organization/"
 chapter = true
 +++
 

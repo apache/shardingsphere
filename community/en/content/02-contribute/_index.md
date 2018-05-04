@@ -1,8 +1,7 @@
 +++
+pre = "<b>2. </b>"
 title = "Get Involved"
 weight = 2
-prev = "/01-organization/"
-next = "/02-contribute/contributor/"
 chapter = true
 +++
 

@@ -1,8 +1,7 @@
 +++
-title = "End users"
+pre = "<b>3. </b>"
+title = "End Users"
 weight = 3
-prev = "/02-contribute/convention/"
-next = "/01-organization/"
 chapter = true
 +++
 

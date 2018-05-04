@@ -1,8 +1,7 @@
 +++
+pre = "<b>1. </b>"
 title = "组织"
 weight = 1
-prev = "/03-company/"
-next = "/02-contribute/"
 chapter = true
 +++
 
