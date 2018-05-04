@@ -19,26 +19,12 @@ package io.shardingjdbc.dbtest.config.bean;
 
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Data
-public class ColumnDefinition {
+public class IndexDefinition {
     
     private String name;
     
     private String type;
     
-    private Integer size;
-    
-    private Integer decimalDigits;
-    
-    private Integer numPrecRadix;
-    
-    private Integer nullAble;
-    
-    private int isAutoincrement;
-    
-    private List<IndexDefinition> indexs = new ArrayList<>();
-    
+    private boolean unique;
 }

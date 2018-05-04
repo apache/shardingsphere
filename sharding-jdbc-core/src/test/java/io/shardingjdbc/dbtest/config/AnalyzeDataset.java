@@ -34,6 +34,7 @@ import javax.xml.xpath.XPathFactory;
 
 import io.shardingjdbc.dbtest.config.bean.ColumnDefinition;
 import io.shardingjdbc.dbtest.config.bean.DatasetDefinition;
+import io.shardingjdbc.dbtest.config.bean.IndexDefinition;
 import io.shardingjdbc.dbtest.exception.DbTestException;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Attr;
@@ -49,13 +50,14 @@ public class AnalyzeDataset {
      * Parsing the Dataset file.
      *
      * @param path path
+     * @param tableName tableName
      * @return DatasetDefinition
      * @throws IOException                  IOException
      * @throws SAXException                 SAXException
      * @throws ParserConfigurationException ParserConfigurationException
      * @throws XPathExpressionException     XPathExpressionException
      */
-    public static DatasetDefinition analyze(final String path, String tableName)
+    public static DatasetDefinition analyze(final String path, final String tableName)
             throws IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         return analyze(new File(path), tableName);
     }
@@ -64,20 +66,27 @@ public class AnalyzeDataset {
      * Parsing the Dataset file.
      *
      * @param file file
+     * @param tableName tableName
      * @return DatasetDefinition
      * @throws IOException                  IOException
      * @throws SAXException                 SAXException
      * @throws ParserConfigurationException ParserConfigurationException
      * @throws XPathExpressionException     XPathExpressionException
      */
-    public static DatasetDefinition analyze(final File file, String tableName)
+    public static DatasetDefinition analyze(final File file, final String tableName)
             throws IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         
-        Document doc = parseFile(file);
-        Node rootNode = getNode(doc, "/init");
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setValidating(false);
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document doc = db.parse(file);
+        XPathFactory factory = XPathFactory.newInstance();
+        XPath oXpath = factory.newXPath();
+        Node rootNode = (Node) oXpath.evaluate("/init", doc, XPathConstants.NODE);
         if (rootNode == null) {
             throw new DbTestException("file :" + file.getPath() + "analyze error,Missing init tag");
         }
+        
         NodeList firstNodeList = rootNode.getChildNodes();
         DatasetDefinition result = new DatasetDefinition();
         for (int i = 0; i < firstNodeList.getLength(); i++) {
@@ -138,12 +147,44 @@ public class AnalyzeDataset {
                         if (StringUtils.isNotEmpty(numPrecRadix)) {
                             cd.setSize(Integer.valueOf(numPrecRadix));
                         }
+                        
+                        NodeList indexNodeList = attNode.getChildNodes();
+                        if (indexNodeList != null && indexNodeList.getLength() != 0) {
+                            getIndexs(indexNodeList, cd);
+                        }
                     }
                     
                 }
             }
         }
         
+    }
+    
+    private static void getIndexs(final NodeList indexNodeList, final ColumnDefinition cd) {
+        List<IndexDefinition> indexs = new ArrayList<>();
+        cd.setIndexs(indexs);
+        for (int w = 0; w < indexNodeList.getLength(); w++) {
+            Node indexNode = indexNodeList.item(w);
+            if (indexNode.getNodeType() == Node.ELEMENT_NODE) {
+                IndexDefinition index = new IndexDefinition();
+                String nameIndex = getAttr("name", indexNode);
+                if (StringUtils.isNotEmpty(nameIndex)) {
+                    index.setName(nameIndex);
+                }
+                
+                String typeIndex = getAttr("type", indexNode);
+                if (StringUtils.isNotEmpty(typeIndex)) {
+                    index.setType(typeIndex);
+                }
+                
+                String uniqueIndex = getAttr("unique", indexNode);
+                if (StringUtils.isNotEmpty(uniqueIndex)) {
+                    index.setUnique(Boolean.valueOf(uniqueIndex));
+                }
+                
+                indexs.add(index);
+            }
+        }
     }
     
     private static String getAttr(final String nodeName, final Node node) {
@@ -187,40 +228,5 @@ public class AnalyzeDataset {
             }
         }
     }
-    
-    /**
-     * Parse the file to Document.
-     *
-     * @param file file
-     * @return Document
-     * @throws ParserConfigurationException ParserConfigurationException
-     * @throws IOException                  IOException
-     * @throws SAXException                 SAXException
-     */
-    private static Document parseFile(final File file) throws ParserConfigurationException, IOException, SAXException {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setValidating(false);
-        DocumentBuilder db = dbf.newDocumentBuilder();
-        Document result = db.parse(file);
-        
-        return result;
-    }
-    
-    /**
-     * Acquisition node.
-     *
-     * @param node  node
-     * @param xpath xpath
-     * @return node
-     * @throws XPathExpressionException XPathExpressionException
-     */
-    private static Node getNode(final Node node, final String xpath) throws XPathExpressionException {
-        XPathFactory factory = XPathFactory.newInstance();
-        XPath oXpath = factory.newXPath();
-        Node result = (Node) oXpath.evaluate(xpath, node, XPathConstants.NODE);
-        
-        return result;
-    }
-    
     
 }
