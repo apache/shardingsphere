@@ -26,7 +26,6 @@ import io.shardingjdbc.core.yaml.sharding.DataSourceParameter;
 import io.shardingjdbc.core.yaml.sharding.YamlShardingConfigurationForProxy;
 import io.shardingjdbc.proxy.metadata.ProxyShardingMetaData;
 import lombok.Getter;
-
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
