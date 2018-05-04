@@ -27,7 +27,7 @@ public class ContentionStrategy extends BaseStrategy {
         LeaderElection election = new LeaderElection() {
             @Override
             public void action() throws KeeperException, InterruptedException {
-                provider.getData(key,callback, ctx);
+                provider.getData(provider.getRealPath(key), callback, ctx);
             }
         };
         provider.executeContention(election);
@@ -38,7 +38,7 @@ public class ContentionStrategy extends BaseStrategy {
         LeaderElection election = new LeaderElection() {
             @Override
             public void action() throws KeeperException, InterruptedException {
-                provider.createCurrentOnly(key, value, createMode);
+                provider.createCurrentOnly(provider.getRealPath(key), value, createMode);
             }
         };
         provider.executeContention(election);
@@ -49,7 +49,7 @@ public class ContentionStrategy extends BaseStrategy {
         provider.executeContention(new LeaderElection() {
             @Override
             public void action() throws KeeperException, InterruptedException {
-                provider.update(key, value);
+                provider.update(provider.getRealPath(key), value);
             }
         });
     }
@@ -59,7 +59,7 @@ public class ContentionStrategy extends BaseStrategy {
         provider.executeContention(new LeaderElection() {
             @Override
             public void action() throws KeeperException, InterruptedException {
-                provider.deleteOnlyCurrent(key);
+                provider.deleteOnlyCurrent(provider.getRealPath(key));
             }
         });
     }
@@ -69,7 +69,7 @@ public class ContentionStrategy extends BaseStrategy {
         provider.executeContention(new LeaderElection() {
             @Override
             public void action() throws KeeperException, InterruptedException {
-                provider.deleteOnlyCurrent(key, callback, ctx);
+                provider.deleteOnlyCurrent(provider.getRealPath(key), callback, ctx);
             }
         });
     }
@@ -86,6 +86,10 @@ public class ContentionStrategy extends BaseStrategy {
     
     
     private void createBegin(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
+        if (key.indexOf(Constants.PATH_SEPARATOR) < -1){
+            this.createCurrentOnly(key, value, createMode);
+            return;
+        }
         List<String> nodes = provider.getNecessaryPaths(key);
         for (int i = 0; i < nodes.size(); i++) {
             if (provider.checkExists(nodes.get(i))){
@@ -106,7 +110,7 @@ public class ContentionStrategy extends BaseStrategy {
         provider.executeContention(new LeaderElection() {
             @Override
             public void action() throws KeeperException, InterruptedException {
-                deleteChildren(key, true);
+                deleteChildren(provider.getRealPath(key), true);
             }
         });
     }

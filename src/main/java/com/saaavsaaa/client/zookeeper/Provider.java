@@ -94,6 +94,11 @@ public class Provider implements IProvider {
     
     
     @Override
+    public String getRealPath(String path) {
+        return PathUtil.getRealPath(rootNode, path);
+    }
+    
+    @Override
     public List<String> getNecessaryPaths(final String key){
         List<String> nodes = PathUtil.getPathOrderNodes(rootNode, key);
         nodes.remove(rootNode);

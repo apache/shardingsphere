@@ -1,6 +1,5 @@
 package com.saaavsaaa.client.zookeeper;
 
-import com.saaavsaaa.client.utility.StringUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.utility.section.Listener;
 
@@ -32,7 +31,7 @@ public class ClientFactory {
     public ClientFactory newUsualClient(final String servers, final int sessionTimeoutMilliseconds) {
         this.servers = servers;
         this.sessionTimeoutMilliseconds = sessionTimeoutMilliseconds;
-        client = new BlendClient(servers, sessionTimeoutMilliseconds);
+        client = new UsualClient(servers, sessionTimeoutMilliseconds);
         return this;
     }
     

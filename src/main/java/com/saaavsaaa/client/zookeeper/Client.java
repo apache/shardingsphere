@@ -121,6 +121,7 @@ public abstract class Client implements IClient {
             zooKeeper.create(rootNode, date, authorities, CreateMode.PERSISTENT);
         } catch (KeeperException.NodeExistsException ee){
             System.out.println("root create : " + ee.getMessage());
+            rootExist = true;
             return;
         }
         rootExist = true;
