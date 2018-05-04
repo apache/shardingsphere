@@ -23,7 +23,13 @@ You should make /your_work_dir/conf/sharding-config.yaml file, and configure the
 ```
 docker run -d -v /your_work_dir/conf:/opt/sharding-proxy/conf --env PORT=3308 -p13308:3308 shardingjdbc/sharding-proxy:2.1.0-SNAPSHOT
 ```
-The port 3308 and 13308 could be customized.
+The port `3308` and `13308` could be customized, `3308` represents docker container's port, `13308` represents host machine's port.
+
+### Run docker with customized JVM parameter
+```
+docker run -d -v /your_work_dir/conf:/opt/sharding-proxy/conf --env JVM_OPTS="-Djava.awt.headless=true" --env PORT=3308 -p13308:3308 shardingjdbc/sharding-proxy:2.1.0-SNAPSHOT
+```
+User can put jvm relative parameters into `JVM_OPTS`.
 
 ### Access sharing-proxy
 ```
