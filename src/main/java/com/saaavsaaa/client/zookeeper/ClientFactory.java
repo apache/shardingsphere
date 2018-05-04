@@ -21,13 +21,6 @@ public class ClientFactory {
     
     public ClientFactory(){}
     
-    public ClientFactory newCacheClient(final String servers, final int sessionTimeoutMilliseconds) {
-        this.servers = servers;
-        this.sessionTimeoutMilliseconds = sessionTimeoutMilliseconds;
-        client = new CacheClient(servers, sessionTimeoutMilliseconds);
-        return this;
-    }
-
     public ClientFactory newUsualClient(final String servers, final int sessionTimeoutMilliseconds) {
         this.servers = servers;
         this.sessionTimeoutMilliseconds = sessionTimeoutMilliseconds;

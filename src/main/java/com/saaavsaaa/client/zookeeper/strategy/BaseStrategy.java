@@ -17,4 +17,8 @@ public abstract class BaseStrategy implements IStrategy {
     public String getDataString(final String key) throws KeeperException, InterruptedException {
         return new String(getData(key));
     }
+    
+    public Provider getProvider() {
+        return provider;
+    }
 }

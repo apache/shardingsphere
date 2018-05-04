@@ -3,23 +3,25 @@ package com.saaavsaaa.client.cache;
 import com.saaavsaaa.client.utility.constant.Constants;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by aaa
- * todo nodeKey can use current node short path: get children.containsKey(path) should be change ,because path can like /root/aaa/aaa
  */
 public class PathNode {
     private final String nodeKey;
+
     private byte[] value;
     private Map<String, PathNode> children = new ConcurrentHashMap<>();
     
-    public PathNode(final String key) {
+    PathNode(final String key) {
         this(key, Constants.RELEASE_VALUE);
     }
     
-    public PathNode(final String key, final byte[] value) {
+    PathNode(final String key, final byte[] value) {
         this.nodeKey = key;
         this.value = value;
     }
@@ -32,10 +34,46 @@ public class PathNode {
         return this.nodeKey;
     }
     
-    public void attechChild(final PathNode node) {
+    public void attachChild(final PathNode node) {
         this.children.put(node.nodeKey, node);
     }
     
+    
+    PathNode set(final Iterator<String> iterator, final String value){
+        String key = iterator.next();
+        PathNode node = children.get(key);
+        if (node == null){
+            node = new PathNode(key);
+            children.put(key, node);
+        }
+        if (iterator.hasNext()){
+            node.set(iterator, value);
+        } else {
+            node.setValue(value.getBytes(Constants.UTF_8));
+        }
+        return node;
+    }
+    
+    PathNode get(final Iterator<String> iterator){
+        String key = iterator.next();
+        PathNode node = children.get(key);
+        if (node == null){
+            return null;
+        }
+        if (iterator.hasNext()){
+            return node.get(iterator);
+        }
+        return node;
+    }
+    
+    public byte[] getValue() {
+        return value;
+    }
+    public void setValue(byte[] value) {
+        this.value = value;
+    }
+    
+    @Deprecated
     PathNode get(final int index, final String path) {
         if (children.isEmpty()){
             return null;
@@ -49,9 +87,5 @@ public class PathNode {
         }
         
         return children.get(path.substring(0, nextSeparate)).get(nextSeparate + 1, path);
-    }
-    
-    public byte[] getValue() {
-        return value;
     }
 }

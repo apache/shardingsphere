@@ -91,15 +91,15 @@ public class ContentionStrategy extends UsualStrategy {
         }
         List<String> nodes = provider.getNecessaryPaths(key);
         for (int i = 0; i < nodes.size(); i++) {
-            if (provider.checkExists(nodes.get(i))){
+            if (this.checkExists(nodes.get(i))){
                 System.out.println("create exist:" + nodes.get(i));
                 continue;
             }
             System.out.println("create not exist:" + nodes.get(i));
             if (i == nodes.size() - 1){
-                provider.createCurrentOnly(nodes.get(i), value, createMode);
+                this.createCurrentOnly(nodes.get(i), value, createMode);
             } else {
-                provider.createCurrentOnly(nodes.get(i), Constants.NOTHING_VALUE, createMode);
+                this.createCurrentOnly(nodes.get(i), Constants.NOTHING_VALUE, createMode);
             }
         }
     }
@@ -118,14 +118,14 @@ public class ContentionStrategy extends UsualStrategy {
         List<String> children = provider.getChildren(key);
         for (int i = 0; i < children.size(); i++) {
             String child = PathUtil.getRealPath(key, children.get(i));
-            if (!provider.checkExists(child)){
+            if (!this.checkExists(child)){
                 System.out.println("delete not exist:" + child);
                 continue;
             }
             deleteChildren(child, true);
         }
         if (deleteCurrentNode){
-            provider.deleteOnlyCurrent(key);
+            this.deleteOnlyCurrent(key);
         }
     }
     
@@ -151,7 +151,7 @@ public class ContentionStrategy extends UsualStrategy {
             String node = pathStack.pop();
             // contrast cache
             if (checkExists(node)){
-                provider.deleteOnlyCurrent(node);
+                this.deleteOnlyCurrent(node);
                 System.out.println("delete : " + node);
             }
         }

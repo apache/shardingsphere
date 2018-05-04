@@ -2,20 +2,18 @@ package com.saaavsaaa.client.cache;
 
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
-import com.saaavsaaa.client.zookeeper.Client;
+import com.saaavsaaa.client.zookeeper.Provider;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.common.PathUtils;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by aaa
  */
 public final class PathTree {
-    private final Map<String, String> currentNodes = new ConcurrentHashMap<>();
     private PathNode rootNode;
     private PathStatus Status;
     
@@ -24,27 +22,28 @@ public final class PathTree {
         this.Status = PathStatus.RELEASE;
     }
     
-    public void loading(final Client client) throws KeeperException, InterruptedException {
+    public void loading(final Provider provider) throws KeeperException, InterruptedException {
         this.setStatus(PathStatus.CHANGING);
         
         PathNode newRoot = new PathNode(rootNode.getKey());
-        List<String> children = client.getChildren(rootNode.getKey());
-        children.remove(PathUtil.getRealPath(rootNode.getKey(), Constants.CHANGING_KEY));
-        this.attechIntoNode(children, newRoot, client);
+        List<String> children = provider.getChildren(rootNode.getKey());
+        children.remove(provider.getRealPath(Constants.CHANGING_KEY));
+        this.attechIntoNode(children, newRoot, provider);
         rootNode = newRoot;
         
         this.setStatus(PathStatus.RELEASE);
     }
     
-    private void attechIntoNode(final List<String> children, final PathNode pathNode, final Client client) throws KeeperException, InterruptedException {
+    private void attechIntoNode(final List<String> children, final PathNode pathNode, final Provider provider) throws KeeperException, InterruptedException {
         if (children.isEmpty()){
             return;
         }
         for (String child : children) {
-            PathNode current = new PathNode(PathUtil.getRealPath(pathNode.getKey(), child), client.getData(child));
-            pathNode.attechChild(current);
-            List<String> subs = client.getChildren(child);
-            this.attechIntoNode(subs, current, client);
+            String childPath = PathUtil.getRealPath(pathNode.getKey(), child);
+            PathNode current = new PathNode(PathUtil.checkPath(child), provider.getData(childPath));
+            pathNode.attachChild(current);
+            List<String> subs = provider.getChildren(childPath);
+            this.attechIntoNode(subs, current, provider);
         }
     }
     
@@ -53,9 +52,6 @@ public final class PathTree {
     }
     
     public void setStatus(final PathStatus status) {
-        if (PathStatus.RELEASE == status){
-            currentNodes.clear();
-        }
         Status = status;
     }
     
@@ -64,16 +60,20 @@ public final class PathTree {
     }
     
     public byte[] getValue(final String path){
-        if (currentNodes.containsKey(path)){
-            return currentNodes.get(path).getBytes(Constants.UTF_8);
-        }
         PathNode node = get(path);
         return null == node ? null : node.getValue();
     }
     
     private PathNode get(final String path){
         PathUtils.validatePath(path);
-        return rootNode.get(1, path);
+        return rootNode.get(keyIterator(path)); //rootNode.get(1, path);
+    }
+    
+    private Iterator<String> keyIterator(final String path){
+        List<String> nodes = PathUtil.getShortPathNodes(path);
+        Iterator<String> iterator = nodes.iterator();
+        iterator.next(); // root
+        return iterator;
     }
     
     public List<String> getChildren(String path) {
@@ -87,20 +87,27 @@ public final class PathTree {
         }
         Iterator<PathNode> children = node.getChildren().values().iterator();
         while (children.hasNext()){
-            // children keys don't needn't currentNodes
             result.add(new String(children.next().getValue()));
         }
         return result;
     }
     
-    public void put(String path, String value) {
+    public void put(final String path, final String value) {
         PathUtils.validatePath(path);
-        currentNodes.put(path, value);
+        if (Status == Status.RELEASE){
+            rootNode.set(keyIterator(path), value);
+        } else {
+            try {
+                Thread.sleep(50L);
+            } catch (InterruptedException e) {
+                System.out.println("cache put status not release");
+            }
+            put(path, value);
+        }
     }
     
     public void delete(String path) {
         PathUtils.validatePath(path);
-        currentNodes.remove(path);
         String prxpath = path.substring(0, path.lastIndexOf(Constants.PATH_SEPARATOR));
         PathNode node = get(prxpath);
         node.getChildren().remove(path);

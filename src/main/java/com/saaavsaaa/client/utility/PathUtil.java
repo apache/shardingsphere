@@ -62,6 +62,25 @@ public class PathUtil {
         return paths;
     }
     
+    public static List<String> getShortPathNodes(String path){
+        path = checkPath(path);
+        List<String> paths = new ArrayList<>();
+        char[] chars = path.toCharArray();
+        StringBuilder builder = new StringBuilder(Constants.PATH_SEPARATOR);
+        for (int i = 1; i < chars.length; i++) {
+            if (chars[i] == Constants.PATH_SEPARATOR.charAt(0)){
+                paths.add(builder.toString());
+                builder = new StringBuilder(Constants.PATH_SEPARATOR);
+                continue;
+            }
+            builder.append(chars[i]);
+            if (i == chars.length - 1){
+                paths.add(builder.toString());
+            }
+        }
+        return paths;
+    }
+    
     public static List<String> breadthToB(TreeNode root) {
         List<String> lists = new ArrayList<>();
         if(root==null)

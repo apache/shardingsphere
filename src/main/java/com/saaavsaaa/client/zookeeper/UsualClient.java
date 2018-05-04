@@ -19,8 +19,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by aaa on 18-5-2.
  */
 public class UsualClient extends Client {
-    private final Map<StrategyType, IStrategy> strategies = new ConcurrentHashMap<>();
-    private IStrategy strategy;
+    protected final Map<StrategyType, IStrategy> strategies = new ConcurrentHashMap<>();
+    protected IStrategy strategy;
     
     UsualClient(final String servers, final int sessionTimeoutMilliseconds) {
         super(servers, sessionTimeoutMilliseconds);
