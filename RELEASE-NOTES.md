@@ -135,7 +135,7 @@
 
 1. [ISSUE #334](https://github.com/shardingjdbc/sharding-jdbc/issues/334) 解析有函数的ORDER BY会将后面的ASC, DESC解析到OrderItem的name属性中
 1. [ISSUE #335](https://github.com/shardingjdbc/sharding-jdbc/issues/339) 使用表全名关联的JOIN解析不正确
-1. [ISSUE #346](https://github.com/shardingjdbc/sharding-jdbc/issues/346) DDL语句 DROP TABLE IF EXISTS USER 解析表明错误
+1. [ISSUE #346](https://github.com/shardingjdbc/sharding-jdbc/issues/346) DDL语句 DROP TABLE IF EXISTS USER 解析表名错误
 
 ## 1.5.1
 
