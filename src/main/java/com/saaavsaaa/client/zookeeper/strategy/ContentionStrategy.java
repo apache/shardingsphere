@@ -12,17 +12,15 @@ import java.util.List;
 import java.util.Stack;
 
 /**
- * Created by aaa on 18-5-2.
+ * Created by aaa
+ * Don't use it if you don't have to use it
  */
-public class ContentionStrategy extends BaseStrategy {
+public class ContentionStrategy extends UsualStrategy {
     public ContentionStrategy(final Provider provider) {
         super(provider);
     }
     
     @Override
-    /*
-    * Don't use it if you don't have to use it
-    */
     public void getData(final String key, final AsyncCallback.DataCallback callback, final Object ctx) throws KeeperException, InterruptedException {
         LeaderElection election = new LeaderElection() {
             @Override
