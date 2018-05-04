@@ -241,11 +241,11 @@
 ### 缺陷修正
 
 1. [ISSUE #149](https://github.com/shardingjdbc/sharding-jdbc/issues/149) INSERT IGNORE INTO时如果数据重了忽略时返回的成-1了，应该返回0 
-1. [ISSUE #118](https://github.com/shardingjdbc/sharding-jdbc/issues/118) 同一个线程内先执行DQL后执行DML，DML操作在从库上执行
-1. [ISSUE #122](https://github.com/shardingjdbc/sharding-jdbc/issues/122) bed的fail重试问题
-1. [ISSUE #152](https://github.com/shardingjdbc/sharding-jdbc/issues/152) 可能同一个connection多线程导致问题
-1. [ISSUE #150](https://github.com/shardingjdbc/sharding-jdbc/issues/150) 与最新SQLServer jdbc驱动兼容问题
-1. [ISSUE #166](https://github.com/shardingjdbc/sharding-jdbc/issues/166) druid数据源stat过滤器多线程报错
+1. [ISSUE #118](https://github.com/shardingjdbc/sharding-jdbc/issues/118) 同一个线程内先执行DQL后执行DML，DML操作再从库上执行
+1. [ISSUE #122](https://github.com/shardingjdbc/sharding-jdbc/issues/122) 在连接不可用的情况下(如网络中断),应该直接中断事务,而不是重试
+1. [ISSUE #152](https://github.com/shardingjdbc/sharding-jdbc/issues/152) PreparedStatement的缓存导致数组越界
+1. [ISSUE #150](https://github.com/shardingjdbc/sharding-jdbc/issues/150) 与最新SQLServer jdbc驱动兼容问题，应该将Product Name由SQLServer改为Microsoft SQL Server
+1. [ISSUE #166](https://github.com/shardingjdbc/sharding-jdbc/issues/166) druid数据源stat过滤器多线程报错，应该增加数据库连接级别的同步
 
 ## 1.3.2
 
