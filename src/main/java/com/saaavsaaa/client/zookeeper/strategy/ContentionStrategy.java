@@ -80,6 +80,7 @@ public class ContentionStrategy extends UsualStrategy {
                 createBegin(key, value, createMode);
             }
         };
+        provider.executeContention(election);
     }
     
     
@@ -91,7 +92,7 @@ public class ContentionStrategy extends UsualStrategy {
         List<String> nodes = provider.getNecessaryPaths(key);
         for (int i = 0; i < nodes.size(); i++) {
             if (provider.checkExists(nodes.get(i))){
-                System.out.println("create :" + nodes.get(i));
+                System.out.println("create exist:" + nodes.get(i));
                 continue;
             }
             System.out.println("create not exist:" + nodes.get(i));
@@ -115,13 +116,6 @@ public class ContentionStrategy extends UsualStrategy {
     
     private void deleteChildren(final String key, final boolean deleteCurrentNode) throws KeeperException, InterruptedException {
         List<String> children = provider.getChildren(key);
-        if (children.isEmpty()){
-            if (deleteCurrentNode){
-                provider.deleteOnlyCurrent(key);
-                return;
-            }
-            return;
-        }
         for (int i = 0; i < children.size(); i++) {
             String child = PathUtil.getRealPath(key, children.get(i));
             if (!provider.checkExists(child)){
@@ -129,6 +123,9 @@ public class ContentionStrategy extends UsualStrategy {
                 continue;
             }
             deleteChildren(child, true);
+        }
+        if (deleteCurrentNode){
+            provider.deleteOnlyCurrent(key);
         }
     }
     
@@ -138,7 +135,7 @@ public class ContentionStrategy extends UsualStrategy {
             @Override
             public void action() throws KeeperException, InterruptedException {
                 try {
-                    deleteBranch(key);
+                    deleteBranch(provider.getRealPath(key));
                 } catch (KeeperException.NotEmptyException ee){
                     System.out.println(key + " exist other children");
                     return;
@@ -154,7 +151,7 @@ public class ContentionStrategy extends UsualStrategy {
             String node = pathStack.pop();
             // contrast cache
             if (checkExists(node)){
-                provider.deleteOnlyCurrent(key);
+                provider.deleteOnlyCurrent(node);
                 System.out.println("delete : " + node);
             }
         }

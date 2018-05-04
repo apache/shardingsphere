@@ -6,6 +6,7 @@ import com.saaavsaaa.client.utility.section.Listener;
 import com.saaavsaaa.client.utility.section.Properties;
 import com.saaavsaaa.client.utility.section.WatcherCreator;
 import com.saaavsaaa.client.zookeeper.Client;
+import com.saaavsaaa.client.zookeeper.Provider;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
@@ -16,14 +17,14 @@ import org.apache.zookeeper.WatchedEvent;
 public abstract class LeaderElection {
     private boolean done = false;
 
-    private boolean contend(final String path, final Client client, final Listener listener) throws KeeperException, InterruptedException {
+    private boolean contend(final String node, final Provider provider, final Listener listener) throws KeeperException, InterruptedException {
         boolean success = false;
         try {
-            client.createCurrentOnly(Constants.CHANGING_KEY, Properties.INSTANCE.getClientId(), CreateMode.EPHEMERAL);
+            provider.createCurrentOnly(node, Properties.INSTANCE.getClientId(), CreateMode.EPHEMERAL);
             success = true;
         } catch (KeeperException.NodeExistsException e) {
             // TODO: or changing_key node value == current client id
-            client.checkExists(Constants.CHANGING_KEY, WatcherCreator.deleteWatcher(PathUtil.getRealPath(path, Constants.CHANGING_KEY), listener));
+            provider.checkExists(node, WatcherCreator.deleteWatcher(node, listener));
         }
         return success;
     }
@@ -31,15 +32,16 @@ public abstract class LeaderElection {
     /*
     * listener will be register when the contention of the path is unsuccessful
     */
-    public void executeContention(final String path, final Client client) throws KeeperException, InterruptedException {
+    public void executeContention(final Provider provider) throws KeeperException, InterruptedException {
         boolean canBegin;
-        canBegin = this.contend(path, client, new Listener() {
+        String contendNode = provider.getRealPath(Constants.CHANGING_KEY);
+        canBegin = this.contend(contendNode, provider, new Listener() {
             @Override
             public void process(WatchedEvent event) {
                 try {
-                    executeContention(path, client);
+                    executeContention(provider);
                 } catch (Exception ee){
-                    System.out.println("Listener Exception " + path);
+                    System.out.println("Listener Exception executeContention");
                     ee.printStackTrace();
                 }
             }
@@ -50,10 +52,10 @@ public abstract class LeaderElection {
                 action();
                 done = true;
             } catch (Exception ee){
-                System.out.println("action Exception " + path);
+                System.out.println("action Exception executeContention");
                 ee.printStackTrace();
             }
-            client.deleteOnlyCurrent(Constants.CHANGING_KEY);
+            provider.deleteOnlyCurrent(contendNode);
         }
     }
     

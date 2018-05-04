@@ -112,7 +112,7 @@ public class Provider implements IProvider {
     
     @Override
     public void executeContention(final LeaderElection election) throws KeeperException, InterruptedException {
-        election.executeContention(rootNode, client);
+        election.executeContention(this);
     }
     
     @Override

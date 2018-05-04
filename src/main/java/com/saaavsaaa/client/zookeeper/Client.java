@@ -44,7 +44,7 @@ public abstract class Client implements IClient {
     
     public synchronized void start() throws IOException, InterruptedException {
         zooKeeper = new ZooKeeper(servers, sessionTimeOut, startWatcher());
-        if (scheme == null || scheme.trim().length() == 0) {
+        if (!StringUtil.isNullOrBlank(scheme)) {
             zooKeeper.addAuthInfo(scheme, auth);
         }
         CONNECTED.await();
