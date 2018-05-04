@@ -20,7 +20,7 @@ package io.shardingjdbc.dbtest;
 import io.shardingjdbc.dbtest.asserts.AssertEngine;
 import io.shardingjdbc.dbtest.config.bean.AssertDefinition;
 import io.shardingjdbc.dbtest.config.bean.AssertsDefinition;
-import io.shardingjdbc.dbtest.init.InItCreateSchema;
+import io.shardingjdbc.dbtest.init.DatabaseEnvironmentManager;
 import lombok.RequiredArgsConstructor;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -71,7 +71,7 @@ public final class StartTest {
             AssertsDefinition assertsDefinition = unmarshal(each);
             String[] dbs = assertsDefinition.getBaseConfig().split(",");
             for (String db : dbs) {
-                InItCreateSchema.addDatabase(db);
+                DatabaseEnvironmentManager.addDatabase(db);
             }
             result.addAll(getParameters(each, assertsDefinition.getAssertDQL()));
             result.addAll(getParameters(each, assertsDefinition.getAssertDML()));
@@ -81,9 +81,9 @@ public final class StartTest {
         return result;
     }
     
-    private static Collection<String[]> getParameters(final String path, final List<? extends AssertDefinition> asserts) {
+    private static Collection<String[]> getParameters(final String path, final List<? extends AssertDefinition> assertDefinitions) {
         Collection<String[]> result = new LinkedList<>();
-        for (AssertDefinition each : asserts) {
+        for (AssertDefinition each : assertDefinitions) {
             result.add(new String[] {path, each.getId()});
         }
         return result;
@@ -114,13 +114,13 @@ public final class StartTest {
     @BeforeClass
     public static void beforeClass() {
         if (isInitialized) {
-            InItCreateSchema.createDatabase();
-            InItCreateSchema.createTable();
+            DatabaseEnvironmentManager.createDatabase();
+            DatabaseEnvironmentManager.createTable();
             isInitialized = false;
         } else {
-            InItCreateSchema.dropDatabase();
-            InItCreateSchema.createDatabase();
-            InItCreateSchema.createTable();
+            DatabaseEnvironmentManager.dropDatabase();
+            DatabaseEnvironmentManager.createDatabase();
+            DatabaseEnvironmentManager.createTable();
         }
     }
     
@@ -132,7 +132,7 @@ public final class StartTest {
     @AfterClass
     public static void afterClass() {
         if (isCleaned) {
-            InItCreateSchema.dropDatabase();
+            DatabaseEnvironmentManager.dropDatabase();
             isCleaned = false;
         }
     }

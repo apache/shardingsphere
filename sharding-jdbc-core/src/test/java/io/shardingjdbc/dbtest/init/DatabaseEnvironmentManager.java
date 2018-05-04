@@ -42,7 +42,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public final class InItCreateSchema {
+public final class DatabaseEnvironmentManager {
     
     private static final Set<String> DATABASES = new HashSet<>();
     
@@ -63,14 +63,14 @@ public final class InItCreateSchema {
         ResultSet resultSet = null;
         try {
             for (String database : DATABASES) {
-                String sql = getCreateTableSql(DatabaseType.H2, AnalyzeDatabase.analyze(InItCreateSchema.class.getClassLoader()
+                String sql = getCreateTableSql(DatabaseType.H2, AnalyzeDatabase.analyze(DatabaseEnvironmentManager.class.getClassLoader()
                         .getResource("integrate/dbtest").getPath() + "/" + database + "/database.xml"));
                 for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
                     if (each.equals(DatabaseType.H2)) {
                         continue;
                     }
                     if (DatabaseType.Oracle.equals(each)) {
-                        String oracleSql = getCreateTableSql(DatabaseType.Oracle, AnalyzeDatabase.analyze(InItCreateSchema.class.getClassLoader()
+                        String oracleSql = getCreateTableSql(DatabaseType.Oracle, AnalyzeDatabase.analyze(DatabaseEnvironmentManager.class.getClassLoader()
                                 .getResource("integrate/dbtest").getPath() + "/" + database + "/database.xml"));
                         StringReader sr = new StringReader(oracleSql);
                         conn = initialConnection(null, each);
@@ -115,14 +115,14 @@ public final class InItCreateSchema {
         StringReader sr = null;
         try {
             for (String database : DATABASES) {
-                String sql = getDropTableSql(DatabaseType.H2, AnalyzeDatabase.analyze(InItCreateSchema.class.getClassLoader()
+                String sql = getDropTableSql(DatabaseType.H2, AnalyzeDatabase.analyze(DatabaseEnvironmentManager.class.getClassLoader()
                         .getResource("integrate/dbtest").getPath() + "/" + database + "/database.xml"));
                 for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
                     if (each.equals(DatabaseType.H2)) {
                         continue;
                     }
                     if (DatabaseType.Oracle.equals(each)) {
-                        String oracleSql = getDropTableSql(DatabaseType.Oracle, AnalyzeDatabase.analyze(InItCreateSchema.class.getClassLoader()
+                        String oracleSql = getDropTableSql(DatabaseType.Oracle, AnalyzeDatabase.analyze(DatabaseEnvironmentManager.class.getClassLoader()
                                 .getResource("integrate/dbtest").getPath() + "/" + database + "/database.xml"));
                         sr = new StringReader(oracleSql);
                         conn = initialConnection(null, each);
@@ -179,11 +179,11 @@ public final class InItCreateSchema {
         StringReader sr = null;
         try {
             for (String each : DATABASES) {
-                List<String> databases = AnalyzeDatabase.analyze(InItCreateSchema.class.getClassLoader()
+                List<String> databases = AnalyzeDatabase.analyze(DatabaseEnvironmentManager.class.getClassLoader()
                         .getResource("integrate/dbtest").getPath() + "/" + each + "/database.xml");
                 for (String database : databases) {
                     conn = initialConnection(database, dbType);
-                    List<String> tableSqlIds = AnalyzeSql.analyze(InItCreateSchema.class.getClassLoader()
+                    List<String> tableSqlIds = AnalyzeSql.analyze(DatabaseEnvironmentManager.class.getClassLoader()
                             .getResource("integrate/dbtest").getPath() + "/" + each + "/table/create-table.xml");
                     List<String> tableSqls = new ArrayList<>();
                     for (String tableSqlId : tableSqlIds) {
@@ -242,7 +242,7 @@ public final class InItCreateSchema {
                         continue;
                     }
                 }
-                List<String> databases = AnalyzeDatabase.analyze(InItCreateSchema.class.getClassLoader()
+                List<String> databases = AnalyzeDatabase.analyze(DatabaseEnvironmentManager.class.getClassLoader()
                         .getResource("integrate/dbtest").getPath() + "/" + each + "/database.xml");
                 for (String database : databases) {
                     conn = initialConnection(database, dbType);
@@ -286,7 +286,7 @@ public final class InItCreateSchema {
                         continue;
                     }
                 }
-                List<String> databases = AnalyzeDatabase.analyze(InItCreateSchema.class.getClassLoader()
+                List<String> databases = AnalyzeDatabase.analyze(DatabaseEnvironmentManager.class.getClassLoader()
                         .getResource("integrate/dbtest").getPath() + "/" + each + "/database.xml");
                 for (String database : databases) {
                     conn = initialConnection(database, dbType);
