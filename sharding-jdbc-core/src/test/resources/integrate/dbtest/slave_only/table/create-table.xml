@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
-    <sql id="slaveOnlyCreateTOrder "/>
-    <sql id="slaveOnlyCreateTOrderItem "/>
-    <sql id="slaveOnlyCreateTConfig "/>
-    <sql id="slaveOnlyCreateTGlobal "/>
+    <sql id="slaveOnlyCreateTOrder" />
+    <sql id="slaveOnlyCreateTOrderItem" />
+    <sql id="slaveOnlyCreateTConfig" />
+    <sql id="slaveOnlyCreateTGlobal" />
 </sqls>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
-    <sql id="jdbcCreateTOrder0 "/>
-    <sql id="jdbcCreateTOrder1 "/>
-    <sql id="jdbcCreateTOrderItem0 "/>
-    <sql id="jdbcCreateTOrderItem1 "/>
-    <sql id="jdbcCreateTConfig "/>
-    <sql id="jdbcCreateTGlobal "/>
+    <sql id="jdbcCreateTOrder0" />
+    <sql id="jdbcCreateTOrder1" />
+    <sql id="jdbcCreateTOrderItem0" />
+    <sql id="jdbcCreateTOrderItem1" />
+    <sql id="jdbcCreateTConfig" />
+    <sql id="jdbcCreateTGlobal" />
 </sqls>
