@@ -14,7 +14,7 @@ cd sharing-jdbc/sharding-proxy
 mvn clean package docker:build
 ```
 
-## 配置外挂卷
+## 配置Sharing-Proxy
 
 创建/${your_work_dir}/conf/sharding-config.yaml文件，进行分片规则配置。配置方式请参考[配置手册](/manual/sharding-proxy/configuration/)。
 
