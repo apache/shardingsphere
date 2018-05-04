@@ -14,8 +14,6 @@ public class ClientFactory {
     private Client client;
     private Listener globalListener;
     private String namespace;
-    private String scheme;
-    private byte[] auth;
     private String servers;
     private int sessionTimeoutMilliseconds;
     
@@ -48,7 +46,6 @@ public class ClientFactory {
     public synchronized Client start() throws IOException, InterruptedException {
         client.setClientFactory(this);
         client.setRootNode(namespace);
-        client.setAuthorities(scheme , auth);
         client.start();
         if (globalListener != null) {
             client.registerWatch(globalListener);
@@ -68,8 +65,7 @@ public class ClientFactory {
         if (scheme == null || scheme.trim().length() == 0) {
             return this;
         }
-        this.scheme = scheme;
-        this.auth = auth;
+        client.setAuthorities(scheme , auth);
         return this;
     }
 }

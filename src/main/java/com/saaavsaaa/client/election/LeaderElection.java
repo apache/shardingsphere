@@ -14,6 +14,7 @@ import org.apache.zookeeper.WatchedEvent;
  * Created by aaa
  */
 public abstract class LeaderElection {
+    private boolean done = false;
 
     private boolean contend(final String path, final Client client, final Listener listener) throws KeeperException, InterruptedException {
         boolean success = false;
@@ -47,6 +48,7 @@ public abstract class LeaderElection {
         if (canBegin){
             try {
                 action();
+                done = true;
             } catch (Exception ee){
                 System.out.println("action Exception " + path);
                 ee.printStackTrace();
@@ -55,6 +57,18 @@ public abstract class LeaderElection {
         }
     }
     
+    public void waitDone(){
+        while (!done){
+            try {
+                Thread.sleep(10L);
+            } catch (InterruptedException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+    
 //    public abstract void actionWhenUnreached() throws KeeperException, InterruptedException;
     public abstract void action() throws KeeperException, InterruptedException;
+    
+    public void callBack(){}
 }

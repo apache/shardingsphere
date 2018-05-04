@@ -1,8 +1,6 @@
 package com.saaavsaaa.client.zookeeper;
 
-import com.saaavsaaa.client.utility.PathUtil;
-import com.saaavsaaa.client.utility.constant.Constants;
-import com.saaavsaaa.client.zookeeper.strategy.BaseStrategy;
+import com.saaavsaaa.client.zookeeper.strategy.UsualStrategy;
 import com.saaavsaaa.client.zookeeper.strategy.ContentionStrategy;
 import com.saaavsaaa.client.action.IStrategy;
 import com.saaavsaaa.client.zookeeper.strategy.StrategyType;
@@ -31,16 +29,17 @@ public class UsualClient extends Client {
     @Override
     public synchronized void start() throws IOException, InterruptedException {
         super.start();
-        UseStrategy(StrategyType.BASE);
+        useStrategy(StrategyType.USUAL);
     }
     
-    public synchronized void UseStrategy(StrategyType strategyType) {
+    @Override
+    public synchronized void useStrategy(StrategyType strategyType) {
         if (strategies.containsKey(strategyType)){
             strategy = strategies.get(strategyType);
             return;
         }
-        if (StrategyType.BASE == strategyType){
-            strategy = new BaseStrategy(new Provider(rootNode, this, watched, authorities));
+        if (StrategyType.USUAL == strategyType){
+            strategy = new UsualStrategy(new Provider(rootNode, this, watched, authorities));
         } else {
             strategy = new ContentionStrategy(new Provider(rootNode, this, watched, authorities));
         }
