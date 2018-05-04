@@ -211,11 +211,11 @@
 
 ### 缺陷修正
 
-1. [ISSUE #194](https://github.com/shardingjdbc/sharding-jdbc/issues/194) jdbc接口中资源释放错误
+1. [ISSUE #194](https://github.com/shardingjdbc/sharding-jdbc/issues/194) Connection, Statement, Resultset等接口中的close方法中部分组件异常造成另外一部分组件的close方法没有被调用
 1. [ISSUE #199](https://github.com/shardingjdbc/sharding-jdbc/issues/199) 分表且复用PreparedStatement对象造成数据路由错误
 1. [ISSUE #201](https://github.com/shardingjdbc/sharding-jdbc/issues/201) 批量操作执行前事件发送缺失
 1. [ISSUE #203](https://github.com/shardingjdbc/sharding-jdbc/issues/203) 合并batch操作发送的事件
-1. [ISSUE #209](https://github.com/shardingjdbc/sharding-jdbc/issues/209) limit并行异常
+1. [ISSUE #209](https://github.com/shardingjdbc/sharding-jdbc/issues/209) 并行执行多个limit查询导致IndexOutOfBoundsException
 
 ## 1.4.0
 
@@ -230,7 +230,7 @@
 
 ### 缺陷修正
 
-1. [ISSUE #176](https://github.com/shardingjdbc/sharding-jdbc/issues/176) AbstractMemoryResultSet对SQL的wasNull实现有问题
+1. [ISSUE #176](https://github.com/shardingjdbc/sharding-jdbc/issues/176) AbstractMemoryResultSet的wasNull标志位没有及时复位
 
 ## 1.3.3
 
