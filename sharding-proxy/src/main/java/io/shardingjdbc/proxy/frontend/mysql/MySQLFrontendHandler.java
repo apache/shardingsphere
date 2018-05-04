@@ -38,6 +38,7 @@ import lombok.RequiredArgsConstructor;
  * MySQL frontend handler.
  *
  * @author zhangliang
+ * @author wangkai
  */
 @RequiredArgsConstructor
 public final class MySQLFrontendHandler extends FrontendHandler {

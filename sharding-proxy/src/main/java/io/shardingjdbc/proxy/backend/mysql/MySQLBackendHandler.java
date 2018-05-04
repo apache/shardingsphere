@@ -17,45 +17,100 @@
 
 package io.shardingjdbc.proxy.backend.mysql;
 
+import com.google.common.primitives.Bytes;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.shardingjdbc.proxy.backend.common.CommandResponsePacketsHandler;
-import io.shardingjdbc.proxy.transport.mysql.packet.handshake.AuthPluginData;
-import io.shardingjdbc.proxy.transport.mysql.packet.handshake.HandshakePacket;
+import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
+import io.shardingjdbc.proxy.transport.mysql.packet.generic.EofPacket;
+import io.shardingjdbc.proxy.transport.mysql.packet.generic.ErrPacket;
+import io.shardingjdbc.proxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingjdbc.proxy.util.MySQLResultCache;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Backend handler.
  *
  * @author wangkai
  */
+@Slf4j
 public class MySQLBackendHandler extends CommandResponsePacketsHandler {
+    
+    private boolean authorized;
     
     @Override
     public void channelRead(final ChannelHandlerContext context, final Object message) {
-        //TODO if handshake, then invoke auth.
-        //TODO if execute command, then invoke executeCommandResponsePackets.
-        //TODO if OKPacket or ERRPacket, then log.
-        if (true) {
-            auth(context, (ByteBuf) message);
-        } else if (true) {
-        
+        MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload((ByteBuf) message);
+        int packetSize = mysqlPacketPayload.readInt3();
+        int sequenceId = mysqlPacketPayload.readInt1();
+        int header = mysqlPacketPayload.readInt1();
+        if (!authorized) {
+            auth(context, header, mysqlPacketPayload);
+        } else if (OKPacket.HEADER == header || ErrPacket.HEADER == header || EofPacket.HEADER == header) {
+            genericResponsePacket(context, header, mysqlPacketPayload);
         } else {
-        
+            executeCommandResponsePackets(context, header, mysqlPacketPayload);
         }
     }
     
-    //TODO message to handshakePacket; send handshakeResponse back.
     @Override
-    protected void auth(ChannelHandlerContext context, ByteBuf message) {
-        HandshakePacket handshakePacket = new HandshakePacket(1, new AuthPluginData());
+    protected void auth(ChannelHandlerContext context, int header, MySQLPacketPayload mysqlPacketPayload) {
+        int protocolVersion = header;
+        String serverVersion = mysqlPacketPayload.readStringNul();
+        int connectionId = mysqlPacketPayload.readInt4();
+        MySQLResultCache.getInstance().putConnectionMap(context.channel().id().asShortText(), connectionId);
+        byte[] authPluginDataPart1 = mysqlPacketPayload.readStringNul().getBytes();
+        int capabilityFlagsLower = mysqlPacketPayload.readInt2();
+        int charset = mysqlPacketPayload.readInt1();
+        int statusFlag = mysqlPacketPayload.readInt2();
+        int capabilityFlagsUpper = mysqlPacketPayload.readInt2();
+        int authPluginDataLength = mysqlPacketPayload.readInt1();
+        mysqlPacketPayload.skipReserved(10);
+        byte[] authPluginDataPart2 = mysqlPacketPayload.readStringNul().getBytes();
+        byte[] authPluginData = Bytes.concat(authPluginDataPart1, authPluginDataPart2);
+        //TODO get username, password(encrypt) and schema to write message.
+        
+    }
+    
+    @Override
+    protected void genericResponsePacket(ChannelHandlerContext context, int header, MySQLPacketPayload mysqlPacketPayload) {
+        switch (header) {
+            case OKPacket.HEADER:
+                if (!authorized) {
+                    authorized = true;
+                }
+                long affectedRows = mysqlPacketPayload.readIntLenenc();
+                long lastInsertId = mysqlPacketPayload.readIntLenenc();
+                int statusFlags = mysqlPacketPayload.readInt2();
+                int warnings = mysqlPacketPayload.readInt2();
+                String info = mysqlPacketPayload.readStringEOF();
+                log.debug("OKPacket[affectedRows={},lastInsertId={},statusFlags={},warnings={},info={}]", affectedRows, lastInsertId, statusFlags, warnings, info);
+                break;
+            case ErrPacket.HEADER:
+                int errorCode = mysqlPacketPayload.readInt2();
+                String sqlStateMarker = mysqlPacketPayload.readStringFix(1);
+                String sqlState = mysqlPacketPayload.readStringFix(5);
+                String errorMessage = mysqlPacketPayload.readStringEOF();
+                log.debug("ErrPacket[errorCode={},sqlStateMarker={},sqlState={},errorMessage={}]", errorCode, sqlStateMarker, sqlState, errorMessage);
+                break;
+            case EofPacket.HEADER:
+                warnings = mysqlPacketPayload.readInt2();
+                statusFlags = mysqlPacketPayload.readInt2();
+                log.debug("EofPacket[warnings={},statusFlags={}]", warnings, statusFlags);
+                break;
+        }
     }
     
     //TODO
     @Override
-    protected void executeCommandResponsePackets(ChannelHandlerContext context, ByteBuf message) {
+    protected void executeCommandResponsePackets(ChannelHandlerContext context, int header, MySQLPacketPayload mysqlPacketPayload) {
         int connectionId = MySQLResultCache.getInstance().getonnectionMap(context.channel().id().asShortText());
         MySQLResultCache.getInstance().get(connectionId).setResponse(null);
     }
     
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        //TODO delete connection map.
+        super.channelInactive(ctx);
+    }
 }
