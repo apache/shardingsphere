@@ -23,13 +23,13 @@ mvn clean package docker:build
 ```
 docker run -d -v /your_work_dir/conf:/opt/sharding-proxy/conf --env PORT=3308 -p13308:3308 shardingjdbc/sharding-proxy:2.1.0-SNAPSHOT
 ```
-可以自定义端口`3308`和`13308`。`3308`表示docker容器端口, `13308`表示宿主机端口.
+可以自定义端口`3308`和`13308`。`3308`表示docker容器端口, `13308`表示宿主机端口。
 
 ### 运行Docker
 ```
 docker run -d -v /your_work_dir/conf:/opt/sharding-proxy/conf --env JVM_OPTS="-Djava.awt.headless=true" --env PORT=3308 -p13308:3308 shardingjdbc/sharding-proxy:2.1.0-SNAPSHOT
 ```
-可以自定义JVM相关参数到环境变量`JVM_OPTS`中.
+可以自定义JVM相关参数到环境变量`JVM_OPTS`中。
 
 ### 访问sharing-proxy
 ```
@@ -38,4 +38,4 @@ mysql -uryour_user_name -pyour_password -hyour_host -P13308
 
 ### FAQ
 1. I/O exception (java.io.IOException) caught when processing request to {}->unix://localhost:80: Connection refused?
-答: 在构建镜像前，请确保docker deamon进程已经运行.
+答: 在构建镜像前，请确保docker deamon进程已经运行。
