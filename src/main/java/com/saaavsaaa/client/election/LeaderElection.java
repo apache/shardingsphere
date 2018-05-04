@@ -1,11 +1,9 @@
 package com.saaavsaaa.client.election;
 
-import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.utility.section.Listener;
 import com.saaavsaaa.client.utility.section.Properties;
 import com.saaavsaaa.client.utility.section.WatcherCreator;
-import com.saaavsaaa.client.zookeeper.Client;
 import com.saaavsaaa.client.zookeeper.Provider;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;

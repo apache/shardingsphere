@@ -1,6 +1,5 @@
 package com.saaavsaaa.client.zookeeper;
 
-import com.saaavsaaa.client.utility.section.Listener;
 import org.apache.zookeeper.KeeperException;
 import org.junit.Test;
 

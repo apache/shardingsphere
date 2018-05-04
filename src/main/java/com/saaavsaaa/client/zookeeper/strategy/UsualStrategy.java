@@ -1,6 +1,5 @@
 package com.saaavsaaa.client.zookeeper.strategy;
 
-import com.saaavsaaa.client.action.IStrategy;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.zookeeper.Provider;
