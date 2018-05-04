@@ -1,7 +1,7 @@
-baseURL = "http://shardingjdbc.io/community/en/"
+baseURL = "http://shardingsphere.io/community/en/"
 canonifyurls = true
 languageCode = "en-us"
-title = "Sharding-JDBC"
+title = "Sharding-Sphere"
 theme = "hugo-theme-learn"
 [params]
   # Change default color scheme with a variant one. Can be "red", "blue", "green".
