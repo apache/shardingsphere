@@ -24,12 +24,10 @@ import io.shardingjdbc.dbtest.common.DatabaseEnvironment;
 import io.shardingjdbc.dbtest.config.AnalyzeDatabase;
 import io.shardingjdbc.dbtest.config.AnalyzeSql;
 import io.shardingjdbc.test.sql.SQLCasesLoader;
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.h2.tools.RunScript;
 import org.xml.sax.SAXException;
 
-import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -45,7 +43,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -85,7 +82,7 @@ public final class DatabaseEnvironmentManager {
                     continue;
                 }
                 try (
-                        Connection conn = createDataSource(null, each).getConnection();
+                        Connection conn = new DatabaseEnvironment(each).createDataSource(null).getConnection();
                         StringReader stringReader = new StringReader(Joiner.on("\n").skipNulls().join(generateCreateDatabaseSQLs(each, databaseInitialization.getDatabases())))) {
                     ResultSet resultSet = RunScript.execute(conn, stringReader);
                     resultSet.close();
@@ -110,20 +107,6 @@ public final class DatabaseEnvironmentManager {
         return result;
     }
     
-    public static DataSource createDataSource(final String dbName, final DatabaseType type) {
-        BasicDataSource result = new BasicDataSource();
-        DatabaseEnvironment dbEnv = new DatabaseEnvironment(type);
-        result.setDriverClassName(dbEnv.getDriverClassName());
-        result.setUrl(dbEnv.getURL(dbName));
-        result.setUsername(dbEnv.getUsername());
-        result.setPassword(dbEnv.getPassword());
-        result.setMaxTotal(1);
-        if (DatabaseType.Oracle == type) {
-            result.setConnectionInitSqls(Collections.singleton("ALTER SESSION SET CURRENT_SCHEMA = " + dbName));
-        }
-        return result;
-    }
-    
     /**
      * drop the database table.
      */
@@ -143,12 +126,12 @@ public final class DatabaseEnvironmentManager {
                         String oracleSql = getDropTableSql(DatabaseType.Oracle, AnalyzeDatabase.analyze(DatabaseEnvironmentManager.class.getClassLoader()
                                 .getResource("integrate/dbtest").getPath() + "/" + database + "/database.xml"));
                         sr = new StringReader(oracleSql);
-                        conn = createDataSource(null, each).getConnection();
+                        conn = new DatabaseEnvironment(each).createDataSource(null).getConnection();
                         resultSet = RunScript.execute(conn, sr);
                         
                     } else {
                         sr = new StringReader(sql);
-                        conn = createDataSource(null, each).getConnection();
+                        conn = new DatabaseEnvironment(each).createDataSource(null).getConnection();
                         resultSet = RunScript.execute(conn, sr);
                     }
                 }
@@ -198,7 +181,7 @@ public final class DatabaseEnvironmentManager {
                 List<String> databases = AnalyzeDatabase.analyze(DatabaseEnvironmentManager.class.getClassLoader()
                         .getResource("integrate/dbtest").getPath() + "/" + each + "/database.xml");
                 for (String database : databases) {
-                    conn = createDataSource(database, dbType).getConnection();
+                    conn = new DatabaseEnvironment(dbType).createDataSource(database).getConnection();
                     List<String> tableSqlIds = AnalyzeSql.analyze(DatabaseEnvironmentManager.class.getClassLoader()
                             .getResource("integrate/dbtest").getPath() + "/" + each + "/table/create-table.xml");
                     List<String> tableSqls = new ArrayList<>();
@@ -260,7 +243,7 @@ public final class DatabaseEnvironmentManager {
                 List<String> databases = AnalyzeDatabase.analyze(DatabaseEnvironmentManager.class.getClassLoader()
                         .getResource("integrate/dbtest").getPath() + "/" + each + "/database.xml");
                 for (String database : databases) {
-                    conn = createDataSource(database, dbType).getConnection();
+                    conn = new DatabaseEnvironment(dbType).createDataSource(database).getConnection();
                     List<String> tableSqls = new ArrayList<>();
                     tableSqls.add(SQLCasesLoader.getInstance().getSchemaSQLCaseMap(sqlId));
                     sr = new StringReader(StringUtils.join(tableSqls, ";\n"));
@@ -304,7 +287,7 @@ public final class DatabaseEnvironmentManager {
                 List<String> databases = AnalyzeDatabase.analyze(DatabaseEnvironmentManager.class.getClassLoader()
                         .getResource("integrate/dbtest").getPath() + "/" + each + "/database.xml");
                 for (String database : databases) {
-                    conn = createDataSource(database, dbType).getConnection();
+                    conn = new DatabaseEnvironment(dbType).createDataSource(database).getConnection();
                     List<String> tableSqls = new ArrayList<>();
                     tableSqls.add(SQLCasesLoader.getInstance().getSchemaSQLCaseMap(sqlId));
                     sr = new StringReader(StringUtils.join(tableSqls, ";\n"));

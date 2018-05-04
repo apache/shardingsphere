@@ -22,6 +22,7 @@ import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.dbtest.IntegrateTestEnvironment;
+import io.shardingjdbc.dbtest.common.DatabaseEnvironment;
 import io.shardingjdbc.dbtest.common.DatabaseUtil;
 import io.shardingjdbc.dbtest.config.AnalyzeDataset;
 import io.shardingjdbc.dbtest.config.bean.AssertDDLDefinition;
@@ -106,7 +107,7 @@ public class AssertEngine {
             for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
                 Map<String, DataSource> dataSourceMaps = new HashMap<>();
                 for (String db : dbs) {
-                    DataSource subDataSource = DatabaseEnvironmentManager.createDataSource(db, each);
+                    DataSource subDataSource = new DatabaseEnvironment(each).createDataSource(db);
                     dataSourceMaps.put(db, subDataSource);
                 }
                 if ("true".equals(assertsDefinition.getMasterslave())) {
