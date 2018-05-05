@@ -29,13 +29,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.h2.tools.RunScript;
 import org.xml.sax.SAXException;
 
-import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -85,7 +83,9 @@ public final class DatabaseEnvironmentManager {
                     continue;
                 }
                 try (
-                        BasicDataSource dataSource = (BasicDataSource) new DatabaseEnvironment(each).createDataSource(null); Connection conn = dataSource.getConnection();
+                        BasicDataSource dataSource = (BasicDataSource) new DatabaseEnvironment(each).createDataSource(null);
+                        Connection conn = dataSource.getConnection();
+                        
                         StringReader stringReader = new StringReader(Joiner.on("\n").skipNulls().join(generateCreateDatabaseSQLs(each, databaseInitialization.getDatabases())))) {
                     ResultSet resultSet = RunScript.execute(conn, stringReader);
                     if (resultSet != null) {
@@ -127,7 +127,10 @@ public final class DatabaseEnvironmentManager {
                     if (DatabaseType.Oracle.equals(each)) {
                         String oracleSql = getDropTableSql(DatabaseType.Oracle, AnalyzeDatabase.analyze(DatabaseEnvironmentManager.class.getClassLoader()
                                 .getResource("integrate/dbtest").getPath() + "/" + database + "/database.xml"));
-                        try (StringReader sr = new StringReader(oracleSql); BasicDataSource dataSource = (BasicDataSource) new DatabaseEnvironment(each).createDataSource(null); Connection conn = dataSource.getConnection();) {
+                        try (StringReader sr = new StringReader(oracleSql);
+                             BasicDataSource dataSource = (BasicDataSource) new DatabaseEnvironment(each).createDataSource(null);
+                             
+                             Connection conn = dataSource.getConnection();) {
                             ResultSet resultSet = RunScript.execute(conn, sr);
                             if (resultSet != null) {
                                 resultSet.close();
@@ -135,7 +138,10 @@ public final class DatabaseEnvironmentManager {
                         }
                         
                     } else {
-                        try (StringReader sr = new StringReader(sql); BasicDataSource dataSource = (BasicDataSource) new DatabaseEnvironment(each).createDataSource(null); Connection conn = dataSource.getConnection();) {
+                        try (StringReader sr = new StringReader(sql);
+                             BasicDataSource dataSource = (BasicDataSource) new DatabaseEnvironment(each).createDataSource(null);
+                             
+                             Connection conn = dataSource.getConnection();) {
                             ResultSet resultSet = RunScript.execute(conn, sr);
                             if (resultSet != null) {
                                 resultSet.close();
@@ -158,6 +164,17 @@ public final class DatabaseEnvironmentManager {
         }
     }
     
+    /**
+     * create Table.
+     *
+     * @param dbType dbType
+     * @param sqlId  sqlId
+     * @param dbname dbname
+     */
+    public static synchronized void createTable(final DatabaseType dbType, final String sqlId, final String dbname) {
+        dropOrCreateShardingSchema(dbType, sqlId, dbname);
+    }
+    
     private static void createSchema(final DatabaseType dbType) {
         createShardingSchema(dbType);
     }
@@ -175,7 +192,9 @@ public final class DatabaseEnvironmentManager {
                     tableSqls.add(SQLCasesLoader.getInstance().getSchemaSQLCaseMap(tableSqlId));
                 }
                 for (String database : databases) {
-                    try (BasicDataSource dataSource = (BasicDataSource) new DatabaseEnvironment(dbType).createDataSource(database); Connection conn = dataSource.getConnection(); StringReader sr = new StringReader(StringUtils.join(tableSqls, ";\n"));) {
+                    try (BasicDataSource dataSource = (BasicDataSource) new DatabaseEnvironment(dbType).createDataSource(database);
+                         Connection conn = dataSource.getConnection();
+                         StringReader sr = new StringReader(StringUtils.join(tableSqls, ";\n"));) {
                         ResultSet resultSet = RunScript.execute(conn, sr);
                         if (resultSet != null) {
                             resultSet.close();
@@ -189,16 +208,13 @@ public final class DatabaseEnvironmentManager {
     }
     
     /**
-     * @param dbType
+     * drop Table.
+     *
+     * @param dbType dbType
+     * @param sqlId  sqlId
+     * @param dbname dbname
      */
     public static void dropTable(final DatabaseType dbType, final String sqlId, final String dbname) {
-        dropOrCreateShardingSchema(dbType, sqlId, dbname);
-    }
-    
-    /**
-     * @param dbType
-     */
-    public static void createTable(final DatabaseType dbType, final String sqlId, final String dbname) {
         dropOrCreateShardingSchema(dbType, sqlId, dbname);
     }
     
@@ -216,7 +232,9 @@ public final class DatabaseEnvironmentManager {
                 tableSqls.add(SQLCasesLoader.getInstance().getSchemaSQLCaseMap(sqlId));
                 for (String database : databases) {
                     
-                    try (BasicDataSource dataSource = (BasicDataSource) new DatabaseEnvironment(dbType).createDataSource(database); Connection conn = dataSource.getConnection();
+                    try (BasicDataSource dataSource = (BasicDataSource) new DatabaseEnvironment(dbType).createDataSource(database);
+                         Connection conn = dataSource.getConnection();
+                         
                          StringReader sr = new StringReader(StringUtils.join(tableSqls, ";\n"));) {
                         ResultSet resultSet = RunScript.execute(conn, sr);
                         if (resultSet != null) {
