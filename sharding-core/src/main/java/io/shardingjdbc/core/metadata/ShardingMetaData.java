@@ -33,6 +33,7 @@ import java.util.Map;
  * Abstract Sharding metadata.
  *
  * @author panjuan
+ * @author zhaojun
  */
 @Getter
 public abstract class ShardingMetaData {
@@ -48,8 +49,19 @@ public abstract class ShardingMetaData {
     public void init(final ShardingRule shardingRule) throws SQLException {
         tableMetaDataMap = new HashMap<>(shardingRule.getTableRules().size(), 1);
         for (TableRule each : shardingRule.getTableRules()) {
-            tableMetaDataMap.put(each.getLogicTable(), getTableMetaData(each.getLogicTable(), each.getActualDataNodes(), shardingRule.getShardingDataSourceNames()));
+            refresh(each, shardingRule);
         }
+    }
+
+    /**
+     * refresh each tableMetaData by TableRule.
+     *
+     * @param each table rule
+     * @param shardingRule sharding rule
+     * @throws SQLException SQL Exception
+     */
+    public void refresh(final TableRule each, final ShardingRule shardingRule) throws SQLException {
+        tableMetaDataMap.put(each.getLogicTable(), getTableMetaData(each.getLogicTable(), each.getActualDataNodes(), shardingRule.getShardingDataSourceNames()));
     }
     
     private TableMetaData getTableMetaData(final String logicTableName, final List<DataNode> actualDataNodes, final ShardingDataSourceNames shardingDataSourceNames) throws SQLException {
@@ -67,6 +79,7 @@ public abstract class ShardingMetaData {
     }
     
     protected abstract Collection<ColumnMetaData> getColumnMetaDataList(DataNode dataNode, ShardingDataSourceNames shardingDataSourceNames) throws SQLException;
+
 }
 
 

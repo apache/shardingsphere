@@ -20,13 +20,17 @@ package io.shardingjdbc.core.jdbc.metadata.dialect;
 import io.shardingjdbc.core.metadata.ColumnMetaData;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * MySQL table metadata handler.
  *
  * @author panjuan
+ * @author zhaojun
  */
 public final class DefaultShardingMetaDataHandler extends ShardingMetaDataHandler {
     
@@ -35,7 +39,7 @@ public final class DefaultShardingMetaDataHandler extends ShardingMetaDataHandle
     }
     
     @Override
-    public Collection<ColumnMetaData> getColumnMetaDataList() {
+    public List<ColumnMetaData> geColumnMetaInternal(final Statement statement) throws SQLException {
         return new LinkedList<>();
     }
 }

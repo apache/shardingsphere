@@ -19,12 +19,13 @@ package io.shardingjdbc.proxy.config;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
+import io.shardingjdbc.core.jdbc.metadata.JDBCShardingMetaData;
 import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.yaml.sharding.DataSourceParameter;
 import io.shardingjdbc.core.yaml.sharding.YamlShardingConfigurationForProxy;
-import io.shardingjdbc.proxy.metadata.ProxyShardingMetaData;
 import lombok.Getter;
 
 import javax.sql.DataSource;
@@ -65,7 +66,8 @@ public final class ShardingRuleRegistry {
         }
         shardingRule = yamlShardingConfigurationForProxy.getShardingRule(Collections.<String>emptyList());
         try {
-            shardingMetaData = new ProxyShardingMetaData(dataSourceMap);
+            shardingMetaData = new JDBCShardingMetaData(dataSourceMap, shardingRule, DatabaseType.MySQL);
+//            shardingMetaData = new ProxyShardingMetaData(dataSourceMap);
             shardingMetaData.init(shardingRule);
         } catch (final SQLException ex) {
             throw new ShardingJdbcException(ex);

@@ -31,19 +31,23 @@ import java.util.List;
  * MySQL table metadata handler.
  *
  * @author panjuan
+ * @author zhaojun
  */
 public final class MySQLShardingMetaDataHandler extends ShardingMetaDataHandler {
     
     public MySQLShardingMetaDataHandler(final DataSource dataSource, final String actualTableName) {
         super(dataSource, actualTableName);
     }
-    
+
     @Override
-    public Collection<ColumnMetaData> getColumnMetaDataList() throws SQLException {
+    public List<ColumnMetaData> geColumnMetaInternal(final Statement statement) throws SQLException {
         List<ColumnMetaData> result = new LinkedList<>();
-        try (Connection connection = getDataSource().getConnection();
-            Statement statement = connection.createStatement()) {
-            ResultSet resultSet = statement.executeQuery(String.format("desc %s", getActualTableName()));
+        statement.executeQuery(String.format("show tables like '%s'", getActualTableName()));
+        ResultSet resultSet = statement.getResultSet();
+
+        if (resultSet.next()) {
+            statement.executeQuery(String.format("desc %s;", getActualTableName()));
+            resultSet = statement.getResultSet();
             while (resultSet.next()) {
                 result.add(new ColumnMetaData(resultSet.getString("Field"), resultSet.getString("Type"), resultSet.getString("Key")));
             }

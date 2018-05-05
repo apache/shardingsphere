@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.core.routing;
 
+import io.shardingjdbc.core.constant.SQLType;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import io.shardingjdbc.core.routing.router.sharding.GeneratedKey;
 import lombok.Getter;
@@ -30,6 +31,7 @@ import java.util.Set;
  * 
  * @author gaohongtao
  * @author zhangliang
+ * @author zhaojun
  */
 @RequiredArgsConstructor
 @Getter
@@ -40,4 +42,13 @@ public final class SQLRouteResult {
     private final GeneratedKey generatedKey;
     
     private final Set<SQLExecutionUnit> executionUnits = new LinkedHashSet<>();
+
+    /**
+     * whether SQLRouteResult is DDL type or not.
+     *
+     * @return boolean
+     */
+    public boolean isDDLResult() {
+        return SQLType.DDL.equals(sqlStatement.getType());
+    }
 }
