@@ -20,7 +20,6 @@ package io.shardingjdbc.dbtest.init;
 import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,7 +33,6 @@ import java.util.List;
 @XmlRootElement(name = "databases")
 public final class DatabaseInitialization {
     
-    @XmlElementWrapper
     @XmlElement(name = "database")
     private List<String> databases = new LinkedList<>();
 }
