@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
-    <sql id="dbDropTOrder"/>
-    <sql id="dbDropTOrderItem"/>
+    <sql id="dbDropTOrder" />
+    <sql id="dbDropTOrderItem" />
 </sqls>

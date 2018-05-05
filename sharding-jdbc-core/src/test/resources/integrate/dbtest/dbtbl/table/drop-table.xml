@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
-    <sql id="dbtblDropTOrder0"/>
-    <sql id="dbtblDropTOrder1"/>
-    <sql id="dbtblDropTOrder2"/>
-    <sql id="dbtblDropTOrder3"/>
-    <sql id="dbtblDropTOrder4"/>
-    <sql id="dbtblDropTOrder5"/>
-    <sql id="dbtblDropTOrder6"/>
-    <sql id="dbtblDropTOrder7"/>
-    <sql id="dbtblDropTOrder8"/>
-    <sql id="dbtblDropTOrder9"/>
-    <sql id="dbtblDropTOrderItem0"/>
-    <sql id="dbtblDropTOrderItem1"/>
-    <sql id="dbtblDropTOrderItem2"/>
-    <sql id="dbtblDropTOrderItem3"/>
-    <sql id="dbtblDropTOrderItem4"/>
-    <sql id="dbtblDropTOrderItem5"/>
-    <sql id="dbtblDropTOrderItem6"/>
-    <sql id="dbtblDropTOrderItem7"/>
-    <sql id="dbtblDropTOrderItem8"/>
-    <sql id="dbtblDropTOrderItem9"/>
-    <sql id="dbtblDropTOrderConfig"/>
-    <sql id="dbtblDropTOrderGlobal"/>
+    <sql id="dbtblDropTOrder0" />
+    <sql id="dbtblDropTOrder1" />
+    <sql id="dbtblDropTOrder2" />
+    <sql id="dbtblDropTOrder3" />
+    <sql id="dbtblDropTOrder4" />
+    <sql id="dbtblDropTOrder5" />
+    <sql id="dbtblDropTOrder6" />
+    <sql id="dbtblDropTOrder7" />
+    <sql id="dbtblDropTOrder8" />
+    <sql id="dbtblDropTOrder9" />
+    <sql id="dbtblDropTOrderItem0" />
+    <sql id="dbtblDropTOrderItem1" />
+    <sql id="dbtblDropTOrderItem2" />
+    <sql id="dbtblDropTOrderItem3" />
+    <sql id="dbtblDropTOrderItem4" />
+    <sql id="dbtblDropTOrderItem5" />
+    <sql id="dbtblDropTOrderItem6" />
+    <sql id="dbtblDropTOrderItem7" />
+    <sql id="dbtblDropTOrderItem8" />
+    <sql id="dbtblDropTOrderItem9" />
+    <sql id="dbtblDropTOrderConfig" />
+    <sql id="dbtblDropTOrderGlobal" />
 </sqls>

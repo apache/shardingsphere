@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
-    <sql id="tblCreateTOrder0"/>
-    <sql id="tblCreateTOrder1"/>
-    <sql id="tblCreateTOrder2"/>
-    <sql id="tblCreateTOrder3"/>
-    <sql id="tblCreateTOrder4"/>
-    <sql id="tblCreateTOrder5"/>
-    <sql id="tblCreateTOrder6"/>
-    <sql id="tblCreateTOrder7"/>
-    <sql id="tblCreateTOrder8"/>
-    <sql id="tblCreateTOrder9"/>
-    <sql id="tblCreateTOrderItem0"/>
-    <sql id="tblCreateTOrderItem1"/>
-    <sql id="tblCreateTOrderItem2"/>
-    <sql id="tblCreateTOrderItem3"/>
-    <sql id="tblCreateTOrderItem4"/>
-    <sql id="tblCreateTOrderItem5"/>
-    <sql id="tblCreateTOrderItem6"/>
-    <sql id="tblCreateTOrderItem7"/>
-    <sql id="tblCreateTOrderItem8"/>
-    <sql id="tblCreateTOrderItem9"/>
-    <sql id="tblCreateTConfig"/>
-    <!--<sql id="tblCreateTGlobal"/>-->
+    <sql id="tblCreateTOrder0" />
+    <sql id="tblCreateTOrder1" />
+    <sql id="tblCreateTOrder2" />
+    <sql id="tblCreateTOrder3" />
+    <sql id="tblCreateTOrder4" />
+    <sql id="tblCreateTOrder5" />
+    <sql id="tblCreateTOrder6" />
+    <sql id="tblCreateTOrder7" />
+    <sql id="tblCreateTOrder8" />
+    <sql id="tblCreateTOrder9" />
+    <sql id="tblCreateTOrderItem0" />
+    <sql id="tblCreateTOrderItem1" />
+    <sql id="tblCreateTOrderItem2" />
+    <sql id="tblCreateTOrderItem3" />
+    <sql id="tblCreateTOrderItem4" />
+    <sql id="tblCreateTOrderItem5" />
+    <sql id="tblCreateTOrderItem6" />
+    <sql id="tblCreateTOrderItem7" />
+    <sql id="tblCreateTOrderItem8" />
+    <sql id="tblCreateTOrderItem9" />
+    <sql id="tblCreateTConfig" />
+    <!--<sql id="tblCreateTGlobal" />-->
 </sqls>

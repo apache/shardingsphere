@@ -17,10 +17,9 @@
 
 package io.shardingjdbc.dbtest.config;
 
-import io.shardingjdbc.dbtest.config.bean.ColumnDefinition;
-import io.shardingjdbc.dbtest.config.bean.DatasetDefinition;
-import org.apache.commons.lang3.StringUtils;
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -33,9 +32,7 @@ import javax.xml.xpath.XPathFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class AnalyzeDatabase {
     
@@ -49,8 +46,7 @@ public class AnalyzeDatabase {
      * @throws ParserConfigurationException ParserConfigurationException
      * @throws XPathExpressionException     XPathExpressionException
      */
-    public static List<String> analyze(final String path)
-            throws IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    public static List<String> analyze(final String path) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         return analyze(new File(path));
     }
     
@@ -64,9 +60,7 @@ public class AnalyzeDatabase {
      * @throws ParserConfigurationException ParserConfigurationException
      * @throws XPathExpressionException     XPathExpressionException
      */
-    public static List<String> analyze(final File file)
-            throws IOException, SAXException, ParserConfigurationException, XPathExpressionException {
-        
+    public static List<String> analyze(final File file) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         Document doc = parseFile(file);
         Node rootNode = getNode(doc, "/databases");
         NodeList firstNodeList = rootNode.getChildNodes();
@@ -114,9 +108,7 @@ public class AnalyzeDatabase {
     private static Node getNode(final Node node, final String xpath) throws XPathExpressionException {
         XPathFactory factory = XPathFactory.newInstance();
         XPath oXpath = factory.newXPath();
-        Node result = (Node) oXpath.evaluate(xpath, node, XPathConstants.NODE);
-        
-        return result;
+        return (Node) oXpath.evaluate(xpath, node, XPathConstants.NODE);
     }
     
   

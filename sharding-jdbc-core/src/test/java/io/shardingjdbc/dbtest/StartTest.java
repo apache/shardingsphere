@@ -18,16 +18,10 @@
 package io.shardingjdbc.dbtest;
 
 import io.shardingjdbc.dbtest.asserts.AssertEngine;
-import io.shardingjdbc.dbtest.config.AnalyzeConfig;
-import io.shardingjdbc.dbtest.config.bean.AssertDDLDefinition;
-import io.shardingjdbc.dbtest.config.bean.AssertDMLDefinition;
-import io.shardingjdbc.dbtest.config.bean.AssertDQLDefinition;
 import io.shardingjdbc.dbtest.config.bean.AssertDefinition;
 import io.shardingjdbc.dbtest.config.bean.AssertsDefinition;
-import io.shardingjdbc.dbtest.exception.DbTestException;
-import io.shardingjdbc.dbtest.init.InItCreateSchema;
+import io.shardingjdbc.dbtest.init.DatabaseEnvironmentManager;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -35,7 +29,10 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -45,7 +42,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -62,8 +59,6 @@ public final class StartTest {
     
     private static boolean isCleaned = IntegrateTestEnvironment.getInstance().isInitialized();
     
-    private static final List<String[]> RESULT_ASSERT = new ArrayList<>();
-    
     private final String path;
     
     private final String id;
@@ -72,27 +67,27 @@ public final class StartTest {
     public static Collection<String[]> getParameters() throws IOException, JAXBException, URISyntaxException {
         URL integrateResources = StartTest.class.getClassLoader().getResource(INTEGRATION_RESOURCES_PATH);
         assertNotNull(integrateResources);
+        List<String[]> result = new LinkedList<>();
         for (String each : getAssertFiles(integrateResources)) {
-            AssertsDefinition assertsDefinition = AnalyzeConfig.analyze(each);
-            if (StringUtils.isNotBlank(assertsDefinition.getBaseConfig())) {
-                String[] dbs = StringUtils.split(assertsDefinition.getBaseConfig(), ",");
-                for (String db : dbs) {
-                    InItCreateSchema.addDatabase(db);
-                }
-            } else {
-                for (String db : AssertEngine.DEFAULT_DATABASES) {
-                    InItCreateSchema.addDatabase(db);
-                }
+            AssertsDefinition assertsDefinition = unmarshal(each);
+            String[] dbs = assertsDefinition.getBaseConfig().split(",");
+            for (String db : dbs) {
+                DatabaseEnvironmentManager.addDatabase(db);
             }
-            List<AssertDQLDefinition> assertDQLs = assertsDefinition.getAssertDQL();
-            collateData(RESULT_ASSERT, each, assertDQLs);
-            List<AssertDMLDefinition> assertDMLs = assertsDefinition.getAssertDML();
-            collateData(RESULT_ASSERT, each, assertDMLs);
-            List<AssertDDLDefinition> assertDDLs = assertsDefinition.getAssertDDL();
-            collateData(RESULT_ASSERT, each, assertDDLs);
+            result.addAll(getParameters(each, assertsDefinition.getAssertDQL()));
+            result.addAll(getParameters(each, assertsDefinition.getAssertDML()));
+            result.addAll(getParameters(each, assertsDefinition.getAssertDDL()));
             AssertEngine.addAssertDefinition(each, assertsDefinition);
         }
-        return RESULT_ASSERT;
+        return result;
+    }
+    
+    private static Collection<String[]> getParameters(final String path, final List<? extends AssertDefinition> assertDefinitions) {
+        Collection<String[]> result = new LinkedList<>();
+        for (AssertDefinition each : assertDefinitions) {
+            result.add(new String[] {path, each.getId()});
+        }
+        return result;
     }
     
     private static List<String> getAssertFiles(final URL integrateResources) throws IOException, URISyntaxException {
@@ -110,31 +105,22 @@ public final class StartTest {
         return result;
     }
     
-    private static <T extends AssertDefinition> void collateData(final List<String[]> result, final String path, final List<T> asserts) {
-        if (asserts == null) {
-            return;
-        }
-        List<String> assertDefinitions = new ArrayList<>(asserts.size());
-        for (AssertDefinition each : asserts) {
-            if (assertDefinitions.contains(each.getId())) {
-                throw new DbTestException("ID can't be repeated");
-            }
-            assertDefinitions.add(each.getId());
-            result.add(new String[]{path, each.getId()});
+    private static AssertsDefinition unmarshal(final String assertFilePath) throws IOException, JAXBException {
+        Unmarshaller unmarshal = JAXBContext.newInstance(AssertsDefinition.class).createUnmarshaller();
+        try (FileReader reader = new FileReader(assertFilePath)) {
+            return (AssertsDefinition) unmarshal.unmarshal(reader);
         }
     }
     
     @BeforeClass
-    public static void beforeClass() {
+    public static void beforeClass() throws JAXBException, IOException, SQLException {
         if (isInitialized) {
-            InItCreateSchema.createDatabase();
-            InItCreateSchema.createTable();
             isInitialized = false;
         } else {
-            InItCreateSchema.dropDatabase();
-            InItCreateSchema.createDatabase();
-            InItCreateSchema.createTable();
+            DatabaseEnvironmentManager.dropDatabase();
         }
+        DatabaseEnvironmentManager.createDatabase();
+        DatabaseEnvironmentManager.createTable();
     }
     
     @Test
@@ -145,7 +131,7 @@ public final class StartTest {
     @AfterClass
     public static void afterClass() {
         if (isCleaned) {
-            InItCreateSchema.dropDatabase();
+            DatabaseEnvironmentManager.dropDatabase();
             isCleaned = false;
         }
     }

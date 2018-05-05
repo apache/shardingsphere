@@ -22,6 +22,7 @@ import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.dbtest.IntegrateTestEnvironment;
+import io.shardingjdbc.dbtest.common.DatabaseEnvironment;
 import io.shardingjdbc.dbtest.common.DatabaseUtil;
 import io.shardingjdbc.dbtest.config.AnalyzeDataset;
 import io.shardingjdbc.dbtest.config.bean.AssertDDLDefinition;
@@ -34,7 +35,7 @@ import io.shardingjdbc.dbtest.config.bean.DatasetDatabase;
 import io.shardingjdbc.dbtest.config.bean.DatasetDefinition;
 import io.shardingjdbc.dbtest.config.bean.ParameterDefinition;
 import io.shardingjdbc.dbtest.exception.DbTestException;
-import io.shardingjdbc.dbtest.init.InItCreateSchema;
+import io.shardingjdbc.dbtest.init.DatabaseEnvironmentManager;
 import io.shardingjdbc.test.sql.SQLCasesLoader;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
@@ -49,8 +50,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,8 +57,6 @@ import java.util.Map;
 public class AssertEngine {
     
     public static final Map<String, AssertsDefinition> ASSERT_DEFINITION_MAPS = new HashMap<>();
-    
-    public static final List<String> DEFAULT_DATABASES = Arrays.asList("db", "dbtbl", "nullable");
     
     /**
      * add check use cases.
@@ -81,18 +78,9 @@ public class AssertEngine {
     public static boolean runAssert(final String path, final String id) {
         AssertsDefinition assertsDefinition = ASSERT_DEFINITION_MAPS.get(path);
         String rootPath = path.substring(0, path.lastIndexOf(File.separator) + 1);
-        assertsDefinition.setPath(rootPath);
         try {
             String msg = "The file path " + path + ", under which id is " + id;
-            
-            List<String> dbNames = new ArrayList<>();
-            if (StringUtils.isNotBlank(assertsDefinition.getBaseConfig())) {
-                String[] dbs = StringUtils.split(assertsDefinition.getBaseConfig(), ",");
-                Collections.addAll(dbNames, dbs);
-            } else {
-                dbNames.addAll(AssertEngine.DEFAULT_DATABASES);
-            }
-            for (String each : dbNames) {
+            for (String each : assertsDefinition.getBaseConfig().split(",")) {
                 String initDataFile = rootPath + assertsDefinition.getInitDataFile();
                 String initDataPath = initDataFile + "/" + each;
                 File fileDirDatabase = new File(initDataPath);
@@ -119,7 +107,7 @@ public class AssertEngine {
             for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
                 Map<String, DataSource> dataSourceMaps = new HashMap<>();
                 for (String db : dbs) {
-                    DataSource subDataSource = InItCreateSchema.buildDataSource(db, each);
+                    DataSource subDataSource = new DatabaseEnvironment(each).createDataSource(db);
                     dataSourceMaps.put(db, subDataSource);
                 }
                 if ("true".equals(assertsDefinition.getMasterslave())) {
@@ -145,7 +133,7 @@ public class AssertEngine {
     private static void ddlRun(final DatabaseType databaseType, final String id, final String dbName, final AssertsDefinition assertsDefinition, final String rootPath, final String msg, final DataSource dataSource) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         for (AssertDDLDefinition each : assertsDefinition.getAssertDDL()) {
             if (id.equals(each.getId())) {
-                List<DatabaseType> databaseTypes = InItCreateSchema.getDatabaseTypes(each.getDatabaseConfig());
+                List<DatabaseType> databaseTypes = DatabaseEnvironmentManager.getDatabaseTypes(each.getDatabaseConfig());
                 if (!databaseTypes.contains(databaseType)) {
                     break;
                 }
@@ -196,7 +184,7 @@ public class AssertEngine {
     
     private static void ddlSubRun(final DatabaseType databaseType, final String dbName, final String rootPath, final String msg, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String expectedDataFile, final List<AssertSubDefinition> subAsserts) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         for (AssertSubDefinition subAssert : subAsserts) {
-            List<DatabaseType> databaseSubTypes = InItCreateSchema.getDatabaseTypes(subAssert.getDatabaseConfig());
+            List<DatabaseType> databaseSubTypes = DatabaseEnvironmentManager.getDatabaseTypes(subAssert.getDatabaseConfig());
             
             if (!databaseSubTypes.contains(databaseType)) {
                 break;
@@ -243,7 +231,7 @@ public class AssertEngine {
     private static void dmlRun(final DatabaseType databaseType, final String initDataFile, final String dbName, final String path, final String id, final AssertsDefinition assertsDefinition, final String rootPath, final String msg, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final List<String> dbs) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
         for (AssertDMLDefinition each : assertsDefinition.getAssertDML()) {
             if (id.equals(each.getId())) {
-                List<DatabaseType> databaseTypes = InItCreateSchema.getDatabaseTypes(each.getDatabaseConfig());
+                List<DatabaseType> databaseTypes = DatabaseEnvironmentManager.getDatabaseTypes(each.getDatabaseConfig());
                 if (!databaseTypes.contains(databaseType)) {
                     break;
                 }
@@ -289,7 +277,7 @@ public class AssertEngine {
                         resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFile, dataSource, dataSourceMaps, each, rootSQL, mapDatasetDefinition, sqls, msg);
                     } else {
                         for (AssertSubDefinition subAssert : subAsserts) {
-                            List<DatabaseType> databaseSubTypes = InItCreateSchema.getDatabaseTypes(subAssert.getDatabaseConfig());
+                            List<DatabaseType> databaseSubTypes = DatabaseEnvironmentManager.getDatabaseTypes(subAssert.getDatabaseConfig());
                             if (!databaseSubTypes.contains(databaseType)) {
                                 break;
                             }
@@ -343,7 +331,7 @@ public class AssertEngine {
                     List<AssertSubDefinition> subAsserts = each.getSubAsserts();
                     if (!subAsserts.isEmpty()) {
                         for (AssertSubDefinition subAssert : subAsserts) {
-                            List<DatabaseType> databaseSubTypes = InItCreateSchema.getDatabaseTypes(subAssert.getDatabaseConfig());
+                            List<DatabaseType> databaseSubTypes = DatabaseEnvironmentManager.getDatabaseTypes(subAssert.getDatabaseConfig());
                             if (!databaseSubTypes.contains(databaseType)) {
                                 break;
                             }
@@ -404,7 +392,7 @@ public class AssertEngine {
         for (AssertDQLDefinition each : assertsDefinition.getAssertDQL()) {
             
             if (id.equals(each.getId())) {
-                List<DatabaseType> databaseTypes = InItCreateSchema.getDatabaseTypes(each.getDatabaseConfig());
+                List<DatabaseType> databaseTypes = DatabaseEnvironmentManager.getDatabaseTypes(each.getDatabaseConfig());
                 if (!databaseTypes.contains(databaseType)) {
                     break;
                 }
@@ -468,7 +456,7 @@ public class AssertEngine {
     
     private static void dqlSubRun(final DatabaseType databaseType, final String dbName, final String rootPath, final String msg, final DataSource dataSource, final AssertDQLDefinition anAssert, final String rootSQL, final String expectedDataFile, final List<AssertSubDefinition> subAsserts) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         for (AssertSubDefinition subAssert : subAsserts) {
-            List<DatabaseType> databaseSubTypes = InItCreateSchema.getDatabaseTypes(subAssert.getDatabaseConfig());
+            List<DatabaseType> databaseSubTypes = DatabaseEnvironmentManager.getDatabaseTypes(subAssert.getDatabaseConfig());
             if (!databaseSubTypes.contains(databaseType)) {
                 break;
             }
@@ -538,10 +526,10 @@ public class AssertEngine {
         try {
             try (Connection con = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
-                    InItCreateSchema.dropTable(databaseType, anAssert.getCleanSql(), dbName);
+                    DatabaseEnvironmentManager.dropTable(databaseType, anAssert.getCleanSql(), dbName);
                 }
                 if (StringUtils.isNotBlank(anAssert.getInitSql())) {
-                    InItCreateSchema.createTable(databaseType, anAssert.getInitSql(), dbName);
+                    DatabaseEnvironmentManager.createTable(databaseType, anAssert.getInitSql(), dbName);
                 }
                 DatabaseUtil.updateUsePreparedStatementToExecute(con, rootsql,
                         anAssert.getParameter());
@@ -553,10 +541,10 @@ public class AssertEngine {
             }
         } finally {
             if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
-                InItCreateSchema.dropTable(databaseType, anAssert.getCleanSql(), dbName);
+                DatabaseEnvironmentManager.dropTable(databaseType, anAssert.getCleanSql(), dbName);
             }
             if (StringUtils.isNotBlank(anAssert.getInitSql())) {
-                InItCreateSchema.createTable(databaseType, anAssert.getInitSql(), dbName);
+                DatabaseEnvironmentManager.createTable(databaseType, anAssert.getInitSql(), dbName);
             }
         }
     }
@@ -589,10 +577,10 @@ public class AssertEngine {
         try {
             try (Connection con = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
-                    InItCreateSchema.dropTable(databaseType, anAssert.getCleanSql(), dbName);
+                    DatabaseEnvironmentManager.dropTable(databaseType, anAssert.getCleanSql(), dbName);
                 }
                 if (StringUtils.isNotBlank(anAssert.getInitSql())) {
-                    InItCreateSchema.createTable(databaseType, anAssert.getInitSql(), dbName);
+                    DatabaseEnvironmentManager.createTable(databaseType, anAssert.getInitSql(), dbName);
                 }
                 DatabaseUtil.updateUsePreparedStatementToExecuteUpdate(con, rootsql,
                         anAssert.getParameter());
@@ -603,10 +591,10 @@ public class AssertEngine {
             }
         } finally {
             if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
-                InItCreateSchema.dropTable(databaseType, anAssert.getCleanSql(), dbName);
+                DatabaseEnvironmentManager.dropTable(databaseType, anAssert.getCleanSql(), dbName);
             }
             if (StringUtils.isNotBlank(anAssert.getInitSql())) {
-                InItCreateSchema.createTable(databaseType, anAssert.getInitSql(), dbName);
+                DatabaseEnvironmentManager.createTable(databaseType, anAssert.getInitSql(), dbName);
             }
         }
     }
@@ -636,10 +624,10 @@ public class AssertEngine {
         try {
             try (Connection con = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
-                    InItCreateSchema.dropTable(databaseType, anAssert.getCleanSql(), dbName);
+                    DatabaseEnvironmentManager.dropTable(databaseType, anAssert.getCleanSql(), dbName);
                 }
                 if (StringUtils.isNotBlank(anAssert.getInitSql())) {
-                    InItCreateSchema.createTable(databaseType, anAssert.getInitSql(), dbName);
+                    DatabaseEnvironmentManager.createTable(databaseType, anAssert.getInitSql(), dbName);
                 }
                 DatabaseUtil.updateUseStatementToExecute(con, rootsql, anAssert.getParameter());
                 DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile), "data");
@@ -649,10 +637,10 @@ public class AssertEngine {
             }
         } finally {
             if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
-                InItCreateSchema.dropTable(databaseType, anAssert.getCleanSql(), dbName);
+                DatabaseEnvironmentManager.dropTable(databaseType, anAssert.getCleanSql(), dbName);
             }
             if (StringUtils.isNotBlank(anAssert.getInitSql())) {
-                InItCreateSchema.createTable(databaseType, anAssert.getInitSql(), dbName);
+                DatabaseEnvironmentManager.createTable(databaseType, anAssert.getInitSql(), dbName);
             }
         }
     }
@@ -682,10 +670,10 @@ public class AssertEngine {
         try {
             try (Connection con = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
-                    InItCreateSchema.dropTable(databaseType, anAssert.getCleanSql(), dbName);
+                    DatabaseEnvironmentManager.dropTable(databaseType, anAssert.getCleanSql(), dbName);
                 }
                 if (StringUtils.isNotBlank(anAssert.getInitSql())) {
-                    InItCreateSchema.createTable(databaseType, anAssert.getInitSql(), dbName);
+                    DatabaseEnvironmentManager.createTable(databaseType, anAssert.getInitSql(), dbName);
                 }
                 DatabaseUtil.updateUseStatementToExecuteUpdate(con, rootsql, anAssert.getParameter());
                 DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile), "data");
@@ -696,10 +684,10 @@ public class AssertEngine {
             }
         } finally {
             if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
-                InItCreateSchema.dropTable(databaseType, anAssert.getCleanSql(), dbName);
+                DatabaseEnvironmentManager.dropTable(databaseType, anAssert.getCleanSql(), dbName);
             }
             if (StringUtils.isNotBlank(anAssert.getInitSql())) {
-                InItCreateSchema.createTable(databaseType, anAssert.getInitSql(), dbName);
+                DatabaseEnvironmentManager.createTable(databaseType, anAssert.getInitSql(), dbName);
             }
         }
     }

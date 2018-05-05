@@ -17,17 +17,13 @@
 
 package io.shardingjdbc.dbtest.config.bean;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import io.shardingjdbc.core.constant.DatabaseType;
-import lombok.Getter;
-import lombok.Setter;
+import java.util.LinkedList;
+import java.util.List;
 
 @Getter
 @XmlRootElement(name = "asserts")
@@ -37,7 +33,7 @@ public class AssertsDefinition {
     private String shardingRuleConfig;
     
     @XmlAttribute(name = "base-config")
-    private String baseConfig;
+    private String baseConfig = "db,dbtbl,nullable";
     
     @XmlAttribute(name = "database-config")
     private String databaseConfig;
@@ -48,19 +44,13 @@ public class AssertsDefinition {
     @XmlAttribute(name = "init-data-file")
     private String initDataFile;
     
-    @Setter
-    private String path;
-    
-    @Setter
-    private String pathBaseCofig;
-    
     @XmlElement(name = "assertDQL")
-    private List<AssertDQLDefinition> assertDQL = new ArrayList<>();
+    private List<AssertDQLDefinition> assertDQL = new LinkedList<>();
     
     @XmlElement(name = "assertDML")
-    private List<AssertDMLDefinition> assertDML = new ArrayList<>();
+    private List<AssertDMLDefinition> assertDML = new LinkedList<>();
     
     @XmlElement(name = "assertDDL")
-    private List<AssertDDLDefinition> assertDDL = new ArrayList<>();
+    private List<AssertDDLDefinition> assertDDL = new LinkedList<>();
     
 }
