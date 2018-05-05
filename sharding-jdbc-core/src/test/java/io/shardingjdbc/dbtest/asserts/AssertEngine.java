@@ -20,6 +20,8 @@ package io.shardingjdbc.dbtest.asserts;
 import io.shardingjdbc.core.api.MasterSlaveDataSourceFactory;
 import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.core.jdbc.core.ShardingContext;
+import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.dbtest.IntegrateTestEnvironment;
 import io.shardingjdbc.dbtest.common.DatabaseEnvironment;
@@ -37,6 +39,7 @@ import io.shardingjdbc.dbtest.config.bean.ParameterDefinition;
 import io.shardingjdbc.dbtest.exception.DbTestException;
 import io.shardingjdbc.dbtest.init.DatabaseEnvironmentManager;
 import io.shardingjdbc.test.sql.SQLCasesLoader;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.xml.sax.SAXException;
@@ -46,6 +49,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -102,32 +106,32 @@ public class AssertEngine {
     }
     
     private static void onlyDatabaseRun(final String dbName, final String path, final String id, final AssertsDefinition assertsDefinition, final String rootPath, final String msg, final String initDataPath, final List<String> dbs) throws IOException, SQLException, SAXException, ParserConfigurationException, XPathExpressionException, ParseException {
-        DataSource dataSource = null;
-        try {
-            for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
-                Map<String, DataSource> dataSourceMaps = new HashMap<>();
-                for (String db : dbs) {
-                    DataSource subDataSource = new DatabaseEnvironment(each).createDataSource(db);
-                    dataSourceMaps.put(db, subDataSource);
-                }
-                if ("true".equals(assertsDefinition.getMasterslave())) {
-                    String configPath = rootPath + assertsDefinition.getShardingRuleConfig() + "-" + dbName + ".yaml";
-                    dataSource = getMasterSlaveDataSource(dataSourceMaps, configPath);
-                } else {
-                    String configPath = rootPath + assertsDefinition.getShardingRuleConfig() + "-" + dbName + ".yaml";
-                    dataSource = getDataSource(dataSourceMaps, configPath);
-                }
+        
+        for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
+            Map<String, DataSource> dataSourceMaps = new HashMap<>();
+            for (String db : dbs) {
+                DataSource subDataSource = new DatabaseEnvironment(each).createDataSource(db);
+                dataSourceMaps.put(db, subDataSource);
+            }
+            if ("true".equals(assertsDefinition.getMasterslave())) {
+                String configPath = rootPath + assertsDefinition.getShardingRuleConfig() + "-" + dbName + ".yaml";
+                MasterSlaveDataSource dataSource = (MasterSlaveDataSource) getMasterSlaveDataSource(dataSourceMaps, configPath);
+                
                 dqlRun(each, initDataPath, dbName, path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
                 dmlRun(each, initDataPath, dbName, path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
                 ddlRun(each, id, dbName, assertsDefinition, rootPath, msg, dataSource);
-            }
-        } finally {
-            if (dataSource != null) {
-                if (dataSource instanceof ShardingDataSource) {
-                    ((ShardingDataSource) dataSource).close();
+                
+            } else {
+                String configPath = rootPath + assertsDefinition.getShardingRuleConfig() + "-" + dbName + ".yaml";
+                try (ShardingDataSource dataSource = (ShardingDataSource) getDataSource(dataSourceMaps, configPath);) {
+                    dqlRun(each, initDataPath, dbName, path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
+                    dmlRun(each, initDataPath, dbName, path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
+                    ddlRun(each, id, dbName, assertsDefinition, rootPath, msg, dataSource);
                 }
             }
+            
         }
+        
     }
     
     private static void ddlRun(final DatabaseType databaseType, final String id, final String dbName, final AssertsDefinition assertsDefinition, final String rootPath, final String msg, final DataSource dataSource) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {

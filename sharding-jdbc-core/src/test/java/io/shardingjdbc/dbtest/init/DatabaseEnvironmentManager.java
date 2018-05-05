@@ -24,15 +24,18 @@ import io.shardingjdbc.dbtest.common.DatabaseEnvironment;
 import io.shardingjdbc.dbtest.config.AnalyzeDatabase;
 import io.shardingjdbc.dbtest.config.AnalyzeSql;
 import io.shardingjdbc.test.sql.SQLCasesLoader;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.h2.tools.RunScript;
 import org.xml.sax.SAXException;
 
+import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -67,10 +70,10 @@ public final class DatabaseEnvironmentManager {
     
     /**
      * Create database.
-     * 
+     *
      * @throws JAXBException jaxb exception
-     * @throws SQLException sql exception
-     * @throws IOException io exception
+     * @throws SQLException  sql exception
+     * @throws IOException   io exception
      */
     public static void createDatabase() throws JAXBException, SQLException, IOException {
         for (String database : DATABASES) {
@@ -82,10 +85,12 @@ public final class DatabaseEnvironmentManager {
                     continue;
                 }
                 try (
-                        Connection conn = new DatabaseEnvironment(each).createDataSource(null).getConnection();
+                        BasicDataSource dataSource = (BasicDataSource) new DatabaseEnvironment(each).createDataSource(null); Connection conn = dataSource.getConnection();
                         StringReader stringReader = new StringReader(Joiner.on("\n").skipNulls().join(generateCreateDatabaseSQLs(each, databaseInitialization.getDatabases())))) {
                     ResultSet resultSet = RunScript.execute(conn, stringReader);
-                    resultSet.close();
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
                 }
             }
         }
@@ -111,9 +116,6 @@ public final class DatabaseEnvironmentManager {
      * drop the database table.
      */
     public static synchronized void dropDatabase() {
-        Connection conn = null;
-        ResultSet resultSet = null;
-        StringReader sr = null;
         try {
             for (String database : DATABASES) {
                 String sql = getDropTableSql(DatabaseType.H2, AnalyzeDatabase.analyze(DatabaseEnvironmentManager.class.getClassLoader()
@@ -125,37 +127,25 @@ public final class DatabaseEnvironmentManager {
                     if (DatabaseType.Oracle.equals(each)) {
                         String oracleSql = getDropTableSql(DatabaseType.Oracle, AnalyzeDatabase.analyze(DatabaseEnvironmentManager.class.getClassLoader()
                                 .getResource("integrate/dbtest").getPath() + "/" + database + "/database.xml"));
-                        sr = new StringReader(oracleSql);
-                        conn = new DatabaseEnvironment(each).createDataSource(null).getConnection();
-                        resultSet = RunScript.execute(conn, sr);
+                        try (StringReader sr = new StringReader(oracleSql); BasicDataSource dataSource = (BasicDataSource) new DatabaseEnvironment(each).createDataSource(null); Connection conn = dataSource.getConnection();) {
+                            ResultSet resultSet = RunScript.execute(conn, sr);
+                            if (resultSet != null) {
+                                resultSet.close();
+                            }
+                        }
                         
                     } else {
-                        sr = new StringReader(sql);
-                        conn = new DatabaseEnvironment(each).createDataSource(null).getConnection();
-                        resultSet = RunScript.execute(conn, sr);
+                        try (StringReader sr = new StringReader(sql); BasicDataSource dataSource = (BasicDataSource) new DatabaseEnvironment(each).createDataSource(null); Connection conn = dataSource.getConnection();) {
+                            ResultSet resultSet = RunScript.execute(conn, sr);
+                            if (resultSet != null) {
+                                resultSet.close();
+                            }
+                        }
                     }
                 }
             }
         } catch (SQLException | ParserConfigurationException | IOException | XPathExpressionException | SAXException e) {
             e.printStackTrace();
-        } finally {
-            if (sr != null) {
-                sr.close();
-            }
-            if (resultSet != null) {
-                try {
-                    resultSet.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
     
@@ -173,45 +163,28 @@ public final class DatabaseEnvironmentManager {
     }
     
     private static void createShardingSchema(final DatabaseType dbType) {
-        Connection conn = null;
-        ResultSet resultSet = null;
-        StringReader sr = null;
         try {
             for (String each : DATABASES) {
                 List<String> databases = AnalyzeDatabase.analyze(DatabaseEnvironmentManager.class.getClassLoader()
                         .getResource("integrate/dbtest").getPath() + "/" + each + "/database.xml");
+                
+                List<String> tableSqlIds = AnalyzeSql.analyze(DatabaseEnvironmentManager.class.getClassLoader()
+                        .getResource("integrate/dbtest").getPath() + "/" + each + "/table/create-table.xml");
+                List<String> tableSqls = new ArrayList<>();
+                for (String tableSqlId : tableSqlIds) {
+                    tableSqls.add(SQLCasesLoader.getInstance().getSchemaSQLCaseMap(tableSqlId));
+                }
                 for (String database : databases) {
-                    conn = new DatabaseEnvironment(dbType).createDataSource(database).getConnection();
-                    List<String> tableSqlIds = AnalyzeSql.analyze(DatabaseEnvironmentManager.class.getClassLoader()
-                            .getResource("integrate/dbtest").getPath() + "/" + each + "/table/create-table.xml");
-                    List<String> tableSqls = new ArrayList<>();
-                    for (String tableSqlId : tableSqlIds) {
-                        tableSqls.add(SQLCasesLoader.getInstance().getSchemaSQLCaseMap(tableSqlId));
+                    try (BasicDataSource dataSource = (BasicDataSource) new DatabaseEnvironment(dbType).createDataSource(database); Connection conn = dataSource.getConnection(); StringReader sr = new StringReader(StringUtils.join(tableSqls, ";\n"));) {
+                        ResultSet resultSet = RunScript.execute(conn, sr);
+                        if (resultSet != null) {
+                            resultSet.close();
+                        }
                     }
-                    sr = new StringReader(StringUtils.join(tableSqls, ";\n"));
-                    resultSet = RunScript.execute(conn, sr);
                 }
             }
         } catch (final SQLException | ParserConfigurationException | IOException | XPathExpressionException | SAXException ex) {
             ex.printStackTrace();
-        } finally {
-            if (sr != null) {
-                sr.close();
-            }
-            if (resultSet != null) {
-                try {
-                    resultSet.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
     
@@ -219,20 +192,17 @@ public final class DatabaseEnvironmentManager {
      * @param dbType
      */
     public static void dropTable(final DatabaseType dbType, final String sqlId, final String dbname) {
-        dropShardingSchema(dbType, sqlId, dbname);
+        dropOrCreateShardingSchema(dbType, sqlId, dbname);
     }
     
     /**
      * @param dbType
      */
     public static void createTable(final DatabaseType dbType, final String sqlId, final String dbname) {
-        createShardingSchema(dbType, sqlId, dbname);
+        dropOrCreateShardingSchema(dbType, sqlId, dbname);
     }
     
-    private static void createShardingSchema(final DatabaseType dbType, final String sqlId, final String dbname) {
-        Connection conn = null;
-        ResultSet resultSet = null;
-        StringReader sr = null;
+    private static void dropOrCreateShardingSchema(final DatabaseType dbType, final String sqlId, final String dbname) {
         try {
             for (String each : DATABASES) {
                 if (dbname != null) {
@@ -242,80 +212,22 @@ public final class DatabaseEnvironmentManager {
                 }
                 List<String> databases = AnalyzeDatabase.analyze(DatabaseEnvironmentManager.class.getClassLoader()
                         .getResource("integrate/dbtest").getPath() + "/" + each + "/database.xml");
+                List<String> tableSqls = new ArrayList<>();
+                tableSqls.add(SQLCasesLoader.getInstance().getSchemaSQLCaseMap(sqlId));
                 for (String database : databases) {
-                    conn = new DatabaseEnvironment(dbType).createDataSource(database).getConnection();
-                    List<String> tableSqls = new ArrayList<>();
-                    tableSqls.add(SQLCasesLoader.getInstance().getSchemaSQLCaseMap(sqlId));
-                    sr = new StringReader(StringUtils.join(tableSqls, ";\n"));
-                    resultSet = RunScript.execute(conn, sr);
-                }
-            }
-        } catch (final SQLException | ParserConfigurationException | IOException | XPathExpressionException | SAXException ex) {
-            ex.printStackTrace();
-        } finally {
-            if (sr != null) {
-                sr.close();
-            }
-            if (resultSet != null) {
-                try {
-                    resultSet.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-    
-    private static void dropShardingSchema(final DatabaseType dbType, final String sqlId, final String dbname) {
-        Connection conn = null;
-        ResultSet resultSet = null;
-        StringReader sr = null;
-        try {
-            for (String each : DATABASES) {
-                if (dbname != null) {
-                    if (!each.equals(dbname)) {
-                        continue;
+                    
+                    try (BasicDataSource dataSource = (BasicDataSource) new DatabaseEnvironment(dbType).createDataSource(database); Connection conn = dataSource.getConnection();
+                         StringReader sr = new StringReader(StringUtils.join(tableSqls, ";\n"));) {
+                        ResultSet resultSet = RunScript.execute(conn, sr);
+                        if (resultSet != null) {
+                            resultSet.close();
+                        }
                     }
                 }
-                List<String> databases = AnalyzeDatabase.analyze(DatabaseEnvironmentManager.class.getClassLoader()
-                        .getResource("integrate/dbtest").getPath() + "/" + each + "/database.xml");
-                for (String database : databases) {
-                    conn = new DatabaseEnvironment(dbType).createDataSource(database).getConnection();
-                    List<String> tableSqls = new ArrayList<>();
-                    tableSqls.add(SQLCasesLoader.getInstance().getSchemaSQLCaseMap(sqlId));
-                    sr = new StringReader(StringUtils.join(tableSqls, ";\n"));
-                    resultSet = RunScript.execute(conn, sr);
-                }
             }
-            
         } catch (SQLException | ParserConfigurationException | IOException | XPathExpressionException | SAXException e) {
             // The table may not exist at the time of deletion（删除时可能表不存在）
             //e.printStackTrace();
-        } finally {
-            if (sr != null) {
-                sr.close();
-            }
-            if (resultSet != null) {
-                try {
-                    resultSet.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
     
