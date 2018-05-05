@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sqls>
-    <sql id="slaveOnlyDropTOrder" />
-    <sql id="slaveOnlyDropTOrderItem" />
-    <sql id="slaveOnlyDropTConfig" />
-    <sql id="slaveOnlyDropTGlobal" />
-</sqls>

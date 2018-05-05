@@ -529,7 +529,6 @@
             </expected-parameter>
         </subAssert>
     </assertDML>
-
     <assertDML id="assertDeleteWithoutAlias"  expected-update="40"
                sql="assertDeleteWithShardingValue"
                expected-sql="assertSelectEqualsWithSingleTable">
@@ -577,7 +576,6 @@
                 <value value="2001" type="int"/>
             </expected-parameter>
         </subAssert>
-
         <subAssert expected-data-file="delete.xml">
             <parameter>
                 <value value="1100" type="int"/>
@@ -622,7 +620,6 @@
                 <value value="2101" type="int"/>
             </expected-parameter>
         </subAssert>
-
         <subAssert expected-data-file="delete.xml">
             <parameter>
                 <value value="1200" type="int"/>
@@ -667,8 +664,6 @@
                 <value value="2201" type="int"/>
             </expected-parameter>
         </subAssert>
-
-
         <subAssert expected-data-file="delete.xml">
             <parameter>
                 <value value="1300" type="int"/>
@@ -713,8 +708,6 @@
                 <value value="2301" type="int"/>
             </expected-parameter>
         </subAssert>
-
-
         <subAssert expected-data-file="delete.xml">
             <parameter>
                 <value value="1400" type="int"/>
@@ -759,8 +752,6 @@
                 <value value="2401" type="int"/>
             </expected-parameter>
         </subAssert>
-
-
         <subAssert expected-data-file="delete.xml">
             <parameter>
                 <value value="1500" type="int"/>
@@ -805,8 +796,6 @@
                 <value value="2501" type="int"/>
             </expected-parameter>
         </subAssert>
-
-
         <subAssert expected-data-file="delete.xml">
             <parameter>
                 <value value="1600" type="int"/>
@@ -851,8 +840,6 @@
                 <value value="2601" type="int"/>
             </expected-parameter>
         </subAssert>
-
-
         <subAssert expected-data-file="delete.xml">
             <parameter>
                 <value value="1700" type="int"/>
@@ -897,8 +884,6 @@
                 <value value="2701" type="int"/>
             </expected-parameter>
         </subAssert>
-
-
         <subAssert expected-data-file="delete.xml">
             <parameter>
                 <value value="1800" type="int"/>
@@ -943,9 +928,6 @@
                 <value value="2801" type="int"/>
             </expected-parameter>
         </subAssert>
-
-
-
         <subAssert expected-data-file="delete.xml">
             <parameter>
                 <value value="1900" type="int"/>
