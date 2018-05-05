@@ -3,6 +3,26 @@
                table="t_log"
                expected-data-file="assertCreateTable.xml">
     </assertDDL>
+    <assertDDL id="assertCreateTableIfNotExist" clean-sql="dropTLog" expected-update="1" sql="assertCreateTableIfNotExist"
+               table="t_log"
+               expected-data-file="assertCreateTable.xml">
+    </assertDDL>
+    <assertDDL id="assertCreateTemporaryTable" clean-sql="dropTTempLog" expected-update="1" sql="assertCreateTemporaryTable"
+               table="t_temp_log" database-config="mysql,postgresql"
+               expected-data-file="assertCreateTableTempLog.xml">
+    </assertDDL>
+    <assertDDL id="assertCreateGlobalTemporaryTable" clean-sql="dropTTempLog" expected-update="1" sql="assertCreateGlobalTemporaryTable"
+               table="t_temp_log" database-config="oracle,postgresql"
+               expected-data-file="assertCreateTableTempLog.xml">
+    </assertDDL>
+    <assertDDL id="assertCreateLocalTempTable" clean-sql="dropTLog" expected-update="1" sql="assertCreateLocalTempTable"
+               table="t_log" database-config="postgresql"
+               expected-data-file="assertCreateTable.xml">
+    </assertDDL>
+    <assertDDL id="assertCreateUnloggedTable" clean-sql="dropTLog" expected-update="1" sql="assertCreateUnloggedTable"
+               table="t_log" database-config="postgresql"
+               expected-data-file="assertCreateTable.xml">
+    </assertDDL>
     <assertDDL id="assertCreateIndex" init-sql="createTLog" clean-sql="dropTLog" expected-update="1" sql="assertCreateIndex"
                table="t_log"
                expected-data-file="assertCreateIndex.xml">
