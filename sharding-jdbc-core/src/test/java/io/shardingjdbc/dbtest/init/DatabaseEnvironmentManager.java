@@ -31,7 +31,6 @@ import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.FileReader;
@@ -44,6 +43,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -79,13 +79,9 @@ public final class DatabaseEnvironmentManager {
             assertNotNull(databaseInitializationResources);
             DatabaseInitialization databaseInitialization = unmarshal(databaseInitializationResources.getFile());
             for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
-                if (each.equals(DatabaseType.H2)) {
-                    continue;
-                }
                 try (
                         BasicDataSource dataSource = (BasicDataSource) new DatabaseEnvironment(each).createDataSource(null);
                         Connection conn = dataSource.getConnection();
-                        
                         StringReader stringReader = new StringReader(Joiner.on("\n").skipNulls().join(generateCreateDatabaseSQLs(each, databaseInitialization.getDatabases())))) {
                     ResultSet resultSet = RunScript.execute(conn, stringReader);
                     if (resultSet != null) {
@@ -97,17 +93,19 @@ public final class DatabaseEnvironmentManager {
     }
     
     private static DatabaseInitialization unmarshal(final String databaseInitializationFilePath) throws IOException, JAXBException {
-        Unmarshaller unmarshal = JAXBContext.newInstance(DatabaseInitialization.class).createUnmarshaller();
         try (FileReader reader = new FileReader(databaseInitializationFilePath)) {
-            return (DatabaseInitialization) unmarshal.unmarshal(reader);
+            return (DatabaseInitialization) JAXBContext.newInstance(DatabaseInitialization.class).createUnmarshaller().unmarshal(reader);
         }
     }
     
     private static Collection<String> generateCreateDatabaseSQLs(final DatabaseType databaseType, final List<String> databases) {
-        String baseSQL = DatabaseType.Oracle == databaseType ? "CREATE SCHEMA %s;" : "CREATE DATABASE %s;";
+        if (DatabaseType.H2 == databaseType) {
+            return Collections.emptyList();
+        }
+        String sql = DatabaseType.Oracle == databaseType ? "CREATE SCHEMA %s;" : "CREATE DATABASE %s;";
         Collection<String> result = new LinkedList<>();
         for (String each : databases) {
-            result.add(String.format(baseSQL, each));
+            result.add(String.format(sql, each));
         }
         return result;
     }
@@ -129,8 +127,7 @@ public final class DatabaseEnvironmentManager {
                                 .getResource("integrate/dbtest").getPath() + "/" + database + "/database.xml"));
                         try (StringReader sr = new StringReader(oracleSql);
                              BasicDataSource dataSource = (BasicDataSource) new DatabaseEnvironment(each).createDataSource(null);
-                             
-                             Connection conn = dataSource.getConnection();) {
+                             Connection conn = dataSource.getConnection()) {
                             ResultSet resultSet = RunScript.execute(conn, sr);
                             if (resultSet != null) {
                                 resultSet.close();

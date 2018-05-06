@@ -31,7 +31,6 @@ import org.junit.runners.Parameterized.Parameters;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -106,9 +105,8 @@ public final class StartTest {
     }
     
     private static AssertsDefinition unmarshal(final String assertFilePath) throws IOException, JAXBException {
-        Unmarshaller unmarshal = JAXBContext.newInstance(AssertsDefinition.class).createUnmarshaller();
         try (FileReader reader = new FileReader(assertFilePath)) {
-            return (AssertsDefinition) unmarshal.unmarshal(reader);
+            return (AssertsDefinition) JAXBContext.newInstance(AssertsDefinition.class).createUnmarshaller().unmarshal(reader);
         }
     }
     
