@@ -22,7 +22,6 @@ import io.shardingjdbc.dbtest.config.bean.AssertDefinition;
 import io.shardingjdbc.dbtest.config.bean.AssertsDefinition;
 import io.shardingjdbc.dbtest.init.DatabaseEnvironmentManager;
 import lombok.RequiredArgsConstructor;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,7 +30,6 @@ import org.junit.runners.Parameterized.Parameters;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -43,7 +41,9 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -54,6 +54,8 @@ import static org.junit.Assert.assertNotNull;
 public final class StartTest {
     
     private static final String INTEGRATION_RESOURCES_PATH = "asserts";
+    
+    private static final Collection<String> SHARDING_RULE_TYPES = new HashSet<>();
     
     private static boolean isInitialized = IntegrateTestEnvironment.getInstance().isInitialized();
     
@@ -70,10 +72,8 @@ public final class StartTest {
         List<String[]> result = new LinkedList<>();
         for (String each : getAssertFiles(integrateResources)) {
             AssertsDefinition assertsDefinition = unmarshal(each);
-            String[] dbs = assertsDefinition.getBaseConfig().split(",");
-            for (String db : dbs) {
-                DatabaseEnvironmentManager.addDatabase(db);
-            }
+            SHARDING_RULE_TYPES.addAll(Arrays.asList(assertsDefinition.getBaseConfig().split(",")));
+            DatabaseEnvironmentManager.SHARDING_RULE_TYPE.addAll(SHARDING_RULE_TYPES);
             result.addAll(getParameters(each, assertsDefinition.getAssertDQL()));
             result.addAll(getParameters(each, assertsDefinition.getAssertDML()));
             result.addAll(getParameters(each, assertsDefinition.getAssertDDL()));
@@ -106,33 +106,30 @@ public final class StartTest {
     }
     
     private static AssertsDefinition unmarshal(final String assertFilePath) throws IOException, JAXBException {
-        Unmarshaller unmarshal = JAXBContext.newInstance(AssertsDefinition.class).createUnmarshaller();
         try (FileReader reader = new FileReader(assertFilePath)) {
-            return (AssertsDefinition) unmarshal.unmarshal(reader);
+            return (AssertsDefinition) JAXBContext.newInstance(AssertsDefinition.class).createUnmarshaller().unmarshal(reader);
         }
     }
     
     @BeforeClass
-    public static void beforeClass() throws JAXBException, IOException, SQLException {
+    public static void setUp() throws JAXBException, IOException, SQLException {
         if (isInitialized) {
             isInitialized = false;
         } else {
-            DatabaseEnvironmentManager.dropDatabase();
+            for (String each : SHARDING_RULE_TYPES) {
+                DatabaseEnvironmentManager.dropDatabase(each);
+            }
         }
-        DatabaseEnvironmentManager.createDatabase();
-        DatabaseEnvironmentManager.createTable();
+        for (String each : SHARDING_RULE_TYPES) {
+            DatabaseEnvironmentManager.createDatabase(each);
+        }
+        for (String each : SHARDING_RULE_TYPES) {
+            DatabaseEnvironmentManager.createTable(each);
+        }
     }
     
     @Test
-    public void test() {
+    public void test() throws JAXBException {
         AssertEngine.runAssert(path, id);
-    }
-    
-    @AfterClass
-    public static void afterClass() {
-        if (isCleaned) {
-            DatabaseEnvironmentManager.dropDatabase();
-            isCleaned = false;
-        }
     }
 }

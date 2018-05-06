@@ -20,19 +20,29 @@ package io.shardingjdbc.dbtest.init;
 import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Database initialization.
+ * Database environment schema.
  *
  * @author zhangliang
  */
 @Getter
-@XmlRootElement(name = "databases")
-public final class DatabaseInitialization {
+@XmlRootElement(name = "schema")
+public final class DatabaseEnvironmentSchema {
     
+    @XmlElementWrapper(name = "databases")
     @XmlElement(name = "database")
     private List<String> databases = new LinkedList<>();
+    
+    @XmlElementWrapper(name = "table-create")
+    @XmlElement(name = "sql")
+    private List<String> tableCreateSQLs = new LinkedList<>();
+    
+    @XmlElementWrapper(name = "table-drop")
+    @XmlElement(name = "sql")
+    private List<String> tableDropSQLs = new LinkedList<>();
 }

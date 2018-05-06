@@ -1,33 +1,33 @@
 <asserts sharding-rule-config="./config/test" init-data-file="./init" database="h2,mysql,oracle,sqlserver,postgresql">
-    <assertDDL id="assertCreateTable" clean-sql="dropTLog" expected-update="1" sql="assertCreateTable"
+    <assertDDL id="assertCreateTable" clean-sql="DROP TABLE t_log" expected-update="1" sql="assertCreateTable"
                table="t_log"
                expected-data-file="assertCreateTable.xml">
     </assertDDL>
-    <assertDDL id="assertCreateTableIfNotExist" clean-sql="dropTLog" expected-update="1" sql="assertCreateTableIfNotExist"
+    <assertDDL id="assertCreateTableIfNotExist" clean-sql="DROP TABLE t_log" expected-update="1" sql="assertCreateTableIfNotExist"
                table="t_log"
                expected-data-file="assertCreateTable.xml">
     </assertDDL>
-    <assertDDL id="assertCreateTemporaryTable" clean-sql="dropTTempLog" expected-update="1" sql="assertCreateTemporaryTable"
+    <assertDDL id="assertCreateTemporaryTable" clean-sql="DROP TABLE t_temp_log" expected-update="1" sql="assertCreateTemporaryTable"
                table="t_temp_log" database-config="mysql,postgresql"
                expected-data-file="assertCreateTableTempLog.xml">
     </assertDDL>
-    <assertDDL id="assertCreateGlobalTemporaryTable" clean-sql="dropTTempLog" expected-update="1" sql="assertCreateGlobalTemporaryTable"
+    <assertDDL id="assertCreateGlobalTemporaryTable" clean-sql="DROP TABLE t_temp_log" expected-update="1" sql="assertCreateGlobalTemporaryTable"
                table="t_temp_log" database-config="oracle,postgresql"
                expected-data-file="assertCreateTableTempLog.xml">
     </assertDDL>
-    <assertDDL id="assertCreateLocalTempTable" clean-sql="dropTLog" expected-update="1" sql="assertCreateLocalTempTable"
+    <assertDDL id="assertCreateLocalTempTable" clean-sql="DROP TABLE t_log" expected-update="1" sql="assertCreateLocalTempTable"
                table="t_log" database-config="postgresql"
                expected-data-file="assertCreateTable.xml">
     </assertDDL>
-    <assertDDL id="assertCreateUnloggedTable" clean-sql="dropTLog" expected-update="1" sql="assertCreateUnloggedTable"
+    <assertDDL id="assertCreateUnloggedTable" clean-sql="DROP TABLE t_log" expected-update="1" sql="assertCreateUnloggedTable"
                table="t_log" database-config="postgresql"
                expected-data-file="assertCreateTable.xml">
     </assertDDL>
-    <assertDDL id="assertCreateIndex" init-sql="createTLog" clean-sql="dropTLog" expected-update="1" sql="assertCreateIndex"
+    <assertDDL id="assertCreateIndex" init-sql="CREATE TABLE t_log(id int, status varchar(10))" clean-sql="DROP TABLE t_log" expected-update="1" sql="assertCreateIndex"
                table="t_log"
                expected-data-file="assertCreateIndex.xml">
     </assertDDL>
-    <assertDDL id="assertCreateUniqueIndex" init-sql="createTLog" clean-sql="dropTLog" expected-update="1" sql="assertCreateUniqueIndex"
+    <assertDDL id="assertCreateUniqueIndex" init-sql="CREATE TABLE t_log(id int, status varchar(10))" clean-sql="DROP TABLE t_log" expected-update="1" sql="assertCreateUniqueIndex"
                table="t_log"
                expected-data-file="assertCreateUniqueIndex.xml">
     </assertDDL>
