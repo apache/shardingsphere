@@ -142,11 +142,31 @@ public final class DatabaseEnvironmentManager {
     }
     
     /**
-     * Initialize the database table.
+     * Create table.
+     *
+     * @param shardingRuleType sharding rule type
+     * @throws JAXBException JAXB exception
+     * @throws SQLException SQL exception
+     * @throws IOException IO exception
      */
-    public static synchronized void createTable() {
+    public static void createTable(final String shardingRuleType) throws JAXBException, SQLException, IOException, XPathExpressionException, SAXException, ParserConfigurationException {
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
-            createSchema(each);
+            List<String> databases = getDatabaseInitialization(shardingRuleType).getDatabases();
+            List<String> tableSqlIds = AnalyzeSql.analyze(DatabaseEnvironmentManager.class.getClassLoader().getResource("integrate/dbtest").getPath() + "/" + shardingRuleType + "/table/create-table.xml");
+            List<String> tableSqls = new LinkedList<>();
+            for (String tableSqlId : tableSqlIds) {
+                tableSqls.add(SQLCasesLoader.getInstance().getSchemaSQLCaseMap(tableSqlId));
+            }
+            for (String database : databases) {
+                try (BasicDataSource dataSource = (BasicDataSource) new DatabaseEnvironment(each).createDataSource(database);
+                     Connection conn = dataSource.getConnection();
+                     StringReader sr = new StringReader(StringUtils.join(tableSqls, ";\n"));) {
+                    ResultSet resultSet = RunScript.execute(conn, sr);
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                }
+            }
         }
     }
     
@@ -157,40 +177,8 @@ public final class DatabaseEnvironmentManager {
      * @param sqlId  sqlId
      * @param dbname dbname
      */
-    public static synchronized void createTable(final DatabaseType dbType, final String sqlId, final String dbname) {
+    public static void createTable(final DatabaseType dbType, final String sqlId, final String dbname) {
         dropOrCreateShardingSchema(dbType, sqlId, dbname);
-    }
-    
-    private static void createSchema(final DatabaseType dbType) {
-        createShardingSchema(dbType);
-    }
-    
-    private static void createShardingSchema(final DatabaseType dbType) {
-        try {
-            for (String each : SHARDING_RULE_TYPE) {
-                List<String> databases = AnalyzeDatabase.analyze(DatabaseEnvironmentManager.class.getClassLoader()
-                        .getResource("integrate/dbtest").getPath() + "/" + each + "/database.xml");
-                
-                List<String> tableSqlIds = AnalyzeSql.analyze(DatabaseEnvironmentManager.class.getClassLoader()
-                        .getResource("integrate/dbtest").getPath() + "/" + each + "/table/create-table.xml");
-                List<String> tableSqls = new ArrayList<>();
-                for (String tableSqlId : tableSqlIds) {
-                    tableSqls.add(SQLCasesLoader.getInstance().getSchemaSQLCaseMap(tableSqlId));
-                }
-                for (String database : databases) {
-                    try (BasicDataSource dataSource = (BasicDataSource) new DatabaseEnvironment(dbType).createDataSource(database);
-                         Connection conn = dataSource.getConnection();
-                         StringReader sr = new StringReader(StringUtils.join(tableSqls, ";\n"));) {
-                        ResultSet resultSet = RunScript.execute(conn, sr);
-                        if (resultSet != null) {
-                            resultSet.close();
-                        }
-                    }
-                }
-            }
-        } catch (final SQLException | ParserConfigurationException | IOException | XPathExpressionException | SAXException ex) {
-            ex.printStackTrace();
-        }
     }
     
     /**
