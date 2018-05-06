@@ -131,7 +131,7 @@
 
 1. [ISSUE #334](https://github.com/shardingjdbc/sharding-jdbc/issues/334) 解析有函数的ORDER BY会将后面的ASC, DESC解析到OrderItem的name属性中
 1. [ISSUE #335](https://github.com/shardingjdbc/sharding-jdbc/issues/339) 使用表全名关联的JOIN解析不正确
-1. [ISSUE #346](https://github.com/shardingjdbc/sharding-jdbc/issues/346) DDL语句 DROP TABLE IF EXISTS USER 解析表明错误
+1. [ISSUE #346](https://github.com/shardingjdbc/sharding-jdbc/issues/346) DDL语句 DROP TABLE IF EXISTS USER 解析表名错误
 
 ## 1.5.1
 
@@ -207,11 +207,11 @@
 
 ### 缺陷修正
 
-1. [ISSUE #194](https://github.com/shardingjdbc/sharding-jdbc/issues/194) jdbc接口中资源释放错误
+1. [ISSUE #194](https://github.com/shardingjdbc/sharding-jdbc/issues/194) Connection, Statement, Resultset等接口中的close方法中部分组件异常造成另外一部分组件的close方法没有被调用
 1. [ISSUE #199](https://github.com/shardingjdbc/sharding-jdbc/issues/199) 分表且复用PreparedStatement对象造成数据路由错误
 1. [ISSUE #201](https://github.com/shardingjdbc/sharding-jdbc/issues/201) 批量操作执行前事件发送缺失
 1. [ISSUE #203](https://github.com/shardingjdbc/sharding-jdbc/issues/203) 合并batch操作发送的事件
-1. [ISSUE #209](https://github.com/shardingjdbc/sharding-jdbc/issues/209) limit并行异常
+1. [ISSUE #209](https://github.com/shardingjdbc/sharding-jdbc/issues/209) 并行执行多个limit查询导致IndexOutOfBoundsException
 
 ## 1.4.0
 
@@ -226,7 +226,7 @@
 
 ### 缺陷修正
 
-1. [ISSUE #176](https://github.com/shardingjdbc/sharding-jdbc/issues/176) AbstractMemoryResultSet对SQL的wasNull实现有问题
+1. [ISSUE #176](https://github.com/shardingjdbc/sharding-jdbc/issues/176) AbstractMemoryResultSet的wasNull标志位没有及时复位
 
 ## 1.3.3
 
@@ -237,23 +237,23 @@
 ### 缺陷修正
 
 1. [ISSUE #149](https://github.com/shardingjdbc/sharding-jdbc/issues/149) INSERT IGNORE INTO时如果数据重了忽略时返回的成-1了，应该返回0 
-1. [ISSUE #118](https://github.com/shardingjdbc/sharding-jdbc/issues/118) 同一个线程内先执行DQL后执行DML，DML操作在从库上执行
-1. [ISSUE #122](https://github.com/shardingjdbc/sharding-jdbc/issues/122) bed的fail重试问题
-1. [ISSUE #152](https://github.com/shardingjdbc/sharding-jdbc/issues/152) 可能同一个connection多线程导致问题
-1. [ISSUE #150](https://github.com/shardingjdbc/sharding-jdbc/issues/150) 与最新SQLServer jdbc驱动兼容问题
-1. [ISSUE #166](https://github.com/shardingjdbc/sharding-jdbc/issues/166) druid数据源stat过滤器多线程报错
+1. [ISSUE #118](https://github.com/shardingjdbc/sharding-jdbc/issues/118) 同一个线程内先执行DQL后执行DML，DML操作再从库上执行
+1. [ISSUE #122](https://github.com/shardingjdbc/sharding-jdbc/issues/122) 在连接不可用的情况下(如网络中断),应该直接中断事务,而不是重试
+1. [ISSUE #152](https://github.com/shardingjdbc/sharding-jdbc/issues/152) PreparedStatement的缓存导致数组越界
+1. [ISSUE #150](https://github.com/shardingjdbc/sharding-jdbc/issues/150) 与最新SQLServer jdbc驱动兼容问题，应该将Product Name由SQLServer改为Microsoft SQL Server
+1. [ISSUE #166](https://github.com/shardingjdbc/sharding-jdbc/issues/166) druid数据源stat过滤器多线程报错，应该增加数据库连接级别的同步
 
 ## 1.3.2
 
 ### 功能提升
 
-1. [ISSUE #79](https://github.com/shardingjdbc/sharding-jdbc/issues/79) 关于MySQL 分页limit
+1. [ISSUE #79](https://github.com/shardingjdbc/sharding-jdbc/issues/79) 对于只有一个目标表的情况优化limit，不修改limit的偏移量
 
 ### 缺陷修正
 
 1. [ISSUE #36](https://github.com/shardingjdbc/sharding-jdbc/issues/36) ShardingPreparedStatement无法反复设置参数
 1. [ISSUE #114](https://github.com/shardingjdbc/sharding-jdbc/issues/114) ShardingPreparedStatement执行批处理任务时,反复解析sql导致oom
-1. [ISSUE #33](https://github.com/shardingjdbc/sharding-jdbc/issues/33) Limit支持问题
+1. [ISSUE #33](https://github.com/shardingjdbc/sharding-jdbc/issues/33) 根据MySQL文档，不支持类似limit 100 , -1格式的查询
 1. [ISSUE #124](https://github.com/shardingjdbc/sharding-jdbc/issues/124) com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractStatementAdapter.getUpdateCount返回值不符合JDBC规范
 1. [ISSUE #141](https://github.com/shardingjdbc/sharding-jdbc/issues/141) 多线程执行器参数设置失效
 
@@ -313,7 +313,7 @@
 
 ### 新功能
 
-1. [ISSUE #53](https://github.com/shardingjdbc/sharding-jdbc/issues/53) 动态表配置
+1. [ISSUE #53](https://github.com/shardingjdbc/sharding-jdbc/issues/53) 可以不配置真实表和逻辑表的对应关系，通过分片算法动态计算真实表
 1. [ISSUE #58](https://github.com/shardingjdbc/sharding-jdbc/issues/58) 柔性事务：最大努力送达型初始版本
 
 ### 结构调整
@@ -325,7 +325,7 @@
 
 1. [ISSUE #43](https://github.com/shardingjdbc/sharding-jdbc/issues/43) yaml文件中包含中文，且操作系统模式不是utf-8编码导致的yaml不能解析
 1. [ISSUE #48](https://github.com/shardingjdbc/sharding-jdbc/issues/48) yaml文件读取后未关闭
-1. [ISSUE #57](https://github.com/shardingjdbc/sharding-jdbc/issues/57) SQL解析子查询改进
+1. [ISSUE #57](https://github.com/shardingjdbc/sharding-jdbc/issues/57) 在解析层面对子查询进行识别，保证补充列行为可以进行精准定位
 
 ## 1.1.0
 
@@ -347,10 +347,10 @@
 
 ### 缺陷修正
 
-1. [ISSUE #11](https://github.com/shardingjdbc/sharding-jdbc/issues/11) count函数在某些情况下返回不正确
-1. [ISSUE #13](https://github.com/shardingjdbc/sharding-jdbc/issues/13) Insert 语句 没有写列名 进行了全路由
-1. [ISSUE #16](https://github.com/shardingjdbc/sharding-jdbc/issues/16) 改造多线程执行模型
-1. [ISSUE #18](https://github.com/shardingjdbc/sharding-jdbc/issues/18) 查询Count时，使用getObject()取数会报异常
+1. [ISSUE #11](https://github.com/shardingjdbc/sharding-jdbc/issues/11) count函数在没有别名的情况下返回不正确
+1. [ISSUE #13](https://github.com/shardingjdbc/sharding-jdbc/issues/13) Insert语句没有写列名，或者写列名但列名不包含分片字段，进行了全路由
+1. [ISSUE #16](https://github.com/shardingjdbc/sharding-jdbc/issues/16) 由每次执行SQL时新建连接池，应改为每个ShardingDataSource对象共享一个连接池
+1. [ISSUE #18](https://github.com/shardingjdbc/sharding-jdbc/issues/18) 查询Count时，调用getObject()抛出异常: Unsupported data type: Object
 1. [ISSUE #19](https://github.com/shardingjdbc/sharding-jdbc/issues/19) sum和avg函数，不加别名不执行merger，加了空指针异常
 1. [ISSUE #38](https://github.com/shardingjdbc/sharding-jdbc/issues/38) JPA与Sharding-JDBC的兼容问题。JPA会自动增加SELECT的列别名，导致ORDER BY只能通过别名，而非列名称获取ResultSet的数据
 
