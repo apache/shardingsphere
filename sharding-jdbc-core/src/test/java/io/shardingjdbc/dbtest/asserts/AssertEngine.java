@@ -71,7 +71,6 @@ public final class AssertEngine {
      * @param databaseTypeEnvironment database type environment
      */
     public static void runAssert(final AssertDefinition assertDefinition, final String path, final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws JAXBException, ParserConfigurationException, IOException, XPathExpressionException, SQLException, SAXException, ParseException {
-        String rootPath = path.substring(0, path.lastIndexOf(File.separator) + 1);
         String dataInitializationPath = EnvironmentPath.getDataInitializeResourceFile(shardingRuleType);
         File fileDirDatabase = new File(dataInitializationPath);
         if (fileDirDatabase.exists()) {
@@ -82,6 +81,7 @@ public final class AssertEngine {
                 dataSourceName = dataSourceName.substring(0, dataSourceName.indexOf("."));
                 dataSourceNames.add(dataSourceName);
             }
+            String rootPath = path.substring(0, path.lastIndexOf(File.separator) + 1);
             runAssert(assertDefinition, shardingRuleType, rootPath, dataInitializationPath, dataSourceNames, databaseTypeEnvironment);
         }
     }
@@ -110,7 +110,7 @@ public final class AssertEngine {
     }
     
     private static DataSource createDataSource(final String shardingRuleType, final Map<String, DataSource> dataSourceMap) throws SQLException, IOException {
-        return false
+        return "masterslaveonly".equals(shardingRuleType)
                         ? MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)))
                         : ShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)));
     }

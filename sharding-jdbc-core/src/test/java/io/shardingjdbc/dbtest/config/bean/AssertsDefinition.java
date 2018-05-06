@@ -35,9 +35,6 @@ public class AssertsDefinition {
     @XmlAttribute(name = "database-config")
     private String databaseConfig = "H2,MySQL,Oracle,SQLServer,PostgreSQL";
     
-    @XmlAttribute(name = "master-slave")
-    private boolean masterSlave;
-    
     @XmlElement(name = "assertDQL")
     private List<AssertDQLDefinition> assertDQL = new LinkedList<>();
     
