@@ -70,7 +70,7 @@ public final class StartTest {
     
     private static boolean isCleaned = IntegrateTestEnvironment.getInstance().isInitialized();
     
-    private final String id;
+    private final AssertDefinition assertDefinition;
     
     private final String shardingRuleType;
     
@@ -104,7 +104,7 @@ public final class StartTest {
                 Collection<DatabaseType> databaseTypes = Strings.isNullOrEmpty(each.getDatabaseConfig()) ? defaultDatabaseTypes : getDatabaseTypes(each.getDatabaseConfig());
                 for (DatabaseType databaseType : databaseTypes) {
                     result.add(new Object[] {
-                            each.getId(), shardingRuleType, new DatabaseTypeEnvironment(databaseType, IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType)), path});
+                            each, shardingRuleType, new DatabaseTypeEnvironment(databaseType, IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType)), path});
                 }
             }
         }
@@ -170,6 +170,6 @@ public final class StartTest {
     
     @Test
     public void test() throws JAXBException, SAXException, ParseException, IOException, XPathExpressionException, SQLException, ParserConfigurationException {
-        AssertEngine.runAssert(id, path, shardingRuleType, databaseTypeEnvironment);
+        AssertEngine.runAssert(assertDefinition, path, shardingRuleType, databaseTypeEnvironment);
     }
 }

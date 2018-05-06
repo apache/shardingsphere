@@ -26,6 +26,7 @@ import io.shardingjdbc.dbtest.config.AnalyzeDataset;
 import io.shardingjdbc.dbtest.config.bean.AssertDDLDefinition;
 import io.shardingjdbc.dbtest.config.bean.AssertDMLDefinition;
 import io.shardingjdbc.dbtest.config.bean.AssertDQLDefinition;
+import io.shardingjdbc.dbtest.config.bean.AssertDefinition;
 import io.shardingjdbc.dbtest.config.bean.AssertSubDefinition;
 import io.shardingjdbc.dbtest.config.bean.AssertsDefinition;
 import io.shardingjdbc.dbtest.config.bean.ColumnDefinition;
@@ -72,15 +73,14 @@ public class AssertEngine {
     }
     
     /**
-     * Execution use case.
+     * Run assert.
      * 
-     * @param id Unique primary key for a use case
+     * @param assertDefinition assert definition
      * @param path Check the use case storage path
      * @param shardingRuleType sharding rule type
      * @param databaseTypeEnvironment database type environment
      */
-    public static void runAssert(final String id, final String path, final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws JAXBException, ParserConfigurationException, IOException, XPathExpressionException, SQLException, SAXException, ParseException {
-        AssertsDefinition assertsDefinition = ASSERT_DEFINITION_MAPS.get(path);
+    public static void runAssert(final AssertDefinition assertDefinition, final String path, final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws JAXBException, ParserConfigurationException, IOException, XPathExpressionException, SQLException, SAXException, ParseException {
         String rootPath = path.substring(0, path.lastIndexOf(File.separator) + 1);
         String dataInitializationPath = EnvironmentPath.getDataInitializeResourceFile(shardingRuleType);
         File fileDirDatabase = new File(dataInitializationPath);
@@ -92,19 +92,23 @@ public class AssertEngine {
                 dataSourceName = dataSourceName.substring(0, dataSourceName.indexOf("."));
                 dataSourceNames.add(dataSourceName);
             }
-            runAssert(id, shardingRuleType, path, assertsDefinition, rootPath, dataInitializationPath, dataSourceNames, databaseTypeEnvironment);
+            runAssert(assertDefinition, shardingRuleType, path, rootPath, dataInitializationPath, dataSourceNames, databaseTypeEnvironment);
         }
     }
     
-    private static void runAssert(final String id, final String shardingRuleType, final String path, final AssertsDefinition assertsDefinition, final String rootPath, final String initDataPath, final List<String> dataSourceNames, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, SQLException, SAXException, ParserConfigurationException, XPathExpressionException, ParseException, JAXBException {
+    private static void runAssert(final AssertDefinition assertDefinition, final String shardingRuleType, final String path, final String rootPath, final String initDataPath, final List<String> dataSourceNames, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, SQLException, SAXException, ParserConfigurationException, XPathExpressionException, ParseException, JAXBException {
         if (!databaseTypeEnvironment.isEnabled()) {
             return;
         }
         Map<String, DataSource> dataSourceMap = createDataSourceMap(dataSourceNames, databaseTypeEnvironment.getDatabaseType());
-        DataSource dataSource = createDataSource(shardingRuleType, assertsDefinition, dataSourceMap);
-        dqlRun(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), initDataPath, path, id, assertsDefinition, rootPath, dataSource, dataSourceMap, dataSourceNames);
-        dmlRun(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), initDataPath, path, id, assertsDefinition, rootPath, dataSource, dataSourceMap, dataSourceNames);
-        ddlRun(databaseTypeEnvironment.getDatabaseType(), id, shardingRuleType, assertsDefinition, rootPath, dataSource);
+        DataSource dataSource = createDataSource(shardingRuleType, dataSourceMap);
+        if (assertDefinition instanceof AssertDQLDefinition) {
+            dqlRun((AssertDQLDefinition) assertDefinition, shardingRuleType, databaseTypeEnvironment.getDatabaseType(), initDataPath, path, rootPath, dataSource, dataSourceMap, dataSourceNames);
+        } else if (assertDefinition instanceof AssertDMLDefinition) {
+            dmlRun((AssertDMLDefinition) assertDefinition, shardingRuleType, databaseTypeEnvironment.getDatabaseType(), initDataPath, path, rootPath, dataSource, dataSourceMap, dataSourceNames);
+        } else if (assertDefinition instanceof AssertDDLDefinition) {
+            ddlRun((AssertDDLDefinition) assertDefinition, databaseTypeEnvironment.getDatabaseType(), shardingRuleType, rootPath, dataSource);
+        }
     }
     
     private static Map<String, DataSource> createDataSourceMap(final List<String> dataSourceNames, final DatabaseType each) {
@@ -115,60 +119,37 @@ public class AssertEngine {
         return dataSourceMap;
     }
     
-    private static DataSource createDataSource(final String shardingRuleType, final AssertsDefinition assertsDefinition, final Map<String, DataSource> dataSourceMap) throws SQLException, IOException {
-        return assertsDefinition.isMasterSlave()
+    private static DataSource createDataSource(final String shardingRuleType, final Map<String, DataSource> dataSourceMap) throws SQLException, IOException {
+        return false
                         ? MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)))
                         : ShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)));
     }
     
-    private static void ddlRun(final DatabaseType databaseType, final String id, final String shardingRuleType, final AssertsDefinition assertsDefinition, final String rootPath, final DataSource dataSource) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
-        for (AssertDDLDefinition each : assertsDefinition.getAssertDDL()) {
-            if (id.equals(each.getId())) {
-                List<DatabaseType> databaseTypes = getDatabaseTypes(each.getDatabaseConfig());
-                if (!databaseTypes.contains(databaseType)) {
-                    break;
-                }
-                String baseConfig = each.getShardingRuleType();
-                if (StringUtils.isNotBlank(baseConfig)) {
-                    String[] baseConfigs = StringUtils.split(baseConfig, ",");
-                    boolean flag = true;
-                    for (String config : baseConfigs) {
-                        if (shardingRuleType.equals(config)) {
-                            flag = false;
-                        }
-                    }
-                    //Skip use cases that do not need to run
-                    if (flag) {
-                        continue;
-                    }
-                }
-                String rootSQL = each.getSql();
-                rootSQL = SQLCasesLoader.getInstance().getSupportedSQL(rootSQL);
-                String expectedDataFile = rootPath + "asserts/ddl/" + shardingRuleType + "/" + each.getExpectedDataFile();
-                if (!new File(expectedDataFile).exists()) {
-                    expectedDataFile = rootPath + "asserts/ddl/" + each.getExpectedDataFile();
-                }
-                if (each.getParameter().getValues().isEmpty() && each.getParameter().getValueReplaces().isEmpty()) {
-                    List<AssertSubDefinition> subAsserts = each.getSubAsserts();
-                    if (subAsserts.isEmpty()) {
-                        doUpdateUseStatementToExecuteUpdateDDL(shardingRuleType, databaseType, expectedDataFile, dataSource, each, rootSQL);
-                        doUpdateUseStatementToExecuteDDL(shardingRuleType, databaseType, expectedDataFile, dataSource, each, rootSQL);
-                        doUpdateUsePreparedStatementToExecuteUpdateDDL(shardingRuleType, databaseType, expectedDataFile, dataSource, each, rootSQL);
-                        doUpdateUsePreparedStatementToExecuteDDL(shardingRuleType, databaseType, expectedDataFile, dataSource, each, rootSQL);
-                    } else {
-                        ddlSubRun(shardingRuleType, databaseType, rootPath, dataSource, each, rootSQL, expectedDataFile, subAsserts);
-                    }
-                } else {
-                    doUpdateUseStatementToExecuteUpdateDDL(shardingRuleType, databaseType, expectedDataFile, dataSource, each, rootSQL);
-                    doUpdateUseStatementToExecuteDDL(shardingRuleType, databaseType, expectedDataFile, dataSource, each, rootSQL);
-                    doUpdateUsePreparedStatementToExecuteUpdateDDL(shardingRuleType, databaseType, expectedDataFile, dataSource, each, rootSQL);
-                    doUpdateUsePreparedStatementToExecuteDDL(shardingRuleType, databaseType, expectedDataFile, dataSource, each, rootSQL);
-                    List<AssertSubDefinition> subAsserts = each.getSubAsserts();
-                    if (!subAsserts.isEmpty()) {
-                        ddlSubRun(shardingRuleType, databaseType, rootPath, dataSource, each, rootSQL, expectedDataFile, subAsserts);
-                    }
-                }
-                break;
+    private static void ddlRun(final AssertDDLDefinition ddlDefinition, final DatabaseType databaseType, final String shardingRuleType, final String rootPath, final DataSource dataSource) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
+        String rootSQL = ddlDefinition.getSql();
+        rootSQL = SQLCasesLoader.getInstance().getSupportedSQL(rootSQL);
+        String expectedDataFile = rootPath + "asserts/ddl/" + shardingRuleType + "/" + ddlDefinition.getExpectedDataFile();
+        if (!new File(expectedDataFile).exists()) {
+            expectedDataFile = rootPath + "asserts/ddl/" + ddlDefinition.getExpectedDataFile();
+        }
+        if (ddlDefinition.getParameter().getValues().isEmpty() && ddlDefinition.getParameter().getValueReplaces().isEmpty()) {
+            List<AssertSubDefinition> subAsserts = ddlDefinition.getSubAsserts();
+            if (subAsserts.isEmpty()) {
+                doUpdateUseStatementToExecuteUpdateDDL(shardingRuleType, databaseType, expectedDataFile, dataSource, ddlDefinition, rootSQL);
+                doUpdateUseStatementToExecuteDDL(shardingRuleType, databaseType, expectedDataFile, dataSource, ddlDefinition, rootSQL);
+                doUpdateUsePreparedStatementToExecuteUpdateDDL(shardingRuleType, databaseType, expectedDataFile, dataSource, ddlDefinition, rootSQL);
+                doUpdateUsePreparedStatementToExecuteDDL(shardingRuleType, databaseType, expectedDataFile, dataSource, ddlDefinition, rootSQL);
+            } else {
+                ddlSubRun(shardingRuleType, databaseType, rootPath, dataSource, ddlDefinition, rootSQL, expectedDataFile, subAsserts);
+            }
+        } else {
+            doUpdateUseStatementToExecuteUpdateDDL(shardingRuleType, databaseType, expectedDataFile, dataSource, ddlDefinition, rootSQL);
+            doUpdateUseStatementToExecuteDDL(shardingRuleType, databaseType, expectedDataFile, dataSource, ddlDefinition, rootSQL);
+            doUpdateUsePreparedStatementToExecuteUpdateDDL(shardingRuleType, databaseType, expectedDataFile, dataSource, ddlDefinition, rootSQL);
+            doUpdateUsePreparedStatementToExecuteDDL(shardingRuleType, databaseType, expectedDataFile, dataSource, ddlDefinition, rootSQL);
+            List<AssertSubDefinition> subAsserts = ddlDefinition.getSubAsserts();
+            if (!subAsserts.isEmpty()) {
+                ddlSubRun(shardingRuleType, databaseType, rootPath, dataSource, ddlDefinition, rootSQL, expectedDataFile, subAsserts);
             }
         }
     }
@@ -219,229 +200,183 @@ public class AssertEngine {
         }
     }
     
-    private static void dmlRun(final String shardingRuleType, final DatabaseType databaseType, final String initDataFile, final String path, final String id, final AssertsDefinition assertsDefinition, final String rootPath, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final List<String> dbs) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
-        for (AssertDMLDefinition each : assertsDefinition.getAssertDML()) {
-            if (id.equals(each.getId())) {
-                List<DatabaseType> databaseTypes = getDatabaseTypes(each.getDatabaseConfig());
-                if (!databaseTypes.contains(databaseType)) {
-                    break;
-                }
-                String baseConfig = each.getShardingRuleType();
-                if (StringUtils.isNotBlank(baseConfig)) {
-                    String[] baseConfigs = StringUtils.split(baseConfig, ",");
-                    boolean flag = true;
-                    for (String config : baseConfigs) {
-                        if (shardingRuleType.equals(config)) {
-                            flag = false;
+    private static void dmlRun(final AssertDMLDefinition dmlDefinition, final String shardingRuleType, final DatabaseType databaseType, final String initDataFile, final String path, final String rootPath, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final List<String> dbs) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
+        String rootSQL = dmlDefinition.getSql();
+        rootSQL = SQLCasesLoader.getInstance().getSupportedSQL(rootSQL);
+        Map<String, DatasetDefinition> mapDatasetDefinition = new HashMap<>();
+        Map<String, String> sqls = new HashMap<>();
+        getInitDatas(dbs, initDataFile, mapDatasetDefinition, sqls);
+        if (mapDatasetDefinition.isEmpty()) {
+            throw new DbTestException(path + "  Use cases cannot be parsed");
+        }
+        if (sqls.isEmpty()) {
+            throw new DbTestException(path + "  The use case cannot initialize the data");
+        }
+        String expectedDataFile = rootPath + "asserts/dml/" + shardingRuleType + "/" + dmlDefinition.getExpectedDataFile();
+        if (!new File(expectedDataFile).exists()) {
+            expectedDataFile = rootPath + "asserts/dml/" + dmlDefinition.getExpectedDataFile();
+        }
+        int resultDoUpdateUseStatementToExecuteUpdate = 0;
+        int resultDoUpdateUseStatementToExecute = 0;
+        int resultDoUpdateUsePreparedStatementToExecuteUpdate = 0;
+        int resultDoUpdateUsePreparedStatementToExecute = 0;
+        if (dmlDefinition.getParameter().getValues().isEmpty() && dmlDefinition.getParameter().getValueReplaces().isEmpty()) {
+            List<AssertSubDefinition> subAsserts = dmlDefinition.getSubAsserts();
+            if (subAsserts.isEmpty()) {
+                resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFile, dataSource, dataSourceMaps, dmlDefinition, rootSQL, mapDatasetDefinition, sqls);
+                resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFile, dataSource, dataSourceMaps, dmlDefinition, rootSQL, mapDatasetDefinition, sqls);
+                resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFile, dataSource, dataSourceMaps, dmlDefinition, rootSQL, mapDatasetDefinition, sqls);
+                resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFile, dataSource, dataSourceMaps, dmlDefinition, rootSQL, mapDatasetDefinition, sqls);
+            } else {
+                for (AssertSubDefinition subAssert : subAsserts) {
+                    List<DatabaseType> databaseSubTypes = getDatabaseTypes(subAssert.getDatabaseConfig());
+                    if (!databaseSubTypes.contains(databaseType)) {
+                        break;
+                    }
+                    String baseConfigSub = subAssert.getShardingRuleType();
+                    if (StringUtils.isNotBlank(baseConfigSub)) {
+                        String[] baseConfigs = StringUtils.split(baseConfigSub, ",");
+                        boolean flag = true;
+                        for (String config : baseConfigs) {
+                            if (shardingRuleType.equals(config)) {
+                                flag = false;
+                            }
+                        }
+                        //Skip use cases that do not need to run
+                        if (flag) {
+                            continue;
                         }
                     }
-                    //Skip use cases that do not need to run
-                    if (flag) {
-                        continue;
-                    }
-                }
-                String rootSQL = each.getSql();
-                rootSQL = SQLCasesLoader.getInstance().getSupportedSQL(rootSQL);
-                Map<String, DatasetDefinition> mapDatasetDefinition = new HashMap<>();
-                Map<String, String> sqls = new HashMap<>();
-                getInitDatas(dbs, initDataFile, mapDatasetDefinition, sqls);
-                if (mapDatasetDefinition.isEmpty()) {
-                    throw new DbTestException(path + "  Use cases cannot be parsed");
-                }
-                if (sqls.isEmpty()) {
-                    throw new DbTestException(path + "  The use case cannot initialize the data");
-                }
-                String expectedDataFile = rootPath + "asserts/dml/" + shardingRuleType + "/" + each.getExpectedDataFile();
-                if (!new File(expectedDataFile).exists()) {
-                    expectedDataFile = rootPath + "asserts/dml/" + each.getExpectedDataFile();
-                }
-                int resultDoUpdateUseStatementToExecuteUpdate = 0;
-                int resultDoUpdateUseStatementToExecute = 0;
-                int resultDoUpdateUsePreparedStatementToExecuteUpdate = 0;
-                int resultDoUpdateUsePreparedStatementToExecute = 0;
-                if (each.getParameter().getValues().isEmpty() && each.getParameter().getValueReplaces().isEmpty()) {
-                    List<AssertSubDefinition> subAsserts = each.getSubAsserts();
-                    if (subAsserts.isEmpty()) {
-                        resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFile, dataSource, dataSourceMaps, each, rootSQL, mapDatasetDefinition, sqls);
-                        resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFile, dataSource, dataSourceMaps, each, rootSQL, mapDatasetDefinition, sqls);
-                        resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFile, dataSource, dataSourceMaps, each, rootSQL, mapDatasetDefinition, sqls);
-                        resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFile, dataSource, dataSourceMaps, each, rootSQL, mapDatasetDefinition, sqls);
+                
+                    String expectedDataFileSub = subAssert.getExpectedDataFile();
+                    ParameterDefinition parameter = subAssert.getParameter();
+                    ParameterDefinition expectedParameter = subAssert.getExpectedParameter();
+                    String expectedDataFileTmp = expectedDataFile;
+                    if (StringUtils.isBlank(expectedDataFileSub)) {
+                        expectedDataFileSub = dmlDefinition.getExpectedDataFile();
                     } else {
-                        for (AssertSubDefinition subAssert : subAsserts) {
-                            List<DatabaseType> databaseSubTypes = getDatabaseTypes(subAssert.getDatabaseConfig());
-                            if (!databaseSubTypes.contains(databaseType)) {
-                                break;
-                            }
-                            String baseConfigSub = subAssert.getShardingRuleType();
-                            if (StringUtils.isNotBlank(baseConfigSub)) {
-                                String[] baseConfigs = StringUtils.split(baseConfigSub, ",");
-                                boolean flag = true;
-                                for (String config : baseConfigs) {
-                                    if (shardingRuleType.equals(config)) {
-                                        flag = false;
-                                    }
-                                }
-                                //Skip use cases that do not need to run
-                                if (flag) {
-                                    continue;
-                                }
-                            }
-                            
-                            String expectedDataFileSub = subAssert.getExpectedDataFile();
-                            ParameterDefinition parameter = subAssert.getParameter();
-                            ParameterDefinition expectedParameter = subAssert.getExpectedParameter();
-                            String expectedDataFileTmp = expectedDataFile;
-                            if (StringUtils.isBlank(expectedDataFileSub)) {
-                                expectedDataFileSub = each.getExpectedDataFile();
-                            } else {
-                                expectedDataFileTmp = rootPath + "asserts/dml/" + shardingRuleType + "/" + expectedDataFileSub;
-                                if (!new File(expectedDataFileTmp).exists()) {
-                                    expectedDataFileTmp = rootPath + "asserts/dml/" + expectedDataFileSub;
-                                }
-                            }
-                            if (parameter == null) {
-                                parameter = each.getParameter();
-                            }
-                            if (expectedParameter == null) {
-                                expectedParameter = each.getParameter();
-                            }
-                            AssertDMLDefinition anAssertSub = new AssertDMLDefinition(each.getId(),
-                                    expectedDataFileSub, each.getShardingRuleType(), each.getDatabaseConfig(), subAssert.getExpectedUpdate(), each.getSql(),
-                                    each.getExpectedSql(), parameter, expectedParameter, each.getSubAsserts());
-                            resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, mapDatasetDefinition, sqls);
-                            resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, mapDatasetDefinition, sqls);
-                            resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, mapDatasetDefinition, sqls);
-                            resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, mapDatasetDefinition, sqls);
+                        expectedDataFileTmp = rootPath + "asserts/dml/" + shardingRuleType + "/" + expectedDataFileSub;
+                        if (!new File(expectedDataFileTmp).exists()) {
+                            expectedDataFileTmp = rootPath + "asserts/dml/" + expectedDataFileSub;
                         }
                     }
-                } else {
-                    resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFile, dataSource, dataSourceMaps, each, rootSQL, mapDatasetDefinition, sqls);
-                    resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFile, dataSource, dataSourceMaps, each, rootSQL, mapDatasetDefinition, sqls);
-                    resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFile, dataSource, dataSourceMaps, each, rootSQL, mapDatasetDefinition, sqls);
-                    resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFile, dataSource, dataSourceMaps, each, rootSQL, mapDatasetDefinition, sqls);
-                    List<AssertSubDefinition> subAsserts = each.getSubAsserts();
-                    if (!subAsserts.isEmpty()) {
-                        for (AssertSubDefinition subAssert : subAsserts) {
-                            List<DatabaseType> databaseSubTypes = getDatabaseTypes(subAssert.getDatabaseConfig());
-                            if (!databaseSubTypes.contains(databaseType)) {
-                                break;
-                            }
-                            String baseConfigSub = subAssert.getShardingRuleType();
-                            if (StringUtils.isNotBlank(baseConfigSub)) {
-                                String[] baseConfigs = StringUtils.split(baseConfigSub, ",");
-                                boolean flag = true;
-                                for (String config : baseConfigs) {
-                                    if (shardingRuleType.equals(config)) {
-                                        flag = false;
-                                    }
-                                }
-                                //Skip use cases that do not need to run
-                                if (flag) {
-                                    continue;
-                                }
-                            }
-                            String expectedDataFileSub = subAssert.getExpectedDataFile();
-                            ParameterDefinition parameter = subAssert.getParameter();
-                            ParameterDefinition expectedParameter = subAssert.getExpectedParameter();
-                            String expectedDataFileTmp = expectedDataFile;
-                            if (StringUtils.isBlank(expectedDataFileSub)) {
-                                expectedDataFileSub = each.getExpectedDataFile();
-                            } else {
-                                expectedDataFileTmp = rootPath + "asserts/dml/" + shardingRuleType + "/" + expectedDataFileSub;
-                                if (!new File(expectedDataFileTmp).exists()) {
-                                    expectedDataFileTmp = rootPath + "asserts/dml/" + expectedDataFileSub;
-                                }
-                            }
-                            if (parameter == null) {
-                                parameter = each.getParameter();
-                            }
-                            if (expectedParameter == null) {
-                                expectedParameter = each.getParameter();
-                            }
-                            AssertDMLDefinition anAssertSub = new AssertDMLDefinition(each.getId(),
-                                    expectedDataFileSub, each.getShardingRuleType(), each.getDatabaseConfig(), subAssert.getExpectedUpdate(), each.getSql(),
-                                    each.getExpectedSql(), parameter, expectedParameter, each.getSubAsserts());
-                            resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, mapDatasetDefinition, sqls);
-                            resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, mapDatasetDefinition, sqls);
-                            resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, mapDatasetDefinition, sqls);
-                            resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, mapDatasetDefinition, sqls);
-                        }
+                    if (parameter == null) {
+                        parameter = dmlDefinition.getParameter();
                     }
+                    if (expectedParameter == null) {
+                        expectedParameter = dmlDefinition.getParameter();
+                    }
+                    AssertDMLDefinition anAssertSub = new AssertDMLDefinition(dmlDefinition.getId(),
+                            expectedDataFileSub, dmlDefinition.getShardingRuleType(), dmlDefinition.getDatabaseConfig(), subAssert.getExpectedUpdate(), dmlDefinition.getSql(),
+                            dmlDefinition.getExpectedSql(), parameter, expectedParameter, dmlDefinition.getSubAsserts());
+                    resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, mapDatasetDefinition, sqls);
+                    resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, mapDatasetDefinition, sqls);
+                    resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, mapDatasetDefinition, sqls);
+                    resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, mapDatasetDefinition, sqls);
                 }
-                if (null != each.getExpectedUpdate()) {
-                    Assert.assertEquals("Update row number error UpdateUseStatementToExecuteUpdate", each.getExpectedUpdate().intValue(), resultDoUpdateUseStatementToExecuteUpdate);
-                    Assert.assertEquals("Update row number error UpdateUseStatementToExecute", each.getExpectedUpdate().intValue(), resultDoUpdateUseStatementToExecute);
-                    Assert.assertEquals("Update row number error UpdateUsePreparedStatementToExecuteUpdate", each.getExpectedUpdate().intValue(), resultDoUpdateUsePreparedStatementToExecuteUpdate);
-                    Assert.assertEquals("Update row number error UpdateUsePreparedStatementToExecute", each.getExpectedUpdate().intValue(), resultDoUpdateUsePreparedStatementToExecute);
-                }
-                break;
             }
+        } else {
+            resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFile, dataSource, dataSourceMaps, dmlDefinition, rootSQL, mapDatasetDefinition, sqls);
+            resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFile, dataSource, dataSourceMaps, dmlDefinition, rootSQL, mapDatasetDefinition, sqls);
+            resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFile, dataSource, dataSourceMaps, dmlDefinition, rootSQL, mapDatasetDefinition, sqls);
+            resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFile, dataSource, dataSourceMaps, dmlDefinition, rootSQL, mapDatasetDefinition, sqls);
+            List<AssertSubDefinition> subAsserts = dmlDefinition.getSubAsserts();
+            if (!subAsserts.isEmpty()) {
+                for (AssertSubDefinition subAssert : subAsserts) {
+                    List<DatabaseType> databaseSubTypes = getDatabaseTypes(subAssert.getDatabaseConfig());
+                    if (!databaseSubTypes.contains(databaseType)) {
+                        break;
+                    }
+                    String baseConfigSub = subAssert.getShardingRuleType();
+                    if (StringUtils.isNotBlank(baseConfigSub)) {
+                        String[] baseConfigs = StringUtils.split(baseConfigSub, ",");
+                        boolean flag = true;
+                        for (String config : baseConfigs) {
+                            if (shardingRuleType.equals(config)) {
+                                flag = false;
+                            }
+                        }
+                        //Skip use cases that do not need to run
+                        if (flag) {
+                            continue;
+                        }
+                    }
+                    String expectedDataFileSub = subAssert.getExpectedDataFile();
+                    ParameterDefinition parameter = subAssert.getParameter();
+                    ParameterDefinition expectedParameter = subAssert.getExpectedParameter();
+                    String expectedDataFileTmp = expectedDataFile;
+                    if (StringUtils.isBlank(expectedDataFileSub)) {
+                        expectedDataFileSub = dmlDefinition.getExpectedDataFile();
+                    } else {
+                        expectedDataFileTmp = rootPath + "asserts/dml/" + shardingRuleType + "/" + expectedDataFileSub;
+                        if (!new File(expectedDataFileTmp).exists()) {
+                            expectedDataFileTmp = rootPath + "asserts/dml/" + expectedDataFileSub;
+                        }
+                    }
+                    if (parameter == null) {
+                        parameter = dmlDefinition.getParameter();
+                    }
+                    if (expectedParameter == null) {
+                        expectedParameter = dmlDefinition.getParameter();
+                    }
+                    AssertDMLDefinition anAssertSub = new AssertDMLDefinition(dmlDefinition.getId(),
+                            expectedDataFileSub, dmlDefinition.getShardingRuleType(), dmlDefinition.getDatabaseConfig(), subAssert.getExpectedUpdate(), dmlDefinition.getSql(),
+                            dmlDefinition.getExpectedSql(), parameter, expectedParameter, dmlDefinition.getSubAsserts());
+                    resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, mapDatasetDefinition, sqls);
+                    resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, mapDatasetDefinition, sqls);
+                    resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, mapDatasetDefinition, sqls);
+                    resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, mapDatasetDefinition, sqls);
+                }
+            }
+        }
+        if (null != dmlDefinition.getExpectedUpdate()) {
+            Assert.assertEquals("Update row number error UpdateUseStatementToExecuteUpdate", dmlDefinition.getExpectedUpdate().intValue(), resultDoUpdateUseStatementToExecuteUpdate);
+            Assert.assertEquals("Update row number error UpdateUseStatementToExecute", dmlDefinition.getExpectedUpdate().intValue(), resultDoUpdateUseStatementToExecute);
+            Assert.assertEquals("Update row number error UpdateUsePreparedStatementToExecuteUpdate", dmlDefinition.getExpectedUpdate().intValue(), resultDoUpdateUsePreparedStatementToExecuteUpdate);
+            Assert.assertEquals("Update row number error UpdateUsePreparedStatementToExecute", dmlDefinition.getExpectedUpdate().intValue(), resultDoUpdateUsePreparedStatementToExecute);
         }
     }
     
-    private static void dqlRun(final String shardingRuleType, final DatabaseType databaseType, final String initDataFile, final String path, final String id, final AssertsDefinition assertsDefinition, final String rootPath, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final List<String> dbs) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
-        for (AssertDQLDefinition each : assertsDefinition.getAssertDQL()) {
-            
-            if (id.equals(each.getId())) {
-                List<DatabaseType> databaseTypes = getDatabaseTypes(each.getDatabaseConfig());
-                if (!databaseTypes.contains(databaseType)) {
-                    break;
+    private static void dqlRun(final AssertDQLDefinition dqlDefinition, final String shardingRuleType, final DatabaseType databaseType, final String initDataFile, final String path, final String rootPath, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final List<String> dbs) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
+        String rootSQL = dqlDefinition.getSql();
+        rootSQL = SQLCasesLoader.getInstance().getSupportedSQL(rootSQL);
+        Map<String, DatasetDefinition> mapDatasetDefinition = new HashMap<>();
+        Map<String, String> sqls = new HashMap<>();
+        getInitDatas(dbs, initDataFile, mapDatasetDefinition, sqls);
+        if (mapDatasetDefinition.isEmpty()) {
+            throw new DbTestException(path + "  Use cases cannot be parsed");
+        }
+        if (sqls.isEmpty()) {
+            throw new DbTestException(path + "  The use case cannot initialize the data");
+        }
+        try {
+            initTableData(dataSourceMaps, sqls, mapDatasetDefinition);
+            String expectedDataFile = rootPath + "asserts/dql/" + shardingRuleType + "/" + dqlDefinition.getExpectedDataFile();
+            if (!new File(expectedDataFile).exists()) {
+                expectedDataFile = rootPath + "asserts/dql/" + dqlDefinition.getExpectedDataFile();
+            }
+            if (dqlDefinition.getParameter().getValues().isEmpty() && dqlDefinition.getParameter().getValueReplaces().isEmpty()) {
+                List<AssertSubDefinition> subAsserts = dqlDefinition.getSubAsserts();
+                if (subAsserts.isEmpty()) {
+                    doSelectUsePreparedStatement(expectedDataFile, dataSource, dqlDefinition, rootSQL);
+                    doSelectUsePreparedStatementToExecuteSelect(expectedDataFile, dataSource, dqlDefinition, rootSQL);
+                    doSelectUseStatement(expectedDataFile, dataSource, dqlDefinition, rootSQL);
+                    doSelectUseStatementToExecuteSelect(expectedDataFile, dataSource, dqlDefinition, rootSQL);
+                } else {
+                    dqlSubRun(databaseType, shardingRuleType, rootPath, dataSource, dqlDefinition, rootSQL, expectedDataFile, subAsserts);
                 }
-                String baseConfig = each.getShardingRuleType();
-                if (StringUtils.isNotBlank(baseConfig)) {
-                    String[] baseConfigs = StringUtils.split(baseConfig, ",");
-                    boolean flag = true;
-                    for (String config : baseConfigs) {
-                        if (shardingRuleType.equals(config)) {
-                            flag = false;
-                        }
-                    }
-                    //Skip use cases that do not need to run
-                    if (flag) {
-                        continue;
-                    }
-                }
-                String rootSQL = each.getSql();
-                rootSQL = SQLCasesLoader.getInstance().getSupportedSQL(rootSQL);
-                Map<String, DatasetDefinition> mapDatasetDefinition = new HashMap<>();
-                Map<String, String> sqls = new HashMap<>();
-                getInitDatas(dbs, initDataFile, mapDatasetDefinition, sqls);
-                if (mapDatasetDefinition.isEmpty()) {
-                    throw new DbTestException(path + "  Use cases cannot be parsed");
-                }
-                if (sqls.isEmpty()) {
-                    throw new DbTestException(path + "  The use case cannot initialize the data");
-                }
-                try {
-                    initTableData(dataSourceMaps, sqls, mapDatasetDefinition);
-                    String expectedDataFile = rootPath + "asserts/dql/" + shardingRuleType + "/" + each.getExpectedDataFile();
-                    if (!new File(expectedDataFile).exists()) {
-                        expectedDataFile = rootPath + "asserts/dql/" + each.getExpectedDataFile();
-                    }
-                    if (each.getParameter().getValues().isEmpty() && each.getParameter().getValueReplaces().isEmpty()) {
-                        List<AssertSubDefinition> subAsserts = each.getSubAsserts();
-                        if (subAsserts.isEmpty()) {
-                            doSelectUsePreparedStatement(expectedDataFile, dataSource, each, rootSQL);
-                            doSelectUsePreparedStatementToExecuteSelect(expectedDataFile, dataSource, each, rootSQL);
-                            doSelectUseStatement(expectedDataFile, dataSource, each, rootSQL);
-                            doSelectUseStatementToExecuteSelect(expectedDataFile, dataSource, each, rootSQL);
-                        } else {
-                            dqlSubRun(databaseType, shardingRuleType, rootPath, dataSource, each, rootSQL, expectedDataFile, subAsserts);
-                        }
-                    } else {
-                        doSelectUsePreparedStatement(expectedDataFile, dataSource, each, rootSQL);
-                        doSelectUsePreparedStatementToExecuteSelect(expectedDataFile, dataSource, each, rootSQL);
-                        doSelectUseStatement(expectedDataFile, dataSource, each, rootSQL);
-                        doSelectUseStatementToExecuteSelect(expectedDataFile, dataSource, each, rootSQL);
-                        List<AssertSubDefinition> subAsserts = each.getSubAsserts();
-                        if (!subAsserts.isEmpty()) {
-                            dqlSubRun(databaseType, shardingRuleType, rootPath, dataSource, each, rootSQL, expectedDataFile, subAsserts);
-                        }
-                    }
-                } finally {
-                    clearTableData(dataSourceMaps, mapDatasetDefinition);
+            } else {
+                doSelectUsePreparedStatement(expectedDataFile, dataSource, dqlDefinition, rootSQL);
+                doSelectUsePreparedStatementToExecuteSelect(expectedDataFile, dataSource, dqlDefinition, rootSQL);
+                doSelectUseStatement(expectedDataFile, dataSource, dqlDefinition, rootSQL);
+                doSelectUseStatementToExecuteSelect(expectedDataFile, dataSource, dqlDefinition, rootSQL);
+                List<AssertSubDefinition> subAsserts = dqlDefinition.getSubAsserts();
+                if (!subAsserts.isEmpty()) {
+                    dqlSubRun(databaseType, shardingRuleType, rootPath, dataSource, dqlDefinition, rootSQL, expectedDataFile, subAsserts);
                 }
             }
+        } finally {
+            clearTableData(dataSourceMaps, mapDatasetDefinition);
         }
     }
     
