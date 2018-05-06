@@ -169,6 +169,6 @@ public final class StartTest {
     
     @Test
     public void test() throws JAXBException, SAXException, ParseException, IOException, XPathExpressionException, SQLException, ParserConfigurationException {
-        AssertEngine.runAssert(assertDefinition, path, shardingRuleType, databaseTypeEnvironment);
+        AssertEngine.runAssert(assertDefinition, shardingRuleType, databaseTypeEnvironment, path);
     }
 }

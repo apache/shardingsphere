@@ -49,13 +49,25 @@ import java.util.List;
 public final class SchemaEnvironmentManager {
     
     /**
+     * Get data source names.
+     * 
+     * @param shardingRuleType sharding rule type
+     * @return data source names
+     * @throws IOException IO exception
+     * @throws JAXBException JAXB exception
+     */
+    public static Collection<String> getDataSourceNames(final String shardingRuleType) throws IOException, JAXBException {
+        return unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(shardingRuleType)).getDatabases();
+    } 
+    
+    /**
      * Create database.
      *
      * @param shardingRuleType sharding rule type
-     * @throws JAXBException JAXB exception
      * @throws IOException IO exception
+     * @throws JAXBException JAXB exception
      */
-    public static void createDatabase(final String shardingRuleType) throws JAXBException, IOException {
+    public static void createDatabase(final String shardingRuleType) throws IOException, JAXBException {
         SchemaEnvironment databaseInitialization = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(shardingRuleType));
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
             try (
@@ -73,10 +85,10 @@ public final class SchemaEnvironmentManager {
      * Drop database.
      *
      * @param shardingRuleType sharding rule type
-     * @throws JAXBException JAXB exception
      * @throws IOException IO exception
+     * @throws JAXBException JAXB exception
      */
-    public static void dropDatabase(final String shardingRuleType) throws JAXBException, IOException {
+    public static void dropDatabase(final String shardingRuleType) throws IOException, JAXBException {
         SchemaEnvironment databaseInitialization = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(shardingRuleType));
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
             try (
@@ -149,10 +161,10 @@ public final class SchemaEnvironmentManager {
      * @param shardingRuleType sharding rule type
      * @param databaseType database type
      * @param sql SQL to be executed
-     * @throws JAXBException JAXB exception
      * @throws IOException IO exception
+     * @throws JAXBException JAXB exception
      */
-    public static void executeSQL(final String shardingRuleType, final DatabaseType databaseType, final String sql) throws JAXBException, IOException {
+    public static void executeSQL(final String shardingRuleType, final DatabaseType databaseType, final String sql) throws IOException, JAXBException {
         try {
             SchemaEnvironment databaseEnvironmentSchema = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(shardingRuleType));
             List<String> databases = databaseEnvironmentSchema.getDatabases();

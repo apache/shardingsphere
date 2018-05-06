@@ -54,6 +54,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -66,30 +67,17 @@ public final class AssertEngine {
      * Run assert.
      * 
      * @param assertDefinition assert definition
-     * @param path Check the use case storage path
      * @param shardingRuleType sharding rule type
      * @param databaseTypeEnvironment database type environment
+     * @param path Check the use case storage path
      */
-    public static void runAssert(final AssertDefinition assertDefinition, final String path, final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws JAXBException, ParserConfigurationException, IOException, XPathExpressionException, SQLException, SAXException, ParseException {
-        String dataInitializationPath = EnvironmentPath.getDataInitializeResourceFile(shardingRuleType);
-        File fileDirDatabase = new File(dataInitializationPath);
-        if (fileDirDatabase.exists()) {
-            File[] fileDatabases = fileDirDatabase.listFiles();
-            List<String> dataSourceNames = new LinkedList<>();
-            for (File fileDatabase : fileDatabases) {
-                String dataSourceName = fileDatabase.getName();
-                dataSourceName = dataSourceName.substring(0, dataSourceName.indexOf("."));
-                dataSourceNames.add(dataSourceName);
-            }
-            String rootPath = path.substring(0, path.lastIndexOf(File.separator) + 1);
-            runAssert(assertDefinition, shardingRuleType, rootPath, dataInitializationPath, dataSourceNames, databaseTypeEnvironment);
-        }
-    }
-    
-    private static void runAssert(final AssertDefinition assertDefinition, final String shardingRuleType, final String rootPath, final String initDataPath, final List<String> dataSourceNames, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, SQLException, SAXException, ParserConfigurationException, XPathExpressionException, ParseException, JAXBException {
+    public static void runAssert(final AssertDefinition assertDefinition, final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment, final String path) throws IOException, SQLException, SAXException, ParserConfigurationException, XPathExpressionException, ParseException, JAXBException {
         if (!databaseTypeEnvironment.isEnabled()) {
             return;
         }
+        String rootPath = path.substring(0, path.lastIndexOf(File.separator) + 1);
+        String initDataPath = EnvironmentPath.getDataInitializeResourceFile(shardingRuleType);
+        Collection<String> dataSourceNames = SchemaEnvironmentManager.getDataSourceNames(shardingRuleType);
         Map<String, DataSource> dataSourceMap = createDataSourceMap(dataSourceNames, databaseTypeEnvironment.getDatabaseType());
         DataSource dataSource = createDataSource(shardingRuleType, dataSourceMap);
         if (assertDefinition instanceof AssertDQLDefinition) {
@@ -101,12 +89,12 @@ public final class AssertEngine {
         }
     }
     
-    private static Map<String, DataSource> createDataSourceMap(final List<String> dataSourceNames, final DatabaseType each) {
-        Map<String, DataSource> dataSourceMap = new HashMap<>(dataSourceNames.size(), 1);
-        for (String db : dataSourceNames) {
-            dataSourceMap.put(db, DataSourceUtil.createDataSource(each, db));
+    private static Map<String, DataSource> createDataSourceMap(final Collection<String> dataSourceNames, final DatabaseType databaseType) {
+        Map<String, DataSource> result = new HashMap<>(dataSourceNames.size(), 1);
+        for (String each : dataSourceNames) {
+            result.put(each, DataSourceUtil.createDataSource(databaseType, each));
         }
-        return dataSourceMap;
+        return result;
     }
     
     private static DataSource createDataSource(final String shardingRuleType, final Map<String, DataSource> dataSourceMap) throws SQLException, IOException {
@@ -190,12 +178,12 @@ public final class AssertEngine {
         }
     }
     
-    private static void dmlRun(final AssertDMLDefinition dmlDefinition, final String shardingRuleType, final DatabaseType databaseType, final String initDataFile, final String rootPath, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final List<String> dbs) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
+    private static void dmlRun(final AssertDMLDefinition dmlDefinition, final String shardingRuleType, final DatabaseType databaseType, final String initDataFile, final String rootPath, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final Collection<String> dataSourceNames) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
         String rootSQL = dmlDefinition.getSql();
         rootSQL = SQLCasesLoader.getInstance().getSupportedSQL(rootSQL);
         Map<String, DatasetDefinition> mapDatasetDefinition = new HashMap<>();
         Map<String, String> sqls = new HashMap<>();
-        getInitDatas(dbs, initDataFile, mapDatasetDefinition, sqls);
+        getInitDatas(dataSourceNames, initDataFile, mapDatasetDefinition, sqls);
         if (mapDatasetDefinition.isEmpty()) {
             throw new DbTestException("Use cases cannot be parsed");
         }
@@ -327,12 +315,12 @@ public final class AssertEngine {
         }
     }
     
-    private static void dqlRun(final AssertDQLDefinition dqlDefinition, final String shardingRuleType, final DatabaseType databaseType, final String initDataFile, final String rootPath, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final List<String> dbs) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
+    private static void dqlRun(final AssertDQLDefinition dqlDefinition, final String shardingRuleType, final DatabaseType databaseType, final String initDataFile, final String rootPath, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final Collection<String> dataSourceNames) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
         String rootSQL = dqlDefinition.getSql();
         rootSQL = SQLCasesLoader.getInstance().getSupportedSQL(rootSQL);
         Map<String, DatasetDefinition> mapDatasetDefinition = new HashMap<>();
         Map<String, String> sqls = new HashMap<>();
-        getInitDatas(dbs, initDataFile, mapDatasetDefinition, sqls);
+        getInitDatas(dataSourceNames, initDataFile, mapDatasetDefinition, sqls);
         if (mapDatasetDefinition.isEmpty()) {
             throw new DbTestException("Use cases cannot be parsed");
         }
@@ -639,9 +627,9 @@ public final class AssertEngine {
         }
     }
     
-    private static void getInitDatas(final List<String> dbs, final String initDataFile, final Map<String, DatasetDefinition> mapDatasetDefinition, final Map<String, String> sqls)
+    private static void getInitDatas(final Collection<String> dataSourceNames, final String initDataFile, final Map<String, DatasetDefinition> mapDatasetDefinition, final Map<String, String> sqls)
             throws IOException, SAXException, ParserConfigurationException, XPathExpressionException {
-        for (String each : dbs) {
+        for (String each : dataSourceNames) {
             String tempPath = initDataFile + "/" + each + ".xml";
             File file = new File(tempPath);
             if (file.exists()) {
