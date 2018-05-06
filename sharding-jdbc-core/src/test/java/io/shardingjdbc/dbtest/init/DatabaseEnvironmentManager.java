@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.net.URL;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,10 +57,9 @@ public final class DatabaseEnvironmentManager {
      *
      * @param shardingRuleType sharding rule type
      * @throws JAXBException JAXB exception
-     * @throws SQLException SQL exception
      * @throws IOException IO exception
      */
-    public static void createDatabase(final String shardingRuleType) throws JAXBException, SQLException, IOException {
+    public static void createDatabase(final String shardingRuleType) throws JAXBException, IOException {
         DatabaseEnvironmentSchema databaseInitialization = getDatabaseInitialization(shardingRuleType);
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
             try (
@@ -69,6 +67,8 @@ public final class DatabaseEnvironmentManager {
                     Connection connection = dataSource.getConnection();
                     StringReader stringReader = new StringReader(Joiner.on(";\n").skipNulls().join(generateCreateDatabaseSQLs(each, databaseInitialization.getDatabases())))) {
                 RunScript.execute(connection, stringReader);
+            } catch (final SQLException ex) {
+                // TODO schema maybe exist for oracle only
             }
         }
     }
@@ -110,7 +110,7 @@ public final class DatabaseEnvironmentManager {
         if (DatabaseType.H2 == databaseType) {
             return Collections.emptyList();
         }
-        String sql = DatabaseType.Oracle == databaseType ? "CREATE SCHEMA %s" : "CREATE DATABASE %s";
+        String sql = DatabaseType.Oracle == databaseType ? "CREATE SCHEMA %s" : "CREATE DATABASE IF NOT EXISTS %s";
         Collection<String> result = new LinkedList<>();
         for (String each : databases) {
             result.add(String.format(sql, each));
@@ -122,7 +122,7 @@ public final class DatabaseEnvironmentManager {
         if (DatabaseType.H2 == databaseType) {
             return Collections.emptyList();
         }
-        String sql = DatabaseType.Oracle == databaseType ? "DROP SCHEMA %s" : "DROP DATABASE IF EXIST %s";
+        String sql = DatabaseType.Oracle == databaseType ? "DROP SCHEMA %s" : "DROP DATABASE IF EXISTS %s";
         Collection<String> result = new LinkedList<>();
         for (String each : databases) {
             result.add(String.format(sql, each));
@@ -153,51 +153,27 @@ public final class DatabaseEnvironmentManager {
     }
     
     /**
-     * create Table.
-     *
-     * @param dbType dbType
-     * @param sql  sql
-     * @param dbname dbname
+     * Execute SQL.
+     * 
+     * @param shardingRuleType sharding rule type
+     * @param databaseType database type
+     * @param sql SQL to be executed
+     * @throws JAXBException JAXB exception
+     * @throws IOException IO exception
      */
-    public static void createTable(final DatabaseType dbType, final String sql, final String dbname) throws JAXBException {
-        dropOrCreateShardingSchema(dbType, sql, dbname);
-    }
-    
-    /**
-     * drop Table.
-     *
-     * @param dbType dbType
-     * @param sql  sqlId
-     * @param dbname dbname
-     */
-    public static void dropTable(final DatabaseType dbType, final String sql, final String dbname) throws JAXBException {
-        dropOrCreateShardingSchema(dbType, sql, dbname);
-    }
-    
-    private static void dropOrCreateShardingSchema(final DatabaseType dbType, final String sql, final String dbname) throws JAXBException {
+    public static void executeSQL(final String shardingRuleType, final DatabaseType databaseType, final String sql) throws JAXBException, IOException {
         try {
-            for (String each : SHARDING_RULE_TYPE) {
-                if (dbname != null) {
-                    if (!each.equals(dbname)) {
-                        continue;
-                    }
-                }
-                DatabaseEnvironmentSchema databaseEnvironmentSchema = getDatabaseInitialization(each);
-                List<String> databases = databaseEnvironmentSchema.getDatabases();
-                for (String database : databases) {
-                    try (BasicDataSource dataSource = (BasicDataSource) new DatabaseEnvironment(dbType).createDataSource(database);
-                         Connection conn = dataSource.getConnection();
-                         StringReader sr = new StringReader(StringUtils.join(sql, ";\n"))) {
-                        ResultSet resultSet = RunScript.execute(conn, sr);
-                        if (resultSet != null) {
-                            resultSet.close();
-                        }
-                    }
+            DatabaseEnvironmentSchema databaseEnvironmentSchema = getDatabaseInitialization(shardingRuleType);
+            List<String> databases = databaseEnvironmentSchema.getDatabases();
+            for (String database : databases) {
+                try (BasicDataSource dataSource = (BasicDataSource) new DatabaseEnvironment(databaseType).createDataSource(database);
+                     Connection connection = dataSource.getConnection();
+                     StringReader stringReader = new StringReader(sql)) {
+                    RunScript.execute(connection, stringReader);
                 }
             }
-        } catch (final SQLException | IOException ex) {
+        } catch (final SQLException ex) {
             // The table may not exist at the time of deletion（删除时可能表不存在）
-            //e.printStackTrace();
         }
     }
     

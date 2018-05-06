@@ -22,7 +22,6 @@ import io.shardingjdbc.dbtest.config.bean.AssertDefinition;
 import io.shardingjdbc.dbtest.config.bean.AssertsDefinition;
 import io.shardingjdbc.dbtest.init.DatabaseEnvironmentManager;
 import lombok.RequiredArgsConstructor;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -113,7 +112,7 @@ public final class StartTest {
     }
     
     @BeforeClass
-    public static void beforeClass() throws JAXBException, IOException, SQLException {
+    public static void setUp() throws JAXBException, IOException, SQLException {
         if (isInitialized) {
             isInitialized = false;
         } else {
@@ -132,15 +131,5 @@ public final class StartTest {
     @Test
     public void test() throws JAXBException {
         AssertEngine.runAssert(path, id);
-    }
-    
-    @AfterClass
-    public static void afterClass() throws JAXBException, IOException, SQLException {
-        if (isCleaned) {
-            for (String each : SHARDING_RULE_TYPES) {
-                DatabaseEnvironmentManager.dropDatabase(each);
-            }
-            isCleaned = false;
-        }
     }
 }
