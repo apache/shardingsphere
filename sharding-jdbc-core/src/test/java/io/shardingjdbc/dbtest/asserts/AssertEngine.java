@@ -38,6 +38,8 @@ import io.shardingjdbc.dbtest.env.datasource.DataSourceUtil;
 import io.shardingjdbc.dbtest.env.schema.SchemaEnvironmentManager;
 import io.shardingjdbc.dbtest.exception.DbTestException;
 import io.shardingjdbc.test.sql.SQLCasesLoader;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.xml.sax.SAXException;
@@ -57,7 +59,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class AssertEngine {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class AssertEngine {
     
     /**
      * Run assert.
@@ -79,20 +82,20 @@ public class AssertEngine {
                 dataSourceName = dataSourceName.substring(0, dataSourceName.indexOf("."));
                 dataSourceNames.add(dataSourceName);
             }
-            runAssert(assertDefinition, shardingRuleType, path, rootPath, dataInitializationPath, dataSourceNames, databaseTypeEnvironment);
+            runAssert(assertDefinition, shardingRuleType, rootPath, dataInitializationPath, dataSourceNames, databaseTypeEnvironment);
         }
     }
     
-    private static void runAssert(final AssertDefinition assertDefinition, final String shardingRuleType, final String path, final String rootPath, final String initDataPath, final List<String> dataSourceNames, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, SQLException, SAXException, ParserConfigurationException, XPathExpressionException, ParseException, JAXBException {
+    private static void runAssert(final AssertDefinition assertDefinition, final String shardingRuleType, final String rootPath, final String initDataPath, final List<String> dataSourceNames, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, SQLException, SAXException, ParserConfigurationException, XPathExpressionException, ParseException, JAXBException {
         if (!databaseTypeEnvironment.isEnabled()) {
             return;
         }
         Map<String, DataSource> dataSourceMap = createDataSourceMap(dataSourceNames, databaseTypeEnvironment.getDatabaseType());
         DataSource dataSource = createDataSource(shardingRuleType, dataSourceMap);
         if (assertDefinition instanceof AssertDQLDefinition) {
-            dqlRun((AssertDQLDefinition) assertDefinition, shardingRuleType, databaseTypeEnvironment.getDatabaseType(), initDataPath, path, rootPath, dataSource, dataSourceMap, dataSourceNames);
+            dqlRun((AssertDQLDefinition) assertDefinition, shardingRuleType, databaseTypeEnvironment.getDatabaseType(), initDataPath, rootPath, dataSource, dataSourceMap, dataSourceNames);
         } else if (assertDefinition instanceof AssertDMLDefinition) {
-            dmlRun((AssertDMLDefinition) assertDefinition, shardingRuleType, databaseTypeEnvironment.getDatabaseType(), initDataPath, path, rootPath, dataSource, dataSourceMap, dataSourceNames);
+            dmlRun((AssertDMLDefinition) assertDefinition, shardingRuleType, databaseTypeEnvironment.getDatabaseType(), initDataPath, rootPath, dataSource, dataSourceMap, dataSourceNames);
         } else if (assertDefinition instanceof AssertDDLDefinition) {
             ddlRun((AssertDDLDefinition) assertDefinition, databaseTypeEnvironment.getDatabaseType(), shardingRuleType, rootPath, dataSource);
         }
@@ -187,17 +190,17 @@ public class AssertEngine {
         }
     }
     
-    private static void dmlRun(final AssertDMLDefinition dmlDefinition, final String shardingRuleType, final DatabaseType databaseType, final String initDataFile, final String path, final String rootPath, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final List<String> dbs) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
+    private static void dmlRun(final AssertDMLDefinition dmlDefinition, final String shardingRuleType, final DatabaseType databaseType, final String initDataFile, final String rootPath, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final List<String> dbs) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
         String rootSQL = dmlDefinition.getSql();
         rootSQL = SQLCasesLoader.getInstance().getSupportedSQL(rootSQL);
         Map<String, DatasetDefinition> mapDatasetDefinition = new HashMap<>();
         Map<String, String> sqls = new HashMap<>();
         getInitDatas(dbs, initDataFile, mapDatasetDefinition, sqls);
         if (mapDatasetDefinition.isEmpty()) {
-            throw new DbTestException(path + "  Use cases cannot be parsed");
+            throw new DbTestException("Use cases cannot be parsed");
         }
         if (sqls.isEmpty()) {
-            throw new DbTestException(path + "  The use case cannot initialize the data");
+            throw new DbTestException("The use case cannot initialize the data");
         }
         String expectedDataFile = rootPath + "asserts/dml/" + shardingRuleType + "/" + dmlDefinition.getExpectedDataFile();
         if (!new File(expectedDataFile).exists()) {
@@ -324,17 +327,17 @@ public class AssertEngine {
         }
     }
     
-    private static void dqlRun(final AssertDQLDefinition dqlDefinition, final String shardingRuleType, final DatabaseType databaseType, final String initDataFile, final String path, final String rootPath, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final List<String> dbs) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
+    private static void dqlRun(final AssertDQLDefinition dqlDefinition, final String shardingRuleType, final DatabaseType databaseType, final String initDataFile, final String rootPath, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final List<String> dbs) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
         String rootSQL = dqlDefinition.getSql();
         rootSQL = SQLCasesLoader.getInstance().getSupportedSQL(rootSQL);
         Map<String, DatasetDefinition> mapDatasetDefinition = new HashMap<>();
         Map<String, String> sqls = new HashMap<>();
         getInitDatas(dbs, initDataFile, mapDatasetDefinition, sqls);
         if (mapDatasetDefinition.isEmpty()) {
-            throw new DbTestException(path + "  Use cases cannot be parsed");
+            throw new DbTestException("Use cases cannot be parsed");
         }
         if (sqls.isEmpty()) {
-            throw new DbTestException(path + "  The use case cannot initialize the data");
+            throw new DbTestException("The use case cannot initialize the data");
         }
         try {
             initTableData(dataSourceMaps, sqls, mapDatasetDefinition);
