@@ -35,6 +35,7 @@ import io.shardingjdbc.dbtest.config.bean.DatasetDatabase;
 import io.shardingjdbc.dbtest.config.bean.DatasetDefinition;
 import io.shardingjdbc.dbtest.config.bean.ParameterDefinition;
 import io.shardingjdbc.dbtest.env.DatabaseEnvironmentManager;
+import io.shardingjdbc.dbtest.env.EnvironmentPath;
 import io.shardingjdbc.dbtest.env.IntegrateTestEnvironment;
 import io.shardingjdbc.dbtest.exception.DbTestException;
 import io.shardingjdbc.test.sql.SQLCasesLoader;
@@ -112,15 +113,13 @@ public class AssertEngine {
                 dataSourceMaps.put(db, subDataSource);
             }
             if (Boolean.TRUE.toString().equals(assertsDefinition.getMasterslave())) {
-                String configPath = rootPath + assertsDefinition.getShardingRuleConfig() + "-" + shardingRuleType + ".yaml";
-                MasterSlaveDataSource dataSource = (MasterSlaveDataSource) getMasterSlaveDataSource(dataSourceMaps, configPath);
+                MasterSlaveDataSource dataSource = (MasterSlaveDataSource) getMasterSlaveDataSource(shardingRuleType, dataSourceMaps);
                 dqlRun(shardingRuleType, each, initDataPath, path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
                 dmlRun(shardingRuleType, each, initDataPath, path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
                 ddlRun(each, id, shardingRuleType, assertsDefinition, rootPath, msg, dataSource);
                 
             } else {
-                String configPath = rootPath + assertsDefinition.getShardingRuleConfig() + "-" + shardingRuleType + ".yaml";
-                try (ShardingDataSource dataSource = (ShardingDataSource) getDataSource(dataSourceMaps, configPath);) {
+                try (ShardingDataSource dataSource = (ShardingDataSource) getDataSource(shardingRuleType, dataSourceMaps)) {
                     dqlRun(shardingRuleType, each, initDataPath, path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
                     dmlRun(shardingRuleType, each, initDataPath, path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
                     ddlRun(each, id, shardingRuleType, assertsDefinition, rootPath, msg, dataSource);
@@ -769,12 +768,12 @@ public class AssertEngine {
         }
     }
     
-    private static DataSource getDataSource(final Map<String, DataSource> dataSourceMap, final String path) throws IOException, SQLException {
-        return ShardingDataSourceFactory.createDataSource(dataSourceMap, new File(path));
+    private static DataSource getDataSource(final String shardingRuleType, final Map<String, DataSource> dataSourceMap) throws IOException, SQLException {
+        return ShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)));
     }
     
-    private static DataSource getMasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final String path) throws IOException, SQLException {
-        return MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new File(path));
+    private static DataSource getMasterSlaveDataSource(final String shardingRuleType, final Map<String, DataSource> dataSourceMap) throws IOException, SQLException {
+        return MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)));
     }
     
     private static List<DatabaseType> getDatabaseTypes(final String databaseTypes) {
