@@ -113,20 +113,19 @@ public class AssertEngine {
                 dataSourceMaps.put(db, subDataSource);
             }
             if (Boolean.TRUE.toString().equals(assertsDefinition.getMasterslave())) {
-                MasterSlaveDataSource dataSource = (MasterSlaveDataSource) getMasterSlaveDataSource(shardingRuleType, dataSourceMaps);
+                MasterSlaveDataSource dataSource = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(dataSourceMaps, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)));
                 dqlRun(shardingRuleType, each, initDataPath, path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
                 dmlRun(shardingRuleType, each, initDataPath, path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
                 ddlRun(each, id, shardingRuleType, assertsDefinition, rootPath, msg, dataSource);
                 
             } else {
-                try (ShardingDataSource dataSource = (ShardingDataSource) getDataSource(shardingRuleType, dataSourceMaps)) {
+                try (ShardingDataSource dataSource = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(dataSourceMaps, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)))) {
                     dqlRun(shardingRuleType, each, initDataPath, path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
                     dmlRun(shardingRuleType, each, initDataPath, path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
                     ddlRun(each, id, shardingRuleType, assertsDefinition, rootPath, msg, dataSource);
                 }
             }
         }
-        
     }
     
     private static void ddlRun(final DatabaseType databaseType, final String id, final String shardingRuleType, final AssertsDefinition assertsDefinition, final String rootPath, final String msg, final DataSource dataSource) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
@@ -766,14 +765,6 @@ public class AssertEngine {
                 }
             }
         }
-    }
-    
-    private static DataSource getDataSource(final String shardingRuleType, final Map<String, DataSource> dataSourceMap) throws IOException, SQLException {
-        return ShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)));
-    }
-    
-    private static DataSource getMasterSlaveDataSource(final String shardingRuleType, final Map<String, DataSource> dataSourceMap) throws IOException, SQLException {
-        return MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)));
     }
     
     private static List<DatabaseType> getDatabaseTypes(final String databaseTypes) {
