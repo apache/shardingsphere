@@ -104,10 +104,10 @@ public final class InsertOptimizeEngineTest {
         assertThat(((InsertShardingCondition) actual.getShardingConditions().get(1)).getInsertValueExpression(), is("(?, ?, ?)"));
         assertThat(actual.getShardingConditions().get(0).getShardingValues().size(), is(2));
         assertThat(actual.getShardingConditions().get(1).getShardingValues().size(), is(2));
-        assertShardingValue((ListShardingValue) actual.getShardingConditions().get(0).getShardingValues().get(0), 10);
-        assertShardingValue((ListShardingValue) actual.getShardingConditions().get(0).getShardingValues().get(1), 1);
-        assertShardingValue((ListShardingValue) actual.getShardingConditions().get(1).getShardingValues().get(0), 11);
-        assertShardingValue((ListShardingValue) actual.getShardingConditions().get(1).getShardingValues().get(1), 2);
+        assertShardingValue((ListShardingValue) actual.getShardingConditions().get(0).getShardingValues().get(0), 1);
+        assertShardingValue((ListShardingValue) actual.getShardingConditions().get(0).getShardingValues().get(1), 10);
+        assertShardingValue((ListShardingValue) actual.getShardingConditions().get(1).getShardingValues().get(0), 2);
+        assertShardingValue((ListShardingValue) actual.getShardingConditions().get(1).getShardingValues().get(1), 11);
     }
     
     @Test
