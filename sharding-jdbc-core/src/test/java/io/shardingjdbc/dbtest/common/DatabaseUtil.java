@@ -17,6 +17,16 @@
 
 package io.shardingjdbc.dbtest.common;
 
+import io.shardingjdbc.dbtest.config.bean.ColumnDefinition;
+import io.shardingjdbc.dbtest.config.bean.DatasetDatabase;
+import io.shardingjdbc.dbtest.config.bean.DatasetDefinition;
+import io.shardingjdbc.dbtest.config.bean.IndexDefinition;
+import io.shardingjdbc.dbtest.config.bean.ParameterDefinition;
+import io.shardingjdbc.dbtest.config.bean.ParameterValueDefinition;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.commons.lang3.time.FastDateFormat;
+
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.Date;
@@ -33,16 +43,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import io.shardingjdbc.dbtest.config.bean.ColumnDefinition;
-import io.shardingjdbc.dbtest.config.bean.DatasetDatabase;
-import io.shardingjdbc.dbtest.config.bean.DatasetDefinition;
-import io.shardingjdbc.dbtest.config.bean.IndexDefinition;
-import io.shardingjdbc.dbtest.config.bean.ParameterDefinition;
-import io.shardingjdbc.dbtest.config.bean.ParameterValueDefinition;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateFormatUtils;
-import org.apache.commons.lang3.time.FastDateFormat;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -584,54 +584,53 @@ public class DatabaseUtil {
      * Comparative data set.
      *
      * @param expected expected
-     * @param actual   actual
-     * @param table    table
-     * @param msg      msg
+     * @param actual actual
+     * @param table table
      */
-    public static void assertConfigs(final DatasetDefinition expected, final List<ColumnDefinition> actual, final String table, final String msg) {
+    public static void assertConfigs(final DatasetDefinition expected, final List<ColumnDefinition> actual, final String table) {
         Map<String, List<ColumnDefinition>> configs = expected.getMetadatas();
         List<ColumnDefinition> columnDefinitions = configs.get(table);
         for (ColumnDefinition each : columnDefinitions) {
-            checkActual(actual, msg, each);
+            checkActual(actual, each);
         }
     }
     
-    private static void checkActual(final List<ColumnDefinition> actual, final String msg, final ColumnDefinition expect) {
+    private static void checkActual(final List<ColumnDefinition> actual, final ColumnDefinition expect) {
         for (ColumnDefinition each : actual) {
             if (expect.getName().equals(each.getName())) {
                 if (StringUtils.isNotEmpty(expect.getType())) {
-                    assertEquals(msg, expect.getType(), each.getType());
+                    assertEquals(expect.getType(), each.getType());
                 }
-                checkDatabaseColumn(msg, expect.getDecimalDigits(), each.getDecimalDigits());
-                checkDatabaseColumn(msg, expect.getNullAble(), each.getNullAble());
-                checkDatabaseColumn(msg, expect.getNumPrecRadix(), each.getNumPrecRadix());
-                checkDatabaseColumn(msg, expect.getSize(), each.getSize());
+                checkDatabaseColumn(expect.getDecimalDigits(), each.getDecimalDigits());
+                checkDatabaseColumn(expect.getNullAble(), each.getNullAble());
+                checkDatabaseColumn(expect.getNumPrecRadix(), each.getNumPrecRadix());
+                checkDatabaseColumn(expect.getSize(), each.getSize());
                 if (expect.getIsAutoincrement() != 0 && expect.getIsAutoincrement() != each.getIsAutoincrement()) {
-                    fail(msg);
+                    fail();
                 }
                 List<IndexDefinition> indexs = expect.getIndexs();
                 if (indexs != null && !indexs.isEmpty()) {
-                    checkIndex(msg, each, indexs);
+                    checkIndex(each, indexs);
                 }
             }
         }
     }
     
-    private static void checkDatabaseColumn(final String msg, final Integer expectData, final Integer actualData) {
+    private static void checkDatabaseColumn(final Integer expectData, final Integer actualData) {
         if (expectData != null && !expectData.equals(actualData)) {
-            fail(msg);
+            fail();
         }
     }
     
-    private static void checkIndex(final String msg, final ColumnDefinition columnDefinition, final List<IndexDefinition> indexs) {
+    private static void checkIndex(final ColumnDefinition columnDefinition, final List<IndexDefinition> indexs) {
         for (IndexDefinition each : indexs) {
             for (IndexDefinition actualIndex : columnDefinition.getIndexs()) {
                 if (each.getName().equals(actualIndex.getName())) {
                     if (each.getType() != null && !each.getType().equals(actualIndex.getType())) {
-                        fail(msg);
+                        fail();
                     }
                     if (each.isUnique() != actualIndex.isUnique()) {
-                        fail(msg);
+                        fail();
                     }
                 }
             }
@@ -642,29 +641,28 @@ public class DatabaseUtil {
      * Comparative data set.
      *
      * @param expected expected
-     * @param actual   actual
-     * @param msg      error msg
+     * @param actual actual
      */
-    public static void assertDatas(final DatasetDefinition expected, final DatasetDatabase actual, final String msg) {
+    public static void assertDatas(final DatasetDefinition expected, final DatasetDatabase actual) {
         Map<String, List<ColumnDefinition>> actualConfigs = actual.getMetadatas();
         Map<String, List<ColumnDefinition>> expectedConfigs = expected.getMetadatas();
         for (Map.Entry<String, List<ColumnDefinition>> entry : expectedConfigs.entrySet()) {
             List<ColumnDefinition> expectedConfig = entry.getValue();
             List<ColumnDefinition> actualConfig = actualConfigs.get(entry.getKey());
-            assertNotNull(msg, actualConfig);
-            checkConfig(msg, expectedConfig, actualConfig);
+            assertNotNull(actualConfig);
+            checkConfig(expectedConfig, actualConfig);
         }
         Map<String, List<Map<String, String>>> actualDatass = actual.getDatas();
         Map<String, List<Map<String, String>>> expectDedatas = expected.getDatas();
         for (Map.Entry<String, List<Map<String, String>>> entry : expectDedatas.entrySet()) {
             List<Map<String, String>> data = entry.getValue();
             List<Map<String, String>> actualDatas = actualDatass.get(entry.getKey());
-            assertEquals(msg + " result set validation failed , The number of validation data and query data is not equal", actualDatas.size(), data.size());
-            checkData(msg, data, actualDatas);
+            assertEquals(actualDatas.size(), data.size());
+            checkData(data, actualDatas);
         }
     }
     
-    private static void checkData(final String msg, final List<Map<String, String>> data, final List<Map<String, String>> actualDatas) {
+    private static void checkData(final List<Map<String, String>> data, final List<Map<String, String>> actualDatas) {
         for (int i = 0; i < data.size(); i++) {
             Map<String, String> expectData = data.get(i);
             Map<String, String> actualData = actualDatas.get(i);
@@ -672,13 +670,13 @@ public class DatabaseUtil {
                 if (!entry.getValue().equals(actualData.get(entry.getKey()))) {
                     String actualMsg = actualDatas.toString();
                     String expectMsg = data.toString();
-                    fail(msg + " result set validation failed . describe : actual = " + actualMsg + " . expect = " + expectMsg);
+                    fail("result set validation failed . describe : actual = " + actualMsg + " . expect = " + expectMsg);
                 }
             }
         }
     }
     
-    private static void checkConfig(final String msg, final List<ColumnDefinition> expectedConfig, final List<ColumnDefinition> actualConfig) {
+    private static void checkConfig(final List<ColumnDefinition> expectedConfig, final List<ColumnDefinition> actualConfig) {
         for (ColumnDefinition eachColumn : expectedConfig) {
             boolean flag = false;
             for (ColumnDefinition each : actualConfig) {
@@ -686,7 +684,7 @@ public class DatabaseUtil {
                     flag = true;
                 }
             }
-            assertTrue(msg, flag);
+            assertTrue(flag);
         }
     }
     
