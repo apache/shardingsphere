@@ -35,8 +35,8 @@ public class AssertsDefinition {
     @XmlAttribute(name = "database-config")
     private String databaseConfig = "H2,MySQL,Oracle,SQLServer,PostgreSQL";
     
-    @XmlAttribute(name = "masterslave")
-    private String masterslave;
+    @XmlAttribute(name = "master-slave")
+    private boolean masterSlave;
     
     @XmlAttribute(name = "init-data-file")
     private String initDataFile;
@@ -49,5 +49,4 @@ public class AssertsDefinition {
     
     @XmlElement(name = "assertDDL")
     private List<AssertDDLDefinition> assertDDL = new LinkedList<>();
-    
 }

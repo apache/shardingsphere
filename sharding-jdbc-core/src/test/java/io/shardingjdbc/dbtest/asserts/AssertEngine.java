@@ -112,18 +112,16 @@ public class AssertEngine {
                 DataSource subDataSource = new DatabaseEnvironment(each).createDataSource(db);
                 dataSourceMaps.put(db, subDataSource);
             }
-            if (Boolean.TRUE.toString().equals(assertsDefinition.getMasterslave())) {
+            if (assertsDefinition.isMasterSlave()) {
                 MasterSlaveDataSource dataSource = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(dataSourceMaps, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)));
                 dqlRun(shardingRuleType, each, initDataPath, path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
                 dmlRun(shardingRuleType, each, initDataPath, path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
                 ddlRun(each, id, shardingRuleType, assertsDefinition, rootPath, msg, dataSource);
-                
             } else {
-                try (ShardingDataSource dataSource = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(dataSourceMaps, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)))) {
-                    dqlRun(shardingRuleType, each, initDataPath, path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
-                    dmlRun(shardingRuleType, each, initDataPath, path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
-                    ddlRun(each, id, shardingRuleType, assertsDefinition, rootPath, msg, dataSource);
-                }
+                ShardingDataSource dataSource = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(dataSourceMaps, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)));
+                dqlRun(shardingRuleType, each, initDataPath, path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
+                dmlRun(shardingRuleType, each, initDataPath, path, id, assertsDefinition, rootPath, msg, dataSource, dataSourceMaps, dbs);
+                ddlRun(each, id, shardingRuleType, assertsDefinition, rootPath, msg, dataSource);
             }
         }
     }
