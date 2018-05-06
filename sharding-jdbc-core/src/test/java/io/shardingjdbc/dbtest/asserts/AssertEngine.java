@@ -28,7 +28,6 @@ import io.shardingjdbc.dbtest.config.bean.AssertDMLDefinition;
 import io.shardingjdbc.dbtest.config.bean.AssertDQLDefinition;
 import io.shardingjdbc.dbtest.config.bean.AssertDefinition;
 import io.shardingjdbc.dbtest.config.bean.AssertSubDefinition;
-import io.shardingjdbc.dbtest.config.bean.AssertsDefinition;
 import io.shardingjdbc.dbtest.config.bean.ColumnDefinition;
 import io.shardingjdbc.dbtest.config.bean.DatasetDatabase;
 import io.shardingjdbc.dbtest.config.bean.DatasetDefinition;
@@ -59,18 +58,6 @@ import java.util.List;
 import java.util.Map;
 
 public class AssertEngine {
-    
-    public static final Map<String, AssertsDefinition> ASSERT_DEFINITION_MAPS = new HashMap<>();
-    
-    /**
-     * add check use cases.
-     *
-     * @param assertPath        Check the use case storage path
-     * @param assertsDefinition Check use case definitions
-     */
-    public static void addAssertDefinition(final String assertPath, final AssertsDefinition assertsDefinition) {
-        ASSERT_DEFINITION_MAPS.put(assertPath, assertsDefinition);
-    }
     
     /**
      * Run assert.

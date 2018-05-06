@@ -91,7 +91,6 @@ public final class StartTest {
             result.addAll(getParameters(each, assertsDefinition.getAssertDQL(), shardingRuleTypes, databaseTypes));
             result.addAll(getParameters(each, assertsDefinition.getAssertDML(), shardingRuleTypes, databaseTypes));
             result.addAll(getParameters(each, assertsDefinition.getAssertDDL(), shardingRuleTypes, databaseTypes));
-            AssertEngine.addAssertDefinition(each, assertsDefinition);
         }
         return result;
     }
