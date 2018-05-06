@@ -1,17 +1,15 @@
-
 shardingRule:
   defaultDataSourceName: dbtbl_0
-
   defaultKeyGeneratorClassName: io.shardingjdbc.dbtest.core.yaml.fixture.IncrementKeyGenerator
 
   tables:
-
     t_order:
       actualDataNodes: dbtbl_${0..9}.t_order_${0..9}
       databaseStrategy:
         standard:
           shardingColumn: user_id
           preciseAlgorithmClassName: io.shardingjdbc.dbtest.core.yaml.fixture.SingleAlgorithm
+          rangeAlgorithmClassName: io.shardingjdbc.core.fixture.RangeOrderShardingAlgorithm
       tableStrategy:
         inline:
           shardingColumn: order_id

@@ -9,7 +9,6 @@ shardingRule:
         standard:
           shardingColumn: user_id
           preciseAlgorithmClassName: io.shardingjdbc.dbtest.core.yaml.fixture.SingleAlgorithm
-
   bindingTables:
     - t_order
 

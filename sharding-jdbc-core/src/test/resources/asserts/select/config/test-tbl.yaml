@@ -3,7 +3,6 @@ shardingRule:
   defaultKeyGeneratorClassName: io.shardingjdbc.dbtest.core.yaml.fixture.IncrementKeyGenerator
 
   tables:
-
     t_order:
       actualDataNodes: tbl.t_order_${0..9}
       tableStrategy:

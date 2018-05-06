@@ -9,6 +9,7 @@ shardingRule:
         standard:
           shardingColumn: user_id
           preciseAlgorithmClassName: io.shardingjdbc.dbtest.core.yaml.fixture.SingleAlgorithm
+          rangeAlgorithmClassName: io.shardingjdbc.core.fixture.RangeOrderShardingAlgorithm
       tableStrategy:
         inline:
           shardingColumn: order_id
