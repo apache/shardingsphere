@@ -165,7 +165,7 @@ public final class DatabaseEnvironmentManager {
                 }
             }
         } catch (final SQLException ex) {
-            // The table may not exist at the time of deletion（删除时可能表不存在）
+            // TODO: Table may not exist on deletion
         }
     }
 }

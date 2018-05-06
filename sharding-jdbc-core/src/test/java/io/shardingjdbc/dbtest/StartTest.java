@@ -42,7 +42,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -113,7 +112,7 @@ public final class StartTest {
     }
     
     @BeforeClass
-    public static void setUp() throws JAXBException, IOException, SQLException {
+    public static void setUp() throws JAXBException, IOException {
         if (isInitialized) {
             isInitialized = false;
         } else {
