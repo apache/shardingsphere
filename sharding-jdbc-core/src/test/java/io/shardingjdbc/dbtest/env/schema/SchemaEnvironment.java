@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.dbtest.env;
+package io.shardingjdbc.dbtest.env.schema;
 
 import lombok.Getter;
 
@@ -26,13 +26,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Database environment schema.
+ * XML definition for database schema environment.
  *
  * @author zhangliang
  */
 @Getter
 @XmlRootElement(name = "schema")
-public final class DatabaseEnvironmentSchema {
+public final class SchemaEnvironment {
     
     @XmlElementWrapper(name = "databases")
     @XmlElement(name = "database")

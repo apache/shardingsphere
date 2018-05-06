@@ -20,7 +20,7 @@ package io.shardingjdbc.dbtest.asserts;
 import io.shardingjdbc.core.api.MasterSlaveDataSourceFactory;
 import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.dbtest.env.DataSourceUtil;
+import io.shardingjdbc.dbtest.env.datasource.DataSourceUtil;
 import io.shardingjdbc.dbtest.common.DatabaseUtil;
 import io.shardingjdbc.dbtest.config.AnalyzeDataset;
 import io.shardingjdbc.dbtest.config.bean.AssertDDLDefinition;
@@ -32,7 +32,7 @@ import io.shardingjdbc.dbtest.config.bean.ColumnDefinition;
 import io.shardingjdbc.dbtest.config.bean.DatasetDatabase;
 import io.shardingjdbc.dbtest.config.bean.DatasetDefinition;
 import io.shardingjdbc.dbtest.config.bean.ParameterDefinition;
-import io.shardingjdbc.dbtest.env.DatabaseEnvironmentManager;
+import io.shardingjdbc.dbtest.env.schema.SchemaEnvironmentManager;
 import io.shardingjdbc.dbtest.env.EnvironmentPath;
 import io.shardingjdbc.dbtest.env.IntegrateTestEnvironment;
 import io.shardingjdbc.dbtest.exception.DbTestException;
@@ -514,10 +514,10 @@ public class AssertEngine {
         try {
             try (Connection con = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
-                    DatabaseEnvironmentManager.executeSQL(shardingRuleType, databaseType, anAssert.getCleanSql());
+                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseType, anAssert.getCleanSql());
                 }
                 if (StringUtils.isNotBlank(anAssert.getInitSql())) {
-                    DatabaseEnvironmentManager.executeSQL(shardingRuleType, databaseType, anAssert.getInitSql());
+                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseType, anAssert.getInitSql());
                 }
                 DatabaseUtil.updateUsePreparedStatementToExecute(con, rootsql,
                         anAssert.getParameter());
@@ -529,10 +529,10 @@ public class AssertEngine {
             }
         } finally {
             if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
-                DatabaseEnvironmentManager.executeSQL(shardingRuleType, databaseType, anAssert.getCleanSql());
+                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseType, anAssert.getCleanSql());
             }
             if (StringUtils.isNotBlank(anAssert.getInitSql())) {
-                DatabaseEnvironmentManager.executeSQL(shardingRuleType, databaseType, anAssert.getInitSql());
+                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseType, anAssert.getInitSql());
             }
         }
     }
@@ -565,10 +565,10 @@ public class AssertEngine {
         try {
             try (Connection con = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
-                    DatabaseEnvironmentManager.executeSQL(shardingRuleType, databaseType, anAssert.getCleanSql());
+                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseType, anAssert.getCleanSql());
                 }
                 if (StringUtils.isNotBlank(anAssert.getInitSql())) {
-                    DatabaseEnvironmentManager.executeSQL(shardingRuleType, databaseType, anAssert.getInitSql());
+                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseType, anAssert.getInitSql());
                 }
                 DatabaseUtil.updateUsePreparedStatementToExecuteUpdate(con, rootsql,
                         anAssert.getParameter());
@@ -579,10 +579,10 @@ public class AssertEngine {
             }
         } finally {
             if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
-                DatabaseEnvironmentManager.executeSQL(shardingRuleType, databaseType, anAssert.getCleanSql());
+                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseType, anAssert.getCleanSql());
             }
             if (StringUtils.isNotBlank(anAssert.getInitSql())) {
-                DatabaseEnvironmentManager.executeSQL(shardingRuleType, databaseType, anAssert.getInitSql());
+                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseType, anAssert.getInitSql());
             }
         }
     }
@@ -612,10 +612,10 @@ public class AssertEngine {
         try {
             try (Connection con = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
-                    DatabaseEnvironmentManager.executeSQL(shardingRuleType, databaseType, anAssert.getCleanSql());
+                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseType, anAssert.getCleanSql());
                 }
                 if (StringUtils.isNotBlank(anAssert.getInitSql())) {
-                    DatabaseEnvironmentManager.executeSQL(shardingRuleType, databaseType, anAssert.getInitSql());
+                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseType, anAssert.getInitSql());
                 }
                 DatabaseUtil.updateUseStatementToExecute(con, rootsql, anAssert.getParameter());
                 DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile), "data");
@@ -625,10 +625,10 @@ public class AssertEngine {
             }
         } finally {
             if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
-                DatabaseEnvironmentManager.executeSQL(shardingRuleType, databaseType, anAssert.getCleanSql());
+                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseType, anAssert.getCleanSql());
             }
             if (StringUtils.isNotBlank(anAssert.getInitSql())) {
-                DatabaseEnvironmentManager.executeSQL(shardingRuleType, databaseType, anAssert.getInitSql());
+                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseType, anAssert.getInitSql());
             }
         }
     }
@@ -658,10 +658,10 @@ public class AssertEngine {
         try {
             try (Connection con = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
-                    DatabaseEnvironmentManager.executeSQL(shardingRuleType, databaseType, anAssert.getCleanSql());
+                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseType, anAssert.getCleanSql());
                 }
                 if (StringUtils.isNotBlank(anAssert.getInitSql())) {
-                    DatabaseEnvironmentManager.executeSQL(shardingRuleType, databaseType, anAssert.getInitSql());
+                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseType, anAssert.getInitSql());
                 }
                 DatabaseUtil.updateUseStatementToExecuteUpdate(con, rootsql, anAssert.getParameter());
                 DatasetDefinition checkDataset = AnalyzeDataset.analyze(new File(expectedDataFile), "data");
@@ -672,10 +672,10 @@ public class AssertEngine {
             }
         } finally {
             if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
-                DatabaseEnvironmentManager.executeSQL(shardingRuleType, databaseType, anAssert.getCleanSql());
+                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseType, anAssert.getCleanSql());
             }
             if (StringUtils.isNotBlank(anAssert.getInitSql())) {
-                DatabaseEnvironmentManager.executeSQL(shardingRuleType, databaseType, anAssert.getInitSql());
+                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseType, anAssert.getInitSql());
             }
         }
     }

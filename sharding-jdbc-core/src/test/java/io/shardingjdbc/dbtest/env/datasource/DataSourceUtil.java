@@ -15,9 +15,10 @@
  * </p>
  */
 
-package io.shardingjdbc.dbtest.env;
+package io.shardingjdbc.dbtest.env.datasource;
 
 import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.dbtest.env.IntegrateTestEnvironment;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.dbcp2.BasicDataSource;

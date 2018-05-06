@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.dbtest.env;
+package io.shardingjdbc.dbtest.env.datasource;
 
 import io.shardingjdbc.core.constant.DatabaseType;
 import lombok.Getter;

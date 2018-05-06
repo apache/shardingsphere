@@ -20,7 +20,7 @@ package io.shardingjdbc.dbtest;
 import io.shardingjdbc.dbtest.asserts.AssertEngine;
 import io.shardingjdbc.dbtest.config.bean.AssertDefinition;
 import io.shardingjdbc.dbtest.config.bean.AssertsDefinition;
-import io.shardingjdbc.dbtest.env.DatabaseEnvironmentManager;
+import io.shardingjdbc.dbtest.env.schema.SchemaEnvironmentManager;
 import io.shardingjdbc.dbtest.env.IntegrateTestEnvironment;
 import lombok.RequiredArgsConstructor;
 import org.junit.AfterClass;
@@ -122,14 +122,14 @@ public final class StartTest {
             isInitialized = false;
         } else {
             for (String each : SHARDING_RULE_TYPES) {
-                DatabaseEnvironmentManager.dropDatabase(each);
+                SchemaEnvironmentManager.dropDatabase(each);
             }
         }
         for (String each : SHARDING_RULE_TYPES) {
-            DatabaseEnvironmentManager.createDatabase(each);
+            SchemaEnvironmentManager.createDatabase(each);
         }
         for (String each : SHARDING_RULE_TYPES) {
-            DatabaseEnvironmentManager.createTable(each);
+            SchemaEnvironmentManager.createTable(each);
         }
     }
     
@@ -138,7 +138,7 @@ public final class StartTest {
     public static void tearDown() throws JAXBException, IOException {
         if (isCleaned) {
             for (String each : SHARDING_RULE_TYPES) {
-                DatabaseEnvironmentManager.dropDatabase(each);
+                SchemaEnvironmentManager.dropDatabase(each);
             }
             isCleaned = false;
         }
