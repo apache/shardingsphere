@@ -23,7 +23,9 @@ import lombok.Getter;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -40,6 +42,8 @@ public final class IntegrateTestEnvironment {
     
     private final Collection<DatabaseType> databaseTypes;
     
+    private final Map<DatabaseType, DatabaseEnvironment> databaseEnvironments;
+    
     private IntegrateTestEnvironment() {
         Properties prop = new Properties();
         try {
@@ -51,6 +55,32 @@ public final class IntegrateTestEnvironment {
         databaseTypes = new LinkedList<>();
         for (String each : prop.getProperty("databases", DatabaseType.H2.name()).split(",")) {
             databaseTypes.add(DatabaseType.valueOf(each.trim()));
+        }
+        databaseEnvironments = new HashMap<>(databaseTypes.size(), 1);
+        for (DatabaseType each : databaseTypes) {
+            switch (each) {
+                case H2:
+                    databaseEnvironments.put(each, new DatabaseEnvironment(each, "", 0, "sa", ""));
+                    break;
+                case MySQL:
+                    databaseEnvironments.put(each, new DatabaseEnvironment(each, prop.getProperty("mysql.host", "127.0.0.1"), Integer.parseInt(prop.getProperty("mysql.port", "3306")),
+                            prop.getProperty("mysql.username", "root"), prop.getProperty("mysql.password", "")));
+                    break;
+                case PostgreSQL:
+                    databaseEnvironments.put(each, new DatabaseEnvironment(each, prop.getProperty("postgresql.host", "127.0.0.1"), Integer.parseInt(prop.getProperty("postgresql.port", "5432")),
+                            prop.getProperty("postgresql.username", "postgres"), prop.getProperty("postgresql.password", "")));
+                    break;
+                case SQLServer:
+                    databaseEnvironments.put(each, new DatabaseEnvironment(each, prop.getProperty("sqlserver.host", "127.0.0.1"), Integer.parseInt(prop.getProperty("sqlserver.port", "1433")),
+                            prop.getProperty("sqlserver.username", "sa"), prop.getProperty("sqlserver.password", "Jdbc1234")));
+                    break;
+                case Oracle:
+                    databaseEnvironments.put(each, new DatabaseEnvironment(each, prop.getProperty("oracle.host", "127.0.0.1"), Integer.parseInt(prop.getProperty("oracle.port", "8521")),
+                            prop.getProperty("oracle.username", "jdbc"), prop.getProperty("oracle.password", "jdbc")));
+                    break;
+                default:
+                    break;
+            }
         }
     }
     

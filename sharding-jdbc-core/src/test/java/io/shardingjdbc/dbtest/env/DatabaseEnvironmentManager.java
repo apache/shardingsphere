@@ -19,7 +19,6 @@ package io.shardingjdbc.dbtest.env;
 
 import com.google.common.base.Joiner;
 import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.dbtest.common.DatabaseEnvironment;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -57,7 +56,7 @@ public final class DatabaseEnvironmentManager {
         DatabaseEnvironmentSchema databaseInitialization = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(shardingRuleType));
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
             try (
-                    BasicDataSource dataSource = (BasicDataSource) new DatabaseEnvironment(each).createDataSource(null);
+                    BasicDataSource dataSource = (BasicDataSource) DataSourceUtil.createDataSource(each, null);
                     Connection connection = dataSource.getConnection();
                     StringReader stringReader = new StringReader(Joiner.on(";\n").skipNulls().join(generateCreateDatabaseSQLs(each, databaseInitialization.getDatabases())))) {
                 RunScript.execute(connection, stringReader);
@@ -78,7 +77,7 @@ public final class DatabaseEnvironmentManager {
         DatabaseEnvironmentSchema databaseInitialization = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(shardingRuleType));
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
             try (
-                    BasicDataSource dataSource = (BasicDataSource) new DatabaseEnvironment(each).createDataSource(null);
+                    BasicDataSource dataSource = (BasicDataSource) DataSourceUtil.createDataSource(each, null);
                     Connection connection = dataSource.getConnection();
                     StringReader stringReader = new StringReader(Joiner.on(";\n").skipNulls().join(generateDropDatabaseSQLs(each, databaseInitialization.getDatabases())))) {
                 RunScript.execute(connection, stringReader);
@@ -130,7 +129,7 @@ public final class DatabaseEnvironmentManager {
             DatabaseEnvironmentSchema databaseEnvironmentSchema = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(shardingRuleType));
             List<String> databases = databaseEnvironmentSchema.getDatabases();
             for (String database : databases) {
-                try (BasicDataSource dataSource = (BasicDataSource) new DatabaseEnvironment(each).createDataSource(database);
+                try (BasicDataSource dataSource = (BasicDataSource) DataSourceUtil.createDataSource(each, database);
                      Connection connection = dataSource.getConnection();
                      StringReader stringReader = new StringReader(StringUtils.join(databaseEnvironmentSchema.getTableCreateSQLs(), ";\n"))) {
                     RunScript.execute(connection, stringReader);
@@ -155,7 +154,7 @@ public final class DatabaseEnvironmentManager {
             DatabaseEnvironmentSchema databaseEnvironmentSchema = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(shardingRuleType));
             List<String> databases = databaseEnvironmentSchema.getDatabases();
             for (String database : databases) {
-                try (BasicDataSource dataSource = (BasicDataSource) new DatabaseEnvironment(databaseType).createDataSource(database);
+                try (BasicDataSource dataSource = (BasicDataSource) DataSourceUtil.createDataSource(databaseType, database);
                      Connection connection = dataSource.getConnection();
                      StringReader stringReader = new StringReader(sql)) {
                     RunScript.execute(connection, stringReader);

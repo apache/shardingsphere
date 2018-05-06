@@ -20,7 +20,7 @@ package io.shardingjdbc.dbtest.asserts;
 import io.shardingjdbc.core.api.MasterSlaveDataSourceFactory;
 import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.dbtest.common.DatabaseEnvironment;
+import io.shardingjdbc.dbtest.env.DataSourceUtil;
 import io.shardingjdbc.dbtest.common.DatabaseUtil;
 import io.shardingjdbc.dbtest.config.AnalyzeDataset;
 import io.shardingjdbc.dbtest.config.bean.AssertDDLDefinition;
@@ -107,7 +107,7 @@ public class AssertEngine {
     private static Map<String, DataSource> createDataSourceMap(final List<String> dataSourceNames, final DatabaseType each) {
         Map<String, DataSource> dataSourceMap = new HashMap<>(dataSourceNames.size(), 1);
         for (String db : dataSourceNames) {
-            dataSourceMap.put(db, new DatabaseEnvironment(each).createDataSource(db));
+            dataSourceMap.put(db, DataSourceUtil.createDataSource(each, db));
         }
         return dataSourceMap;
     }
