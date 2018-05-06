@@ -22,7 +22,6 @@ import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingjdbc.dbtest.env.IntegrateTestEnvironment;
 import io.shardingjdbc.dbtest.common.DatabaseEnvironment;
 import io.shardingjdbc.dbtest.common.DatabaseUtil;
 import io.shardingjdbc.dbtest.config.AnalyzeDataset;
@@ -35,8 +34,9 @@ import io.shardingjdbc.dbtest.config.bean.ColumnDefinition;
 import io.shardingjdbc.dbtest.config.bean.DatasetDatabase;
 import io.shardingjdbc.dbtest.config.bean.DatasetDefinition;
 import io.shardingjdbc.dbtest.config.bean.ParameterDefinition;
-import io.shardingjdbc.dbtest.exception.DbTestException;
 import io.shardingjdbc.dbtest.env.DatabaseEnvironmentManager;
+import io.shardingjdbc.dbtest.env.IntegrateTestEnvironment;
+import io.shardingjdbc.dbtest.exception.DbTestException;
 import io.shardingjdbc.test.sql.SQLCasesLoader;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
@@ -53,6 +53,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -132,7 +133,7 @@ public class AssertEngine {
     private static void ddlRun(final DatabaseType databaseType, final String id, final String shardingRuleType, final AssertsDefinition assertsDefinition, final String rootPath, final String msg, final DataSource dataSource) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
         for (AssertDDLDefinition each : assertsDefinition.getAssertDDL()) {
             if (id.equals(each.getId())) {
-                List<DatabaseType> databaseTypes = DatabaseEnvironmentManager.getDatabaseTypes(each.getDatabaseConfig());
+                List<DatabaseType> databaseTypes = getDatabaseTypes(each.getDatabaseConfig());
                 if (!databaseTypes.contains(databaseType)) {
                     break;
                 }
@@ -183,7 +184,7 @@ public class AssertEngine {
     
     private static void ddlSubRun(final String shardingRuleType, final DatabaseType databaseType, final String rootPath, final String msg, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String expectedDataFile, final List<AssertSubDefinition> subAsserts) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
         for (AssertSubDefinition subAssert : subAsserts) {
-            List<DatabaseType> databaseSubTypes = DatabaseEnvironmentManager.getDatabaseTypes(subAssert.getDatabaseConfig());
+            List<DatabaseType> databaseSubTypes = getDatabaseTypes(subAssert.getDatabaseConfig());
             
             if (!databaseSubTypes.contains(databaseType)) {
                 break;
@@ -230,7 +231,7 @@ public class AssertEngine {
     private static void dmlRun(final String shardingRuleType, final DatabaseType databaseType, final String initDataFile, final String path, final String id, final AssertsDefinition assertsDefinition, final String rootPath, final String msg, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final List<String> dbs) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
         for (AssertDMLDefinition each : assertsDefinition.getAssertDML()) {
             if (id.equals(each.getId())) {
-                List<DatabaseType> databaseTypes = DatabaseEnvironmentManager.getDatabaseTypes(each.getDatabaseConfig());
+                List<DatabaseType> databaseTypes = getDatabaseTypes(each.getDatabaseConfig());
                 if (!databaseTypes.contains(databaseType)) {
                     break;
                 }
@@ -276,7 +277,7 @@ public class AssertEngine {
                         resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFile, dataSource, dataSourceMaps, each, rootSQL, mapDatasetDefinition, sqls, msg);
                     } else {
                         for (AssertSubDefinition subAssert : subAsserts) {
-                            List<DatabaseType> databaseSubTypes = DatabaseEnvironmentManager.getDatabaseTypes(subAssert.getDatabaseConfig());
+                            List<DatabaseType> databaseSubTypes = getDatabaseTypes(subAssert.getDatabaseConfig());
                             if (!databaseSubTypes.contains(databaseType)) {
                                 break;
                             }
@@ -330,7 +331,7 @@ public class AssertEngine {
                     List<AssertSubDefinition> subAsserts = each.getSubAsserts();
                     if (!subAsserts.isEmpty()) {
                         for (AssertSubDefinition subAssert : subAsserts) {
-                            List<DatabaseType> databaseSubTypes = DatabaseEnvironmentManager.getDatabaseTypes(subAssert.getDatabaseConfig());
+                            List<DatabaseType> databaseSubTypes = getDatabaseTypes(subAssert.getDatabaseConfig());
                             if (!databaseSubTypes.contains(databaseType)) {
                                 break;
                             }
@@ -391,7 +392,7 @@ public class AssertEngine {
         for (AssertDQLDefinition each : assertsDefinition.getAssertDQL()) {
             
             if (id.equals(each.getId())) {
-                List<DatabaseType> databaseTypes = DatabaseEnvironmentManager.getDatabaseTypes(each.getDatabaseConfig());
+                List<DatabaseType> databaseTypes = getDatabaseTypes(each.getDatabaseConfig());
                 if (!databaseTypes.contains(databaseType)) {
                     break;
                 }
@@ -455,7 +456,7 @@ public class AssertEngine {
     
     private static void dqlSubRun(final DatabaseType databaseType, final String dbName, final String rootPath, final String msg, final DataSource dataSource, final AssertDQLDefinition anAssert, final String rootSQL, final String expectedDataFile, final List<AssertSubDefinition> subAsserts) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         for (AssertSubDefinition subAssert : subAsserts) {
-            List<DatabaseType> databaseSubTypes = DatabaseEnvironmentManager.getDatabaseTypes(subAssert.getDatabaseConfig());
+            List<DatabaseType> databaseSubTypes = getDatabaseTypes(subAssert.getDatabaseConfig());
             if (!databaseSubTypes.contains(databaseType)) {
                 break;
             }
@@ -774,5 +775,13 @@ public class AssertEngine {
     
     private static DataSource getMasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final String path) throws IOException, SQLException {
         return MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new File(path));
+    }
+    
+    private static List<DatabaseType> getDatabaseTypes(final String databaseTypes) {
+        List<DatabaseType> result = new LinkedList<>();
+        for (String eachType : databaseTypes.split(",")) {
+            result.add(DatabaseType.valueOf(eachType));
+        }
+        return result;
     }
 }

@@ -23,6 +23,7 @@ import io.shardingjdbc.dbtest.config.bean.AssertsDefinition;
 import io.shardingjdbc.dbtest.env.DatabaseEnvironmentManager;
 import io.shardingjdbc.dbtest.env.IntegrateTestEnvironment;
 import lombok.RequiredArgsConstructor;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,6 +60,8 @@ public final class StartTest {
     private static final Collection<String> SHARDING_RULE_TYPES = new HashSet<>();
     
     private static boolean isInitialized = IntegrateTestEnvironment.getInstance().isInitialized();
+    
+    private static boolean isCleaned = IntegrateTestEnvironment.getInstance().isInitialized();
     
     private final String path;
     
@@ -123,6 +126,17 @@ public final class StartTest {
         }
         for (String each : SHARDING_RULE_TYPES) {
             DatabaseEnvironmentManager.createTable(each);
+        }
+    }
+    
+    @AfterClass
+    // TODO add tearDown for temporary, will remove when original integrate test removed.
+    public static void tearDown() throws JAXBException, IOException {
+        if (isCleaned) {
+            for (String each : SHARDING_RULE_TYPES) {
+                DatabaseEnvironmentManager.dropDatabase(each);
+            }
+            isCleaned = false;
         }
     }
     

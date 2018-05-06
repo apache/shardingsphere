@@ -36,7 +36,7 @@ public class AssertsDefinition {
     private String baseConfig = "db,dbtbl,nullable";
     
     @XmlAttribute(name = "database-config")
-    private String databaseConfig;
+    private String databaseConfig = "H2,MySQL,Oracle,SQLServer,PostgreSQL";
     
     @XmlAttribute(name = "masterslave")
     private String masterslave;
