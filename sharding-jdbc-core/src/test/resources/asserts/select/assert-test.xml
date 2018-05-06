@@ -1,31 +1,31 @@
-<asserts init-data-file="./init" base-config="db,tbl,dbtbl,masterslave">
+<asserts init-data-file="./init" sharding-rule-type="db,tbl,dbtbl,masterslave">
     <assertDQL id="assertSelectOne"
                sql="assertSelectOne"
                expected-data-file="SelectOne.xml">
     </assertDQL>
     <assertDQL id="assertSelectNotEqualsWithSingleTable"
-               sql="assertSelectNotEqualsWithSingleTable" base-config="tbl"
+               sql="assertSelectNotEqualsWithSingleTable" sharding-rule-type="tbl"
                expected-data-file="SelectNotEqualsWithSingleTable.xml">
         <parameter>
             <value value="100000" type="int"/>
         </parameter>
     </assertDQL>
     <assertDQL id="assertSelectNotEqualsWithSingleTableForExclamationEqual"
-               sql="assertSelectNotEqualsWithSingleTableForExclamationEqual" base-config="tbl"
+               sql="assertSelectNotEqualsWithSingleTableForExclamationEqual" sharding-rule-type="tbl"
                expected-data-file="SelectNotEqualsWithSingleTable.xml">
         <parameter>
             <value value="100000" type="int"/>
         </parameter>
     </assertDQL>
     <assertDQL id="assertSelectNotEqualsWithSingleTableForNotIn"
-               sql="assertSelectNotEqualsWithSingleTableForNotIn" base-config="tbl"
+               sql="assertSelectNotEqualsWithSingleTableForNotIn" sharding-rule-type="tbl"
                expected-data-file="SelectNotEqualsWithSingleTable.xml">
         <parameter>
             <value value="100000" type="int"/>
         </parameter>
     </assertDQL>
     <assertDQL id="assertSelectEqualsWithSameShardingColumns"
-               sql="assertSelectEqualsWithSameShardingColumns" base-config="tbl"
+               sql="assertSelectEqualsWithSameShardingColumns" sharding-rule-type="tbl"
                expected-data-file="SelectEqualsWithSameShardingColumns.xml">
         <parameter>
             <value value="1000" type="int"/>
@@ -33,7 +33,7 @@
         </parameter>
     </assertDQL>
     <assertDQL id="assertSelectInWithSameShardingColumns"
-               sql="assertSelectInWithSameShardingColumns" base-config="tbl"
+               sql="assertSelectInWithSameShardingColumns" sharding-rule-type="tbl"
                expected-data-file="SelectInWithSameShardingColumns.xml">
         <parameter>
             <value value="1000" type="int"/>
@@ -43,21 +43,21 @@
         </parameter>
     </assertDQL>
     <assertDQL id="assertSelectEqualsWithSingleTable"
-               sql="assertSelectEqualsWithSingleTable" base-config="tbl,db,masterslave,dbtbl"
+               sql="assertSelectEqualsWithSingleTable" sharding-rule-type="tbl,db,masterslave,dbtbl"
                expected-data-file="SelectEqualsWithSingleTable_1.xml">
-        <subAssert expected-data-file="SelectEqualsWithSingleTable_0.xml"  base-config="tbl">
+        <subAssert expected-data-file="SelectEqualsWithSingleTable_0.xml" sharding-rule-type="tbl">
             <parameter>
                 <value value="10" type="int"/>
                 <value value="1000" type="int"/>
             </parameter>
         </subAssert>
-        <subAssert expected-data-file="SelectEqualsWithSingleTable_1.xml" base-config="tbl">
+        <subAssert expected-data-file="SelectEqualsWithSingleTable_1.xml" sharding-rule-type="tbl">
             <parameter>
                 <value value="11" type="int"/>
                 <value value="1109" type="int"/>
             </parameter>
         </subAssert>
-        <subAssert expected-data-file="SelectEqualsWithSingleTable_2.xml" base-config="db,masterslave,dbtbl">
+        <subAssert expected-data-file="SelectEqualsWithSingleTable_2.xml" sharding-rule-type="db,masterslave,dbtbl">
             <parameter>
                 <value value="12" type="int"/>
                 <value value="1201" type="int"/>
@@ -72,9 +72,9 @@
     </assertDQL>
 
     <!--<assertDQL id="assertSelectBetweenWithSingleTable"
-               sql="assertSelectBetweenWithSingleTable" base-config="tbl,db,dbtbl"
+               sql="assertSelectBetweenWithSingleTable" sharding-rule-type="tbl,db,dbtbl"
     >
-        <subAssert expected-data-file="SelectBetweenWithSingleTable.xml" base-config="tbl,dbtbl">
+        <subAssert expected-data-file="SelectBetweenWithSingleTable.xml" sharding-rule-type="tbl,dbtbl">
             <parameter>
                 <value value="10" type="int"/>
                 <value value="12" type="int"/>
@@ -82,7 +82,7 @@
                 <value value="1108" type="int"/>
             </parameter>
         </subAssert>
-        <subAssert expected-data-file="SelectBetweenWithSingleTable.xml" base-config="db">
+        <subAssert expected-data-file="SelectBetweenWithSingleTable.xml" sharding-rule-type="db">
             <parameter>
                 <value value="10" type="int"/>
                 <value value="12" type="int"/>

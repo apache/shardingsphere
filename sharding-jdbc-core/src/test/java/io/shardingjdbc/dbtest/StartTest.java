@@ -73,7 +73,7 @@ public final class StartTest {
         List<String[]> result = new LinkedList<>();
         for (String each : getAssertFiles(integrateResources)) {
             AssertsDefinition assertsDefinition = unmarshal(each);
-            SHARDING_RULE_TYPES.addAll(Arrays.asList(assertsDefinition.getBaseConfig().split(",")));
+            SHARDING_RULE_TYPES.addAll(Arrays.asList(assertsDefinition.getShardingRuleType().split(",")));
             result.addAll(getParameters(each, assertsDefinition.getAssertDQL()));
             result.addAll(getParameters(each, assertsDefinition.getAssertDML()));
             result.addAll(getParameters(each, assertsDefinition.getAssertDDL()));

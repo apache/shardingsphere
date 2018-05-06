@@ -29,8 +29,8 @@ import java.util.List;
 @XmlRootElement(name = "asserts")
 public class AssertsDefinition {
     
-    @XmlAttribute(name = "base-config")
-    private String baseConfig = "db,dbtbl,nullable";
+    @XmlAttribute(name = "sharding-rule-type")
+    private String shardingRuleType = "db,dbtbl,nullable";
     
     @XmlAttribute(name = "database-config")
     private String databaseConfig = "H2,MySQL,Oracle,SQLServer,PostgreSQL";

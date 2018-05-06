@@ -40,8 +40,8 @@ public class AssertDDLDefinition implements AssertDefinition {
     @XmlAttribute(name = "init-sql")
     private String initSql;
     
-    @XmlAttribute(name = "base-config")
-    private String baseConfig;
+    @XmlAttribute(name = "sharding-rule-type")
+    private String shardingRuleType;
     
     @XmlAttribute(name = "clean-sql")
     private String cleanSql;

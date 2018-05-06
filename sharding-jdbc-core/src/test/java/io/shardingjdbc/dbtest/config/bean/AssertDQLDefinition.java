@@ -40,8 +40,8 @@ public class AssertDQLDefinition implements AssertDefinition {
     @XmlAttribute(name = "expected-data-file")
     private String expectedDataFile;
     
-    @XmlAttribute(name = "base-config")
-    private String baseConfig;
+    @XmlAttribute(name = "sharding-rule-type")
+    private String shardingRuleType;
     
     @XmlAttribute(name = "database-config")
     private String databaseConfig = "H2,MySQL,Oracle,SQLServer,PostgreSQL";
