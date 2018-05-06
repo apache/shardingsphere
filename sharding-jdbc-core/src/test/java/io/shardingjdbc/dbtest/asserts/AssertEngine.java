@@ -71,30 +71,29 @@ public class AssertEngine {
     
     /**
      * Execution use case.
-     *
+     * 
+     * @param id Unique primary key for a use case
      * @param path Check the use case storage path
-     * @param id   Unique primary key for a use case
+     * @param shardingRuleType sharding rule type
      */
-    public static void runAssert(final String path, final String id) throws JAXBException, ParserConfigurationException, IOException, XPathExpressionException, SQLException, SAXException, ParseException {
+    public static void runAssert(final String id, final String path, final String shardingRuleType) throws JAXBException, ParserConfigurationException, IOException, XPathExpressionException, SQLException, SAXException, ParseException {
         AssertsDefinition assertsDefinition = ASSERT_DEFINITION_MAPS.get(path);
         String rootPath = path.substring(0, path.lastIndexOf(File.separator) + 1);
-        for (String each : assertsDefinition.getShardingRuleType().split(",")) {
-            String dataInitializationPath = EnvironmentPath.getDataInitializeResourceFile(each);
-            File fileDirDatabase = new File(dataInitializationPath);
-            if (fileDirDatabase.exists()) {
-                File[] fileDatabases = fileDirDatabase.listFiles();
-                List<String> dataSourceNames = new LinkedList<>();
-                for (File fileDatabase : fileDatabases) {
-                    String dataSourceName = fileDatabase.getName();
-                    dataSourceName = dataSourceName.substring(0, dataSourceName.indexOf("."));
-                    dataSourceNames.add(dataSourceName);
-                }
-                runAssert(each, path, id, assertsDefinition, rootPath, dataInitializationPath, dataSourceNames);
+        String dataInitializationPath = EnvironmentPath.getDataInitializeResourceFile(shardingRuleType);
+        File fileDirDatabase = new File(dataInitializationPath);
+        if (fileDirDatabase.exists()) {
+            File[] fileDatabases = fileDirDatabase.listFiles();
+            List<String> dataSourceNames = new LinkedList<>();
+            for (File fileDatabase : fileDatabases) {
+                String dataSourceName = fileDatabase.getName();
+                dataSourceName = dataSourceName.substring(0, dataSourceName.indexOf("."));
+                dataSourceNames.add(dataSourceName);
             }
+            runAssert(id, shardingRuleType, path, assertsDefinition, rootPath, dataInitializationPath, dataSourceNames);
         }
     }
     
-    private static void runAssert(final String shardingRuleType, final String path, final String id, final AssertsDefinition assertsDefinition, final String rootPath, final String initDataPath, final List<String> dataSourceNames) throws IOException, SQLException, SAXException, ParserConfigurationException, XPathExpressionException, ParseException, JAXBException {
+    private static void runAssert(final String id, final String shardingRuleType, final String path, final AssertsDefinition assertsDefinition, final String rootPath, final String initDataPath, final List<String> dataSourceNames) throws IOException, SQLException, SAXException, ParserConfigurationException, XPathExpressionException, ParseException, JAXBException {
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
             Map<String, DataSource> dataSourceMap = createDataSourceMap(dataSourceNames, each);
             DataSource dataSource = createDataSource(shardingRuleType, assertsDefinition, dataSourceMap);

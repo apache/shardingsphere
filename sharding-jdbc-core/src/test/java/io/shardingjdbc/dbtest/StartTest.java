@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.dbtest;
 
+import com.google.common.base.Strings;
 import io.shardingjdbc.dbtest.asserts.AssertEngine;
 import io.shardingjdbc.dbtest.config.bean.AssertDefinition;
 import io.shardingjdbc.dbtest.config.bean.AssertsDefinition;
@@ -69,28 +70,34 @@ public final class StartTest {
     
     private final String id;
     
+    private final String shardingRuleType;
+    
     private final String path;
     
-    @Parameters(name = "{0} ({2}) -> {1}")
+    @Parameters(name = "{0} -> (rule:{1})")
     public static Collection<String[]> getParameters() throws IOException, JAXBException, URISyntaxException {
         URL integrateResources = StartTest.class.getClassLoader().getResource(INTEGRATION_RESOURCES_PATH);
         assertNotNull(integrateResources);
         List<String[]> result = new LinkedList<>();
         for (String each : getAssertFiles(integrateResources)) {
             AssertsDefinition assertsDefinition = unmarshal(each);
-            SHARDING_RULE_TYPES.addAll(Arrays.asList(assertsDefinition.getShardingRuleType().split(",")));
-            result.addAll(getParameters(each, assertsDefinition.getAssertDQL()));
-            result.addAll(getParameters(each, assertsDefinition.getAssertDML()));
-            result.addAll(getParameters(each, assertsDefinition.getAssertDDL()));
+            Collection<String> shardingRuleTypes = Arrays.asList(assertsDefinition.getShardingRuleType().split(","));
+            SHARDING_RULE_TYPES.addAll(shardingRuleTypes);
+            result.addAll(getParameters(each, assertsDefinition.getAssertDQL(), shardingRuleTypes));
+            result.addAll(getParameters(each, assertsDefinition.getAssertDML(), shardingRuleTypes));
+            result.addAll(getParameters(each, assertsDefinition.getAssertDDL(), shardingRuleTypes));
             AssertEngine.addAssertDefinition(each, assertsDefinition);
         }
         return result;
     }
     
-    private static Collection<String[]> getParameters(final String path, final List<? extends AssertDefinition> assertDefinitions) {
+    private static Collection<String[]> getParameters(final String path, final List<? extends AssertDefinition> assertDefinitions, final Collection<String> assertsDefinitionShardingRuleTypes) {
         Collection<String[]> result = new LinkedList<>();
         for (AssertDefinition each : assertDefinitions) {
-            result.add(new String[] {each.getId(), path});
+            Collection<String> shardingRuleTypes = Strings.isNullOrEmpty(each.getShardingRuleType()) ? assertsDefinitionShardingRuleTypes : Arrays.asList(each.getShardingRuleType().split(","));
+            for (String shardingRuleType : shardingRuleTypes) {
+                result.add(new String[] {each.getId(), shardingRuleType, path});
+            }
         }
         return result;
     }
@@ -146,6 +153,6 @@ public final class StartTest {
     
     @Test
     public void test() throws JAXBException, SAXException, ParseException, IOException, XPathExpressionException, SQLException, ParserConfigurationException {
-        AssertEngine.runAssert(path, id);
+        AssertEngine.runAssert(id, path, shardingRuleType);
     }
 }
