@@ -67,8 +67,10 @@ public final class DatabaseEnvironmentManager {
             try (
                     BasicDataSource dataSource = (BasicDataSource) new DatabaseEnvironment(each).createDataSource(null);
                     Connection connection = dataSource.getConnection();
-                    StringReader stringReader = new StringReader(Joiner.on("\n").skipNulls().join(generateCreateDatabaseSQLs(each, databaseInitialization.getDatabases())))) {
+                    StringReader stringReader = new StringReader(Joiner.on(";\n").skipNulls().join(generateCreateDatabaseSQLs(each, databaseInitialization.getDatabases())))) {
                 RunScript.execute(connection, stringReader);
+            } catch (final SQLException ex) {
+    
             }
         }
     }
@@ -89,6 +91,8 @@ public final class DatabaseEnvironmentManager {
                     Connection connection = dataSource.getConnection();
                     StringReader stringReader = new StringReader(Joiner.on(";\n").skipNulls().join(generateDropDatabaseSQLs(each, databaseInitialization.getDatabases())))) {
                 RunScript.execute(connection, stringReader);
+            } catch (final SQLException ex) {
+                
             }
         }
     }
@@ -121,7 +125,7 @@ public final class DatabaseEnvironmentManager {
         if (DatabaseType.H2 == databaseType) {
             return Collections.emptyList();
         }
-        String sql = DatabaseType.Oracle == databaseType ? "DROP SCHEMA %s" : "CREATE DROP %s";
+        String sql = DatabaseType.Oracle == databaseType ? "DROP SCHEMA %s" : "DROP DATABASE %s";
         Collection<String> result = new LinkedList<>();
         for (String each : databases) {
             result.add(String.format(sql, each));

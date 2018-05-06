@@ -123,6 +123,8 @@ public final class StartTest {
         }
         for (String each : SHARDING_RULE_TYPES) {
             DatabaseEnvironmentManager.createDatabase(each);
+        }
+        for (String each : SHARDING_RULE_TYPES) {
             DatabaseEnvironmentManager.createTable(each);
         }
     }
