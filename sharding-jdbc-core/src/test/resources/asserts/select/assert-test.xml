@@ -1,4 +1,4 @@
-<asserts init-data-file="./init" sharding-rule-type="db,tbl,dbtbl,masterslave">
+<asserts sharding-rule-type="db,tbl,dbtbl,masterslave">
     <assertDQL id="assertSelectOne"
                sql="assertSelectOne"
                expected-data-file="SelectOne.xml">

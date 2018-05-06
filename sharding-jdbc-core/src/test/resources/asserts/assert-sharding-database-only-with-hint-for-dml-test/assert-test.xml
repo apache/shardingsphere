@@ -1,4 +1,4 @@
-<asserts init-data-file="./init" sharding-rule-type="db">
+<asserts sharding-rule-type="db">
    <assertDML id="assertInsertWithAllPlaceholders" expected-update="9" sql="assertInsertWithAllPlaceholders" sharding-rule-type="db" expected-sql="assertSelectEqualsWithSingleTable">
         <subAssert expected-data-file="insert/db_1.xml">
             <parameter>
