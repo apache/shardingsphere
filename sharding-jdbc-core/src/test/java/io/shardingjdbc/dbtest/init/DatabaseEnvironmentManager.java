@@ -69,8 +69,6 @@ public final class DatabaseEnvironmentManager {
                     Connection connection = dataSource.getConnection();
                     StringReader stringReader = new StringReader(Joiner.on(";\n").skipNulls().join(generateCreateDatabaseSQLs(each, databaseInitialization.getDatabases())))) {
                 RunScript.execute(connection, stringReader);
-            } catch (final SQLException ex) {
-    
             }
         }
     }
@@ -80,10 +78,9 @@ public final class DatabaseEnvironmentManager {
      *
      * @param shardingRuleType sharding rule type
      * @throws JAXBException JAXB exception
-     * @throws SQLException SQL exception
      * @throws IOException IO exception
      */
-    public static void dropDatabase(final String shardingRuleType) throws JAXBException, SQLException, IOException {
+    public static void dropDatabase(final String shardingRuleType) throws JAXBException, IOException {
         DatabaseEnvironmentSchema databaseInitialization = getDatabaseInitialization(shardingRuleType);
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
             try (
@@ -92,7 +89,7 @@ public final class DatabaseEnvironmentManager {
                     StringReader stringReader = new StringReader(Joiner.on(";\n").skipNulls().join(generateDropDatabaseSQLs(each, databaseInitialization.getDatabases())))) {
                 RunScript.execute(connection, stringReader);
             } catch (final SQLException ex) {
-                
+                // TODO schema maybe not exist for oracle only
             }
         }
     }
@@ -125,7 +122,7 @@ public final class DatabaseEnvironmentManager {
         if (DatabaseType.H2 == databaseType) {
             return Collections.emptyList();
         }
-        String sql = DatabaseType.Oracle == databaseType ? "DROP SCHEMA %s" : "DROP DATABASE %s";
+        String sql = DatabaseType.Oracle == databaseType ? "DROP SCHEMA %s" : "DROP DATABASE IF EXIST %s";
         Collection<String> result = new LinkedList<>();
         for (String each : databases) {
             result.add(String.format(sql, each));
