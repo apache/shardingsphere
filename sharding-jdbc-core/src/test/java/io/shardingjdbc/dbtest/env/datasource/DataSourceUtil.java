@@ -49,6 +49,7 @@ public final class DataSourceUtil {
         result.setUsername(databaseEnvironment.getUsername());
         result.setPassword(databaseEnvironment.getPassword());
         result.setMaxTotal(1);
+        result.setValidationQuery("SELECT 1");
         if (DatabaseType.Oracle == databaseType) {
             result.setConnectionInitSqls(Collections.singleton("ALTER SESSION SET CURRENT_SCHEMA = " + dataSourceName));
         }
