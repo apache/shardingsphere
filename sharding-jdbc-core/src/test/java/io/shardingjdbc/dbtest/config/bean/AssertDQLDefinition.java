@@ -44,7 +44,7 @@ public class AssertDQLDefinition implements AssertDefinition {
     private String shardingRuleType;
     
     @XmlAttribute(name = "database-config")
-    private String databaseConfig = "H2,MySQL,Oracle,SQLServer,PostgreSQL";
+    private String databaseConfig;
     
     @XmlAttribute(name = "sql")
     private String sql;

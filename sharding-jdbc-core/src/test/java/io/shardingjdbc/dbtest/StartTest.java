@@ -18,6 +18,7 @@
 package io.shardingjdbc.dbtest;
 
 import com.google.common.base.Strings;
+import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.dbtest.asserts.AssertEngine;
 import io.shardingjdbc.dbtest.config.bean.AssertDefinition;
 import io.shardingjdbc.dbtest.config.bean.AssertsDefinition;
@@ -72,31 +73,37 @@ public final class StartTest {
     
     private final String shardingRuleType;
     
+    private final DatabaseType databaseType;
+    
     private final String path;
     
-    @Parameters(name = "{0} -> (rule:{1})")
-    public static Collection<String[]> getParameters() throws IOException, JAXBException, URISyntaxException {
+    @Parameters(name = "{0} -> (rule:{1}) -> {2}")
+    public static Collection<Object[]> getParameters() throws IOException, JAXBException, URISyntaxException {
         URL integrateResources = StartTest.class.getClassLoader().getResource(INTEGRATION_RESOURCES_PATH);
         assertNotNull(integrateResources);
-        List<String[]> result = new LinkedList<>();
+        List<Object[]> result = new LinkedList<>();
         for (String each : getAssertFiles(integrateResources)) {
             AssertsDefinition assertsDefinition = unmarshal(each);
             Collection<String> shardingRuleTypes = Arrays.asList(assertsDefinition.getShardingRuleType().split(","));
             SHARDING_RULE_TYPES.addAll(shardingRuleTypes);
-            result.addAll(getParameters(each, assertsDefinition.getAssertDQL(), shardingRuleTypes));
-            result.addAll(getParameters(each, assertsDefinition.getAssertDML(), shardingRuleTypes));
-            result.addAll(getParameters(each, assertsDefinition.getAssertDDL(), shardingRuleTypes));
+            Collection<DatabaseType> databaseTypes = getDatabaseTypes(assertsDefinition.getDatabaseConfig());
+            result.addAll(getParameters(each, assertsDefinition.getAssertDQL(), shardingRuleTypes, databaseTypes));
+            result.addAll(getParameters(each, assertsDefinition.getAssertDML(), shardingRuleTypes, databaseTypes));
+            result.addAll(getParameters(each, assertsDefinition.getAssertDDL(), shardingRuleTypes, databaseTypes));
             AssertEngine.addAssertDefinition(each, assertsDefinition);
         }
         return result;
     }
     
-    private static Collection<String[]> getParameters(final String path, final List<? extends AssertDefinition> assertDefinitions, final Collection<String> assertsDefinitionShardingRuleTypes) {
-        Collection<String[]> result = new LinkedList<>();
+    private static Collection<Object[]> getParameters(final String path, final List<? extends AssertDefinition> assertDefinitions, final Collection<String> defaultShardingRuleTypes, final Collection<DatabaseType> defaultDatabaseTypes) {
+        Collection<Object[]> result = new LinkedList<>();
         for (AssertDefinition each : assertDefinitions) {
-            Collection<String> shardingRuleTypes = Strings.isNullOrEmpty(each.getShardingRuleType()) ? assertsDefinitionShardingRuleTypes : Arrays.asList(each.getShardingRuleType().split(","));
+            Collection<String> shardingRuleTypes = Strings.isNullOrEmpty(each.getShardingRuleType()) ? defaultShardingRuleTypes : Arrays.asList(each.getShardingRuleType().split(","));
             for (String shardingRuleType : shardingRuleTypes) {
-                result.add(new String[] {each.getId(), shardingRuleType, path});
+                Collection<DatabaseType> databaseTypes = Strings.isNullOrEmpty(each.getDatabaseConfig()) ? defaultDatabaseTypes : getDatabaseTypes(each.getDatabaseConfig());
+                for (DatabaseType databaseType : databaseTypes) {
+                    result.add(new Object[] {each.getId(), shardingRuleType, databaseType, path});
+                }
             }
         }
         return result;
@@ -121,6 +128,14 @@ public final class StartTest {
         try (FileReader reader = new FileReader(assertFilePath)) {
             return (AssertsDefinition) JAXBContext.newInstance(AssertsDefinition.class).createUnmarshaller().unmarshal(reader);
         }
+    }
+    
+    private static List<DatabaseType> getDatabaseTypes(final String databaseTypes) {
+        List<DatabaseType> result = new LinkedList<>();
+        for (String eachType : databaseTypes.split(",")) {
+            result.add(DatabaseType.valueOf(eachType));
+        }
+        return result;
     }
     
     @BeforeClass
@@ -153,6 +168,6 @@ public final class StartTest {
     
     @Test
     public void test() throws JAXBException, SAXException, ParseException, IOException, XPathExpressionException, SQLException, ParserConfigurationException {
-        AssertEngine.runAssert(id, path, shardingRuleType);
+        AssertEngine.runAssert(id, path, shardingRuleType, databaseType);
     }
 }

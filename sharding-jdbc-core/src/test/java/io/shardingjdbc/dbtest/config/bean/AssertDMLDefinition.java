@@ -42,12 +42,12 @@ public class AssertDMLDefinition implements AssertDefinition {
     
     @XmlAttribute(name = "sharding-rule-type")
     private String shardingRuleType;
-
-    @XmlAttribute(name = "expected-update")
-    private Integer expectedUpdate;
     
     @XmlAttribute(name = "database-config")
-    private String databaseConfig = "H2,MySQL,Oracle,SQLServer,PostgreSQL";
+    private String databaseConfig;
+    
+    @XmlAttribute(name = "expected-update")
+    private Integer expectedUpdate;
     
     @XmlAttribute(name = "sql")
     private String sql;
