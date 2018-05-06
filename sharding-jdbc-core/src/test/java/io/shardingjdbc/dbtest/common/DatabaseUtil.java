@@ -61,8 +61,8 @@ public class DatabaseUtil {
     public static String analyzeSql(final String table, final Map<String, String> config) {
         List<String> colsConfigs = new ArrayList<>();
         List<String> valueConfigs = new ArrayList<>();
-        for (Map.Entry<String, String> stringStringEntry : config.entrySet()) {
-            colsConfigs.add(stringStringEntry.getKey());
+        for (Map.Entry<String, String> entry : config.entrySet()) {
+            colsConfigs.add(entry.getKey());
             valueConfigs.add("?");
         }
         StringBuilder sbsql = new StringBuilder("insert into ");
@@ -92,8 +92,8 @@ public class DatabaseUtil {
                                                      final List<Map<String, String>> datas, final List<ColumnDefinition> config)
             throws SQLException, ParseException {
         try (PreparedStatement pstmt = conn.prepareStatement(sql);) {
-            for (Map<String, String> data : datas) {
-                sqlParameterProcessing(config, pstmt, data);
+            for (Map<String, String> entry : datas) {
+                sqlParameterProcessing(config, pstmt, entry);
                 pstmt.executeUpdate();
             }
         }
@@ -197,9 +197,9 @@ public class DatabaseUtil {
             return sql;
         }
         String result = sql;
-        for (ParameterValueDefinition parameterDefinition : parameter) {
-            String type = parameterDefinition.getType();
-            String datacol = parameterDefinition.getValue();
+        for (ParameterValueDefinition each : parameter) {
+            String type = each.getType();
+            String datacol = each.getValue();
             switch (type) {
                 case "byte":
                 case "short":
@@ -235,9 +235,9 @@ public class DatabaseUtil {
             return sql;
         }
         String result = sql;
-        for (ParameterValueDefinition parameterDefinition : parameter) {
-            String type = parameterDefinition.getType();
-            String datacol = parameterDefinition.getValue();
+        for (ParameterValueDefinition each : parameter) {
+            String type = each.getType();
+            String datacol = each.getValue();
             switch (type) {
                 case "byte":
                 case "short":
@@ -503,9 +503,9 @@ public class DatabaseUtil {
             return;
         }
         int index = 1;
-        for (ParameterValueDefinition parameterDefinition : parameter) {
-            String type = parameterDefinition.getType();
-            String datacol = parameterDefinition.getValue();
+        for (ParameterValueDefinition each : parameter) {
+            String type = each.getType();
+            String datacol = each.getValue();
             processingParameters(pstmt, index, datacol, type);
             index++;
         }
@@ -615,14 +615,14 @@ public class DatabaseUtil {
         }
     }
     
-    private static void checkIndex(final String msg, final ColumnDefinition each, final List<IndexDefinition> indexs) {
-        for (IndexDefinition expectIndex : indexs) {
-            for (IndexDefinition actualIndex : each.getIndexs()) {
-                if (expectIndex.getName().equals(actualIndex.getName())) {
-                    if (expectIndex.getType() != null && !expectIndex.getType().equals(actualIndex.getType())) {
+    private static void checkIndex(final String msg, final ColumnDefinition columnDefinition, final List<IndexDefinition> indexs) {
+        for (IndexDefinition each : indexs) {
+            for (IndexDefinition actualIndex : columnDefinition.getIndexs()) {
+                if (each.getName().equals(actualIndex.getName())) {
+                    if (each.getType() != null && !each.getType().equals(actualIndex.getType())) {
                         fail(msg);
                     }
-                    if (expectIndex.isUnique() != actualIndex.isUnique()) {
+                    if (each.isUnique() != actualIndex.isUnique()) {
                         fail(msg);
                     }
                 }
@@ -640,17 +640,17 @@ public class DatabaseUtil {
     public static void assertDatas(final DatasetDefinition expected, final DatasetDatabase actual, final String msg) {
         Map<String, List<ColumnDefinition>> actualConfigs = actual.getMetadatas();
         Map<String, List<ColumnDefinition>> expectedConfigs = expected.getMetadatas();
-        for (Map.Entry<String, List<ColumnDefinition>> each : expectedConfigs.entrySet()) {
-            List<ColumnDefinition> expectedConfig = each.getValue();
-            List<ColumnDefinition> actualConfig = actualConfigs.get(each.getKey());
+        for (Map.Entry<String, List<ColumnDefinition>> entry : expectedConfigs.entrySet()) {
+            List<ColumnDefinition> expectedConfig = entry.getValue();
+            List<ColumnDefinition> actualConfig = actualConfigs.get(entry.getKey());
             assertNotNull(msg, actualConfig);
             checkConfig(msg, expectedConfig, actualConfig);
         }
         Map<String, List<Map<String, String>>> actualDatass = actual.getDatas();
         Map<String, List<Map<String, String>>> expectDedatas = expected.getDatas();
-        for (Map.Entry<String, List<Map<String, String>>> stringListEntry : expectDedatas.entrySet()) {
-            List<Map<String, String>> data = stringListEntry.getValue();
-            List<Map<String, String>> actualDatas = actualDatass.get(stringListEntry.getKey());
+        for (Map.Entry<String, List<Map<String, String>>> entry : expectDedatas.entrySet()) {
+            List<Map<String, String>> data = entry.getValue();
+            List<Map<String, String>> actualDatas = actualDatass.get(entry.getKey());
             assertEquals(msg + " result set validation failed , The number of validation data and query data is not equal", actualDatas.size(), data.size());
             checkData(msg, data, actualDatas);
         }
@@ -660,8 +660,8 @@ public class DatabaseUtil {
         for (int i = 0; i < data.size(); i++) {
             Map<String, String> expectData = data.get(i);
             Map<String, String> actualData = actualDatas.get(i);
-            for (Map.Entry<String, String> stringStringEntry : expectData.entrySet()) {
-                if (!stringStringEntry.getValue().equals(actualData.get(stringStringEntry.getKey()))) {
+            for (Map.Entry<String, String> entry : expectData.entrySet()) {
+                if (!entry.getValue().equals(actualData.get(entry.getKey()))) {
                     String actualMsg = actualDatas.toString();
                     String expectMsg = data.toString();
                     fail(msg + " result set validation failed . describe : actual = " + actualMsg + " . expect = " + expectMsg);
@@ -673,8 +673,8 @@ public class DatabaseUtil {
     private static void checkConfig(final String msg, final List<ColumnDefinition> expectedConfig, final List<ColumnDefinition> actualConfig) {
         for (ColumnDefinition eachColumn : expectedConfig) {
             boolean flag = false;
-            for (ColumnDefinition eachActualColumn : actualConfig) {
-                if (eachColumn.getName().equals(eachActualColumn.getName()) && eachColumn.getType().equals(eachActualColumn.getType())) {
+            for (ColumnDefinition each : actualConfig) {
+                if (eachColumn.getName().equals(each.getName()) && eachColumn.getType().equals(each.getType())) {
                     flag = true;
                 }
             }
