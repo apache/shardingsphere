@@ -20,8 +20,8 @@ package io.shardingjdbc.dbtest;
 import io.shardingjdbc.dbtest.asserts.AssertEngine;
 import io.shardingjdbc.dbtest.config.bean.AssertDefinition;
 import io.shardingjdbc.dbtest.config.bean.AssertsDefinition;
-import io.shardingjdbc.dbtest.env.schema.SchemaEnvironmentManager;
 import io.shardingjdbc.dbtest.env.IntegrateTestEnvironment;
+import io.shardingjdbc.dbtest.env.schema.SchemaEnvironmentManager;
 import lombok.RequiredArgsConstructor;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -67,9 +67,9 @@ public final class StartTest {
     
     private static boolean isCleaned = IntegrateTestEnvironment.getInstance().isInitialized();
     
-    private final String path;
-    
     private final String id;
+    
+    private final String path;
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<String[]> getParameters() throws IOException, JAXBException, URISyntaxException {
@@ -90,7 +90,7 @@ public final class StartTest {
     private static Collection<String[]> getParameters(final String path, final List<? extends AssertDefinition> assertDefinitions) {
         Collection<String[]> result = new LinkedList<>();
         for (AssertDefinition each : assertDefinitions) {
-            result.add(new String[] {path, each.getId()});
+            result.add(new String[] {each.getId(), path});
         }
         return result;
     }

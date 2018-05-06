@@ -15,10 +15,13 @@
  * </p>
  */
 
-package io.shardingjdbc.dbtest.env;
+package io.shardingjdbc.dbtest.env.schema;
 
 import com.google.common.base.Joiner;
 import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.dbtest.env.EnvironmentPath;
+import io.shardingjdbc.dbtest.env.IntegrateTestEnvironment;
+import io.shardingjdbc.dbtest.env.datasource.DataSourceUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -38,12 +41,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Database environment manager.
+ * Schema environment manager.
  * 
  * @author zhangliang 
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DatabaseEnvironmentManager {
+public final class SchemaEnvironmentManager {
     
     /**
      * Create database.
@@ -53,7 +56,7 @@ public final class DatabaseEnvironmentManager {
      * @throws IOException IO exception
      */
     public static void createDatabase(final String shardingRuleType) throws JAXBException, IOException {
-        DatabaseEnvironmentSchema databaseInitialization = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(shardingRuleType));
+        SchemaEnvironment databaseInitialization = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(shardingRuleType));
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
             try (
                     BasicDataSource dataSource = (BasicDataSource) DataSourceUtil.createDataSource(each, null);
@@ -74,7 +77,7 @@ public final class DatabaseEnvironmentManager {
      * @throws IOException IO exception
      */
     public static void dropDatabase(final String shardingRuleType) throws JAXBException, IOException {
-        DatabaseEnvironmentSchema databaseInitialization = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(shardingRuleType));
+        SchemaEnvironment databaseInitialization = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(shardingRuleType));
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
             try (
                     BasicDataSource dataSource = (BasicDataSource) DataSourceUtil.createDataSource(each, null);
@@ -87,9 +90,9 @@ public final class DatabaseEnvironmentManager {
         }
     }
     
-    private static DatabaseEnvironmentSchema unmarshal(final String databaseInitializationFilePath) throws IOException, JAXBException {
+    private static SchemaEnvironment unmarshal(final String databaseInitializationFilePath) throws IOException, JAXBException {
         try (FileReader reader = new FileReader(databaseInitializationFilePath)) {
-            return (DatabaseEnvironmentSchema) JAXBContext.newInstance(DatabaseEnvironmentSchema.class).createUnmarshaller().unmarshal(reader);
+            return (SchemaEnvironment) JAXBContext.newInstance(SchemaEnvironment.class).createUnmarshaller().unmarshal(reader);
         }
     }
     
@@ -126,7 +129,7 @@ public final class DatabaseEnvironmentManager {
      */
     public static void createTable(final String shardingRuleType) throws JAXBException, IOException {
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
-            DatabaseEnvironmentSchema databaseEnvironmentSchema = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(shardingRuleType));
+            SchemaEnvironment databaseEnvironmentSchema = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(shardingRuleType));
             List<String> databases = databaseEnvironmentSchema.getDatabases();
             for (String database : databases) {
                 try (BasicDataSource dataSource = (BasicDataSource) DataSourceUtil.createDataSource(each, database);
@@ -151,7 +154,7 @@ public final class DatabaseEnvironmentManager {
      */
     public static void executeSQL(final String shardingRuleType, final DatabaseType databaseType, final String sql) throws JAXBException, IOException {
         try {
-            DatabaseEnvironmentSchema databaseEnvironmentSchema = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(shardingRuleType));
+            SchemaEnvironment databaseEnvironmentSchema = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(shardingRuleType));
             List<String> databases = databaseEnvironmentSchema.getDatabases();
             for (String database : databases) {
                 try (BasicDataSource dataSource = (BasicDataSource) DataSourceUtil.createDataSource(databaseType, database);
