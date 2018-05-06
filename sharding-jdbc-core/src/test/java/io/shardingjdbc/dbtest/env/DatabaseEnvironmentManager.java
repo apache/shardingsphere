@@ -15,11 +15,10 @@
  * </p>
  */
 
-package io.shardingjdbc.dbtest.init;
+package io.shardingjdbc.dbtest.env;
 
 import com.google.common.base.Joiner;
 import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.dbtest.IntegrateTestEnvironment;
 import io.shardingjdbc.dbtest.common.DatabaseEnvironment;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang3.StringUtils;

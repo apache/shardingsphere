@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.dbtest.init;
+package io.shardingjdbc.dbtest.env;
 
 import lombok.Getter;
 
