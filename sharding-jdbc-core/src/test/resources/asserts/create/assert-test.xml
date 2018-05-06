@@ -1,4 +1,4 @@
-<asserts sharding-rule-config="./config/test" init-data-file="./init">
+<asserts init-data-file="./init">
     <assertDDL id="assertCreateTable" clean-sql="DROP TABLE t_log" expected-update="1" sql="assertCreateTable"
                table="t_log"
                expected-data-file="assertCreateTable.xml">
