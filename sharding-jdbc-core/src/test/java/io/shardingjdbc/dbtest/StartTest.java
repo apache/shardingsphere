@@ -29,9 +29,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -42,6 +45,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -140,7 +145,7 @@ public final class StartTest {
     }
     
     @Test
-    public void test() throws JAXBException {
+    public void test() throws JAXBException, SAXException, ParseException, IOException, XPathExpressionException, SQLException, ParserConfigurationException {
         AssertEngine.runAssert(path, id);
     }
 }

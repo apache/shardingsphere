@@ -20,8 +20,6 @@ package io.shardingjdbc.dbtest.asserts;
 import io.shardingjdbc.core.api.MasterSlaveDataSourceFactory;
 import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.dbtest.common.DatabaseEnvironment;
 import io.shardingjdbc.dbtest.common.DatabaseUtil;
 import io.shardingjdbc.dbtest.config.AnalyzeDataset;
@@ -52,7 +50,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -77,51 +74,48 @@ public class AssertEngine {
      *
      * @param path Check the use case storage path
      * @param id   Unique primary key for a use case
-     * @return Successful implementation
      */
-    public static boolean runAssert(final String path, final String id) throws JAXBException {
+    public static void runAssert(final String path, final String id) throws JAXBException, ParserConfigurationException, IOException, XPathExpressionException, SQLException, SAXException, ParseException {
         AssertsDefinition assertsDefinition = ASSERT_DEFINITION_MAPS.get(path);
         String rootPath = path.substring(0, path.lastIndexOf(File.separator) + 1);
-        try {
-            for (String each : assertsDefinition.getShardingRuleType().split(",")) {
-                String dataInitializationPath = EnvironmentPath.getDataInitializeResourceFile(each);
-                File fileDirDatabase = new File(dataInitializationPath);
-                if (fileDirDatabase.exists()) {
-                    File[] fileDatabases = fileDirDatabase.listFiles();
-                    List<String> dbs = new ArrayList<>(fileDatabases.length);
-                    for (File fileDatabase : fileDatabases) {
-                        String databaseName = fileDatabase.getName();
-                        databaseName = databaseName.substring(0, databaseName.indexOf("."));
-                        dbs.add(databaseName);
-                    }
-                    onlyDatabaseRun(each, path, id, assertsDefinition, rootPath, dataInitializationPath, dbs);
+        for (String each : assertsDefinition.getShardingRuleType().split(",")) {
+            String dataInitializationPath = EnvironmentPath.getDataInitializeResourceFile(each);
+            File fileDirDatabase = new File(dataInitializationPath);
+            if (fileDirDatabase.exists()) {
+                File[] fileDatabases = fileDirDatabase.listFiles();
+                List<String> dataSourceNames = new LinkedList<>();
+                for (File fileDatabase : fileDatabases) {
+                    String dataSourceName = fileDatabase.getName();
+                    dataSourceName = dataSourceName.substring(0, dataSourceName.indexOf("."));
+                    dataSourceNames.add(dataSourceName);
                 }
+                runAssert(each, path, id, assertsDefinition, rootPath, dataInitializationPath, dataSourceNames);
             }
-        } catch (final ParseException | XPathExpressionException | SQLException | ParserConfigurationException | SAXException | IOException e) {
-            throw new DbTestException(e);
         }
-        return true;
     }
     
-    private static void onlyDatabaseRun(final String shardingRuleType, final String path, final String id, final AssertsDefinition assertsDefinition, final String rootPath, final String initDataPath, final List<String> dbs) throws IOException, SQLException, SAXException, ParserConfigurationException, XPathExpressionException, ParseException, JAXBException {
+    private static void runAssert(final String shardingRuleType, final String path, final String id, final AssertsDefinition assertsDefinition, final String rootPath, final String initDataPath, final List<String> dataSourceNames) throws IOException, SQLException, SAXException, ParserConfigurationException, XPathExpressionException, ParseException, JAXBException {
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
-            Map<String, DataSource> dataSourceMaps = new HashMap<>();
-            for (String db : dbs) {
-                DataSource subDataSource = new DatabaseEnvironment(each).createDataSource(db);
-                dataSourceMaps.put(db, subDataSource);
-            }
-            if (assertsDefinition.isMasterSlave()) {
-                MasterSlaveDataSource dataSource = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(dataSourceMaps, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)));
-                dqlRun(shardingRuleType, each, initDataPath, path, id, assertsDefinition, rootPath, dataSource, dataSourceMaps, dbs);
-                dmlRun(shardingRuleType, each, initDataPath, path, id, assertsDefinition, rootPath, dataSource, dataSourceMaps, dbs);
-                ddlRun(each, id, shardingRuleType, assertsDefinition, rootPath, dataSource);
-            } else {
-                ShardingDataSource dataSource = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(dataSourceMaps, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)));
-                dqlRun(shardingRuleType, each, initDataPath, path, id, assertsDefinition, rootPath, dataSource, dataSourceMaps, dbs);
-                dmlRun(shardingRuleType, each, initDataPath, path, id, assertsDefinition, rootPath, dataSource, dataSourceMaps, dbs);
-                ddlRun(each, id, shardingRuleType, assertsDefinition, rootPath, dataSource);
-            }
+            Map<String, DataSource> dataSourceMap = createDataSourceMap(dataSourceNames, each);
+            DataSource dataSource = createDataSource(shardingRuleType, assertsDefinition, dataSourceMap);
+            dqlRun(shardingRuleType, each, initDataPath, path, id, assertsDefinition, rootPath, dataSource, dataSourceMap, dataSourceNames);
+            dmlRun(shardingRuleType, each, initDataPath, path, id, assertsDefinition, rootPath, dataSource, dataSourceMap, dataSourceNames);
+            ddlRun(each, id, shardingRuleType, assertsDefinition, rootPath, dataSource);
         }
+    }
+    
+    private static Map<String, DataSource> createDataSourceMap(final List<String> dataSourceNames, final DatabaseType each) {
+        Map<String, DataSource> dataSourceMap = new HashMap<>(dataSourceNames.size(), 1);
+        for (String db : dataSourceNames) {
+            dataSourceMap.put(db, new DatabaseEnvironment(each).createDataSource(db));
+        }
+        return dataSourceMap;
+    }
+    
+    private static DataSource createDataSource(final String shardingRuleType, final AssertsDefinition assertsDefinition, final Map<String, DataSource> dataSourceMap) throws SQLException, IOException {
+        return assertsDefinition.isMasterSlave()
+                        ? MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)))
+                        : ShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)));
     }
     
     private static void ddlRun(final DatabaseType databaseType, final String id, final String shardingRuleType, final AssertsDefinition assertsDefinition, final String rootPath, final DataSource dataSource) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
