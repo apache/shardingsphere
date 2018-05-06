@@ -28,12 +28,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathExpressionException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -116,7 +113,7 @@ public final class StartTest {
     }
     
     @BeforeClass
-    public static void beforeClass() throws JAXBException, IOException, SQLException, ParserConfigurationException, XPathExpressionException, SAXException {
+    public static void beforeClass() throws JAXBException, IOException, SQLException {
         if (isInitialized) {
             isInitialized = false;
         } else {
@@ -131,7 +128,7 @@ public final class StartTest {
     }
     
     @Test
-    public void test() {
+    public void test() throws JAXBException {
         AssertEngine.runAssert(path, id);
     }
     

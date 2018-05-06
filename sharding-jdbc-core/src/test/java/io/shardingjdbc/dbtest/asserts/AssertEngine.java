@@ -20,7 +20,6 @@ package io.shardingjdbc.dbtest.asserts;
 import io.shardingjdbc.core.api.MasterSlaveDataSourceFactory;
 import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingjdbc.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingjdbc.dbtest.IntegrateTestEnvironment;
@@ -39,17 +38,16 @@ import io.shardingjdbc.dbtest.config.bean.ParameterDefinition;
 import io.shardingjdbc.dbtest.exception.DbTestException;
 import io.shardingjdbc.dbtest.init.DatabaseEnvironmentManager;
 import io.shardingjdbc.test.sql.SQLCasesLoader;
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.xml.sax.SAXException;
 
 import javax.sql.DataSource;
+import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -79,7 +77,7 @@ public class AssertEngine {
      * @param id   Unique primary key for a use case
      * @return Successful implementation
      */
-    public static boolean runAssert(final String path, final String id) {
+    public static boolean runAssert(final String path, final String id) throws JAXBException {
         AssertsDefinition assertsDefinition = ASSERT_DEFINITION_MAPS.get(path);
         String rootPath = path.substring(0, path.lastIndexOf(File.separator) + 1);
         try {
@@ -105,7 +103,7 @@ public class AssertEngine {
         return true;
     }
     
-    private static void onlyDatabaseRun(final String dbName, final String path, final String id, final AssertsDefinition assertsDefinition, final String rootPath, final String msg, final String initDataPath, final List<String> dbs) throws IOException, SQLException, SAXException, ParserConfigurationException, XPathExpressionException, ParseException {
+    private static void onlyDatabaseRun(final String dbName, final String path, final String id, final AssertsDefinition assertsDefinition, final String rootPath, final String msg, final String initDataPath, final List<String> dbs) throws IOException, SQLException, SAXException, ParserConfigurationException, XPathExpressionException, ParseException, JAXBException {
         
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
             Map<String, DataSource> dataSourceMaps = new HashMap<>();
@@ -134,7 +132,7 @@ public class AssertEngine {
         
     }
     
-    private static void ddlRun(final DatabaseType databaseType, final String id, final String dbName, final AssertsDefinition assertsDefinition, final String rootPath, final String msg, final DataSource dataSource) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private static void ddlRun(final DatabaseType databaseType, final String id, final String dbName, final AssertsDefinition assertsDefinition, final String rootPath, final String msg, final DataSource dataSource) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
         for (AssertDDLDefinition each : assertsDefinition.getAssertDDL()) {
             if (id.equals(each.getId())) {
                 List<DatabaseType> databaseTypes = DatabaseEnvironmentManager.getDatabaseTypes(each.getDatabaseConfig());
@@ -186,7 +184,7 @@ public class AssertEngine {
         }
     }
     
-    private static void ddlSubRun(final DatabaseType databaseType, final String dbName, final String rootPath, final String msg, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String expectedDataFile, final List<AssertSubDefinition> subAsserts) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private static void ddlSubRun(final DatabaseType databaseType, final String dbName, final String rootPath, final String msg, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String expectedDataFile, final List<AssertSubDefinition> subAsserts) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
         for (AssertSubDefinition subAssert : subAsserts) {
             List<DatabaseType> databaseSubTypes = DatabaseEnvironmentManager.getDatabaseTypes(subAssert.getDatabaseConfig());
             
@@ -526,7 +524,7 @@ public class AssertEngine {
         }
     }
     
-    private static void doUpdateUsePreparedStatementToExecuteDDL(final DatabaseType databaseType, final String dbName, final String expectedDataFile, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private static void doUpdateUsePreparedStatementToExecuteDDL(final DatabaseType databaseType, final String dbName, final String expectedDataFile, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
         try {
             try (Connection con = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
@@ -577,7 +575,7 @@ public class AssertEngine {
         }
     }
     
-    private static void doUpdateUsePreparedStatementToExecuteUpdateDDL(final DatabaseType databaseType, final String dbName, final String expectedDataFile, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private static void doUpdateUsePreparedStatementToExecuteUpdateDDL(final DatabaseType databaseType, final String dbName, final String expectedDataFile, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
         try {
             try (Connection con = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
@@ -624,7 +622,7 @@ public class AssertEngine {
         }
     }
     
-    private static void doUpdateUseStatementToExecuteDDL(final DatabaseType databaseType, final String dbName, final String expectedDataFile, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private static void doUpdateUseStatementToExecuteDDL(final DatabaseType databaseType, final String dbName, final String expectedDataFile, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
         try {
             try (Connection con = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
@@ -670,7 +668,7 @@ public class AssertEngine {
         }
     }
     
-    private static void doUpdateUseStatementToExecuteUpdateDDL(final DatabaseType databaseType, final String dbName, final String expectedDataFile, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private static void doUpdateUseStatementToExecuteUpdateDDL(final DatabaseType databaseType, final String dbName, final String expectedDataFile, final DataSource dataSource, final AssertDDLDefinition anAssert, final String rootsql, final String msg) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
         try {
             try (Connection con = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(anAssert.getCleanSql())) {

@@ -52,12 +52,9 @@ public final class SQLCasesLoader {
     
     private final Map<String, SQLCase> unsupportedSQLCaseMap;
     
-    private final Map<String, SQLCase> schemaSQLCaseMap;
-    
     private SQLCasesLoader() {
         supportedSQLCaseMap = loadSQLCases("sql");
         unsupportedSQLCaseMap = loadSQLCases("unsupported_sql");
-        schemaSQLCaseMap = loadSQLCases("schema");
     }
     
     /**
@@ -159,15 +156,6 @@ public final class SQLCasesLoader {
     }
     
     /**
-     * Get all unsupported SQL cases.
-     *
-     * @return all unsupported SQL cases
-     */
-    public Collection<SQLCase> getAllSchemaSQLCaseMap() {
-        return schemaSQLCaseMap.values();
-    }
-    
-    /**
      * Get SQL.
      * @param sqlCaseId SQL ID
      * Get supported SQL with placeholder.
@@ -223,15 +211,6 @@ public final class SQLCasesLoader {
             return sql;
         }
         return String.format(sql, parameters.toArray()).replace("%%", "%");
-    }
-    
-    /**
-     * Get unsupported SQL.
-     * @param id SQL ID
-     * @return SQL
-     */
-    public String getSchemaSQLCaseMap(final String id) {
-        return getSQLFromMap(id, schemaSQLCaseMap);
     }
     
     private String getSQLFromMap(final String id, final Map<String, SQLCase> sqlCaseMap) {

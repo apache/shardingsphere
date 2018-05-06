@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sqls>
-    <sql id="jdbcDropTOrder0" />
-    <sql id="jdbcDropTOrder1" />
-    <sql id="jdbcDropTOrderItem0" />
-    <sql id="jdbcDropTOrderItem1" />
-    <sql id="jdbcDropTConfig" />
-    <sql id="jdbcDropTGlobal" />
-</sqls>
