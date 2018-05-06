@@ -63,4 +63,9 @@ public class AssertDDLDefinition implements AssertDefinition {
     
     @XmlElement(name = "subAssert")
     private List<AssertSubDefinition> subAsserts = new ArrayList<>();
+    
+    @Override
+    public String toString() {
+        return id;
+    }
 }
