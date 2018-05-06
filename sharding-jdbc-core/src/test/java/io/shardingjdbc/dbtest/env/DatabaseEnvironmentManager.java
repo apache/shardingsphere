@@ -126,10 +126,9 @@ public final class DatabaseEnvironmentManager {
      *
      * @param shardingRuleType sharding rule type
      * @throws JAXBException JAXB exception
-     * @throws SQLException SQL exception
      * @throws IOException IO exception
      */
-    public static void createTable(final String shardingRuleType) throws JAXBException, SQLException, IOException {
+    public static void createTable(final String shardingRuleType) throws JAXBException, IOException {
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
             DatabaseEnvironmentSchema databaseEnvironmentSchema = getDatabaseInitialization(shardingRuleType);
             List<String> databases = databaseEnvironmentSchema.getDatabases();
@@ -138,6 +137,8 @@ public final class DatabaseEnvironmentManager {
                      Connection connection = dataSource.getConnection();
                      StringReader stringReader = new StringReader(StringUtils.join(databaseEnvironmentSchema.getTableCreateSQLs(), ";\n"))) {
                     RunScript.execute(connection, stringReader);
+                } catch (final SQLException ex) {
+                    // TODO schema maybe not exist for oracle only
                 }
             }
         }
