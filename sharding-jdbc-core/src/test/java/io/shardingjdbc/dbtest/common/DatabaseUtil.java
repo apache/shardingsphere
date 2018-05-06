@@ -44,8 +44,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 
-import io.shardingjdbc.dbtest.exception.DbTestException;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -61,14 +59,12 @@ public class DatabaseUtil {
      * @return sql
      */
     public static String analyzeSql(final String table, final Map<String, String> config) {
-        
         List<String> colsConfigs = new ArrayList<>();
         List<String> valueConfigs = new ArrayList<>();
-        for (Map.Entry<String, String> stringStringEntry : config.entrySet()) {
-            colsConfigs.add(stringStringEntry.getKey());
+        for (Map.Entry<String, String> entry : config.entrySet()) {
+            colsConfigs.add(entry.getKey());
             valueConfigs.add("?");
         }
-        
         StringBuilder sbsql = new StringBuilder("insert into ");
         sbsql.append(table);
         sbsql.append(" ( ");
@@ -78,7 +74,6 @@ public class DatabaseUtil {
         sbsql.append(" ( ");
         sbsql.append(StringUtils.join(valueConfigs, ","));
         sbsql.append(" )");
-        
         return sbsql.toString();
     }
     
@@ -97,8 +92,8 @@ public class DatabaseUtil {
                                                      final List<Map<String, String>> datas, final List<ColumnDefinition> config)
             throws SQLException, ParseException {
         try (PreparedStatement pstmt = conn.prepareStatement(sql);) {
-            for (Map<String, String> data : datas) {
-                sqlParameterProcessing(config, pstmt, data);
+            for (Map<String, String> entry : datas) {
+                sqlParameterProcessing(config, pstmt, entry);
                 pstmt.executeUpdate();
             }
         }
@@ -113,48 +108,49 @@ public class DatabaseUtil {
             String type = "String";
             if (config != null) {
                 for (ColumnDefinition eachColumnDefinition : config) {
-                    if (key.equals(eachColumnDefinition.getName())) {
+                    if (key.equals(eachColumnDefinition.getName()) && eachColumnDefinition.getType() != null) {
                         type = eachColumnDefinition.getType();
                     }
                 }
             }
-            if (type == null) {
-                type = "String";
-            }
-            switch (type) {
-                case "byte":
-                    pstmt.setByte(index, Byte.valueOf(datacol));
-                    break;
-                case "short":
-                    pstmt.setShort(index, Short.valueOf(datacol));
-                    break;
-                case "int":
-                    pstmt.setInt(index, Integer.valueOf(datacol));
-                    break;
-                case "long":
-                    pstmt.setLong(index, Long.valueOf(datacol));
-                    break;
-                case "float":
-                    pstmt.setFloat(index, Float.valueOf(datacol));
-                    break;
-                case "double":
-                    pstmt.setDouble(index, Double.valueOf(datacol));
-                    break;
-                case "boolean":
-                    pstmt.setBoolean(index, Boolean.valueOf(datacol));
-                    break;
-                case "Date":
-                    FastDateFormat fdf = FastDateFormat.getInstance("yyyy-MM-dd");
-                    pstmt.setDate(index, new Date(fdf.parse(datacol).getTime()));
-                    break;
-                case "String":
-                    pstmt.setString(index, datacol);
-                    break;
-                default:
-                    pstmt.setString(index, datacol);
-                    break;
-            }
+            processingParameters(pstmt, index, datacol, type);
             index++;
+        }
+    }
+    
+    private static void processingParameters(final PreparedStatement pstmt, final int index, final String datacol, final String type) throws SQLException, ParseException {
+        switch (type) {
+            case "byte":
+                pstmt.setByte(index, Byte.valueOf(datacol));
+                break;
+            case "short":
+                pstmt.setShort(index, Short.valueOf(datacol));
+                break;
+            case "int":
+                pstmt.setInt(index, Integer.valueOf(datacol));
+                break;
+            case "long":
+                pstmt.setLong(index, Long.valueOf(datacol));
+                break;
+            case "float":
+                pstmt.setFloat(index, Float.valueOf(datacol));
+                break;
+            case "double":
+                pstmt.setDouble(index, Double.valueOf(datacol));
+                break;
+            case "boolean":
+                pstmt.setBoolean(index, Boolean.valueOf(datacol));
+                break;
+            case "Date":
+                FastDateFormat fdf = FastDateFormat.getInstance("yyyy-MM-dd");
+                pstmt.setDate(index, new Date(fdf.parse(datacol).getTime()));
+                break;
+            case "String":
+                pstmt.setString(index, datacol);
+                break;
+            default:
+                pstmt.setString(index, datacol);
+                break;
         }
     }
     
@@ -172,28 +168,6 @@ public class DatabaseUtil {
     }
     
     /**
-     * To determine if it is a query statement.
-     *
-     * @param sql sql
-     * @return true select
-     */
-    public static boolean isSelect(final String sql) {
-        String newSql = sql.trim();
-        return newSql.startsWith("select");
-    }
-    
-    /**
-     * To determine whether the statement is an update.
-     *
-     * @param sql sql
-     * @return true update
-     */
-    public static boolean isInsertOrUpdateOrDelete(final String sql) {
-        String newSql = sql.trim();
-        return newSql.startsWith("insert") || newSql.startsWith("update") || newSql.startsWith("delete");
-    }
-    
-    /**
      * Use Statement Test data update.
      *
      * @param conn                Jdbc connection
@@ -204,13 +178,11 @@ public class DatabaseUtil {
      */
     public static int updateUseStatementToExecuteUpdate(final Connection conn, final String sql,
                                                         final ParameterDefinition parameterDefinition) throws SQLException {
-        int result = 0;
         try (Statement pstmt = conn.createStatement()) {
             String newSql = sqlReplaceStatement(sql, parameterDefinition.getValueReplaces());
             newSql = sqlStatement(newSql, parameterDefinition.getValues());
-            result = result + pstmt.executeUpdate(newSql);
+            return pstmt.executeUpdate(newSql);
         }
-        return result;
     }
     
     /**
@@ -225,10 +197,9 @@ public class DatabaseUtil {
             return sql;
         }
         String result = sql;
-        for (ParameterValueDefinition parameterDefinition : parameter) {
-            
-            String type = parameterDefinition.getType();
-            String datacol = parameterDefinition.getValue();
+        for (ParameterValueDefinition each : parameter) {
+            String type = each.getType();
+            String datacol = each.getValue();
             switch (type) {
                 case "byte":
                 case "short":
@@ -237,17 +208,11 @@ public class DatabaseUtil {
                 case "float":
                 case "double":
                     result = Pattern.compile("%s", Pattern.LITERAL).matcher(result)
-                            .replaceFirst(Matcher.quoteReplacement(datacol.toString()));
+                            .replaceFirst(Matcher.quoteReplacement(datacol));
                     break;
                 case "boolean":
                     result = Pattern.compile("%s", Pattern.LITERAL).matcher(result)
                             .replaceFirst(Matcher.quoteReplacement(Boolean.valueOf(datacol).toString()));
-                    break;
-                case "Date":
-                    throw new DbTestException("Date type not supported for the time being");
-                case "String":
-                    result = Pattern.compile("%s", Pattern.LITERAL).matcher(result)
-                            .replaceFirst(Matcher.quoteReplacement("'" + datacol + "'"));
                     break;
                 default:
                     result = Pattern.compile("%s", Pattern.LITERAL).matcher(result)
@@ -270,10 +235,9 @@ public class DatabaseUtil {
             return sql;
         }
         String result = sql;
-        for (ParameterValueDefinition parameterDefinition : parameter) {
-            
-            String type = parameterDefinition.getType();
-            String datacol = parameterDefinition.getValue();
+        for (ParameterValueDefinition each : parameter) {
+            String type = each.getType();
+            String datacol = each.getValue();
             switch (type) {
                 case "byte":
                 case "short":
@@ -287,12 +251,6 @@ public class DatabaseUtil {
                 case "boolean":
                     result = Pattern.compile("#s", Pattern.LITERAL).matcher(result)
                             .replaceFirst(Matcher.quoteReplacement(Boolean.valueOf(datacol).toString()));
-                    break;
-                case "Date":
-                    throw new DbTestException("Date type not supported for the time being");
-                case "String":
-                    result = Pattern.compile("#s", Pattern.LITERAL).matcher(result)
-                            .replaceFirst(Matcher.quoteReplacement("'" + datacol + "'"));
                     break;
                 default:
                     result = Pattern.compile("#s", Pattern.LITERAL).matcher(result)
@@ -314,16 +272,14 @@ public class DatabaseUtil {
      */
     public static int updateUseStatementToExecute(final Connection conn, final String sql,
                                                   final ParameterDefinition parameterDefinition) throws SQLException {
-        int result = 0;
         try (Statement pstmt = conn.createStatement()) {
             String newSql = sqlReplaceStatement(sql, parameterDefinition.getValueReplaces());
             newSql = sqlStatement(newSql, parameterDefinition.getValues());
             if (!pstmt.execute(newSql)) {
-                result = result + pstmt.getUpdateCount();
+                return pstmt.getUpdateCount();
             }
-            
         }
-        return result;
+        return 0;
     }
     
     /**
@@ -338,14 +294,12 @@ public class DatabaseUtil {
      */
     public static int updateUsePreparedStatementToExecuteUpdate(final Connection conn, final String sql,
                                                                 final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
-        int result = 0;
         String newSql = sql.replaceAll("\\%s", "?");
         newSql = sqlReplaceStatement(newSql, parameterDefinition.getValueReplaces());
         try (PreparedStatement pstmt = conn.prepareStatement(newSql)) {
             sqlPreparedStatement(parameterDefinition.getValues(), pstmt);
-            result = result + pstmt.executeUpdate();
+            return pstmt.executeUpdate();
         }
-        return result;
     }
     
     /**
@@ -360,17 +314,15 @@ public class DatabaseUtil {
      */
     public static int updateUsePreparedStatementToExecute(final Connection conn, final String sql,
                                                           final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
-        int result = 0;
         String newSql = sql.replaceAll("\\%s", "?");
         newSql = sqlReplaceStatement(newSql, parameterDefinition.getValueReplaces());
         try (PreparedStatement pstmt = conn.prepareStatement(newSql)) {
             sqlPreparedStatement(parameterDefinition.getValues(), pstmt);
             if (!pstmt.execute()) {
-                result = result + pstmt.getUpdateCount();
+                return pstmt.getUpdateCount();
             }
         }
-        
-        return result;
+        return 0;
     }
     
     /**
@@ -391,7 +343,7 @@ public class DatabaseUtil {
         try (PreparedStatement pstmt = conn.prepareStatement(newSql)) {
             sqlPreparedStatement(parameter, pstmt);
             try (ResultSet resultSet = pstmt.executeQuery()) {
-                return usePreparedStatementBackResultSet(resultSet);
+                return useBackResultSet(resultSet);
             }
         }
     }
@@ -416,36 +368,9 @@ public class DatabaseUtil {
             boolean flag = pstmt.execute();
             assertTrue("Not a query statement.", flag);
             try (ResultSet resultSet = pstmt.getResultSet()) {
-                return usePreparedStatementBackResultSet(resultSet);
+                return useBackResultSet(resultSet);
             }
         }
-    }
-    
-    private static DatasetDatabase usePreparedStatementBackResultSet(final ResultSet resultSet) throws SQLException {
-        ResultSetMetaData rsmd = resultSet.getMetaData();
-        int colsint = rsmd.getColumnCount();
-        List<ColumnDefinition> cols = new ArrayList<>();
-        for (int i = 1; i < colsint + 1; i++) {
-            String name = rsmd.getColumnName(i);
-            String type = getDataType(rsmd.getColumnType(i), rsmd.getScale(i));
-            ColumnDefinition columnDefinition = new ColumnDefinition();
-            columnDefinition.setName(name);
-            columnDefinition.setType(type);
-            cols.add(columnDefinition);
-        }
-        
-        Map<String, List<ColumnDefinition>> configs = new HashMap<>();
-        configs.put("data", cols);
-        
-        List<Map<String, String>> ls = new ArrayList<>();
-        Map<String, List<Map<String, String>>> datas = new HashMap<>();
-        datas.put("data", ls);
-        
-        handleResultSet(resultSet, cols, ls);
-        DatasetDatabase result = new DatasetDatabase();
-        result.setMetadatas(configs);
-        result.setDatas(datas);
-        return result;
     }
     
     private static void handleResultSet(final ResultSet resultSet, final List<ColumnDefinition> cols, final List<Map<String, String>> ls) throws SQLException {
@@ -455,25 +380,10 @@ public class DatabaseUtil {
                 String name = each.getName();
                 String type = each.getType();
                 switch (type) {
-                    case "int":
-                        data.put(name, String.valueOf(resultSet.getInt(name)));
-                        break;
-                    case "long":
-                        data.put(name, String.valueOf(resultSet.getLong(name)));
-                        break;
-                    case "float":
-                        data.put(name, String.valueOf(resultSet.getFloat(name)));
-                        break;
-                    case "double":
-                        data.put(name, String.valueOf(resultSet.getDouble(name)));
-                        break;
                     case "boolean":
                         data.put(name, String.valueOf(resultSet.getBoolean(name)));
                         break;
                     case "char":
-                        data.put(name, String.valueOf(resultSet.getString(name)));
-                        break;
-                    case "String":
                         data.put(name, String.valueOf(resultSet.getString(name)));
                         break;
                     case "Date":
@@ -484,11 +394,31 @@ public class DatabaseUtil {
                         data.put(name, String.valueOf(resultSet.getBlob(name)));
                         break;
                     default:
-                        data.put(name, resultSet.getString(name));
+                        handleResultSetMore(type, resultSet, data, name);
                         break;
                 }
             }
             ls.add(data);
+        }
+    }
+    
+    private static void handleResultSetMore(final String type, final ResultSet resultSet, final Map<String, String> data, final String name) throws SQLException {
+        switch (type) {
+            case "int":
+                data.put(name, String.valueOf(resultSet.getInt(name)));
+                return;
+            case "long":
+                data.put(name, String.valueOf(resultSet.getLong(name)));
+                break;
+            case "float":
+                data.put(name, String.valueOf(resultSet.getFloat(name)));
+                break;
+            case "double":
+                data.put(name, String.valueOf(resultSet.getDouble(name)));
+                break;
+            default:
+                data.put(name, resultSet.getString(name));
+                break;
         }
     }
     
@@ -508,7 +438,7 @@ public class DatabaseUtil {
         try (Statement pstmt = conn.createStatement()) {
             newSql = sqlStatement(newSql, parameter);
             try (ResultSet resultSet = pstmt.executeQuery(newSql)) {
-                return useStatementBackResultSet(resultSet);
+                return useBackResultSet(resultSet);
             }
         }
     }
@@ -529,12 +459,12 @@ public class DatabaseUtil {
         try (Statement pstmt = conn.createStatement()) {
             newSql = sqlStatement(newSql, parameter);
             try (ResultSet resultSet = pstmt.executeQuery(newSql)) {
-                return useStatementBackResultSet(resultSet);
+                return useBackResultSet(resultSet);
             }
         }
     }
     
-    private static DatasetDatabase useStatementBackResultSet(final ResultSet resultSet) throws SQLException {
+    private static DatasetDatabase useBackResultSet(final ResultSet resultSet) throws SQLException {
         ResultSetMetaData rsmd = resultSet.getMetaData();
         int colsint = rsmd.getColumnCount();
         List<ColumnDefinition> cols = new ArrayList<>();
@@ -546,14 +476,11 @@ public class DatabaseUtil {
             columnDefinition.setType(type);
             cols.add(columnDefinition);
         }
-        
         Map<String, List<ColumnDefinition>> configs = new HashMap<>();
         configs.put("data", cols);
-        
         List<Map<String, String>> ls = new ArrayList<>();
         Map<String, List<Map<String, String>>> datas = new HashMap<>();
         datas.put("data", ls);
-        
         handleResultSet(resultSet, cols, ls);
         DatasetDatabase result = new DatasetDatabase();
         result.setMetadatas(configs);
@@ -576,42 +503,10 @@ public class DatabaseUtil {
             return;
         }
         int index = 1;
-        for (ParameterValueDefinition parameterDefinition : parameter) {
-            String type = parameterDefinition.getType();
-            String datacol = parameterDefinition.getValue();
-            switch (type) {
-                case "byte":
-                    pstmt.setByte(index, Byte.valueOf(datacol));
-                    break;
-                case "short":
-                    pstmt.setShort(index, Short.valueOf(datacol));
-                    break;
-                case "int":
-                    pstmt.setInt(index, Integer.valueOf(datacol));
-                    break;
-                case "long":
-                    pstmt.setLong(index, Long.valueOf(datacol));
-                    break;
-                case "float":
-                    pstmt.setFloat(index, Float.valueOf(datacol));
-                    break;
-                case "double":
-                    pstmt.setDouble(index, Double.valueOf(datacol));
-                    break;
-                case "boolean":
-                    pstmt.setBoolean(index, Boolean.valueOf(datacol));
-                    break;
-                case "Date":
-                    FastDateFormat fdf = FastDateFormat.getInstance("yyyy-MM-dd");
-                    pstmt.setDate(index, new Date(fdf.parse(datacol).getTime()));
-                    break;
-                case "String":
-                    pstmt.setString(index, datacol);
-                    break;
-                default:
-                    pstmt.setString(index, datacol);
-                    break;
-            }
+        for (ParameterValueDefinition each : parameter) {
+            String type = each.getType();
+            String datacol = each.getValue();
+            processingParameters(pstmt, index, datacol, type);
             index++;
         }
     }
@@ -626,21 +521,6 @@ public class DatabaseUtil {
     private static String getDataType(final int type, final int scale) {
         String result = null;
         switch (type) {
-            case Types.INTEGER:
-                result = "int";
-                break;
-            case Types.LONGVARCHAR:
-                result = "long";
-                break;
-            case Types.BIGINT:
-                result = "long";
-                break;
-            case Types.FLOAT:
-                result = "float";
-                break;
-            case Types.DOUBLE:
-                result = "double";
-                break;
             case Types.BOOLEAN:
                 result = "boolean";
                 break;
@@ -659,9 +539,6 @@ public class DatabaseUtil {
                         result = "double";
                 }
                 break;
-            case Types.VARCHAR:
-                result = "String";
-                break;
             case Types.DATE:
                 result = "Date";
                 break;
@@ -672,9 +549,27 @@ public class DatabaseUtil {
                 result = "Blob";
                 break;
             default:
-                result = "String";
+                result = getDataTypeMore(type);
+                break;
         }
         return result;
+    }
+    
+    private static String getDataTypeMore(final int type) {
+        switch (type) {
+            case Types.INTEGER:
+                return "int";
+            case Types.LONGVARCHAR:
+                return "long";
+            case Types.BIGINT:
+                return "long";
+            case Types.FLOAT:
+                return "float";
+            case Types.DOUBLE:
+                return "double";
+            default:
+                return "String";
+        }
     }
     
     /**
@@ -699,36 +594,36 @@ public class DatabaseUtil {
                 if (StringUtils.isNotEmpty(expect.getType())) {
                     assertEquals(msg, expect.getType(), each.getType());
                 }
-                if (expect.getDecimalDigits() != null && !expect.getDecimalDigits().equals(each.getDecimalDigits())) {
-                    fail(msg);
-                }
-                if (expect.getNullAble() != null && !expect.getNullAble().equals(each.getNullAble())) {
-                    fail(msg);
-                }
-                if (expect.getNumPrecRadix() != null && !expect.getNumPrecRadix().equals(each.getNumPrecRadix())) {
-                    fail(msg);
-                }
-                if (expect.getSize() != null && !expect.getSize().equals(each.getSize())) {
-                    fail(msg);
-                }
+                checkDatabaseColumn(msg, expect.getDecimalDigits(), each.getDecimalDigits());
+                checkDatabaseColumn(msg, expect.getNullAble(), each.getNullAble());
+                checkDatabaseColumn(msg, expect.getNumPrecRadix(), each.getNumPrecRadix());
+                checkDatabaseColumn(msg, expect.getSize(), each.getSize());
                 if (expect.getIsAutoincrement() != 0 && expect.getIsAutoincrement() != each.getIsAutoincrement()) {
                     fail(msg);
                 }
                 List<IndexDefinition> indexs = expect.getIndexs();
                 if (indexs != null && !indexs.isEmpty()) {
-                    for (IndexDefinition expectIndex : indexs) {
-                        for (IndexDefinition actualIndex : each.getIndexs()) {
-                            if (expectIndex.getName().equals(actualIndex.getName())) {
-                                if (expectIndex.getType() != null && !expectIndex.getType().equals(actualIndex.getType())) {
-                                    fail(msg);
-                                }
-                                
-                                if (expectIndex.isUnique() != actualIndex.isUnique()) {
-                                    fail(msg);
-                                }
-                                
-                            }
-                        }
+                    checkIndex(msg, each, indexs);
+                }
+            }
+        }
+    }
+    
+    private static void checkDatabaseColumn(final String msg, final Integer expectData, final Integer actualData) {
+        if (expectData != null && !expectData.equals(actualData)) {
+            fail(msg);
+        }
+    }
+    
+    private static void checkIndex(final String msg, final ColumnDefinition columnDefinition, final List<IndexDefinition> indexs) {
+        for (IndexDefinition each : indexs) {
+            for (IndexDefinition actualIndex : columnDefinition.getIndexs()) {
+                if (each.getName().equals(actualIndex.getName())) {
+                    if (each.getType() != null && !each.getType().equals(actualIndex.getType())) {
+                        fail(msg);
+                    }
+                    if (each.isUnique() != actualIndex.isUnique()) {
+                        fail(msg);
                     }
                 }
             }
@@ -745,42 +640,45 @@ public class DatabaseUtil {
     public static void assertDatas(final DatasetDefinition expected, final DatasetDatabase actual, final String msg) {
         Map<String, List<ColumnDefinition>> actualConfigs = actual.getMetadatas();
         Map<String, List<ColumnDefinition>> expectedConfigs = expected.getMetadatas();
-        
-        for (Map.Entry<String, List<ColumnDefinition>> each : expectedConfigs.entrySet()) {
-            List<ColumnDefinition> config = each.getValue();
-            List<ColumnDefinition> actualConfig = actualConfigs.get(each.getKey());
+        for (Map.Entry<String, List<ColumnDefinition>> entry : expectedConfigs.entrySet()) {
+            List<ColumnDefinition> expectedConfig = entry.getValue();
+            List<ColumnDefinition> actualConfig = actualConfigs.get(entry.getKey());
             assertNotNull(msg, actualConfig);
-            for (ColumnDefinition eachColumn : config) {
-                boolean flag = false;
-                for (ColumnDefinition eachActualColumn : actualConfig) {
-                    if (eachColumn.getName().equals(eachActualColumn.getName()) && eachColumn.getType().equals(eachActualColumn.getType())) {
-                        flag = true;
-                    }
-                }
-                assertTrue(msg, flag);
-            }
+            checkConfig(msg, expectedConfig, actualConfig);
         }
-        
         Map<String, List<Map<String, String>>> actualDatass = actual.getDatas();
         Map<String, List<Map<String, String>>> expectDedatas = expected.getDatas();
-        for (Map.Entry<String, List<Map<String, String>>> stringListEntry : expectDedatas.entrySet()) {
-            List<Map<String, String>> data = stringListEntry.getValue();
-            List<Map<String, String>> actualDatas = actualDatass.get(stringListEntry.getKey());
-            
+        for (Map.Entry<String, List<Map<String, String>>> entry : expectDedatas.entrySet()) {
+            List<Map<String, String>> data = entry.getValue();
+            List<Map<String, String>> actualDatas = actualDatass.get(entry.getKey());
             assertEquals(msg + " result set validation failed , The number of validation data and query data is not equal", actualDatas.size(), data.size());
-            
-            for (int i = 0; i < data.size(); i++) {
-                Map<String, String> expectData = data.get(i);
-                Map<String, String> actualData = actualDatas.get(i);
-                for (Map.Entry<String, String> stringStringEntry : expectData.entrySet()) {
-                    if (!stringStringEntry.getValue().equals(actualData.get(stringStringEntry.getKey()))) {
-                        String actualMsg = actualDatas.toString();
-                        String expectMsg = data.toString();
-                        fail(msg + " result set validation failed . describe : actual = " + actualMsg + " . expect = " + expectMsg);
-                    }
+            checkData(msg, data, actualDatas);
+        }
+    }
+    
+    private static void checkData(final String msg, final List<Map<String, String>> data, final List<Map<String, String>> actualDatas) {
+        for (int i = 0; i < data.size(); i++) {
+            Map<String, String> expectData = data.get(i);
+            Map<String, String> actualData = actualDatas.get(i);
+            for (Map.Entry<String, String> entry : expectData.entrySet()) {
+                if (!entry.getValue().equals(actualData.get(entry.getKey()))) {
+                    String actualMsg = actualDatas.toString();
+                    String expectMsg = data.toString();
+                    fail(msg + " result set validation failed . describe : actual = " + actualMsg + " . expect = " + expectMsg);
                 }
-                
             }
+        }
+    }
+    
+    private static void checkConfig(final String msg, final List<ColumnDefinition> expectedConfig, final List<ColumnDefinition> actualConfig) {
+        for (ColumnDefinition eachColumn : expectedConfig) {
+            boolean flag = false;
+            for (ColumnDefinition each : actualConfig) {
+                if (eachColumn.getName().equals(each.getName()) && eachColumn.getType().equals(each.getType())) {
+                    flag = true;
+                }
+            }
+            assertTrue(msg, flag);
         }
     }
     
@@ -801,27 +699,20 @@ public class DatabaseUtil {
                 ColumnDefinition col = new ColumnDefinition();
                 String column = rs.getString("COLUMN_NAME");
                 col.setName(column);
-                
                 int size = rs.getInt("COLUMN_SIZE");
                 col.setSize(size);
-                
                 String columnType = rs.getString("TYPE_NAME").toLowerCase();
                 col.setType(columnType);
-                
                 int decimalDigits = rs.getInt("DECIMAL_DIGITS");
                 col.setDecimalDigits(decimalDigits);
-                
                 int numPrecRadix = rs.getInt("NUM_PREC_RADIX");
                 col.setNumPrecRadix(numPrecRadix);
-                
                 int nullAble = rs.getInt("NULLABLE");
                 col.setNullAble(nullAble);
-                
                 String isAutoincrement = rs.getString("IS_AUTOINCREMENT");
                 if (StringUtils.isNotEmpty(isAutoincrement)) {
                     col.setIsAutoincrement(1);
                 }
-                
                 cols.add(col);
             }
             geIndexDefinitions(stmt, cols, table);
@@ -833,23 +724,19 @@ public class DatabaseUtil {
         try (ResultSet rs = stmt.getIndexInfo(null, null, table, false, false)) {
             while (rs.next()) {
                 IndexDefinition index = new IndexDefinition();
-                
                 String name = rs.getString("COLUMN_NAME");
                 String nameIndex = rs.getString("INDEX_NAME");
                 if (StringUtils.isNotEmpty(nameIndex)) {
                     index.setName(nameIndex);
                 }
-                
                 String typeIndex = rs.getString("TYPE");
                 if (StringUtils.isNotEmpty(typeIndex)) {
                     index.setType(typeIndex);
                 }
-                
                 String uniqueIndex = rs.getString("NON_UNIQUE");
                 if (StringUtils.isNotEmpty(uniqueIndex)) {
                     index.setUnique(!"TRUE".equalsIgnoreCase(uniqueIndex));
                 }
-                
                 for (ColumnDefinition col : cols) {
                     if (name.equals(col.getName())) {
                         col.getIndexs().add(index);
