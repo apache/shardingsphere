@@ -22,6 +22,7 @@ import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.dbtest.asserts.AssertEngine;
 import io.shardingjdbc.dbtest.config.bean.AssertDefinition;
 import io.shardingjdbc.dbtest.config.bean.AssertsDefinition;
+import io.shardingjdbc.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingjdbc.dbtest.env.IntegrateTestEnvironment;
 import io.shardingjdbc.dbtest.env.schema.SchemaEnvironmentManager;
 import lombok.RequiredArgsConstructor;
@@ -73,11 +74,11 @@ public final class StartTest {
     
     private final String shardingRuleType;
     
-    private final DatabaseType databaseType;
+    private final DatabaseTypeEnvironment databaseTypeEnvironment;
     
     private final String path;
     
-    @Parameters(name = "{0} -> (rule:{1}) -> {2}")
+    @Parameters(name = "{0} -> Rule:{1} -> {2}")
     public static Collection<Object[]> getParameters() throws IOException, JAXBException, URISyntaxException {
         URL integrateResources = StartTest.class.getClassLoader().getResource(INTEGRATION_RESOURCES_PATH);
         assertNotNull(integrateResources);
@@ -102,7 +103,8 @@ public final class StartTest {
             for (String shardingRuleType : shardingRuleTypes) {
                 Collection<DatabaseType> databaseTypes = Strings.isNullOrEmpty(each.getDatabaseConfig()) ? defaultDatabaseTypes : getDatabaseTypes(each.getDatabaseConfig());
                 for (DatabaseType databaseType : databaseTypes) {
-                    result.add(new Object[] {each.getId(), shardingRuleType, databaseType, path});
+                    result.add(new Object[] {
+                            each.getId(), shardingRuleType, new DatabaseTypeEnvironment(databaseType, IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType)), path});
                 }
             }
         }
@@ -168,6 +170,6 @@ public final class StartTest {
     
     @Test
     public void test() throws JAXBException, SAXException, ParseException, IOException, XPathExpressionException, SQLException, ParserConfigurationException {
-        AssertEngine.runAssert(id, path, shardingRuleType, databaseType);
+        AssertEngine.runAssert(id, path, shardingRuleType, databaseTypeEnvironment);
     }
 }

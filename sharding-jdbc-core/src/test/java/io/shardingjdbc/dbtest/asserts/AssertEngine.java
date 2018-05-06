@@ -32,8 +32,8 @@ import io.shardingjdbc.dbtest.config.bean.ColumnDefinition;
 import io.shardingjdbc.dbtest.config.bean.DatasetDatabase;
 import io.shardingjdbc.dbtest.config.bean.DatasetDefinition;
 import io.shardingjdbc.dbtest.config.bean.ParameterDefinition;
+import io.shardingjdbc.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingjdbc.dbtest.env.EnvironmentPath;
-import io.shardingjdbc.dbtest.env.IntegrateTestEnvironment;
 import io.shardingjdbc.dbtest.env.datasource.DataSourceUtil;
 import io.shardingjdbc.dbtest.env.schema.SchemaEnvironmentManager;
 import io.shardingjdbc.dbtest.exception.DbTestException;
@@ -77,9 +77,9 @@ public class AssertEngine {
      * @param id Unique primary key for a use case
      * @param path Check the use case storage path
      * @param shardingRuleType sharding rule type
-     * @param databaseType database type
+     * @param databaseTypeEnvironment database type environment
      */
-    public static void runAssert(final String id, final String path, final String shardingRuleType, final DatabaseType databaseType) throws JAXBException, ParserConfigurationException, IOException, XPathExpressionException, SQLException, SAXException, ParseException {
+    public static void runAssert(final String id, final String path, final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws JAXBException, ParserConfigurationException, IOException, XPathExpressionException, SQLException, SAXException, ParseException {
         AssertsDefinition assertsDefinition = ASSERT_DEFINITION_MAPS.get(path);
         String rootPath = path.substring(0, path.lastIndexOf(File.separator) + 1);
         String dataInitializationPath = EnvironmentPath.getDataInitializeResourceFile(shardingRuleType);
@@ -92,19 +92,19 @@ public class AssertEngine {
                 dataSourceName = dataSourceName.substring(0, dataSourceName.indexOf("."));
                 dataSourceNames.add(dataSourceName);
             }
-            runAssert(id, shardingRuleType, path, assertsDefinition, rootPath, dataInitializationPath, dataSourceNames, databaseType);
+            runAssert(id, shardingRuleType, path, assertsDefinition, rootPath, dataInitializationPath, dataSourceNames, databaseTypeEnvironment);
         }
     }
     
-    private static void runAssert(final String id, final String shardingRuleType, final String path, final AssertsDefinition assertsDefinition, final String rootPath, final String initDataPath, final List<String> dataSourceNames, final DatabaseType databaseType) throws IOException, SQLException, SAXException, ParserConfigurationException, XPathExpressionException, ParseException, JAXBException {
-        if (!IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType)) {
+    private static void runAssert(final String id, final String shardingRuleType, final String path, final AssertsDefinition assertsDefinition, final String rootPath, final String initDataPath, final List<String> dataSourceNames, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, SQLException, SAXException, ParserConfigurationException, XPathExpressionException, ParseException, JAXBException {
+        if (!databaseTypeEnvironment.isEnabled()) {
             return;
         }
-        Map<String, DataSource> dataSourceMap = createDataSourceMap(dataSourceNames, databaseType);
+        Map<String, DataSource> dataSourceMap = createDataSourceMap(dataSourceNames, databaseTypeEnvironment.getDatabaseType());
         DataSource dataSource = createDataSource(shardingRuleType, assertsDefinition, dataSourceMap);
-        dqlRun(shardingRuleType, databaseType, initDataPath, path, id, assertsDefinition, rootPath, dataSource, dataSourceMap, dataSourceNames);
-        dmlRun(shardingRuleType, databaseType, initDataPath, path, id, assertsDefinition, rootPath, dataSource, dataSourceMap, dataSourceNames);
-        ddlRun(databaseType, id, shardingRuleType, assertsDefinition, rootPath, dataSource);
+        dqlRun(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), initDataPath, path, id, assertsDefinition, rootPath, dataSource, dataSourceMap, dataSourceNames);
+        dmlRun(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), initDataPath, path, id, assertsDefinition, rootPath, dataSource, dataSourceMap, dataSourceNames);
+        ddlRun(databaseTypeEnvironment.getDatabaseType(), id, shardingRuleType, assertsDefinition, rootPath, dataSource);
     }
     
     private static Map<String, DataSource> createDataSourceMap(final List<String> dataSourceNames, final DatabaseType each) {
