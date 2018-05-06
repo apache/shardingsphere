@@ -49,6 +49,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+/**
+ * Database related operations a series of methods,
+ * including pre-compiled sql processing,
+ * non-precompiled sql processing and include result set transformation,
+ * get table structure, etc.
+ * @author liu ze jian
+ */
 public class DatabaseUtil {
     
     /**
