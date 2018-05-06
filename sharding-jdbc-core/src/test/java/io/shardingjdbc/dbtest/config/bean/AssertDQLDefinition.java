@@ -17,15 +17,14 @@
 
 package io.shardingjdbc.dbtest.config.bean;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +44,7 @@ public class AssertDQLDefinition implements AssertDefinition {
     private String baseConfig;
     
     @XmlAttribute(name = "database-config")
-    private String databaseConfig;
+    private String databaseConfig = "H2,MySQL,Oracle,SQLServer,PostgreSQL";
     
     @XmlAttribute(name = "sql")
     private String sql;

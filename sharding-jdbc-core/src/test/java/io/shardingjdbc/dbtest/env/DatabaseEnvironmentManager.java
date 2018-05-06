@@ -32,8 +32,6 @@ import java.io.StringReader;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -168,28 +166,5 @@ public final class DatabaseEnvironmentManager {
         } catch (final SQLException ex) {
             // The table may not exist at the time of deletion（删除时可能表不存在）
         }
-    }
-    
-    /**
-     * Get the database type enumeration.
-     *
-     * @param typeStrs String database type
-     * @return database enumeration
-     */
-    public static List<DatabaseType> getDatabaseTypes(final String typeStrs) {
-        if (StringUtils.isBlank(typeStrs)) {
-            return Arrays.asList(DatabaseType.values());
-        }
-        String[] types = StringUtils.split(typeStrs, ",");
-        List<DatabaseType> result = new ArrayList<>();
-        for (String eachType : types) {
-            DatabaseType[] databaseTypeSrcs = DatabaseType.values();
-            for (DatabaseType each : databaseTypeSrcs) {
-                if (eachType.equalsIgnoreCase(each.name())) {
-                    result.add(each);
-                }
-            }
-        }
-        return result;
     }
 }

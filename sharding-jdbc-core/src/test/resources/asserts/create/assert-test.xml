@@ -1,4 +1,4 @@
-<asserts sharding-rule-config="./config/test" init-data-file="./init" database="h2,mysql,oracle,sqlserver,postgresql">
+<asserts sharding-rule-config="./config/test" init-data-file="./init">
     <assertDDL id="assertCreateTable" clean-sql="DROP TABLE t_log" expected-update="1" sql="assertCreateTable"
                table="t_log"
                expected-data-file="assertCreateTable.xml">
@@ -8,19 +8,19 @@
                expected-data-file="assertCreateTable.xml">
     </assertDDL>
     <assertDDL id="assertCreateTemporaryTable" clean-sql="DROP TABLE t_temp_log" expected-update="1" sql="assertCreateTemporaryTable"
-               table="t_temp_log" database-config="mysql,postgresql"
+               table="t_temp_log" database-config="MySQL,PostgreSQL"
                expected-data-file="assertCreateTableTempLog.xml">
     </assertDDL>
     <assertDDL id="assertCreateGlobalTemporaryTable" clean-sql="DROP TABLE t_temp_log" expected-update="1" sql="assertCreateGlobalTemporaryTable"
-               table="t_temp_log" database-config="oracle,postgresql"
+               table="t_temp_log" database-config="Oracle,PostgreSQL"
                expected-data-file="assertCreateTableTempLog.xml">
     </assertDDL>
     <assertDDL id="assertCreateLocalTempTable" clean-sql="DROP TABLE t_log" expected-update="1" sql="assertCreateLocalTempTable"
-               table="t_log" database-config="postgresql"
+               table="t_log" database-config="PostgreSQL"
                expected-data-file="assertCreateTable.xml">
     </assertDDL>
     <assertDDL id="assertCreateUnloggedTable" clean-sql="DROP TABLE t_log" expected-update="1" sql="assertCreateUnloggedTable"
-               table="t_log" database-config="postgresql"
+               table="t_log" database-config="PostgreSQL"
                expected-data-file="assertCreateTable.xml">
     </assertDDL>
     <assertDDL id="assertCreateIndex" init-sql="CREATE TABLE t_log(id int, status varchar(10))" clean-sql="DROP TABLE t_log" expected-update="1" sql="assertCreateIndex"

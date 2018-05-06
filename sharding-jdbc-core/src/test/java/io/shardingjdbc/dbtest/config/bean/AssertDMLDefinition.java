@@ -47,7 +47,7 @@ public class AssertDMLDefinition implements AssertDefinition {
     private Integer expectedUpdate;
     
     @XmlAttribute(name = "database-config")
-    private String databaseConfig;
+    private String databaseConfig = "H2,MySQL,Oracle,SQLServer,PostgreSQL";
     
     @XmlAttribute(name = "sql")
     private String sql;

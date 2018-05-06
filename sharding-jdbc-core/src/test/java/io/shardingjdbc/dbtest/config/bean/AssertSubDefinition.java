@@ -32,7 +32,7 @@ public class AssertSubDefinition {
     private String expectedDataFile;
     
     @XmlAttribute(name = "database-config")
-    private String databaseConfig;
+    private String databaseConfig = "H2,MySQL,Oracle,SQLServer,PostgreSQL";
     
     @XmlElement(name = "parameter")
     private ParameterDefinition parameter;
