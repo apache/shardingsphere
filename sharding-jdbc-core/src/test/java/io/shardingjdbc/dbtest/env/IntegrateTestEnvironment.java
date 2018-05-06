@@ -15,9 +15,10 @@
  * </p>
  */
 
-package io.shardingjdbc.dbtest;
+package io.shardingjdbc.dbtest.env;
 
 import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.dbtest.StartTest;
 import lombok.Getter;
 
 import java.io.IOException;

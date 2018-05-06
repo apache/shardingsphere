@@ -15,11 +15,10 @@
  * </p>
  */
 
-package io.shardingjdbc.dbtest.init;
+package io.shardingjdbc.dbtest.env;
 
 import com.google.common.base.Joiner;
 import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.dbtest.IntegrateTestEnvironment;
 import io.shardingjdbc.dbtest.common.DatabaseEnvironment;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang3.StringUtils;
@@ -37,20 +36,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.Assert.assertNotNull;
 
 public final class DatabaseEnvironmentManager {
     
     private static final String DATABASE_INITIALIZATION_RESOURCES_PATH = "integrate/dbtest/%s/schema.xml";
-    
-    @Deprecated
-    public static final Set<String> SHARDING_RULE_TYPE = new HashSet<>();
-    
     
     /**
      * Create database.

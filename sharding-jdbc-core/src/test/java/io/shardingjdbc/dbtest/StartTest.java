@@ -20,7 +20,8 @@ package io.shardingjdbc.dbtest;
 import io.shardingjdbc.dbtest.asserts.AssertEngine;
 import io.shardingjdbc.dbtest.config.bean.AssertDefinition;
 import io.shardingjdbc.dbtest.config.bean.AssertsDefinition;
-import io.shardingjdbc.dbtest.init.DatabaseEnvironmentManager;
+import io.shardingjdbc.dbtest.env.DatabaseEnvironmentManager;
+import io.shardingjdbc.dbtest.env.IntegrateTestEnvironment;
 import lombok.RequiredArgsConstructor;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -59,8 +60,6 @@ public final class StartTest {
     
     private static boolean isInitialized = IntegrateTestEnvironment.getInstance().isInitialized();
     
-    private static boolean isCleaned = IntegrateTestEnvironment.getInstance().isInitialized();
-    
     private final String path;
     
     private final String id;
@@ -73,7 +72,6 @@ public final class StartTest {
         for (String each : getAssertFiles(integrateResources)) {
             AssertsDefinition assertsDefinition = unmarshal(each);
             SHARDING_RULE_TYPES.addAll(Arrays.asList(assertsDefinition.getBaseConfig().split(",")));
-            DatabaseEnvironmentManager.SHARDING_RULE_TYPE.addAll(SHARDING_RULE_TYPES);
             result.addAll(getParameters(each, assertsDefinition.getAssertDQL()));
             result.addAll(getParameters(each, assertsDefinition.getAssertDML()));
             result.addAll(getParameters(each, assertsDefinition.getAssertDDL()));
