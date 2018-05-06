@@ -85,9 +85,8 @@ public class AssertEngine {
         try {
             String msg = "The file path " + path + ", under which id is " + id;
             for (String each : assertsDefinition.getShardingRuleType().split(",")) {
-                String initDataFile = rootPath + assertsDefinition.getInitDataFile();
-                String initDataPath = initDataFile + "/" + each;
-                File fileDirDatabase = new File(initDataPath);
+                String dataInitializationPath = EnvironmentPath.getDataInitializeResourceFile(each);
+                File fileDirDatabase = new File(dataInitializationPath);
                 if (fileDirDatabase.exists()) {
                     File[] fileDatabases = fileDirDatabase.listFiles();
                     List<String> dbs = new ArrayList<>(fileDatabases.length);
@@ -96,7 +95,7 @@ public class AssertEngine {
                         databaseName = databaseName.substring(0, databaseName.indexOf("."));
                         dbs.add(databaseName);
                     }
-                    onlyDatabaseRun(each, path, id, assertsDefinition, rootPath, msg, initDataPath, dbs);
+                    onlyDatabaseRun(each, path, id, assertsDefinition, rootPath, msg, dataInitializationPath, dbs);
                 }
             }
         } catch (final ParseException | XPathExpressionException | SQLException | ParserConfigurationException | SAXException | IOException e) {

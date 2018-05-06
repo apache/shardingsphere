@@ -38,9 +38,6 @@ public class AssertsDefinition {
     @XmlAttribute(name = "master-slave")
     private boolean masterSlave;
     
-    @XmlAttribute(name = "init-data-file")
-    private String initDataFile;
-    
     @XmlElement(name = "assertDQL")
     private List<AssertDQLDefinition> assertDQL = new LinkedList<>();
     

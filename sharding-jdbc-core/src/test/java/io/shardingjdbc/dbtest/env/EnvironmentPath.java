@@ -34,6 +34,8 @@ public final class EnvironmentPath {
     
     private static final String DATABASE_ENVIRONMENT_RESOURCES_PATH = "integrate/dbtest/%s/schema.xml";
     
+    private static final String DATA_INITIALIZE_RESOURCES_PATH = "integrate/dbtest/%s/data-init";
+    
     private static final String SHARDING_RULE_RESOURCES_PATH = "integrate/dbtest/%s/sharding-rule.yaml";
     
     /**
@@ -44,6 +46,16 @@ public final class EnvironmentPath {
      */
     public static String getDatabaseEnvironmentResourceFile(final String shardingRuleType) {
         return getResourceFile(DATABASE_ENVIRONMENT_RESOURCES_PATH, shardingRuleType);
+    }
+    
+    /**
+     * Get data initialize resource File.
+     *
+     * @param shardingRuleType Sharding rule type
+     * @return data initialize resource file
+     */
+    public static String getDataInitializeResourceFile(final String shardingRuleType) {
+        return getResourceFile(DATA_INITIALIZE_RESOURCES_PATH, shardingRuleType);
     }
     
     /**
