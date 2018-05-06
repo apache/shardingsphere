@@ -73,7 +73,6 @@ public final class StartTest {
         for (String each : getAssertFiles(integrateResources)) {
             AssertsDefinition assertsDefinition = unmarshal(each);
             SHARDING_RULE_TYPES.addAll(Arrays.asList(assertsDefinition.getBaseConfig().split(",")));
-            DatabaseEnvironmentManager.SHARDING_RULE_TYPE.addAll(SHARDING_RULE_TYPES);
             result.addAll(getParameters(each, assertsDefinition.getAssertDQL()));
             result.addAll(getParameters(each, assertsDefinition.getAssertDML()));
             result.addAll(getParameters(each, assertsDefinition.getAssertDDL()));
