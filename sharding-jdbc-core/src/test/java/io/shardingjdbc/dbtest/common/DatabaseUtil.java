@@ -55,6 +55,7 @@ import static org.junit.Assert.fail;
  * non-precompiled sql processing and include result set transformation,
  * get table structure, etc.
  * @author liu ze jian
+ * @version 1.0
  */
 public class DatabaseUtil {
     
