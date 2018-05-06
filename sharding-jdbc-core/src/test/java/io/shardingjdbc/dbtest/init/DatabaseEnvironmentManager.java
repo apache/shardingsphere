@@ -55,41 +55,60 @@ public final class DatabaseEnvironmentManager {
     
     private static final String DATABASE_INITIALIZATION_RESOURCES_PATH = "integrate/dbtest/%s/database.xml";
     
-    private static final Set<String> DATABASES = new HashSet<>();
+    @Deprecated
+    public static final Set<String> SHARDING_RULE_TYPE = new HashSet<>();
     
-    /**
-     * Add database.
-     *
-     * @param database database name
-     */
-    public static void addDatabase(final String database) {
-        DATABASES.add(database);
-    }
     
     /**
      * Create database.
      *
-     * @throws JAXBException jaxb exception
-     * @throws SQLException  sql exception
-     * @throws IOException   io exception
+     * @param shardingRuleType sharding rule type
+     * @throws JAXBException JAXB exception
+     * @throws SQLException SQL exception
+     * @throws IOException IO exception
      */
-    public static void createDatabase() throws JAXBException, SQLException, IOException {
-        for (String database : DATABASES) {
-            URL databaseInitializationResources = DatabaseEnvironmentManager.class.getClassLoader().getResource(String.format(DATABASE_INITIALIZATION_RESOURCES_PATH, database));
-            assertNotNull(databaseInitializationResources);
-            DatabaseInitialization databaseInitialization = unmarshal(databaseInitializationResources.getFile());
-            for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
-                try (
-                        BasicDataSource dataSource = (BasicDataSource) new DatabaseEnvironment(each).createDataSource(null);
-                        Connection conn = dataSource.getConnection();
-                        StringReader stringReader = new StringReader(Joiner.on("\n").skipNulls().join(generateCreateDatabaseSQLs(each, databaseInitialization.getDatabases())))) {
-                    ResultSet resultSet = RunScript.execute(conn, stringReader);
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
+    public static void createDatabase(final String shardingRuleType) throws JAXBException, SQLException, IOException {
+        DatabaseInitialization databaseInitialization = getDatabaseInitialization(shardingRuleType);
+        for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
+            try (
+                    BasicDataSource dataSource = (BasicDataSource) new DatabaseEnvironment(each).createDataSource(null);
+                    Connection conn = dataSource.getConnection();
+                    StringReader stringReader = new StringReader(Joiner.on("\n").skipNulls().join(generateCreateDatabaseSQLs(each, databaseInitialization.getDatabases())))) {
+                ResultSet resultSet = RunScript.execute(conn, stringReader);
+                if (resultSet != null) {
+                    resultSet.close();
                 }
             }
         }
+    }
+    
+    /**
+     * Drop database.
+     *
+     * @param shardingRuleType sharding rule type
+     * @throws JAXBException JAXB exception
+     * @throws SQLException SQL exception
+     * @throws IOException IO exception
+     */
+    public static void dropDatabase(final String shardingRuleType) throws JAXBException, SQLException, IOException {
+        DatabaseInitialization databaseInitialization = getDatabaseInitialization(shardingRuleType);
+        for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
+            try (
+                    BasicDataSource dataSource = (BasicDataSource) new DatabaseEnvironment(each).createDataSource(null);
+                    Connection conn = dataSource.getConnection();
+                    StringReader stringReader = new StringReader(Joiner.on("\n").skipNulls().join(generateDropDatabaseSQLs(each, databaseInitialization.getDatabases())))) {
+                ResultSet resultSet = RunScript.execute(conn, stringReader);
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            }
+        }
+    }
+    
+    private static DatabaseInitialization getDatabaseInitialization(final String shardingRuleType) throws IOException, JAXBException {
+        URL databaseInitializationResources = DatabaseEnvironmentManager.class.getClassLoader().getResource(String.format(DATABASE_INITIALIZATION_RESOURCES_PATH, shardingRuleType));
+        assertNotNull(databaseInitializationResources);
+        return unmarshal(databaseInitializationResources.getFile());
     }
     
     private static DatabaseInitialization unmarshal(final String databaseInitializationFilePath) throws IOException, JAXBException {
@@ -110,46 +129,16 @@ public final class DatabaseEnvironmentManager {
         return result;
     }
     
-    /**
-     * drop the database table.
-     */
-    public static synchronized void dropDatabase() {
-        try {
-            for (String database : DATABASES) {
-                String sql = getDropTableSql(DatabaseType.H2, AnalyzeDatabase.analyze(DatabaseEnvironmentManager.class.getClassLoader()
-                        .getResource("integrate/dbtest").getPath() + "/" + database + "/database.xml"));
-                for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
-                    if (each.equals(DatabaseType.H2)) {
-                        continue;
-                    }
-                    if (DatabaseType.Oracle.equals(each)) {
-                        String oracleSql = getDropTableSql(DatabaseType.Oracle, AnalyzeDatabase.analyze(DatabaseEnvironmentManager.class.getClassLoader()
-                                .getResource("integrate/dbtest").getPath() + "/" + database + "/database.xml"));
-                        try (StringReader sr = new StringReader(oracleSql);
-                             BasicDataSource dataSource = (BasicDataSource) new DatabaseEnvironment(each).createDataSource(null);
-                             Connection conn = dataSource.getConnection()) {
-                            ResultSet resultSet = RunScript.execute(conn, sr);
-                            if (resultSet != null) {
-                                resultSet.close();
-                            }
-                        }
-                        
-                    } else {
-                        try (StringReader sr = new StringReader(sql);
-                             BasicDataSource dataSource = (BasicDataSource) new DatabaseEnvironment(each).createDataSource(null);
-                             
-                             Connection conn = dataSource.getConnection();) {
-                            ResultSet resultSet = RunScript.execute(conn, sr);
-                            if (resultSet != null) {
-                                resultSet.close();
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (SQLException | ParserConfigurationException | IOException | XPathExpressionException | SAXException e) {
-            e.printStackTrace();
+    private static Collection<String> generateDropDatabaseSQLs(final DatabaseType databaseType, final List<String> databases) {
+        if (DatabaseType.H2 == databaseType) {
+            return Collections.emptyList();
         }
+        String sql = DatabaseType.Oracle == databaseType ? "DROP SCHEMA %s;" : "CREATE DROP %s;";
+        Collection<String> result = new LinkedList<>();
+        for (String each : databases) {
+            result.add(String.format(sql, each));
+        }
+        return result;
     }
     
     /**
@@ -178,7 +167,7 @@ public final class DatabaseEnvironmentManager {
     
     private static void createShardingSchema(final DatabaseType dbType) {
         try {
-            for (String each : DATABASES) {
+            for (String each : SHARDING_RULE_TYPE) {
                 List<String> databases = AnalyzeDatabase.analyze(DatabaseEnvironmentManager.class.getClassLoader()
                         .getResource("integrate/dbtest").getPath() + "/" + each + "/database.xml");
                 
@@ -217,7 +206,7 @@ public final class DatabaseEnvironmentManager {
     
     private static void dropOrCreateShardingSchema(final DatabaseType dbType, final String sqlId, final String dbname) {
         try {
-            for (String each : DATABASES) {
+            for (String each : SHARDING_RULE_TYPE) {
                 if (dbname != null) {
                     if (!each.equals(dbname)) {
                         continue;
@@ -244,18 +233,6 @@ public final class DatabaseEnvironmentManager {
             // The table may not exist at the time of deletion（删除时可能表不存在）
             //e.printStackTrace();
         }
-    }
-    
-    private static String getDropTableSql(final DatabaseType databaseType, final List<String> databases) {
-        String basesql = "DROP DATABASE ";
-        if (DatabaseType.Oracle == databaseType) {
-            basesql = "DROP SCHEMA ";
-        }
-        List<String> sqls = new ArrayList<>();
-        for (String database : databases) {
-            sqls.add(basesql + database + ";");
-        }
-        return StringUtils.join(sqls, "\n");
     }
     
     /**

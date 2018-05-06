@@ -42,7 +42,9 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -53,6 +55,8 @@ import static org.junit.Assert.assertNotNull;
 public final class StartTest {
     
     private static final String INTEGRATION_RESOURCES_PATH = "asserts";
+    
+    private static final Collection<String> SHARDING_RULE_TYPES = new HashSet<>();
     
     private static boolean isInitialized = IntegrateTestEnvironment.getInstance().isInitialized();
     
@@ -69,10 +73,8 @@ public final class StartTest {
         List<String[]> result = new LinkedList<>();
         for (String each : getAssertFiles(integrateResources)) {
             AssertsDefinition assertsDefinition = unmarshal(each);
-            String[] dbs = assertsDefinition.getBaseConfig().split(",");
-            for (String db : dbs) {
-                DatabaseEnvironmentManager.addDatabase(db);
-            }
+            SHARDING_RULE_TYPES.addAll(Arrays.asList(assertsDefinition.getBaseConfig().split(",")));
+            DatabaseEnvironmentManager.SHARDING_RULE_TYPE.addAll(SHARDING_RULE_TYPES);
             result.addAll(getParameters(each, assertsDefinition.getAssertDQL()));
             result.addAll(getParameters(each, assertsDefinition.getAssertDML()));
             result.addAll(getParameters(each, assertsDefinition.getAssertDDL()));
@@ -115,9 +117,13 @@ public final class StartTest {
         if (isInitialized) {
             isInitialized = false;
         } else {
-            DatabaseEnvironmentManager.dropDatabase();
+            for (String each : SHARDING_RULE_TYPES) {
+                DatabaseEnvironmentManager.dropDatabase(each);
+            }
         }
-        DatabaseEnvironmentManager.createDatabase();
+        for (String each : SHARDING_RULE_TYPES) {
+            DatabaseEnvironmentManager.createDatabase(each);
+        }
         DatabaseEnvironmentManager.createTable();
     }
     
@@ -127,9 +133,11 @@ public final class StartTest {
     }
     
     @AfterClass
-    public static void afterClass() {
+    public static void afterClass() throws JAXBException, IOException, SQLException {
         if (isCleaned) {
-            DatabaseEnvironmentManager.dropDatabase();
+            for (String each : SHARDING_RULE_TYPES) {
+                DatabaseEnvironmentManager.dropDatabase(each);
+            }
             isCleaned = false;
         }
     }
