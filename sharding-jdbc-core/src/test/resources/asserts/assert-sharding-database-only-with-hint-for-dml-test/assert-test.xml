@@ -196,8 +196,8 @@
 <dml-assert id="assertInsertWithPartialPlaceholders" expected-update="9" sql="assertInsertWithPartialPlaceholders" sharding-rule-types="db" expected-sql="assertSelectEqualsWithSingleTable">
         <subAssert expected-data-file="insert/db_1.xml">
             <parameter>
-                <valueReplace value="1" type="int"/>
-                <valueReplace value="1" type="int"/>
+                <value-replace value="1" type="int"/>
+                <value-replace value="1" type="int"/>
                 <value value="insert"/>
             </parameter>
             <expected-parameter>
@@ -207,8 +207,8 @@
         </subAssert>
         <subAssert expected-data-file="insert/db_2.xml">
             <parameter>
-                <valueReplace value="2" type="int"/>
-                <valueReplace value="2" type="int"/>
+                <value-replace value="2" type="int"/>
+                <value-replace value="2" type="int"/>
                 <value value="insert"/>
             </parameter>
             <expected-parameter>
@@ -218,8 +218,8 @@
         </subAssert>
         <subAssert expected-data-file="insert/db_3.xml">
             <parameter>
-                <valueReplace value="3" type="int"/>
-                <valueReplace value="3" type="int"/>
+                <value-replace value="3" type="int"/>
+                <value-replace value="3" type="int"/>
                 <value value="insert"/>
             </parameter>
             <expected-parameter>
@@ -229,8 +229,8 @@
         </subAssert>
         <subAssert expected-data-file="insert/db_4.xml">
             <parameter>
-                <valueReplace value="4" type="int"/>
-                <valueReplace value="4" type="int"/>
+                <value-replace value="4" type="int"/>
+                <value-replace value="4" type="int"/>
                 <value value="insert"/>
             </parameter>
             <expected-parameter>
@@ -240,8 +240,8 @@
         </subAssert>
         <subAssert expected-data-file="insert/db_5.xml">
             <parameter>
-                <valueReplace value="5" type="int"/>
-                <valueReplace value="5" type="int"/>
+                <value-replace value="5" type="int"/>
+                <value-replace value="5" type="int"/>
                 <value value="insert"/>
             </parameter>
             <expected-parameter>
@@ -251,8 +251,8 @@
         </subAssert>
         <subAssert expected-data-file="insert/db_6.xml">
             <parameter>
-                <valueReplace value="6" type="int"/>
-                <valueReplace value="6" type="int"/>
+                <value-replace value="6" type="int"/>
+                <value-replace value="6" type="int"/>
                 <value value="insert"/>
             </parameter>
             <expected-parameter>
@@ -262,8 +262,8 @@
         </subAssert>
         <subAssert expected-data-file="insert/db_7.xml">
             <parameter>
-                <valueReplace value="7" type="int"/>
-                <valueReplace value="7" type="int"/>
+                <value-replace value="7" type="int"/>
+                <value-replace value="7" type="int"/>
                 <value value="insert"/>
             </parameter>
             <expected-parameter>
@@ -273,8 +273,8 @@
         </subAssert>
         <subAssert expected-data-file="insert/db_8.xml">
             <parameter>
-                <valueReplace value="8" type="int"/>
-                <valueReplace value="8" type="int"/>
+                <value-replace value="8" type="int"/>
+                <value-replace value="8" type="int"/>
                 <value value="insert"/>
             </parameter>
             <expected-parameter>
@@ -284,8 +284,8 @@
         </subAssert>
         <subAssert expected-data-file="insert/db_9.xml">
             <parameter>
-                <valueReplace value="9" type="int"/>
-                <valueReplace value="9" type="int"/>
+                <value-replace value="9" type="int"/>
+                <value-replace value="9" type="int"/>
                 <value value="insert"/>
             </parameter>
             <expected-parameter>

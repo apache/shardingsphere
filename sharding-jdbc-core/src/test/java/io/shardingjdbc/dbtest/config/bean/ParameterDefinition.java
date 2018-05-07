@@ -17,13 +17,11 @@
 
 package io.shardingjdbc.dbtest.config.bean;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-
 import lombok.Getter;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +32,7 @@ public class ParameterDefinition {
     @XmlElement(name = "value")
     private List<ParameterValueDefinition> values = new ArrayList<>();
     
-    @XmlElement(name = "valueReplace")
+    @XmlElement(name = "value-replace")
     private List<ParameterValueDefinition> valueReplaces = new ArrayList<>();
     
 }
