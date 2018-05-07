@@ -12,6 +12,6 @@ import java.io.IOException;
 public class CacheClientTest extends UsualClientTest {
     @Override
     protected Client createClient(ClientFactory creator) throws IOException, InterruptedException {
-        return creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes()).newUsualClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).start();
+        return creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes()).newCacheClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).start();
     }
 }

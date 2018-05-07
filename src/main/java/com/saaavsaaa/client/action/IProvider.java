@@ -1,6 +1,7 @@
 package com.saaavsaaa.client.action;
 
 import com.saaavsaaa.client.election.LeaderElection;
+import com.saaavsaaa.client.utility.section.Listener;
 import org.apache.zookeeper.KeeperException;
 
 import java.util.List;
@@ -14,4 +15,5 @@ public interface IProvider extends IAction {
     List<String> getNecessaryPaths(final String key);
     Stack<String> getDeletingPaths(final String key);
     void executeContention(final LeaderElection election) throws KeeperException, InterruptedException;
+    void watch(final String key, final Listener listener);
 }

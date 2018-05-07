@@ -135,7 +135,8 @@ public class PathUtil {
         char previous = 47;
         char[] chars = path.toCharArray();
         StringBuilder builder = new StringBuilder();
-    
+        builder.append(previous);
+        
         for(int i = 1; i < chars.length; ++i) {
             char c = chars[i];
             if (c == 0 || (c == 47 && previous == 47)) {
@@ -157,8 +158,8 @@ public class PathUtil {
                 continue;
             }
     
-            builder.append(previous);
-            previous = chars[i];
+            builder.append(c);
+            previous = c;
         }
         return builder.toString();
     }

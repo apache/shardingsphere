@@ -2,9 +2,7 @@ package com.saaavsaaa.client.cache;
 
 import com.saaavsaaa.client.utility.constant.Constants;
 
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -69,6 +67,7 @@ public class PathNode {
     public byte[] getValue() {
         return value;
     }
+    
     public void setValue(byte[] value) {
         this.value = value;
     }

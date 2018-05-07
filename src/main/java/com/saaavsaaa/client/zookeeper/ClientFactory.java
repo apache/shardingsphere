@@ -28,8 +28,18 @@ public class ClientFactory {
         return this;
     }
     
+    /*
+    * used for create new clients through a existing client
+    */
     ClientFactory newUsualClient() {
         client = new UsualClient(servers, sessionTimeoutMilliseconds);
+        return this;
+    }
+    
+    public ClientFactory newCacheClient(final String servers, final int sessionTimeoutMilliseconds) {
+        this.servers = servers;
+        this.sessionTimeoutMilliseconds = sessionTimeoutMilliseconds;
+        client = new CacheClient(servers, sessionTimeoutMilliseconds);
         return this;
     }
     
