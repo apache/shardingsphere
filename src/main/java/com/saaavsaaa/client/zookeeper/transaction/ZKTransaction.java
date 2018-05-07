@@ -8,7 +8,6 @@ import java.util.List;
 
 /**
  * Created by aaa
- * todo transaction api
  */
 public class ZKTransaction {
     private final Transaction transaction;

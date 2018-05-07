@@ -141,6 +141,7 @@ public abstract class Client implements IClient {
     
     void deleteNamespace() throws KeeperException, InterruptedException {
         zooKeeper.delete(rootNode, Constants.VERSION);
+        rootExist = false;
     }
     
     void setRootNode(final String rootNode) {

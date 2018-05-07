@@ -87,7 +87,6 @@ public abstract class BaseClientTest {
     protected void get(Client client) throws KeeperException, InterruptedException {
         client.createAllNeedPath("a/b", "bbb11", CreateMode.PERSISTENT);
         String key = "a";
-        // TODO: cache
         assert getDirectly(key, client).equals("");
         key = "a/b";
         assert getDirectly(key, client).equals("bbb11");

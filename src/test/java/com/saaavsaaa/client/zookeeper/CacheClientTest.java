@@ -8,6 +8,7 @@ import java.io.IOException;
 
 /**
  * Created by aaa
+ * todo test check cache content
  */
 public class CacheClientTest extends UsualClientTest {
     @Override
