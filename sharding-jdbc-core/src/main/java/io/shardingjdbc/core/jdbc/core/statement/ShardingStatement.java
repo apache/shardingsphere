@@ -219,7 +219,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
     }
 
     private void refreshShardingMetaData(final ShardingContext context, final SQLRouteResult routeResult) throws SQLException {
-        if (routeResult.isDDLResult()) {
+        if (routeResult.canRefreshMetaData()) {
             String logicTable = routeResult.getSqlStatement().getTables().getSingleTableName();
             TableRule tableRule = context.getShardingRule().getTableRule(logicTable);
             context.getShardingMetaData().refresh(tableRule, context.getShardingRule());

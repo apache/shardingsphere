@@ -44,11 +44,11 @@ public final class SQLRouteResult {
     private final Set<SQLExecutionUnit> executionUnits = new LinkedHashSet<>();
 
     /**
-     * whether SQLRouteResult is DDL type or not.
+     * whether SQLRouteResult can refresh table metadata.
      *
      * @return boolean
      */
-    public boolean isDDLResult() {
-        return SQLType.DDL.equals(sqlStatement.getType());
+    public boolean canRefreshMetaData() {
+        return SQLType.DDL.equals(sqlStatement.getType()) && !sqlStatement.getTables().isEmpty();
     }
 }

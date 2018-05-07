@@ -26,11 +26,7 @@ import org.mockito.Mockito;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -67,6 +63,10 @@ public final class ShardingDataSourceFactoryTest {
         when(databaseMetaData.getDatabaseProductName()).thenReturn("H2");
         when(connection.createStatement()).thenReturn(statement);
         when(statement.executeQuery(Mockito.anyString())).thenReturn(resultSet);
+        when(statement.getConnection()).thenReturn(connection);
+        when(statement.getConnection().getMetaData().getTables(null, null, "table_0", null)).thenReturn(resultSet);
+        when(statement.getConnection().getMetaData().getTables(null, null, "table_1", null)).thenReturn(resultSet);
+        when(statement.getConnection().getMetaData().getTables(null, null, "table_2", null)).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         Map<String, DataSource> result = new HashMap<>(1);
         result.put("ds", dataSource);
