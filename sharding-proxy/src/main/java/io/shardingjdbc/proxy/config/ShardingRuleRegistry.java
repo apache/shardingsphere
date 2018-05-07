@@ -66,8 +66,8 @@ public final class ShardingRuleRegistry {
         }
         shardingRule = yamlShardingConfigurationForProxy.getShardingRule(Collections.<String>emptyList());
         try {
+            // TODO currently only support MySQL datasource
             shardingMetaData = new JDBCShardingMetaData(dataSourceMap, shardingRule, DatabaseType.MySQL);
-//            shardingMetaData = new ProxyShardingMetaData(dataSourceMap);
             shardingMetaData.init(shardingRule);
         } catch (final SQLException ex) {
             throw new ShardingJdbcException(ex);
