@@ -24,12 +24,12 @@ import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.dbtest.common.DatabaseUtil;
 import io.shardingjdbc.dbtest.config.DataSetsParser;
+import io.shardingjdbc.dbtest.config.bean.AssertSubDefinition;
+import io.shardingjdbc.dbtest.config.bean.ColumnDefinition;
 import io.shardingjdbc.dbtest.config.bean.DDLDataSetAssert;
 import io.shardingjdbc.dbtest.config.bean.DMLDataSetAssert;
 import io.shardingjdbc.dbtest.config.bean.DQLDataSetAssert;
 import io.shardingjdbc.dbtest.config.bean.DataSetAssert;
-import io.shardingjdbc.dbtest.config.bean.AssertSubDefinition;
-import io.shardingjdbc.dbtest.config.bean.ColumnDefinition;
 import io.shardingjdbc.dbtest.config.bean.DatasetDatabase;
 import io.shardingjdbc.dbtest.config.bean.DatasetDefinition;
 import io.shardingjdbc.dbtest.config.bean.ParameterDefinition;
@@ -612,8 +612,8 @@ public final class AssertEngine {
     }
     
     private static void doSelectUsePreparedStatementToExecuteSelect(final String expectedDataFile, final DataSource dataSource, final DQLDataSetAssert anAssert, final String rootsql) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
-        try (Connection con = dataSource.getConnection();) {
-            DatasetDatabase ddPreparedStatement = DatabaseUtil.selectUsePreparedStatementToExecuteSelect(con, rootsql, anAssert.getParameter());
+        try (Connection connection = dataSource.getConnection()) {
+            DatasetDatabase ddPreparedStatement = DatabaseUtil.selectUsePreparedStatementToExecuteSelect(connection, rootsql, anAssert.getParameter());
             DatasetDefinition checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
             DatabaseUtil.assertDatas(checkDataset, ddPreparedStatement);
         }
