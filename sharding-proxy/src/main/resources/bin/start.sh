@@ -27,9 +27,10 @@ JAVA_MEM_OPTS=" -server -Xmx2g -Xms2g -Xmn256m -Xss256k -XX:+DisableExplicitGC -
 MAIN_CLASS=io.shardingjdbc.proxy.Bootstrap
 
 if [ $# == 1 ]; then
-    MAIN_CLASS=$MAIN_CLASS $1
+    MAIN_CLASS=$MAIN_CLASS" "$1
 fi
 
 echo "Starting the $SERVER_NAME ..."
 nohup java $JAVA_OPTS $JAVA_MEM_OPTS -classpath $CLASS_PATH $MAIN_CLASS > $STDOUT_FILE 2>&1 &
+sleep 1
 echo "Please check the STDOUT file: $STDOUT_FILE"
