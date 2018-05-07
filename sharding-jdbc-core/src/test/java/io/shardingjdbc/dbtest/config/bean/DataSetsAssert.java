@@ -32,8 +32,8 @@ public class DataSetsAssert {
     @XmlAttribute(name = "sharding-rule-type")
     private String shardingRuleType = "db,dbtbl,nullable";
     
-    @XmlAttribute(name = "database-config")
-    private String databaseConfig = "H2,MySQL,Oracle,SQLServer,PostgreSQL";
+    @XmlAttribute(name = "database-types")
+    private String databaseTypes = "H2,MySQL,Oracle,SQLServer,PostgreSQL";
     
     @XmlElement(name = "dql-assert")
     private List<DQLDataSetAssert> dqlDataSetAsserts = new LinkedList<>();

@@ -93,9 +93,9 @@ public final class DataSetAssertLoader {
         DataSetsAssert assertsDefinition = unmarshal(file);
         Map<String, DataSetAssert> result = new HashMap<>(assertsDefinition.getDqlDataSetAsserts().size() + assertsDefinition.getDmlDataSetAsserts().size() + assertsDefinition.getDdlDataSetAsserts().size(), 1);
         shardingRuleTypes.addAll(Arrays.asList(assertsDefinition.getShardingRuleType().split(",")));
-        result.putAll(loadDataSetAssert(file, assertsDefinition.getDqlDataSetAsserts(), assertsDefinition.getShardingRuleType(), assertsDefinition.getDatabaseConfig()));
-        result.putAll(loadDataSetAssert(file, assertsDefinition.getDmlDataSetAsserts(), assertsDefinition.getShardingRuleType(), assertsDefinition.getDatabaseConfig()));
-        result.putAll(loadDataSetAssert(file, assertsDefinition.getDdlDataSetAsserts(), assertsDefinition.getShardingRuleType(), assertsDefinition.getDatabaseConfig()));
+        result.putAll(loadDataSetAssert(file, assertsDefinition.getDqlDataSetAsserts(), assertsDefinition.getShardingRuleType(), assertsDefinition.getDatabaseTypes()));
+        result.putAll(loadDataSetAssert(file, assertsDefinition.getDmlDataSetAsserts(), assertsDefinition.getShardingRuleType(), assertsDefinition.getDatabaseTypes()));
+        result.putAll(loadDataSetAssert(file, assertsDefinition.getDdlDataSetAsserts(), assertsDefinition.getShardingRuleType(), assertsDefinition.getDatabaseTypes()));
         return result;
     }
     
@@ -109,8 +109,8 @@ public final class DataSetAssertLoader {
             } else {
                 shardingRuleTypes.addAll(Arrays.asList(each.getShardingRuleType().split(",")));
             }
-            if (Strings.isNullOrEmpty(each.getDatabaseConfig())) {
-                each.setDatabaseConfig(defaultDatabaseTypes);
+            if (Strings.isNullOrEmpty(each.getDatabaseTypes())) {
+                each.setDatabaseTypes(defaultDatabaseTypes);
             }
         }
         return result;

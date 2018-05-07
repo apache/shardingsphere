@@ -78,7 +78,7 @@ public final class StartTest {
             if (null == assertDefinition) {
                 continue;
             }
-            if (!getDatabaseTypes(assertDefinition.getDatabaseConfig()).contains(databaseType)) {
+            if (!getDatabaseTypes(assertDefinition.getDatabaseTypes()).contains(databaseType)) {
                 continue;
             }
             for (String shardingRuleType : assertDefinition.getShardingRuleType().split(",")) {
