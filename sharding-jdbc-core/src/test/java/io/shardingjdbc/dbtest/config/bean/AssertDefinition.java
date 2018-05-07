@@ -23,7 +23,15 @@ public interface AssertDefinition {
     
     String getShardingRuleType();
     
+    void setShardingRuleType(String shardingRuleTypes);
+    
     String getDatabaseConfig();
     
+    void setDatabaseConfig(String databaseTypes);
+    
     String getSql();
+    
+    String getPath();
+    
+    void setPath(String path);
 }

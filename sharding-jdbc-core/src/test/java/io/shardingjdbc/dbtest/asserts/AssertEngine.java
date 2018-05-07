@@ -69,13 +69,12 @@ public final class AssertEngine {
      * @param assertDefinition assert definition
      * @param shardingRuleType sharding rule type
      * @param databaseTypeEnvironment database type environment
-     * @param path Check the use case storage path
      */
-    public static void runAssert(final AssertDefinition assertDefinition, final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment, final String path) throws IOException, SQLException, SAXException, ParserConfigurationException, XPathExpressionException, ParseException, JAXBException {
+    public static void runAssert(final AssertDefinition assertDefinition, final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, SQLException, SAXException, ParserConfigurationException, XPathExpressionException, ParseException, JAXBException {
         if (!databaseTypeEnvironment.isEnabled()) {
             return;
         }
-        String rootPath = path.substring(0, path.lastIndexOf(File.separator) + 1);
+        String rootPath = assertDefinition.getPath().substring(0, assertDefinition.getPath().lastIndexOf(File.separator) + 1);
         String initDataPath = EnvironmentPath.getDataInitializeResourceFile(shardingRuleType);
         Collection<String> dataSourceNames = SchemaEnvironmentManager.getDataSourceNames(shardingRuleType);
         Map<String, DataSource> dataSourceMap = createDataSourceMap(dataSourceNames, databaseTypeEnvironment.getDatabaseType());
@@ -170,7 +169,7 @@ public final class AssertEngine {
             AssertDDLDefinition anAssertSub = new AssertDDLDefinition(anAssert.getId(), anAssert.getInitSql(),
                     anAssert.getShardingRuleType(), anAssert.getDatabaseConfig(), anAssert.getCleanSql(), expectedDataFileSub,
                     anAssert.getSql(), anAssert.getTable(),
-                    parameter, anAssert.getSubAsserts());
+                    parameter, anAssert.getSubAsserts(), "");
             doUpdateUseStatementToExecuteUpdateDDL(shardingRuleType, databaseType, expectedDataFileTmp, dataSource, anAssertSub, rootsql);
             doUpdateUseStatementToExecuteDDL(shardingRuleType, databaseType, expectedDataFileTmp, dataSource, anAssertSub, rootsql);
             doUpdateUsePreparedStatementToExecuteUpdateDDL(shardingRuleType, databaseType, expectedDataFileTmp, dataSource, anAssertSub, rootsql);
@@ -246,7 +245,7 @@ public final class AssertEngine {
                     }
                     AssertDMLDefinition anAssertSub = new AssertDMLDefinition(dmlDefinition.getId(),
                             expectedDataFileSub, dmlDefinition.getShardingRuleType(), dmlDefinition.getDatabaseConfig(), subAssert.getExpectedUpdate(), dmlDefinition.getSql(),
-                            dmlDefinition.getExpectedSql(), parameter, expectedParameter, dmlDefinition.getSubAsserts());
+                            dmlDefinition.getExpectedSql(), parameter, expectedParameter, dmlDefinition.getSubAsserts(), "");
                     resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, mapDatasetDefinition, sqls);
                     resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, mapDatasetDefinition, sqls);
                     resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, mapDatasetDefinition, sqls);
@@ -299,7 +298,7 @@ public final class AssertEngine {
                     }
                     AssertDMLDefinition anAssertSub = new AssertDMLDefinition(dmlDefinition.getId(),
                             expectedDataFileSub, dmlDefinition.getShardingRuleType(), dmlDefinition.getDatabaseConfig(), subAssert.getExpectedUpdate(), dmlDefinition.getSql(),
-                            dmlDefinition.getExpectedSql(), parameter, expectedParameter, dmlDefinition.getSubAsserts());
+                            dmlDefinition.getExpectedSql(), parameter, expectedParameter, dmlDefinition.getSubAsserts(), "");
                     resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, mapDatasetDefinition, sqls);
                     resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, mapDatasetDefinition, sqls);
                     resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, mapDatasetDefinition, sqls);
@@ -394,7 +393,7 @@ public final class AssertEngine {
             }
             AssertDQLDefinition anAssertSub = new AssertDQLDefinition(anAssert.getId(),
                     expectedDataFileSub, anAssert.getShardingRuleType(), anAssert.getDatabaseConfig(), anAssert.getSql(),
-                    parameter, anAssert.getSubAsserts());
+                    parameter, anAssert.getSubAsserts(), "");
             doSelectUsePreparedStatement(expectedDataFileTmp, dataSource, anAssertSub, rootSQL);
             doSelectUsePreparedStatementToExecuteSelect(expectedDataFileTmp, dataSource, anAssertSub, rootSQL);
             doSelectUseStatement(expectedDataFileTmp, dataSource, anAssertSub, rootSQL);

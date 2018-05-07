@@ -17,14 +17,15 @@
 
 package io.shardingjdbc.dbtest;
 
-import com.google.common.base.Strings;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.dbtest.asserts.AssertEngine;
+import io.shardingjdbc.dbtest.asserts.DataSetAssertLoader;
 import io.shardingjdbc.dbtest.config.bean.AssertDefinition;
-import io.shardingjdbc.dbtest.config.bean.AssertsDefinition;
 import io.shardingjdbc.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingjdbc.dbtest.env.IntegrateTestEnvironment;
 import io.shardingjdbc.dbtest.env.schema.SchemaEnvironmentManager;
+import io.shardingjdbc.test.sql.SQLCaseType;
+import io.shardingjdbc.test.sql.SQLCasesLoader;
 import lombok.RequiredArgsConstructor;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -34,37 +35,24 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.xml.sax.SAXException;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-
-import static org.junit.Assert.assertNotNull;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
 public final class StartTest {
     
-    private static final String INTEGRATION_RESOURCES_PATH = "asserts";
+    private static SQLCasesLoader sqlCasesLoader = SQLCasesLoader.getInstance();
     
-    private static final Collection<String> SHARDING_RULE_TYPES = new HashSet<>();
+    private static DataSetAssertLoader dataSetAssertLoader = DataSetAssertLoader.getInstance();
     
     private static boolean isInitialized = IntegrateTestEnvironment.getInstance().isInitialized();
     
@@ -76,59 +64,33 @@ public final class StartTest {
     
     private final DatabaseTypeEnvironment databaseTypeEnvironment;
     
-    private final String path;
+    private final SQLCaseType caseType;
     
     @Parameters(name = "{0} -> Rule:{1} -> {2}")
-    public static Collection<Object[]> getParameters() throws IOException, JAXBException, URISyntaxException {
-        URL integrateResources = StartTest.class.getClassLoader().getResource(INTEGRATION_RESOURCES_PATH);
-        assertNotNull(integrateResources);
-        List<Object[]> result = new LinkedList<>();
-        for (String each : getAssertFiles(integrateResources)) {
-            AssertsDefinition assertsDefinition = unmarshal(each);
-            Collection<String> shardingRuleTypes = Arrays.asList(assertsDefinition.getShardingRuleType().split(","));
-            SHARDING_RULE_TYPES.addAll(shardingRuleTypes);
-            Collection<DatabaseType> databaseTypes = getDatabaseTypes(assertsDefinition.getDatabaseConfig());
-            result.addAll(getParameters(each, assertsDefinition.getAssertDQL(), shardingRuleTypes, databaseTypes));
-            result.addAll(getParameters(each, assertsDefinition.getAssertDML(), shardingRuleTypes, databaseTypes));
-            result.addAll(getParameters(each, assertsDefinition.getAssertDDL(), shardingRuleTypes, databaseTypes));
-        }
-        return result;
-    }
-    
-    private static Collection<Object[]> getParameters(final String path, final List<? extends AssertDefinition> assertDefinitions, final Collection<String> defaultShardingRuleTypes, final Collection<DatabaseType> defaultDatabaseTypes) {
+    public static Collection<Object[]> getParameters() {
         Collection<Object[]> result = new LinkedList<>();
-        for (AssertDefinition each : assertDefinitions) {
-            Collection<String> shardingRuleTypes = Strings.isNullOrEmpty(each.getShardingRuleType()) ? defaultShardingRuleTypes : Arrays.asList(each.getShardingRuleType().split(","));
-            for (String shardingRuleType : shardingRuleTypes) {
-                Collection<DatabaseType> databaseTypes = Strings.isNullOrEmpty(each.getDatabaseConfig()) ? defaultDatabaseTypes : getDatabaseTypes(each.getDatabaseConfig());
-                for (DatabaseType databaseType : databaseTypes) {
-                    result.add(new Object[] {
-                            each, shardingRuleType, new DatabaseTypeEnvironment(databaseType, IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType)), path});
-                }
+        for (Object[] each : sqlCasesLoader.getSupportedSQLTestParameters(Arrays.<Enum>asList(DatabaseType.values()), DatabaseType.class)) {
+            String sqlCaseId = each[0].toString();
+            DatabaseType databaseType = (DatabaseType) each[1];
+            SQLCaseType caseType = (SQLCaseType) each[2];
+            AssertDefinition assertDefinition = dataSetAssertLoader.getDataSetAssert(sqlCaseId);
+            // TODO remove when transfer finished
+            if (null == assertDefinition) {
+                continue;
+            }
+            if (!getDatabaseTypes(assertDefinition.getDatabaseConfig()).contains(databaseType)) {
+                continue;
+            }
+            for (String shardingRuleType : assertDefinition.getShardingRuleType().split(",")) {
+                Object[] data = new Object[4];
+                data[0] = assertDefinition;
+                data[1] = shardingRuleType;
+                data[2] = new DatabaseTypeEnvironment(databaseType, IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType));
+                data[3] = caseType;
+                result.add(data);
             }
         }
         return result;
-    }
-    
-    private static List<String> getAssertFiles(final URL integrateResources) throws IOException, URISyntaxException {
-        final List<String> result = new LinkedList<>();
-        Files.walkFileTree(Paths.get(integrateResources.toURI()), new SimpleFileVisitor<Path>() {
-            
-            @Override
-            public FileVisitResult visitFile(final Path file, final BasicFileAttributes basicFileAttributes) {
-                if (file.getFileName().toString().startsWith("assert-") && file.getFileName().toString().endsWith(".xml")) {
-                    result.add(file.toFile().getPath());
-                }
-                return FileVisitResult.CONTINUE;
-            }
-        });
-        return result;
-    }
-    
-    private static AssertsDefinition unmarshal(final String assertFilePath) throws IOException, JAXBException {
-        try (FileReader reader = new FileReader(assertFilePath)) {
-            return (AssertsDefinition) JAXBContext.newInstance(AssertsDefinition.class).createUnmarshaller().unmarshal(reader);
-        }
     }
     
     private static List<DatabaseType> getDatabaseTypes(final String databaseTypes) {
@@ -144,14 +106,14 @@ public final class StartTest {
         if (isInitialized) {
             isInitialized = false;
         } else {
-            for (String each : SHARDING_RULE_TYPES) {
+            for (String each : dataSetAssertLoader.getShardingRuleTypes()) {
                 SchemaEnvironmentManager.dropDatabase(each);
             }
         }
-        for (String each : SHARDING_RULE_TYPES) {
+        for (String each : dataSetAssertLoader.getShardingRuleTypes()) {
             SchemaEnvironmentManager.createDatabase(each);
         }
-        for (String each : SHARDING_RULE_TYPES) {
+        for (String each : dataSetAssertLoader.getShardingRuleTypes()) {
             SchemaEnvironmentManager.createTable(each);
         }
     }
@@ -160,7 +122,7 @@ public final class StartTest {
     // TODO add tearDown for temporary, will remove when original integrate test removed.
     public static void tearDown() throws JAXBException, IOException {
         if (isCleaned) {
-            for (String each : SHARDING_RULE_TYPES) {
+            for (String each : dataSetAssertLoader.getShardingRuleTypes()) {
                 SchemaEnvironmentManager.dropDatabase(each);
             }
             isCleaned = false;
@@ -169,6 +131,6 @@ public final class StartTest {
     
     @Test
     public void test() throws JAXBException, SAXException, ParseException, IOException, XPathExpressionException, SQLException, ParserConfigurationException {
-        AssertEngine.runAssert(assertDefinition, shardingRuleType, databaseTypeEnvironment, path);
+        AssertEngine.runAssert(assertDefinition, shardingRuleType, databaseTypeEnvironment);
     }
 }
