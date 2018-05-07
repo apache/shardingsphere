@@ -30,8 +30,8 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class DataSetMetadata {
     
-    @XmlAttribute(name = "table-names")
-    private String tableNames;
+    @XmlAttribute(name = "data-nodes")
+    private String dataNodes;
     
     @XmlElement(name = "column")
     private List<DataSetColumnMetadata> columnMetadataList = new LinkedList<>();

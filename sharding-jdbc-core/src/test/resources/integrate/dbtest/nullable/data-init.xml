@@ -1,5 +1,5 @@
 <datasets>
-    <metadata table-names="t_order">
+    <metadata data-nodes="nullable_${0..9}.t_order">
         <column name="order_id" type="numeric" />
         <column name="sku_num" type="numeric" />
         <column name="status" type="varchar" />

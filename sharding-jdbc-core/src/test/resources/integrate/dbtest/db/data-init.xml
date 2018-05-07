@@ -1,10 +1,10 @@
 <datasets>
-    <metadata table-names="t_order">
+    <metadata data-nodes="db_${0..9}.t_order">
         <column name="order_id" type="numeric" />
         <column name="user_id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
-    <metadata table-names="t_order_item">
+    <metadata table-names="db_${0..9}.t_order_item">
         <column name="item_id" type="numeric" />
         <column name="order_id" type="numeric" />
         <column name="user_id" type="numeric" />

@@ -1,20 +1,20 @@
 <datasets>
-    <metadata table-names="t_order_0, t_order_1, t_order_2, t_order_3, t_order_4, t_order_5, t_order_6, t_order_7, t_order_8, t_order_9">
+    <metadata data-nodes="db_${0..9}.t_order_${0..9}">
         <column name="order_id" type="numeric" />
         <column name="user_id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
-    <metadata table-names="t_order_item_0, t_order_item_1, t_order_item_2, t_order_item_3, t_order_item_4, t_order_item_5, t_order_item_6, t_order_item_7, t_order_item_8, t_order_item_9">
+    <metadata data-nodes="db_${0..9}.t_order_item_${0..9}">
         <column name="item_id" type="numeric" />
         <column name="order_id" type="numeric" />
         <column name="user_id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
-    <metadata table-names="t_config">
+    <metadata data-nodes="db_${0..9}.t_config">
         <column name="id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
-    <metadata table-names="t_global">
+    <metadata data-nodes="db_0.t_global">
         <column name="id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
