@@ -140,7 +140,7 @@ public final class AssertEngine {
             if (!databaseSubTypes.contains(databaseType)) {
                 break;
             }
-            String baseConfig = subAssert.getShardingRuleType();
+            String baseConfig = subAssert.getShardingRuleTypes();
             if (StringUtils.isNotBlank(baseConfig)) {
                 String[] baseConfigs = StringUtils.split(baseConfig, ",");
                 boolean flag = true;
@@ -169,7 +169,7 @@ public final class AssertEngine {
                 parameter = anAssert.getParameter();
             }
             DDLDataSetAssert anAssertSub = new DDLDataSetAssert(anAssert.getId(), anAssert.getInitSql(),
-                    anAssert.getShardingRuleType(), anAssert.getDatabaseTypes(), anAssert.getCleanSql(), expectedDataFileSub,
+                    anAssert.getShardingRuleTypes(), anAssert.getDatabaseTypes(), anAssert.getCleanSql(), expectedDataFileSub,
                     anAssert.getSql(), anAssert.getTable(),
                     parameter, anAssert.getSubAsserts(), "");
             doUpdateUseStatementToExecuteUpdateDDL(shardingRuleType, databaseType, expectedDataFileTmp, dataSource, anAssertSub, rootsql);
@@ -208,7 +208,7 @@ public final class AssertEngine {
                     if (!databaseSubTypes.contains(databaseType)) {
                         break;
                     }
-                    String baseConfigSub = subAssert.getShardingRuleType();
+                    String baseConfigSub = subAssert.getShardingRuleTypes();
                     if (StringUtils.isNotBlank(baseConfigSub)) {
                         String[] baseConfigs = StringUtils.split(baseConfigSub, ",");
                         boolean flag = true;
@@ -241,7 +241,7 @@ public final class AssertEngine {
                         expectedParameter = dmlDefinition.getParameter();
                     }
                     DMLDataSetAssert anAssertSub = new DMLDataSetAssert(dmlDefinition.getId(),
-                            expectedDataFileSub, dmlDefinition.getShardingRuleType(), dmlDefinition.getDatabaseTypes(), subAssert.getExpectedUpdate(), dmlDefinition.getSql(),
+                            expectedDataFileSub, dmlDefinition.getShardingRuleTypes(), dmlDefinition.getDatabaseTypes(), subAssert.getExpectedUpdate(), dmlDefinition.getSql(),
                             dmlDefinition.getExpectedSql(), parameter, expectedParameter, dmlDefinition.getSubAsserts(), "");
                     resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, mapDatasetDefinition, sqls);
                     resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, mapDatasetDefinition, sqls);
@@ -261,7 +261,7 @@ public final class AssertEngine {
                     if (!databaseSubTypes.contains(databaseType)) {
                         break;
                     }
-                    String baseConfigSub = subAssert.getShardingRuleType();
+                    String baseConfigSub = subAssert.getShardingRuleTypes();
                     if (StringUtils.isNotBlank(baseConfigSub)) {
                         String[] baseConfigs = StringUtils.split(baseConfigSub, ",");
                         boolean flag = true;
@@ -294,7 +294,7 @@ public final class AssertEngine {
                         expectedParameter = dmlDefinition.getParameter();
                     }
                     DMLDataSetAssert anAssertSub = new DMLDataSetAssert(dmlDefinition.getId(),
-                            expectedDataFileSub, dmlDefinition.getShardingRuleType(), dmlDefinition.getDatabaseTypes(), subAssert.getExpectedUpdate(), dmlDefinition.getSql(),
+                            expectedDataFileSub, dmlDefinition.getShardingRuleTypes(), dmlDefinition.getDatabaseTypes(), subAssert.getExpectedUpdate(), dmlDefinition.getSql(),
                             dmlDefinition.getExpectedSql(), parameter, expectedParameter, dmlDefinition.getSubAsserts(), "");
                     resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, mapDatasetDefinition, sqls);
                     resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, mapDatasetDefinition, sqls);
@@ -356,7 +356,7 @@ public final class AssertEngine {
             if (!databaseSubTypes.contains(databaseType)) {
                 break;
             }
-            String baseSubConfig = subAssert.getShardingRuleType();
+            String baseSubConfig = subAssert.getShardingRuleTypes();
             if (StringUtils.isNotBlank(baseSubConfig)) {
                 String[] baseConfigs = StringUtils.split(baseSubConfig, ",");
                 boolean flag = true;
@@ -385,7 +385,7 @@ public final class AssertEngine {
                 parameter = anAssert.getParameter();
             }
             DQLDataSetAssert anAssertSub = new DQLDataSetAssert(anAssert.getId(),
-                    expectedDataFileSub, anAssert.getShardingRuleType(), anAssert.getDatabaseTypes(), anAssert.getSql(),
+                    expectedDataFileSub, anAssert.getShardingRuleTypes(), anAssert.getDatabaseTypes(), anAssert.getSql(),
                     parameter, anAssert.getSubAsserts(), "");
             doSelectUsePreparedStatement(expectedDataFileTmp, dataSource, anAssertSub, rootSQL);
             doSelectUsePreparedStatementToExecuteSelect(expectedDataFileTmp, dataSource, anAssertSub, rootSQL);

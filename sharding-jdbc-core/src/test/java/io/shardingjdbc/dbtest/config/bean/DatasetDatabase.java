@@ -18,6 +18,4 @@
 package io.shardingjdbc.dbtest.config.bean;
 
 public class DatasetDatabase extends DatasetDefinition {
-
-
 }

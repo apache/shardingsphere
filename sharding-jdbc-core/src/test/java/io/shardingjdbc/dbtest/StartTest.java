@@ -81,7 +81,7 @@ public final class StartTest {
             if (!getDatabaseTypes(assertDefinition.getDatabaseTypes()).contains(databaseType)) {
                 continue;
             }
-            for (String shardingRuleType : assertDefinition.getShardingRuleType().split(",")) {
+            for (String shardingRuleType : assertDefinition.getShardingRuleTypes().split(",")) {
                 Object[] data = new Object[4];
                 data[0] = assertDefinition;
                 data[1] = shardingRuleType;

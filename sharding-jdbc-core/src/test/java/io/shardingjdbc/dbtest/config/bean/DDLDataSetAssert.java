@@ -42,8 +42,8 @@ public class DDLDataSetAssert implements DataSetAssert {
     @XmlAttribute(name = "init-sql")
     private String initSql;
     
-    @XmlAttribute(name = "sharding-rule-type")
-    private String shardingRuleType;
+    @XmlAttribute(name = "sharding-rule-types")
+    private String shardingRuleTypes;
     
     @XmlAttribute(name = "database-types")
     private String databaseTypes;

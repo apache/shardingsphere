@@ -29,8 +29,8 @@ import java.util.List;
 @XmlRootElement(name = "asserts")
 public class DataSetsAssert {
     
-    @XmlAttribute(name = "sharding-rule-type")
-    private String shardingRuleType = "db,dbtbl,nullable";
+    @XmlAttribute(name = "sharding-rule-types")
+    private String shardingRuleTypes = "db,dbtbl,nullable";
     
     @XmlAttribute(name = "database-types")
     private String databaseTypes = "H2,MySQL,Oracle,SQLServer,PostgreSQL";

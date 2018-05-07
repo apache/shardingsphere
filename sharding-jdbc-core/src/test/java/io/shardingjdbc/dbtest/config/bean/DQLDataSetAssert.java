@@ -42,8 +42,8 @@ public class DQLDataSetAssert implements DataSetAssert {
     @XmlAttribute(name = "expected-data-file")
     private String expectedDataFile;
     
-    @XmlAttribute(name = "sharding-rule-type")
-    private String shardingRuleType;
+    @XmlAttribute(name = "sharding-rule-types")
+    private String shardingRuleTypes;
     
     @XmlAttribute(name = "database-types")
     private String databaseTypes;

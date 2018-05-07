@@ -25,8 +25,8 @@ import javax.xml.bind.annotation.*;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class AssertSubDefinition {
     
-    @XmlAttribute(name = "sharding-rule-type")
-    private String shardingRuleType;
+    @XmlAttribute(name = "sharding-rule-types")
+    private String shardingRuleTypes;
     
     @XmlAttribute(name = "expected-data-file")
     private String expectedDataFile;

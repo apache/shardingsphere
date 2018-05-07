@@ -1,5 +1,5 @@
-<asserts sharding-rule-type="db">
-   <dml-assert id="assertInsertWithAllPlaceholders" expected-update="9" sql="assertInsertWithAllPlaceholders" sharding-rule-type="db" expected-sql="assertSelectEqualsWithSingleTable">
+<asserts sharding-rule-types="db">
+   <dml-assert id="assertInsertWithAllPlaceholders" expected-update="9" sql="assertInsertWithAllPlaceholders" sharding-rule-types="db" expected-sql="assertSelectEqualsWithSingleTable">
         <subAssert expected-data-file="insert/db_1.xml">
             <parameter>
                 <value value="1" type="int"/>
@@ -100,7 +100,7 @@
             </expected-parameter>
         </subAssert>
     </dml-assert>
-    <dml-assert id="assertInsertWithoutPlaceholder" expected-update="9" sql="assertInsertWithPartialPlaceholder" sharding-rule-type="db" expected-sql="assertSelectEqualsWithSingleTable">
+    <dml-assert id="assertInsertWithoutPlaceholder" expected-update="9" sql="assertInsertWithPartialPlaceholder" sharding-rule-types="db" expected-sql="assertSelectEqualsWithSingleTable">
         <subAssert expected-data-file="insert/db_1.xml">
             <parameter>
                 <value value="1" type="int"/>
@@ -193,7 +193,7 @@
         </subAssert>
     </dml-assert>
 <!--
-<dml-assert id="assertInsertWithPartialPlaceholders" expected-update="9" sql="assertInsertWithPartialPlaceholders" sharding-rule-type="db" expected-sql="assertSelectEqualsWithSingleTable">
+<dml-assert id="assertInsertWithPartialPlaceholders" expected-update="9" sql="assertInsertWithPartialPlaceholders" sharding-rule-types="db" expected-sql="assertSelectEqualsWithSingleTable">
         <subAssert expected-data-file="insert/db_1.xml">
             <parameter>
                 <valueReplace value="1" type="int"/>

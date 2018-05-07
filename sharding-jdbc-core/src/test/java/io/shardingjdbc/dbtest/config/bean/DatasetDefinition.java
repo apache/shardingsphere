@@ -17,23 +17,17 @@
 
 package io.shardingjdbc.dbtest.config.bean;
 
+import lombok.Data;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import lombok.Data;
-
 @Data
 public class DatasetDefinition {
-
-    /*
-     * Map<table, List<ColumnDefinition>>
-     */
+    
     private Map<String, List<ColumnDefinition>> metadatas = new HashMap<>();
-
-    /*
-     * Map<table,List<Map<column,data>>>
-     */
+    
     private Map<String, List<Map<String, String>>> datas = new HashMap<>();
 
 }

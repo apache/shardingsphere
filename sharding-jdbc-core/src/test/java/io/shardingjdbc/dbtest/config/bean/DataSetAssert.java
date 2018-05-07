@@ -21,9 +21,9 @@ public interface DataSetAssert {
     
     String getId();
     
-    String getShardingRuleType();
+    String getShardingRuleTypes();
     
-    void setShardingRuleType(String shardingRuleTypes);
+    void setShardingRuleTypes(String shardingRuleTypes);
     
     String getDatabaseTypes();
     
