@@ -19,8 +19,8 @@ package io.shardingjdbc.dbtest.asserts;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import io.shardingjdbc.dbtest.config.bean.AssertDefinition;
-import io.shardingjdbc.dbtest.config.bean.AssertsDefinition;
+import io.shardingjdbc.dbtest.config.bean.DataSetAssert;
+import io.shardingjdbc.dbtest.config.bean.DataSetsAssert;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -57,7 +57,7 @@ public final class DataSetAssertLoader {
     @Getter
     private final Collection<String> shardingRuleTypes;
     
-    private final Map<String, AssertDefinition> dataSetAssertMap;
+    private final Map<String, DataSetAssert> dataSetAssertMap;
     
     private DataSetAssertLoader() {
         shardingRuleTypes = new HashSet<>();
@@ -77,31 +77,31 @@ public final class DataSetAssertLoader {
         return INSTANCE;
     }
     
-    private Map<String, AssertDefinition> loadDataSetAssert() throws IOException, URISyntaxException, JAXBException {
+    private Map<String, DataSetAssert> loadDataSetAssert() throws IOException, URISyntaxException, JAXBException {
         URL url = DataSetAssertLoader.class.getClassLoader().getResource("asserts/");
         Preconditions.checkNotNull(url, "Cannot found integrate test cases.");
         List<String> files = getFiles(url);
         Preconditions.checkNotNull(files, "Cannot found integrate test cases.");
-        Map<String, AssertDefinition> result = new HashMap<>(Short.MAX_VALUE, 1);
+        Map<String, DataSetAssert> result = new HashMap<>(Short.MAX_VALUE, 1);
         for (String each : files) {
             result.putAll(loadDataSetAssert(each));
         }
         return result;
     }
     
-    private Map<String, AssertDefinition> loadDataSetAssert(final String file) throws IOException, JAXBException {
-        AssertsDefinition assertsDefinition = unmarshal(file);
-        Map<String, AssertDefinition> result = new HashMap<>(assertsDefinition.getAssertDQL().size() + assertsDefinition.getAssertDML().size() + assertsDefinition.getAssertDDL().size(), 1);
+    private Map<String, DataSetAssert> loadDataSetAssert(final String file) throws IOException, JAXBException {
+        DataSetsAssert assertsDefinition = unmarshal(file);
+        Map<String, DataSetAssert> result = new HashMap<>(assertsDefinition.getDqlDataSetAsserts().size() + assertsDefinition.getDmlDataSetAsserts().size() + assertsDefinition.getDdlDataSetAsserts().size(), 1);
         shardingRuleTypes.addAll(Arrays.asList(assertsDefinition.getShardingRuleType().split(",")));
-        result.putAll(loadDataSetAssert(file, assertsDefinition.getAssertDQL(), assertsDefinition.getShardingRuleType(), assertsDefinition.getDatabaseConfig()));
-        result.putAll(loadDataSetAssert(file, assertsDefinition.getAssertDML(), assertsDefinition.getShardingRuleType(), assertsDefinition.getDatabaseConfig()));
-        result.putAll(loadDataSetAssert(file, assertsDefinition.getAssertDDL(), assertsDefinition.getShardingRuleType(), assertsDefinition.getDatabaseConfig()));
+        result.putAll(loadDataSetAssert(file, assertsDefinition.getDqlDataSetAsserts(), assertsDefinition.getShardingRuleType(), assertsDefinition.getDatabaseConfig()));
+        result.putAll(loadDataSetAssert(file, assertsDefinition.getDmlDataSetAsserts(), assertsDefinition.getShardingRuleType(), assertsDefinition.getDatabaseConfig()));
+        result.putAll(loadDataSetAssert(file, assertsDefinition.getDdlDataSetAsserts(), assertsDefinition.getShardingRuleType(), assertsDefinition.getDatabaseConfig()));
         return result;
     }
     
-    private Map<String, AssertDefinition> loadDataSetAssert(final String file, final List<? extends AssertDefinition> assertDefinitions, final String defaultShardingRuleType, final String defaultDatabaseTypes) {
-        Map<String, AssertDefinition> result = new HashMap<>(assertDefinitions.size(), 1);
-        for (AssertDefinition each : assertDefinitions) {
+    private Map<String, DataSetAssert> loadDataSetAssert(final String file, final List<? extends DataSetAssert> assertDefinitions, final String defaultShardingRuleType, final String defaultDatabaseTypes) {
+        Map<String, DataSetAssert> result = new HashMap<>(assertDefinitions.size(), 1);
+        for (DataSetAssert each : assertDefinitions) {
             result.put(each.getId(), each);
             each.setPath(file);
             if (Strings.isNullOrEmpty(each.getShardingRuleType())) {
@@ -131,9 +131,9 @@ public final class DataSetAssertLoader {
         return result;
     }
     
-    private static AssertsDefinition unmarshal(final String assertFilePath) throws IOException, JAXBException {
+    private static DataSetsAssert unmarshal(final String assertFilePath) throws IOException, JAXBException {
         try (FileReader reader = new FileReader(assertFilePath)) {
-            return (AssertsDefinition) JAXBContext.newInstance(AssertsDefinition.class).createUnmarshaller().unmarshal(reader);
+            return (DataSetsAssert) JAXBContext.newInstance(DataSetsAssert.class).createUnmarshaller().unmarshal(reader);
         }
     }
     
@@ -143,7 +143,7 @@ public final class DataSetAssertLoader {
      * @param sqlCaseId SQL case ID
      * @return data set assert
      */
-    public AssertDefinition getDataSetAssert(final String sqlCaseId) {
+    public DataSetAssert getDataSetAssert(final String sqlCaseId) {
         // TODO resume when transfer finished
 //        Preconditions.checkState(dataSetAssertMap.containsKey(sqlCaseId), "Can't find SQL of id: " + sqlCaseId);
         // TODO remove when transfer finished

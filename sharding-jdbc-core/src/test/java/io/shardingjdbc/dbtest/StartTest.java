@@ -20,7 +20,7 @@ package io.shardingjdbc.dbtest;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.dbtest.asserts.AssertEngine;
 import io.shardingjdbc.dbtest.asserts.DataSetAssertLoader;
-import io.shardingjdbc.dbtest.config.bean.AssertDefinition;
+import io.shardingjdbc.dbtest.config.bean.DataSetAssert;
 import io.shardingjdbc.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingjdbc.dbtest.env.IntegrateTestEnvironment;
 import io.shardingjdbc.dbtest.env.schema.SchemaEnvironmentManager;
@@ -58,7 +58,7 @@ public final class StartTest {
     
     private static boolean isCleaned = IntegrateTestEnvironment.getInstance().isInitialized();
     
-    private final AssertDefinition assertDefinition;
+    private final DataSetAssert assertDefinition;
     
     private final String shardingRuleType;
     
@@ -73,7 +73,7 @@ public final class StartTest {
             String sqlCaseId = each[0].toString();
             DatabaseType databaseType = (DatabaseType) each[1];
             SQLCaseType caseType = (SQLCaseType) each[2];
-            AssertDefinition assertDefinition = dataSetAssertLoader.getDataSetAssert(sqlCaseId);
+            DataSetAssert assertDefinition = dataSetAssertLoader.getDataSetAssert(sqlCaseId);
             // TODO remove when transfer finished
             if (null == assertDefinition) {
                 continue;

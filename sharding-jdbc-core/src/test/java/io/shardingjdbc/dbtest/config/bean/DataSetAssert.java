@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.dbtest.config.bean;
 
-public interface AssertDefinition {
+public interface DataSetAssert {
     
     String getId();
     

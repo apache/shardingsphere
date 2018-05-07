@@ -34,11 +34,11 @@ import java.util.List;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public class AssertDQLDefinition implements AssertDefinition {
-    
+public class DMLDataSetAssert implements DataSetAssert {
+
     @XmlAttribute(name = "id")
     private String id;
-    
+
     @XmlAttribute(name = "expected-data-file")
     private String expectedDataFile;
     
@@ -48,11 +48,20 @@ public class AssertDQLDefinition implements AssertDefinition {
     @XmlAttribute(name = "database-config")
     private String databaseConfig;
     
+    @XmlAttribute(name = "expected-update")
+    private Integer expectedUpdate;
+    
     @XmlAttribute(name = "sql")
     private String sql;
     
+    @XmlAttribute(name = "expected-sql")
+    private String expectedSql;
+
     @XmlElement(name = "parameter")
     private ParameterDefinition parameter = new ParameterDefinition();
+    
+    @XmlElement(name = "expected-parameter")
+    private ParameterDefinition expectedParameter = new ParameterDefinition();
     
     @XmlElement(name = "subAssert")
     private List<AssertSubDefinition> subAsserts = new ArrayList<>();

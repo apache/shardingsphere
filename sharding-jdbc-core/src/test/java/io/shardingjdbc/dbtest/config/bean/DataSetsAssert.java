@@ -27,7 +27,7 @@ import java.util.List;
 
 @Getter
 @XmlRootElement(name = "asserts")
-public class AssertsDefinition {
+public class DataSetsAssert {
     
     @XmlAttribute(name = "sharding-rule-type")
     private String shardingRuleType = "db,dbtbl,nullable";
@@ -35,12 +35,12 @@ public class AssertsDefinition {
     @XmlAttribute(name = "database-config")
     private String databaseConfig = "H2,MySQL,Oracle,SQLServer,PostgreSQL";
     
-    @XmlElement(name = "assertDQL")
-    private List<AssertDQLDefinition> assertDQL = new LinkedList<>();
+    @XmlElement(name = "dql-assert")
+    private List<DQLDataSetAssert> dqlDataSetAsserts = new LinkedList<>();
     
-    @XmlElement(name = "assertDML")
-    private List<AssertDMLDefinition> assertDML = new LinkedList<>();
+    @XmlElement(name = "dml-assert")
+    private List<DMLDataSetAssert> dmlDataSetAsserts = new LinkedList<>();
     
-    @XmlElement(name = "assertDDL")
-    private List<AssertDDLDefinition> assertDDL = new LinkedList<>();
+    @XmlElement(name = "ddl-assert")
+    private List<DDLDataSetAssert> ddlDataSetAsserts = new LinkedList<>();
 }

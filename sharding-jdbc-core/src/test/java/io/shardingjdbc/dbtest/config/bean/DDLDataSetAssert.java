@@ -34,13 +34,13 @@ import java.util.List;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public class AssertDMLDefinition implements AssertDefinition {
+public class DDLDataSetAssert implements DataSetAssert {
 
     @XmlAttribute(name = "id")
     private String id;
 
-    @XmlAttribute(name = "expected-data-file")
-    private String expectedDataFile;
+    @XmlAttribute(name = "init-sql")
+    private String initSql;
     
     @XmlAttribute(name = "sharding-rule-type")
     private String shardingRuleType;
@@ -48,20 +48,20 @@ public class AssertDMLDefinition implements AssertDefinition {
     @XmlAttribute(name = "database-config")
     private String databaseConfig;
     
-    @XmlAttribute(name = "expected-update")
-    private Integer expectedUpdate;
+    @XmlAttribute(name = "clean-sql")
+    private String cleanSql;
+
+    @XmlAttribute(name = "expected-data-file")
+    private String expectedDataFile;
     
     @XmlAttribute(name = "sql")
     private String sql;
     
-    @XmlAttribute(name = "expected-sql")
-    private String expectedSql;
+    @XmlAttribute(name = "table")
+    private String table;
 
     @XmlElement(name = "parameter")
     private ParameterDefinition parameter = new ParameterDefinition();
-    
-    @XmlElement(name = "expected-parameter")
-    private ParameterDefinition expectedParameter = new ParameterDefinition();
     
     @XmlElement(name = "subAssert")
     private List<AssertSubDefinition> subAsserts = new ArrayList<>();
