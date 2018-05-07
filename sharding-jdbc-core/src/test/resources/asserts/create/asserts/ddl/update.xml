@@ -1,4 +1,4 @@
-<init>
+<datasets>
     <metadata>
         <table name="t_log">
             <cloumn name="id" type="integer" />
@@ -6,4 +6,4 @@
             <cloumn name="name" type="varchar"/>
         </table>
     </metadata>
-</init>
+</datasets>

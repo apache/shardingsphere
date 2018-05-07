@@ -66,7 +66,7 @@ public final class AnalyzeDataset {
         Document doc = db.parse(file);
         XPathFactory factory = XPathFactory.newInstance();
         XPath oXpath = factory.newXPath();
-        Node rootNode = (Node) oXpath.evaluate("/init", doc, XPathConstants.NODE);
+        Node rootNode = (Node) oXpath.evaluate("/datasets", doc, XPathConstants.NODE);
         Preconditions.checkNotNull(rootNode, "file :" + file.getPath() + "analyze error,Missing init tag");
         NodeList firstNodeList = rootNode.getChildNodes();
         DatasetDefinition result = new DatasetDefinition();
