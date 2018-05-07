@@ -31,10 +31,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
@@ -46,10 +44,16 @@ import java.util.List;
 import java.util.Map;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AnalyzeDataset {
+public final class DataSetsParser {
+    
+    private static final String ROOT_TAG = "/datasets";
+    
+    private static final String METADATA_TAG = "metadata";
+    
+    private static final String DATASET_TAG = "dataset";
     
     /**
-     * Parsing the Dataset file.
+     * Parse dataset file.
      *
      * @param file file
      * @param tableName tableName
@@ -59,39 +63,44 @@ public final class AnalyzeDataset {
      * @throws ParserConfigurationException Parser configuration exception
      * @throws XPathExpressionException XPath expression exception
      */
-    public static DatasetDefinition analyze(final File file, final String tableName) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setValidating(false);
-        DocumentBuilder db = dbf.newDocumentBuilder();
-        Document doc = db.parse(file);
-        XPathFactory factory = XPathFactory.newInstance();
-        XPath oXpath = factory.newXPath();
-        Node rootNode = (Node) oXpath.evaluate("/datasets", doc, XPathConstants.NODE);
-        Preconditions.checkNotNull(rootNode, "file :" + file.getPath() + "analyze error,Missing init tag");
-        NodeList firstNodeList = rootNode.getChildNodes();
+    public static DatasetDefinition parse(final File file, final String tableName) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+        Node rootNode = (Node) XPathFactory.newInstance().newXPath().evaluate(ROOT_TAG, getDocument(file), XPathConstants.NODE);
+        Preconditions.checkNotNull(rootNode, String.format("Missing root tag for file `%s`.", file.getPath()));
         DatasetDefinition result = new DatasetDefinition();
-        for (int i = 0; i < firstNodeList.getLength(); i++) {
-            Node firstNode = firstNodeList.item(i);
-            if (Node.ELEMENT_NODE == firstNode.getNodeType()) {
-                if ("metadata".equals(firstNode.getNodeName())) {
-                    analyzeTableConfig(result, firstNode);
-                } else if ("dataset".equals(firstNode.getNodeName())) {
-                    analyzeDataset(result, tableName, firstNode);
-                }
+        NodeList childNodes = rootNode.getChildNodes();
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node each = childNodes.item(i);
+            if (Node.ELEMENT_NODE != each.getNodeType()) {
+                continue;
+            }
+            switch (each.getNodeName()) {
+                case METADATA_TAG:
+                    parseMetadata(result, each);
+                    break;
+                case DATASET_TAG:
+                    parseDataset(result, tableName, each);
+                    break;
+                default:
+                    break;
             }
         }
         return result;
     }
     
-    private static void analyzeTableConfig(final DatasetDefinition datasetDefinition, final Node firstNode) {
-        NodeList secondNodeList = firstNode.getChildNodes();
-        Map<String, List<ColumnDefinition>> metadatas = datasetDefinition.getMetadatas();
-        for (int i = 0; i < secondNodeList.getLength(); i++) {
-            Node secondNode = secondNodeList.item(i);
-            if (secondNode.getNodeType() == Node.ELEMENT_NODE) {
+    private static Document getDocument(final File file) throws ParserConfigurationException, SAXException, IOException {
+        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        documentBuilderFactory.setValidating(false);
+        return documentBuilderFactory.newDocumentBuilder().parse(file);
+    }
+    
+    private static void parseMetadata(final DatasetDefinition datasetDefinition, final Node node) {
+        Map<String, List<ColumnDefinition>> metadataMap = datasetDefinition.getMetadatas();
+        for (int i = 0; i < node.getChildNodes().getLength(); i++) {
+            Node each = node.getChildNodes().item(i);
+            if (Node.ELEMENT_NODE == each.getNodeType()) {
                 List<ColumnDefinition> tableDefinitions = new ArrayList<>();
-                metadatas.put(getAttribute("name", secondNode), tableDefinitions);
-                NodeList columnNodeList = secondNode.getChildNodes();
+                metadataMap.put(getAttribute("name", each), tableDefinitions);
+                NodeList columnNodeList = each.getChildNodes();
                 for (int n = 0; n < columnNodeList.getLength(); n++) {
                     Node attNode = columnNodeList.item(n);
                     if (attNode.getNodeType() == Node.ELEMENT_NODE) {
@@ -166,7 +175,7 @@ public final class AnalyzeDataset {
         return "";
     }
     
-    private static void analyzeDataset(final DatasetDefinition datasetDefinition, final String tableName, final Node firstNode) {
+    private static void parseDataset(final DatasetDefinition datasetDefinition, final String tableName, final Node firstNode) {
         NodeList secondNodeList = firstNode.getChildNodes();
         for (int i = 0; i < secondNodeList.getLength(); i++) {
             Node secondNode = secondNodeList.item(i);

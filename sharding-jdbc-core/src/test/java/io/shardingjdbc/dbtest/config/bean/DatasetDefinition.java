@@ -29,5 +29,4 @@ public class DatasetDefinition {
     private Map<String, List<ColumnDefinition>> metadatas = new HashMap<>();
     
     private Map<String, List<Map<String, String>>> datas = new HashMap<>();
-
 }
