@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.dbtest.asserts;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import io.shardingjdbc.core.api.MasterSlaveDataSourceFactory;
 import io.shardingjdbc.core.api.ShardingDataSourceFactory;
@@ -36,7 +37,6 @@ import io.shardingjdbc.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingjdbc.dbtest.env.EnvironmentPath;
 import io.shardingjdbc.dbtest.env.datasource.DataSourceUtil;
 import io.shardingjdbc.dbtest.env.schema.SchemaEnvironmentManager;
-import io.shardingjdbc.dbtest.exception.DbTestException;
 import io.shardingjdbc.test.sql.SQLCaseType;
 import io.shardingjdbc.test.sql.SQLCasesLoader;
 import lombok.AccessLevel;
@@ -185,12 +185,8 @@ public final class AssertEngine {
         Map<String, DatasetDefinition> mapDatasetDefinition = new HashMap<>();
         Map<String, String> sqls = new HashMap<>();
         getInitDatas(dataSourceNames, initDataFile, mapDatasetDefinition, sqls);
-        if (mapDatasetDefinition.isEmpty()) {
-            throw new DbTestException("Use cases cannot be parsed");
-        }
-        if (sqls.isEmpty()) {
-            throw new DbTestException("The use case cannot initialize the data");
-        }
+        Preconditions.checkState(!mapDatasetDefinition.isEmpty(), "Use cases cannot be parsed");
+        Preconditions.checkState(!sqls.isEmpty(), "The use case cannot initialize the data");
         String expectedDataFile = rootPath + "asserts/dml/" + shardingRuleType + "/" + dmlDefinition.getExpectedDataFile();
         if (!new File(expectedDataFile).exists()) {
             expectedDataFile = rootPath + "asserts/dml/" + dmlDefinition.getExpectedDataFile();
@@ -322,12 +318,8 @@ public final class AssertEngine {
         Map<String, DatasetDefinition> mapDatasetDefinition = new HashMap<>();
         Map<String, String> sqls = new HashMap<>();
         getInitDatas(dataSourceNames, initDataFile, mapDatasetDefinition, sqls);
-        if (mapDatasetDefinition.isEmpty()) {
-            throw new DbTestException("Use cases cannot be parsed");
-        }
-        if (sqls.isEmpty()) {
-            throw new DbTestException("The use case cannot initialize the data");
-        }
+        Preconditions.checkState(!mapDatasetDefinition.isEmpty(), "Use cases cannot be parsed");
+        Preconditions.checkState(!sqls.isEmpty(), "The use case cannot initialize the data");
         try {
             initTableData(dataSourceMaps, sqls, mapDatasetDefinition);
             String expectedDataFile = rootPath + "asserts/dql/" + shardingRuleType + "/" + dqlDefinition.getExpectedDataFile();
