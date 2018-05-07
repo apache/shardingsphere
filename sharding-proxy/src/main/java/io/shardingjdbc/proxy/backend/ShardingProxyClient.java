@@ -39,7 +39,6 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import javax.sql.DataSource;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -55,36 +54,44 @@ public final class ShardingProxyClient {
     private EventLoopGroup workerGroup;
     
     @Getter
-    private Map<String,Channel> channelMap = Maps.newHashMap();
+    private Map<String, Channel> channelMap = Maps.newHashMap();
+    private Map<String, Bootstrap> bootstrapMap = Maps.newHashMap();
     
     /**
      * Start Sharding-Proxy.
      *
-     * @throws InterruptedException interrupted exception
+     * @throws InterruptedException  interrupted exception
      * @throws MalformedURLException url is illegal.
      */
     public void start() throws InterruptedException, MalformedURLException {
-        Bootstrap bootstrap = new Bootstrap();
-        if (workerGroup instanceof EpollEventLoopGroup) {
-            groupsEpoll(bootstrap);
-        } else {
-            groupsNio(bootstrap);
-        }
         Map<String, DataSource> dataSourceMap = ShardingRuleRegistry.getInstance().getDataSourceMap();
-        for (Map.Entry<String,DataSource> each : dataSourceMap.entrySet()) {
-            URL url = new URL(((BasicDataSource)each.getValue()).getUrl().replaceAll("jdbc:mysql://","http://"));
-            ChannelFuture future = bootstrap.connect(url.getHost(),url.getPort()).sync();
-            channelMap.put(each.getKey(),future.channel());
+        for (Map.Entry<String, DataSource> each : dataSourceMap.entrySet()) {
+            URL url = new URL(((BasicDataSource) each.getValue()).getUrl().replaceAll("jdbc:mysql://", "http://"));
+            String ip = url.getHost();
+            int port = url.getPort();
+            String database = url.getPath().substring(1);
+            String username = ((BasicDataSource) each.getValue()).getUsername();
+            String password = ((BasicDataSource) each.getValue()).getPassword();
+            Bootstrap bootstrap = new Bootstrap();
+            if (workerGroup instanceof EpollEventLoopGroup) {
+                groupsEpoll(bootstrap, ip, port, database, username, password);
+            } else {
+                groupsNio(bootstrap, ip, port, database, username, password);
+            }
+            //TODO use connection pool.
+            bootstrapMap.put(each.getKey(), bootstrap);
+            ChannelFuture future = bootstrap.connect(ip, port).sync();
+            channelMap.put(each.getKey(), future.channel());
         }
     }
     
-    public void stop(){
-        if(workerGroup != null){
+    public void stop() {
+        if (workerGroup != null) {
             workerGroup.shutdownGracefully();
         }
     }
     
-    private void groupsEpoll(final Bootstrap bootstrap) {
+    private void groupsEpoll(final Bootstrap bootstrap, String ip, int port, String database, String username, String password) {
         workerGroup = new EpollEventLoopGroup(WORKER_MAX_THREADS);
         bootstrap.group(workerGroup)
                 .channel(EpollServerSocketChannel.class)
@@ -93,10 +100,10 @@ public final class ShardingProxyClient {
                 .option(EpollChannelOption.SO_BACKLOG, 128)
                 .option(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .handler(new LoggingHandler(LogLevel.INFO))
-                .handler(new ClientHandlerInitializer());
+                .handler(new ClientHandlerInitializer(ip, port, database, username, password));
     }
     
-    private void groupsNio(final Bootstrap bootstrap) {
+    private void groupsNio(final Bootstrap bootstrap, String ip, int port, String database, String username, String password) {
         workerGroup = new NioEventLoopGroup(WORKER_MAX_THREADS);
         bootstrap.group(workerGroup)
                 .channel(NioServerSocketChannel.class)
@@ -106,7 +113,7 @@ public final class ShardingProxyClient {
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 100)
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .handler(new LoggingHandler(LogLevel.INFO))
-                .handler(new ClientHandlerInitializer());
+                .handler(new ClientHandlerInitializer(ip, port, database, username, password));
     }
     
     /**

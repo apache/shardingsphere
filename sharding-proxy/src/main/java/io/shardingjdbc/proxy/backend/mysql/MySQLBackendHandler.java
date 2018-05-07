@@ -21,12 +21,19 @@ import com.google.common.primitives.Bytes;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.shardingjdbc.proxy.backend.common.CommandResponsePacketsHandler;
+import io.shardingjdbc.proxy.transport.mysql.constant.CapabilityFlag;
+import io.shardingjdbc.proxy.transport.mysql.constant.ServerInfo;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingjdbc.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.generic.OKPacket;
+import io.shardingjdbc.proxy.transport.mysql.packet.handshake.HandshakeResponse41Packet;
 import io.shardingjdbc.proxy.util.MySQLResultCache;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * Backend handler.
@@ -34,9 +41,15 @@ import lombok.extern.slf4j.Slf4j;
  * @author wangkai
  */
 @Slf4j
+@RequiredArgsConstructor
 public class MySQLBackendHandler extends CommandResponsePacketsHandler {
     
     private boolean authorized;
+    private final String ip;
+    private final int port;
+    private final String database;
+    private final String username;
+    private final String password;
     
     @Override
     public void channelRead(final ChannelHandlerContext context, final Object message) {
@@ -45,7 +58,7 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
         int sequenceId = mysqlPacketPayload.readInt1();
         int header = mysqlPacketPayload.readInt1();
         if (!authorized) {
-            auth(context, header, mysqlPacketPayload);
+            auth(context, sequenceId, header, mysqlPacketPayload);
         } else if (OKPacket.HEADER == header || ErrPacket.HEADER == header || EofPacket.HEADER == header) {
             genericResponsePacket(context, header, mysqlPacketPayload);
         } else {
@@ -54,7 +67,7 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
     }
     
     @Override
-    protected void auth(ChannelHandlerContext context, int header, MySQLPacketPayload mysqlPacketPayload) {
+    protected void auth(ChannelHandlerContext context, int sequenceId, int header, MySQLPacketPayload mysqlPacketPayload) {
         int protocolVersion = header;
         String serverVersion = mysqlPacketPayload.readStringNul();
         int connectionId = mysqlPacketPayload.readInt4();
@@ -68,8 +81,10 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
         mysqlPacketPayload.skipReserved(10);
         byte[] authPluginDataPart2 = mysqlPacketPayload.readStringNul().getBytes();
         byte[] authPluginData = Bytes.concat(authPluginDataPart1, authPluginDataPart2);
-        //TODO get username, password(encrypt) and schema to write message.
-        
+        byte[] authResponse = byteXOR(SHA1(password.getBytes()), SHA1(Bytes.concat(authPluginData, SHA1(SHA1(password.getBytes())))));
+        //TODO maxSizePactet should be set.
+        HandshakeResponse41Packet handshakeResponse41Packet = new HandshakeResponse41Packet(sequenceId, CapabilityFlag.calculateHandshakeCapabilityFlagsLower(), 4194304, ServerInfo.CHARSET, username, authResponse, database);
+        context.writeAndFlush(handshakeResponse41Packet);
     }
     
     @Override
@@ -112,5 +127,28 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         //TODO delete connection map.
         super.channelInactive(ctx);
+    }
+    
+    private byte[] SHA1(byte[] decript) {
+        try {
+            MessageDigest digest = java.security.MessageDigest.getInstance("SHA-1");
+            digest.update(decript);
+            return digest.digest();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    private byte[] byteXOR(byte[] arg1, byte[] arg2) {
+        byte[] byteXOR = new byte[arg1.length];
+        byte temp3;
+        for (int i = 0; i < arg1.length; i++) {
+            byte temp1 = arg1[i];
+            byte temp2 = arg2[i];
+            temp3 = (byte) (temp1 ^ temp2);
+            byteXOR[i] = temp3;
+        }
+        return byteXOR;
     }
 }

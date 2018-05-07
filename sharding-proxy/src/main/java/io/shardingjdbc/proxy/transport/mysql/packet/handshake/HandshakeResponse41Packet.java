@@ -24,9 +24,10 @@ import lombok.Getter;
 
 /**
  * Handshake response above MySQL 4.1 packet protocol.
- * @see <a href="https://dev.mysql.com/doc/internals/en/connection-phase-packets.html#packet-Protocol::HandshakeResponse41">HandshakeResponse41</a>
- * 
+ *
  * @author zhangliang
+ * @author wangkai
+ * @see <a href="https://dev.mysql.com/doc/internals/en/connection-phase-packets.html#packet-Protocol::HandshakeResponse41">HandshakeResponse41</a>
  */
 @Getter
 public final class HandshakeResponse41Packet extends MySQLPacket {
@@ -52,6 +53,16 @@ public final class HandshakeResponse41Packet extends MySQLPacket {
         username = mysqlPacketPayload.readStringNul();
         readAuthResponse(mysqlPacketPayload);
         readDatabase(mysqlPacketPayload);
+    }
+    
+    public HandshakeResponse41Packet(final int sequenceId, final int capabilityFlags, final int maxPacketSize, final int characterSet, final String username, final byte[] authResponse, final String database) {
+        super(sequenceId);
+        this.capabilityFlags = capabilityFlags;
+        this.maxPacketSize = maxPacketSize;
+        this.characterSet = characterSet;
+        this.username = username;
+        this.authResponse = authResponse;
+        this.database = database;
     }
     
     private void readAuthResponse(final MySQLPacketPayload mysqlPacketPayload) {
@@ -94,7 +105,7 @@ public final class HandshakeResponse41Packet extends MySQLPacket {
     }
     
     private void writeDatabase(final MySQLPacketPayload mysqlPacketPayload) {
-        if (0 != (capabilityFlags & CapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue())) { 
+        if (0 != (capabilityFlags & CapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue())) {
             mysqlPacketPayload.writeStringNul(database);
         }
     }

@@ -33,10 +33,10 @@ public final class BackendHandlerFactory {
      * @param databaseType database type
      * @return backend handler instance
      */
-    public static CommandResponsePacketsHandler createBackendHandlerInstance(final DatabaseType databaseType) {
+    public static CommandResponsePacketsHandler createBackendHandlerInstance(final DatabaseType databaseType, String ip, int port, String database, String username, String password) {
         switch (databaseType) {
             case MySQL:
-                return new MySQLBackendHandler();
+                return new MySQLBackendHandler(ip, port, database, username, password);
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseType));
         }
