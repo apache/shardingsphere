@@ -582,9 +582,6 @@ public class DatabaseUtil {
         for (IndexDefinition each : indexs) {
             for (IndexDefinition actualIndex : columnDefinition.getIndexs()) {
                 if (each.getName().equals(actualIndex.getName())) {
-                    if (each.getType() != null && !each.getType().equals(actualIndex.getType())) {
-                        fail();
-                    }
                     if (each.isUnique() != actualIndex.isUnique()) {
                         fail();
                     }
@@ -689,10 +686,6 @@ public class DatabaseUtil {
                 String nameIndex = resultSet.getString("INDEX_NAME");
                 if (StringUtils.isNotEmpty(nameIndex)) {
                     index.setName(nameIndex);
-                }
-                String typeIndex = resultSet.getString("TYPE");
-                if (StringUtils.isNotEmpty(typeIndex)) {
-                    index.setType(typeIndex);
                 }
                 String uniqueIndex = resultSet.getString("NON_UNIQUE");
                 if (StringUtils.isNotEmpty(uniqueIndex)) {

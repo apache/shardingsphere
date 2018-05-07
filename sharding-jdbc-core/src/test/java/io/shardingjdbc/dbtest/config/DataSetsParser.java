@@ -151,10 +151,6 @@ public final class DataSetsParser {
                 if (StringUtils.isNotEmpty(nameIndex)) {
                     index.setName(nameIndex);
                 }
-                String typeIndex = getAttribute("type", indexNode);
-                if (StringUtils.isNotEmpty(typeIndex)) {
-                    index.setType(typeIndex);
-                }
                 String uniqueIndex = getAttribute("unique", indexNode);
                 if (StringUtils.isNotEmpty(uniqueIndex)) {
                     index.setUnique(Boolean.valueOf(uniqueIndex));
