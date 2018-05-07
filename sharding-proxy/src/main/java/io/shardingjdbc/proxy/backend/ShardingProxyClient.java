@@ -18,6 +18,7 @@
 package io.shardingjdbc.proxy.backend;
 
 import com.google.common.collect.Maps;
+import com.zaxxer.hikari.HikariConfig;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
@@ -34,11 +35,10 @@ import io.netty.handler.logging.LoggingHandler;
 import io.shardingjdbc.proxy.backend.netty.ClientHandlerInitializer;
 import io.shardingjdbc.proxy.config.ShardingRuleRegistry;
 import lombok.Getter;
-import org.apache.commons.dbcp2.BasicDataSource;
 
-import javax.sql.DataSource;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -55,6 +55,7 @@ public final class ShardingProxyClient {
     
     @Getter
     private Map<String, Channel> channelMap = Maps.newHashMap();
+    @Getter
     private Map<String, Bootstrap> bootstrapMap = Maps.newHashMap();
     
     /**
@@ -63,15 +64,16 @@ public final class ShardingProxyClient {
      * @throws InterruptedException  interrupted exception
      * @throws MalformedURLException url is illegal.
      */
-    public void start() throws InterruptedException, MalformedURLException {
-        Map<String, DataSource> dataSourceMap = ShardingRuleRegistry.getInstance().getDataSourceMap();
-        for (Map.Entry<String, DataSource> each : dataSourceMap.entrySet()) {
-            URL url = new URL(((BasicDataSource) each.getValue()).getUrl().replaceAll("jdbc:mysql://", "http://"));
+    public void start() throws MalformedURLException, InterruptedException {
+        Map<String, HikariConfig> dataSourceConfigurationMap = new HashMap<>();
+        ShardingRuleRegistry.getInstance();
+        for (Map.Entry<String, HikariConfig> each : dataSourceConfigurationMap.entrySet()) {
+            URL url = new URL(each.getValue().getJdbcUrl());
             String ip = url.getHost();
             int port = url.getPort();
             String database = url.getPath().substring(1);
-            String username = ((BasicDataSource) each.getValue()).getUsername();
-            String password = ((BasicDataSource) each.getValue()).getPassword();
+            String username = (each.getValue()).getUsername();
+            String password = (each.getValue()).getPassword();
             Bootstrap bootstrap = new Bootstrap();
             if (workerGroup instanceof EpollEventLoopGroup) {
                 groupsEpoll(bootstrap, ip, port, database, username, password);

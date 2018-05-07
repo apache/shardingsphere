@@ -26,6 +26,7 @@ import io.shardingjdbc.core.yaml.sharding.DataSourceParameter;
 import io.shardingjdbc.core.yaml.sharding.YamlShardingConfigurationForProxy;
 import io.shardingjdbc.proxy.metadata.ProxyShardingMetaData;
 import lombok.Getter;
+
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
@@ -48,6 +49,8 @@ public final class ShardingRuleRegistry {
     
     private final Map<String, DataSource> dataSourceMap;
     
+    private final Map<String, HikariConfig> dataSourceConfigurationMap;
+    
     private final ShardingRule shardingRule;
     
     private final ShardingMetaData shardingMetaData;
@@ -59,10 +62,15 @@ public final class ShardingRuleRegistry {
         } catch (final IOException ex) {
             throw new ShardingJdbcException(ex);
         }
+        dataSourceConfigurationMap = new HashMap<>(128, 1);
         dataSourceMap = new HashMap<>(128, 1);
         Map<String, DataSourceParameter> dataSourceParameters = yamlShardingConfigurationForProxy.getDataSources();
         for (String each : dataSourceParameters.keySet()) {
-            dataSourceMap.put(each, getDataSource(dataSourceParameters.get(each)));
+            if (WITHOUT_JDBC) {
+                dataSourceConfigurationMap.put(each, getDataSourceConfiguration(dataSourceParameters.get(each)));
+            } else {
+                dataSourceMap.put(each, getDataSource(dataSourceParameters.get(each)));
+            }
         }
         shardingRule = yamlShardingConfigurationForProxy.getShardingRule(Collections.<String>emptyList());
         try {
@@ -73,7 +81,7 @@ public final class ShardingRuleRegistry {
         }
     }
     
-    private DataSource getDataSource(final DataSourceParameter dataSourceParameter) {
+    private HikariConfig getDataSourceConfiguration(final DataSourceParameter dataSourceParameter) {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("com.mysql.jdbc.Driver");
         config.setJdbcUrl(dataSourceParameter.getUrl());
@@ -86,7 +94,11 @@ public final class ShardingRuleRegistry {
         config.setMaximumPoolSize(100);
         config.addDataSourceProperty("useServerPrepStmts", "true");
         config.addDataSourceProperty("cachePrepStmts", "true");
-        return new HikariDataSource(config);
+        return config;
+    }
+    
+    private DataSource getDataSource(final DataSourceParameter dataSourceParameter) {
+        return new HikariDataSource(getDataSourceConfiguration(dataSourceParameter));
     }
     
     /**

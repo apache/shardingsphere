@@ -1,12 +1,12 @@
 dataSources:
   demo_ds_0:
-    url: jdbc:mysql://localhost:3306/demo_ds_0
-    username: root
-    password:
+    url: jdbc:mysql://10.7.8.175:13306/demo_ds_0
+    username: admin
+    password: 123456
   demo_ds_1:
-    url: jdbc:mysql://localhost:3306/demo_ds_1
-    username: root
-    password:
+    url: jdbc:mysql://10.7.8.175:13306/demo_ds_1
+    username: admin
+    password: 123456
 
 shardingRule:
   tables:
