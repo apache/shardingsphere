@@ -34,6 +34,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -59,6 +60,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         List<AndCondition> andConditions = insertStatement.getConditions().getOrCondition().getAndConditions();
         List<InsertValue> insertValues = insertStatement.getInsertValues().getInsertValues();
         List<ShardingCondition> result = new ArrayList<>(andConditions.size());
+        Iterator<Number> generatedKeys = null;
         int count = 0;
         for (AndCondition each : andConditions) {
             InsertValue insertValue = insertValues.get(count);
@@ -67,26 +69,34 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
             
             String logicTableName = insertStatement.getTables().getSingleTableName();
             Optional<Column> generateKeyColumn = shardingRule.getGenerateKeyColumn(logicTableName);
-            String expression;
+            InsertShardingCondition insertShardingCondition;
             if (-1 != insertStatement.getGenerateKeyColumnIndex() || !generateKeyColumn.isPresent()) {
-                expression = insertValue.getExpression();
+                insertShardingCondition = new InsertShardingCondition(insertValue.getExpression(), currentParameters);
             } else {
+                if (null == generatedKeys) {
+                    generatedKeys = generatedKey.getGeneratedKeys().iterator();
+                }
+                String expression;
+                Number currentGeneratedKey = generatedKeys.next();
                 if (0 == parameters.size()) {
-                    expression = insertValue.getExpression().substring(0, insertValue.getExpression().length() - 1) + ", " + generatedKey.getGeneratedKeys().get(count).toString() + ")";
+                    expression = insertValue.getExpression().substring(0, insertValue.getExpression().length() - 1) + ", " + currentGeneratedKey.toString() + ")";
                 } else {
                     expression = insertValue.getExpression().substring(0, insertValue.getExpression().length() - 1) + ", ?)";
-                    currentParameters.add(generatedKey.getGeneratedKeys().get(count));
+                    currentParameters.add(currentGeneratedKey);
                 }
+                insertShardingCondition = new InsertShardingCondition(expression, currentParameters);
+                insertShardingCondition.getShardingValues().add(getShardingCondition(generateKeyColumn.get(), currentGeneratedKey));
             }
-            InsertShardingCondition insertShardingCondition = new InsertShardingCondition(expression, currentParameters);
             insertShardingCondition.getShardingValues().addAll(getShardingCondition(each));
-            if (-1 == insertStatement.getGenerateKeyColumnIndex() && generateKeyColumn.isPresent()) {
-                insertShardingCondition.getShardingValues().add(getShardingCondition(generateKeyColumn.get(), generatedKey.getGeneratedKeys().get(count)));
-            }
             result.add(insertShardingCondition);
             count++;
         }
         return new ShardingConditions(result);
+    }
+    
+    private ListShardingValue getShardingCondition(final Column column, final Number value) {
+        return new ListShardingValue<>(column.getTableName(), column.getName(),
+                new GeneratedKeyCondition(column, -1, value).getConditionValues(parameters));
     }
     
     private Collection<ListShardingValue> getShardingCondition(final AndCondition andCondition) {
@@ -95,10 +105,5 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
             result.add(new ListShardingValue<>(each.getColumn().getTableName(), each.getColumn().getName(), each.getConditionValues(parameters)));
         }
         return result;
-    }
-    
-    private ListShardingValue getShardingCondition(final Column column, final Number value) {
-        return new ListShardingValue<>(column.getTableName(), column.getName(),
-                new GeneratedKeyCondition(column, -1, value).getConditionValues(parameters));
     }
 }

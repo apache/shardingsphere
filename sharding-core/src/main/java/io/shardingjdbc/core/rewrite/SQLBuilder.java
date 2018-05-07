@@ -153,6 +153,7 @@ public final class SQLBuilder {
             if (dataNode.getDataSourceName().equals(tableUnit.getDataSourceName()) && dataNode.getTableName().equals(tableUnit.getRoutingTables().iterator().next().getActualTableName())) {
                 expressions.add(shardingCondition.getInsertValueExpression());
                 parameters.addAll(shardingCondition.getParameters());
+                break;
             }
         }
     }
