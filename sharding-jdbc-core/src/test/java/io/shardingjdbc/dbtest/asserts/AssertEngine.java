@@ -37,6 +37,7 @@ import io.shardingjdbc.dbtest.env.EnvironmentPath;
 import io.shardingjdbc.dbtest.env.datasource.DataSourceUtil;
 import io.shardingjdbc.dbtest.env.schema.SchemaEnvironmentManager;
 import io.shardingjdbc.dbtest.exception.DbTestException;
+import io.shardingjdbc.test.sql.SQLCaseType;
 import io.shardingjdbc.test.sql.SQLCasesLoader;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -69,8 +70,9 @@ public final class AssertEngine {
      * @param assertDefinition assert definition
      * @param shardingRuleType sharding rule type
      * @param databaseTypeEnvironment database type environment
+     * @param caseType case type
      */
-    public static void runAssert(final AssertDefinition assertDefinition, final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, SQLException, SAXException, ParserConfigurationException, XPathExpressionException, ParseException, JAXBException {
+    public static void runAssert(final AssertDefinition assertDefinition, final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, SQLException, SAXException, ParserConfigurationException, XPathExpressionException, ParseException, JAXBException {
         if (!databaseTypeEnvironment.isEnabled()) {
             return;
         }
@@ -636,7 +638,7 @@ public final class AssertEngine {
                 mapDatasetDefinition.put(each, datasetDefinition);
                 Map<String, List<Map<String, String>>> datas = datasetDefinition.getDatas();
                 for (Map.Entry<String, List<Map<String, String>>> eachEntry : datas.entrySet()) {
-                    String sql = DatabaseUtil.analyzeSql(eachEntry.getKey(), eachEntry.getValue().get(0));
+                    String sql = DatabaseUtil.analyzeSQL(eachEntry.getKey(), eachEntry.getValue().get(0));
                     sqls.put(eachEntry.getKey(), sql);
                 }
             }
