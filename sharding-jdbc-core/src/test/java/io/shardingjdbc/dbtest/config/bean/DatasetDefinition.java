@@ -17,6 +17,8 @@
 
 package io.shardingjdbc.dbtest.config.bean;
 
+import io.shardingjdbc.dbtest.config.dataset.DataSetColumnMetadata;
+import io.shardingjdbc.dbtest.config.dataset.DataSetIndexMetadata;
 import lombok.Data;
 
 import java.util.HashMap;
@@ -26,7 +28,9 @@ import java.util.Map;
 @Data
 public class DatasetDefinition {
     
-    private Map<String, List<ColumnDefinition>> metadatas = new HashMap<>();
+    private Map<String, List<DataSetColumnMetadata>> metadatas = new HashMap<>();
+    
+    private Map<String, List<DataSetIndexMetadata>> indexMetadataList = new HashMap<>();
     
     private Map<String, List<Map<String, String>>> datas = new HashMap<>();
 }

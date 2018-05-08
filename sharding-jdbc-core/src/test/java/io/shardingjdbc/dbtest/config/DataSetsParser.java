@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import io.shardingjdbc.dbtest.config.bean.ColumnDefinition;
 import io.shardingjdbc.dbtest.config.bean.DatasetDefinition;
 import io.shardingjdbc.dbtest.config.bean.IndexDefinition;
+import io.shardingjdbc.dbtest.config.dataset.DataSetColumnMetadata;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -94,17 +95,17 @@ public final class DataSetsParser {
     }
     
     private static void parseMetadata(final DatasetDefinition datasetDefinition, final Node node) {
-        Map<String, List<ColumnDefinition>> metadataMap = datasetDefinition.getMetadatas();
+        Map<String, List<DataSetColumnMetadata>> metadataMap = datasetDefinition.getMetadatas();
         for (int i = 0; i < node.getChildNodes().getLength(); i++) {
             Node each = node.getChildNodes().item(i);
             if (Node.ELEMENT_NODE == each.getNodeType()) {
-                List<ColumnDefinition> tableDefinitions = new ArrayList<>();
+                List<DataSetColumnMetadata> tableDefinitions = new ArrayList<>();
                 metadataMap.put(getAttribute("name", each), tableDefinitions);
                 NodeList columnNodeList = each.getChildNodes();
                 for (int n = 0; n < columnNodeList.getLength(); n++) {
                     Node attNode = columnNodeList.item(n);
                     if (attNode.getNodeType() == Node.ELEMENT_NODE) {
-                        ColumnDefinition cd = new ColumnDefinition();
+                        DataSetColumnMetadata cd = new DataSetColumnMetadata();
                         tableDefinitions.add(cd);
                         String name = getAttribute("name", attNode);
                         if (StringUtils.isNotEmpty(name)) {
@@ -130,10 +131,11 @@ public final class DataSetsParser {
                         if (StringUtils.isNotEmpty(numPrecRadix)) {
                             cd.setSize(Integer.valueOf(numPrecRadix));
                         }
-                        NodeList indexNodeList = attNode.getChildNodes();
-                        if (indexNodeList != null && indexNodeList.getLength() != 0) {
-                            getIndexes(indexNodeList, cd);
-                        }
+                        // TODO assert index
+//                        NodeList indexNodeList = attNode.getChildNodes();
+//                        if (indexNodeList != null && indexNodeList.getLength() != 0) {
+//                            getIndexes(indexNodeList, cd);
+//                        }
                     }
                 }
             }

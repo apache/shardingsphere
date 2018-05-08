@@ -34,7 +34,7 @@ public final class EnvironmentPath {
     
     private static final String DATABASE_ENVIRONMENT_RESOURCES_PATH = "integrate/dbtest/%s/schema.xml";
     
-    private static final String DATA_INITIALIZE_RESOURCES_PATH = "integrate/dbtest/%s/data-init";
+    private static final String DATA_INITIALIZE_RESOURCES_PATH = "integrate/dbtest/%s/data-init.xml";
     
     private static final String SHARDING_RULE_RESOURCES_PATH = "integrate/dbtest/%s/sharding-rule.yaml";
     

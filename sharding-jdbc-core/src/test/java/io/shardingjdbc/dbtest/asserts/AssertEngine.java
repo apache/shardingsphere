@@ -18,14 +18,15 @@
 package io.shardingjdbc.dbtest.asserts;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import io.shardingjdbc.core.api.MasterSlaveDataSourceFactory;
 import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.core.constant.DatabaseType;
+import io.shardingjdbc.core.util.InlineExpressionParser;
 import io.shardingjdbc.dbtest.common.DatabaseUtil;
 import io.shardingjdbc.dbtest.config.DataSetsParser;
 import io.shardingjdbc.dbtest.config.bean.AssertSubDefinition;
-import io.shardingjdbc.dbtest.config.bean.ColumnDefinition;
 import io.shardingjdbc.dbtest.config.bean.DDLDataSetAssert;
 import io.shardingjdbc.dbtest.config.bean.DMLDataSetAssert;
 import io.shardingjdbc.dbtest.config.bean.DQLDataSetAssert;
@@ -33,6 +34,10 @@ import io.shardingjdbc.dbtest.config.bean.DataSetAssert;
 import io.shardingjdbc.dbtest.config.bean.DatasetDatabase;
 import io.shardingjdbc.dbtest.config.bean.DatasetDefinition;
 import io.shardingjdbc.dbtest.config.bean.ParameterDefinition;
+import io.shardingjdbc.dbtest.config.dataset.DataSetColumnMetadata;
+import io.shardingjdbc.dbtest.config.dataset.DataSetMetadata;
+import io.shardingjdbc.dbtest.config.dataset.DataSetRow;
+import io.shardingjdbc.dbtest.config.dataset.DataSetsRoot;
 import io.shardingjdbc.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingjdbc.dbtest.env.EnvironmentPath;
 import io.shardingjdbc.dbtest.env.datasource.DataSourceUtil;
@@ -46,10 +51,12 @@ import org.junit.Assert;
 import org.xml.sax.SAXException;
 
 import javax.sql.DataSource;
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -57,6 +64,7 @@ import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -78,13 +86,12 @@ public final class AssertEngine {
         }
         String rootPath = assertDefinition.getPath().substring(0, assertDefinition.getPath().lastIndexOf(File.separator) + 1);
         String initDataPath = EnvironmentPath.getDataInitializeResourceFile(shardingRuleType);
-        Collection<String> dataSourceNames = SchemaEnvironmentManager.getDataSourceNames(shardingRuleType);
-        Map<String, DataSource> dataSourceMap = createDataSourceMap(dataSourceNames, databaseTypeEnvironment.getDatabaseType());
+        Map<String, DataSource> dataSourceMap = createDataSourceMap(SchemaEnvironmentManager.getDataSourceNames(shardingRuleType), databaseTypeEnvironment.getDatabaseType());
         DataSource dataSource = createDataSource(shardingRuleType, dataSourceMap);
         if (assertDefinition instanceof DQLDataSetAssert) {
-            dqlRun((DQLDataSetAssert) assertDefinition, shardingRuleType, databaseTypeEnvironment.getDatabaseType(), initDataPath, rootPath, dataSource, dataSourceMap, dataSourceNames);
+            dqlRun((DQLDataSetAssert) assertDefinition, shardingRuleType, databaseTypeEnvironment.getDatabaseType(), initDataPath, rootPath, dataSource, dataSourceMap);
         } else if (assertDefinition instanceof DMLDataSetAssert) {
-            dmlRun((DMLDataSetAssert) assertDefinition, shardingRuleType, databaseTypeEnvironment.getDatabaseType(), initDataPath, rootPath, dataSource, dataSourceMap, dataSourceNames);
+            dmlRun((DMLDataSetAssert) assertDefinition, shardingRuleType, databaseTypeEnvironment.getDatabaseType(), initDataPath, rootPath, dataSource, dataSourceMap);
         } else if (assertDefinition instanceof DDLDataSetAssert) {
             ddlRun((DDLDataSetAssert) assertDefinition, databaseTypeEnvironment.getDatabaseType(), shardingRuleType, rootPath, dataSource);
         }
@@ -178,12 +185,12 @@ public final class AssertEngine {
         }
     }
     
-    private static void dmlRun(final DMLDataSetAssert dmlDefinition, final String shardingRuleType, final DatabaseType databaseType, final String initDataFile, final String rootPath, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final Collection<String> dataSourceNames) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
+    private static void dmlRun(final DMLDataSetAssert dmlDefinition, final String shardingRuleType, final DatabaseType databaseType, final String initDataFile, final String rootPath, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException, JAXBException {
         String rootSQL = dmlDefinition.getSql();
         rootSQL = SQLCasesLoader.getInstance().getSupportedSQL(rootSQL);
         Map<String, DatasetDefinition> mapDatasetDefinition = new HashMap<>();
         Map<String, String> sqls = new HashMap<>();
-        getInitDatas(dataSourceNames, initDataFile, mapDatasetDefinition, sqls);
+        getInitDatas(initDataFile, mapDatasetDefinition, sqls);
         Preconditions.checkState(!mapDatasetDefinition.isEmpty(), "Use cases cannot be parsed");
         Preconditions.checkState(!sqls.isEmpty(), "The use case cannot initialize the data");
         String expectedDataFile = rootPath + "asserts/dml/" + shardingRuleType + "/" + dmlDefinition.getExpectedDataFile();
@@ -310,12 +317,12 @@ public final class AssertEngine {
         }
     }
     
-    private static void dqlRun(final DQLDataSetAssert dqlDefinition, final String shardingRuleType, final DatabaseType databaseType, final String initDataFile, final String rootPath, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps, final Collection<String> dataSourceNames) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
+    private static void dqlRun(final DQLDataSetAssert dqlDefinition, final String shardingRuleType, final DatabaseType databaseType, final String initDataFile, final String rootPath, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException, JAXBException {
         String rootSQL = dqlDefinition.getSql();
         rootSQL = SQLCasesLoader.getInstance().getSupportedSQL(rootSQL);
         Map<String, DatasetDefinition> mapDatasetDefinition = new HashMap<>();
         Map<String, String> sqls = new HashMap<>();
-        getInitDatas(dataSourceNames, initDataFile, mapDatasetDefinition, sqls);
+        getInitDatas(initDataFile, mapDatasetDefinition, sqls);
         Preconditions.checkState(!mapDatasetDefinition.isEmpty(), "Use cases cannot be parsed");
         Preconditions.checkState(!sqls.isEmpty(), "The use case cannot initialize the data");
         try {
@@ -430,7 +437,7 @@ public final class AssertEngine {
                 DatasetDefinition checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
                 
                 String table = anAssert.getTable();
-                List<ColumnDefinition> columnDefinitions = DatabaseUtil.getColumnDefinitions(con, table);
+                List<DataSetColumnMetadata> columnDefinitions = DatabaseUtil.getColumnDefinitions(con, table);
                 DatabaseUtil.assertConfigs(checkDataset, columnDefinitions, table);
             }
         } finally {
@@ -478,7 +485,7 @@ public final class AssertEngine {
                         anAssert.getParameter());
                 DatasetDefinition checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
                 String table = anAssert.getTable();
-                List<ColumnDefinition> columnDefinitions = DatabaseUtil.getColumnDefinitions(con, table);
+                List<DataSetColumnMetadata> columnDefinitions = DatabaseUtil.getColumnDefinitions(con, table);
                 DatabaseUtil.assertConfigs(checkDataset, columnDefinitions, table);
             }
         } finally {
@@ -523,7 +530,7 @@ public final class AssertEngine {
                 DatabaseUtil.updateUseStatementToExecute(con, rootsql, anAssert.getParameter());
                 DatasetDefinition checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
                 String table = anAssert.getTable();
-                List<ColumnDefinition> columnDefinitions = DatabaseUtil.getColumnDefinitions(con, table);
+                List<DataSetColumnMetadata> columnDefinitions = DatabaseUtil.getColumnDefinitions(con, table);
                 DatabaseUtil.assertConfigs(checkDataset, columnDefinitions, table);
             }
         } finally {
@@ -567,9 +574,8 @@ public final class AssertEngine {
                 }
                 DatabaseUtil.updateUseStatementToExecuteUpdate(con, rootsql, anAssert.getParameter());
                 DatasetDefinition checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
-                
                 String table = anAssert.getTable();
-                List<ColumnDefinition> columnDefinitions = DatabaseUtil.getColumnDefinitions(con, table);
+                List<DataSetColumnMetadata> columnDefinitions = DatabaseUtil.getColumnDefinitions(con, table);
                 DatabaseUtil.assertConfigs(checkDataset, columnDefinitions, table);
             }
         } finally {
@@ -614,30 +620,59 @@ public final class AssertEngine {
         }
     }
     
-    private static void getInitDatas(final Collection<String> dataSourceNames, final String initDataFile, final Map<String, DatasetDefinition> mapDatasetDefinition, final Map<String, String> sqls)
-            throws IOException, SAXException, ParserConfigurationException, XPathExpressionException {
-        for (String each : dataSourceNames) {
-            String tempPath = initDataFile + "/" + each + ".xml";
-            File file = new File(tempPath);
-            if (file.exists()) {
-                DatasetDefinition datasetDefinition = DataSetsParser.parse(file, null);
-                mapDatasetDefinition.put(each, datasetDefinition);
-                Map<String, List<Map<String, String>>> datas = datasetDefinition.getDatas();
-                for (Map.Entry<String, List<Map<String, String>>> eachEntry : datas.entrySet()) {
-                    String sql = DatabaseUtil.analyzeSQL(eachEntry.getKey(), eachEntry.getValue().get(0));
-                    sqls.put(eachEntry.getKey(), sql);
+    private static void getInitDatas(final String initDataFile, final Map<String, DatasetDefinition> mapDatasetDefinition, final Map<String, String> sqls) throws IOException, JAXBException {
+        DataSetsRoot dataSetsRoot = unmarshal(initDataFile);
+        for (DataSetMetadata each : dataSetsRoot.getMetadataList()) {
+            List<String> dataNodes = new InlineExpressionParser(each.getDataNodes()).evaluate();
+            for (String dataNode : dataNodes) {
+                String dataSourceName = dataNode.split("\\.")[0];
+                String tableName = dataNode.split("\\.")[1];
+                if (!mapDatasetDefinition.containsKey(dataSourceName)) {
+                    mapDatasetDefinition.put(dataSourceName, new DatasetDefinition());
                 }
+                DatasetDefinition datasetDefinition = mapDatasetDefinition.get(dataSourceName);
+                datasetDefinition.getMetadatas().put(tableName, each.getColumnMetadataList());
+                datasetDefinition.getIndexMetadataList().put(tableName, each.getIndexMetadataList());
+                mapDatasetDefinition.put(dataSourceName, datasetDefinition);
             }
+        }
+        for (DataSetRow each : dataSetsRoot.getDataSetRows()) {
+            String dataSourceName = each.getDataNode().split("\\.")[0];
+            String tableName = each.getDataNode().split("\\.")[1];
+            if (!mapDatasetDefinition.get(dataSourceName).getDatas().containsKey(tableName)) {
+                mapDatasetDefinition.get(dataSourceName).getDatas().put(tableName, new LinkedList<Map<String, String>>());
+            }
+            List<Map<String, String>> tableDataList = mapDatasetDefinition.get(dataSourceName).getDatas().get(tableName);
+            List<String> values = Splitter.on(',').trimResults().splitToList(each.getValues());
+            int count = 0;
+            Map<String, String> map = new LinkedHashMap<>(values.size(), 1);
+            for (DataSetColumnMetadata column : mapDatasetDefinition.get(dataSourceName).getMetadatas().get(tableName)) {
+                map.put(column.getName(), values.get(count));
+                count++;
+            }
+            String sql = DatabaseUtil.analyzeSQL(tableName, mapDatasetDefinition.get(dataSourceName).getMetadatas().get(tableName));
+            sqls.put(tableName, sql);
+            if (!mapDatasetDefinition.get(dataSourceName).getDatas().containsKey(tableName)) {
+                mapDatasetDefinition.get(dataSourceName).getDatas().put(tableName, new LinkedList<Map<String, String>>());
+            }
+            tableDataList.add(map);
+            mapDatasetDefinition.get(dataSourceName).getDatas().put(tableName, tableDataList);
+        }
+    }
+    
+    private static DataSetsRoot unmarshal(final String path) throws IOException, JAXBException {
+        try (FileReader reader = new FileReader(path)) {
+            return (DataSetsRoot) JAXBContext.newInstance(DataSetsRoot.class).createUnmarshaller().unmarshal(reader);
         }
     }
     
     private static void clearTableData(final Map<String, DataSource> dataSourceMaps, final Map<String, DatasetDefinition> mapDatasetDefinition) throws SQLException {
         for (Map.Entry<String, DataSource> eachEntry : dataSourceMaps.entrySet()) {
-            DataSource dataSource1 = eachEntry.getValue();
+            DataSource dataSource = eachEntry.getValue();
             DatasetDefinition datasetDefinition = mapDatasetDefinition.get(eachEntry.getKey());
             Map<String, List<Map<String, String>>> datas = datasetDefinition.getDatas();
             for (Map.Entry<String, List<Map<String, String>>> eachListEntry : datas.entrySet()) {
-                try (Connection conn = dataSource1.getConnection()) {
+                try (Connection conn = dataSource.getConnection()) {
                     DatabaseUtil.cleanAllUsePreparedStatement(conn, eachListEntry.getKey());
                 }
             }
@@ -649,7 +684,7 @@ public final class AssertEngine {
         for (Map.Entry<String, DataSource> eachDataSourceEntry : dataSourceMaps.entrySet()) {
             DataSource dataSource1 = eachDataSourceEntry.getValue();
             DatasetDefinition datasetDefinition = mapDatasetDefinition.get(eachDataSourceEntry.getKey());
-            Map<String, List<ColumnDefinition>> metadatas = datasetDefinition.getMetadatas();
+            Map<String, List<DataSetColumnMetadata>> metadatas = datasetDefinition.getMetadatas();
             Map<String, List<Map<String, String>>> datas = datasetDefinition.getDatas();
             for (Map.Entry<String, List<Map<String, String>>> eachListEntry : datas.entrySet()) {
                 try (Connection conn = dataSource1.getConnection()) {
