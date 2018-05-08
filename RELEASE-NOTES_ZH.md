@@ -21,7 +21,7 @@
 1. [ISSUE #773](https://github.com/shardingjdbc/sharding-jdbc/issues/773) 支持不包含列名的INSERT语句的分片与自增主键 
 
 ### 缺陷修正
-1. [ISSUE #628](https://github.com/shardingjdbc/sharding-jdbc/issues/628) 支持PostgreSql的数据类型jsonb
+1. [ISSUE #628](https://github.com/shardingjdbc/sharding-jdbc/issues/628) 支持PostgreSQL的数据类型jsonb
 1. [ISSUE #646](https://github.com/shardingjdbc/sharding-jdbc/issues/646) 当SELECT ITEMS中的别名与GROUP BY或ORDER BY的真实列名对应时，无需补列
 
 ## 2.0.3
@@ -84,7 +84,7 @@
 1. [ISSUE #398](https://github.com/shardingjdbc/sharding-jdbc/issues/398) 使用Hint路由屏蔽表和列名称的大小写区别
 1. [ISSUE #404](https://github.com/shardingjdbc/sharding-jdbc/issues/404) sharding-jdbc的spring-boot-starter不支持HikariDataSource
 1. [ISSUE #419](https://github.com/shardingjdbc/sharding-jdbc/issues/419) SQL改写时, 未判断别名是否为关键字未加转义符导致了SQL异常
-1. [ISSUE #436](https://github.com/shardingjdbc/sharding-jdbc/issues/436) 读写分离多从库配置RoundRobin算法并使用MyBatis时，只能路由到同一从库
+1. [ISSUE #436](https://github.com/shardingjdbc/sharding-jdbc/issues/436) 读写分离当从库配置RoundRobin算法并使用MyBatis时，只能路由到同一从库
 1. [ISSUE #452](https://github.com/shardingjdbc/sharding-jdbc/issues/452) DDL语句分片至多个表会造成连接泄漏的问题
 1. [ISSUE #453](https://github.com/shardingjdbc/sharding-jdbc/issues/453) 编排治理数据源配置name与Druid数据源name冲突
 1. [ISSUE #464](https://github.com/shardingjdbc/sharding-jdbc/issues/464) SQL如果varchar类型由于没有匹配单引号并未关闭, 而恰好sql中的下一个varchar又是汉字的错误SQL, 将导致CPU使用增高
@@ -176,7 +176,7 @@
 
 ### 功能调整
 
-1. 简化分布式自增序列。将每个表支持多自增序列简化为单表仅支持单一的分布式自增序列，并不再支持通过环境变量设置workerID。
+1. 简化分布式自增序列。将每个表支持多自增序列简化为单表仅支持单一的分布式自增序列，并不再支持通过环境变量设置workerID
 1. 去掉对OR的支持
 
 ### 缺陷修正
@@ -196,7 +196,7 @@
 
 ### 缺陷修正
 
-1. [ISSUE #212](https://github.com/shardingjdbc/sharding-jdbc/issues/212) 对去缺少数据源规则给出更有意义的提示
+1. [ISSUE #212](https://github.com/shardingjdbc/sharding-jdbc/issues/212) 对缺少数据源规则给出更有意义的提示
 1. [ISSUE #214](https://github.com/shardingjdbc/sharding-jdbc/issues/214) where中 table_name.column_name in (?,?)无法解析表达式
 1. [ISSUE #180](https://github.com/shardingjdbc/sharding-jdbc/issues/180) 批量执行Update返回值不准确
 1. [ISSUE #225](https://github.com/shardingjdbc/sharding-jdbc/issues/225) 自动生成Id最后一位不归零
@@ -241,11 +241,11 @@
 ### 缺陷修正
 
 1. [ISSUE #149](https://github.com/shardingjdbc/sharding-jdbc/issues/149) INSERT IGNORE INTO时如果数据重了忽略时返回的成-1了，应该返回0 
-1. [ISSUE #118](https://github.com/shardingjdbc/sharding-jdbc/issues/118) 同一个线程内先执行DQL后执行DML，DML操作再从库上执行
+1. [ISSUE #118](https://github.com/shardingjdbc/sharding-jdbc/issues/118) 同一个线程内先执行DQL后执行DML，DML操作在从库上执行
 1. [ISSUE #122](https://github.com/shardingjdbc/sharding-jdbc/issues/122) 在连接不可用的情况下(如网络中断),应该直接中断事务,而不是重试
 1. [ISSUE #152](https://github.com/shardingjdbc/sharding-jdbc/issues/152) PreparedStatement的缓存导致数组越界
 1. [ISSUE #150](https://github.com/shardingjdbc/sharding-jdbc/issues/150) 与最新SQLServer jdbc驱动兼容问题，应该将Product Name由SQLServer改为Microsoft SQL Server
-1. [ISSUE #166](https://github.com/shardingjdbc/sharding-jdbc/issues/166) druid数据源stat过滤器多线程报错，应该增加数据库连接级别的同步
+1. [ISSUE #166](https://github.com/shardingjdbc/sharding-jdbc/issues/166) Druid数据源stat过滤器多线程报错，应该增加数据库连接级别的同步
 
 ## 1.3.2
 
@@ -256,7 +256,7 @@
 ### 缺陷修正
 
 1. [ISSUE #36](https://github.com/shardingjdbc/sharding-jdbc/issues/36) ShardingPreparedStatement无法反复设置参数
-1. [ISSUE #114](https://github.com/shardingjdbc/sharding-jdbc/issues/114) ShardingPreparedStatement执行批处理任务时,反复解析sql导致oom
+1. [ISSUE #114](https://github.com/shardingjdbc/sharding-jdbc/issues/114) ShardingPreparedStatement执行批处理任务时,反复解析sql导致OOM
 1. [ISSUE #33](https://github.com/shardingjdbc/sharding-jdbc/issues/33) 根据MySQL文档，不支持类似limit 100 , -1格式的查询
 1. [ISSUE #124](https://github.com/shardingjdbc/sharding-jdbc/issues/124) com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractStatementAdapter.getUpdateCount返回值不符合JDBC规范
 1. [ISSUE #141](https://github.com/shardingjdbc/sharding-jdbc/issues/141) 多线程执行器参数设置失效
