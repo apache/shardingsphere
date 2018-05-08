@@ -8,6 +8,8 @@ import com.saaavsaaa.client.utility.section.Listener;
 import com.saaavsaaa.client.zookeeper.transaction.ZKTransaction;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.ACL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Stack;
@@ -16,6 +18,7 @@ import java.util.Stack;
  * Created by aaa
  */
 public class Provider implements IProvider {
+    private static final Logger logger = LoggerFactory.getLogger(Provider.class);
     protected final Client client;
     private final ZooKeeper zooKeeper;
     protected final boolean watched;
@@ -67,10 +70,12 @@ public class Provider implements IProvider {
         }
         try {
             zooKeeper.create(key, value.getBytes(Constants.UTF_8), authorities, createMode);
+            logger.debug("Provider createCurrentOnly:{}", key);
         } catch (KeeperException.NoNodeException e) {
+            logger.error("Provider createCurrentOnly:{}", e.getMessage(), e);
             // I don't know whether it will happen or not, if root watcher don't update rootExist timely
             if (e.getMessage().contains(key)) {
-                System.out.println("rootExist : " + e.getMessage());
+                logger.info("Provider createCurrentOnly rootExist:{}", client.rootExist);
                 Thread.sleep(50);
                 this.createCurrentOnly(key, value, createMode);
             }
@@ -81,6 +86,7 @@ public class Provider implements IProvider {
     public void createInTransaction(final String key, final String value, final CreateMode createMode, final ZKTransaction transaction) throws KeeperException, InterruptedException {
         client.createNamespace();
         if (rootNode.equals(key)){
+            logger.info("Provider createInTransaction rootNode:{}", key);
             return;
         }
         transaction.create(key, value.getBytes(Constants.UTF_8), authorities, createMode);
@@ -94,7 +100,7 @@ public class Provider implements IProvider {
     @Override
     public void deleteOnlyCurrent(final String key) throws KeeperException, InterruptedException {
         zooKeeper.delete(key, Constants.VERSION);
-        System.out.println("delete : " + key);
+        logger.debug("Provider deleteOnlyCurrent:{}", key);
         if (rootNode.equals(key)){
             client.rootExist = false; //protected
         }
@@ -103,6 +109,7 @@ public class Provider implements IProvider {
     @Override
     public void deleteOnlyCurrent(final String key, final AsyncCallback.VoidCallback callback, final Object ctx) throws KeeperException, InterruptedException {
         zooKeeper.delete(key, Constants.VERSION, callback, ctx);
+        logger.debug("Provider deleteOnlyCurrent:{},ctx:{}", key, ctx);
         if (rootNode.equals(key)){
             client.rootExist = false;
         }

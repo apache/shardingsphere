@@ -5,10 +5,9 @@ import com.saaavsaaa.client.zookeeper.strategy.UsualStrategy;
 import com.saaavsaaa.client.zookeeper.strategy.ContentionStrategy;
 import com.saaavsaaa.client.zookeeper.strategy.StrategyType;
 import com.saaavsaaa.client.zookeeper.transaction.ZKTransaction;
-import org.apache.zookeeper.AsyncCallback;
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.Watcher;
+import org.apache.zookeeper.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * todo log
  */
 public class UsualClient extends Client {
+    private static final Logger logger = LoggerFactory.getLogger(UsualClient.class);
     protected final Map<StrategyType, IExecStrategy> strategies = new ConcurrentHashMap<>();
     protected IExecStrategy strategy;
     
@@ -30,11 +30,12 @@ public class UsualClient extends Client {
     @Override
     public synchronized void start() throws IOException, InterruptedException {
         super.start();
-        useStrategy(StrategyType.USUAL);
+        useExecStrategy(StrategyType.USUAL);
     }
     
     @Override
-    public synchronized void useStrategy(StrategyType strategyType) {
+    public synchronized void useExecStrategy(StrategyType strategyType) {
+        logger.debug("useExecStrategy:{}", strategyType);
         if (strategies.containsKey(strategyType)){
             strategy = strategies.get(strategyType);
             return;

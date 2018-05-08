@@ -18,7 +18,7 @@ public class ContentionStrategyTest extends UsualClientTest {
     protected Client createClient(final ClientFactory creator) throws IOException, InterruptedException {
         Listener listener = TestSupport.buildListener();
         Client client = creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes()).newClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).watch(listener).start();
-        client.useStrategy(StrategyType.CONTENTION);
+        client.useExecStrategy(StrategyType.CONTENTION);
         return client;
     }
     

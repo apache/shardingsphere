@@ -10,6 +10,8 @@ import com.saaavsaaa.client.utility.section.WatcherCreator;
 import com.saaavsaaa.client.zookeeper.strategy.StrategyType;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.ACL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
@@ -21,6 +23,7 @@ import java.util.concurrent.CountDownLatch;
  * Created by aaa
  */
 public abstract class Client implements IClient {
+    private static final Logger logger = LoggerFactory.getLogger(Client.class);
     private static final CountDownLatch CONNECTED = new CountDownLatch(1);
     protected static final Map<String, Watcher> watchers = new ConcurrentHashMap<>();
     
@@ -43,14 +46,16 @@ public abstract class Client implements IClient {
     }
     
     public synchronized void start() throws IOException, InterruptedException {
+        logger.debug("Client servers:{},sessionTimeOut:{}", servers, sessionTimeOut);
         zooKeeper = new ZooKeeper(servers, sessionTimeOut, startWatcher());
         if (!StringUtil.isNullOrBlank(scheme)) {
             zooKeeper.addAuthInfo(scheme, auth);
+            logger.debug("Client scheme:{},auth:{}", scheme, auth);
         }
         CONNECTED.await();
     }
     
-    public abstract void useStrategy(StrategyType strategyType);
+    public abstract void useExecStrategy(StrategyType strategyType);
     
     ZooKeeper getZooKeeper(){
         return zooKeeper;
@@ -59,13 +64,16 @@ public abstract class Client implements IClient {
     private Watcher startWatcher() {
         return new Watcher(){
             public void process(WatchedEvent event) {
+                logger.debug("Client process event:{},type:{}", event.getPath(), event.getType());
                 if(Event.KeeperState.SyncConnected == event.getState()){
                     if(Event.EventType.None == event.getType()){
                         CONNECTED.countDown();
+                        logger.debug("Client startWatcher SyncConnected");
                     }
                 }
                 if (globalListenerRegistered){
                     watchers.get(Constants.GLOBAL_LISTENER_KEY).process(event);
+                    logger.debug("Client " + Constants.GLOBAL_LISTENER_KEY + " process");
                 }
                 if (Properties.INSTANCE.watchOn() && watchers.containsKey(event.getPath())){
                      watchers.get(event.getPath()).process(event);
@@ -107,11 +115,13 @@ public abstract class Client implements IClient {
         String path = PathUtil.getRealPath(rootNode, key);
         if (watchers.containsKey(path)){
             watchers.remove(path);
+            logger.debug("unregisterWatch:{}", path);
         }
     }
     
     public void close() throws InterruptedException {
         zooKeeper.close();
+        logger.debug("zk closed");
     }
     
     void createNamespace() throws KeeperException, InterruptedException {
@@ -124,8 +134,9 @@ public abstract class Client implements IClient {
         }
         try {
             zooKeeper.create(rootNode, date, authorities, CreateMode.PERSISTENT);
+            logger.debug("create root:{}", rootNode);
         } catch (KeeperException.NodeExistsException ee){
-            System.out.println("root create : " + ee.getMessage());
+            logger.warn("root create:{}", ee.getMessage());
             rootExist = true;
             return;
         }
@@ -136,12 +147,13 @@ public abstract class Client implements IClient {
                 rootExist = false;
             }
         }));
-        System.out.println("----------------------------------------------create root");
+        logger.debug("----------------------------------------------create root");
     }
     
     void deleteNamespace() throws KeeperException, InterruptedException {
         zooKeeper.delete(rootNode, Constants.VERSION);
         rootExist = false;
+        logger.debug("create root:{},rootExist:{}", rootNode, rootExist);
     }
     
     void setRootNode(final String rootNode) {
