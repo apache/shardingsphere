@@ -27,6 +27,7 @@ Organizations using Sharding in chronological order.
 * [sohu](http://ss.sohu.com/)
 * [auto ifeng](http://auto.ifeng.com/)
 * [tianya](http://www.tianya.cn/)
+* [yiche](http://www.yiche.com/)
 
 ## O2O
 
@@ -77,6 +78,8 @@ Organizations using Sharding in chronological order.
 * [5grain](http://www.5grain.com/)
 * [Ruff](https://ruff.io/)
 * [19pay](http://www.19pay.com.cn/)
+* [chaojilanling](http://www.chaojilanling.cn/)
+* [cloudansys](http://www.cloudansys.com/)
 
 ## Government
 
