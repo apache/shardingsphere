@@ -15,9 +15,14 @@
  * </p>
  */
 
-package io.shardingjdbc.core.yaml.sharding;
+package io.shardingjdbc.core.yaml.proxy;
 
+import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
+import io.shardingjdbc.core.rule.MasterSlaveRule;
 import io.shardingjdbc.core.rule.ShardingRule;
+import io.shardingjdbc.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
+import io.shardingjdbc.core.yaml.sharding.DataSourceParameter;
+import io.shardingjdbc.core.yaml.sharding.YamlShardingRuleConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 import org.yaml.snakeyaml.Yaml;
@@ -29,6 +34,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,14 +43,17 @@ import java.util.Map;
  * Yaml sharding configuration for proxy.
  *
  * @author zhangyonglun
+ * @author panjuan
  */
 @Getter
 @Setter
-public class YamlShardingConfigurationForProxy {
+public class YamlProxyConfiguration {
     
     private Map<String, DataSourceParameter> dataSources = new HashMap<>();
     
-    private YamlShardingRuleConfiguration shardingRule;
+    private YamlMasterSlaveRuleConfiguration masterSlaveRule = new YamlMasterSlaveRuleConfiguration();
+   
+    private YamlShardingRuleConfiguration shardingRule = new YamlShardingRuleConfiguration();
     
     /**
      * Unmarshal yaml sharding configuration from yaml file.
@@ -52,13 +61,14 @@ public class YamlShardingConfigurationForProxy {
      * @param yamlFile yaml file
      * @return yaml sharding configuration
      * @throws IOException IO Exception
+     *
      */
-    public static YamlShardingConfigurationForProxy unmarshal(final File yamlFile) throws IOException {
+    public static YamlProxyConfiguration unmarshal(final File yamlFile) throws IOException {
         try (
                 FileInputStream fileInputStream = new FileInputStream(yamlFile);
                 InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")
         ) {
-            return new Yaml(new Constructor(YamlShardingConfigurationForProxy.class)).loadAs(inputStreamReader, YamlShardingConfigurationForProxy.class);
+            return new Yaml(new Constructor(YamlProxyConfiguration.class)).loadAs(inputStreamReader, YamlProxyConfiguration.class);
         }
     }
     
@@ -69,9 +79,9 @@ public class YamlShardingConfigurationForProxy {
      * @return yaml sharding configuration
      * @throws IOException IO Exception
      */
-    public static YamlShardingConfigurationForProxy unmarshal(final byte[] yamlBytes) throws IOException {
+    public static YamlProxyConfiguration unmarshal(final byte[] yamlBytes) throws IOException {
         try (InputStream inputStream = new ByteArrayInputStream(yamlBytes)) {
-            return new Yaml(new Constructor(YamlShardingConfigurationForProxy.class)).loadAs(inputStream, YamlShardingConfigurationForProxy.class);
+            return new Yaml(new Constructor(YamlProxyConfiguration.class)).loadAs(inputStream, YamlProxyConfiguration.class);
         }
     }
     
@@ -81,7 +91,17 @@ public class YamlShardingConfigurationForProxy {
      * @param dataSourceNames data source names
      * @return sharding rule from yaml
      */
-    public ShardingRule getShardingRule(final Collection<String> dataSourceNames) {
+    public ShardingRule obtainShardingRule(final Collection<String> dataSourceNames) {
         return new ShardingRule(shardingRule.getShardingRuleConfiguration(), dataSourceNames.isEmpty() ? dataSources.keySet() : dataSourceNames);
+    }
+    
+    /**
+     * Get master slave rule from yaml.
+     *
+     * @return master slave rule.
+     */
+    public MasterSlaveRule obtainMasterSlaveRule() {
+        return null == masterSlaveRule.getMasterDataSourceName() ? new MasterSlaveRule(new MasterSlaveRuleConfiguration("", "", Arrays.asList(""), null))
+                : new MasterSlaveRule(masterSlaveRule.getMasterSlaveRuleConfiguration());
     }
 }
