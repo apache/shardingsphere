@@ -79,6 +79,7 @@ chapter = true
 * [上海南潮信息科技有限公司](https://ruff.io/)
 * [高阳捷迅](http://www.19pay.com.cn/)
 * [超级蓝领网络科技服务有限公司](http://www.chaojilanling.cn/)
+* [北京云庐科技有限公司](http://www.cloudansys.com/)
 
 ## 政府
 
