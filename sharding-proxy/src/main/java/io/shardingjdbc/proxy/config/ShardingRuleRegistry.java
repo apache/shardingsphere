@@ -21,9 +21,10 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.metadata.ShardingMetaData;
+import io.shardingjdbc.core.rule.MasterSlaveRule;
 import io.shardingjdbc.core.rule.ShardingRule;
+import io.shardingjdbc.core.yaml.proxy.YamlProxyConfiguration;
 import io.shardingjdbc.core.yaml.sharding.DataSourceParameter;
-import io.shardingjdbc.core.yaml.sharding.YamlShardingConfigurationForProxy;
 import io.shardingjdbc.proxy.metadata.ProxyShardingMetaData;
 import lombok.Getter;
 
@@ -51,24 +52,32 @@ public final class ShardingRuleRegistry {
     
     private final ShardingRule shardingRule;
     
+    private final MasterSlaveRule masterSlaveRule;
+    
     private final ShardingMetaData shardingMetaData;
     
+    private final boolean isOnlyMasterSlave;
+    
     private ShardingRuleRegistry() {
-        YamlShardingConfigurationForProxy yamlShardingConfigurationForProxy;
+        YamlProxyConfiguration yamlProxyConfiguration;
         try {
-            yamlShardingConfigurationForProxy = YamlShardingConfigurationForProxy.unmarshal(new File(getClass().getResource("/conf/sharding-config.yaml").getFile()));
+            yamlProxyConfiguration = YamlProxyConfiguration.unmarshal(new File(getClass().getResource("/conf/sharding-config.yaml").getFile()));
         } catch (final IOException ex) {
             throw new ShardingJdbcException(ex);
         }
         dataSourceMap = new HashMap<>(128, 1);
-        Map<String, DataSourceParameter> dataSourceParameters = yamlShardingConfigurationForProxy.getDataSources();
+        Map<String, DataSourceParameter> dataSourceParameters = yamlProxyConfiguration.getDataSources();
         for (String each : dataSourceParameters.keySet()) {
             dataSourceMap.put(each, getDataSource(dataSourceParameters.get(each)));
         }
-        shardingRule = yamlShardingConfigurationForProxy.getShardingRule(Collections.<String>emptyList());
+        shardingRule = yamlProxyConfiguration.obtainShardingRule(Collections.<String>emptyList());
+        masterSlaveRule = yamlProxyConfiguration.obtainMasterSlaveRule();
+        isOnlyMasterSlave = shardingRule.getTableRules().isEmpty() && !masterSlaveRule.getMasterDataSourceName().isEmpty();
         try {
             shardingMetaData = new ProxyShardingMetaData(dataSourceMap);
-            shardingMetaData.init(shardingRule);
+            if (!isOnlyMasterSlave) {
+                shardingMetaData.init(shardingRule);
+            }
         } catch (final SQLException ex) {
             throw new ShardingJdbcException(ex);
         }

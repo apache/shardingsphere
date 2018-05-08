@@ -84,8 +84,6 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
     
     private final boolean showSQL;
     
-    private final boolean isOnlyMasterSlave;
-    
     public SQLExecuteBackendHandler(final String sql, final DatabaseType databaseType, final boolean showSQL) {
         this.sql = sql;
         connections = new ArrayList<>(1024);
@@ -94,19 +92,20 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
         hasMoreResultValueFlag = true;
         this.databaseType = databaseType;
         this.showSQL = showSQL;
-        isOnlyMasterSlave = ShardingRuleRegistry.getInstance().getShardingRule().isOnlyUsingMasterSlave();
     }
     
     @Override
     public CommandResponsePackets execute() {
-        return isOnlyMasterSlave ? executeForMasterSlave() : executeForSharding();
+        return ShardingRuleRegistry.getInstance().isOnlyMasterSlave() ? executeForMasterSlave() : executeForSharding();
     }
     
     private CommandResponsePackets executeForMasterSlave() {
-        MasterSlaveRouter masterSlaveRouter = new MasterSlaveRouter(ShardingRuleRegistry.getInstance().getShardingRule().getMasterSlaveRules().iterator().next());
+        MasterSlaveRouter masterSlaveRouter = new MasterSlaveRouter(ShardingRuleRegistry.getInstance().getMasterSlaveRule());
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
         String dataSourceName = masterSlaveRouter.route(sqlStatement.getType()).iterator().next();
-        return execute(sqlStatement, dataSourceName, sql);
+        List<CommandResponsePackets> result = new LinkedList<>();
+        result.add(execute(sqlStatement, dataSourceName, sql));
+        return merge(sqlStatement, result);
     }
     
     private CommandResponsePackets executeForSharding() {
@@ -130,7 +129,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
                 return executeQuery(ShardingRuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql);
             case DML:
             case DDL:
-                return isOnlyMasterSlave ? executeUpdate(ShardingRuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql)
+                return ShardingRuleRegistry.getInstance().isOnlyMasterSlave() ? executeUpdate(ShardingRuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql)
                         : executeUpdate(ShardingRuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql, sqlStatement);
             default:
                 return executeCommon(ShardingRuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql);
