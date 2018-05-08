@@ -1,9 +1,7 @@
 +++
 toc = true
-title = "Test engine"
+title = "Test Engine"
 weight = 6
-prev = "/07-other/stress-test/"
-next = "/07-other/external-dependency/"
 +++
 
 Sharding-JDBC provides a perfect test engine. It defines SQL in the form of XML, and each of SQL is driven by an SQL parsing unit test engine and an integration test engine, each of which provides test cases for H2, MySQL, PostgreSQL, SQL server, and Oracle databases.

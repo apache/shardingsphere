@@ -32,9 +32,9 @@ chapter = true
 
  - 请在选择您要修改的issue。如果是您新发现的问题或想提供issue中没有的功能增强，请先新建一个issue并设置正确的标签。
  - 在选中相关的issue之后，请回复以表明您当前正在这个issue上工作。并在回复的时候为自己设置一个deadline，添加至回复内容中。
- - 在[开发者列表](/01-organization/)中找到一个导师，导师会在设计与功能实现上给予即时的反馈。
+ - 在[开发者列表](/organization/)中找到一个导师，导师会在设计与功能实现上给予即时的反馈。
  - 您需要fork一个分支到您自己的repo来开始工作。
- - 请您在开发过程中遵循Sharding的[开发规范](/03-convention/)。并在准备提交pull request之前完成相应的检查。
+ - 请您在开发过程中遵循Sharding的[开发规范](/contribute/convention/)。并在准备提交pull request之前完成相应的检查。
  - 完成后，发送一个pull request到shardingjdbc的dev分支，请不要提交pull request至master分支中。
  - 接着导师做CodeReview，然后他会与您讨论一些细节（包括设计，实现，性能等）。当导师对本次修改满意后，会将提交合并到当前开发版本的分支中。
  - 最后，恭喜您已经成为了Sharding的官方贡献者！

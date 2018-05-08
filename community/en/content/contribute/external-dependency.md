@@ -1,9 +1,7 @@
 +++
 toc = true
 title = "External dependencies"
-weight = 4
-prev = "/07-other/stress-test/"
-next = "/01-overview/"
+weight = 5
 +++
 
 | *Dependency*                         | *License*       |

@@ -1,36 +1,34 @@
 +++
-title = "Committers' Guide"
+title = "提交者指南"
 weight = 2
-prev = "/02-contribute/contributor/"
-next = "/02-contribute/convention/"
 chapter = true
 +++
 
-## Becoming a committer
+## 成为一个提交者
 
- - Consistent contributions over the past 6 months
- - Deep understanding of Sharding core technology
- - Compliance with the development conventions
- - High quality of commits
- - Enable Two-factor authentication([2FA](/02-contribute/2fa/))
+ - 过去的6个月持续的做出贡献
+ - 深入理解Sharding核心技术
+ - 遵守开发规范
+ - 高质量提交
+ - 开启Google 2FA([2FA](/contribute/2fa/))
 
-## Current Committers
+## 当前提交者
 
- - See [Committer](/01-organization/)
+ - 见 [组织](/organization/)
  
-## Maintainer responsibility
+## 维护者责任
 
-Maintainers are committers that have spent a significant amount of time and effort in the maintenance of a component in the project. This means that maintainer should:
+维护者是花费大量时间和精力维护项目组件的提交者，这意味着维护者应该：
    
- - Review PRs in a timely and reliable fashion
- - They should also help to actively whittle down the PR backlog
- - Answering questions
- - Taking on core changes/bugs/feature requests
- - Some changes are important enough that a maintainer needs to ensure it gets done.
- - Improving processes and tooling
- - Refactoring
+ - 及时和可靠的评审PR
+ - 积极削减PR积压
+ - 解答问题
+ - 接纳核心更改、bug、特性请求
+ - 对于重要的变更，维护者需要确保它完成
+ - 改进流程和工具
+ - 重构
  
-## Current component maintainer list
+## 当前组件维护者列表
 
  - *All Components in Sharding*
  
@@ -56,7 +54,7 @@ Maintainers are committers that have spent a significant amount of time and effo
  
  - *sharding-jdbc-orchestration*
   
-     - 朱政科, Zhengke Zhu, [@CharlesMaster](https://github.com/CharlesMaster)
+     - 朱政科, Zhengke Zhu, [@CharlesMaster](https://github.com/CharlesMaster) 
      - 马晓光, Xiaoguang Ma, [@ma-xiao-guang-64](https://github.com/ma-xiao-guang-64)
  
  - *sharding-jdbc-plugin*
@@ -83,7 +81,7 @@ Maintainers are committers that have spent a significant amount of time and effo
  
  - *sharding-jdbc-example*
  
-     - 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013)
+     - 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013) 
      - 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) 
  
  - *sharding-jdbc-opentracing*

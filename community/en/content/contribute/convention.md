@@ -1,8 +1,6 @@
 +++
 title = "Conventions"
-weight = 3
-prev = "/02-contribute/committer/"
-next = "/03-company/"
+weight = 4
 chapter = true
 +++
 
