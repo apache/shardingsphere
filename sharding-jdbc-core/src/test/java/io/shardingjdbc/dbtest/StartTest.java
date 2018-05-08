@@ -29,6 +29,7 @@ import io.shardingjdbc.test.sql.SQLCasesLoader;
 import lombok.RequiredArgsConstructor;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -130,6 +131,8 @@ public final class StartTest {
     }
     
     @Test
+    @Ignore
+    // TODO ignore new test engine, because it is not completed yet, will continue to do it in 3.0.0.m2
     public void test() throws JAXBException, SAXException, ParseException, IOException, XPathExpressionException, SQLException, ParserConfigurationException {
         AssertEngine.runAssert(assertDefinition, shardingRuleType, databaseTypeEnvironment, caseType);
     }
