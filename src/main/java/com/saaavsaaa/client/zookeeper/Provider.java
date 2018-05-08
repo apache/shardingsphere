@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Stack;
 
 /**
- * Created by aaa on 18-5-3.
+ * Created by aaa
  */
 public class Provider implements IProvider {
     protected final Client client;
@@ -76,6 +76,15 @@ public class Provider implements IProvider {
             }
         }
     }
+    
+    @Override
+    public void createInTransaction(final String key, final String value, final CreateMode createMode, final ZKTransaction transaction) throws KeeperException, InterruptedException {
+        client.createNamespace();
+        if (rootNode.equals(key)){
+            return;
+        }
+        transaction.create(key, value.getBytes(Constants.UTF_8), authorities, createMode);
+    }
 
     @Override
     public void update(final String key, final String value) throws KeeperException, InterruptedException {
@@ -86,11 +95,17 @@ public class Provider implements IProvider {
     public void deleteOnlyCurrent(final String key) throws KeeperException, InterruptedException {
         zooKeeper.delete(key, Constants.VERSION);
         System.out.println("delete : " + key);
+        if (rootNode.equals(key)){
+            client.rootExist = false; //protected
+        }
     }
     
     @Override
     public void deleteOnlyCurrent(final String key, final AsyncCallback.VoidCallback callback, final Object ctx) throws KeeperException, InterruptedException {
         zooKeeper.delete(key, Constants.VERSION, callback, ctx);
+        if (rootNode.equals(key)){
+            client.rootExist = false;
+        }
     }
     
     
@@ -113,7 +128,11 @@ public class Provider implements IProvider {
     
     @Override
     public void executeContention(final LeaderElection election) throws KeeperException, InterruptedException {
-        election.executeContention(this);
+        this.executeContention(rootNode, election);
+    }
+    
+    public void executeContention(final String nodeBeCompete, final LeaderElection election) throws KeeperException, InterruptedException {
+        election.executeContention(rootNode, this);
     }
     
     @Override

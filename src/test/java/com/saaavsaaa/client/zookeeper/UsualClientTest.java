@@ -12,7 +12,7 @@ public class UsualClientTest extends BaseClientTest {
     
     @Override
     protected Client createClient(final ClientFactory creator) throws IOException, InterruptedException {
-        return creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes()).newUsualClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).start();
+        return creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes()).newClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).start();
     }
     
     @Test

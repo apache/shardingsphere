@@ -1,8 +1,8 @@
 package com.saaavsaaa.client.zookeeper;
 
+import com.saaavsaaa.client.action.IExecStrategy;
 import com.saaavsaaa.client.zookeeper.strategy.UsualStrategy;
 import com.saaavsaaa.client.zookeeper.strategy.ContentionStrategy;
-import com.saaavsaaa.client.action.IStrategy;
 import com.saaavsaaa.client.zookeeper.strategy.StrategyType;
 import com.saaavsaaa.client.zookeeper.transaction.ZKTransaction;
 import org.apache.zookeeper.AsyncCallback;
@@ -16,11 +16,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Created by aaa on 18-5-2.
+ * Created by aaa
+ * todo log
  */
 public class UsualClient extends Client {
-    protected final Map<StrategyType, IStrategy> strategies = new ConcurrentHashMap<>();
-    protected IStrategy strategy;
+    protected final Map<StrategyType, IExecStrategy> strategies = new ConcurrentHashMap<>();
+    protected IExecStrategy strategy;
     
     UsualClient(final String servers, final int sessionTimeoutMilliseconds) {
         super(servers, sessionTimeoutMilliseconds);

@@ -21,7 +21,7 @@ public class ClientFactory {
     
     public ClientFactory(){}
     
-    public ClientFactory newUsualClient(final String servers, final int sessionTimeoutMilliseconds) {
+    public ClientFactory newClient(final String servers, final int sessionTimeoutMilliseconds) {
         this.servers = servers;
         this.sessionTimeoutMilliseconds = sessionTimeoutMilliseconds;
         client = new UsualClient(servers, sessionTimeoutMilliseconds);
@@ -31,7 +31,7 @@ public class ClientFactory {
     /*
     * used for create new clients through a existing client
     */
-    ClientFactory newUsualClient() {
+    ClientFactory newClient() {
         client = new UsualClient(servers, sessionTimeoutMilliseconds);
         return this;
     }

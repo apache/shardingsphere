@@ -12,7 +12,7 @@ import org.apache.zookeeper.Watcher;
 import java.util.List;
 
 /**
- * Created by aaa on 18-5-2.
+ * Created by aaa
  */
 public class UsualStrategy extends BaseStrategy {
     public UsualStrategy(final Provider provider){
@@ -96,7 +96,7 @@ public class UsualStrategy extends BaseStrategy {
         List<String> children;
         try{
             children = provider.getChildren(path);
-        } catch (KeeperException.NoNodeException e){ // someone else has deleted the node since we checked
+        } catch (KeeperException.NoNodeException e){
             System.out.println(e.getMessage());
             return;
         }
@@ -107,9 +107,9 @@ public class UsualStrategy extends BaseStrategy {
         if (deleteCurrentNode){
             try{
                 this.deleteOnlyCurrent(path);
-            } catch(KeeperException.NotEmptyException e){ //someone has created a new child since we checked ... delete again.
+            } catch(KeeperException.NotEmptyException e){
                 deleteChildren(path, true);
-            } catch(KeeperException.NoNodeException e){ // ignore... someone else has deleted the node since we checked
+            } catch(KeeperException.NoNodeException e){
                 System.out.println(e.getMessage());
             }
         }

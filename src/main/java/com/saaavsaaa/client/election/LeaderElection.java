@@ -1,5 +1,6 @@
 package com.saaavsaaa.client.election;
 
+import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.utility.section.Listener;
 import com.saaavsaaa.client.utility.section.Properties;
@@ -30,14 +31,15 @@ public abstract class LeaderElection {
     /*
     * listener will be register when the contention of the path is unsuccessful
     */
-    public void executeContention(final Provider provider) throws KeeperException, InterruptedException {
+    public void executeContention(final String nodeBeCompete, final Provider provider) throws KeeperException, InterruptedException {
         boolean canBegin;
-        String contendNode = provider.getRealPath(Constants.CHANGING_KEY);
+        String realNode = provider.getRealPath(nodeBeCompete);
+        String contendNode = PathUtil.getRealPath(realNode, Constants.CHANGING_KEY);
         canBegin = this.contend(contendNode, provider, new Listener() {
             @Override
             public void process(WatchedEvent event) {
                 try {
-                    executeContention(provider);
+                    executeContention(realNode, provider);
                 } catch (Exception ee){
                     System.out.println("Listener Exception executeContention");
                     ee.printStackTrace();
@@ -49,6 +51,7 @@ public abstract class LeaderElection {
             try {
                 action();
                 done = true;
+                callback();
             } catch (Exception ee){
                 System.out.println("action Exception executeContention");
                 ee.printStackTrace();
@@ -70,5 +73,5 @@ public abstract class LeaderElection {
 //    public abstract void actionWhenUnreached() throws KeeperException, InterruptedException;
     public abstract void action() throws KeeperException, InterruptedException;
     
-    public void callBack(){}
+    public void callback(){}
 }

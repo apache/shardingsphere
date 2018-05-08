@@ -1,6 +1,5 @@
 package com.saaavsaaa.client.utility.section;
 
-import com.saaavsaaa.client.zookeeper.Client;
 import com.saaavsaaa.client.zookeeper.Provider;
 import org.apache.zookeeper.KeeperException;
 
