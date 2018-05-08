@@ -30,6 +30,7 @@ import lombok.Getter;
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -58,8 +59,8 @@ public final class ShardingRuleRegistry {
     private ShardingRuleRegistry() {
         YamlShardingConfigurationForProxy yamlShardingConfigurationForProxy;
         try {
-            yamlShardingConfigurationForProxy = YamlShardingConfigurationForProxy.unmarshal(new File(getClass().getResource("/conf/sharding-config.yaml").getFile()));
-        } catch (final IOException ex) {
+            yamlShardingConfigurationForProxy = YamlShardingConfigurationForProxy.unmarshal(new File(getClass().getResource("/conf/sharding-config.yaml").toURI().getPath()));
+        } catch (final IOException | URISyntaxException ex) {
             throw new ShardingJdbcException(ex);
         }
         dataSourceConfigurationMap = new HashMap<>(128, 1);
