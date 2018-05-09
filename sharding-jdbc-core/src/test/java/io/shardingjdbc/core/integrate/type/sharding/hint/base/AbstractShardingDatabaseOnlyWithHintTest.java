@@ -44,4 +44,5 @@ public abstract class AbstractShardingDatabaseOnlyWithHintTest extends AbstractH
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new NoneShardingStrategyConfiguration());
         return new ShardingRule(shardingRuleConfig, dataSourceEntry.getValue().keySet());
     }
+    
 }

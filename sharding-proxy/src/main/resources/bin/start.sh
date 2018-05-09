@@ -12,7 +12,7 @@ fi
 
 STDOUT_FILE=$LOGS_DIR/stdout.log
 
-PIDS=`ps -ef | grep java | grep "$DEPLOY_DIR" | awk '{print $2}'`
+PIDS=`ps -ef | grep java | grep "$DEPLOY_DIR" | grep -v grep | awk '{print $2}'`
 if [ -n "$PIDS" ]; then
     echo "ERROR: The $SERVER_NAME already started!"
     echo "PID: $PIDS"
