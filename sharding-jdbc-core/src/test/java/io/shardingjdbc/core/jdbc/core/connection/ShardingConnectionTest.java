@@ -23,7 +23,7 @@ import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.fixture.TestDataSource;
 import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingjdbc.core.metadata.JDBCShardingMetaData;
+import io.shardingjdbc.core.jdbc.metadata.JDBCShardingMetaData;
 import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.rule.ShardingRule;
 import org.junit.After;

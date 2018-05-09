@@ -15,10 +15,11 @@
  * </p>
  */
 
-package io.shardingjdbc.core.metadata;
+package io.shardingjdbc.core.jdbc.metadata;
 
 import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.core.metadata.dialect.ShardingMetaDataHandlerFactory;
+import io.shardingjdbc.core.metadata.ColumnMetaData;
+import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.rule.DataNode;
 import io.shardingjdbc.core.rule.ShardingDataSourceNames;
 import io.shardingjdbc.core.rule.ShardingRule;
@@ -48,7 +49,6 @@ public final class JDBCShardingMetaData extends ShardingMetaData {
     @Override
     public Collection<ColumnMetaData> getColumnMetaDataList(final DataNode dataNode, final ShardingDataSourceNames shardingDataSourceNames) throws SQLException {
         String dataSourceName = shardingDataSourceNames.getRawMasterDataSourceName(dataNode.getDataSourceName());
-
         if (getCachedConnectionMap().containsKey(dataSourceName)) {
             return ShardingMetaDataHandlerFactory.newInstance(dataNode.getTableName(), databaseType).getColumnMetaDataList(getCachedConnectionMap().get(dataSourceName));
         } else {

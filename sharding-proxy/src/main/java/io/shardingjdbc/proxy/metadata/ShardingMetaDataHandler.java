@@ -26,7 +26,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -49,12 +48,28 @@ public final class ShardingMetaDataHandler {
      * @return column meta data list
      * @throws SQLException SQL exception
      */
-    public Collection<ColumnMetaData> getColumnMetaDataList() throws SQLException {
+    public List<ColumnMetaData> getColumnMetaDataList() throws SQLException {
         List<ColumnMetaData> result = new LinkedList<>();
         try (Connection connection = getDataSource().getConnection();
              Statement statement = connection.createStatement()) {
-            statement.executeQuery(String.format("desc %s;", getActualTableName()));
-            ResultSet resultSet = statement.getResultSet();
+            if (isTableExist(statement)) {
+                result = getExistColumnMeta(statement);
+            }
+            return result;
+        }
+    }
+
+    private boolean isTableExist(final Statement statement) throws SQLException {
+        statement.executeQuery(String.format("show tables like '%s'", getActualTableName()));
+        try (ResultSet resultSet = statement.getResultSet()) {
+            return resultSet.next();
+        }
+    }
+
+    private List<ColumnMetaData> getExistColumnMeta(final Statement statement) throws SQLException {
+        List<ColumnMetaData> result = new LinkedList<>();
+        statement.executeQuery(String.format("desc %s;", getActualTableName()));
+        try (ResultSet resultSet = statement.getResultSet()) {
             while (resultSet.next()) {
                 result.add(new ColumnMetaData(resultSet.getString("Field"), resultSet.getString("Type"), resultSet.getString("Key")));
             }

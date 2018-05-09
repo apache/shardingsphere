@@ -123,6 +123,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
         try {
             return generateExecutor(sql).executeUpdate();
         } finally {
+            refreshShardingMetaData(routeResult);
             currentResultSet = null;
         }
     }
@@ -228,15 +229,18 @@ public class ShardingStatement extends AbstractStatementAdapter {
             String logicTable = routeResult.getSqlStatement().getTables().getSingleTableName();
             TableRule tableRule = context.getShardingRule().getTableRule(logicTable);
             ShardingDataSourceNames shardingDataSourceNames = context.getShardingRule().getShardingDataSourceNames();
-
-            Map<String, Connection> cachedConnectionMap = new HashMap<>();
-            for (DataNode each : tableRule.getActualDataNodes()) {
-                String dataSourceName = shardingDataSourceNames.getRawMasterDataSourceName(each.getDataSourceName());
-                cachedConnectionMap.put(dataSourceName, connection.getConnection(dataSourceName));
-            }
-            context.getShardingMetaData().setCachedConnectionMap(cachedConnectionMap);
-            context.getShardingMetaData().refresh(tableRule, context.getShardingRule());
+            doRefreshInternal(context, tableRule, shardingDataSourceNames);
         }
+    }
+
+    private void doRefreshInternal(ShardingContext context, TableRule tableRule, ShardingDataSourceNames shardingDataSourceNames) throws SQLException {
+        Map<String, Connection> cachedConnectionMap = new HashMap<>();
+        for (DataNode each : tableRule.getActualDataNodes()) {
+            String dataSourceName = shardingDataSourceNames.getRawMasterDataSourceName(each.getDataSourceName());
+            cachedConnectionMap.put(dataSourceName, connection.getConnection(dataSourceName));
+        }
+        context.getShardingMetaData().setCachedConnectionMap(cachedConnectionMap);
+        context.getShardingMetaData().refresh(tableRule, context.getShardingRule());
     }
     
     @Override

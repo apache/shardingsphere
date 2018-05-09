@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.metadata.dialect;
+package io.shardingjdbc.core.jdbc.metadata.dialect;
 
 import io.shardingjdbc.core.metadata.ColumnMetaData;
 
@@ -41,11 +41,22 @@ public final class H2ShardingMetaDataHandler extends ShardingMetaDataHandler {
     @Override
     public List<ColumnMetaData> geColumnMetaInternal(final Statement statement) throws SQLException {
         List<ColumnMetaData> result = new LinkedList<>();
-        ResultSet resultSet = statement.getConnection().getMetaData().getTables(null, null, getActualTableName(), null);
+        if (isTableExist(statement)) {
+            result = getExistColumnMeta(statement);
+        }
+        return result;
+    }
 
-        if (resultSet.next()) {
-            statement.executeQuery(String.format("show columns from %s;", getActualTableName()));
-            resultSet = statement.getResultSet();
+    private boolean isTableExist(final Statement statement) throws SQLException {
+        try (ResultSet resultSet = statement.getConnection().getMetaData().getTables(null, null, getActualTableName(), null)) {
+            return resultSet.next();
+        }
+    }
+
+    private List<ColumnMetaData> getExistColumnMeta(final Statement statement) throws SQLException {
+        List<ColumnMetaData> result = new LinkedList<>();
+        statement.executeQuery(String.format("show columns from %s;", getActualTableName()));
+        try (ResultSet resultSet = statement.getResultSet()) {
             while (resultSet.next()) {
                 result.add(new ColumnMetaData(resultSet.getString("FIELD"), resultSet.getString("TYPE"), resultSet.getString("KEY")));
             }

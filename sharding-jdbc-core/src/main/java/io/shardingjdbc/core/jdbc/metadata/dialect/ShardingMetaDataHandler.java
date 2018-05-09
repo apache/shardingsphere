@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingjdbc.core.metadata.dialect;
+package io.shardingjdbc.core.jdbc.metadata.dialect;
 
 import io.shardingjdbc.core.metadata.ColumnMetaData;
 import lombok.AccessLevel;
