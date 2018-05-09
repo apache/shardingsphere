@@ -25,6 +25,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
@@ -41,7 +42,7 @@ public final class ProxyShardingMetaData extends ShardingMetaData {
     private final Map<String, DataSource> dataSourceMap;
     
     @Override
-    protected Collection<ColumnMetaData> getColumnMetaDataList(final DataNode dataNode, final ShardingDataSourceNames shardingDataSourceNames) throws SQLException {
+    public Collection<ColumnMetaData> getColumnMetaDataList(final DataNode dataNode, final ShardingDataSourceNames shardingDataSourceNames) throws SQLException {
         return new ShardingMetaDataHandler(dataSourceMap.get(shardingDataSourceNames.getRawMasterDataSourceName(dataNode.getDataSourceName())), dataNode.getTableName()).getColumnMetaDataList();
     }
 }

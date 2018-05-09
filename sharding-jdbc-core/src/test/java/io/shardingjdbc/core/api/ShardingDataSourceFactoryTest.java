@@ -22,6 +22,7 @@ import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.rule.ShardingRule;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import javax.sql.DataSource;
@@ -67,6 +68,9 @@ public final class ShardingDataSourceFactoryTest {
         when(databaseMetaData.getDatabaseProductName()).thenReturn("H2");
         when(connection.createStatement()).thenReturn(statement);
         when(statement.executeQuery(Mockito.anyString())).thenReturn(resultSet);
+        when(statement.getConnection()).thenReturn(connection);
+        when(statement.getConnection().getMetaData().getTables(ArgumentMatchers.<String>any(), ArgumentMatchers.<String>any(),
+                ArgumentMatchers.<String>any(), ArgumentMatchers.<String[]>any())).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         Map<String, DataSource> result = new HashMap<>(1);
         result.put("ds", dataSource);

@@ -47,8 +47,12 @@ public final class JDBCShardingMetaData extends ShardingMetaData {
     private final DatabaseType databaseType;
     
     @Override
-    protected Collection<ColumnMetaData> getColumnMetaDataList(final DataNode dataNode, final ShardingDataSourceNames shardingDataSourceNames) throws SQLException {
-        return ShardingMetaDataHandlerFactory.newInstance(
-                dataSourceMap.get(shardingDataSourceNames.getRawMasterDataSourceName(dataNode.getDataSourceName())), dataNode.getTableName(), databaseType).getColumnMetaDataList();
+    public Collection<ColumnMetaData> getColumnMetaDataList(final DataNode dataNode, final ShardingDataSourceNames shardingDataSourceNames) throws SQLException {
+        String dataSourceName = shardingDataSourceNames.getRawMasterDataSourceName(dataNode.getDataSourceName());
+        if (getCachedConnectionMap().containsKey(dataSourceName)) {
+            return ShardingMetaDataHandlerFactory.newInstance(dataNode.getTableName(), databaseType).getColumnMetaDataList(getCachedConnectionMap().get(dataSourceName));
+        } else {
+            return ShardingMetaDataHandlerFactory.newInstance(dataSourceMap.get(dataSourceName), dataNode.getTableName(), databaseType).getColumnMetaDataList();
+        }
     }
 }
