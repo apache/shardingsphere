@@ -9,7 +9,7 @@
     <modules>
         <module>sharding-core</module>
         <module>sharding-jdbc</module>
-        <module>sharding-jdbc-core-spring</module>
+        <module>sharding-jdbc-spring</module>
         <module>sharding-jdbc-transaction-parent</module>
         <module>sharding-jdbc-orchestration</module>
         <module>sharding-jdbc-orchestration-spring</module>

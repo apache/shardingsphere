@@ -8,12 +8,12 @@
         <artifactId>sharding-sphere</artifactId>
         <version>2.1.0-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-jdbc-core-spring</artifactId>
+    <artifactId>sharding-jdbc-spring</artifactId>
     <packaging>pom</packaging>
     
     <modules>
-        <module>sharding-jdbc-core-spring-namespace</module>
-        <module>sharding-jdbc-core-spring-boot-starter</module>
+        <module>sharding-jdbc-spring-namespace</module>
+        <module>sharding-jdbc-spring-boot-starter</module>
     </modules>
     
     <dependencies>
