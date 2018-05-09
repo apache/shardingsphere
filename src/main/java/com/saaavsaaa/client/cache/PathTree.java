@@ -18,20 +18,21 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 /*
  * Created by aaa
  */
 public final class PathTree {
     private static final Logger logger = LoggerFactory.getLogger(PathTree.class);
+    private final AtomicReference<PathNode> rootNode = new AtomicReference<>();
     private boolean executorStart = false;
     private ScheduledExecutorService cacheService;
     private final Provider provider;
-    private PathNode rootNode;
     private PathStatus Status;
     
     public PathTree(final String root, final Provider provider) {
-        this.rootNode = new PathNode(root);
+        this.rootNode.set(new PathNode(root));
         this.Status = PathStatus.RELEASE;
         this.provider = provider;
     }
@@ -41,11 +42,11 @@ public final class PathTree {
             logger.debug("loading Status:{}", Status);
             this.setStatus(PathStatus.CHANGING);
     
-            PathNode newRoot = new PathNode(rootNode.getKey());
-            List<String> children = provider.getChildren(rootNode.getKey());
+            PathNode newRoot = new PathNode(rootNode.get().getKey());
+            List<String> children = provider.getChildren(rootNode.get().getKey());
             children.remove(provider.getRealPath(Constants.CHANGING_KEY));
             this.attechIntoNode(children, newRoot, provider);
-            rootNode = newRoot;
+            rootNode.set(newRoot);
     
             this.setStatus(PathStatus.RELEASE);
             logger.debug("loading release:{}", Status);
@@ -131,8 +132,8 @@ public final class PathTree {
                 }
             };
         }
-        logger.debug("PathTree Watch:{}", rootNode.getKey());
-        provider.watch(rootNode.getKey(), listener);
+        logger.debug("PathTree Watch:{}", rootNode.get().getKey());
+        provider.watch(rootNode.get().getKey(), listener);
     }
     
     public PathStatus getStatus() {
@@ -144,7 +145,7 @@ public final class PathTree {
     }
     
     public PathNode getRootNode() {
-        return rootNode;
+        return rootNode.get();
     }
     
     public byte[] getValue(final String path){
@@ -181,12 +182,12 @@ public final class PathTree {
     private PathNode get(final String path){
         logger.debug("PathTree get:{}", path);
         PathUtils.validatePath(path);
-        if (path.equals(rootNode.getKey())){
-            return rootNode;
+        if (path.equals(rootNode.get().getKey())){
+            return rootNode.get();
         }
         Iterator<String> iterator = keyIterator(path);
         if (iterator.hasNext()) {
-            return rootNode.get(iterator); //rootNode.get(1, path);
+            return rootNode.get().get(iterator); //rootNode.get(1, path);
         }
         logger.debug("{} not exist", path);
         return null;
@@ -197,12 +198,12 @@ public final class PathTree {
         PathUtils.validatePath(path);
         logger.debug("put Status:{}", Status);
         if (Status == Status.RELEASE){
-            if (path.equals(rootNode.getKey())){
-                rootNode.setValue(value.getBytes(Constants.UTF_8));
+            if (path.equals(rootNode.get().getKey())){
+                rootNode.set(new PathNode(rootNode.get().getKey(), value.getBytes(Constants.UTF_8)));
                 return;
             }
             this.setStatus(PathStatus.CHANGING);
-            rootNode.set(keyIterator(path), value);
+            rootNode.get().set(keyIterator(path), value);
             this.setStatus(PathStatus.RELEASE);
         } else {
             try {

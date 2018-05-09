@@ -13,10 +13,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class PathNode {
     private static final Logger logger = LoggerFactory.getLogger(PathNode.class);
+    private final Map<String, PathNode> children = new ConcurrentHashMap<>();
     private final String nodeKey;
-
     private byte[] value;
-    private Map<String, PathNode> children = new ConcurrentHashMap<>();
     
     PathNode(final String key) {
         this(key, Constants.RELEASE_VALUE);
