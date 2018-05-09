@@ -28,6 +28,9 @@ public abstract class Client implements IClient {
     protected static final Map<String, Watcher> watchers = new ConcurrentHashMap<>();
     
     protected final boolean watched = true; //false
+    private boolean globalListenerRegistered = false;
+    protected String rootNode = "/InitValue";
+    protected boolean rootExist = false;
     private final String servers;
     private final int sessionTimeOut;
     private String scheme;
@@ -35,9 +38,6 @@ public abstract class Client implements IClient {
     
     protected ZooKeeper zooKeeper;
     protected List<ACL> authorities;
-    private boolean globalListenerRegistered = false;
-    protected String rootNode = "/InitValue";
-    protected boolean rootExist = false;
     private ClientFactory clientFactory;
     
     protected Client(final String servers, final int sessionTimeoutMilliseconds) {

@@ -2,12 +2,16 @@ package com.saaavsaaa.client.utility.section;
 
 import com.saaavsaaa.client.zookeeper.Provider;
 import org.apache.zookeeper.KeeperException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by aaa
  */
 public abstract class ClientTask implements Runnable {
+    private static final Logger logger = LoggerFactory.getLogger(ClientTask.class);
     private final Provider provider;
+    
     public ClientTask(final Provider provider){
         this.provider = provider;
     }
@@ -18,12 +22,8 @@ public abstract class ClientTask implements Runnable {
     public void run() {
         try {
             run(provider);
-        } catch (KeeperException e) {
-            System.out.println("ClientTask");
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            System.out.println("ClientTask");
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
         }
     }
 }

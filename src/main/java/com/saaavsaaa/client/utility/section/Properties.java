@@ -20,7 +20,6 @@ public enum Properties {
         // ResourceBundle caches the value in Thread
         String clientId = bundle.getString("client.id");
         if (StringUtil.isNullOrBlank(clientId)){
-            System.out.println("client.id doesn't exist");
             throw new IllegalArgumentException("client.id doesn't exist");
         }
         return clientId;
@@ -29,7 +28,6 @@ public enum Properties {
     public boolean watchOn(){
         String result = bundle.getString("client.watch.on");
         if (StringUtil.isNullOrBlank(result)){
-            System.out.println("client.watch.on doesn't exist");
             throw new IllegalArgumentException("client.watch.on doesn't exist");
         }
         return "up".equals(result);
@@ -38,7 +36,6 @@ public enum Properties {
     public long getThreadInitialDelay(){
         String result = bundle.getString("client.thread.delay");
         if (StringUtil.isNullOrBlank(result)){
-            System.out.println("client.thread.delay doesn't exist");
             throw new IllegalArgumentException("client.thread.delay doesn't exist");
         }
         return Long.valueOf(result);
@@ -47,7 +44,6 @@ public enum Properties {
     public long getThreadPeriod(){
         String result = bundle.getString("client.thread.period");
         if (StringUtil.isNullOrBlank(result)){
-            System.out.println("client.thread.period doesn't exist");
             throw new IllegalArgumentException("client.thread.period doesn't exist");
         }
         return Long.valueOf(result);

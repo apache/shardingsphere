@@ -8,6 +8,8 @@ import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.Watcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -15,6 +17,7 @@ import java.util.List;
  * Created by aaa
  */
 public class UsualStrategy extends BaseStrategy {
+    private static final Logger logger = LoggerFactory.getLogger(UsualStrategy.class);
     public UsualStrategy(final Provider provider){
         super(provider);
     }
@@ -79,9 +82,9 @@ public class UsualStrategy extends BaseStrategy {
                 } else {
                     this.createCurrentOnly(nodes.get(i), Constants.NOTHING_VALUE, createMode);
                 }
-                System.out.println("not exist and create:" + nodes.get(i));
+                logger.debug("node not exist and create:", nodes.get(i));
             } catch (KeeperException.NodeExistsException ee){
-                System.out.println("exist:" + nodes.get(i));
+                logger.debug("create node exist:{}", nodes.get(i));
                 continue;
             }
         }
@@ -89,15 +92,17 @@ public class UsualStrategy extends BaseStrategy {
     
     @Override
     public void deleteAllChildren(final String key) throws KeeperException, InterruptedException {
+        logger.debug("deleteAllChildren:{}", key);
         this.deleteChildren(provider.getRealPath(key), true);
     }
     
     private void deleteChildren(final String path, final boolean deleteCurrentNode) throws KeeperException, InterruptedException {
+        logger.debug("deleteChildren:{}", path);
         List<String> children;
         try{
             children = provider.getChildren(path);
         } catch (KeeperException.NoNodeException e){
-            System.out.println(e.getMessage());
+            logger.warn("deleteChildren node not exist:{},e:{}", path, e.getMessage());
             return;
         }
         for (String child : children){
@@ -108,9 +113,10 @@ public class UsualStrategy extends BaseStrategy {
             try{
                 this.deleteOnlyCurrent(path);
             } catch(KeeperException.NotEmptyException e){
+                logger.warn("deleteCurrentNode exist children:{},e:{}", path, e.getMessage());
                 deleteChildren(path, true);
             } catch(KeeperException.NoNodeException e){
-                System.out.println(e.getMessage());
+                logger.warn("deleteCurrentNode node not exist:{},e:{}", path, e.getMessage());
             }
         }
     }
@@ -120,6 +126,7 @@ public class UsualStrategy extends BaseStrategy {
     */
     @Override
     public void deleteCurrentBranch(final String key) throws KeeperException, InterruptedException {
+        logger.debug("deleteCurrentBranch:{}", key);
         if (key.indexOf(Constants.PATH_SEPARATOR) < -1){
             this.deleteOnlyCurrent(key);
             return;
@@ -130,12 +137,13 @@ public class UsualStrategy extends BaseStrategy {
         try {
             this.deleteRecursively(superPath);
         } catch (KeeperException.NotEmptyException ee){
-            System.out.println(ee.getMessage());
+            logger.warn("deleteCurrentBranch exist children:{},e:{}", path, ee.getMessage());
             return;
         }
     }
     
     private void deleteRecursively(final String path) throws KeeperException, InterruptedException {
+        logger.debug("deleteRecursively:{}", path);
         int index = path.lastIndexOf(Constants.PATH_SEPARATOR);
         if (index == 0){
             this.deleteOnlyCurrent(path);
@@ -146,8 +154,8 @@ public class UsualStrategy extends BaseStrategy {
             this.deleteOnlyCurrent(path);
             this.deleteRecursively(superPath);
         } catch (KeeperException.NotEmptyException ee){
-            List<String> children = this.getChildren(path);
-            children.forEach((c) -> System.out.println(path + " exist other children " + c));
+            logger.warn("deleteRecursively exist children:{},e:{}", path, ee.getMessage());
+            logger.info("deleteRecursively {} exist other children:{}", path, this.getChildren(path));
             return;
         }
     }

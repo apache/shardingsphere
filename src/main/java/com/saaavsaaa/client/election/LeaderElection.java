@@ -9,11 +9,14 @@ import com.saaavsaaa.client.zookeeper.Provider;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by aaa
  */
 public abstract class LeaderElection {
+    private static final Logger logger = LoggerFactory.getLogger(LeaderElection.class);
     private boolean done = false;
 
     private boolean contend(final String node, final Provider provider, final Listener listener) throws KeeperException, InterruptedException {
@@ -22,6 +25,7 @@ public abstract class LeaderElection {
             provider.createCurrentOnly(node, Properties.INSTANCE.getClientId(), CreateMode.EPHEMERAL);
             success = true;
         } catch (KeeperException.NodeExistsException e) {
+            logger.info("contend not success");
             // TODO: or changing_key node value == current client id
             provider.checkExists(node, WatcherCreator.deleteWatcher(node, listener));
         }
@@ -41,8 +45,7 @@ public abstract class LeaderElection {
                 try {
                     executeContention(realNode, provider);
                 } catch (Exception ee){
-                    System.out.println("Listener Exception executeContention");
-                    ee.printStackTrace();
+                    logger.error("Listener Exception executeContention:{}", ee.getMessage(), ee);
                 }
             }
         });
@@ -53,8 +56,7 @@ public abstract class LeaderElection {
                 done = true;
                 callback();
             } catch (Exception ee){
-                System.out.println("action Exception executeContention");
-                ee.printStackTrace();
+                logger.error("action Exception executeContention:{}", ee.getMessage(), ee);
             }
             provider.deleteOnlyCurrent(contendNode);
         }
@@ -65,7 +67,7 @@ public abstract class LeaderElection {
             try {
                 Thread.sleep(10L);
             } catch (InterruptedException e) {
-                System.out.println(e.getMessage());
+                logger.error("waitDone:{}", e.getMessage(), e);
             }
         }
     }

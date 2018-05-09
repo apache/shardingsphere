@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Stack;
 
 /**
- * Created by aaa on 18-5-3.
+ * Created by aaa
  */
 public interface IProvider extends IAction {
     String getRealPath(final String path);
