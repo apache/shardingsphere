@@ -5,7 +5,7 @@ weight = 5
 chapter = true
 +++
 
-### 1. 阅读源码时为什么会出现编译错误?
+#### 1. 阅读源码时为什么会出现编译错误?
 
 回答：
 
@@ -13,21 +13,20 @@ Sharding-Sphere使用lombok实现极简代码。关于更多使用和安装细�
 
 sharding-jdbc-orchestration模块需要先执行`mvn install`命令，根据protobuf文件生成gRPC相关的java文件。
 
-
-### 2. Cloud not resolve placeholder ... in string value ...异常的解决方法?
+#### 2. Cloud not resolve placeholder ... in string value ...异常的解决方法?
 
 回答：
 
 行表达式标识符可以使用`${...}`或`$->{...}`，但前者与Spring本身的属性文件占位符冲突，因此在Spring环境中使用行表达式标识符建议使用`$->{...}`。
 
-### 3. inline表达式返回结果为何出现浮点数？
+#### 3. inline表达式返回结果为何出现浮点数？
 
 回答：
 
 Java的整数相除结果是整数，但是对于inline表达式中的Groovy语法则不同，整数相除结果是浮点数。
 想获得除法整数结果需要将A/B改为A.intdiv(B)。
 
-### 4. 使用Proxool时分库结果不正确？
+#### 4. 使用Proxool时分库结果不正确？
 
 回答：
 
@@ -45,7 +44,7 @@ Java的整数相除结果是整数，但是对于inline表达式中的Groovy语�
 
 PS:sourceforge网站需要翻墙访问。
 
-### 5. 使用SQLSever和PostgreSQL时，聚合列不加别名会抛异常？
+#### 5. 使用SQLSever和PostgreSQL时，聚合列不加别名会抛异常？
 
 回答：
 
@@ -63,14 +62,14 @@ SQLServer获取到的列为空字符串和(2)，PostgreSQL获取到的列为空s
 SELECT SUM(num) AS sum_num, SUM(num2) AS sum_num2 FROM table_xxx;
 ```
 
-### 6. 如果SQL在Sharding-Sphere中执行不正确，该如何调试？
+#### 6. 如果SQL在Sharding-Sphere中执行不正确，该如何调试？
 
 回答：
 
 在Sharding-Proxy以及Sharding-JDBC 1.5.0版本之后提供了sql.show的配置，可以将解析上下文和改写后的SQL以及最终路由至的数据源的细节信息全部打印至info日志。
 sql.show配置默认关闭，如果需要请通过配置开启。
 
-### 7. 如果只有部分数据库分库分表，是否需要将不分库分表的表也配置在分片规则中？
+#### 7. 如果只有部分数据库分库分表，是否需要将不分库分表的表也配置在分片规则中？
 
 回答：
 
@@ -81,7 +80,7 @@ sql.show配置默认关闭，如果需要请通过配置开启。
 
 方法2：将不参与分库分表的数据源独立于Sharding-Sphere之外，在应用中使用多个数据源分别处理分片和不分片的情况。
 
-### 8. Sharding-Sphere提供的默认分布式自增主键策略为什么是不连续的，且尾数大多为偶数？
+#### 8. Sharding-Sphere提供的默认分布式自增主键策略为什么是不连续的，且尾数大多为偶数？
 
 回答：
 
@@ -90,13 +89,13 @@ Sharding-Sphere采用snowflake算法作为默认的分布式分布式自增主�
 而snowflake算法的最后4位是在同一毫秒内的访问递增值。因此，如果毫秒内并发度不高，最后4位为零的几率则很大。因此并发度不高的应用生成偶数主键的几率会更高。
 
 
-### 9. 指定了泛型为Long的SingleKeyTableShardingAlgorithm，遇到ClassCastException: Integer can not cast to Long?
+#### 9. 指定了泛型为Long的SingleKeyTableShardingAlgorithm，遇到ClassCastException: Integer can not cast to Long?
 
 回答：
 
 必须确保数据库表中该字段和分片算法该字段类型一致，如：数据库中该字段类型为int(11)，泛型所对应的分片类型应为Integer，如果需要配置为Long类型，请确保数据库中该字段类型为bigint。
 
-### 10. Sharding-JDBC除了支持自带的分布式自增主键之外，还能否支持原生的自增主键？
+#### 10. Sharding-JDBC除了支持自带的分布式自增主键之外，还能否支持原生的自增主键？
 
 回答：是的，可以支持。但原生自增主键有使用限制，即不能将原生自增主键同时作为分片键使用。
 
@@ -104,7 +103,7 @@ Sharding-Sphere采用snowflake算法作为默认的分布式分布式自增主�
 
 而原生自增主键返回的前提条件是INSERT SQL必须最终路由至一张表，因此，面对返回多表的INSERT SQL，自增主键则会返回零。
 
-### 11. Oracle数据库使用Timestamp类型的Order By语句抛出异常提示“Order by value must implements Comparable”?
+#### 11. Oracle数据库使用Timestamp类型的Order By语句抛出异常提示“Order by value must implements Comparable”?
 
 回答：
 
@@ -160,7 +159,7 @@ com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByValue#getOrderValues()�
     }
 ```
 
-### 12. 使用Spring命名空间时找不到xsd?
+#### 12. 使用Spring命名空间时找不到xsd?
 
 回答：
 
