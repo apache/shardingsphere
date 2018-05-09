@@ -29,14 +29,14 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
                         http://www.springframework.org/schema/tx
                         http://www.springframework.org/schema/tx/spring-tx.xsd">
     <context:annotation-config />
-    <context:component-scan base-package="io.shardingjdbc.example.spring.namespace.jpa" />
+    <context:component-scan base-package="io.shardingsphere.example.spring.namespace.jpa" />
     
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="shardingDataSource" />
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:database="MYSQL" />
         </property>
-        <property name="packagesToScan" value="io.shardingjdbc.example.spring.namespace.jpa.entity" />
+        <property name="packagesToScan" value="io.shardingsphere.example.spring.namespace.jpa.entity" />
         <property name="jpaProperties">
             <props>
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
@@ -62,8 +62,8 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
         <property name="password" value="" />
     </bean>
     
-    <bean id="preciseModuloDatabaseShardingAlgorithm" class="io.shardingjdbc.example.spring.namespace.jpa.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
-    <bean id="preciseModuloTableShardingAlgorithm" class="io.shardingjdbc.example.spring.namespace.jpa.algorithm.PreciseModuloTableShardingAlgorithm" />
+    <bean id="preciseModuloDatabaseShardingAlgorithm" class="io.shardingsphere.example.spring.namespace.jpa.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
+    <bean id="preciseModuloTableShardingAlgorithm" class="io.shardingsphere.example.spring.namespace.jpa.algorithm.PreciseModuloTableShardingAlgorithm" />
     
     <sharding:standard-strategy id="databaseShardingStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
     <sharding:standard-strategy id="tableShardingStrategy" sharding-column="order_id" precise-algorithm-ref="preciseModuloTableShardingAlgorithm" />
@@ -98,14 +98,14 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
                         http://shardingjdbc.io/schema/shardingjdbc/masterslave  
                         http://shardingjdbc.io/schema/shardingjdbc/masterslave/master-slave.xsd">
     <context:annotation-config />
-    <context:component-scan base-package="io.shardingjdbc.example.spring.namespace.jpa" />
+    <context:component-scan base-package="io.shardingsphere.example.spring.namespace.jpa" />
     
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="masterSlaveDataSource" />
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:database="MYSQL" />
         </property>
-        <property name="packagesToScan" value="io.shardingjdbc.example.spring.namespace.jpa.entity" />
+        <property name="packagesToScan" value="io.shardingsphere.example.spring.namespace.jpa.entity" />
         <property name="jpaProperties">
             <props>
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
@@ -166,14 +166,14 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
                         http://shardingjdbc.io/schema/shardingjdbc/masterslave
                         http://shardingjdbc.io/schema/shardingjdbc/masterslave/master-slave.xsd">
     <context:annotation-config />
-    <context:component-scan base-package="io.shardingjdbc.example.spring.namespace.jpa" />
+    <context:component-scan base-package="io.shardingsphere.example.spring.namespace.jpa" />
     
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="shardingDataSource" />
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:database="MYSQL" />
         </property>
-        <property name="packagesToScan" value="io.shardingjdbc.example.spring.namespace.jpa.entity" />
+        <property name="packagesToScan" value="io.shardingsphere.example.spring.namespace.jpa.entity" />
         <property name="jpaProperties">
             <props>
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
@@ -227,7 +227,7 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
         <property name="password" value="" />
     </bean>
 
-    <bean id="randomStrategy" class="io.shardingjdbc.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
+    <bean id="randomStrategy" class="io.shardingsphere.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
 
     <master-slave:data-source id="ds_ms_0" master-data-source-name="ds_master_0" slave-data-source-names="ds_master_0_slave_0, ds_master_0_slave_1" strategy-ref="randomStrategy" />
     <master-slave:data-source id="ds_ms_1" master-data-source-name="ds_master_1" slave-data-source-names="ds_master_1_slave_0, ds_master_1_slave_1" strategy-ref="randomStrategy" />
@@ -320,7 +320,7 @@ Namespace: http://shardingjdbc.io/schema/shardingjdbc/sharding/sharding.xsd
 | default-data-source-name (?)      | Attribute | If table not configure at table rule, will route to defaultDataSourceName                                                             |
 | default-database-strategy-ref (?) | Attribute | Default database sharding strategy, reference id of \<sharding:xxx-strategy>, Default for not sharding                                |
 | default-table-strategy-ref (?)    | Attribute | Default table sharding strategy, reference id of \<sharding:xxx-strategy>, Default for not sharding                                   |
-| default-key-generator (?)         | Attribute | Default key generator, default value is `io.shardingjdbc.core.keygen.DefaultKeyGenerator`. This class need to implements KeyGenerator |
+| default-key-generator (?)         | Attribute | Default key generator, default value is `io.shardingsphere.core.keygen.DefaultKeyGenerator`. This class need to implements KeyGenerator |
 
 #### \<sharding:table-rules />
 

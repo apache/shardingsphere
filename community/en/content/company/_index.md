@@ -7,7 +7,7 @@ chapter = true
 
 It's our pleasure if you leave the information of your organization when using Sharding.
 
-Welcome to register by `company` + `homepage` + `company type` [here](https://github.com/shardingjdbc/sharding-jdbc/issues/234).
+Welcome to register by `company` + `homepage` + `company type` [here](https://github.com/sharding-sphere/sharding-sphere/issues/234).
 
 Organizations using Sharding in chronological order.
 

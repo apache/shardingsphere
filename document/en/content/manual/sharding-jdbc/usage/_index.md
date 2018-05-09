@@ -8,4 +8,4 @@ chapter = true
 
 ## Navigation
 
-This section introduce the usage of Sharding-JDBC. More details please reference [example](https://github.com/shardingjdbc/sharding-jdbc-example).
+This section introduce the usage of Sharding-JDBC. More details please reference [example](https://github.com/sharding-sphere/sharding-sphere-example).

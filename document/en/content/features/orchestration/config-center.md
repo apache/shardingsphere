@@ -77,7 +77,7 @@ The configuration of Sharding, including the configs of  Sharding and Read-write
             "tableShardingStrategyConfig": {
                 "type": "STANDARD", 
                 "shardingColumn": "order_id", 
-                "preciseAlgorithmClassName": "io.shardingjdbc.example.orchestration.spring.namespace.mybatis.algorithm.PreciseModuloTableShardingAlgorithm", 
+                "preciseAlgorithmClassName": "io.shardingsphere.example.orchestration.spring.namespace.mybatis.algorithm.PreciseModuloTableShardingAlgorithm", 
                 "rangeAlgorithmClassName": ""
             }, 
             "keyGeneratorColumnName": "order_id"
@@ -89,7 +89,7 @@ The configuration of Sharding, including the configs of  Sharding and Read-write
             "tableShardingStrategyConfig": {
                 "type": "STANDARD", 
                 "shardingColumn": "order_id", 
-                "preciseAlgorithmClassName": "io.shardingjdbc.example.orchestration.spring.namespace.mybatis.algorithm.PreciseModuloTableShardingAlgorithm", 
+                "preciseAlgorithmClassName": "io.shardingsphere.example.orchestration.spring.namespace.mybatis.algorithm.PreciseModuloTableShardingAlgorithm", 
                 "rangeAlgorithmClassName": ""
             }, 
             "keyGeneratorColumnName": "order_item_id"

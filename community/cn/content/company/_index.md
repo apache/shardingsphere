@@ -7,7 +7,7 @@ chapter = true
 
 欢迎采用了Sharding的公司在此登记，您的支持是我们最大的动力。
 
-请按`公司名` + `首页` + `公司类型`的格式在[此处](https://github.com/shardingjdbc/sharding-jdbc/issues/234)登记。
+请按`公司名` + `首页` + `公司类型`的格式在[此处](https://github.com/sharding-sphere/sharding-sphere/issues/234)登记。
 
 采用公司列表按登记顺序展示。
 
