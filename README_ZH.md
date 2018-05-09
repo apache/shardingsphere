@@ -87,7 +87,7 @@ Sharding-JDBC是一个开源的分布式数据库中间件解决方案。它在J
 ```xml
 <!-- 引入sharding-jdbc核心模块 -->
 <dependency>
-    <groupId>io.shardingjdbc</groupId>
+    <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-jdbc-core</artifactId>
     <version>${latest.release.version}</version>
 </dependency>

@@ -2,15 +2,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>io.shardingjdbc</groupId>
-        <artifactId>sharding-jdbc</artifactId>
+        <groupId>io.shardingsphere</groupId>
+        <artifactId>sharding-sphere</artifactId>
         <version>2.1.0-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-jdbc-core</artifactId>
     <name>${project.artifactId}</name>
     <dependencies>
         <dependency>
-            <groupId>io.shardingjdbc</groupId>
+            <groupId>io.shardingsphere</groupId>
             <artifactId>sharding-core</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -38,7 +38,7 @@
         </dependency>
         
         <dependency>
-            <groupId>io.shardingjdbc</groupId>
+            <groupId>io.shardingsphere</groupId>
             <artifactId>sharding-sql-test</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
