@@ -6,13 +6,12 @@ mkdir target
 
 cp -rf homepage/. target
 
-mkdir target/document
+mkdir -p target/document/legacy/1.x
+mkdir -p target/document/legacy/2.x
 
-mkdir target/document/docs_2.x
-cp -rf docs_cn target/document/docs_2.x/cn
-cp -rf docs_en target/document/docs_2.x/en
-
-cp -rf docs_1.x target/document/docs_1.x
+cp -rf docs_2.x_cn target/document/legacy/2.x/cn
+cp -rf docs_2.x_en target/document/legacy/2.x/en
+cp -rf docs_1.x target/document/legacy/1.x
 
 cd document/cn
 hugo
