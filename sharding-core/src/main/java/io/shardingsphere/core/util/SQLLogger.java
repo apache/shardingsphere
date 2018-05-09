@@ -19,8 +19,6 @@ package io.shardingsphere.core.util;
 
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.routing.SQLExecutionUnit;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +31,7 @@ import java.util.Collection;
  * @author zhangliang
  * @author maxiaoguang
  */
-@Slf4j(topic = "Sharding-JDBC-SQL")
+@Slf4j(topic = "Sharding-Sphere-SQL")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLLogger {
     

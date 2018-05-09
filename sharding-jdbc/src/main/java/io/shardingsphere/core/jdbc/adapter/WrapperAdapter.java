@@ -17,9 +17,8 @@
 
 package io.shardingsphere.core.jdbc.adapter;
 
-import io.shardingsphere.core.exception.ShardingJdbcException;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.jdbc.adapter.invocation.JdbcMethodInvocation;
-import io.shardingsphere.core.exception.ShardingJdbcException;
 
 import java.sql.SQLException;
 import java.sql.Wrapper;
@@ -61,7 +60,7 @@ public class WrapperAdapter implements Wrapper {
         try {
             jdbcMethodInvocations.add(new JdbcMethodInvocation(targetClass.getMethod(methodName, argumentTypes), arguments));
         } catch (final NoSuchMethodException ex) {
-            throw new ShardingJdbcException(ex);
+            throw new ShardingException(ex);
         }
     }
     

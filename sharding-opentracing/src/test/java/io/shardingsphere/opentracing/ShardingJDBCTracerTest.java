@@ -20,7 +20,7 @@ package io.shardingsphere.opentracing;
 import io.opentracing.NoopTracerFactory;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
-import io.shardingsphere.core.exception.ShardingJdbcException;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.opentracing.fixture.FooTracer;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -65,7 +65,7 @@ public final class ShardingJDBCTracerTest {
 		assertThat(ShardingJDBCTracer.get(), is(ShardingJDBCTracer.get()));
 	}
 
-	@Test(expected = ShardingJdbcException.class)
+	@Test(expected = ShardingException.class)
 	public void assertTracerClassError() {
 		System.setProperty("shardingjdbc.opentracing.tracer.class", "com.foo.FooTracer");
 		ShardingJDBCTracer.get();

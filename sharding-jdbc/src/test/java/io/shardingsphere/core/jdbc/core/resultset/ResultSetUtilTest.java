@@ -17,8 +17,7 @@
 
 package io.shardingsphere.core.jdbc.core.resultset;
 
-import io.shardingsphere.core.exception.ShardingJdbcException;
-import io.shardingsphere.core.exception.ShardingJdbcException;
+import io.shardingsphere.core.exception.ShardingException;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -54,7 +53,7 @@ public final class ResultSetUtilTest {
         assertThat(ResultSetUtil.convertValue((short) 1, String.class), is((Object) "1"));
     }
     
-    @Test(expected = ShardingJdbcException.class)
+    @Test(expected = ShardingException.class)
     public void assertConvertNumberValueError() {
         ResultSetUtil.convertValue(1, Date.class);
     }
@@ -83,7 +82,7 @@ public final class ResultSetUtilTest {
         assertThat((Timestamp) ResultSetUtil.convertValue(now, Timestamp.class), is(new Timestamp(now.getTime())));
     }
     
-    @Test(expected = ShardingJdbcException.class)
+    @Test(expected = ShardingException.class)
     public void assertConvertDateValueError() {
         ResultSetUtil.convertValue(new Date(), int.class);
     }

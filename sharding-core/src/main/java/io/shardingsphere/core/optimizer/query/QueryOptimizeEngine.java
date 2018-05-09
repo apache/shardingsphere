@@ -23,7 +23,7 @@ import io.shardingsphere.core.api.algorithm.sharding.ListShardingValue;
 import io.shardingsphere.core.api.algorithm.sharding.RangeShardingValue;
 import io.shardingsphere.core.api.algorithm.sharding.ShardingValue;
 import io.shardingsphere.core.constant.ShardingOperator;
-import io.shardingsphere.core.exception.ShardingJdbcException;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.optimizer.OptimizeEngine;
 import io.shardingsphere.core.optimizer.condition.ShardingCondition;
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;
@@ -31,8 +31,6 @@ import io.shardingsphere.core.parsing.parser.context.condition.AndCondition;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
 import io.shardingsphere.core.parsing.parser.context.condition.Condition;
 import io.shardingsphere.core.parsing.parser.context.condition.OrCondition;
-import io.shardingsphere.core.optimizer.condition.ShardingCondition;
-import io.shardingsphere.core.optimizer.condition.ShardingConditions;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
@@ -72,7 +70,7 @@ public final class QueryOptimizeEngine implements OptimizeEngine {
                 }
                 result.getShardingValues().add(shardingValue);
             } catch (final ClassCastException ex) {
-                throw new ShardingJdbcException("Found different types for sharding value `%s`.", entry.getKey());
+                throw new ShardingException("Found different types for sharding value `%s`.", entry.getKey());
             }
         }
         return result;

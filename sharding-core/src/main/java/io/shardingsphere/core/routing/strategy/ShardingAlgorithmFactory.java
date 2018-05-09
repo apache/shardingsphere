@@ -17,8 +17,7 @@
 
 package io.shardingsphere.core.routing.strategy;
 
-import io.shardingsphere.core.exception.ShardingJdbcException;
-import io.shardingsphere.core.exception.ShardingJdbcException;
+import io.shardingsphere.core.exception.ShardingException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -43,11 +42,11 @@ public final class ShardingAlgorithmFactory {
         try {
             Class<?> result = Class.forName(shardingAlgorithmClassName);
             if (!superShardingAlgorithmClass.isAssignableFrom(result)) {
-                throw new ShardingJdbcException("Class %s should be implement %s", shardingAlgorithmClassName, superShardingAlgorithmClass.getName());
+                throw new ShardingException("Class %s should be implement %s", shardingAlgorithmClassName, superShardingAlgorithmClass.getName());
             }
             return (T) result.newInstance();
         } catch (final ReflectiveOperationException ex) {
-            throw new ShardingJdbcException("Class %s should have public privilege and no argument constructor", shardingAlgorithmClassName);
+            throw new ShardingException("Class %s should have public privilege and no argument constructor", shardingAlgorithmClassName);
         }
     }
 }

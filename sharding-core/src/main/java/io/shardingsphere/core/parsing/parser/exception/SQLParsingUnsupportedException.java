@@ -17,16 +17,15 @@
 
 package io.shardingsphere.core.parsing.parser.exception;
 
-import io.shardingsphere.core.exception.ShardingJdbcException;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.parsing.lexer.token.TokenType;
-import io.shardingsphere.core.exception.ShardingJdbcException;
 
 /**
  * Throw exception when SQL not supported.
  * 
  * @author zhangliang 
  */
-public final class SQLParsingUnsupportedException extends ShardingJdbcException {
+public final class SQLParsingUnsupportedException extends ShardingException {
     
     private static final long serialVersionUID = -4968036951399076811L;
     

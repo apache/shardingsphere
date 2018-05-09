@@ -20,20 +20,11 @@ package io.shardingsphere.core.jdbc.core.datasource;
 import io.shardingsphere.core.api.ConfigMapContext;
 import io.shardingsphere.core.constant.ShardingProperties;
 import io.shardingsphere.core.constant.ShardingPropertiesConstant;
-import io.shardingsphere.core.exception.ShardingJdbcException;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.executor.ExecutorEngine;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
-import io.shardingsphere.core.jdbc.metadata.JDBCShardingMetaData;
-import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.api.ConfigMapContext;
-import io.shardingsphere.core.constant.ShardingProperties;
-import io.shardingsphere.core.constant.ShardingPropertiesConstant;
-import io.shardingsphere.core.exception.ShardingJdbcException;
-import io.shardingsphere.core.executor.ExecutorEngine;
-import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.metadata.JDBCShardingMetaData;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
@@ -98,7 +89,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         try {
             shardingMetaData.init(newShardingRule);
         } catch (SQLException ex) {
-            throw new ShardingJdbcException(ex);
+            throw new ShardingException(ex);
         }
         
         shardingProperties = newShardingProperties;

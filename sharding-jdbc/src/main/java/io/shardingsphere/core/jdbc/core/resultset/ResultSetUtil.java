@@ -17,8 +17,7 @@
 
 package io.shardingsphere.core.jdbc.core.resultset;
 
-import io.shardingsphere.core.exception.ShardingJdbcException;
-import io.shardingsphere.core.exception.ShardingJdbcException;
+import io.shardingsphere.core.exception.ShardingException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
@@ -105,7 +104,7 @@ public final class ResultSetUtil {
             case "java.lang.String":
                 return value.toString();
             default:
-                throw new ShardingJdbcException("Unsupported data type:%s", convertType);
+                throw new ShardingException("Unsupported data type:%s", convertType);
         }
     }
     
@@ -119,7 +118,7 @@ public final class ResultSetUtil {
             case "java.sql.Timestamp":
                 return new Timestamp(date.getTime());
             default:
-                throw new ShardingJdbcException("Unsupported Date type:%s", convertType);
+                throw new ShardingException("Unsupported Date type:%s", convertType);
         }
     }
 }

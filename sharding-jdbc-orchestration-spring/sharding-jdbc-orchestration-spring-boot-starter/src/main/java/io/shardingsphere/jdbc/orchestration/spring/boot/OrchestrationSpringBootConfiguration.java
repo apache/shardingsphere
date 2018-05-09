@@ -37,15 +37,11 @@ import org.springframework.util.StringUtils;
 
 import com.google.common.base.Preconditions;
 
-import io.shardingsphere.core.exception.ShardingJdbcException;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.util.DataSourceUtil;
 import io.shardingsphere.jdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
 import io.shardingsphere.jdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
-import io.shardingsphere.jdbc.orchestration.spring.boot.masterslave.SpringBootMasterSlaveRuleConfigurationProperties;
-import io.shardingsphere.jdbc.orchestration.spring.boot.orchestration.SpringBootOrchestrationConfigurationProperties;
-import io.shardingsphere.jdbc.orchestration.spring.boot.sharding.SpringBootShardingRuleConfigurationProperties;
-import io.shardingsphere.jdbc.orchestration.spring.boot.util.PropertyUtil;
 
 /**
  * Orchestration spring boot sharding and master-slave configuration.
@@ -104,7 +100,7 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
                 DataSource dataSource = DataSourceUtil.getDataSource(dataSourceProps.get("type").toString(), dataSourceProps);
                 dataSourceMap.put(each, dataSource);
             } catch (final ReflectiveOperationException ex) {
-                throw new ShardingJdbcException("Can't find datasource type!", ex);
+                throw new ShardingException("Can't find datasource type!", ex);
             }
         }
     }

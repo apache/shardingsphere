@@ -23,7 +23,7 @@ import io.opentracing.ActiveSpan;
 import io.opentracing.Span;
 import io.opentracing.Tracer;
 import io.opentracing.tag.Tags;
-import io.shardingsphere.core.exception.ShardingJdbcException;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.executor.event.AbstractSQLExecutionEvent;
 import io.shardingsphere.core.executor.event.DMLExecutionEvent;
 import io.shardingsphere.core.executor.event.DQLExecutionEvent;
@@ -80,7 +80,7 @@ public final class ExecuteEventListener {
                 deactivate();
                 break;
             default:
-                throw new ShardingJdbcException("Unsupported event type");
+                throw new ShardingException("Unsupported event type");
         }
     }
     
@@ -139,7 +139,7 @@ public final class ExecuteEventListener {
                 finish();
                 break;
             default:
-                throw new ShardingJdbcException("Unsupported event type");
+                throw new ShardingException("Unsupported event type");
         }
     }
     

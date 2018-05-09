@@ -17,12 +17,11 @@
 
 package io.shardingsphere.core.metadata;
 
-import io.shardingsphere.core.exception.ShardingJdbcException;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.rule.ShardingDataSourceNames;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
-import io.shardingsphere.core.exception.ShardingJdbcException;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -79,7 +78,7 @@ public abstract class ShardingMetaData {
                 result = columnMetaDataList;
             }
             if (!result.equals(columnMetaDataList)) {
-                throw new ShardingJdbcException(getErrorMsgOfTableMetaData(logicTableName, result, columnMetaDataList));
+                throw new ShardingException(getErrorMsgOfTableMetaData(logicTableName, result, columnMetaDataList));
             }
         }
         return new TableMetaData(result);

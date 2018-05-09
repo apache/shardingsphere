@@ -17,8 +17,7 @@
 
 package io.shardingsphere.core.common.env;
 
-import io.shardingsphere.core.exception.ShardingJdbcException;
-import io.shardingsphere.core.exception.ShardingJdbcException;
+import io.shardingsphere.core.exception.ShardingException;
 import org.dbunit.JdbcDatabaseTester;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.IDatabaseConnection;
@@ -61,7 +60,7 @@ public final class ShardingJdbcDatabaseTester extends JdbcDatabaseTester {
                 dbConfig.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new MsSqlDataTypeFactory());
                 break;
             default:
-                throw new ShardingJdbcException("Unsupported JDBC driver '%s'", driverClass);
+                throw new ShardingException("Unsupported JDBC driver '%s'", driverClass);
         }
         return result;
     }

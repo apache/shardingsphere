@@ -19,13 +19,12 @@ package io.shardingsphere.proxy.config;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import io.shardingsphere.core.exception.ShardingJdbcException;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.yaml.proxy.YamlProxyConfiguration;
 import io.shardingsphere.core.yaml.sharding.DataSourceParameter;
-import io.shardingsphere.proxy.metadata.ProxyShardingMetaData;
 import io.shardingsphere.proxy.metadata.ProxyShardingMetaData;
 import lombok.Getter;
 
@@ -64,7 +63,7 @@ public final class RuleRegistry {
         try {
             yamlProxyConfiguration = YamlProxyConfiguration.unmarshal(new File(getClass().getResource("/conf/config.yaml").getFile()));
         } catch (final IOException ex) {
-            throw new ShardingJdbcException(ex);
+            throw new ShardingException(ex);
         }
         dataSourceMap = new HashMap<>(128, 1);
         Map<String, DataSourceParameter> dataSourceParameters = yamlProxyConfiguration.getDataSources();
@@ -80,7 +79,7 @@ public final class RuleRegistry {
                 shardingMetaData.init(shardingRule);
             }
         } catch (final SQLException ex) {
-            throw new ShardingJdbcException(ex);
+            throw new ShardingException(ex);
         }
     }
     

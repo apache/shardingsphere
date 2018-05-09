@@ -17,15 +17,14 @@
 
 package io.shardingsphere.core.parsing.lexer.analyzer;
 
-import io.shardingsphere.core.exception.ShardingJdbcException;
-import io.shardingsphere.core.exception.ShardingJdbcException;
+import io.shardingsphere.core.exception.ShardingException;
 
 /**
  * Unterminated char exception.
  *
  * @author zhangliang
  */
-public final class UnterminatedCharException extends ShardingJdbcException {
+public final class UnterminatedCharException extends ShardingException {
     
     private static final long serialVersionUID = 8575890835166900925L;
     

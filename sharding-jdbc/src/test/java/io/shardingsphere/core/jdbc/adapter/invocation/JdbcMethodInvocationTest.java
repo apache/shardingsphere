@@ -17,8 +17,7 @@
 
 package io.shardingsphere.core.jdbc.adapter.invocation;
 
-import io.shardingsphere.core.exception.ShardingJdbcException;
-import io.shardingsphere.core.exception.ShardingJdbcException;
+import io.shardingsphere.core.exception.ShardingException;
 import org.junit.Test;
 
 public final class JdbcMethodInvocationTest {
@@ -29,7 +28,7 @@ public final class JdbcMethodInvocationTest {
         actual.invoke("");
     }
     
-    @Test(expected = ShardingJdbcException.class)
+    @Test(expected = ShardingException.class)
     public void assertInvokeFailure() throws NoSuchMethodException, SecurityException {
         JdbcMethodInvocation actual = new JdbcMethodInvocation(String.class.getDeclaredMethod("indexOfSupplementary", int.class, int.class), new Object[] {1, 1});
         actual.invoke("");

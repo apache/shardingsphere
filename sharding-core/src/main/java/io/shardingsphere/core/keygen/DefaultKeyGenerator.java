@@ -34,7 +34,7 @@ import java.util.Date;
  * 
  * <pre>
  * 1bit   sign bit.
- * 41bits timestamp offset from 2016.11.01(Sharding-JDBC distributed primary key published data) to now.
+ * 41bits timestamp offset from 2016.11.01(Sharding-Sphere distributed primary key published data) to now.
  * 10bits worker process id.
  * 12bits auto increment offset in one mills
  * </pre>

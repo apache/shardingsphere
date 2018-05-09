@@ -19,14 +19,7 @@ package io.shardingsphere.core.rewrite;
 
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
-import io.shardingsphere.core.exception.ShardingJdbcException;
-import io.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
-import io.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
-import io.shardingsphere.core.rewrite.placeholder.TablePlaceholder;
-import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.api.config.TableRuleConfiguration;
-import io.shardingsphere.core.exception.ShardingJdbcException;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.TablePlaceholder;
@@ -103,7 +96,7 @@ public final class SQLBuilderTest {
         assertThat(sqlBuilder.toSQL(null, tableTokens, null).getSql(), is("CREATE INDEX index_name_table_x_1 ON table_x_1 ('column')"));
     }
     
-    @Test(expected = ShardingJdbcException.class)
+    @Test(expected = ShardingException.class)
     public void assertSchemaPlaceholderAppendTableWithoutTableToken() {
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals("SHOW ");

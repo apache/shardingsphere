@@ -19,12 +19,7 @@ package io.shardingsphere.core.rule;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
-import io.shardingsphere.core.exception.ShardingJdbcException;
-import io.shardingsphere.core.keygen.KeyGenerator;
-import io.shardingsphere.core.routing.strategy.ShardingStrategy;
-import io.shardingsphere.core.routing.strategy.ShardingStrategyFactory;
-import io.shardingsphere.core.util.InlineExpressionParser;
-import io.shardingsphere.core.exception.ShardingJdbcException;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.keygen.KeyGenerator;
 import io.shardingsphere.core.routing.strategy.ShardingStrategy;
 import io.shardingsphere.core.routing.strategy.ShardingStrategyFactory;
@@ -90,7 +85,7 @@ public final class TableRule {
         for (String each : actualDataNodes) {
             DataNode dataNode = new DataNode(each);
             if (!dataSourceNames.contains(dataNode.getDataSourceName())) {
-                throw new ShardingJdbcException("Cannot find data source in sharding rule, invalid actual data node is: '%s'", each);
+                throw new ShardingException("Cannot find data source in sharding rule, invalid actual data node is: '%s'", each);
             }
             result.add(dataNode);
         }

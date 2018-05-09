@@ -23,7 +23,7 @@ import io.shardingsphere.core.api.config.strategy.HintShardingStrategyConfigurat
 import io.shardingsphere.core.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingsphere.core.api.config.strategy.NoneShardingStrategyConfiguration;
 import io.shardingsphere.core.api.config.strategy.StandardShardingStrategyConfiguration;
-import io.shardingsphere.core.exception.ShardingJdbcException;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.jdbc.orchestration.spring.namespace.constants.ShardingStrategyBeanDefinitionParserTag;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -53,7 +53,7 @@ public class ShardingStrategyBeanDefinition {
             case ShardingStrategyBeanDefinitionParserTag.NONE_STRATEGY_ROOT_TAG:
                 return getNoneShardingStrategyConfigBeanDefinition();
             default:
-                throw new ShardingJdbcException("Cannot support type: %s", type);
+                throw new ShardingException("Cannot support type: %s", type);
         }
     }
     

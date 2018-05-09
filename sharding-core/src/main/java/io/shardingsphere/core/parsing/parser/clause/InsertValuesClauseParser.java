@@ -18,7 +18,7 @@
 package io.shardingsphere.core.parsing.parser.clause;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.exception.ShardingJdbcException;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
@@ -38,18 +38,6 @@ import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.token.InsertValuesToken;
 import io.shardingsphere.core.parsing.parser.token.ItemsToken;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.exception.ShardingJdbcException;
-import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.parsing.parser.clause.expression.BasicExpressionParser;
-import io.shardingsphere.core.parsing.parser.context.condition.AndCondition;
-import io.shardingsphere.core.parsing.parser.context.condition.Column;
-import io.shardingsphere.core.parsing.parser.context.condition.Condition;
-import io.shardingsphere.core.parsing.parser.context.condition.GeneratedKeyCondition;
-import io.shardingsphere.core.parsing.parser.context.insertvalue.InsertValue;
-import io.shardingsphere.core.parsing.parser.dialect.ExpressionParserFactory;
-import io.shardingsphere.core.parsing.parser.expression.SQLExpression;
-import io.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
-import io.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -159,7 +147,7 @@ public class InsertValuesClauseParser implements SQLClauseParser {
         } else if (sqlExpression instanceof SQLNumberExpression) {
             result = new GeneratedKeyCondition(column, -1, ((SQLNumberExpression) sqlExpression).getNumber());
         } else {
-            throw new ShardingJdbcException("Generated key only support number.");
+            throw new ShardingException("Generated key only support number.");
         }
         return result;
     }

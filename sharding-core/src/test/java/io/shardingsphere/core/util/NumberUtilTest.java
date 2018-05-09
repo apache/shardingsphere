@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.util;
 
-import io.shardingsphere.core.exception.ShardingJdbcException;
+import io.shardingsphere.core.exception.ShardingException;
 import org.junit.Test;
 
 import java.math.BigInteger;
@@ -65,7 +65,7 @@ public final class NumberUtilTest {
         assertThat(NumberUtil.roundHalfUp("1.5"), is(2));
     }
     
-    @Test(expected = ShardingJdbcException.class)
+    @Test(expected = ShardingException.class)
     public void assertRoundHalfUpWithInvalidType() {
         NumberUtil.roundHalfUp(new Object());
     }

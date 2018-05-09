@@ -20,7 +20,7 @@ package io.shardingsphere.jdbc.spring.boot;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.api.MasterSlaveDataSourceFactory;
 import io.shardingsphere.core.api.ShardingDataSourceFactory;
-import io.shardingsphere.core.exception.ShardingJdbcException;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.util.DataSourceUtil;
 import io.shardingsphere.jdbc.spring.boot.masterslave.SpringBootMasterSlaveRuleConfigurationProperties;
 import io.shardingsphere.jdbc.spring.boot.sharding.SpringBootShardingRuleConfigurationProperties;
@@ -83,7 +83,7 @@ public class SpringBootConfiguration implements EnvironmentAware {
                 DataSource dataSource = DataSourceUtil.getDataSource(dataSourceProps.get("type").toString(), dataSourceProps);
                 dataSourceMap.put(each, dataSource);
             } catch (final ReflectiveOperationException ex) {
-                throw new ShardingJdbcException("Can't find datasource type!", ex);
+                throw new ShardingException("Can't find datasource type!", ex);
             }
         }
     }

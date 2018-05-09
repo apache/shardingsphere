@@ -23,7 +23,7 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import io.shardingsphere.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
-import io.shardingsphere.core.exception.ShardingJdbcException;
+import io.shardingsphere.core.exception.ShardingException;
 
 import java.io.IOException;
 
@@ -46,7 +46,7 @@ public final class MasterSlaveLoadBalanceAlgorithmGsonTypeAdapter extends TypeAd
         try {
             return Strings.isNullOrEmpty(masterSlaveLoadBalanceAlgorithmClassName) ? null : (MasterSlaveLoadBalanceAlgorithm) Class.forName(masterSlaveLoadBalanceAlgorithmClassName).newInstance();
         } catch (ReflectiveOperationException ex) {
-            throw new ShardingJdbcException(ex);
+            throw new ShardingException(ex);
         }
     }
     

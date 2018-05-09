@@ -18,7 +18,7 @@
 package io.shardingsphere.jdbc.orchestration.internal.state.datasource;
 
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.core.exception.ShardingJdbcException;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.rule.ShardingRule;
@@ -78,7 +78,7 @@ public final class DataSourceListenerManager implements ListenerManager {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
                     MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = dataSourceService.getAvailableMasterSlaveRuleConfiguration();
                     if (masterSlaveRuleConfiguration.getSlaveDataSourceNames().isEmpty()) {
-                        throw new ShardingJdbcException("No available slave datasource, can't apply the configuration!");
+                        throw new ShardingException("No available slave datasource, can't apply the configuration!");
                     } 
                     masterSlaveDataSource.renew(dataSourceService.getAvailableDataSources(), masterSlaveRuleConfiguration);
                 }

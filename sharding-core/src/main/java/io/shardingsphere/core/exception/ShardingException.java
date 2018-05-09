@@ -18,11 +18,11 @@
 package io.shardingsphere.core.exception;
 
 /**
- * Base exception for Sharding-JDBC.
+ * Base exception.
  * 
  * @author zhangliang
  */
-public class ShardingJdbcException extends RuntimeException {
+public class ShardingException extends RuntimeException {
     
     private static final long serialVersionUID = -1343739516839252250L;
     
@@ -32,7 +32,7 @@ public class ShardingJdbcException extends RuntimeException {
      * @param errorMessage formatted error message
      * @param args arguments of error message
      */
-    public ShardingJdbcException(final String errorMessage, final Object... args) {
+    public ShardingException(final String errorMessage, final Object... args) {
         super(String.format(errorMessage, args));
     }
     
@@ -42,7 +42,7 @@ public class ShardingJdbcException extends RuntimeException {
      * @param message error message
      * @param cause error cause
      */
-    public ShardingJdbcException(final String message, final Exception cause) {
+    public ShardingException(final String message, final Exception cause) {
         super(message, cause);
     }
     
@@ -51,7 +51,7 @@ public class ShardingJdbcException extends RuntimeException {
      *
      * @param cause error cause
      */
-    public ShardingJdbcException(final Exception cause) {
+    public ShardingException(final Exception cause) {
         super(cause);
     }
 }

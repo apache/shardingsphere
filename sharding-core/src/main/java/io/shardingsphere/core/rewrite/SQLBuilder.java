@@ -20,7 +20,7 @@ package io.shardingsphere.core.rewrite;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import io.shardingsphere.core.exception.ShardingJdbcException;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.optimizer.condition.ShardingCondition;
 import io.shardingsphere.core.optimizer.insert.InsertShardingCondition;
 import io.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
@@ -33,16 +33,6 @@ import io.shardingsphere.core.routing.type.TableUnit;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
-import io.shardingsphere.core.exception.ShardingJdbcException;
-import io.shardingsphere.core.optimizer.condition.ShardingCondition;
-import io.shardingsphere.core.optimizer.insert.InsertShardingCondition;
-import io.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
-import io.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
-import io.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
-import io.shardingsphere.core.rewrite.placeholder.ShardingPlaceholder;
-import io.shardingsphere.core.rewrite.placeholder.TablePlaceholder;
-import io.shardingsphere.core.routing.SQLUnit;
-import io.shardingsphere.core.routing.type.TableUnit;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -120,7 +110,7 @@ public final class SQLBuilder {
                 SchemaPlaceholder schemaPlaceholder = (SchemaPlaceholder) each;
                 Optional<TableRule> tableRule = shardingRule.tryFindTableRuleByActualTable(actualTableName);
                 if (!tableRule.isPresent() && Strings.isNullOrEmpty(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName())) {
-                    throw new ShardingJdbcException("Cannot found schema name '%s' in sharding rule.", schemaPlaceholder.getLogicSchemaName());
+                    throw new ShardingException("Cannot found schema name '%s' in sharding rule.", schemaPlaceholder.getLogicSchemaName());
                 }
                 // TODO 目前只能找到真实数据源名称. 未来需要在初始化sharding rule时创建connection,并验证连接是否正确,并获取出真实的schema的名字, 然后在这里替换actualDataSourceName为actualSchemaName
                 // TODO 目前actualDataSourceName必须actualSchemaName一样,才能保证替换schema的场景不出错, 如: show columns xxx

@@ -17,8 +17,7 @@
 
 package io.shardingsphere.core.util;
 
-import io.shardingsphere.core.exception.ShardingJdbcException;
-import io.shardingsphere.core.exception.ShardingJdbcException;
+import io.shardingsphere.core.exception.ShardingException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
@@ -59,7 +58,7 @@ public final class NumberUtil {
         if (obj instanceof String) {
             return new BigDecimal((String) obj).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
         }
-        throw new ShardingJdbcException("Invalid value to transfer: %s", obj);
+        throw new ShardingException("Invalid value to transfer: %s", obj);
     }
     
     /**

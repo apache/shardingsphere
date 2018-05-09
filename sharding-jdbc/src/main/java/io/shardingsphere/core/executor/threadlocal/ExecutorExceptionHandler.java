@@ -17,8 +17,7 @@
 
 package io.shardingsphere.core.executor.threadlocal;
 
-import io.shardingsphere.core.exception.ShardingJdbcException;
-import io.shardingsphere.core.exception.ShardingJdbcException;
+import io.shardingsphere.core.exception.ShardingException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -65,7 +64,7 @@ public final class ExecutorExceptionHandler {
             if (exception instanceof SQLException) {
                 throw (SQLException) exception;
             }
-            throw new ShardingJdbcException(exception);
+            throw new ShardingException(exception);
         }
         log.error("exception occur: ", exception);
     }

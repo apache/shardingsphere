@@ -21,7 +21,7 @@ import com.google.common.collect.Sets;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import io.shardingsphere.core.exception.ShardingJdbcException;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.jdbc.core.datasource.NamedDataSource;
 import io.shardingsphere.core.util.DataSourceUtil;
 
@@ -70,7 +70,7 @@ public final class DataSourceGsonTypeAdapter extends TypeAdapter<NamedDataSource
         try {
             return new NamedDataSource(name, DataSourceUtil.getDataSource(clazz, properties));
         } catch (final ReflectiveOperationException ex) {
-            throw new ShardingJdbcException(ex);
+            throw new ShardingException(ex);
         }
     }
     

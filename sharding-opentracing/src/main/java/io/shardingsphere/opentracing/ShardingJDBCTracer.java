@@ -19,7 +19,7 @@ package io.shardingsphere.opentracing;
 
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
-import io.shardingsphere.core.exception.ShardingJdbcException;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.opentracing.config.ConfigurationLoader;
 import lombok.AccessLevel;
@@ -45,7 +45,7 @@ public final class ShardingJDBCTracer {
         try {
             init((Tracer) Class.forName(tracerClassName).newInstance());
         } catch (final InstantiationException | IllegalAccessException | ClassNotFoundException ex) {
-            throw new ShardingJdbcException("Parse tracer class name", ex);
+            throw new ShardingException("Parse tracer class name", ex);
         }
     }
     

@@ -17,10 +17,7 @@
 
 package io.shardingsphere.core.jdbc.adapter;
 
-import io.shardingsphere.core.exception.ShardingJdbcException;
-import io.shardingsphere.core.jdbc.adapter.invocation.SetParameterMethodInvocation;
-import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
-import io.shardingsphere.core.exception.ShardingJdbcException;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.jdbc.adapter.invocation.SetParameterMethodInvocation;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
 import lombok.Getter;
@@ -264,7 +261,7 @@ public abstract class AbstractShardingPreparedStatementAdapter extends AbstractU
         try {
             setParameterMethodInvocations.add(new SetParameterMethodInvocation(PreparedStatement.class.getMethod(methodName, argumentTypes), arguments, arguments[1]));
         } catch (final NoSuchMethodException ex) {
-            throw new ShardingJdbcException(ex);
+            throw new ShardingException(ex);
         }
     }
     

@@ -31,7 +31,7 @@ import io.shardingsphere.core.api.config.strategy.InlineShardingStrategyConfigur
 import io.shardingsphere.core.api.config.strategy.NoneShardingStrategyConfiguration;
 import io.shardingsphere.core.api.config.strategy.ShardingStrategyConfiguration;
 import io.shardingsphere.core.api.config.strategy.StandardShardingStrategyConfiguration;
-import io.shardingsphere.core.exception.ShardingJdbcException;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.routing.strategy.ShardingAlgorithmFactory;
 
 import java.io.IOException;
@@ -78,7 +78,7 @@ public final class ShardingStrategyConfigurationGsonTypeAdapter extends TypeAdap
                     algorithmExpression = in.nextString();
                     break;
                 default:
-                    throw new ShardingJdbcException("Cannot convert json for property: %s", jsonName);
+                    throw new ShardingException("Cannot convert json for property: %s", jsonName);
             }
         }
         in.endObject();

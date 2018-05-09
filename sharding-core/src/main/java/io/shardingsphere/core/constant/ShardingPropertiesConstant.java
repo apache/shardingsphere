@@ -36,7 +36,7 @@ public enum ShardingPropertiesConstant {
      * <p>
      * Print SQL details can help developers debug easier. 
      * The details includes: logic SQL, parse context and rewrote actual SQL list. 
-     * Enable this property will log into log topic: {@code Sharding-JDBC-SQL}, log level is {@code INFO}.
+     * Enable this property will log into log topic: {@code Sharding-Sphere-SQL}, log level is {@code INFO}.
      * Default: false
      * </p>
      */

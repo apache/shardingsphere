@@ -23,13 +23,7 @@ import io.shardingsphere.core.api.algorithm.sharding.ListShardingValue;
 import io.shardingsphere.core.api.algorithm.sharding.RangeShardingValue;
 import io.shardingsphere.core.api.algorithm.sharding.ShardingValue;
 import io.shardingsphere.core.constant.ShardingOperator;
-import io.shardingsphere.core.exception.ShardingJdbcException;
-import io.shardingsphere.core.parsing.parser.expression.SQLExpression;
-import io.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
-import io.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
-import io.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
-import io.shardingsphere.core.constant.ShardingOperator;
-import io.shardingsphere.core.exception.ShardingJdbcException;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.parsing.parser.expression.SQLExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
@@ -133,7 +127,7 @@ public class Condition {
         for (Entry<Integer, Integer> entry : positionIndexMap.entrySet()) {
             Object parameter = parameters.get(entry.getValue());
             if (!(parameter instanceof Comparable<?>)) {
-                throw new ShardingJdbcException("Parameter `%s` should extends Comparable for sharding value.", parameter);
+                throw new ShardingException("Parameter `%s` should extends Comparable for sharding value.", parameter);
             }
             if (entry.getKey() < result.size()) {
                 result.add(entry.getKey(), (Comparable<?>) parameter);

@@ -17,8 +17,7 @@
 
 package io.shardingsphere.core.jdbc.adapter.invocation;
 
-import io.shardingsphere.core.exception.ShardingJdbcException;
-import io.shardingsphere.core.exception.ShardingJdbcException;
+import io.shardingsphere.core.exception.ShardingException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -48,7 +47,7 @@ public class JdbcMethodInvocation {
         try {
             method.invoke(target, arguments);
         } catch (final IllegalAccessException | InvocationTargetException ex) {
-            throw new ShardingJdbcException("Invoke jdbc method exception", ex);
+            throw new ShardingException("Invoke jdbc method exception", ex);
         }
     }
 }

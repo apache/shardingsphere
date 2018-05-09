@@ -24,7 +24,7 @@ import java.lang.reflect.Method;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertyResolver;
 
-import io.shardingsphere.core.exception.ShardingJdbcException;
+import io.shardingsphere.core.exception.ShardingException;
 
 public class PropertyUtil {
     
@@ -66,7 +66,7 @@ public class PropertyUtil {
             return getSubPropertiesMethod.invoke(resolverObject, prefixParam);
         } catch (final ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
                 | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            throw new ShardingJdbcException(ex.getMessage(), ex);
+            throw new ShardingException(ex.getMessage(), ex);
         }
     }
     
@@ -82,7 +82,7 @@ public class PropertyUtil {
             return resultGetMethod.invoke(bindResultObject);
         } catch (final ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException
                 | IllegalArgumentException | InvocationTargetException ex) {
-            throw new ShardingJdbcException(ex.getMessage(), ex);
+            throw new ShardingException(ex.getMessage(), ex);
         }
     }
 }

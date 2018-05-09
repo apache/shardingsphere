@@ -27,7 +27,7 @@ import java.util.Properties;
 import java.util.Set;
 
 /**
- * The properties for Sharding-JDBC configuration.
+ * Properties for sharding configuration.
  *
  * @author gaohongtao
  * @author zhangliang
