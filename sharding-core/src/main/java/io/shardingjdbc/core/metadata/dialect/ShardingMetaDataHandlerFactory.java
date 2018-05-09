@@ -15,13 +15,9 @@
  * </p>
  */
 
-package io.shardingjdbc.core.jdbc.metadata;
+package io.shardingjdbc.core.metadata.dialect;
 
 import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.core.jdbc.metadata.dialect.DefaultShardingMetaDataHandler;
-import io.shardingjdbc.core.jdbc.metadata.dialect.H2ShardingMetaDataHandler;
-import io.shardingjdbc.core.jdbc.metadata.dialect.MySQLShardingMetaDataHandler;
-import io.shardingjdbc.core.jdbc.metadata.dialect.ShardingMetaDataHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

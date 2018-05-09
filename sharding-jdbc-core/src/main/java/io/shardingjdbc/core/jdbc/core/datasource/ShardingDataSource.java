@@ -25,7 +25,7 @@ import io.shardingjdbc.core.executor.ExecutorEngine;
 import io.shardingjdbc.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingjdbc.core.jdbc.core.ShardingContext;
 import io.shardingjdbc.core.jdbc.core.connection.ShardingConnection;
-import io.shardingjdbc.core.jdbc.metadata.JDBCShardingMetaData;
+import io.shardingjdbc.core.metadata.JDBCShardingMetaData;
 import io.shardingjdbc.core.metadata.ShardingMetaData;
 import io.shardingjdbc.core.rule.ShardingRule;
 import lombok.Getter;

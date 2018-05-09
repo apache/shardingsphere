@@ -42,7 +42,7 @@ public final class ProxyShardingMetaData extends ShardingMetaData {
     private final Map<String, DataSource> dataSourceMap;
     
     @Override
-    public Collection<ColumnMetaData> getColumnMetaDataList(final DataNode dataNode, final ShardingDataSourceNames shardingDataSourceNames, Connection connection) throws SQLException {
+    public Collection<ColumnMetaData> getColumnMetaDataList(final DataNode dataNode, final ShardingDataSourceNames shardingDataSourceNames) throws SQLException {
         return new ShardingMetaDataHandler(dataSourceMap.get(shardingDataSourceNames.getRawMasterDataSourceName(dataNode.getDataSourceName())), dataNode.getTableName()).getColumnMetaDataList();
     }
 }

@@ -18,7 +18,6 @@
 package io.shardingjdbc.core.jdbc.core.statement;
 
 import com.google.common.base.Optional;
-import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.executor.type.statement.StatementExecutor;
 import io.shardingjdbc.core.executor.type.statement.StatementUnit;
 import io.shardingjdbc.core.jdbc.adapter.AbstractStatementAdapter;
@@ -30,8 +29,6 @@ import io.shardingjdbc.core.merger.JDBCQueryResult;
 import io.shardingjdbc.core.merger.MergeEngine;
 import io.shardingjdbc.core.merger.MergeEngineFactory;
 import io.shardingjdbc.core.merger.QueryResult;
-import io.shardingjdbc.core.metadata.ColumnMetaData;
-import io.shardingjdbc.core.metadata.TableMetaData;
 import io.shardingjdbc.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dql.DQLStatement;
@@ -46,13 +43,16 @@ import io.shardingjdbc.core.rule.TableRule;
 import lombok.AccessLevel;
 import lombok.Getter;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Statement that support sharding.
@@ -229,19 +229,13 @@ public class ShardingStatement extends AbstractStatementAdapter {
             TableRule tableRule = context.getShardingRule().getTableRule(logicTable);
             ShardingDataSourceNames shardingDataSourceNames = context.getShardingRule().getShardingDataSourceNames();
 
-            // TODO consider refresh process within ShardingMetada, This need to move ShardingMetaData to package sharding-jdbc-core
-            Collection<ColumnMetaData> result = null;
+            Map<String, Connection> cachedConnectionMap = new HashMap<>();
             for (DataNode each : tableRule.getActualDataNodes()) {
                 String dataSourceName = shardingDataSourceNames.getRawMasterDataSourceName(each.getDataSourceName());
-                Collection<ColumnMetaData> columnMetaDataList = context.getShardingMetaData().getColumnMetaDataList(each, shardingDataSourceNames, connection.getConnection(dataSourceName));
-                if (null == result) {
-                    result = columnMetaDataList;
-                }
-                if (!result.equals(columnMetaDataList)) {
-                    throw new ShardingJdbcException("Cannot get uniformed table structure for '%s'.", tableRule.getLogicTable());
-                }
+                cachedConnectionMap.put(dataSourceName, connection.getConnection(dataSourceName));
             }
-            context.getShardingMetaData().getTableMetaDataMap().put(tableRule.getLogicTable(), new TableMetaData(result));
+            context.getShardingMetaData().setCachedConnectionMap(cachedConnectionMap);
+            context.getShardingMetaData().refresh(tableRule, context.getShardingRule());
         }
     }
     

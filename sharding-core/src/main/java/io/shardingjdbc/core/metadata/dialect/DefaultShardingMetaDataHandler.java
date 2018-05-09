@@ -15,15 +15,13 @@
  * </p>
  */
 
-package io.shardingjdbc.core.jdbc.metadata.dialect;
+package io.shardingjdbc.core.metadata.dialect;
 
 import io.shardingjdbc.core.metadata.ColumnMetaData;
+
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -33,25 +31,14 @@ import java.util.List;
  * @author panjuan
  * @author zhaojun
  */
-public final class MySQLShardingMetaDataHandler extends ShardingMetaDataHandler {
+public final class DefaultShardingMetaDataHandler extends ShardingMetaDataHandler {
     
-    public MySQLShardingMetaDataHandler(final DataSource dataSource, final String actualTableName) {
+    public DefaultShardingMetaDataHandler(final DataSource dataSource, final String actualTableName) {
         super(dataSource, actualTableName);
     }
-
+    
     @Override
     public List<ColumnMetaData> geColumnMetaInternal(final Statement statement) throws SQLException {
-        List<ColumnMetaData> result = new LinkedList<>();
-        statement.executeQuery(String.format("show tables like '%s'", getActualTableName()));
-        ResultSet resultSet = statement.getResultSet();
-
-        if (resultSet.next()) {
-            statement.executeQuery(String.format("desc %s;", getActualTableName()));
-            resultSet = statement.getResultSet();
-            while (resultSet.next()) {
-                result.add(new ColumnMetaData(resultSet.getString("Field"), resultSet.getString("Type"), resultSet.getString("Key")));
-            }
-        }
-        return result;
+        return new LinkedList<>();
     }
 }

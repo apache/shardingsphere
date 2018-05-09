@@ -23,6 +23,7 @@ import io.shardingjdbc.core.rule.ShardingDataSourceNames;
 import io.shardingjdbc.core.rule.ShardingRule;
 import io.shardingjdbc.core.rule.TableRule;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -38,12 +39,15 @@ import java.util.Map;
  * @author zhaojun
  */
 @Getter
+@Setter
 public abstract class ShardingMetaData {
     
     private Map<String, TableMetaData> tableMetaDataMap;
+
+    private Map<String, Connection> cachedConnectionMap = new HashMap<>();
     
     /**
-     * Initialize sharding meta data.
+     * Initialize sharding metadata.
      *
      * @param shardingRule sharding rule
      * @throws SQLException SQL exception
@@ -51,16 +55,25 @@ public abstract class ShardingMetaData {
     public void init(final ShardingRule shardingRule) throws SQLException {
         tableMetaDataMap = new HashMap<>(shardingRule.getTableRules().size(), 1);
         for (TableRule each : shardingRule.getTableRules()) {
-            tableMetaDataMap.put(each.getLogicTable(),
-                    getTableMetaData(each.getLogicTable(), each.getActualDataNodes(), shardingRule.getShardingDataSourceNames())
-            );
+            refresh(each, shardingRule);
         }
+    }
+
+    /**
+     * refresh each tableMetaData by TableRule.
+     *
+     * @param each table rule
+     * @param shardingRule sharding rule
+     * @throws SQLException SQL Exception
+     */
+    public void refresh(final TableRule each, final ShardingRule shardingRule) throws SQLException {
+        tableMetaDataMap.put(each.getLogicTable(), getTableMetaData(each.getLogicTable(), each.getActualDataNodes(), shardingRule.getShardingDataSourceNames()));
     }
 
     private TableMetaData getTableMetaData(final String logicTableName, final List<DataNode> actualDataNodes, final ShardingDataSourceNames shardingDataSourceNames) throws SQLException {
         Collection<ColumnMetaData> result = null;
         for (DataNode each : actualDataNodes) {
-            Collection<ColumnMetaData> columnMetaDataList = getColumnMetaDataList(each, shardingDataSourceNames, null);
+            Collection<ColumnMetaData> columnMetaDataList = getColumnMetaDataList(each, shardingDataSourceNames);
             if (null == result) {
                 result = columnMetaDataList;
             }
@@ -76,12 +89,10 @@ public abstract class ShardingMetaData {
      *
      * @param dataNode DataNode
      * @param shardingDataSourceNames ShardingDataSourceNames
-     * @param connection Connection
      * @return ColumnMetaData
      * @throws SQLException SQL exception
      */
-    public abstract Collection<ColumnMetaData> getColumnMetaDataList(DataNode dataNode, ShardingDataSourceNames
-            shardingDataSourceNames, Connection connection) throws SQLException;
+    public abstract Collection<ColumnMetaData> getColumnMetaDataList(DataNode dataNode, ShardingDataSourceNames shardingDataSourceNames) throws SQLException;
 }
 
 

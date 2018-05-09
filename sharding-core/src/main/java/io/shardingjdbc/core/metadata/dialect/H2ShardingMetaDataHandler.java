@@ -15,14 +15,14 @@
  * </p>
  */
 
-package io.shardingjdbc.core.jdbc.metadata.dialect;
+package io.shardingjdbc.core.metadata.dialect;
 
 import io.shardingjdbc.core.metadata.ColumnMetaData;
 
 import javax.sql.DataSource;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -32,14 +32,24 @@ import java.util.List;
  * @author panjuan
  * @author zhaojun
  */
-public final class DefaultShardingMetaDataHandler extends ShardingMetaDataHandler {
+public final class H2ShardingMetaDataHandler extends ShardingMetaDataHandler {
     
-    public DefaultShardingMetaDataHandler(final DataSource dataSource, final String actualTableName) {
+    public H2ShardingMetaDataHandler(final DataSource dataSource, final String actualTableName) {
         super(dataSource, actualTableName);
     }
     
     @Override
     public List<ColumnMetaData> geColumnMetaInternal(final Statement statement) throws SQLException {
-        return new LinkedList<>();
+        List<ColumnMetaData> result = new LinkedList<>();
+        ResultSet resultSet = statement.getConnection().getMetaData().getTables(null, null, getActualTableName(), null);
+
+        if (resultSet.next()) {
+            statement.executeQuery(String.format("show columns from %s;", getActualTableName()));
+            resultSet = statement.getResultSet();
+            while (resultSet.next()) {
+                result.add(new ColumnMetaData(resultSet.getString("FIELD"), resultSet.getString("TYPE"), resultSet.getString("KEY")));
+            }
+        }
+        return result;
     }
 }

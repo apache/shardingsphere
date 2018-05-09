@@ -15,11 +15,10 @@
  * </p>
  */
 
-package io.shardingjdbc.core.jdbc.metadata;
+package io.shardingjdbc.core.metadata;
 
 import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.core.metadata.ColumnMetaData;
-import io.shardingjdbc.core.metadata.ShardingMetaData;
+import io.shardingjdbc.core.metadata.dialect.ShardingMetaDataHandlerFactory;
 import io.shardingjdbc.core.rule.DataNode;
 import io.shardingjdbc.core.rule.ShardingDataSourceNames;
 import io.shardingjdbc.core.rule.ShardingRule;
@@ -27,7 +26,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
@@ -48,12 +46,13 @@ public final class JDBCShardingMetaData extends ShardingMetaData {
     private final DatabaseType databaseType;
     
     @Override
-    public Collection<ColumnMetaData> getColumnMetaDataList(final DataNode dataNode, final ShardingDataSourceNames shardingDataSourceNames, Connection connection) throws SQLException {
-        if (null == connection) {
-            String dataSourceName = shardingDataSourceNames.getRawMasterDataSourceName(dataNode.getDataSourceName());
+    public Collection<ColumnMetaData> getColumnMetaDataList(final DataNode dataNode, final ShardingDataSourceNames shardingDataSourceNames) throws SQLException {
+        String dataSourceName = shardingDataSourceNames.getRawMasterDataSourceName(dataNode.getDataSourceName());
+
+        if (getCachedConnectionMap().containsKey(dataSourceName)) {
+            return ShardingMetaDataHandlerFactory.newInstance(dataNode.getTableName(), databaseType).getColumnMetaDataList(getCachedConnectionMap().get(dataSourceName));
+        } else {
             return ShardingMetaDataHandlerFactory.newInstance(dataSourceMap.get(dataSourceName), dataNode.getTableName(), databaseType).getColumnMetaDataList();
         }
-
-        return ShardingMetaDataHandlerFactory.newInstance(dataNode.getTableName(), databaseType).getColumnMetaDataList(connection);
     }
 }
