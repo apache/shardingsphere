@@ -81,6 +81,91 @@ masterSlaveRule:
     - ds_slave_1
 ```
 
+### Sharding + Read-write splitting
+
+```yaml
+dataSources:
+  ds_0: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ds_0
+    username: root
+    password: 
+  ds_0_slave_0: !!org.apache.commons.dbcp.BasicDataSource
+      driverClassName: com.mysql.jdbc.Driver
+      url: jdbc:mysql://localhost:3306/ds_0_slave_0
+      username: root
+      password: 
+  ds_0_slave_1: !!org.apache.commons.dbcp.BasicDataSource
+      driverClassName: com.mysql.jdbc.Driver
+      url: jdbc:mysql://localhost:3306/ds_0_slave_1
+      username: root
+      password: 
+  ds_1: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ds_1
+    username: root
+    password: 
+  ds_1_slave_0: !!org.apache.commons.dbcp.BasicDataSource
+        driverClassName: com.mysql.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/ds_1_slave_0
+        username: root
+        password: 
+  ds_1_slave_1: !!org.apache.commons.dbcp.BasicDataSource
+        driverClassName: com.mysql.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/ds_1_slave_1
+        username: root
+        password: 
+
+shardingRule:  
+  tables:
+    t_order: 
+      actualDataNodes: ds_${0..1}.t_order_${0..1}
+      tableStrategy: 
+        inline:
+          shardingColumn: order_id
+          algorithmExpression: t_order_${order_id % 2}
+      keyGeneratorColumnName: order_id
+    t_order_item:
+      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
+      tableStrategy:
+        inline:
+          shardingColumn: order_id
+          algorithmExpression: t_order_item_${order_id % 2}  
+  
+  bindingTables:
+    - t_order,t_order_item
+  
+  defaultDatabaseStrategy:
+    inline:
+      shardingColumn: user_id
+      algorithmExpression: ds_${user_id % 2}
+  
+  defaultTableStrategy:
+    none:
+  defaultKeyGeneratorClassName: io.shardingjdbc.core.keygen.DefaultKeyGenerator
+  
+  masterSlaveRules:
+      ms_ds_0:
+        masterDataSourceName: ds_0
+        slaveDataSourceNames:
+          - ds_0_slave_0
+          - ds_0_slave_1
+        loadBalanceAlgorithmType: ROUND_ROBIN
+        configMap:
+          master-slave-key0: master-slave-value0
+      ms_ds_1:
+        masterDataSourceName: ds_1
+        slaveDataSourceNames: 
+          - ds_1_slave_0
+          - ds_1_slave_1
+        loadBalanceAlgorithmType: ROUND_ROBIN
+        configMap:
+          master-slave-key1: master-slave-value1
+
+  props:
+    sql.show: true
+```
+
 ### Orchestration by Zookeeper
 
 ```yaml
