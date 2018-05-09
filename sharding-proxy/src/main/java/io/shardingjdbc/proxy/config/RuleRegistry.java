@@ -31,7 +31,6 @@ import lombok.Getter;
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -45,9 +44,9 @@ import java.util.Map;
  * @author panjuan
  */
 @Getter
-public final class ShardingRuleRegistry {
+public final class RuleRegistry {
     
-    private static final ShardingRuleRegistry INSTANCE = new ShardingRuleRegistry();
+    private static final RuleRegistry INSTANCE = new RuleRegistry();
     
     private final Map<String, DataSource> dataSourceMap;
     
@@ -59,11 +58,11 @@ public final class ShardingRuleRegistry {
     
     private final boolean isOnlyMasterSlave;
     
-    private ShardingRuleRegistry() {
+    private RuleRegistry() {
         YamlProxyConfiguration yamlProxyConfiguration;
         try {
-            yamlProxyConfiguration = YamlProxyConfiguration.unmarshal(new File(getClass().getResource("/conf/sharding-config.yaml").toURI().getPath()));
-        } catch (final IOException | URISyntaxException ex) {
+            yamlProxyConfiguration = YamlProxyConfiguration.unmarshal(new File(getClass().getResource("/conf/config.yaml").getFile()));
+        } catch (final IOException ex) {
             throw new ShardingJdbcException(ex);
         }
         dataSourceMap = new HashMap<>(128, 1);
@@ -105,7 +104,7 @@ public final class ShardingRuleRegistry {
      *
      * @return instance of sharding rule registry
      */
-    public static ShardingRuleRegistry getInstance() {
+    public static RuleRegistry getInstance() {
         return INSTANCE;
     }
 }
