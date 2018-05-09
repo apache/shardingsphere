@@ -24,7 +24,7 @@ JAVA_OPTS=" -Djava.awt.headless=true -Djava.net.preferIPv4Stack=true "
 
 JAVA_MEM_OPTS=" -server -Xmx2g -Xms2g -Xmn256m -Xss256k -XX:+DisableExplicitGC -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:LargePageSizeInBytes=128m -XX:+UseFastAccessorMethods -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70 "
 
-MAIN_CLASS=io.shardingjdbc.proxy.Bootstrap
+MAIN_CLASS=io.shardingsphere.proxy.Bootstrap
 
 if [ $# == 1 ]; then
     MAIN_CLASS=$MAIN_CLASS" "$1

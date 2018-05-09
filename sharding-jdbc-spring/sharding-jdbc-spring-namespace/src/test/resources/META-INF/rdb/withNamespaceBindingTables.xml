@@ -9,8 +9,8 @@
                         ">
     <import resource="datasource/dataSource.xml" />
     
-    <bean id="preciseModuloDatabaseShardingAlgorithm" class="io.shardingjdbc.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
-    <bean id="preciseModuloTableShardingAlgorithm" class="io.shardingjdbc.spring.algorithm.PreciseModuloTableShardingAlgorithm" />
+    <bean id="preciseModuloDatabaseShardingAlgorithm" class="io.shardingsphere.jdbc.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
+    <bean id="preciseModuloTableShardingAlgorithm" class="io.shardingsphere.jdbc.spring.algorithm.PreciseModuloTableShardingAlgorithm" />
     
     <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
     <sharding:standard-strategy id="tableStrategy" sharding-column="order_id" precise-algorithm-ref="preciseModuloTableShardingAlgorithm" />

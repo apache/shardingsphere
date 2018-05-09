@@ -34,13 +34,13 @@ shardingRule:
       databaseStrategy: 
         standard:
           shardingColumn: user_id
-          preciseAlgorithmClassName: io.shardingjdbc.core.integrate.api.yaml.fixture.SingleAlgorithm
+          preciseAlgorithmClassName: io.shardingsphere.core.integrate.api.yaml.fixture.SingleAlgorithm
       tableStrategy: 
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_${order_id % 2}
       keyGeneratorColumnName: order_id
-      keyGeneratorClassName: io.shardingjdbc.core.integrate.api.yaml.fixture.IncrementKeyGenerator
+      keyGeneratorClassName: io.shardingsphere.core.integrate.api.yaml.fixture.IncrementKeyGenerator
       logicIndex: t_order_index
     
     t_order_item:
@@ -48,7 +48,7 @@ shardingRule:
       databaseStrategy: 
         standard:
           shardingColumn: user_id
-          preciseAlgorithmClassName: io.shardingjdbc.core.integrate.api.yaml.fixture.SingleAlgorithm
+          preciseAlgorithmClassName: io.shardingsphere.core.integrate.api.yaml.fixture.SingleAlgorithm
       tableStrategy: 
         inline:
           shardingColumn: order_id
@@ -61,7 +61,7 @@ shardingRule:
   defaultTableStrategy:
     complex:
       shardingColumns: id, order_id
-      algorithmClassName: io.shardingjdbc.core.integrate.api.yaml.fixture.MultiAlgorithm
+      algorithmClassName: io.shardingsphere.core.integrate.api.yaml.fixture.MultiAlgorithm
   
   masterSlaveRules:
     db_ms_0:
