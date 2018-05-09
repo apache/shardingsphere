@@ -11,38 +11,43 @@ weight = 2
 
 ```yaml
 dataSources:
-  demo_ds_0:
-    url: jdbc:mysql://127.0.0.1:3306/demo_ds_0
+  ds_0: 
+    url: jdbc:mysql://localhost:3306/ds_0
     username: root
-    password:
-  demo_ds_1:
-    url: jdbc:mysql://127.0.0.1:3306/demo_ds_1
+    password: 
+  ds_1:
+    url: jdbc:mysql://localhost:3306/ds_1
     username: root
-    password:
-shardingRule:
+    password: 
+
+shardingRule:  
   tables:
-    t_order:
-      actualDataNodes: demo_ds_${0..1}.t_order_${0..1}
-      tableStrategy:
+    t_order: 
+      actualDataNodes: ds_${0..1}.t_order_${0..1}
+      tableStrategy: 
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_${order_id % 2}
       keyGeneratorColumnName: order_id
     t_order_item:
-      actualDataNodes: demo_ds_${0..1}.t_order_item_${0..1}
+      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
       tableStrategy:
         inline:
           shardingColumn: order_id
-          algorithmExpression: t_order_item_${order_id % 2}
+          algorithmExpression: t_order_item_${order_id % 2}  
+  
   bindingTables:
     - t_order,t_order_item
+  
   defaultDatabaseStrategy:
     inline:
       shardingColumn: user_id
-      algorithmExpression: demo_ds_${user_id % 2}
+      algorithmExpression: ds_${user_id % 2}
+  
   defaultTableStrategy:
     none:
-  defaultKeyGeneratorClassName: io.shardingjdbc.core.keygen.DefaultKeyGenerator
+  defaultKeyGeneratorClass: io.shardingjdbc.core.keygen.DefaultKeyGenerator
+  
   props:
     sql.show: true
 ```
@@ -51,19 +56,26 @@ shardingRule:
 
 ```yaml
 dataSources:
-  demo_ds_0:
-    url: jdbc:mysql://127.0.0.1:3306/demo_ds_0
+  ds_master:
+    url: jdbc:mysql://localhost:3306/ds_master
     username: root
-    password:
-  demo_ds_1:
-    url: jdbc:mysql://127.0.0.1:3306/demo_ds_1
+    password: 
+  ds_slave_0:
+    url: jdbc:mysql://localhost:3306/ds_slave_0
     username: root
-    password:
+    password: 
+  ds_slave_1: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ds_slave_1
+    username: root
+    password: 
+
 masterSlaveRule:
   name: ds_ms
-  masterDataSourceName: demo_ds_0
-  slaveDataSourceNames:
-    - demo_ds_1
+  masterDataSourceName: ds_master
+  slaveDataSourceNames: 
+    - ds_slave_0
+    - ds_slave_1
 ```
 
 ### Orchestration by Zookeeper
