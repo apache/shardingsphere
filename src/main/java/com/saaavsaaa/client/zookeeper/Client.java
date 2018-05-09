@@ -64,11 +64,12 @@ public abstract class Client implements IClient {
     private Watcher startWatcher() {
         return new Watcher(){
             public void process(WatchedEvent event) {
-                logger.debug("Client process event:{},type:{}", event.getPath(), event.getType());
+                logger.debug("Client process event:{}", event.toString());
                 if(Event.KeeperState.SyncConnected == event.getState()){
                     if(Event.EventType.None == event.getType()){
                         CONNECTED.countDown();
                         logger.debug("Client startWatcher SyncConnected");
+                        return;
                     }
                 }
                 if (globalListenerRegistered){
@@ -84,6 +85,7 @@ public abstract class Client implements IClient {
     
     void registerWatch(final Listener globalListener){
         if (globalListenerRegistered){
+            logger.warn("global listener can only register one");
             return;
         }
         watchers.put(Constants.GLOBAL_LISTENER_KEY, new Watcher() {
@@ -93,6 +95,7 @@ public abstract class Client implements IClient {
             }
         });
         globalListenerRegistered = true;
+        logger.debug("globalListenerRegistered:{}", globalListenerRegistered);
     }
     
     public Watcher registerWatch(final String key, final Listener listener){
@@ -105,6 +108,7 @@ public abstract class Client implements IClient {
             }
         };
         watchers.put(path, watcher);
+        logger.debug("register watcher:{}", path);
         return watcher;
     }
     
@@ -130,6 +134,7 @@ public abstract class Client implements IClient {
     
    private void createNamespace(final byte[] date) throws KeeperException, InterruptedException {
         if (rootExist){
+            logger.debug("root exist");
             return;
         }
         try {
@@ -147,7 +152,7 @@ public abstract class Client implements IClient {
                 rootExist = false;
             }
         }));
-        logger.debug("----------------------------------------------create root");
+        logger.debug("create root:{}", rootNode);
     }
     
     void deleteNamespace() throws KeeperException, InterruptedException {
@@ -169,7 +174,7 @@ public abstract class Client implements IClient {
     void setClientFactory(ClientFactory clientFactory) {
         this.clientFactory = clientFactory;
     }
-    public ClientFactory getClientFactory() {
+    ClientFactory getClientFactory() {
         return clientFactory;
     }
 }

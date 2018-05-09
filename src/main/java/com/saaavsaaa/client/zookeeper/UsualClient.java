@@ -16,7 +16,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by aaa
- * todo log
  */
 public class UsualClient extends Client {
     private static final Logger logger = LoggerFactory.getLogger(UsualClient.class);

@@ -13,6 +13,8 @@ import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
@@ -25,6 +27,7 @@ import java.util.concurrent.TimeUnit;
  * Created by aaa
  */
 public final class CacheClient extends UsualClient {
+    private static final Logger logger = LoggerFactory.getLogger(CacheClient.class);
     protected PathTree pathTree = null;
     
     CacheClient(String servers, int sessionTimeoutMilliseconds) {
@@ -37,11 +40,12 @@ public final class CacheClient extends UsualClient {
         try {
             useCacheStrategy(CacheStrategy.WATCH);
         } catch (KeeperException e) {
-            System.out.println("CacheClient useCacheStrategy : " + e.getMessage());
+            logger.error("CacheClient useCacheStrategy : " + e.getMessage());
         }
     }
     
     void useCacheStrategy(CacheStrategy cacheStrategy) throws KeeperException, InterruptedException {
+        logger.debug("use cache strategy:{}", cacheStrategy);
         switch (cacheStrategy){
             case WATCH:{
                 pathTree  = new PathTree(rootNode, strategy.getProvider());
@@ -49,6 +53,7 @@ public final class CacheClient extends UsualClient {
                     @Override
                     public void process(WatchedEvent event) {
                         String path = event.getPath();
+                        logger.debug("useCacheStrategy Watch event:{}", event.toString());
                         switch (event.getType()) {
                             case NodeCreated:
                             case NodeDataChanged:
@@ -56,7 +61,7 @@ public final class CacheClient extends UsualClient {
                                 try {
                                     pathTree.put(path, strategy.getDataString(path));
                                 } catch (Exception e) {
-                                    System.out.println("path tree put error : " + e.getMessage());
+                                    logger.error("path tree put error : " + e.getMessage());
                                 }
                                 break;
                             }
@@ -72,7 +77,7 @@ public final class CacheClient extends UsualClient {
                 return;
             }
             case ALL:{
-                pathTree = getPathTree(rootNode);
+                pathTree = loadPathTree();
                 return;
             }
             case NONE:
@@ -82,12 +87,13 @@ public final class CacheClient extends UsualClient {
         }
     }
     
-    public PathTree getPathTree() throws KeeperException, InterruptedException {
-        return getPathTree(rootNode);
+    public PathTree loadPathTree() throws KeeperException, InterruptedException {
+        return loadPathTree(rootNode);
     }
     
-    public PathTree getPathTree(final String treeRoot) throws KeeperException, InterruptedException {
+    public PathTree loadPathTree(final String treeRoot) throws KeeperException, InterruptedException {
         PathTree tree = new PathTree(treeRoot, strategy.getProvider());
+        logger.debug("load path tree:{}", treeRoot);
         tree.loading();
         return tree;
     }
