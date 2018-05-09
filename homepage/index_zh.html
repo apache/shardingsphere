@@ -1,356 +1,151 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
-
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="renderer" content="webkit">
-    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/style.min.css" rel="stylesheet">
-    <link rel="shortcut icon" href="http://ovfotjrsi.bkt.clouddn.com/favicon.png">
-    <!--[if lt IE 9]>
-    <script src="https://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-    <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
-  <![endif]-->
-    <title>Sharding JDBC - A JDBC driver for shard databases and tables</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="description" content="Sharding-Sphere官网"/>
+    <meta name="Keywords" content="Sharding-Sphere,Sharding-JDBC,Sharding-Proxy,Sharding-Sidecar,数据库中间件,分布式"/>
+    <title>Sharding-Sphere</title>
+    <link rel="icon" href="http://ovfqtdb4e.bkt.clouddn.com/homepage/favicon.png" type="image/x-icon"/>
+    <link rel="stylesheet" href="http://static.360buyimg.com/finance/base/1.2.0/css/base.css"/>
+    <link rel="stylesheet" type="text/css" href="./css/index.css">
 </head>
-
 <body>
-    <div class="navbar navbar-inverse navbar-fixed-top header">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="javascript:;">
-                    <div class="logo"></div>
-                </a>
-            </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li class="dropdown">
-                        <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">文档<span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a href="http://shardingsphere.io/docs_1.x/00-overview" target="_blank">1.X</a>
-                            </li>
-                            <li role="separator" class="divider"></li>
-                            <li>
-                                <a href="http://shardingsphere.io/docs_cn/00-overview" target="_blank">2.X (Current)</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="dropdown">
-                        <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">源码 <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a href="https://gitee.com/shardingjdbc" target="_blank">码云</a>
-                            </li>
-                            <li role="separator" class="divider"></li>
-                            <li>
-                                <a href="https://github.com/shardingjdbc" target="_blank">Github</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="http://shardingsphere.io/community/cn" target="_blank">社区</a>
-                    </li>
-                </ul>
-
-                <ul class="nav navbar-nav navbar-right">
-                    <li class="english"><a class="turn_zh" href="index_zh.html">中文</a></li>
-                    <li class="english"><a class="turn_en" href="index.html">EN</a></li>
-                </ul>
+    <div class="jdbc">
+        <div class="jdbcTopbar">
+            <div class="w1200 clearfix">
+                <div class="logo">
+                    <img src="http://ovfqtdb4e.bkt.clouddn.com/homepage/white-logo.png" alt="">
+                    Sharding-Sphere
+                </div>
+                <div class="itemBox">
+                    <div class="item"><a href="http://shardingsphere.io/document/cn/" target="_blank">文档</a></div>
+                    <div class="item">
+                        <div class="i-dropBtn">
+                            源码<em class="i-d-caret"></em>
+                            <div class="i-d-pop">
+                                <a class="i-d-list" href="https://github.com/shardingjdbc" target="_blank">Github</a>
+                                <em class="i-d-line"></em>
+                                <a class="i-d-list" href="https://gitee.com/shardingjdbc" target="_blank">码云</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item"><a href="http://shardingsphere.io/community/cn/" target="_blank">社区</a></div>
+                </div>
+                <div class="languageBox">
+                    <a class="lan" href="index_zh.html">中文</a>
+                    <a class="lan" href="index.html">EN</a>
+                </div>
             </div>
         </div>
-    </div>
-
-    <div class="banner">
-        <div class="container body-content">
-            <div class="produce">
-                <p class="first"><img src="http://ovfotjrsi.bkt.clouddn.com/images/sharding-jdbc.png" width="50%" /></p>
-                <p class="second">Sharding-JDBC是一个开源的分布式数据库中间件，它无需额外部署和依赖，完全兼容JDBC和各种ORM框架。Sharding-JDBC作为面向开发的微服务云原生基础类库，完整的实现了分库分表、读写分离和分布式主键功能，并初步实现了柔性事务。</p>
-                <p class="second">在经历了整体架构的数次精炼及稳定性打磨后，如今它已积累了足够的底蕴，相信可以成为开发者技术选型时的一个参考。</p>
-                <p><a class="btn more_btn" role="button" href="http://gitee.com/shardingjdbc" target="_blank">了解更多</a></p>
-            </div>
-        </div>
-    </div>
-
-    <div class="container">
-        <!--功能列表-->
-        <div class="mod-wrap mod-wrap-product-new bg-color-1">
-            <div class="function_list">
-                <p class="title_name">功能列表<span class="slide"></span></p>
-            </div>
-
-            <div class="mod-inner">
-                <div class="mod-content qc-grids with-slot">
-                    <div data-index="0" class="product-block qc-unit-4-24 qc-unit-md-1-1 qc-unit-active">
-                        <div class="unit-box">
-                            <!--概览内容 start-->
-                            <div class="pt-overview">
-                                <div class="pt-overview-name">
-                                    <span class="pt-name-img compute"></span>
-                                    <h3 class="name-title">分库分表<span class="icon-arrow"></span></h3>
-                                </div>
-                                <div class="pt-overview-sub-menu">
-                                </div>
-                            </div>
-                            <!--概览内容 end-->
-                            <!--详细内容 start-->
-                            <div class="pt-detail">
-                                <div class="pt-detail-name">
-                                    <span class="pt-name-img compute"></span>
-                                    <h3 class="name-title">分库分表<span class="icon-arrow"></span></h3>
-                                </div>
-                                <div class="pt-detail-sub-menu">
-                                    <div class="row">
-                                        <p><span class="circle"></span>解析功能完善。支持聚合、分组、排序、分页和关联查询</p>
-                                    </div>
-                                    <div class="row">
-                                        <p><span class="circle"></span>分片策略灵活。支持=，BETWEEN，IN等多维度分片；支持自定义分片策略</p>
-                                    </div>
-                                    <div class="row">
-                                        <p><span class="circle"></span>支持基于Hint的强制分片路由</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <!--详细内容 end-->
-                        </div>
+        <div class="jdbcHead">
+            <div class="w1200">
+                <div class="logo">
+                    <img class="l-img" src="http://ovfqtdb4e.bkt.clouddn.com/homepage/blue-logo.png" alt="">
+                    Sharding-Sphere
+                </div>
+                <div class="title">开源&emsp;快速&emsp;共享</div>
+                <div class="msg">Sharding-Sphere是一套开源的分布式数据库中间件解决方案组成的生态圈，它由Sharding-JDBC、Sharding-Proxy和Sharding-Sidecar这3款产品组成。3款产品提供标准化的数据分片、读写分离、柔性事务和数据治理功能，可适用于如Java同构、异构语言、容器、云原生等各种多样化的应用场景。</div>
+                <div class="button"><a class="btn" href="http://shardingsphere.io/document/cn/" target="_blank">了解更多</a></div>
+                <div class="other">
+                    <div class="o-list">
+                        <p><img src="http://ovfqtdb4e.bkt.clouddn.com/homepage/sharding-jdbc.png" alt=""></p>
+                        <p>Sharding-JDBC</p>
                     </div>
-
-                    <div data-index="1" class="product-block qc-unit-4-24 qc-unit-md-1-1">
-                        <div class="unit-box">
-                            <!--概览内容 start-->
-                            <div class="pt-overview">
-                                <div class="pt-overview-name">
-                                    <span class="pt-name-img network"></span>
-                                    <h3 class="name-title">读写分离<span class="icon-arrow"></span></h3>
-                                </div>
-                                <div class="pt-overview-sub-menu">
-                                </div>
-                            </div>
-                            <!--概览内容 end-->
-                            <!--详细内容 start-->
-                            <div class="pt-detail">
-                                <div class="pt-detail-name">
-                                    <span class="pt-name-img network"></span>
-                                    <h3 class="name-title">读写分离<span class="icon-arrow"></span></h3>
-                                </div>
-                                <div class="pt-detail-sub-menu">
-                                    <div class="row">
-                                        <p><span class="circle"></span>支持一主多从的读写分离，可配合分库分表使用</p>
-                                    </div>
-                                    <div class="row">
-                                        <p><span class="circle"></span>支持基于Hint的强制主库路由</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <!--详细内容 end-->
-                        </div>
+                    <div class="o-list">
+                        <p><img src="http://ovfqtdb4e.bkt.clouddn.com/homepage/sharding-proxy.png" alt=""></p>
+                        <p>Sharding-Proxy</p>
                     </div>
-
-                    <div data-index="2" class="product-block qc-unit-4-24 qc-unit-md-1-1">
-                        <div class="unit-box">
-                            <!--概览内容 start-->
-                            <div class="pt-overview">
-                                <div class="pt-overview-name">
-                                    <span class="pt-name-img cdn"></span>
-                                    <h3 class="name-title">柔性事务<span class="icon-arrow"></span></h3>
-                                </div>
-                                <div class="pt-overview-sub-menu">
-                                </div>
-                            </div>
-                            <!--概览内容 start-->
-                            <!--详细内容 start-->
-                            <div class="pt-detail">
-                                <div class="pt-detail-name">
-                                    <span class="pt-name-img cdn"></span>
-                                    <h3 class="name-title">柔性事务<span class="icon-arrow"></span></h3>
-                                </div>
-                                <div class="pt-detail-sub-menu">
-                                    <div class="row">
-                                        <p><span class="circle"></span>最大努力送达型事务</p>
-                                    </div>
-                                    <div class="row">
-                                        <p><span class="circle"></span>TCC型事务(TBD)</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <!--详细内容 end-->
-                        </div>
-                    </div>
-
-                    <div data-index="3" class="product-block qc-unit-4-24 qc-unit-md-1-1">
-                        <div class="unit-box">
-                            <!--概览内容 start-->
-                            <div class="pt-overview">
-                                <div class="pt-overview-name">
-                                    <span class="pt-name-img database"></span>
-                                    <h3 class="name-title">分布式主键<span class="icon-arrow"></span></h3>
-                                </div>
-                                <div class="pt-overview-sub-menu">
-
-                                </div>
-                            </div>
-                            <!--概览内容 start-->
-                            <!--详细内容 start-->
-                            <div class="pt-detail">
-                                <div class="pt-detail-name">
-                                    <span class="pt-name-img database"></span>
-                                    <h3 class="name-title">分布式主键<span class="icon-arrow"></span></h3>
-                                </div>
-                                <div class="pt-detail-sub-menu">
-                                    <div class="row">
-                                        <p><span class="circle"></span>内置分布式序列生成器</p>
-                                    </div>
-                                    <div class="row">
-                                        <p><span class="circle"></span>可自定义的分布式序列生成器</p>
-                                    </div>
-                                    <div class="row">
-                                        <p><span class="circle"></span>完美的兼容JDBC标准协议</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <!--详细内容 end-->
-                        </div>
-                    </div>
-
-                    <div data-index="6" class="product-block qc-unit-4-24 qc-unit-md-1-1">
-                        <div class="unit-box">
-                            <!--概览内容 start-->
-                            <div class="pt-overview">
-                                <div class="pt-overview-name">
-                                    <span class="pt-name-img mobile"></span>
-                                    <h3 class="name-title">多样化配置<span class="icon-arrow"></span></h3>
-                                </div>
-                                <div class="pt-overview-sub-menu">
-
-                                </div>
-                            </div>
-                            <!--概览内容 start-->
-                            <!--详细内容 start-->
-                            <div class="pt-detail">
-                                <div class="pt-detail-name">
-                                    <span class="pt-name-img mobile"></span>
-                                    <h3 class="name-title">多样化配置<span class="icon-arrow"></span></h3>
-                                </div>
-                                <div class="pt-detail-sub-menu">
-                                    <div class="row">
-                                        <p><span class="circle"></span>Java编码方式配置</p>
-                                    </div>
-                                    <div class="row">
-                                        <p><span class="circle"></span>自定义Spring命名空间配置</p>
-                                    </div>
-                                    <div class="row">
-                                        <p><span class="circle"></span>YAML方式配置</p>
-                                    </div>
-                                    <div class="row">
-                                        <p><span class="circle"></span>Inline表达式配置分片策略</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <!--详细内容 end-->
-                        </div>
-                    </div>
-
-                    <div data-index="7" class="product-block qc-unit-4-24 qc-unit-md-1-1  ">
-                        <div class="unit-box">
-                            <!--概览内容 start-->
-                            <div class="pt-overview">
-                                <div class="pt-overview-name">
-                                    <span class="pt-name-img domain"></span>
-                                    <h3 class="name-title">兼容性<span class="icon-arrow"></span></h3>
-                                </div>
-                                <div class="pt-overview-sub-menu">
-                                </div>
-                            </div>
-                            <!--概览内容 start-->
-                            <!--详细内容 start-->
-                            <div class="pt-detail">
-                                <div class="pt-detail-name">
-                                    <span class="pt-name-img domain"></span>
-                                    <h3 class="name-title">兼容性<span class="icon-arrow"></span></h3>
-                                </div>
-                                <div class="pt-detail-sub-menu">
-                                    <div class="row">
-                                        <p><span class="circle"></span>适用于任何java的ORM框架，如：JPA, Hibernate, Mybatis或直接使用JDBC</p>
-                                    </div>
-                                    <div class="row">
-                                        <p><span class="circle"></span>适用于任何数据库连接池，如：DBCP, C3P0, BoneCP, Druid等</p>
-                                    </div>
-                                    <div class="row">
-                                        <p><span class="circle"></span>理论上可支持任意实现JDBC规范的数据库。目前支持MySQL，Oracle，SQLServer和PostgreSQL</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <!--详细内容 end-->
-                        </div>
+                    <div class="o-list">
+                        <p><img src="http://ovfqtdb4e.bkt.clouddn.com/homepage/sharding-sidecar.png" alt=""></p>
+                        <p>Sharding-Sidecar</p>
                     </div>
                 </div>
             </div>
         </div>
-
-        <div class="container">
-            <div class="communion">
-                <div class="function_list">
-                    <p class="title_name">交流与参与<span class="slide"></span></p>
-                </div>
-
-                <div class="row attend_communion">
-                    <ul class="row">
-                        <li class="col-md-4 col-sm-6">
-                            <div class="title_icon"></div>
-                            <p class="qq">532576663/659205143</p>
-                            <p class="qq_name">官方交流群/源码交流群</p>
-                            <p class="qq_produce"><b>官方交流群（已满）</b>：仅限于讨论与Sharding-JDBC相关的话题，我们希望您在入群前仔细阅读文档，请在入群后阅读公告以及修改群名片。<br/><b>官方交流2群</b>：459894627<br/><b>源码交流群</b>：讨论源码实现话题。欢迎在这里交流Sharding-JDBC的架构设计、代码实现以及未来线路规划。入群资格：请发布一篇关于Sharding-JDBC的源码分析的文章并将链接通过官方交流群发送给我们。</p>
-                        </li>
-                        <li class="col-md-4 col-sm-6">
-                            <div class="title_icon source"></div>
-                            <a href="https://github.com/shardingjdbc/sharding-jdbc/issues/234" class="btn btn-lg click_upload" target="_blank">采用公司登记</a>
-                            <p class="qq_produce">希望Sharding-JDBC能真正的解放开发者。同时，如果您的公司不介意，欢迎采用了Sharding-JDBC的公司再此登记，您的支持是我们最大的动力。请按照公司名+首页的格式在<a href="https://github.com/shardingjdbc/sharding-jdbc/issues/234">此处</a>登记。</p>
-                        </li>
-                        <li class="col-md-4 col-sm-6">
-                            <div class="title_icon bug"></div>
-                            <a href="http://shardingjdbc.io/docs_cn/00-overview/contribution" class="btn btn-lg click_upload" target="_blank">贡献代码</a>
-                            <p class="qq_produce">您可以通过阅读代码贡献指南，向我们贡献代码并成为Sharding-JDBC开发者。开源的世界需要您来拯救，欢迎和我们一起打造更好的开源项目。</p>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+        <div class="jdbcMsg">
+            <ul class="ulist">
+                <li class="list">
+                    <div class="w1200">
+                        <div class="l-image">
+                            <img src="http://ovfqtdb4e.bkt.clouddn.com/homepage/sharding.png" alt="">
+                        </div>
+                        <div class="l-msg">
+                            <div class="l-m-tit">数据分片</div>
+                            <div class="l-m-info">
+                                <p>分库 + 分表<p>
+                                <p>支持聚合，分组，排序，分页，OR，关联查询等复杂查询语句<p>
+                                <p>支持DML，DDL，TCL以及数据库管理语句<p>
+                                <p>支持=，BETWEEN，IN的分片操作符<p>
+                                <p>自定义的灵活分片策略，支持多分片键共用，支持行表达式<p>
+                                <p>基于Hint的强制路由<p>
+                                <p>分布式主键<p>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list">
+                    <div class="w1200">
+                        <div class="l-image">
+                            <img src="http://ovfqtdb4e.bkt.clouddn.com/homepage/read-write-splitting.png" alt="">
+                        </div>
+                        <div class="l-msg">
+                            <div class="l-m-tit">读写分离</div>
+                            <div class="l-m-info">
+                                <p>一主多从的读写分离</p>
+                                <p>同一线程内的数据一致性</p>
+                                <p>支持分库分表与读写分离共同使用</p>
+                                <p>基于Hint的强制主库路由</p>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list">
+                    <div class="w1200">
+                        <div class="l-image">
+                            <img src="http://ovfqtdb4e.bkt.clouddn.com/homepage/base-transaction.png" alt="">
+                        </div>
+                        <div class="l-msg">
+                            <div class="l-m-tit">柔性事务</div>
+                            <div class="l-m-info">
+                                <p>最大努力送达型事务</p>
+                                <p>TCC型事务(TBD)</p>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list">
+                    <div class="w1200">
+                        <div class="l-image">
+                            <img src="http://ovfqtdb4e.bkt.clouddn.com/homepage/orchestration.png" alt="">
+                        </div>
+                        <div class="l-msg">
+                            <div class="l-m-tit">数据治理</div>
+                            <div class="l-m-info">
+                                <p>配置中心，配置动态化</p>
+                                <p>客户端熔断</p>
+                                <p>支持Open Tracing协议</p>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list">
+                    <div class="w1200">
+                        <div class="l-image">
+                            <img src="http://ovfqtdb4e.bkt.clouddn.com/homepage/compatibility.png" alt="">
+                        </div>
+                        <div class="l-msg">
+                            <div class="l-m-tit">兼容性</div>
+                            <div class="l-m-info">
+                                <p>Sharding-JDBC兼容所有的Java ORM框架以及数据库连接池</p>
+                                <p>Sharding-JDBC兼容MySQL、PostgreSQL、Oracle和SQLServer数据库</p>
+                                <p>Sharding-Proxy兼容全部异构语言</p>
+                                <p>Sharding-Sidecar在Kubernetes/Mesos环境提供云原生支持(TBD)</p>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
         </div>
     </div>
-
-    <!--footer-->
-    <footer class="footer">
-        <div class="container foot">
-            <p>&copy; 2018 Sharding-JDBC</p>
-        </div>
-    </footer>
-
-    <div id="back-to-top" class="back-to-top" data-spy="affix" data-offset-top="60">
-        <a href="#top"><i class="glyphicon glyphicon-arrow-up"></i></a>
-    </div>
-
-    <script src="https://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
-    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script>
-        $(function() {
-            var hoverTimer;
-            $('div [data-index]').hover(function() {
-                var $this = $(this);
-                clearTimeout(hoverTimer);
-                hoverTimer = setTimeout(function() {
-                    $this.addClass("qc-unit-active")
-                        .siblings()
-                        .removeClass("qc-unit-active");
-                }, 150);
-            });
-        });
-    </script>
 </body>
-
 </html>

@@ -1,326 +1,151 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
-
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="renderer" content="webkit">
-    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/style.min.css" rel="stylesheet">
-    <link rel="shortcut icon" href="http://ovfotjrsi.bkt.clouddn.com/favicon.png">
-    <!--[if lt IE 9]>
-    <script src="https://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-    <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
-  <![endif]-->
-    <title>Sharding JDBC - A JDBC driver for shard databases and tables</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="description" content="Sharding-Sphere official website"/>
+    <meta name="Keywords" content="Sharding-Sphere,Sharding-JDBC,Sharding-Proxy,Sharding-Sidecar,Database,Middleware,Distribute"/>
+    <title>Sharding-Sphere</title>
+    <link rel="icon" href="http://ovfqtdb4e.bkt.clouddn.com/homepage/favicon.png" type="image/x-icon"/>
+    <link rel="stylesheet" href="http://static.360buyimg.com/finance/base/1.2.0/css/base.css"/>
+    <link rel="stylesheet" type="text/css" href="./css/index.css">
 </head>
-
 <body>
-    <div class="navbar navbar-inverse navbar-fixed-top header">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="javascript:;">
-                    <div class="logo"></div>
-                </a>
-            </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li class="dropdown">
-                        <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Document<span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a href="http://shardingsphere.io/docs_en/00-overview" target="_blank">2.X (Current)</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="dropdown">
-                        <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">SCM <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a href="https://gitee.com/shardingjdbc" target="_blank">Gitee</a>
-                            </li>
-                            <li role="separator" class="divider"></li>
-                            <li>
-                                <a href="https://github.com/shardingjdbc" target="_blank">Github</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="http://shardingsphere.io/community/en" target="_blank">Community</a>
-                    </li>
-                </ul>
-
-                <ul class="nav navbar-nav navbar-right">
-                    <li class="english"><a class="turn_zh" href="index_zh.html">中文</a></li>
-                    <li class="english"><a class="turn_en" href="index.html">EN</a></li>
-                </ul>
+    <div class="jdbc">
+        <div class="jdbcTopbar">
+            <div class="w1200 clearfix">
+                <div class="logo">
+                    <img src="http://ovfqtdb4e.bkt.clouddn.com/homepage/white-logo.png" alt="">
+                    Sharding-Sphere
+                </div>
+                <div class="itemBox">
+                    <div class="item"><a href="http://shardingsphere.io/document/en/" target="_blank">Document</a></div>
+                    <div class="item">
+                        <div class="i-dropBtn">
+                            SCM<em class="i-d-caret"></em>
+                            <div class="i-d-pop">
+                                <a class="i-d-list" href="https://github.com/shardingjdbc" target="_blank">Github</a>
+                                <em class="i-d-line"></em>
+                                <a class="i-d-list" href="https://gitee.com/shardingjdbc" target="_blank">Gitee</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item"><a href="http://shardingsphere.io/community/en/" target="_blank">Community</a></div>
+                </div>
+                <div class="languageBox">
+                    <a class="lan" href="index_zh.html">中文</a>
+                    <a class="lan" href="index.html">EN</a>
+                </div>
             </div>
         </div>
-    </div>
-
-    <div class="banner">
-        <div class="container body-content">
-            <div class="produce">
-                <p class="first"><img src="http://ovfotjrsi.bkt.clouddn.com/images/sharding-jdbc.png" width="50%" /></p>
-                <p class="second">Sharding-JDBC is an open source distributed database middleware, as a JDBC driver extension, compatible with JDBC and ORM frameworks. Sharding-JDBC is considered as a micro-service-oriented and cloud-native java library, which provides sharding
-                    databases and tables, read/write splitting, and distributed sequence features, also provides the B.A.S.E transaction.</p>
-                <a class="btn more_btn" href="https://github.com/shardingjdbc" target="_blank">Learn More</a>
-            </div>
-        </div>
-    </div>
-
-    <div class="container">
-        <div class="mod-wrap mod-wrap-product-new bg-color-1">
-            <div class="function_list">
-                <p class="title_name">Features<span class="slide"></span></p>
-            </div>
-
-            <div class="mod-inner">
-                <div class="mod-content qc-grids with-slot">
-                    <div data-index="0" class="product-block qc-unit-4-24 qc-unit-md-1-1 qc-unit-active">
-                        <div class="unit-box">
-                            <div class="pt-overview">
-                                <div class="pt-overview-name">
-                                    <span class="pt-name-img compute"></span>
-                                    <h3 class="name-title">Sharding<span class="icon-arrow"></span></h3>
-                                </div>
-                                <div class="pt-overview-sub-menu">
-                                </div>
-                            </div>
-                            <div class="pt-detail">
-                                <div class="pt-detail-name">
-                                    <span class="pt-name-img compute"></span>
-                                    <h3 class="name-title">Sharding<span class="icon-arrow"></span></h3>
-                                </div>
-                                <div class="pt-detail-sub-menu">
-                                    <div class="row">
-                                        <p><span class="circle"></span>Perfect SQL parsing, rewriting and merging engine, which support aggregation, grouping, sorting, paging and join</p>
-                                    </div>
-                                    <div class="row">
-                                        <p><span class="circle"></span>Flexible sharding strategy, which support =, BETWEEN, IN and customized sharding strategy</p>
-                                    </div>
-                                    <div class="row">
-                                        <p><span class="circle"></span>Supports Hint-based sharding</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+        <div class="jdbcHead">
+            <div class="w1200">
+                <div class="logo">
+                    <img class="l-img" src="http://ovfqtdb4e.bkt.clouddn.com/homepage/blue-logo.png" alt="">
+                    Sharding-Sphere
+                </div>
+                <div class="title">Open&emsp;Rapid&emsp;Share</div>
+                <div class="msg">Sharding-Sphere is an open-sourced distributed database middleware solution suite, which is composite by Sharding-JDBC, Sharding-Proxy and Sharding-Sidecar. Those 3 projects provide consistent features which include data sharding, read-write splitting, orchestration and B.A.S.E transaction. They can suitable for various scenario.</div>
+                <div class="button"><a class="btn" href="http://shardingsphere.io/document/en/" target="_blank">Learn More</a></div>
+                <div class="other">
+                    <div class="o-list">
+                        <p><img src="http://ovfqtdb4e.bkt.clouddn.com/homepage/sharding-jdbc.png" alt=""></p>
+                        <p>Sharding-JDBC</p>
                     </div>
-
-                    <div data-index="1" class="product-block qc-unit-4-24 qc-unit-md-1-1">
-                        <div class="unit-box">
-                            <div class="pt-overview">
-                                <div class="pt-overview-name">
-                                    <span class="pt-name-img network"></span>
-                                    <h3 class="name-title">Read/Write Splitting<span class="icon-arrow"></span></h3>
-                                </div>
-                                <div class="pt-overview-sub-menu">
-                                </div>
-                            </div>
-                            <div class="pt-detail">
-                                <div class="pt-detail-name">
-                                    <span class="pt-name-img network"></span>
-                                    <h3 class="name-title">Read/Write Splitting<span class="icon-arrow"></span></h3>
-                                </div>
-                                <div class="pt-detail-sub-menu">
-                                    <div class="row">
-                                        <p><span class="circle"></span>Support one master and multiple slaves for the read and write splitting</p>
-                                    </div>
-                                    <div class="row">
-                                        <p><span class="circle"></span>Hint-based forced master routing</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="o-list">
+                        <p><img src="http://ovfqtdb4e.bkt.clouddn.com/homepage/sharding-proxy.png" alt=""></p>
+                        <p>Sharding-Proxy</p>
                     </div>
-
-                    <div data-index="2" class="product-block qc-unit-4-24 qc-unit-md-1-1">
-                        <div class="unit-box">
-                            <div class="pt-overview">
-                                <div class="pt-overview-name">
-                                    <span class="pt-name-img cdn"></span>
-                                    <h3 class="name-title">B.A.S.E Transaction<span class="icon-arrow"></span></h3>
-                                </div>
-                                <div class="pt-overview-sub-menu">
-                                </div>
-                            </div>
-                            <div class="pt-detail">
-                                <div class="pt-detail-name">
-                                    <span class="pt-name-img cdn"></span>
-                                    <h3 class="name-title">B.A.S.E Transaction<span class="icon-arrow"></span></h3>
-                                </div>
-                                <div class="pt-detail-sub-menu">
-                                    <div class="row">
-                                        <p><span class="circle"></span>Best Effort Delivery</p>
-                                    </div>
-                                    <div class="row">
-                                        <p><span class="circle"></span>Try Confirm Cancel(TBD)</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div data-index="3" class="product-block qc-unit-4-24 qc-unit-md-1-1">
-                        <div class="unit-box">
-                            <div class="pt-overview">
-                                <div class="pt-overview-name">
-                                    <span class="pt-name-img database"></span>
-                                    <h3 class="name-title">Distributed Sequence<span class="icon-arrow"></span></h3>
-                                </div>
-                                <div class="pt-overview-sub-menu">
-
-                                </div>
-                            </div>
-                            <div class="pt-detail">
-                                <div class="pt-detail-name">
-                                    <span class="pt-name-img database"></span>
-                                    <h3 class="name-title">Distributed Sequence<span class="icon-arrow"></span></h3>
-                                </div>
-                                <div class="pt-detail-sub-menu">
-                                    <div class="row">
-                                        <p><span class="circle"></span>Built-in distributed sequence generator</p>
-                                    </div>
-                                    <div class="row">
-                                        <p><span class="circle"></span>Customized distributed sequence generator</p>
-                                    </div>
-                                    <div class="row">
-                                        <p><span class="circle"></span>Compatibility with JDBC</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div data-index="6" class="product-block qc-unit-4-24 qc-unit-md-1-1">
-                        <div class="unit-box">
-                            <div class="pt-overview">
-                                <div class="pt-overview-name">
-                                    <span class="pt-name-img mobile"></span>
-                                    <h3 class="name-title">Configuration<span class="icon-arrow"></span></h3>
-                                </div>
-                                <div class="pt-overview-sub-menu">
-
-                                </div>
-                            </div>
-                            <div class="pt-detail">
-                                <div class="pt-detail-name">
-                                    <span class="pt-name-img mobile"></span>
-                                    <h3 class="name-title">Configuration<span class="icon-arrow"></span></h3>
-                                </div>
-                                <div class="pt-detail-sub-menu">
-                                    <div class="row">
-                                        <p><span class="circle"></span>Java configuration</p>
-                                    </div>
-                                    <div class="row">
-                                        <p><span class="circle"></span>Customized spring namespace</p>
-                                    </div>
-                                    <div class="row">
-                                        <p><span class="circle"></span>YAML configuration</p>
-                                    </div>
-                                    <div class="row">
-                                        <p><span class="circle"></span>Inline expression</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div data-index="7" class="product-block qc-unit-4-24 qc-unit-md-1-1  ">
-                        <div class="unit-box">
-                            <div class="pt-overview">
-                                <div class="pt-overview-name">
-                                    <span class="pt-name-img domain"></span>
-                                    <h3 class="name-title">Compatibility<span class="icon-arrow"></span></h3>
-                                </div>
-                                <div class="pt-overview-sub-menu">
-                                </div>
-                            </div>
-                            <div class="pt-detail">
-                                <div class="pt-detail-name">
-                                    <span class="pt-name-img domain"></span>
-                                    <h3 class="name-title">Compatibility<span class="icon-arrow"></span></h3>
-                                </div>
-                                <div class="pt-detail-sub-menu">
-                                    <div class="row">
-                                        <p><span class="circle"></span>Suitable for any java ORM frameworks, such as: JPA, Hibernate, Mybatis or JDBC directly</p>
-                                    </div>
-                                    <div class="row">
-                                        <p><span class="circle"></span>Suitable for any database connection pool, such as: DBCP, C3P0, BoneCP, etc</p>
-                                    </div>
-                                    <div class="row">
-                                        <p><span class="circle"></span>Support MySQL, Oracle, SQLServer and PostgreSQL</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="o-list">
+                        <p><img src="http://ovfqtdb4e.bkt.clouddn.com/homepage/sharding-sidecar.png" alt=""></p>
+                        <p>Sharding-Sidecar</p>
                     </div>
                 </div>
             </div>
         </div>
-
-        <div class="container">
-            <div class="communion">
-                <div class="function_list">
-                    <p class="title_name">Community<span class="slide"></span></p>
-                </div>
-
-                <div class="row attend_communion">
-                    <ul class="row">
-                        <li class="col-md-4 col-sm-6">
-                            <div class="title_icon source"></div>
-                            <a href="https://gitter.im/Sharding-JDBC/shardingjdbc" class="btn btn-lg click_upload" target="_blank">Communicate</a>
-                            <p class="qq_produce">Welcome to discuss Sharding-JDBC <a href="https://gitter.im/Sharding-JDBC/shardingjdbc" target="_blank">here</a>.</p>
-                        </li>
-                        <li class="col-md-4 col-sm-6">
-                            <div class="title_icon source"></div>
-                            <a href="https://github.com/shardingjdbc/sharding-jdbc/issues/234" class="btn btn-lg click_upload" target="_blank">Register</a>
-                            <p class="qq_produce">Please leave your company's info when using Sharding-JDBC <a href="https://github.com/shardingjdbc/sharding-jdbc/issues/234">Company + Website</a></p>
-                        </li>
-                        <li class="col-md-4 col-sm-6">
-                            <div class="title_icon bug"></div>
-                            <a href="http://shardingsphere.io/docs_en/00-overview/contribution" class="btn btn-lg click_upload" target="_blank">Contribution</a>
-                            <p class="qq_produce">Please read <a href="http://shardingsphere.io/docs_en/00-overview/contribution">contribution guide</a> before contribute.</p>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+        <div class="jdbcMsg">
+            <ul class="ulist">
+                <li class="list">
+                    <div class="w1200">
+                        <div class="l-image">
+                            <img src="http://ovfqtdb4e.bkt.clouddn.com/homepage/sharding.png" alt="">
+                        </div>
+                        <div class="l-msg">
+                            <div class="l-m-tit">Sharding</div>
+                            <div class="l-m-info">
+                                <p>Both databases and tables sharding.<p>
+                                <p>Aggregation functions, GROUP BY, ORDER BY, LIMIT, OR and JOIN DQL supported.<p>
+                                <p>DML, DDL, TCL and database administrator command supported.<p>
+                                <p>Sharding operator =, BETWEEN and IN supported.<p>
+                                <p>Sharding algorithm customization and inline expression supported.<p>
+                                <p>Force route by hint.<p>
+                                <p>Distributed sequence.<p>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list">
+                    <div class="w1200">
+                        <div class="l-image">
+                            <img src="http://ovfqtdb4e.bkt.clouddn.com/homepage/read-write-splitting.png" alt="">
+                        </div>
+                        <div class="l-msg">
+                            <div class="l-m-tit">Read/Write Splitting</div>
+                            <div class="l-m-info">
+                                <p>Multiple slaves replica.</p>
+                                <p>Data consistency guarantee in same thread.</p>
+                                <p>Mix read-write splitting and data sharding.</p>
+                                <p>Force route by hint.</p>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list">
+                    <div class="w1200">
+                        <div class="l-image">
+                            <img src="http://ovfqtdb4e.bkt.clouddn.com/homepage/base-transaction.png" alt="">
+                        </div>
+                        <div class="l-msg">
+                            <div class="l-m-tit">B.A.S.E Transaction</div>
+                            <div class="l-m-info">
+                                <p>Best efforts delivery transaction.</p>
+                                <p>Try confirm cancel transaction (TBD).</p>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list">
+                    <div class="w1200">
+                        <div class="l-image">
+                            <img src="http://ovfqtdb4e.bkt.clouddn.com/homepage/orchestration.png" alt="">
+                        </div>
+                        <div class="l-msg">
+                            <div class="l-m-tit">Orchestration</div>
+                            <div class="l-m-info">
+                                <p>Configuration center, can refresh dynamically.</p>
+                                <p>Circuit breaker.</p>
+                                <p>Open tracing supported.</p>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list">
+                    <div class="w1200">
+                        <div class="l-image">
+                            <img src="http://ovfqtdb4e.bkt.clouddn.com/homepage/compatibility.png" alt="">
+                        </div>
+                        <div class="l-msg">
+                            <div class="l-m-tit">Compatibility</div>
+                            <div class="l-m-info">
+                                <p>Java compatible for all ORM framework and connection pool for Sharding-JDBC.</p>
+                                <p>Database compatible for MySQL, PostgreSQL, Oracle and SQLServer for Sharding-JDBC.</p>
+                                <p>Heterogeneous language compatible for Sharding-Proxy.</p>
+                                <p>Cloud native on Kubernetes/Mesos for Sharding-Sidecar (TBD).</p>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
         </div>
     </div>
-
-    <!--footer-->
-    <footer class="footer">
-        <div class="container foot">
-            <p>&copy; 2018 Sharding-JDBC</p>
-        </div>
-    </footer>
-
-    <div id="back-to-top" class="back-to-top" data-spy="affix" data-offset-top="60">
-        <a href="#top"><i class="glyphicon glyphicon-arrow-up"></i></a>
-    </div>
-
-    <script src="https://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
-    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script>
-        $(function() {
-            var hoverTimer;
-            $('div [data-index]').hover(function() {
-                var $this = $(this);
-                clearTimeout(hoverTimer);
-                hoverTimer = setTimeout(function() {
-                    $this.addClass("qc-unit-active")
-                        .siblings()
-                        .removeClass("qc-unit-active");
-                }, 150);
-            });
-        });
-    </script>
 </body>
-
 </html>
