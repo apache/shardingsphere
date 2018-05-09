@@ -31,7 +31,7 @@ import io.shardingjdbc.core.routing.SQLRouteResult;
 import io.shardingjdbc.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingjdbc.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingjdbc.proxy.backend.mysql.MySQLPacketStatementExecuteQueryResult;
-import io.shardingjdbc.proxy.config.ShardingRuleRegistry;
+import io.shardingjdbc.proxy.config.RuleRegistry;
 import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingjdbc.proxy.transport.mysql.constant.ColumnType;
 import io.shardingjdbc.proxy.transport.mysql.constant.StatusFlag;
@@ -104,11 +104,11 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
     
     @Override
     public CommandResponsePackets execute() {
-        return ShardingRuleRegistry.getInstance().isOnlyMasterSlave() ? executeForMasterSlave() : executeForSharding();
+        return RuleRegistry.getInstance().isOnlyMasterSlave() ? executeForMasterSlave() : executeForSharding();
     }
     
     private CommandResponsePackets executeForMasterSlave() {
-        MasterSlaveRouter masterSlaveRouter = new MasterSlaveRouter(ShardingRuleRegistry.getInstance().getMasterSlaveRule());
+        MasterSlaveRouter masterSlaveRouter = new MasterSlaveRouter(RuleRegistry.getInstance().getMasterSlaveRule());
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
         String dataSourceName = masterSlaveRouter.route(sqlStatement.getType()).iterator().next();
         List<CommandResponsePackets> result = new LinkedList<>();
@@ -118,7 +118,7 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
     
     private CommandResponsePackets executeForSharding() {
         PreparedStatementRoutingEngine routingEngine = new PreparedStatementRoutingEngine(sql,
-                ShardingRuleRegistry.getInstance().getShardingRule(), ShardingRuleRegistry.getInstance().getShardingMetaData(), databaseType, showSQL);
+                RuleRegistry.getInstance().getShardingRule(), RuleRegistry.getInstance().getShardingMetaData(), databaseType, showSQL);
         // TODO support null value parameter
         SQLRouteResult routeResult = routingEngine.route(getComStmtExecuteParameters());
         if (routeResult.getExecutionUnits().isEmpty()) {
@@ -136,13 +136,13 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
         switch (sqlStatement.getType()) {
             case DQL:
             case DAL:
-                return executeQuery(ShardingRuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql);
+                return executeQuery(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql);
             case DML:
             case DDL:
-                return ShardingRuleRegistry.getInstance().isOnlyMasterSlave() ? executeUpdate(ShardingRuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql)
-                        : executeUpdate(ShardingRuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql, sqlStatement);
+                return RuleRegistry.getInstance().isOnlyMasterSlave() ? executeUpdate(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql)
+                        : executeUpdate(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql, sqlStatement);
             default:
-                return executeCommon(ShardingRuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql);
+                return executeCommon(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql);
         }
     }
     
@@ -336,7 +336,7 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
             queryResults.add(new MySQLPacketStatementExecuteQueryResult(packets.get(i), resultSets.get(i), columnTypes));
         }
         try {
-            mergedResult = MergeEngineFactory.newInstance(ShardingRuleRegistry.getInstance().getShardingRule(), queryResults, sqlStatement).merge();
+            mergedResult = MergeEngineFactory.newInstance(RuleRegistry.getInstance().getShardingRule(), queryResults, sqlStatement).merge();
             isMerged = true;
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
