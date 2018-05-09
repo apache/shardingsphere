@@ -12,6 +12,9 @@ chapter = true
 
 Sharding-Sphere is an open-sourced distributed database middleware solution suite, which is composite by Sharding-JDBC, Sharding-Proxy and Sharding-Sidecar. Those 3 projects provide consistent features which include data sharding, read-write splitting, orchestration and B.A.S.E transaction. They can suitable for various scenario.
 
+Sharding-Sphere is a Relational Database Middleware which reuse capacity of original databases (such as: compute, storage), but make best simplicity and efficiency on distribute environment. Sharding-Sphere do not want implement a new database.
+It can cooperate with NoSQL and NewSQL. NoSQL and NewSQL are good exploration for technology, they are care about what’s going to change. There is another theory which is care about what’s not going to change. Relational Database still is the biggest percentage of market share, it is difficult to estimate trendy in future. So we are focus about how to enhance with Relational Database now.
+
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![Gitter](https://badges.gitter.im/Sharding-JDBC/shardingjdbc.svg)](https://gitter.im/Sharding-JDBC/shardingjdbc?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
