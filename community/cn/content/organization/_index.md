@@ -35,17 +35,7 @@ chapter = true
 
 Sharding在很多情况下需要投票。选票可以视情况通过手机、电子邮件或某个投票系统产生。投票人可以回复“agree, yes, +1”，“disagree, no, -1”或“弃权”。赞成票占总票数的三分之二即可通过本次投票。弃权票等同于未投票。
 
-## Committer
-
-* 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013) Java技术专家, 蚂蚁金服
-
-* 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) 技术经理, 康大预诊
-
-* 朱政科, Zhengke Zhu, [@CharlesMaster](https://github.com/CharlesMaster) 高级工程师, 杭州恩牛网络技术有限公司
-
-* 马晓光, Xiaoguang Ma, [@ma-xiao-guang-64](https://github.com/ma-xiao-guang-64) 高级工程师, 惠买集团
-
-* 刘泽剑, ZeJian Liu, [@qiankunshe](https://github.com/qiankunshe) IT经理, 泽达易盛
+## Internal Committer
 
 * 张永伦, Yonglun Zhang, [@tuohai666](https://github.com/tuohai666) 高级工程师, 京东
 
@@ -54,6 +44,20 @@ Sharding在很多情况下需要投票。选票可以视情况通过手机、电
 * 王凯, Kai Wang, [@oracle219](https://github.com/oracle219) 架构师, 当当
 
 * 林嘉琦, Jiaqi Lin, [@chidaodezhongsheng](https://github.com/chidaodezhongsheng) 工程师, 当当
+
+* 赵俊, Jun Zhao, [@cherrylzhao](https://github.com/cherrylzhao) 高级工程师, 京东
+
+## External Committer
+
+* 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) 技术经理, 康大预诊
+
+* 朱政科, Zhengke Zhu, [@CharlesMaster](https://github.com/CharlesMaster) 高级工程师, 杭州恩牛网络技术有限公司
+
+* 马晓光, Xiaoguang Ma, [@ma-xiao-guang-64](https://github.com/ma-xiao-guang-64) 高级工程师, 惠买集团
+
+* 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013) Java技术专家, 蚂蚁金服
+
+* 刘泽剑, ZeJian Liu, [@qiankunshe](https://github.com/qiankunshe) IT经理, 泽达易盛
 
 * 岳令, Ling Yue, [@ling.yue](https://github.com/yue530tom) 测试工程师, 当当
 

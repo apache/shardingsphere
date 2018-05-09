@@ -35,17 +35,7 @@ The current Project Management Committee is as follows (in chronological order):
 
 In various situations the Sharding shall hold a vote. These votes can happen on the phone, email, or via a voting service, when appropriate. Voters can either respond "agree, yes, +1", "disagree, no, -1", or "abstain". A vote passes with two-thirds vote of votes cast. An abstain vote equals not voting at all.
 
-## Committer
-
-* 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013) Java Expert, Antfin
-
-* 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) Technical manager, Kangda
-
-* 朱政科, Zhengke Zhu, [@CharlesMaster](https://github.com/CharlesMaster) Senior engineer, Hangzhou Enniu Network Technology Company Limited
-
-* 马晓光, Xiaoguang Ma, [@ma-xiao-guang-64](https://github.com/ma-xiao-guang-64) Senior engineer, huimai365
-
-* 刘泽剑, ZeJian Liu, [@qiankunshe](https://github.com/qiankunshe) IT Manager, ZeDaYiSheng
+## Internal Committer
 
 * 张永伦, Yonglun Zhang, [@tuohai666](https://github.com/tuohai666) Senior engineer, Jingdong
 
@@ -54,6 +44,20 @@ In various situations the Sharding shall hold a vote. These votes can happen on 
 * 王凯, Kai Wang, [@oracle219](https://github.com/oracle219) Architect, Dangdang
 
 * 林嘉琦, Jiaqi Lin, [@chidaodezhongsheng](https://github.com/chidaodezhongsheng) Engineer, Dangdang
+
+* 赵俊, Jun Zhao, [@cherrylzhao](https://github.com/cherrylzhao) Senior engineer, Jingdong
+
+## External Committer
+
+* 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) Technical manager, Kangda
+
+* 朱政科, Zhengke Zhu, [@CharlesMaster](https://github.com/CharlesMaster) Senior engineer, Hangzhou Enniu Network Technology Company Limited
+
+* 马晓光, Xiaoguang Ma, [@ma-xiao-guang-64](https://github.com/ma-xiao-guang-64) Senior engineer, huimai365
+
+* 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013) Java Expert, Antfin
+
+* 刘泽剑, ZeJian Liu, [@qiankunshe](https://github.com/qiankunshe) IT Manager, ZeDaYiSheng
 
 * 岳令, Ling Yue, [@ling.yue](https://github.com/yue530tom) QA Engineer, Dangdang
 
