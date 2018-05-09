@@ -54,13 +54,13 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
     @Override
     public void channelRead(final ChannelHandlerContext context, final Object message) {
         MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload((ByteBuf) message);
-        int packetSize = mysqlPacketPayload.readInt3();
+        //int packetSize = mysqlPacketPayload.readInt3();
         int sequenceId = mysqlPacketPayload.readInt1();
-        int header = mysqlPacketPayload.readInt1();
-        if (!authorized) {
-            auth(context, sequenceId, header, mysqlPacketPayload);
-        } else if (OKPacket.HEADER == header || ErrPacket.HEADER == header || EofPacket.HEADER == header) {
+        int header = mysqlPacketPayload.readInt1() & 0xFF;
+        if (OKPacket.HEADER == header || ErrPacket.HEADER == header || EofPacket.HEADER == header) {
             genericResponsePacket(context, header, mysqlPacketPayload);
+        } else if (!authorized) {
+            auth(context, sequenceId, header, mysqlPacketPayload);
         } else {
             executeCommandResponsePackets(context, header, mysqlPacketPayload);
         }
@@ -81,9 +81,10 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
         mysqlPacketPayload.skipReserved(10);
         byte[] authPluginDataPart2 = mysqlPacketPayload.readStringNul().getBytes();
         byte[] authPluginData = Bytes.concat(authPluginDataPart1, authPluginDataPart2);
-        byte[] authResponse = byteXOR(SHA1(password.getBytes()), SHA1(Bytes.concat(authPluginData, SHA1(SHA1(password.getBytes())))));
+        //byte[] authResponse = byteXOR(SHA1(password.getBytes()), SHA1(Bytes.concat(authPluginData, SHA1(SHA1(password.getBytes())))));
+        byte[] authResponse = securePasswordAuthentication(password.getBytes(),authPluginData);
         //TODO maxSizePactet should be set.
-        HandshakeResponse41Packet handshakeResponse41Packet = new HandshakeResponse41Packet(sequenceId, CapabilityFlag.calculateHandshakeCapabilityFlagsLower(), 4194304, ServerInfo.CHARSET, username, authResponse, database);
+        HandshakeResponse41Packet handshakeResponse41Packet = new HandshakeResponse41Packet(sequenceId + 1, CapabilityFlag.calculateHandshakeCapabilityFlagsLower(), 16777215, ServerInfo.CHARSET, username, authResponse, database);
         context.writeAndFlush(handshakeResponse41Packet);
     }
     
@@ -129,26 +130,22 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
         super.channelInactive(ctx);
     }
     
-    private byte[] SHA1(byte[] decript) {
+    private final byte[] securePasswordAuthentication(byte[] password, byte[] authPluginData){
         try {
-            MessageDigest digest = java.security.MessageDigest.getInstance("SHA-1");
-            digest.update(decript);
-            return digest.digest();
+            MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
+            byte[] part1 = sha1.digest(password);
+            sha1.reset();
+            byte[] part2 = sha1.digest(part1);
+            sha1.reset();
+            sha1.update(authPluginData);
+            byte[] authResponse = sha1.digest(part2);
+            for (int i = 0; i < authResponse.length; i++) {
+                authResponse[i] = (byte) (authResponse[i] ^ part1[i]);
+            }
+            return authResponse;
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
         return null;
-    }
-    
-    private byte[] byteXOR(byte[] arg1, byte[] arg2) {
-        byte[] byteXOR = new byte[arg1.length];
-        byte temp3;
-        for (int i = 0; i < arg1.length; i++) {
-            byte temp1 = arg1[i];
-            byte temp2 = arg2[i];
-            temp3 = (byte) (temp1 ^ temp2);
-            byteXOR[i] = temp3;
-        }
-        return byteXOR;
     }
 }

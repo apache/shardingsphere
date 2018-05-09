@@ -98,7 +98,8 @@ public final class HandshakeResponse41Packet extends MySQLPacket {
             mysqlPacketPayload.writeStringLenenc(new String(authResponse));
         } else if (0 != (capabilityFlags & CapabilityFlag.CLIENT_SECURE_CONNECTION.getValue())) {
             mysqlPacketPayload.writeInt1(authResponse.length);
-            mysqlPacketPayload.writeStringFix(new String(authResponse));
+            mysqlPacketPayload.writeBytes(authResponse);
+            
         } else {
             mysqlPacketPayload.writeStringNul(new String(authResponse));
         }
