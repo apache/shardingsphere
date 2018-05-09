@@ -18,6 +18,7 @@
 package io.shardingjdbc.core.jdbc.core.statement;
 
 import com.google.common.base.Optional;
+import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.executor.type.statement.StatementExecutor;
 import io.shardingjdbc.core.executor.type.statement.StatementUnit;
 import io.shardingjdbc.core.jdbc.adapter.AbstractStatementAdapter;
@@ -29,6 +30,8 @@ import io.shardingjdbc.core.merger.JDBCQueryResult;
 import io.shardingjdbc.core.merger.MergeEngine;
 import io.shardingjdbc.core.merger.MergeEngineFactory;
 import io.shardingjdbc.core.merger.QueryResult;
+import io.shardingjdbc.core.metadata.ColumnMetaData;
+import io.shardingjdbc.core.metadata.TableMetaData;
 import io.shardingjdbc.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingjdbc.core.parsing.parser.sql.dql.DQLStatement;
@@ -37,6 +40,8 @@ import io.shardingjdbc.core.routing.SQLExecutionUnit;
 import io.shardingjdbc.core.routing.SQLRouteResult;
 import io.shardingjdbc.core.routing.StatementRoutingEngine;
 import io.shardingjdbc.core.routing.router.sharding.GeneratedKey;
+import io.shardingjdbc.core.rule.DataNode;
+import io.shardingjdbc.core.rule.ShardingDataSourceNames;
 import io.shardingjdbc.core.rule.TableRule;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -118,7 +123,6 @@ public class ShardingStatement extends AbstractStatementAdapter {
         try {
             return generateExecutor(sql).executeUpdate();
         } finally {
-            refreshShardingMetaData(connection.getShardingContext(), routeResult);
             currentResultSet = null;
         }
     }
@@ -160,7 +164,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
         try {
             return generateExecutor(sql).execute();
         } finally {
-            refreshShardingMetaData(connection.getShardingContext(), routeResult);
+            refreshShardingMetaData(routeResult);
             currentResultSet = null;
         }
     }
@@ -218,11 +222,26 @@ public class ShardingStatement extends AbstractStatementAdapter {
         routedStatements.clear();
     }
 
-    private void refreshShardingMetaData(final ShardingContext context, final SQLRouteResult routeResult) throws SQLException {
+    private void refreshShardingMetaData(final SQLRouteResult routeResult) throws SQLException {
         if (routeResult.canRefreshMetaData()) {
+            ShardingContext context = connection.getShardingContext();
             String logicTable = routeResult.getSqlStatement().getTables().getSingleTableName();
             TableRule tableRule = context.getShardingRule().getTableRule(logicTable);
-            context.getShardingMetaData().refresh(tableRule, context.getShardingRule());
+            ShardingDataSourceNames shardingDataSourceNames = context.getShardingRule().getShardingDataSourceNames();
+
+            // TODO consider refresh process within ShardingMetada, This need to move ShardingMetaData to package sharding-jdbc-core
+            Collection<ColumnMetaData> result = null;
+            for (DataNode each : tableRule.getActualDataNodes()) {
+                String dataSourceName = shardingDataSourceNames.getRawMasterDataSourceName(each.getDataSourceName());
+                Collection<ColumnMetaData> columnMetaDataList = context.getShardingMetaData().getColumnMetaDataList(each, shardingDataSourceNames, connection.getConnection(dataSourceName));
+                if (null == result) {
+                    result = columnMetaDataList;
+                }
+                if (!result.equals(columnMetaDataList)) {
+                    throw new ShardingJdbcException("Cannot get uniformed table structure for '%s'.", tableRule.getLogicTable());
+                }
+            }
+            context.getShardingMetaData().getTableMetaDataMap().put(tableRule.getLogicTable(), new TableMetaData(result));
         }
     }
     

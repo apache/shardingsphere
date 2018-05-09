@@ -41,7 +41,7 @@ public final class ShardingMetaDataHandlerFactory {
      * @param dataSource data source
      * @param actualTableName actual table name
      * @param databaseType database type
-     * @return sharding meta data handler
+     * @return sharding metadata handler
      */
     public static ShardingMetaDataHandler newInstance(final DataSource dataSource, final String actualTableName, final DatabaseType databaseType) {
         switch (databaseType) {
@@ -52,5 +52,16 @@ public final class ShardingMetaDataHandlerFactory {
             default:
                 return new DefaultShardingMetaDataHandler(dataSource, actualTableName);
         }
+    }
+
+    /**
+     * To generate table metadata handler by existing sharding connection.
+     *
+     * @param actualTableName actual table name
+     * @param databaseType database type
+     * @return sharding metadata handler
+     */
+    public static ShardingMetaDataHandler newInstance(final String actualTableName, final DatabaseType databaseType) {
+        return newInstance(null, actualTableName, databaseType);
     }
 }

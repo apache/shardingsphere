@@ -51,11 +51,22 @@ public abstract class ShardingMetaDataHandler {
      */
     public Collection<ColumnMetaData> getColumnMetaDataList() throws SQLException {
         List<ColumnMetaData> result;
-        try (Connection connection = getDataSource().getConnection();
+        try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             result = geColumnMetaInternal(statement);
         }
         return result;
+    }
+
+    /**
+     * Get column metadata by Sharding Connection.
+     *
+     * @param connection connection
+     * @return column metadata List
+     * @throws SQLException SQL exception
+     */
+    public Collection<ColumnMetaData> getColumnMetaDataList(final Connection connection) throws SQLException {
+        return geColumnMetaInternal(connection.createStatement());
     }
 
     /**
