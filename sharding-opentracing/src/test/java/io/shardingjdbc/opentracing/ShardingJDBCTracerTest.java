@@ -21,62 +21,60 @@ import io.opentracing.NoopTracerFactory;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
-import io.shardingjdbc.opentracing.config.OpentracingConfigurationParser;
 import io.shardingjdbc.opentracing.fixture.FooTracer;
-import org.hamcrest.core.Is;
+
+import static org.hamcrest.CoreMatchers.is;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.lang.reflect.Field;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.hamcrest.core.Is.isA;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(OpentracingConfigurationParser.class)
 public final class ShardingJDBCTracerTest {
-    
-    @Before
-    public void setUp() throws Exception {
-        mockStatic(System.class);
-        clearGlobalTracer();
-    }
-    
-    @Test
-    public void assertDuplicatedLoading() {
-        ShardingJDBCTracer.init(mock(Tracer.class));
-        Tracer t1 = ShardingJDBCTracer.get();
-        ShardingJDBCTracer.init();
-        assertEquals(t1, ShardingJDBCTracer.get());
-        ShardingJDBCTracer.init(mock(Tracer.class));
-        assertEquals(t1, ShardingJDBCTracer.get());
-    }
-    
-    @Test
-    public void assertTracer() {
-        when(System.getProperty("shardingjdbc.opentracing.tracer.class")).thenReturn(FooTracer.class.getName());
-        assertThat((GlobalTracer) ShardingJDBCTracer.get(), Is.isA(GlobalTracer.class));
-        assertTrue(GlobalTracer.isRegistered());
-        assertThat(ShardingJDBCTracer.get(), Is.is(ShardingJDBCTracer.get()));
-    }
-    
-    @Test(expected = ShardingJdbcException.class)
-    public void assertTracerClassError() {
-        when(System.getProperty("shardingjdbc.opentracing.tracer.class")).thenReturn("com.foo.FooTracer");
-        ShardingJDBCTracer.get();
-        
-    }
-    
-    private static void clearGlobalTracer() throws NoSuchFieldException, IllegalAccessException {
-        Field tracerField = GlobalTracer.class.getDeclaredField("tracer");
-        tracerField.setAccessible(true);
-        tracerField.set(GlobalTracer.class, NoopTracerFactory.create());
-    }
+
+	@Before
+	public void setUp() throws Exception {
+		System.setProperty("shardingjdbc.opentracing.tracer.class", FooTracer.class.getName());
+		clearGlobalTracer();
+	}
+
+	@After
+	public void tearDown() {
+		System.getProperties().remove("shardingjdbc.opentracing.tracer.class");
+	}
+
+	@Test
+	public void assertDuplicatedLoading() {
+		ShardingJDBCTracer.init(mock(Tracer.class));
+		Tracer t1 = ShardingJDBCTracer.get();
+		ShardingJDBCTracer.init();
+		assertEquals(t1, ShardingJDBCTracer.get());
+		ShardingJDBCTracer.init(mock(Tracer.class));
+		assertEquals(t1, ShardingJDBCTracer.get());
+	}
+
+	@Test
+	public void assertTracer() {
+		assertThat((GlobalTracer) ShardingJDBCTracer.get(), isA(GlobalTracer.class));
+		assertTrue(GlobalTracer.isRegistered());
+		assertThat(ShardingJDBCTracer.get(), is(ShardingJDBCTracer.get()));
+	}
+
+	@Test(expected = ShardingJdbcException.class)
+	public void assertTracerClassError() {
+		System.setProperty("shardingjdbc.opentracing.tracer.class", "com.foo.FooTracer");
+		ShardingJDBCTracer.get();
+
+	}
+
+	private static void clearGlobalTracer() throws NoSuchFieldException, IllegalAccessException {
+		Field tracerField = GlobalTracer.class.getDeclaredField("tracer");
+		tracerField.setAccessible(true);
+		tracerField.set(GlobalTracer.class, NoopTracerFactory.create());
+	}
 }

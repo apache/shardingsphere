@@ -57,19 +57,19 @@ public final class DatabaseEnvironment {
         USERNAME.put(DatabaseType.MySQL, "root");
         PASSWORD.put(DatabaseType.MySQL, "");
         SCHEMA.put(DatabaseType.MySQL, null);
-        
+
         DRIVER_CLASS_NAME.put(DatabaseType.PostgreSQL, org.postgresql.Driver.class.getName());
         URL.put(DatabaseType.PostgreSQL, "jdbc:postgresql://db.psql:5432/%s");
         USERNAME.put(DatabaseType.PostgreSQL, "postgres");
         PASSWORD.put(DatabaseType.PostgreSQL, "");
         SCHEMA.put(DatabaseType.PostgreSQL, null);
-        
+
         DRIVER_CLASS_NAME.put(DatabaseType.SQLServer, com.microsoft.sqlserver.jdbc.SQLServerDriver.class.getName());
         URL.put(DatabaseType.SQLServer, "jdbc:sqlserver://db.mssql:1433;DatabaseName=%s");
         USERNAME.put(DatabaseType.SQLServer, "sa");
         PASSWORD.put(DatabaseType.SQLServer, "Jdbc1234");
         SCHEMA.put(DatabaseType.SQLServer, null);
-        
+
         DRIVER_CLASS_NAME.put(DatabaseType.Oracle, "oracle.jdbc.driver.OracleDriver");
         URL.put(DatabaseType.Oracle, "jdbc:oracle:thin:@db.oracle:8521:db_1");
         USERNAME.put(DatabaseType.Oracle, "jdbc");
