@@ -86,7 +86,7 @@ Use sidecar to connect databases, best for Kubernetes or Mesos together.
 <!-- import sharding-jdbc core -->
 <dependency>
     <groupId>io.shardingsphere</groupId>
-    <artifactId>sharding-jdbc-core</artifactId>
+    <artifactId>sharding-jdbc</artifactId>
     <version>${latest.release.version}</version>
 </dependency>
 ```

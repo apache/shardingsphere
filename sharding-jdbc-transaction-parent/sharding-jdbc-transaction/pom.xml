@@ -11,7 +11,7 @@
     <dependencies>
         <dependency>
             <groupId>io.shardingsphere</groupId>
-            <artifactId>sharding-jdbc-core</artifactId>
+            <artifactId>sharding-jdbc</artifactId>
         </dependency>
         <dependency>
             <groupId>io.shardingsphere</groupId>

@@ -22,7 +22,7 @@
     <dependencies>
         <dependency>
             <groupId>io.shardingsphere</groupId>
-            <artifactId>sharding-jdbc-core</artifactId>
+            <artifactId>sharding-jdbc</artifactId>
             <version>${sharding-jdbc.version}</version>
         </dependency>
         <dependency>
