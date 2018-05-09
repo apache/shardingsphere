@@ -83,7 +83,7 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
         byte[] authPluginData = Bytes.concat(authPluginDataPart1, authPluginDataPart2);
         //byte[] authResponse = byteXOR(SHA1(password.getBytes()), SHA1(Bytes.concat(authPluginData, SHA1(SHA1(password.getBytes())))));
         byte[] authResponse = securePasswordAuthentication(password.getBytes(),authPluginData);
-        //TODO maxSizePactet should be set.
+        //TODO maxSizePactet（16MB） should be set.
         HandshakeResponse41Packet handshakeResponse41Packet = new HandshakeResponse41Packet(sequenceId + 1, CapabilityFlag.calculateHandshakeCapabilityFlagsLower(), 16777215, ServerInfo.CHARSET, username, authResponse, database);
         context.writeAndFlush(handshakeResponse41Packet);
     }
@@ -130,7 +130,7 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
         super.channelInactive(ctx);
     }
     
-    private final byte[] securePasswordAuthentication(byte[] password, byte[] authPluginData){
+    private byte[] securePasswordAuthentication(byte[] password, byte[] authPluginData){
         try {
             MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
             byte[] part1 = sha1.digest(password);
