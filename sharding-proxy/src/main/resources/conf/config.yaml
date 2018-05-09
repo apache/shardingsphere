@@ -9,10 +9,8 @@
 ##################      ##################
 
 
-##################
-#
 # The example of Sharding rule.
-#
+
 #dataSources:
 #  demo_ds_0:
 #    url: jdbc:mysql://127.0.0.1:3306/demo_ds_0
@@ -52,10 +50,9 @@
 #    sql.show: true
 
 
-##################
-#
+
 # The example of master-slave rule.
-#
+
 #dataSources:
 #  demo_ds_0:
 #    url: jdbc:mysql://127.0.0.1:3306/demo_ds_0
@@ -70,4 +67,4 @@
 #  masterDataSourceName: demo_ds_0
 #  slaveDataSourceNames:
 #    - demo_ds_1
-#
+
