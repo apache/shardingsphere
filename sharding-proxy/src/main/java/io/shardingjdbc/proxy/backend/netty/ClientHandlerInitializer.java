@@ -17,6 +17,7 @@
 
 package io.shardingjdbc.proxy.backend.netty;
 
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -31,7 +32,7 @@ import lombok.RequiredArgsConstructor;
  * @author wangkai
  */
 @RequiredArgsConstructor
-public final class ClientHandlerInitializer extends ChannelInitializer<SocketChannel> {
+public final class ClientHandlerInitializer extends ChannelInitializer<Channel> {
     
     private final String ip;
     private final int port;
@@ -40,8 +41,8 @@ public final class ClientHandlerInitializer extends ChannelInitializer<SocketCha
     private final String password;
     
     @Override
-    protected void initChannel(final SocketChannel socketChannel) {
-        ChannelPipeline pipeline = socketChannel.pipeline();
+    protected void initChannel(final Channel channel) {
+        ChannelPipeline pipeline = channel.pipeline();
         // TODO load database type from yaml or startup arguments
         pipeline.addLast(PacketCodecFactory.createPacketCodecInstance(DatabaseType.MySQL));
         pipeline.addLast(BackendHandlerFactory.createBackendHandlerInstance(DatabaseType.MySQL, ip, port, database, username, password));

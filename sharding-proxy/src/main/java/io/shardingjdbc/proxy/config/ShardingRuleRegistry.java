@@ -48,37 +48,40 @@ public final class ShardingRuleRegistry {
     
     private static final ShardingRuleRegistry INSTANCE = new ShardingRuleRegistry();
     
-    private final Map<String, DataSource> dataSourceMap;
+    private Map<String, DataSource> dataSourceMap;
     
-    private final Map<String, HikariConfig> dataSourceConfigurationMap;
+    private Map<String, HikariConfig> dataSourceConfigurationMap;
     
-    private final ShardingRule shardingRule;
+    private ShardingRule shardingRule;
     
-    private final ShardingMetaData shardingMetaData;
+    private ShardingMetaData shardingMetaData;
     
     private ShardingRuleRegistry() {
-        YamlShardingConfigurationForProxy yamlShardingConfigurationForProxy;
         try {
-            yamlShardingConfigurationForProxy = YamlShardingConfigurationForProxy.unmarshal(new File(getClass().getResource("/conf/sharding-config.yaml").toURI().getPath()));
-        } catch (final IOException | URISyntaxException ex) {
-            throw new ShardingJdbcException(ex);
-        }
-        dataSourceConfigurationMap = new HashMap<>(128, 1);
-        dataSourceMap = new HashMap<>(128, 1);
-        Map<String, DataSourceParameter> dataSourceParameters = yamlShardingConfigurationForProxy.getDataSources();
-        for (String each : dataSourceParameters.keySet()) {
-            if (WITHOUT_JDBC) {
-                dataSourceConfigurationMap.put(each, getDataSourceConfiguration(dataSourceParameters.get(each)));
-            } else {
+            YamlShardingConfigurationForProxy yamlShardingConfigurationForProxy;
+            try {
+                yamlShardingConfigurationForProxy = YamlShardingConfigurationForProxy.unmarshal(new File(getClass().getResource("/conf/sharding-config.yaml").toURI().getPath()));
+            } catch (final IOException | URISyntaxException ex) {
+                throw new ShardingJdbcException(ex);
+            }
+            dataSourceConfigurationMap = new HashMap<>(128, 1);
+            dataSourceMap = new HashMap<>(128, 1);
+            Map<String, DataSourceParameter> dataSourceParameters = yamlShardingConfigurationForProxy.getDataSources();
+            for (String each : dataSourceParameters.keySet()) {
+                if (WITHOUT_JDBC) {
+                    dataSourceConfigurationMap.put(each, getDataSourceConfiguration(dataSourceParameters.get(each)));
+                }
                 dataSourceMap.put(each, getDataSource(dataSourceParameters.get(each)));
             }
-        }
-        shardingRule = yamlShardingConfigurationForProxy.getShardingRule(Collections.<String>emptyList());
-        try {
-            shardingMetaData = new ProxyShardingMetaData(dataSourceMap);
-            shardingMetaData.init(shardingRule);
-        } catch (final SQLException ex) {
-            throw new ShardingJdbcException(ex);
+            shardingRule = yamlShardingConfigurationForProxy.getShardingRule(Collections.<String>emptyList());
+            try {
+                shardingMetaData = new ProxyShardingMetaData(dataSourceMap);
+                shardingMetaData.init(shardingRule);
+            } catch (final SQLException ex) {
+                throw new ShardingJdbcException(ex);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
     

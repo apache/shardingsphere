@@ -28,8 +28,10 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.EpollChannelOption;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollServerSocketChannel;
+import io.netty.channel.epoll.EpollSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.shardingjdbc.proxy.backend.netty.ClientHandlerInitializer;
@@ -65,25 +67,28 @@ public final class ShardingProxyClient {
      * @throws MalformedURLException url is illegal.
      */
     public void start() throws MalformedURLException, InterruptedException {
-        Map<String, HikariConfig> dataSourceConfigurationMap = new HashMap<>();
-        ShardingRuleRegistry.getInstance();
-        for (Map.Entry<String, HikariConfig> each : dataSourceConfigurationMap.entrySet()) {
-            URL url = new URL(each.getValue().getJdbcUrl());
-            String ip = url.getHost();
-            int port = url.getPort();
-            String database = url.getPath().substring(1);
-            String username = (each.getValue()).getUsername();
-            String password = (each.getValue()).getPassword();
-            Bootstrap bootstrap = new Bootstrap();
-            if (workerGroup instanceof EpollEventLoopGroup) {
-                groupsEpoll(bootstrap, ip, port, database, username, password);
-            } else {
-                groupsNio(bootstrap, ip, port, database, username, password);
+        try {
+            Map<String, HikariConfig> dataSourceConfigurationMap = ShardingRuleRegistry.getInstance().getDataSourceConfigurationMap();
+            for (Map.Entry<String, HikariConfig> each : dataSourceConfigurationMap.entrySet()) {
+                URL url = new URL(each.getValue().getJdbcUrl().replaceAll("jdbc:mysql:", "http:"));
+                String ip = url.getHost();
+                int port = url.getPort();
+                String database = url.getPath().substring(1);
+                String username = (each.getValue()).getUsername();
+                String password = (each.getValue()).getPassword();
+                Bootstrap bootstrap = new Bootstrap();
+                if (workerGroup instanceof EpollEventLoopGroup) {
+                    groupsEpoll(bootstrap, ip, port, database, username, password);
+                } else {
+                    groupsNio(bootstrap, ip, port, database, username, password);
+                }
+                //TODO use connection pool.
+                bootstrapMap.put(each.getKey(), bootstrap);
+                ChannelFuture future = bootstrap.connect(ip, port).sync();
+                channelMap.put(each.getKey(), future.channel());
             }
-            //TODO use connection pool.
-            bootstrapMap.put(each.getKey(), bootstrap);
-            ChannelFuture future = bootstrap.connect(ip, port).sync();
-            channelMap.put(each.getKey(), future.channel());
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
     
@@ -96,9 +101,8 @@ public final class ShardingProxyClient {
     private void groupsEpoll(final Bootstrap bootstrap, String ip, int port, String database, String username, String password) {
         workerGroup = new EpollEventLoopGroup(WORKER_MAX_THREADS);
         bootstrap.group(workerGroup)
-                .channel(EpollServerSocketChannel.class)
+                .channel(EpollSocketChannel.class)
                 .option(EpollChannelOption.TCP_CORK, true)
-                .option(EpollChannelOption.SO_KEEPALIVE, true)
                 .option(EpollChannelOption.SO_BACKLOG, 128)
                 .option(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .handler(new LoggingHandler(LogLevel.INFO))
@@ -108,9 +112,7 @@ public final class ShardingProxyClient {
     private void groupsNio(final Bootstrap bootstrap, String ip, int port, String database, String username, String password) {
         workerGroup = new NioEventLoopGroup(WORKER_MAX_THREADS);
         bootstrap.group(workerGroup)
-                .channel(NioServerSocketChannel.class)
-                .option(ChannelOption.SO_KEEPALIVE, true)
-                .option(ChannelOption.TCP_NODELAY, true)
+                .channel(NioSocketChannel.class)
                 .option(ChannelOption.SO_BACKLOG, 128)
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 100)
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
