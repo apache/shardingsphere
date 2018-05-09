@@ -46,7 +46,7 @@ shardingRule:
   
   defaultTableStrategy:
     none:
-  defaultKeyGeneratorClass: io.shardingjdbc.core.keygen.DefaultKeyGenerator
+  defaultKeyGeneratorClassName: io.shardingjdbc.core.keygen.DefaultKeyGenerator
   
   props:
     sql.show: true
