@@ -21,9 +21,10 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import io.shardingjdbc.core.exception.ShardingJdbcException;
 import io.shardingjdbc.core.metadata.ShardingMetaData;
+import io.shardingjdbc.core.rule.MasterSlaveRule;
 import io.shardingjdbc.core.rule.ShardingRule;
+import io.shardingjdbc.core.yaml.proxy.YamlProxyConfiguration;
 import io.shardingjdbc.core.yaml.sharding.DataSourceParameter;
-import io.shardingjdbc.core.yaml.sharding.YamlShardingConfigurationForProxy;
 import io.shardingjdbc.proxy.metadata.ProxyShardingMetaData;
 import lombok.Getter;
 
@@ -39,34 +40,44 @@ import java.util.Map;
  * Sharding rule registry.
  *
  * @author zhangliang
+ * @author zhangyonglun
+ * @author panjuan
  */
 @Getter
-public final class ShardingRuleRegistry {
+public final class RuleRegistry {
     
-    private static final ShardingRuleRegistry INSTANCE = new ShardingRuleRegistry();
+    private static final RuleRegistry INSTANCE = new RuleRegistry();
     
     private final Map<String, DataSource> dataSourceMap;
     
     private final ShardingRule shardingRule;
     
+    private final MasterSlaveRule masterSlaveRule;
+    
     private final ShardingMetaData shardingMetaData;
     
-    private ShardingRuleRegistry() {
-        YamlShardingConfigurationForProxy yamlShardingConfigurationForProxy;
+    private final boolean isOnlyMasterSlave;
+    
+    private RuleRegistry() {
+        YamlProxyConfiguration yamlProxyConfiguration;
         try {
-            yamlShardingConfigurationForProxy = YamlShardingConfigurationForProxy.unmarshal(new File(getClass().getResource("/conf/sharding-config.yaml").getFile()));
+            yamlProxyConfiguration = YamlProxyConfiguration.unmarshal(new File(getClass().getResource("/conf/config.yaml").getFile()));
         } catch (final IOException ex) {
             throw new ShardingJdbcException(ex);
         }
         dataSourceMap = new HashMap<>(128, 1);
-        Map<String, DataSourceParameter> dataSourceParameters = yamlShardingConfigurationForProxy.getDataSources();
+        Map<String, DataSourceParameter> dataSourceParameters = yamlProxyConfiguration.getDataSources();
         for (String each : dataSourceParameters.keySet()) {
             dataSourceMap.put(each, getDataSource(dataSourceParameters.get(each)));
         }
-        shardingRule = yamlShardingConfigurationForProxy.getShardingRule(Collections.<String>emptyList());
+        shardingRule = yamlProxyConfiguration.obtainShardingRule(Collections.<String>emptyList());
+        masterSlaveRule = yamlProxyConfiguration.obtainMasterSlaveRule();
+        isOnlyMasterSlave = shardingRule.getTableRules().isEmpty() && !masterSlaveRule.getMasterDataSourceName().isEmpty();
         try {
             shardingMetaData = new ProxyShardingMetaData(dataSourceMap);
-            shardingMetaData.init(shardingRule);
+            if (!isOnlyMasterSlave) {
+                shardingMetaData.init(shardingRule);
+            }
         } catch (final SQLException ex) {
             throw new ShardingJdbcException(ex);
         }
@@ -93,7 +104,7 @@ public final class ShardingRuleRegistry {
      *
      * @return instance of sharding rule registry
      */
-    public static ShardingRuleRegistry getInstance() {
+    public static RuleRegistry getInstance() {
         return INSTANCE;
     }
 }

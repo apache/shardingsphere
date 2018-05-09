@@ -126,6 +126,9 @@ public final class ShardingDataSourceTest {
         when(result.getConnection()).thenReturn(connection);
         when(connection.createStatement()).thenReturn(statement);
         when(statement.executeQuery(ArgumentMatchers.<String>any())).thenReturn(resultSet);
+        when(statement.getConnection()).thenReturn(connection);
+        when(statement.getConnection().getMetaData().getTables(ArgumentMatchers.<String>any(), ArgumentMatchers.<String>any(),
+                ArgumentMatchers.<String>any(), ArgumentMatchers.<String[]>any())).thenReturn(resultSet);
         return result;
     }
     

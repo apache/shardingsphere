@@ -19,11 +19,9 @@ package io.shardingjdbc.core.jdbc.metadata.dialect;
 
 import io.shardingjdbc.core.metadata.ColumnMetaData;
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,19 +29,34 @@ import java.util.List;
  * MySQL table metadata handler.
  *
  * @author panjuan
+ * @author zhaojun
  */
 public final class MySQLShardingMetaDataHandler extends ShardingMetaDataHandler {
     
     public MySQLShardingMetaDataHandler(final DataSource dataSource, final String actualTableName) {
         super(dataSource, actualTableName);
     }
-    
+
     @Override
-    public Collection<ColumnMetaData> getColumnMetaDataList() throws SQLException {
+    public List<ColumnMetaData> geColumnMetaInternal(final Statement statement) throws SQLException {
         List<ColumnMetaData> result = new LinkedList<>();
-        try (Connection connection = getDataSource().getConnection();
-            Statement statement = connection.createStatement()) {
-            ResultSet resultSet = statement.executeQuery(String.format("desc %s", getActualTableName()));
+        if (isTableExist(statement)) {
+            result = getExistColumnMeta(statement);
+        }
+        return result;
+    }
+
+    private boolean isTableExist(final Statement statement) throws SQLException {
+        statement.executeQuery(String.format("show tables like '%s'", getActualTableName()));
+        try (ResultSet resultSet = statement.getResultSet()) {
+            return resultSet.next();
+        }
+    }
+
+    private List<ColumnMetaData> getExistColumnMeta(final Statement statement) throws SQLException {
+        List<ColumnMetaData> result = new LinkedList<>();
+        statement.executeQuery(String.format("desc %s;", getActualTableName()));
+        try (ResultSet resultSet = statement.getResultSet()) {
             while (resultSet.next()) {
                 result.add(new ColumnMetaData(resultSet.getString("Field"), resultSet.getString("Type"), resultSet.getString("Key")));
             }
