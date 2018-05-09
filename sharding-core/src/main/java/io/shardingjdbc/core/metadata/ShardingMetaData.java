@@ -78,12 +78,12 @@ public abstract class ShardingMetaData {
                 result = columnMetaDataList;
             }
             if (!result.equals(columnMetaDataList)) {
-                throw new ShardingJdbcException("Cannot get uniformed table structure for '%s'.", logicTableName);
+                throw new ShardingJdbcException(getErrorMsgOfTableMetaData(logicTableName, result, columnMetaDataList));
             }
         }
         return new TableMetaData(result);
     }
-
+    
     /**
      * Get column metadata implementing by concrete handler.
      *
@@ -93,6 +93,18 @@ public abstract class ShardingMetaData {
      * @throws SQLException SQL exception
      */
     public abstract Collection<ColumnMetaData> getColumnMetaDataList(DataNode dataNode, ShardingDataSourceNames shardingDataSourceNames) throws SQLException;
+    
+    private String getErrorMsgOfTableMetaData(final String logicTableName, final Collection<ColumnMetaData> oldColumnMetaDataList, final Collection<ColumnMetaData> newColumnMetaDataList) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(" Cannot get uniformed table structure for ").append(logicTableName).append(".");
+        stringBuilder.append(" The different column metadata of actual tables is as follows: ");
+        for (ColumnMetaData each : oldColumnMetaDataList) {
+            stringBuilder.append(each.toString()).append(" ");
+        }
+        stringBuilder.append("\n");
+        for (ColumnMetaData each : newColumnMetaDataList) {
+            stringBuilder.append(each.toString()).append(" ");
+        }
+        return stringBuilder.toString();
+    }
 }
-
-
