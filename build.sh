@@ -9,9 +9,9 @@ cp -rf homepage/. target
 mkdir -p target/document/legacy/1.x
 mkdir -p target/document/legacy/2.x
 
-cp -rf docs_2.x_cn target/document/legacy/2.x/cn
-cp -rf docs_2.x_en target/document/legacy/2.x/en
-cp -rf docs_1.x target/document/legacy/1.x
+cp -rf document/legacy/2.x/cn target/document/legacy/2.x/cn
+cp -rf document/legacy/2.x/en target/document/legacy/2.x/en
+cp -rf document/legacy/1.x/cn target/document/legacy/1.x/cn
 
 cd document/cn
 hugo
