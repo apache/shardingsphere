@@ -1,6 +1,7 @@
 ## 2.1.0
 
 ### Milestones
+
 1. Sharding-Proxy launch. Support the use of Sharding-JDBC in the form of database to support for MySQL CLI and GUI client
 
 ### New Features
@@ -9,6 +10,7 @@
 1. [ISSUE #501](https://github.com/shardingjdbc/sharding-jdbc/issues/501) Support OR statement
 
 ### Enhancements
+
 1. [ISSUE #608](https://github.com/shardingjdbc/sharding-jdbc/issues/608) Support the USE statement of MySQL
 1. [ISSUE #609](https://github.com/shardingjdbc/sharding-jdbc/issues/609) Support the SHOW statement of MySQL
 1. [ISSUE #610](https://github.com/shardingjdbc/sharding-jdbc/issues/610) Optimize the DQL that does not contain a table name
@@ -21,15 +23,19 @@
 1. [ISSUE #773](https://github.com/shardingjdbc/sharding-jdbc/issues/773) Support sharding and autoincrement primary key of INSERT statements without column names
 
 ### Bug Fixes
+
 1. [ISSUE #628](https://github.com/shardingjdbc/sharding-jdbc/issues/628) Support data type jsonb for PostgreSQL
 1. [ISSUE #646](https://github.com/shardingjdbc/sharding-jdbc/issues/646) When aliases in SELECT ITEMS correspond to the real column names of GROUP BY or ORDER BY, there is no need to add columns
+1. [ISSUE #806](https://github.com/shardingjdbc/sharding-jdbc/issues/806) SQL parse error with `NOT IN`
 
 ## 2.0.3
 
 ### Enhancements
+
 1. [ISSUE #600](https://github.com/shardingjdbc/sharding-jdbc/issues/600) Support TCL
 
 ### Bug Fixes
+
 1. [ISSUE #522](https://github.com/shardingjdbc/sharding-jdbc/issues/522) The slave database does not need to execute the DDL statement for read-write separation 
 1. [ISSUE #540](https://github.com/shardingjdbc/sharding-jdbc/issues/540) Support SQLs that the alias is the keyword
 1. [ISSUE #577](https://github.com/shardingjdbc/sharding-jdbc/issues/577) Support newline for YAML configuration
@@ -37,10 +43,12 @@
 ## 2.0.2
 
 ### Enhancements
+
 1. [ISSUE #475](https://github.com/shardingjdbc/sharding-jdbc/issues/475) Support CREATE INDEX
 1. [ISSUE #525](https://github.com/shardingjdbc/sharding-jdbc/issues/525) Support DROP INDEX
 
 ### Bug Fixes
+
 1. [ISSUE #520](https://github.com/shardingjdbc/sharding-jdbc/issues/520) When the partition table is introduced, the exception type is no longer DuplicateKeyException when the unique key conflict occurs
 1. [ISSUE #521](https://github.com/shardingjdbc/sharding-jdbc/issues/521) ShardingProperties is invalid in YAML configuration
 1. [ISSUE #529](https://github.com/shardingjdbc/sharding-jdbc/issues/529) Table name capitalization cannot be queried
@@ -52,11 +60,13 @@
 ## 2.0.1
 
 ### Enhancements
+
 1. [ISSUE #489](https://github.com/shardingjdbc/sharding-jdbc/issues/489) SpringName uses RuntimeBeanReference to prevent the creation of InnerBean
 1. [ISSUE #496](https://github.com/shardingjdbc/sharding-jdbc/issues/496) Logical table names in sharding configuration can be case sensitive
 1. [ISSUE #497](https://github.com/shardingjdbc/sharding-jdbc/issues/497) The registry center closes gracefully
 
 ### Bug Fixes
+
 1. [ISSUE #490](https://github.com/shardingjdbc/sharding-jdbc/issues/490) Oracle using rownum greater than or equal to or less than or equal to the result of paging is incorrect
 1. [ISSUE #491](https://github.com/shardingjdbc/sharding-jdbc/issues/491) Can't close connection by ResultSet.getStatement().getConnection().close()
 
@@ -359,4 +369,5 @@ Automatic generation key implementation, including
 1. [ISSUE #38](https://github.com/shardingjdbc/sharding-jdbc/issues/38) The compatibility between JPA and Sharding-JDBC. JPA automatically add the column aliases of SELECT, resulting in ORDER BY obtaining ResultSet data only by aliases rather than column names
 
 ## 1.0.0
+
 1. Initial version

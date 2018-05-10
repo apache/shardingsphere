@@ -1,6 +1,7 @@
 ## 2.1.0
 
 ### 里程碑
+
 1. Sharding-Proxy发布. 支持以数据库的形式使用Sharding-JDBC, 全面提供对MySQL命令行以及图形化客户端的支持
 
 ### 新功能
@@ -9,6 +10,7 @@
 1. [ISSUE #501](https://github.com/shardingjdbc/sharding-jdbc/issues/501) 支持OR语句
 
 ### 功能提升
+
 1. [ISSUE #608](https://github.com/shardingjdbc/sharding-jdbc/issues/608) 支持MySQL的USE语句
 1. [ISSUE #609](https://github.com/shardingjdbc/sharding-jdbc/issues/609) 支持MySQL的SHOW语句
 1. [ISSUE #610](https://github.com/shardingjdbc/sharding-jdbc/issues/610) 优化不包含表的DQL
@@ -21,15 +23,19 @@
 1. [ISSUE #773](https://github.com/shardingjdbc/sharding-jdbc/issues/773) 支持不包含列名的INSERT语句的分片与自增主键 
 
 ### 缺陷修正
+
 1. [ISSUE #628](https://github.com/shardingjdbc/sharding-jdbc/issues/628) 支持PostgreSQL的数据类型jsonb
 1. [ISSUE #646](https://github.com/shardingjdbc/sharding-jdbc/issues/646) 当SELECT ITEMS中的别名与GROUP BY或ORDER BY的真实列名对应时，无需补列
+1. [ISSUE #806](https://github.com/shardingjdbc/sharding-jdbc/issues/806) `NOT IN`解析异常
 
 ## 2.0.3
 
 ### 功能提升
+
 1. [ISSUE #600](https://github.com/shardingjdbc/sharding-jdbc/issues/600) 支持TCL
 
 ### 缺陷修正
+
 1. [ISSUE #522](https://github.com/shardingjdbc/sharding-jdbc/issues/522) 读写分离Slave库不需要执行DDL语句
 1. [ISSUE #540](https://github.com/shardingjdbc/sharding-jdbc/issues/540) 梳理并支持别名为关键字SQL
 1. [ISSUE #577](https://github.com/shardingjdbc/sharding-jdbc/issues/577) 支持YAML配置换行
@@ -37,10 +43,12 @@
 ## 2.0.2
 
 ### 功能提升
+
 1. [ISSUE #475](https://github.com/shardingjdbc/sharding-jdbc/issues/475) 支持CREATE INDEX
 1. [ISSUE #525](https://github.com/shardingjdbc/sharding-jdbc/issues/525) 支持DROP INDEX
 
 ### 缺陷修正
+
 1. [ISSUE #520](https://github.com/shardingjdbc/sharding-jdbc/issues/520) 引入分表后，唯一键冲突时异常类型不再是DuplicateKeyException
 1. [ISSUE #521](https://github.com/shardingjdbc/sharding-jdbc/issues/521) YAML文件中ShardingProperties设置无效
 1. [ISSUE #529](https://github.com/shardingjdbc/sharding-jdbc/issues/529) 表名大写无法查询
@@ -52,11 +60,13 @@
 ## 2.0.1
 
 ### 功能提升
+
 1. [ISSUE #489](https://github.com/shardingjdbc/sharding-jdbc/issues/489) SpringName使用RuntimeBeanReference防止创建InnerBean
 1. [ISSUE #496](https://github.com/shardingjdbc/sharding-jdbc/issues/496) 分片配置中逻辑表名可以大小写不敏感
 1. [ISSUE #497](https://github.com/shardingjdbc/sharding-jdbc/issues/497) 注册中心优雅关闭
 
 ### 缺陷修正
+
 1. [ISSUE #490](https://github.com/shardingjdbc/sharding-jdbc/issues/490) Oracle使用rownum大于等于或小于等于分页结果不正确
 1. [ISSUE #491](https://github.com/shardingjdbc/sharding-jdbc/issues/491) 通过ResultSet.getStatement().getConnection().close()无法释放连接
 
@@ -359,4 +369,5 @@
 1. [ISSUE #38](https://github.com/shardingjdbc/sharding-jdbc/issues/38) JPA与Sharding-JDBC的兼容问题。JPA会自动增加SELECT的列别名，导致ORDER BY只能通过别名，而非列名称获取ResultSet的数据
 
 ## 1.0.0
+
 1. 初始版本
