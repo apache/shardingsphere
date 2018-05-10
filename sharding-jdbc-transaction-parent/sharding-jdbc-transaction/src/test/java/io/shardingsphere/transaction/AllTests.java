@@ -20,9 +20,6 @@ package io.shardingsphere.transaction;
 import io.shardingsphere.transaction.api.SoftTransactionManagerTest;
 import io.shardingsphere.transaction.bed.BEDSoftTransactionTest;
 import io.shardingsphere.transaction.integrate.SoftTransactionTest;
-import io.shardingsphere.transaction.api.SoftTransactionManagerTest;
-import io.shardingsphere.transaction.bed.BEDSoftTransactionTest;
-import io.shardingsphere.transaction.integrate.SoftTransactionTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 

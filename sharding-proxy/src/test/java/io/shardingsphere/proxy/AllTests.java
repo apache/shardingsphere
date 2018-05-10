@@ -18,7 +18,6 @@
 package io.shardingsphere.proxy;
 
 import io.shardingsphere.proxy.util.RandomGeneratorTest;
-import io.shardingsphere.proxy.util.RandomGeneratorTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;

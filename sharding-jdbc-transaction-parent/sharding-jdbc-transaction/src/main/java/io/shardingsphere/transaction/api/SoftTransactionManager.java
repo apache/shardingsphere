@@ -27,10 +27,6 @@ import io.shardingsphere.transaction.bed.sync.BestEffortsDeliveryListener;
 import io.shardingsphere.transaction.constants.SoftTransactionType;
 import io.shardingsphere.transaction.constants.TransactionLogDataSourceType;
 import io.shardingsphere.transaction.tcc.TCCSoftTransaction;
-import io.shardingsphere.transaction.api.config.SoftTransactionConfiguration;
-import io.shardingsphere.transaction.constants.SoftTransactionType;
-import io.shardingsphere.transaction.constants.TransactionLogDataSourceType;
-import io.shardingsphere.transaction.tcc.TCCSoftTransaction;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

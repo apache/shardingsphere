@@ -26,8 +26,6 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import lombok.extern.slf4j.Slf4j;
 
 /**

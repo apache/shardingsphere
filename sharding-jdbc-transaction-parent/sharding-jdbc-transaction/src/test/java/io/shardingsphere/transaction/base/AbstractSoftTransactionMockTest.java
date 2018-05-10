@@ -17,10 +17,10 @@
 
 package io.shardingsphere.transaction.base;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.transaction.api.SoftTransactionManager;
 import io.shardingsphere.transaction.api.config.NestedBestEffortsDeliveryJobConfiguration;
 import io.shardingsphere.transaction.api.config.SoftTransactionConfiguration;
-import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.junit.Before;

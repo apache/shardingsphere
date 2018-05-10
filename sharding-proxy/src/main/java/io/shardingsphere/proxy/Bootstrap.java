@@ -18,7 +18,6 @@
 package io.shardingsphere.proxy;
 
 import io.shardingsphere.proxy.frontend.ShardingProxy;
-import io.shardingsphere.proxy.frontend.ShardingProxy;
 
 /**
  * Sharding-Proxy Bootstrap.

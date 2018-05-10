@@ -33,7 +33,6 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePac
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.PreparedStatementRegistry;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import lombok.extern.slf4j.Slf4j;
 
 /**

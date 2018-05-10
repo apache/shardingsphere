@@ -42,13 +42,6 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextRes
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
-import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
-import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextResultSetRowPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

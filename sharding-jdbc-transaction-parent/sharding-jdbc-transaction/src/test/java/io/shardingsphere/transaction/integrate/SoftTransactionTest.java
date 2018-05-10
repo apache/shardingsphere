@@ -23,7 +23,6 @@ import io.shardingsphere.transaction.api.config.SoftTransactionConfiguration;
 import io.shardingsphere.transaction.base.AbstractSoftTransactionIntegrationTest;
 import io.shardingsphere.transaction.bed.BEDSoftTransaction;
 import io.shardingsphere.transaction.constants.SoftTransactionType;
-import io.shardingsphere.transaction.constants.SoftTransactionType;
 import org.junit.Test;
 
 import java.sql.Connection;

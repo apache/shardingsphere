@@ -22,7 +22,6 @@ import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;

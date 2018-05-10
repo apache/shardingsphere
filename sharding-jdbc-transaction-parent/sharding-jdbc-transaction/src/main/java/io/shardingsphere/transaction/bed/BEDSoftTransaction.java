@@ -19,8 +19,6 @@ package io.shardingsphere.transaction.bed;
 
 import io.shardingsphere.transaction.api.AbstractSoftTransaction;
 import io.shardingsphere.transaction.constants.SoftTransactionType;
-import io.shardingsphere.transaction.api.AbstractSoftTransaction;
-import io.shardingsphere.transaction.constants.SoftTransactionType;
 
 import java.sql.Connection;
 import java.sql.SQLException;

@@ -24,10 +24,6 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePac
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute.BinaryResultSetRowPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
-import io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute.BinaryResultSetRowPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
-import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
 import lombok.RequiredArgsConstructor;
 
 import java.io.InputStream;

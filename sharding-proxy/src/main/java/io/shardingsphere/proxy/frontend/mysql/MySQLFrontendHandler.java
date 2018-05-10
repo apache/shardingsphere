@@ -31,15 +31,6 @@ import io.shardingsphere.proxy.transport.mysql.packet.handshake.AuthPluginData;
 import io.shardingsphere.proxy.transport.mysql.packet.handshake.ConnectionIdGenerator;
 import io.shardingsphere.proxy.transport.mysql.packet.handshake.HandshakePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.handshake.HandshakeResponse41Packet;
-import io.shardingsphere.proxy.frontend.common.FrontendHandler;
-import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketFactory;
-import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.handshake.AuthPluginData;
-import io.shardingsphere.proxy.transport.mysql.packet.handshake.ConnectionIdGenerator;
-import io.shardingsphere.proxy.transport.mysql.packet.handshake.HandshakePacket;
-import io.shardingsphere.proxy.transport.mysql.packet.handshake.HandshakeResponse41Packet;
 import lombok.RequiredArgsConstructor;
 
 /**
