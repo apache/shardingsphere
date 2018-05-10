@@ -36,6 +36,7 @@ public final class Bootstrap {
      * 
      * @param args startup arguments
      * @throws InterruptedException interrupted exception
+     * @throws MalformedURLException URL exception
      */
     public static void main(final String[] args) throws InterruptedException, MalformedURLException {
         new ShardingProxy().start(getPort(args));

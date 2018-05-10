@@ -45,10 +45,15 @@ import java.security.NoSuchAlgorithmException;
 public class MySQLBackendHandler extends CommandResponsePacketsHandler {
     
     private boolean authorized;
+    
     private final String ip;
+    
     private final int port;
+    
     private final String database;
+    
     private final String username;
+    
     private final String password;
     
     @Override
@@ -67,7 +72,7 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
     }
     
     @Override
-    protected void auth(ChannelHandlerContext context, int sequenceId, int header, MySQLPacketPayload mysqlPacketPayload) {
+    protected void auth(final ChannelHandlerContext context, final int sequenceId, final int header, final MySQLPacketPayload mysqlPacketPayload) {
         int protocolVersion = header;
         String serverVersion = mysqlPacketPayload.readStringNul();
         int connectionId = mysqlPacketPayload.readInt4();
@@ -82,14 +87,15 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
         byte[] authPluginDataPart2 = mysqlPacketPayload.readStringNul().getBytes();
         byte[] authPluginData = Bytes.concat(authPluginDataPart1, authPluginDataPart2);
         //byte[] authResponse = byteXOR(SHA1(password.getBytes()), SHA1(Bytes.concat(authPluginData, SHA1(SHA1(password.getBytes())))));
-        byte[] authResponse = securePasswordAuthentication(password.getBytes(),authPluginData);
+        byte[] authResponse = securePasswordAuthentication(password.getBytes(), authPluginData);
         //TODO maxSizePactet（16MB） should be set.
-        HandshakeResponse41Packet handshakeResponse41Packet = new HandshakeResponse41Packet(sequenceId + 1, CapabilityFlag.calculateHandshakeCapabilityFlagsLower(), 16777215, ServerInfo.CHARSET, username, authResponse, database);
+        HandshakeResponse41Packet handshakeResponse41Packet = new HandshakeResponse41Packet(sequenceId + 1, CapabilityFlag.calculateHandshakeCapabilityFlagsLower(), 16777215, ServerInfo.CHARSET,
+                username, authResponse, database);
         context.writeAndFlush(handshakeResponse41Packet);
     }
     
     @Override
-    protected void genericResponsePacket(ChannelHandlerContext context, int header, MySQLPacketPayload mysqlPacketPayload) {
+    protected void genericResponsePacket(final ChannelHandlerContext context, final int header, final MySQLPacketPayload mysqlPacketPayload) {
         switch (header) {
             case OKPacket.HEADER:
                 if (!authorized) {
@@ -114,12 +120,14 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
                 statusFlags = mysqlPacketPayload.readInt2();
                 log.debug("EofPacket[warnings={},statusFlags={}]", warnings, statusFlags);
                 break;
+            default:
+                break;
         }
     }
     
     //TODO
     @Override
-    protected void executeCommandResponsePackets(ChannelHandlerContext context, int header, MySQLPacketPayload mysqlPacketPayload) {
+    protected void executeCommandResponsePackets(final ChannelHandlerContext context, final int header, final MySQLPacketPayload mysqlPacketPayload) {
         int connectionId = MySQLResultCache.getInstance().getonnectionMap(context.channel().id().asShortText());
         MySQLResultCache.getInstance().get(connectionId).setResponse(null);
     }
@@ -130,7 +138,7 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
         super.channelInactive(ctx);
     }
     
-    private byte[] securePasswordAuthentication(byte[] password, byte[] authPluginData){
+    private byte[] securePasswordAuthentication(byte[] password, byte[] authPluginData) {
         try {
             MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
             byte[] part1 = sha1.digest(password);

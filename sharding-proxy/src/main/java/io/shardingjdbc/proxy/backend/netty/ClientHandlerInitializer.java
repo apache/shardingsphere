@@ -20,7 +20,6 @@ package io.shardingjdbc.proxy.backend.netty;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
-import io.netty.channel.socket.SocketChannel;
 import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.proxy.backend.common.BackendHandlerFactory;
 import io.shardingjdbc.proxy.transport.common.codec.PacketCodecFactory;
@@ -35,9 +34,13 @@ import lombok.RequiredArgsConstructor;
 public final class ClientHandlerInitializer extends ChannelInitializer<Channel> {
     
     private final String ip;
+    
     private final int port;
+    
     private final String database;
+    
     private final String username;
+    
     private final String password;
     
     @Override

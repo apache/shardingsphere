@@ -19,6 +19,7 @@ package io.shardingjdbc.proxy.transport.mysql.packet.command;
 
 import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacket;
+import lombok.Getter;
 
 /**
  * Command packet.
@@ -27,7 +28,8 @@ import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacket;
  * @author wangkai
  */
 public abstract class CommandPacket extends MySQLPacket {
-    protected final int connectionId;
+    @Getter
+    private final int connectionId;
     
     public CommandPacket(final int sequenceId, final int connectionId) {
         super(sequenceId);

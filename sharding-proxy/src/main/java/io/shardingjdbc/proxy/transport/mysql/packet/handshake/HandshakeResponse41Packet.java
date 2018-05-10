@@ -55,7 +55,8 @@ public final class HandshakeResponse41Packet extends MySQLPacket {
         readDatabase(mysqlPacketPayload);
     }
     
-    public HandshakeResponse41Packet(final int sequenceId, final int capabilityFlags, final int maxPacketSize, final int characterSet, final String username, final byte[] authResponse, final String database) {
+    public HandshakeResponse41Packet(final int sequenceId, final int capabilityFlags, final int maxPacketSize, final int characterSet, final String username, final byte[] authResponse, final String
+            database) {
         super(sequenceId);
         this.capabilityFlags = capabilityFlags;
         this.maxPacketSize = maxPacketSize;

@@ -31,9 +31,15 @@ public final class BackendHandlerFactory {
      * Create bakcend handler instance.
      *
      * @param databaseType database type
+     * @param ip           database ip
+     * @param port         database port
+     * @param database     database name
+     * @param username     access database username
+     * @param password     access database password
      * @return backend handler instance
      */
-    public static CommandResponsePacketsHandler createBackendHandlerInstance(final DatabaseType databaseType, String ip, int port, String database, String username, String password) {
+    public static CommandResponsePacketsHandler createBackendHandlerInstance(final DatabaseType databaseType, final String ip, final int port, final String database, final String username, final
+        String password) {
         switch (databaseType) {
             case MySQL:
                 return new MySQLBackendHandler(ip, port, database, username, password);

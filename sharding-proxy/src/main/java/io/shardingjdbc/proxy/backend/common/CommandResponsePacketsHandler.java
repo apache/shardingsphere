@@ -17,7 +17,6 @@
 
 package io.shardingjdbc.proxy.backend.common;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
@@ -29,6 +28,8 @@ import io.shardingjdbc.proxy.transport.mysql.packet.MySQLPacketPayload;
  */
 public abstract class CommandResponsePacketsHandler extends ChannelInboundHandlerAdapter {
     protected abstract void auth(ChannelHandlerContext context, int sequenceId, int header, MySQLPacketPayload mysqlPacketPayload);
+    
     protected abstract void genericResponsePacket(ChannelHandlerContext context, int header, MySQLPacketPayload mysqlPacketPayload);
+    
     protected abstract void executeCommandResponsePackets(ChannelHandlerContext context, int header, MySQLPacketPayload mysqlPacketPayload);
 }

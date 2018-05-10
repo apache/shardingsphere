@@ -37,13 +37,13 @@ public class SynchronizedFuture<T> implements Future<List<T>> {
     
     private long beginTime = System.currentTimeMillis();
     
-    public SynchronizedFuture(int resultSize) {
+    public SynchronizedFuture(final int resultSize) {
         latch = new CountDownLatch(resultSize);
         responses = Lists.newArrayListWithCapacity(resultSize);
     }
     
     @Override
-    public boolean cancel(boolean mayInterruptIfRunning) {
+    public boolean cancel(final boolean mayInterruptIfRunning) {
         return false;
     }
     
@@ -66,8 +66,14 @@ public class SynchronizedFuture<T> implements Future<List<T>> {
         return this.responses;
     }
     
+    /**
+     * wait for responses.
+     * @param timeout wait timeout.
+     * @param unit time unit
+     * @return responses.
+     */
     @Override
-    public List<T> get(long timeout, TimeUnit unit) {
+    public List<T> get(final long timeout, final TimeUnit unit) {
         try {
             if (latch.await(timeout, unit)) {
                 return this.responses;
@@ -78,12 +84,13 @@ public class SynchronizedFuture<T> implements Future<List<T>> {
         return this.responses;
     }
     
-    public void setResponse(T response) {
+    /**
+     * set response and count down.
+     * @param response sql command result.
+     */
+    public void setResponse(final T response) {
         this.responses.add(response);
         latch.countDown();
     }
     
-    public long getBeginTime() {
-        return beginTime;
-    }
 }

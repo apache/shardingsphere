@@ -31,7 +31,8 @@ import io.shardingjdbc.core.routing.StatementRoutingEngine;
 import io.shardingjdbc.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingjdbc.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingjdbc.proxy.backend.mysql.MySQLPacketQueryResult;
-import io.shardingjdbc.proxy.config.ShardingRuleRegistry;
+import io.shardingjdbc.proxy.config.RuleRegistry;
+import io.shardingjdbc.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingjdbc.proxy.transport.mysql.constant.ColumnType;
 import io.shardingjdbc.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandResponsePackets;
@@ -41,6 +42,7 @@ import io.shardingjdbc.proxy.transport.mysql.packet.command.text.query.TextResul
 import io.shardingjdbc.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingjdbc.proxy.transport.mysql.packet.generic.OKPacket;
+import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -64,7 +66,8 @@ public class SQLExecuteBackendHandler implements BackendHandler {
     
     private static final Integer FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
     
-    protected final String sql;
+    @Getter
+    private final String sql;
    
     private List<Connection> connections;
     
@@ -80,8 +83,10 @@ public class SQLExecuteBackendHandler implements BackendHandler {
     
     private boolean hasMoreResultValueFlag;
     
+    @Getter
     private final DatabaseType databaseType;
     
+    @Getter
     private final boolean showSQL;
     
     public SQLExecuteBackendHandler(final String sql, final DatabaseType databaseType, final boolean showSQL) {
@@ -99,7 +104,7 @@ public class SQLExecuteBackendHandler implements BackendHandler {
         return RuleRegistry.getInstance().isOnlyMasterSlave() ? executeForMasterSlave() : executeForSharding();
     }
     
-    private CommandResponsePackets executeForMasterSlave() {
+    protected CommandResponsePackets executeForMasterSlave() {
         MasterSlaveRouter masterSlaveRouter = new MasterSlaveRouter(RuleRegistry.getInstance().getMasterSlaveRule());
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
         String dataSourceName = masterSlaveRouter.route(sqlStatement.getType()).iterator().next();
@@ -108,7 +113,7 @@ public class SQLExecuteBackendHandler implements BackendHandler {
         return merge(sqlStatement, result);
     }
     
-    private CommandResponsePackets executeForSharding() {
+    protected CommandResponsePackets executeForSharding() {
         StatementRoutingEngine routingEngine = new StatementRoutingEngine(RuleRegistry.getInstance().getShardingRule(), RuleRegistry.getInstance().getShardingMetaData(), databaseType, showSQL);
         SQLRouteResult routeResult = routingEngine.route(sql);
         if (routeResult.getExecutionUnits().isEmpty()) {
@@ -122,7 +127,7 @@ public class SQLExecuteBackendHandler implements BackendHandler {
         return merge(routeResult.getSqlStatement(), result);
     }
     
-    protected CommandResponsePackets execute(final SQLStatement sqlStatement, final SQLExecutionUnit sqlExecutionUnit, final String sql) {
+    protected CommandResponsePackets execute(final SQLStatement sqlStatement, final String dataSourceName, final String sql) {
         switch (sqlStatement.getType()) {
             case DQL:
             case DAL:
@@ -198,6 +203,8 @@ public class SQLExecuteBackendHandler implements BackendHandler {
             }
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
+        } finally {
+            MasterVisitedManager.clear();
         }
     }
     
@@ -366,6 +373,7 @@ public class SQLExecuteBackendHandler implements BackendHandler {
             if (null != each) {
                 try {
                     each.close();
+                    MasterVisitedManager.clear();
                 } catch (final SQLException ignore) {
                 }
             }

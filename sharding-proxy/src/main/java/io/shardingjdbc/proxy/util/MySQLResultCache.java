@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class MySQLResultCache {
     private static final MySQLResultCache INSTANCE = new MySQLResultCache();
+    
     //TODO expire time should be set.
     private Cache<Integer, SynchronizedFuture> resultCache = CacheBuilder.newBuilder().expireAfterWrite(60, TimeUnit.SECONDS).build();
     
@@ -38,41 +39,46 @@ public class MySQLResultCache {
     private Cache<String, Integer> channelCache = CacheBuilder.newBuilder().build();
     
     /**
+     * put synchronizedFuture by connectionId.
      * @param connectionId       mysql connection id.
      * @param synchronizedFuture multiple result set.
      */
-    public void put(int connectionId, SynchronizedFuture<CommandResponsePackets> synchronizedFuture) {
+    public void put(final int connectionId, final SynchronizedFuture<CommandResponsePackets> synchronizedFuture) {
         resultCache.put(connectionId, synchronizedFuture);
     }
     
     /**
+     * get SynchronizedFuture by connectionId.
      * @param connectionId mysql connection id.
      * @return multiple result set.
      */
-    public SynchronizedFuture<CommandResponsePackets> get(int connectionId) {
+    public SynchronizedFuture<CommandResponsePackets> get(final int connectionId) {
         return resultCache.getIfPresent(connectionId);
     }
     
     /**
+     * delete SynchronizedFuture by connectionId.
      * @param connectionId mysql connection id.
      */
-    public void delete(int connectionId) {
+    public void delete(final int connectionId) {
         resultCache.invalidate(connectionId);
     }
     
     /**
+     * put connectionId by channelId.
      * @param channelId    netty channel id.
      * @param connectionId mysql connection id.
      */
-    public void putConnectionMap(String channelId, int connectionId) {
+    public void putConnectionMap(final String channelId, final int connectionId) {
         connectionCache.put(channelId, connectionId);
     }
     
     /**
+     * get connectionId by channelId.
      * @param channelId netty channel id.
      * @return connectionId   mysql connection id.
      */
-    public int getonnectionMap(String channelId) {
+    public int getonnectionMap(final String channelId) {
         return connectionCache.getIfPresent(channelId);
     }
     

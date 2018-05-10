@@ -30,7 +30,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.shardingjdbc.proxy.backend.ShardingProxyClient;
-import io.shardingjdbc.proxy.config.ShardingRuleRegistry;
+import io.shardingjdbc.proxy.config.RuleRegistry;
 import io.shardingjdbc.proxy.frontend.netty.ServerHandlerInitializer;
 
 import java.net.MalformedURLException;
@@ -57,10 +57,11 @@ public final class ShardingProxy {
      *
      * @param port port
      * @throws InterruptedException interrupted exception
+     * @throws MalformedURLException URL exception
      */
     public void start(final int port) throws InterruptedException, MalformedURLException {
         try {
-            if (ShardingRuleRegistry.WITHOUT_JDBC) {
+            if (RuleRegistry.WITHOUT_JDBC) {
                 ShardingProxyClient.getInstance().start();
             }
             ServerBootstrap bootstrap = new ServerBootstrap();
@@ -76,7 +77,7 @@ public final class ShardingProxy {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
             userGroup.shutdownGracefully();
-            if (ShardingRuleRegistry.WITHOUT_JDBC) {
+            if (RuleRegistry.WITHOUT_JDBC) {
                 ShardingProxyClient.getInstance().stop();
             }
         }

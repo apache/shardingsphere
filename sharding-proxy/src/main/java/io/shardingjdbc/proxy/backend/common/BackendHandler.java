@@ -17,9 +17,6 @@
 
 package io.shardingjdbc.proxy.backend.common;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandResponsePackets;
 
 /**

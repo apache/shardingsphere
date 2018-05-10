@@ -22,7 +22,9 @@ import io.shardingjdbc.core.constant.DatabaseType;
 import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
 import io.shardingjdbc.core.routing.SQLExecutionUnit;
 import io.shardingjdbc.core.routing.SQLRouteResult;
+import io.shardingjdbc.core.routing.StatementRoutingEngine;
 import io.shardingjdbc.proxy.backend.ShardingProxyClient;
+import io.shardingjdbc.proxy.config.RuleRegistry;
 import io.shardingjdbc.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingjdbc.proxy.transport.mysql.packet.generic.OKPacket;
@@ -48,15 +50,17 @@ public final class SQLPacketsBackendHandler extends SQLExecuteBackendHandler {
     }
     
     @Override
-    public CommandResponsePackets execute() {
-        SQLRouteResult routeResult = routingEngine.route(sql);
+    public CommandResponsePackets executeForSharding() {
+        StatementRoutingEngine routingEngine = new StatementRoutingEngine(RuleRegistry.getInstance().getShardingRule(), RuleRegistry.getInstance().getShardingMetaData(), getDatabaseType(),
+                isShowSQL());
+        SQLRouteResult routeResult = routingEngine.route(getSql());
         if (routeResult.getExecutionUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
         }
         synchronizedFuture = new SynchronizedFuture<>(routeResult.getExecutionUnits().size());
         MySQLResultCache.getInstance().put(connectionId, synchronizedFuture);
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
-            execute(routeResult.getSqlStatement(), each);
+            execute(routeResult.getSqlStatement(), each.getDataSource(), each.getSqlUnit().getSql());
         }
         //TODO timeout should be set.
         List<CommandResponsePackets> result = synchronizedFuture.get(30, TimeUnit.SECONDS);
@@ -65,17 +69,19 @@ public final class SQLPacketsBackendHandler extends SQLExecuteBackendHandler {
     }
     
     @Override
-    protected CommandResponsePackets execute(final SQLStatement sqlStatement, final SQLExecutionUnit sqlExecutionUnit) {
-        Channel channel = ShardingProxyClient.getInstance().getChannelMap().get(sqlExecutionUnit.getDataSource());
+    protected CommandResponsePackets execute(final SQLStatement sqlStatement, final String dataSourceName, final String sql) {
+        Channel channel = ShardingProxyClient.getInstance().getChannelMap().get(dataSourceName);
         //MySQLResultCache.getInstance().putConnectionMap(channel.id().asShortText(), connectionId);
         switch (sqlStatement.getType()) {
             case DQL:
-                executeQuery(channel, sqlExecutionUnit.getSqlUnit().getSql());
+                executeQuery(channel, sql);
+                break;
             case DML:
             case DDL:
-                executeUpdate(channel, sqlExecutionUnit.getSqlUnit().getSql(), sqlStatement);
+                executeUpdate(channel, sql, sqlStatement);
+                break;
             default:
-                executeCommon(channel, sqlExecutionUnit.getSqlUnit().getSql());
+                executeCommon(channel, sql);
         }
         return null;
     }

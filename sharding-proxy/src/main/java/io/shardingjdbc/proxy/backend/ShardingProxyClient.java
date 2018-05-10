@@ -33,7 +33,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.shardingjdbc.proxy.backend.netty.ClientHandlerInitializer;
-import io.shardingjdbc.proxy.config.ShardingRuleRegistry;
+import io.shardingjdbc.proxy.config.RuleRegistry;
 import lombok.Getter;
 
 import java.net.MalformedURLException;
@@ -54,6 +54,7 @@ public final class ShardingProxyClient {
     
     @Getter
     private Map<String, Channel> channelMap = Maps.newHashMap();
+    
     @Getter
     private Map<String, Bootstrap> bootstrapMap = Maps.newHashMap();
     
@@ -64,38 +65,37 @@ public final class ShardingProxyClient {
      * @throws MalformedURLException url is illegal.
      */
     public void start() throws MalformedURLException, InterruptedException {
-        try {
-            Map<String, HikariConfig> dataSourceConfigurationMap = ShardingRuleRegistry.getInstance().getDataSourceConfigurationMap();
-            for (Map.Entry<String, HikariConfig> each : dataSourceConfigurationMap.entrySet()) {
-                URL url = new URL(each.getValue().getJdbcUrl().replaceAll("jdbc:mysql:", "http:"));
-                String ip = url.getHost();
-                int port = url.getPort();
-                String database = url.getPath().substring(1);
-                String username = (each.getValue()).getUsername();
-                String password = (each.getValue()).getPassword();
-                Bootstrap bootstrap = new Bootstrap();
-                if (workerGroup instanceof EpollEventLoopGroup) {
-                    groupsEpoll(bootstrap, ip, port, database, username, password);
-                } else {
-                    groupsNio(bootstrap, ip, port, database, username, password);
-                }
-                //TODO use connection pool.
-                bootstrapMap.put(each.getKey(), bootstrap);
-                ChannelFuture future = bootstrap.connect(ip, port).sync();
-                channelMap.put(each.getKey(), future.channel());
+        Map<String, HikariConfig> dataSourceConfigurationMap = RuleRegistry.getInstance().getDataSourceConfigurationMap();
+        for (Map.Entry<String, HikariConfig> each : dataSourceConfigurationMap.entrySet()) {
+            URL url = new URL(each.getValue().getJdbcUrl().replaceAll("jdbc:mysql:", "http:"));
+            String ip = url.getHost();
+            int port = url.getPort();
+            String database = url.getPath().substring(1);
+            String username = (each.getValue()).getUsername();
+            String password = (each.getValue()).getPassword();
+            Bootstrap bootstrap = new Bootstrap();
+            if (workerGroup instanceof EpollEventLoopGroup) {
+                groupsEpoll(bootstrap, ip, port, database, username, password);
+            } else {
+                groupsNio(bootstrap, ip, port, database, username, password);
             }
-        }catch (Exception e){
-            e.printStackTrace();
+            //TODO use connection pool.
+            bootstrapMap.put(each.getKey(), bootstrap);
+            ChannelFuture future = bootstrap.connect(ip, port).sync();
+            channelMap.put(each.getKey(), future.channel());
         }
     }
     
+    /**
+     * Stop Sharding-Proxy.
+     */
     public void stop() {
         if (workerGroup != null) {
             workerGroup.shutdownGracefully();
         }
     }
     
-    private void groupsEpoll(final Bootstrap bootstrap, String ip, int port, String database, String username, String password) {
+    private void groupsEpoll(final Bootstrap bootstrap, final String ip, final int port, final String database, final String username, final String password) {
         workerGroup = new EpollEventLoopGroup(WORKER_MAX_THREADS);
         bootstrap.group(workerGroup)
                 .channel(EpollSocketChannel.class)
@@ -107,7 +107,7 @@ public final class ShardingProxyClient {
                 .handler(new ClientHandlerInitializer(ip, port, database, username, password));
     }
     
-    private void groupsNio(final Bootstrap bootstrap, String ip, int port, String database, String username, String password) {
+    private void groupsNio(final Bootstrap bootstrap, final String ip, final int port, final String database, final String username, final String password) {
         workerGroup = new NioEventLoopGroup(WORKER_MAX_THREADS);
         bootstrap.group(workerGroup)
                 .channel(NioSocketChannel.class)
