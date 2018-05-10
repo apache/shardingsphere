@@ -3,7 +3,8 @@
     <sql-case id="assertSelectOne" value="SELECT 1 as a" db-types="MySQL,PostgreSQL,SQLServer" />
     <sql-case id="assertSelectNotEqualsWithSingleTable" value="SELECT * FROM t_order_item WHERE item_id &lt;&gt; %s ORDER BY item_id" />
     <sql-case id="assertSelectNotEqualsWithSingleTableForExclamationEqual" value="SELECT * FROM t_order_item WHERE item_id != %s ORDER BY item_id" />
-    <sql-case id="assertSelectNotEqualsWithSingleTableForNotIn" value="SELECT * FROM t_order_item WHERE item_id IS NOT NULL AND item_id NOT IN (%s) ORDER BY item_id" />
+    <sql-case id="assertSelectNotEqualsWithSingleTableForNotIn" value="SELECT * FROM t_order_item WHERE item_id IS NOT NULL AND item_id NOT IN (%s, %s) ORDER BY item_id" />
+    <sql-case id="assertSelectNotEqualsWithSingleTableForNotBetween" value="SELECT * FROM t_order_item WHERE item_id IS NOT NULL AND item_id NOT BETWEEN %s AND %s ORDER BY item_id" />
     <sql-case id="assertSelectEqualsWithSingleTable" value="SELECT * FROM t_order WHERE user_id = %s AND order_id = %s" />
     <sql-case id="assertSelectEqualsWithSameShardingColumns" value="SELECT * FROM t_order WHERE order_id = %s AND order_id = %s" />
     <sql-case id="assertSelectBetweenWithSingleTable" value="SELECT * FROM t_order WHERE user_id BETWEEN %s AND %s AND order_id BETWEEN %s AND %s ORDER BY user_id, order_id" />

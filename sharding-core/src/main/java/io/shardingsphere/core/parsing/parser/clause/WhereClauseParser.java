@@ -201,10 +201,7 @@ public class WhereClauseParser implements SQLClauseParser {
             parseOtherCondition(sqlStatement);
         }
         if (lexerEngine.skipIfEqual(DefaultKeyword.NOT)) {
-            lexerEngine.nextToken();
-            lexerEngine.skipIfEqual(Symbol.LEFT_PAREN);
-            parseOtherCondition(sqlStatement);
-            lexerEngine.skipIfEqual(Symbol.RIGHT_PAREN);
+            parseNotCondition(sqlStatement);
         }
         return result;
     }
@@ -228,6 +225,7 @@ public class WhereClauseParser implements SQLClauseParser {
         do {
             lexerEngine.skipIfEqual(Symbol.COMMA);
             rights.add(basicExpressionParser.parse(sqlStatement));
+            skipsDoubleColon();
         } while (!lexerEngine.equalAny(Symbol.RIGHT_PAREN));
         lexerEngine.nextToken();
         Optional<Column> column = find(sqlStatement.getTables(), left);
@@ -300,6 +298,28 @@ public class WhereClauseParser implements SQLClauseParser {
     
     private void parseOtherCondition(final SQLStatement sqlStatement) {
         basicExpressionParser.parse(sqlStatement);
+    }
+    
+    private void parseNotCondition(final SQLStatement sqlStatement) {
+        if (lexerEngine.skipIfEqual(DefaultKeyword.BETWEEN)) {
+            parseOtherCondition(sqlStatement);
+            skipsDoubleColon();
+            lexerEngine.accept(DefaultKeyword.AND);
+            parseOtherCondition(sqlStatement);
+            return;
+        }
+        if (lexerEngine.skipIfEqual(DefaultKeyword.IN)) {
+            lexerEngine.accept(Symbol.LEFT_PAREN);
+            do {
+                lexerEngine.skipIfEqual(Symbol.COMMA);
+                parseOtherCondition(sqlStatement);
+                skipsDoubleColon();
+            } while (!lexerEngine.equalAny(Symbol.RIGHT_PAREN));
+            lexerEngine.nextToken();
+        } else {
+            lexerEngine.nextToken();
+            parseOtherCondition(sqlStatement);
+        }
     }
     
     private Optional<Column> find(final Tables tables, final SQLExpression sqlExpression) {
