@@ -61,6 +61,8 @@ Sharding在很多情况下需要投票。选票可以视情况通过手机、电
 
 * 岳令, Ling Yue, [@ling.yue](https://github.com/yue530tom) 测试工程师, 当当
 
+* 陈清阳, QingYang Chen, [@beckhampu](https://github.com/beckhampu) 高级工程师, 甜橙金融
+
 ## 邮件列表
 
 * [Google Groups](mailto:sharding+subscribe@googlegroups.com)
