@@ -36,7 +36,7 @@
         </encoder>
     </appender>
     
-    <logger name="io.shardingjdbc.transaction.job.BASETransactionJob" level="ERROR" additivity="false">
+    <logger name="io.shardingsphere.transaction.job.BASETransactionJob" level="ERROR" additivity="false">
         <appender-ref ref="APP_FILE" />
     </logger>
     

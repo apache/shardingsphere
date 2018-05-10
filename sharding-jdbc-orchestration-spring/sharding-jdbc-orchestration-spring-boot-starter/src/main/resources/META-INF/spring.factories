@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-io.shardingjdbc.orchestration.spring.boot.OrchestrationSpringBootConfiguration
+io.shardingsphere.jdbc.orchestration.spring.boot.OrchestrationSpringBootConfiguration

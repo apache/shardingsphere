@@ -18,7 +18,7 @@ fi
 
 CONF_DIR=$DEPLOY_DIR/conf/*
 LIB_DIR=$DEPLOY_DIR/lib/*
-CONTAINER_MAIN=io.shardingjdbc.transaction.job.BASETransactionJobBootStrap
+CONTAINER_MAIN=io.shardingsphere.transaction.job.BASETransactionJobBootStrap
 nohup java -classpath $CONF_DIR:$LIB_DIR:. $CONTAINER_MAIN >/dev/null 2>&1 &
 
 CONSOLE_TXT="Started the $SERVER_NAME"
