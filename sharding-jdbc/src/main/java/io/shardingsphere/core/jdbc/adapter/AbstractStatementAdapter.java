@@ -18,7 +18,6 @@
 package io.shardingsphere.core.jdbc.adapter;
 
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationStatement;
-import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationStatement;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.SQLException;

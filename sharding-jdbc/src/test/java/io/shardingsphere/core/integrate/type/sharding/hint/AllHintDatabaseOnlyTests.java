@@ -21,10 +21,6 @@ import io.shardingsphere.core.integrate.type.sharding.hint.type.RoutingDatabaseO
 import io.shardingsphere.core.integrate.type.sharding.hint.type.RoutingDatabaseOnlyWithHintForSelectTest;
 import io.shardingsphere.core.integrate.type.sharding.hint.type.ShardingDatabaseOnlyWithHintForDMLTest;
 import io.shardingsphere.core.integrate.type.sharding.hint.type.ShardingDatabaseOnlyWithHintForSelectTest;
-import io.shardingsphere.core.integrate.type.sharding.hint.type.RoutingDatabaseOnlyWithHintForDMLTest;
-import io.shardingsphere.core.integrate.type.sharding.hint.type.RoutingDatabaseOnlyWithHintForSelectTest;
-import io.shardingsphere.core.integrate.type.sharding.hint.type.ShardingDatabaseOnlyWithHintForDMLTest;
-import io.shardingsphere.core.integrate.type.sharding.hint.type.ShardingDatabaseOnlyWithHintForSelectTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 

@@ -19,7 +19,6 @@ package io.shardingsphere.core.optimizer.insert;
 
 import io.shardingsphere.core.optimizer.condition.ShardingCondition;
 import io.shardingsphere.core.rule.DataNode;
-import io.shardingsphere.core.optimizer.condition.ShardingCondition;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;

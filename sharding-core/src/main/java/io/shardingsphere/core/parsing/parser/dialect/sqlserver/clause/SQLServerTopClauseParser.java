@@ -33,11 +33,6 @@ import io.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.parsing.parser.token.RowCountToken;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.parsing.parser.exception.SQLParsingException;
-import io.shardingsphere.core.parsing.parser.expression.SQLExpression;
-import io.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
-import io.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
 
 /**
  * Top clause parser for SQLServer.

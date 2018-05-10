@@ -21,9 +21,6 @@ import com.google.common.base.Preconditions;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
-import io.shardingsphere.core.hint.HintManagerHolder;
-import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
-import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

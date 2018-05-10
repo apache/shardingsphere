@@ -17,12 +17,13 @@
 
 package io.shardingsphere.core.util;
 
-import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import com.zaxxer.hikari.HikariDataSource;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;

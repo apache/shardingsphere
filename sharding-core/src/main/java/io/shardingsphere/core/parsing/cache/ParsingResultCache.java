@@ -18,7 +18,6 @@
 package io.shardingsphere.core.parsing.cache;
 
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

@@ -22,11 +22,6 @@ import io.shardingsphere.core.parsing.lexer.token.Literals;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.lexer.token.Token;
 import io.shardingsphere.core.parsing.lexer.token.TokenType;
-import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
-import io.shardingsphere.core.parsing.lexer.token.Literals;
-import io.shardingsphere.core.parsing.lexer.token.Symbol;
-import io.shardingsphere.core.parsing.lexer.token.Token;
-import io.shardingsphere.core.parsing.lexer.token.TokenType;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.Test;
 

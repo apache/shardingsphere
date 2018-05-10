@@ -38,11 +38,6 @@ import io.shardingsphere.jdbc.orchestration.spring.algorithm.RangeModuloTableSha
 import io.shardingsphere.jdbc.orchestration.spring.fixture.IncrementKeyGenerator;
 import io.shardingsphere.jdbc.orchestration.spring.util.EmbedTestingServer;
 import io.shardingsphere.jdbc.orchestration.spring.util.FieldValueUtil;
-import io.shardingsphere.jdbc.orchestration.spring.algorithm.DefaultComplexKeysShardingAlgorithm;
-import io.shardingsphere.jdbc.orchestration.spring.algorithm.DefaultHintShardingAlgorithm;
-import io.shardingsphere.jdbc.orchestration.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm;
-import io.shardingsphere.jdbc.orchestration.spring.algorithm.PreciseModuloTableShardingAlgorithm;
-import io.shardingsphere.jdbc.orchestration.spring.algorithm.RangeModuloTableShardingAlgorithm;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;

@@ -20,8 +20,6 @@ package io.shardingsphere.core.routing;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.routing.router.sharding.GeneratedKey;
-import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.routing.router.sharding.GeneratedKey;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

@@ -22,8 +22,6 @@ import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssertMessag
 import io.shardingsphere.core.parsing.integrate.jaxb.table.ExpectedTable;
 import io.shardingsphere.core.parsing.parser.context.table.Table;
 import io.shardingsphere.core.parsing.parser.context.table.Tables;
-import io.shardingsphere.core.parsing.parser.context.table.Table;
-import io.shardingsphere.core.parsing.parser.context.table.Tables;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

@@ -18,7 +18,6 @@
 package io.shardingsphere.core.optimizer;
 
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;
-import io.shardingsphere.core.optimizer.condition.ShardingConditions;
 
 /**
  * Optimize engine.

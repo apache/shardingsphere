@@ -30,9 +30,6 @@ import io.shardingsphere.core.api.config.strategy.StandardShardingStrategyConfig
 import io.shardingsphere.core.routing.strategy.complex.ComplexShardingStrategy;
 import io.shardingsphere.core.routing.strategy.none.NoneShardingStrategy;
 import io.shardingsphere.core.routing.strategy.standard.StandardShardingStrategy;
-import io.shardingsphere.core.api.algorithm.fixture.TestComplexKeysShardingAlgorithm;
-import io.shardingsphere.core.api.algorithm.fixture.TestPreciseShardingAlgorithm;
-import io.shardingsphere.core.api.algorithm.fixture.TestRangeShardingAlgorithm;
 import org.junit.Test;
 
 import java.util.Collection;

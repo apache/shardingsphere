@@ -22,7 +22,6 @@ import io.shardingsphere.core.parsing.parser.clause.facade.AbstractDeleteClauseP
 import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.MySQLTableReferencesClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.MySQLWhereClauseParser;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.MySQLTableReferencesClauseParser;
 
 /**
  * Delete clause parser facade for MySQL.

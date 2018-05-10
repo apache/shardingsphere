@@ -29,7 +29,6 @@ import io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.PostgreSQ
 import io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.PostgreSQLSelectRestClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.PostgreSQLTableReferencesClauseParser;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.constant.DatabaseType;
 
 /**
  * Select clause parser facade for PostgreSQL.

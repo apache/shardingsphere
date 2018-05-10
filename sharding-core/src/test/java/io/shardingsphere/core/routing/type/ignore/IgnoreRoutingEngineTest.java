@@ -18,7 +18,6 @@
 package io.shardingsphere.core.routing.type.ignore;
 
 import io.shardingsphere.core.routing.type.RoutingResult;
-import io.shardingsphere.core.routing.type.RoutingResult;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;

@@ -20,7 +20,6 @@ package io.shardingsphere.core.parsing.parser.dialect.sqlserver.clause;
 import io.shardingsphere.core.constant.OrderDirection;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.parser.clause.OrderByClauseParser;
-import io.shardingsphere.core.constant.OrderDirection;
 
 /**
  * Order by clause parser for SQLServer.

@@ -24,9 +24,6 @@ import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.integrate.jaxb.SQLAssert;
 import io.shardingsphere.core.integrate.jaxb.SQLAsserts;
 import io.shardingsphere.test.sql.SQLCasesLoader;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.integrate.jaxb.SQLAsserts;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;

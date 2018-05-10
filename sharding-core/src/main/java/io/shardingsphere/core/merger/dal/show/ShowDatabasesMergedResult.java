@@ -19,7 +19,6 @@ package io.shardingsphere.core.merger.dal.show;
 
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.merger.MergedResult;
-import io.shardingsphere.core.constant.ShardingConstant;
 
 import java.io.InputStream;
 import java.sql.SQLFeatureNotSupportedException;

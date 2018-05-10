@@ -19,8 +19,6 @@ package io.shardingsphere.core.jdbc.adapter;
 
 import io.shardingsphere.core.jdbc.adapter.invocation.JdbcMethodInvocationTest;
 import io.shardingsphere.core.jdbc.adapter.invocation.SetParameterMethodInvocationTest;
-import io.shardingsphere.core.jdbc.adapter.invocation.JdbcMethodInvocationTest;
-import io.shardingsphere.core.jdbc.adapter.invocation.SetParameterMethodInvocationTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 

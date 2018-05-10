@@ -17,10 +17,9 @@
 
 package io.shardingsphere.transaction.api;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.transaction.api.config.SoftTransactionConfiguration;
 import io.shardingsphere.transaction.base.AbstractSoftTransactionMockTest;
-import io.shardingsphere.transaction.constants.SoftTransactionType;
-import com.google.common.base.Optional;
 import io.shardingsphere.transaction.constants.SoftTransactionType;
 import org.junit.Test;
 

@@ -28,7 +28,6 @@ import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.MySQLSelectRes
 import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.MySQLTableReferencesClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.MySQLWhereClauseParser;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.MySQLTableReferencesClauseParser;
 
 /**
  * Select clause parser facade for MySQL.

@@ -30,18 +30,6 @@ import io.shardingsphere.core.parsing.lexer.token.TokenType;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingException;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.parsing.lexer.dialect.mysql.MySQLLexer;
-import io.shardingsphere.core.parsing.lexer.dialect.oracle.OracleLexer;
-import io.shardingsphere.core.parsing.lexer.dialect.postgresql.PostgreSQLLexer;
-import io.shardingsphere.core.parsing.lexer.dialect.sqlserver.SQLServerLexer;
-import io.shardingsphere.core.parsing.lexer.token.Assist;
-import io.shardingsphere.core.parsing.lexer.token.Symbol;
-import io.shardingsphere.core.parsing.lexer.token.Token;
-import io.shardingsphere.core.parsing.lexer.token.TokenType;
-import io.shardingsphere.core.parsing.parser.exception.SQLParsingException;
-import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Set;

@@ -17,9 +17,9 @@
 
 package io.shardingsphere.core.executor.fixture;
 
-import io.shardingsphere.core.executor.event.DQLExecutionEvent;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
+import io.shardingsphere.core.executor.event.DQLExecutionEvent;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor

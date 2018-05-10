@@ -18,7 +18,6 @@
 package io.shardingsphere.core.api.config.strategy;
 
 import io.shardingsphere.core.api.algorithm.sharding.hint.HintShardingAlgorithm;
-import io.shardingsphere.core.api.algorithm.sharding.hint.HintShardingAlgorithm;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

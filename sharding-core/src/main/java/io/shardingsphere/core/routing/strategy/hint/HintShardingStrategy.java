@@ -22,7 +22,6 @@ import io.shardingsphere.core.api.algorithm.sharding.ShardingValue;
 import io.shardingsphere.core.api.algorithm.sharding.hint.HintShardingAlgorithm;
 import io.shardingsphere.core.api.config.strategy.HintShardingStrategyConfiguration;
 import io.shardingsphere.core.routing.strategy.ShardingStrategy;
-import io.shardingsphere.core.routing.strategy.ShardingStrategy;
 import lombok.Getter;
 
 import java.util.Collection;

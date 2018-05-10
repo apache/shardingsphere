@@ -20,7 +20,6 @@ package io.shardingsphere.core.merger.dql.pagination;
 import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.dql.common.DecoratorMergedResult;
 import io.shardingsphere.core.parsing.parser.context.limit.Limit;
-import io.shardingsphere.core.parsing.parser.context.limit.Limit;
 
 import java.sql.SQLException;
 

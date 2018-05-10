@@ -20,8 +20,6 @@ package io.shardingsphere.core.api;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.fixture.TestDataSource;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.core.fixture.TestDataSource;
 import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 

@@ -26,15 +26,6 @@ import io.shardingsphere.core.jdbc.core.resultset.ResultSetUtilTest;
 import io.shardingsphere.core.jdbc.core.resultset.ShardingResultSetTest;
 import io.shardingsphere.core.jdbc.core.statement.ShardingPreparedStatementTest;
 import io.shardingsphere.core.jdbc.core.statement.ShardingStatementTest;
-import io.shardingsphere.core.jdbc.core.connection.ShardingConnectionTest;
-import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSourceTest;
-import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSourceTest;
-import io.shardingsphere.core.jdbc.core.resultset.GeneratedKeysResultSetMetaDataTest;
-import io.shardingsphere.core.jdbc.core.resultset.GeneratedKeysResultSetTest;
-import io.shardingsphere.core.jdbc.core.resultset.ResultSetUtilTest;
-import io.shardingsphere.core.jdbc.core.resultset.ShardingResultSetTest;
-import io.shardingsphere.core.jdbc.core.statement.ShardingPreparedStatementTest;
-import io.shardingsphere.core.jdbc.core.statement.ShardingStatementTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 

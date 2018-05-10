@@ -24,11 +24,6 @@ import io.shardingsphere.core.parsing.parser.dialect.oracle.sql.OracleDeletePars
 import io.shardingsphere.core.parsing.parser.dialect.postgresql.sql.PostgreSQLDeleteParser;
 import io.shardingsphere.core.parsing.parser.dialect.sqlserver.sql.SQLServerDeleteParser;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.sql.MySQLDeleteParser;
-import io.shardingsphere.core.parsing.parser.dialect.oracle.sql.OracleDeleteParser;
-import io.shardingsphere.core.parsing.parser.dialect.postgresql.sql.PostgreSQLDeleteParser;
-import io.shardingsphere.core.parsing.parser.dialect.sqlserver.sql.SQLServerDeleteParser;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

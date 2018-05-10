@@ -23,11 +23,6 @@ import io.shardingsphere.core.jdbc.core.connection.MasterSlaveConnection;
 import io.shardingsphere.core.parsing.SQLJudgeEngine;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
-import io.shardingsphere.core.jdbc.adapter.AbstractMasterSlavePreparedStatementAdapter;
-import io.shardingsphere.core.jdbc.core.connection.MasterSlaveConnection;
-import io.shardingsphere.core.parsing.SQLJudgeEngine;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import lombok.Getter;
 
 import java.sql.PreparedStatement;

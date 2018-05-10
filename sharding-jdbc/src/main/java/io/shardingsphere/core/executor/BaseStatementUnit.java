@@ -18,7 +18,6 @@
 package io.shardingsphere.core.executor;
 
 import io.shardingsphere.core.routing.SQLExecutionUnit;
-import io.shardingsphere.core.routing.SQLExecutionUnit;
 
 import java.sql.Statement;
 

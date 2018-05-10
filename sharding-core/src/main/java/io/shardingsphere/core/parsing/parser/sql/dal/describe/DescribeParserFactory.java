@@ -21,8 +21,6 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.sql.MySQLDescribeParser;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.sql.MySQLDescribeParser;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

@@ -21,9 +21,6 @@ import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssertMessag
 import io.shardingsphere.core.parsing.integrate.jaxb.item.ExpectedAggregationSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.SelectItem;
-import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssertMessage;
-import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
-import io.shardingsphere.core.parsing.parser.context.selectitem.SelectItem;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;

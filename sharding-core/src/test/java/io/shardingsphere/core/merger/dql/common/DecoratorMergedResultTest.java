@@ -19,7 +19,6 @@ package io.shardingsphere.core.merger.dql.common;
 
 import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.dql.common.fixture.TestDecoratorMergedResult;
-import io.shardingsphere.core.merger.dql.common.fixture.TestDecoratorMergedResult;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

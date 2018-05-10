@@ -21,10 +21,6 @@ import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.routing.type.RoutingResult;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.api.config.TableRuleConfiguration;
-import io.shardingsphere.core.routing.type.RoutingResult;
-import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
 

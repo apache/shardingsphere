@@ -31,11 +31,6 @@ import io.shardingsphere.core.integrate.fixture.RangeModuloTableShardingAlgorith
 import io.shardingsphere.core.integrate.jaxb.SQLShardingRule;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.integrate.fixture.PreciseModuloDatabaseShardingAlgorithm;
-import io.shardingsphere.core.integrate.fixture.PreciseModuloTableShardingAlgorithm;
-import io.shardingsphere.core.integrate.fixture.RangeModuloDatabaseShardingAlgorithm;
-import io.shardingsphere.core.integrate.fixture.RangeModuloTableShardingAlgorithm;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

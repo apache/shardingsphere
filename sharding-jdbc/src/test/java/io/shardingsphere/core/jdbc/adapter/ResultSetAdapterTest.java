@@ -21,9 +21,6 @@ import io.shardingsphere.core.common.base.AbstractShardingJDBCDatabaseAndTableTe
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.jdbc.util.JDBCTestSQL;
-import io.shardingsphere.core.common.base.AbstractShardingJDBCDatabaseAndTableTest;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.jdbc.util.JDBCTestSQL;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

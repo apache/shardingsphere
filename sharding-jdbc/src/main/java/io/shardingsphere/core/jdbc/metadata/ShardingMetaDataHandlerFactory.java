@@ -22,10 +22,6 @@ import io.shardingsphere.core.jdbc.metadata.dialect.DefaultShardingMetaDataHandl
 import io.shardingsphere.core.jdbc.metadata.dialect.H2ShardingMetaDataHandler;
 import io.shardingsphere.core.jdbc.metadata.dialect.MySQLShardingMetaDataHandler;
 import io.shardingsphere.core.jdbc.metadata.dialect.ShardingMetaDataHandler;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.jdbc.metadata.dialect.DefaultShardingMetaDataHandler;
-import io.shardingsphere.core.jdbc.metadata.dialect.H2ShardingMetaDataHandler;
-import io.shardingsphere.core.jdbc.metadata.dialect.MySQLShardingMetaDataHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

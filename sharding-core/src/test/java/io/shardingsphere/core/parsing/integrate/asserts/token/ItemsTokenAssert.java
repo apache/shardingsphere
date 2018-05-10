@@ -23,8 +23,6 @@ import io.shardingsphere.core.parsing.integrate.jaxb.token.ExpectedItemsToken;
 import io.shardingsphere.core.parsing.integrate.jaxb.token.ExpectedTokens;
 import io.shardingsphere.core.parsing.parser.token.ItemsToken;
 import io.shardingsphere.core.parsing.parser.token.SQLToken;
-import io.shardingsphere.core.parsing.parser.token.ItemsToken;
-import io.shardingsphere.core.parsing.parser.token.SQLToken;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

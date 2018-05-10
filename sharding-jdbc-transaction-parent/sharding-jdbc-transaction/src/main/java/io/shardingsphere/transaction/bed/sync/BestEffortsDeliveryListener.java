@@ -27,12 +27,6 @@ import io.shardingsphere.transaction.constants.SoftTransactionType;
 import io.shardingsphere.transaction.storage.TransactionLog;
 import io.shardingsphere.transaction.storage.TransactionLogStorage;
 import io.shardingsphere.transaction.storage.TransactionLogStorageFactory;
-import io.shardingsphere.transaction.api.SoftTransactionManager;
-import io.shardingsphere.transaction.api.config.SoftTransactionConfiguration;
-import io.shardingsphere.transaction.constants.SoftTransactionType;
-import io.shardingsphere.transaction.storage.TransactionLog;
-import io.shardingsphere.transaction.storage.TransactionLogStorage;
-import io.shardingsphere.transaction.storage.TransactionLogStorageFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;

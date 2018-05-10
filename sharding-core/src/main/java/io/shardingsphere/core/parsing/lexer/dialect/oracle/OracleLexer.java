@@ -19,7 +19,6 @@ package io.shardingsphere.core.parsing.lexer.dialect.oracle;
 
 import io.shardingsphere.core.parsing.lexer.Lexer;
 import io.shardingsphere.core.parsing.lexer.analyzer.Dictionary;
-import io.shardingsphere.core.parsing.lexer.analyzer.Dictionary;
 
 /**
  * Oracle Lexical analysis.

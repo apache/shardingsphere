@@ -19,11 +19,6 @@ package io.shardingsphere.core;
 
 import io.shardingsphere.core.api.AllApiTests;
 import io.shardingsphere.core.executor.AllExecutorTests;
-import io.shardingsphere.core.jdbc.AllJDBCTests;
-import io.shardingsphere.core.util.AllUtilTests;
-import io.shardingsphere.core.integrate.api.yaml.AllYamlTests;
-import io.shardingsphere.core.api.AllApiTests;
-import io.shardingsphere.core.executor.AllExecutorTests;
 import io.shardingsphere.core.integrate.api.yaml.AllYamlTests;
 import io.shardingsphere.core.jdbc.AllJDBCTests;
 import io.shardingsphere.core.util.AllUtilTests;

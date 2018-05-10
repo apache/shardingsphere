@@ -19,8 +19,6 @@ package io.shardingsphere.core.jdbc.unsupported;
 
 import io.shardingsphere.core.common.base.AbstractShardingJDBCDatabaseAndTableTest;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.common.base.AbstractShardingJDBCDatabaseAndTableTest;
-import io.shardingsphere.core.constant.DatabaseType;
 import org.junit.Test;
 
 import java.sql.SQLException;

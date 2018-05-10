@@ -18,7 +18,6 @@
 package io.shardingsphere.core.merger.fixture;
 
 import io.shardingsphere.core.merger.QueryResult;
-import io.shardingsphere.core.merger.QueryResult;
 import lombok.RequiredArgsConstructor;
 
 import java.io.InputStream;

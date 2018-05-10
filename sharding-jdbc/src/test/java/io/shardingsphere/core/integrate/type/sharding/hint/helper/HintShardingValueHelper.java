@@ -19,7 +19,6 @@ package io.shardingsphere.core.integrate.type.sharding.hint.helper;
 
 import io.shardingsphere.core.api.HintManager;
 import io.shardingsphere.core.constant.ShardingOperator;
-import io.shardingsphere.core.constant.ShardingOperator;
 import lombok.AccessLevel;
 import lombok.Getter;
 

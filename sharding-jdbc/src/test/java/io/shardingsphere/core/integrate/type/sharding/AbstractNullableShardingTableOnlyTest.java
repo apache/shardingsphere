@@ -29,9 +29,6 @@ import io.shardingsphere.core.integrate.jaxb.SQLShardingRule;
 import io.shardingsphere.core.integrate.jaxb.helper.SQLAssertJAXBHelper;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.integrate.fixture.ComplexKeysModuloDatabaseShardingAlgorithm;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

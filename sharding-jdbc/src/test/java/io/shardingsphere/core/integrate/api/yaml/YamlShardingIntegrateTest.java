@@ -24,8 +24,6 @@ import io.shardingsphere.core.api.ConfigMapContext;
 import io.shardingsphere.core.api.ShardingDataSourceFactory;
 import io.shardingsphere.core.constant.ShardingProperties;
 import io.shardingsphere.core.constant.ShardingPropertiesConstant;
-import io.shardingsphere.core.constant.ShardingProperties;
-import io.shardingsphere.core.constant.ShardingPropertiesConstant;
 import lombok.RequiredArgsConstructor;
 import org.junit.Test;
 import org.junit.runner.RunWith;

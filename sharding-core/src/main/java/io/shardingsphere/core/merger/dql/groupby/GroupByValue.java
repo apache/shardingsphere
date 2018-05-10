@@ -19,7 +19,6 @@ package io.shardingsphere.core.merger.dql.groupby;
 
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.parsing.parser.context.OrderItem;
-import io.shardingsphere.core.parsing.parser.context.OrderItem;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 

@@ -31,14 +31,6 @@ import io.shardingsphere.core.routing.strategy.ShardingStrategy;
 import io.shardingsphere.core.routing.strategy.ShardingStrategyFactory;
 import io.shardingsphere.core.routing.strategy.none.NoneShardingStrategy;
 import io.shardingsphere.core.util.StringUtil;
-import io.shardingsphere.core.exception.ShardingConfigurationException;
-import io.shardingsphere.core.keygen.DefaultKeyGenerator;
-import io.shardingsphere.core.keygen.KeyGenerator;
-import io.shardingsphere.core.parsing.parser.context.condition.Column;
-import io.shardingsphere.core.routing.strategy.ShardingStrategy;
-import io.shardingsphere.core.routing.strategy.ShardingStrategyFactory;
-import io.shardingsphere.core.routing.strategy.none.NoneShardingStrategy;
-import io.shardingsphere.core.util.StringUtil;
 import lombok.Getter;
 
 import java.util.Collection;

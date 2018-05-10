@@ -26,11 +26,6 @@ import io.shardingsphere.core.parsing.parser.dialect.oracle.clause.facade.Oracle
 import io.shardingsphere.core.parsing.parser.sql.dql.select.AbstractSelectParser;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.parsing.parser.dialect.oracle.clause.OracleForClauseParser;
-import io.shardingsphere.core.parsing.parser.dialect.oracle.clause.OracleHierarchicalQueryClauseParser;
-import io.shardingsphere.core.parsing.parser.dialect.oracle.clause.OracleModelClauseParser;
-import io.shardingsphere.core.parsing.parser.dialect.oracle.clause.facade.OracleSelectClauseParserFacade;
 
 /**
  * Select parser for Oracle.

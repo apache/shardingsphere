@@ -47,15 +47,6 @@ import io.shardingsphere.core.routing.type.TableUnit;
 import io.shardingsphere.core.rule.BindingTableRule;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.util.SQLUtil;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.optimizer.condition.ShardingConditions;
-import io.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
-import io.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
-import io.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
-import io.shardingsphere.core.rewrite.placeholder.TablePlaceholder;
-import io.shardingsphere.core.routing.SQLUnit;
-import io.shardingsphere.core.routing.type.RoutingTable;
-import io.shardingsphere.core.routing.type.TableUnit;
 
 import java.util.Collections;
 import java.util.Comparator;

@@ -17,14 +17,12 @@
 
 package io.shardingsphere.core.jdbc.adapter;
 
+import com.google.common.collect.Lists;
 import io.shardingsphere.core.common.base.AbstractShardingJDBCDatabaseAndTableTest;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.jdbc.core.statement.ShardingStatement;
 import io.shardingsphere.core.jdbc.util.JDBCTestSQL;
-import com.google.common.collect.Lists;
-import io.shardingsphere.core.common.base.AbstractShardingJDBCDatabaseAndTableTest;
-import io.shardingsphere.core.constant.DatabaseType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

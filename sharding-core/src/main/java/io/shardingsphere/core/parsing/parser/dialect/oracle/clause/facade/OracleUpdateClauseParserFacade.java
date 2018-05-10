@@ -23,7 +23,6 @@ import io.shardingsphere.core.parsing.parser.clause.facade.AbstractUpdateClauseP
 import io.shardingsphere.core.parsing.parser.dialect.oracle.clause.OracleTableReferencesClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.oracle.clause.OracleWhereClauseParser;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.parsing.parser.dialect.oracle.clause.OracleWhereClauseParser;
 
 /**
  * Update clause parser facade for Oracle.

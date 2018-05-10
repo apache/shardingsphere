@@ -18,7 +18,6 @@
 package io.shardingsphere.core.fixture;
 
 import io.shardingsphere.core.keygen.KeyGenerator;
-import io.shardingsphere.core.keygen.KeyGenerator;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

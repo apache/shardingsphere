@@ -30,7 +30,6 @@ import io.shardingsphere.core.parsing.parser.context.insertvalue.InsertValue;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.routing.router.sharding.GeneratedKey;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.optimizer.condition.ShardingCondition;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;

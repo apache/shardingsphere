@@ -32,9 +32,6 @@ import io.shardingsphere.core.routing.type.TableUnit;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
-import io.shardingsphere.core.optimizer.condition.ShardingCondition;
-import io.shardingsphere.core.optimizer.condition.ShardingConditions;
-import io.shardingsphere.core.optimizer.insert.InsertShardingCondition;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;

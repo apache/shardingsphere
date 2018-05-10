@@ -19,7 +19,6 @@ package io.shardingsphere.core.parsing.integrate.asserts.index;
 
 import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssertMessage;
 import io.shardingsphere.test.sql.SQLCaseType;
-import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssertMessage;
 import lombok.RequiredArgsConstructor;
 
 import static org.hamcrest.CoreMatchers.is;

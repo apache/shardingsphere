@@ -19,7 +19,6 @@ package io.shardingsphere.core.jdbc.core.resultset;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedGeneratedKeysResultSet;
-import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedGeneratedKeysResultSet;
 import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;

@@ -18,7 +18,6 @@
 package io.shardingsphere.core.jdbc.metadata.dialect;
 
 import io.shardingsphere.core.metadata.ColumnMetaData;
-import io.shardingsphere.core.metadata.ColumnMetaData;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

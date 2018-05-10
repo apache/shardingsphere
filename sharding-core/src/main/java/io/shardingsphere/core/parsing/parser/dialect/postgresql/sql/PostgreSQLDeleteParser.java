@@ -24,7 +24,6 @@ import io.shardingsphere.core.parsing.lexer.token.Keyword;
 import io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.facade.PostgreSQLDeleteClauseParserFacade;
 import io.shardingsphere.core.parsing.parser.sql.dml.delete.AbstractDeleteParser;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.facade.PostgreSQLDeleteClauseParserFacade;
 
 /**
  * Delete parser for PostgreSQL.

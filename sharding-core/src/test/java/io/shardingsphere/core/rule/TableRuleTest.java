@@ -22,7 +22,6 @@ import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.api.config.strategy.NoneShardingStrategyConfiguration;
 import io.shardingsphere.core.keygen.fixture.IncrementKeyGenerator;
-import io.shardingsphere.core.keygen.fixture.IncrementKeyGenerator;
 import org.junit.Test;
 
 import java.util.Arrays;

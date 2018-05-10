@@ -18,7 +18,6 @@
 package io.shardingsphere.core.rewrite.placeholder;
 
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;
-import io.shardingsphere.core.optimizer.condition.ShardingConditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;

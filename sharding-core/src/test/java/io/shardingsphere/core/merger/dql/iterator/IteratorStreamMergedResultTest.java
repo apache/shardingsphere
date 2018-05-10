@@ -18,11 +18,6 @@
 package io.shardingsphere.core.merger.dql.iterator;
 
 import com.google.common.collect.Lists;
-import io.shardingsphere.core.merger.dql.DQLMergeEngine;
-import io.shardingsphere.core.merger.QueryResult;
-import io.shardingsphere.core.merger.MergedResult;
-import io.shardingsphere.core.merger.fixture.TestQueryResult;
-import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.merger.dql.DQLMergeEngine;

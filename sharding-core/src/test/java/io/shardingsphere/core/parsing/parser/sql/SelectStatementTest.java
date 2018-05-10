@@ -21,9 +21,6 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.OrderDirection;
 import io.shardingsphere.core.parsing.parser.context.OrderItem;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
-import io.shardingsphere.core.constant.OrderDirection;
-import io.shardingsphere.core.parsing.parser.context.OrderItem;
-import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;

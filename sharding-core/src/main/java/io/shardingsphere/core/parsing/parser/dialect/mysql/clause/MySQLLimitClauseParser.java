@@ -29,8 +29,6 @@ import io.shardingsphere.core.parsing.parser.exception.SQLParsingException;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.parsing.parser.token.OffsetToken;
 import io.shardingsphere.core.parsing.parser.token.RowCountToken;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.parsing.parser.exception.SQLParsingException;
 import lombok.RequiredArgsConstructor;
 
 /**

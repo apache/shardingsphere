@@ -30,18 +30,6 @@ import io.shardingsphere.core.parsing.parser.context.condition.Condition;
 import io.shardingsphere.core.parsing.parser.context.condition.OrCondition;
 import io.shardingsphere.core.parsing.parser.expression.SQLExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
-import io.shardingsphere.core.api.algorithm.sharding.ListShardingValue;
-import io.shardingsphere.core.api.algorithm.sharding.RangeShardingValue;
-import io.shardingsphere.core.api.algorithm.sharding.ShardingValue;
-import io.shardingsphere.core.optimizer.condition.ShardingCondition;
-import io.shardingsphere.core.optimizer.condition.ShardingConditions;
-import io.shardingsphere.core.optimizer.query.QueryOptimizeEngine;
-import io.shardingsphere.core.parsing.parser.context.condition.AndCondition;
-import io.shardingsphere.core.parsing.parser.context.condition.Column;
-import io.shardingsphere.core.parsing.parser.context.condition.Condition;
-import io.shardingsphere.core.parsing.parser.context.condition.OrCondition;
-import io.shardingsphere.core.parsing.parser.expression.SQLExpression;
-import io.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 

@@ -25,11 +25,6 @@ import io.shardingsphere.core.api.config.strategy.HintShardingStrategyConfigurat
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.fixture.OrderDatabaseHintShardingAlgorithm;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.api.HintManager;
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.api.config.strategy.HintShardingStrategyConfiguration;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
 

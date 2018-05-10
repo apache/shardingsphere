@@ -22,11 +22,6 @@ import io.shardingsphere.core.parsing.lexer.dialect.mysql.MySQLLexer;
 import io.shardingsphere.core.parsing.lexer.dialect.oracle.OracleLexer;
 import io.shardingsphere.core.parsing.lexer.dialect.postgresql.PostgreSQLLexer;
 import io.shardingsphere.core.parsing.lexer.dialect.sqlserver.SQLServerLexer;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.parsing.lexer.dialect.mysql.MySQLLexer;
-import io.shardingsphere.core.parsing.lexer.dialect.oracle.OracleLexer;
-import io.shardingsphere.core.parsing.lexer.dialect.postgresql.PostgreSQLLexer;
-import io.shardingsphere.core.parsing.lexer.dialect.sqlserver.SQLServerLexer;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

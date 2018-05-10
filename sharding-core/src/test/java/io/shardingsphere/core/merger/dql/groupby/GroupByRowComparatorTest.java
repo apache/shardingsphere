@@ -23,12 +23,6 @@ import io.shardingsphere.core.merger.dql.common.MemoryQueryResultRow;
 import io.shardingsphere.core.merger.fixture.TestQueryResult;
 import io.shardingsphere.core.parsing.parser.context.OrderItem;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
-import io.shardingsphere.core.constant.OrderDirection;
-import io.shardingsphere.core.merger.QueryResult;
-import io.shardingsphere.core.merger.dql.common.MemoryQueryResultRow;
-import io.shardingsphere.core.merger.fixture.TestQueryResult;
-import io.shardingsphere.core.parsing.parser.context.OrderItem;
-import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import org.junit.Test;
 
 import java.sql.ResultSet;

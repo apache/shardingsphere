@@ -33,14 +33,8 @@ import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.util.SQLUtil;
-import io.shardingsphere.core.constant.AggregationType;
-import io.shardingsphere.core.parsing.parser.clause.expression.AliasExpressionParser;
-import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
-import io.shardingsphere.core.parsing.parser.context.selectitem.CommonSelectItem;
-import io.shardingsphere.core.parsing.parser.context.selectitem.SelectItem;
-import io.shardingsphere.core.parsing.parser.context.selectitem.StarSelectItem;
-import io.shardingsphere.core.parsing.parser.dialect.ExpressionParserFactory;
 import lombok.Getter;
+
 import java.util.List;
 
 /**

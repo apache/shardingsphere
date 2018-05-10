@@ -22,9 +22,6 @@ import io.shardingsphere.core.merger.dql.common.MemoryQueryResultRow;
 import io.shardingsphere.core.merger.dql.orderby.CompareUtil;
 import io.shardingsphere.core.parsing.parser.context.OrderItem;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
-import io.shardingsphere.core.merger.dql.orderby.CompareUtil;
-import io.shardingsphere.core.parsing.parser.context.OrderItem;
-import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Comparator;

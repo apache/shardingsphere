@@ -23,12 +23,6 @@ import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.rule.ShardingDataSourceNames;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.metadata.ColumnMetaData;
-import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.rule.DataNode;
-import io.shardingsphere.core.rule.ShardingDataSourceNames;
-import io.shardingsphere.core.rule.ShardingRule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

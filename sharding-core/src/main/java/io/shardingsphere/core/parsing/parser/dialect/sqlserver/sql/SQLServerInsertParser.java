@@ -22,8 +22,6 @@ import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.parser.dialect.sqlserver.clause.facade.SQLServerInsertClauseParserFacade;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.AbstractInsertParser;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.parsing.parser.dialect.sqlserver.clause.facade.SQLServerInsertClauseParserFacade;
 
 /**
  * Insert parser for SQLServer.

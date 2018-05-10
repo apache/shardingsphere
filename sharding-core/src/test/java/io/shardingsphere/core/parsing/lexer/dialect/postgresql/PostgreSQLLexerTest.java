@@ -20,8 +20,6 @@ package io.shardingsphere.core.parsing.lexer.dialect.postgresql;
 import io.shardingsphere.core.parsing.lexer.LexerAssert;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingException;
-import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
-import io.shardingsphere.core.parsing.parser.exception.SQLParsingException;
 import org.junit.Test;
 
 public final class PostgreSQLLexerTest {

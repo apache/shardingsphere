@@ -19,7 +19,6 @@ package io.shardingsphere.core.jdbc.adapter;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
-import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
