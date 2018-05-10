@@ -23,9 +23,6 @@ import io.shardingsphere.core.executor.type.prepared.PreparedStatementExecutor;
 import io.shardingsphere.core.executor.type.prepared.PreparedStatementUnit;
 import io.shardingsphere.core.rewrite.SQLBuilder;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
-import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.rewrite.SQLBuilder;
-import io.shardingsphere.core.routing.SQLExecutionUnit;
 import org.junit.Test;
 
 import java.sql.Connection;

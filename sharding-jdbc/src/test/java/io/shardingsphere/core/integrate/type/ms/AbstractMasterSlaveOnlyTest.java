@@ -26,8 +26,6 @@ import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.integrate.jaxb.SQLShardingRule;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.After;
 import org.junit.AfterClass;

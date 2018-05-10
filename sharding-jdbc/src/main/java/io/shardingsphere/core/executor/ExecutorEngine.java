@@ -32,14 +32,6 @@ import io.shardingsphere.core.executor.event.OverallExecutionEvent;
 import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.core.util.EventBusInstance;
-import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.executor.event.AbstractExecutionEvent;
-import io.shardingsphere.core.executor.event.DMLExecutionEvent;
-import io.shardingsphere.core.executor.event.DQLExecutionEvent;
-import io.shardingsphere.core.executor.event.EventExecutionType;
-import io.shardingsphere.core.executor.event.OverallExecutionEvent;
-import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
-import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;

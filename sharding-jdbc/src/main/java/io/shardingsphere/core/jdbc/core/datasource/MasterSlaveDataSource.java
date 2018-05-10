@@ -22,10 +22,6 @@ import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.connection.MasterSlaveConnection;
 import io.shardingsphere.core.rule.MasterSlaveRule;
-import io.shardingsphere.core.api.ConfigMapContext;
-import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
-import io.shardingsphere.core.rule.MasterSlaveRule;
 import lombok.Getter;
 
 import javax.sql.DataSource;

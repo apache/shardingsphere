@@ -19,8 +19,6 @@ package io.shardingsphere.core.jdbc.core.resultset;
 
 import io.shardingsphere.core.jdbc.adapter.AbstractResultSetAdapter;
 import io.shardingsphere.core.merger.MergedResult;
-import io.shardingsphere.core.jdbc.adapter.AbstractResultSetAdapter;
-import io.shardingsphere.core.merger.MergedResult;
 
 import java.io.InputStream;
 import java.io.Reader;

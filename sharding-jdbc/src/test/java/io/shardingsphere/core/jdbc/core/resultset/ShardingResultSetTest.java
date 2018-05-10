@@ -18,7 +18,6 @@
 package io.shardingsphere.core.jdbc.core.resultset;
 
 import io.shardingsphere.core.merger.MergedResult;
-import io.shardingsphere.core.merger.MergedResult;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

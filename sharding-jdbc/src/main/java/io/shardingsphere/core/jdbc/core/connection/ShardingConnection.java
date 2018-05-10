@@ -21,7 +21,6 @@ import io.shardingsphere.core.jdbc.adapter.AbstractConnectionAdapter;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.statement.ShardingPreparedStatement;
 import io.shardingsphere.core.jdbc.core.statement.ShardingStatement;
-import io.shardingsphere.core.jdbc.adapter.AbstractConnectionAdapter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

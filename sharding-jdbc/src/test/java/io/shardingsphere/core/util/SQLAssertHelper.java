@@ -20,7 +20,6 @@ package io.shardingsphere.core.util;
 import io.shardingsphere.core.common.env.DatabaseEnvironment;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
-import io.shardingsphere.core.constant.DatabaseType;
 import lombok.RequiredArgsConstructor;
 import org.dbunit.Assertion;
 import org.dbunit.DatabaseUnitException;

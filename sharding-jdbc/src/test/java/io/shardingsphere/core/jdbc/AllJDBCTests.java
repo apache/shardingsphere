@@ -20,8 +20,6 @@ package io.shardingsphere.core.jdbc;
 import io.shardingsphere.core.jdbc.adapter.AllAdapterTests;
 import io.shardingsphere.core.jdbc.core.AllCoreTests;
 import io.shardingsphere.core.jdbc.unsupported.AllUnsupportedTests;
-import io.shardingsphere.core.jdbc.adapter.AllAdapterTests;
-import io.shardingsphere.core.jdbc.unsupported.AllUnsupportedTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 

@@ -19,12 +19,11 @@ package io.shardingsphere.core.integrate.type.sharding.hint.base;
 
 import io.shardingsphere.core.common.base.AbstractSQLTest;
 import io.shardingsphere.core.common.env.DatabaseEnvironment;
-import io.shardingsphere.core.util.DBUnitUtil;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.integrate.type.sharding.hint.helper.HintShardingValueHelper;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.util.DBUnitUtil;
 import org.dbunit.Assertion;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.dataset.IDataSet;

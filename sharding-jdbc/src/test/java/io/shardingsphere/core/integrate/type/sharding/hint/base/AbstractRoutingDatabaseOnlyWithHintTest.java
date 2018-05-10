@@ -22,8 +22,6 @@ import io.shardingsphere.core.api.config.strategy.HintShardingStrategyConfigurat
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.integrate.fixture.HintModuloDatabaseShardingAlgorithm;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.integrate.fixture.HintModuloDatabaseShardingAlgorithm;
 
 import javax.sql.DataSource;
 import java.util.Map;

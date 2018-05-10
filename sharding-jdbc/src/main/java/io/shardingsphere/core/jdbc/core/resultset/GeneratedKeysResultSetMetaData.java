@@ -19,7 +19,6 @@ package io.shardingsphere.core.jdbc.core.resultset;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.jdbc.adapter.WrapperAdapter;
-import io.shardingsphere.core.jdbc.adapter.WrapperAdapter;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.ResultSetMetaData;

@@ -18,7 +18,6 @@
 package io.shardingsphere.core;
 
 import io.shardingsphere.core.integrate.AllIntegrateTests;
-import io.shardingsphere.core.integrate.AllIntegrateTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;

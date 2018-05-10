@@ -24,13 +24,11 @@ import io.shardingsphere.core.api.config.strategy.NoneShardingStrategyConfigurat
 import io.shardingsphere.core.common.base.AbstractSQLAssertTest;
 import io.shardingsphere.core.common.env.ShardingTestStrategy;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.fixture.IncrementKeyGenerator;
 import io.shardingsphere.core.integrate.fixture.ComplexKeysModuloDatabaseShardingAlgorithm;
 import io.shardingsphere.core.integrate.jaxb.SQLShardingRule;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingsphere.core.fixture.IncrementKeyGenerator;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.integrate.fixture.ComplexKeysModuloDatabaseShardingAlgorithm;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

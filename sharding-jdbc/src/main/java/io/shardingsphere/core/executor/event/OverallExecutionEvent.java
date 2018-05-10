@@ -18,7 +18,6 @@
 package io.shardingsphere.core.executor.event;
 
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.constant.SQLType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

@@ -18,7 +18,6 @@
 package io.shardingsphere.core.util;
 
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
-import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

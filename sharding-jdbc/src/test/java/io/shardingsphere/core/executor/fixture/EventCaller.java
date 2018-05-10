@@ -19,7 +19,6 @@ package io.shardingsphere.core.executor.fixture;
 
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.event.EventExecutionType;
-import io.shardingsphere.core.constant.SQLType;
 
 import java.util.List;
 

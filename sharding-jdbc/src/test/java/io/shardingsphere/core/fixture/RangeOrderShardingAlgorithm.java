@@ -19,8 +19,6 @@ package io.shardingsphere.core.fixture;
 
 import io.shardingsphere.core.api.algorithm.sharding.RangeShardingValue;
 import io.shardingsphere.core.api.algorithm.sharding.standard.RangeShardingAlgorithm;
-import io.shardingsphere.core.api.algorithm.sharding.RangeShardingValue;
-import io.shardingsphere.core.api.algorithm.sharding.standard.RangeShardingAlgorithm;
 
 import java.util.Collection;
 import java.util.HashSet;

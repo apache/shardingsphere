@@ -18,7 +18,6 @@
 package io.shardingsphere.core.util;
 
 import io.shardingsphere.core.common.env.DatabaseEnvironment;
-import io.shardingsphere.core.common.env.DatabaseEnvironment;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.dbunit.DatabaseUnitException;

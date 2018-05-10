@@ -19,7 +19,6 @@ package io.shardingsphere.core.executor.event;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.routing.SQLUnit;
-import io.shardingsphere.core.routing.SQLUnit;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

@@ -19,7 +19,6 @@ package io.shardingsphere.core.executor.type.batch;
 
 import io.shardingsphere.core.executor.BaseStatementUnit;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
-import io.shardingsphere.core.routing.SQLExecutionUnit;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

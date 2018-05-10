@@ -25,9 +25,6 @@ import io.shardingsphere.core.integrate.type.sharding.hint.helper.HintShardingVa
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.util.SQLPlaceholderUtil;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.integrate.type.sharding.hint.helper.HintDatabaseShardingValueHelper;
-import io.shardingsphere.core.integrate.type.sharding.hint.helper.HintShardingValueHelper;
 import org.dbunit.DatabaseUnitException;
 import org.junit.Before;
 import org.junit.Test;

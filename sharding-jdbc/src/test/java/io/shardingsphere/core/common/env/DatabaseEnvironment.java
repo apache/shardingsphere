@@ -18,7 +18,6 @@
 package io.shardingsphere.core.common.env;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.DatabaseType;
 import lombok.Getter;
 
 import java.util.HashMap;

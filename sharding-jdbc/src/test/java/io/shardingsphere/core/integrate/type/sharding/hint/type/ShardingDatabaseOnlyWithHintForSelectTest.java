@@ -18,17 +18,13 @@
 package io.shardingsphere.core.integrate.type.sharding.hint.type;
 
 import com.google.common.collect.Lists;
-import io.shardingsphere.core.util.SQLPlaceholderUtil;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.ShardingOperator;
 import io.shardingsphere.core.integrate.sql.DatabaseTestSQL;
 import io.shardingsphere.core.integrate.type.sharding.hint.base.AbstractShardingDatabaseOnlyWithHintTest;
 import io.shardingsphere.core.integrate.type.sharding.hint.helper.HintShardingValueHelper;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.ShardingOperator;
-import io.shardingsphere.core.integrate.type.sharding.hint.base.AbstractShardingDatabaseOnlyWithHintTest;
-import io.shardingsphere.core.integrate.type.sharding.hint.helper.HintShardingValueHelper;
+import io.shardingsphere.core.util.SQLPlaceholderUtil;
 import org.dbunit.DatabaseUnitException;
 import org.junit.Before;
 import org.junit.Test;

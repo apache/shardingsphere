@@ -20,9 +20,6 @@ package io.shardingsphere.core.api;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveConfiguration;
-import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveConfiguration;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

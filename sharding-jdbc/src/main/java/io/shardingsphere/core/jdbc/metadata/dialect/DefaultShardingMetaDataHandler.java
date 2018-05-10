@@ -18,7 +18,6 @@
 package io.shardingsphere.core.jdbc.metadata.dialect;
 
 import io.shardingsphere.core.metadata.ColumnMetaData;
-import io.shardingsphere.core.metadata.ColumnMetaData;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
