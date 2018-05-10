@@ -1,5 +1,6 @@
 package com.saaavsaaa.client.zookeeper;
 
+import com.saaavsaaa.client.action.IClient;
 import org.apache.zookeeper.KeeperException;
 import org.junit.Test;
 
@@ -11,7 +12,7 @@ import java.io.IOException;
 public class UsualClientTest extends BaseClientTest {
     
     @Override
-    protected Client createClient(final ClientFactory creator) throws IOException, InterruptedException {
+    protected IClient createClient(final ClientFactory creator) throws IOException, InterruptedException {
         return creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes()).newClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).start();
     }
     

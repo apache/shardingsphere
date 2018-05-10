@@ -1,7 +1,9 @@
 package com.saaavsaaa.client.zookeeper;
 
+import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.utility.section.Listener;
 import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.ZooKeeper;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -12,7 +14,7 @@ import java.util.List;
  * Created by aaa
  */
 public class ClientsTest extends BaseClientTest {
-    private List<Client> clients;
+    private List<IClient> clients;
     private final int count = 5;
     private final int shard = 2;
     
@@ -26,8 +28,8 @@ public class ClientsTest extends BaseClientTest {
     }
     
     @Override
-    protected Client createClient(ClientFactory creator) throws IOException, InterruptedException {
-        Client client;
+    protected IClient createClient(ClientFactory creator) throws IOException, InterruptedException {
+        IClient client;
         if (clients.size() % shard == 1){
             System.out.println("create client");
             client = newClient(creator);
@@ -35,21 +37,22 @@ public class ClientsTest extends BaseClientTest {
             System.out.println("create watch client");
             client = newWatchClient(creator);
         }
+        zooKeeper = ((BaseClient)client).getZooKeeper();
         return client;
     }
     
-    private Client newClient(ClientFactory creator) throws IOException, InterruptedException {
+    private IClient newClient(ClientFactory creator) throws IOException, InterruptedException {
         return creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes()).newClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).start();
     }
     
-    protected Client newWatchClient(ClientFactory creator) throws IOException, InterruptedException {
+    protected IClient newWatchClient(ClientFactory creator) throws IOException, InterruptedException {
         Listener listener = TestSupport.buildListener();
         return creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes()).newClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).watch(listener).start();
     }
     
     @Override
     public void stop() throws InterruptedException {
-        for (Client client : clients) {
+        for (IClient client : clients) {
             client.close();
         }
         clients = null;
@@ -57,85 +60,87 @@ public class ClientsTest extends BaseClientTest {
     
     @Test
     public void createRoot() throws KeeperException, InterruptedException {
-        for (Client client : clients) {
+        for (IClient client : clients) {
             super.createRoot(client);
         }
     }
     
     @Test
     public void createChild() throws KeeperException, InterruptedException {
-        for (Client client : clients) {
+        for (IClient client : clients) {
             super.createChild(client);
         }
     }
     
     @Test
     public void deleteBranch() throws KeeperException, InterruptedException {
-        for (Client client : clients) {
+        for (IClient client : clients) {
             super.deleteBranch(client);
         }
     }
     
     @Test
     public void isExisted() throws KeeperException, InterruptedException {
-        for (Client client : clients) {
+        for (IClient client : clients) {
             super.isExisted(client);
         }
     }
     
     @Test
     public void get() throws KeeperException, InterruptedException {
-        for (Client client : clients) {
+        for (IClient client : clients) {
             super.get(client);
         }
     }
     
     @Test
     public void asynGet() throws KeeperException, InterruptedException {
-        for (Client client : clients) {
+        for (IClient client : clients) {
             super.asynGet(client);
         }
     }
     
     @Test
     public void getChildrenKeys() throws KeeperException, InterruptedException {
-        for (Client client : clients) {
+        for (IClient client : clients) {
             super.getChildrenKeys(client);
         }
     }
     
     @Test
     public void persist() throws KeeperException, InterruptedException {
-        for (Client client : clients) {
+        for (IClient client : clients) {
             super.persist(client);
         }
     }
     
     @Test
     public void persistEphemeral() throws KeeperException, InterruptedException {
-        for (Client client : clients) {
+        for (IClient client : clients) {
             super.persistEphemeral(client);
         }
     }
     
     @Test
     public void delAllChildren() throws KeeperException, InterruptedException {
-        for (Client client : clients) {
+        for (IClient client : clients) {
             super.delAllChildren(client);
         }
     }
     
     @Test
     public void watch() throws KeeperException, InterruptedException {
-        for (Client client : clients) {
+        for (IClient client : clients) {
             super.watch(client);
         }
     }
     
     @Test
     public void close() throws Exception {
-        for (Client client : clients) {
-            super.close(client);
+        for (IClient client : clients) {
+            ZooKeeper zk = ((BaseClient)client).getZooKeeper();
+            client.close();
+            assert zk.getState() == ZooKeeper.States.CLOSED;
         }
     }
 }

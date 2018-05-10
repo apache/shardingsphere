@@ -1,5 +1,6 @@
 package com.saaavsaaa.client.zookeeper;
 
+import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.utility.section.Listener;
 
 import java.io.IOException;
@@ -10,7 +11,7 @@ import java.io.IOException;
 public class UsualWatchClientTest extends UsualClientTest {
     
     @Override
-    protected Client createClient(final ClientFactory creator) throws IOException, InterruptedException {
+    protected IClient createClient(final ClientFactory creator) throws IOException, InterruptedException {
         Listener listener = TestSupport.buildListener();
         return creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes()).newClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).watch(listener).start();
     }

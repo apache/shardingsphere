@@ -19,13 +19,13 @@ import java.util.Stack;
  */
 public class Provider implements IProvider {
     private static final Logger logger = LoggerFactory.getLogger(Provider.class);
-    protected final Client client;
+    protected final BaseClient client;
     private final ZooKeeper zooKeeper;
     protected final boolean watched;
     protected final List<ACL> authorities;
     protected final String rootNode;
     
-    Provider(final String rootNode, final Client client, final boolean watched, final List<ACL> authorities){
+    Provider(final String rootNode, final BaseClient client, final boolean watched, final List<ACL> authorities){
         this.rootNode = rootNode;
         this.client = client;
         this.zooKeeper = client.getZooKeeper();

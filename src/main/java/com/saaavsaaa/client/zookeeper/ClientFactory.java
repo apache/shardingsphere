@@ -1,5 +1,6 @@
 package com.saaavsaaa.client.zookeeper;
 
+import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.utility.section.Listener;
 import org.slf4j.Logger;
@@ -14,7 +15,7 @@ public class ClientFactory {
     //    private static final String CLIENT_EXCLUSIVE_NODE = "ZKC";
     private static final Logger logger = LoggerFactory.getLogger(ClientFactory.class);
     
-    private Client client;
+    private BaseClient client;
     private Listener globalListener;
     private String namespace;
     private String scheme;
@@ -54,7 +55,7 @@ public class ClientFactory {
         return this;
     }
     
-    public synchronized Client start() throws IOException, InterruptedException {
+    public synchronized IClient start() throws IOException, InterruptedException {
         client.setClientFactory(this);
         client.setRootNode(namespace);
         client.setAuthorities(scheme , auth);

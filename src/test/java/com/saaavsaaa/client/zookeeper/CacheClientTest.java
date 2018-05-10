@@ -1,5 +1,7 @@
 package com.saaavsaaa.client.zookeeper;
 
+import com.saaavsaaa.client.action.IClient;
+
 import java.io.IOException;
 
 /**
@@ -8,7 +10,7 @@ import java.io.IOException;
  */
 public class CacheClientTest extends UsualClientTest {
     @Override
-    protected Client createClient(ClientFactory creator) throws IOException, InterruptedException {
+    protected IClient createClient(ClientFactory creator) throws IOException, InterruptedException {
         return creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes()).newCacheClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).start();
     }
 }

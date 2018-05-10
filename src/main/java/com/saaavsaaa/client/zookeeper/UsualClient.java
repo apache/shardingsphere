@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by aaa
  */
-public class UsualClient extends Client {
+public class UsualClient extends BaseClient {
     private static final Logger logger = LoggerFactory.getLogger(UsualClient.class);
     protected final Map<StrategyType, IExecStrategy> strategies = new ConcurrentHashMap<>();
     protected IExecStrategy strategy;

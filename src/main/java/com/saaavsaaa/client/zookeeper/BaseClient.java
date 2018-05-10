@@ -22,8 +22,8 @@ import java.util.concurrent.CountDownLatch;
 /**
  * Created by aaa
  */
-public abstract class Client implements IClient {
-    private static final Logger logger = LoggerFactory.getLogger(Client.class);
+public abstract class BaseClient implements IClient {
+    private static final Logger logger = LoggerFactory.getLogger(BaseClient.class);
     private static final CountDownLatch CONNECTED = new CountDownLatch(1);
     protected static final Map<String, Watcher> watchers = new ConcurrentHashMap<>();
     
@@ -40,19 +40,26 @@ public abstract class Client implements IClient {
     protected List<ACL> authorities;
     private ClientFactory clientFactory;
     
-    protected Client(final String servers, final int sessionTimeoutMilliseconds) {
+    protected BaseClient(final String servers, final int sessionTimeoutMilliseconds) {
         this.servers = servers;
         this.sessionTimeOut = sessionTimeoutMilliseconds;
     }
     
+    @Override
     public synchronized void start() throws IOException, InterruptedException {
-        logger.debug("Client servers:{},sessionTimeOut:{}", servers, sessionTimeOut);
+        logger.debug("BaseClient servers:{},sessionTimeOut:{}", servers, sessionTimeOut);
         zooKeeper = new ZooKeeper(servers, sessionTimeOut, startWatcher());
         if (!StringUtil.isNullOrBlank(scheme)) {
             zooKeeper.addAuthInfo(scheme, auth);
-            logger.debug("Client scheme:{},auth:{}", scheme, auth);
+            logger.debug("BaseClient scheme:{},auth:{}", scheme, auth);
         }
         CONNECTED.await();
+    }
+    
+    @Override
+    public void close() throws InterruptedException {
+        zooKeeper.close();
+        logger.debug("zk closed");
     }
     
     public abstract void useExecStrategy(StrategyType strategyType);
@@ -64,17 +71,17 @@ public abstract class Client implements IClient {
     private Watcher startWatcher() {
         return new Watcher(){
             public void process(WatchedEvent event) {
-                logger.debug("Client process event:{}", event.toString());
+                logger.debug("BaseClient process event:{}", event.toString());
                 if(Event.KeeperState.SyncConnected == event.getState()){
                     if(Event.EventType.None == event.getType()){
                         CONNECTED.countDown();
-                        logger.debug("Client startWatcher SyncConnected");
+                        logger.debug("BaseClient startWatcher SyncConnected");
                         return;
                     }
                 }
                 if (globalListenerRegistered){
                     watchers.get(Constants.GLOBAL_LISTENER_KEY).process(event);
-                    logger.debug("Client " + Constants.GLOBAL_LISTENER_KEY + " process");
+                    logger.debug("BaseClient " + Constants.GLOBAL_LISTENER_KEY + " process");
                 }
                 if (Properties.INSTANCE.watchOn() && watchers.containsKey(event.getPath())){
                      watchers.get(event.getPath()).process(event);
@@ -98,6 +105,7 @@ public abstract class Client implements IClient {
         logger.debug("globalListenerRegistered:{}", globalListenerRegistered);
     }
     
+    @Override
     public Watcher registerWatch(final String key, final Listener listener){
         String path = PathUtil.getRealPath(rootNode, key);
 //        listener.setKey(path);
@@ -112,6 +120,7 @@ public abstract class Client implements IClient {
         return watcher;
     }
     
+    @Override
     public void unregisterWatch(final String key){
         if (StringUtil.isNullOrBlank(key)){
             throw new IllegalArgumentException("key should not be blank");
@@ -121,11 +130,6 @@ public abstract class Client implements IClient {
             watchers.remove(path);
             logger.debug("unregisterWatch:{}", path);
         }
-    }
-    
-    public void close() throws InterruptedException {
-        zooKeeper.close();
-        logger.debug("zk closed");
     }
     
     void createNamespace() throws KeeperException, InterruptedException {
