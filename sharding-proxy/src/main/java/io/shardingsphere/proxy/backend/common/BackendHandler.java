@@ -18,7 +18,6 @@
 package io.shardingsphere.proxy.backend.common;
 
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 
 /**
  * Backend handler.

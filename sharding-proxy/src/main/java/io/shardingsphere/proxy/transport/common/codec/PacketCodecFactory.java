@@ -19,7 +19,6 @@ package io.shardingsphere.proxy.transport.common.codec;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.proxy.transport.mysql.codec.MySQLPacketCodec;
-import io.shardingsphere.proxy.transport.mysql.codec.MySQLPacketCodec;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

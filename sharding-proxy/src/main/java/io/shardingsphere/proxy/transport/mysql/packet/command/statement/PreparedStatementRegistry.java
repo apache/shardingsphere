@@ -18,7 +18,6 @@
 package io.shardingsphere.proxy.transport.mysql.packet.command.statement;
 
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute.PreparedStatementParameterHeader;
-import io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute.PreparedStatementParameterHeader;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

@@ -24,7 +24,6 @@ import io.netty.channel.socket.SocketChannel;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.proxy.frontend.common.FrontendHandlerFactory;
 import io.shardingsphere.proxy.transport.common.codec.PacketCodecFactory;
-import io.shardingsphere.proxy.frontend.common.FrontendHandlerFactory;
 import lombok.RequiredArgsConstructor;
 
 /**
