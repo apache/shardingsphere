@@ -17,7 +17,7 @@
 
 package io.shardingsphere.proxy;
 
-import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.frontend.ShardingProxy;
 
 /**
@@ -52,10 +52,6 @@ public final class Bootstrap {
     }
     
     private static void initializeRuleRegistry() {
-        try {
-            Class.forName("io.shardingsphere.proxy.config.RuleRegistry");
-        } catch (ClassNotFoundException ex) {
-            throw new ShardingException(ex);
-        }
+        RuleRegistry.getInstance();
     }
 }

@@ -111,7 +111,7 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
             } else {
                 return executeForSharding();
             }
-        } catch (ShardingException ex) {
+        } catch (final ShardingException ex) {
             return new CommandResponsePackets(new ErrPacket(1, 0, "", "", ex.getMessage()));
         }
     }
