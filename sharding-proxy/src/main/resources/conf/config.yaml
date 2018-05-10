@@ -1,3 +1,16 @@
+##################      ##################
+# Here you can configure the rules for the proxy.
+#
+# We provide two kinds of configurations for example. The one is the configuration of Sharding rule,
+# and the other is the configuration of master-slave rule.
+# If you want to use Sharding, please refer to the first one, and if you only want to use master-slave,
+# please refer to the second one.
+#
+##################      ##################
+
+
+# The example of Sharding rule.
+
 dataSources:
   demo_ds_0:
     url: jdbc:mysql://10.7.8.175:13306/demo_ds_0
@@ -35,3 +48,23 @@ shardingRule:
 
   props:
     sql.show: true
+
+
+
+# The example of master-slave rule.
+
+#dataSources:
+#  demo_ds_0:
+#    url: jdbc:mysql://127.0.0.1:3306/demo_ds_0
+#    username: root
+#    password:
+#  demo_ds_1:
+#    url: jdbc:mysql://127.0.0.1:3306/demo_ds_1
+#    username: root
+#    password:
+#masterSlaveRule:
+#  name: ds_ms
+#  masterDataSourceName: demo_ds_0
+#  slaveDataSourceNames:
+#    - demo_ds_1
+

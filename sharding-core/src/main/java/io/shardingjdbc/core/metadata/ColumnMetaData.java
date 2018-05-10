@@ -20,6 +20,7 @@ package io.shardingjdbc.core.metadata;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 /**
  * Column metadata.
@@ -29,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
+@ToString
 public final class ColumnMetaData {
     
     private final String columnName;
