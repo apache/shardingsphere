@@ -278,8 +278,13 @@ public class ContentionStrategy extends UsualStrategy {
             String node = pathStack.pop();
             // contrast cache
             if (provider.checkExists(node)){
-                provider.deleteOnlyCurrent(node);
-                continue;
+                try {
+                    provider.deleteOnlyCurrent(node);
+                } catch (KeeperException.NotEmptyException ee){
+                    logger.warn("deleteBranch {} exist other children:{}", node, this.getChildren(node));
+                    logger.debug(ee.getMessage());
+                    return;
+                }
             }
             logger.info("deleteBranch node not exist:{}", node);
         }
