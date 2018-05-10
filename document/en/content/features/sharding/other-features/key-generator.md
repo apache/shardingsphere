@@ -26,7 +26,7 @@ Because of timestamp is monotonically increasing, generated key by snowflake is 
 
 Database should be save in a number column whose length is >= 64 bits, such as BIGINT in MySQL.
 
-Class: `io.shardingjdbc.core.keygen.DefaultKeyGenerator`
+Class: `io.shardingsphere.core.keygen.DefaultKeyGenerator`
 
 ### Timestamp(41 bits)
 

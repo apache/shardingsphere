@@ -9,8 +9,8 @@ You can report a bug, submit a new feature enhancement recommendation, or commit
 ## Reporting Bugs
 
  - Before report a bug, please search from google to confirm you cannot find any hint on it.
- - Look [issues List](https://github.com/shardingjdbc/sharding-jdbc/issues) to confirm this issue is not a duplicated one.
- - [Create](https://github.com/shardingjdbc/sharding-jdbc/issues/new) a new issue.
+ - Look [issues List](https://github.com/sharding-sphere/sharding-sphere/issues) to confirm this issue is not a duplicated one.
+ - [Create](https://github.com/sharding-sphere/sharding-sphere/issues/new) a new issue.
  - Define a clear and descriptive title for the issue.
  - If bug reported, please provide information below:
        - Details for reproduce bug step by step. Include SQL, configuration, expected results, actual results and tracing log.

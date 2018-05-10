@@ -10,9 +10,9 @@ weight = 2
 
 ```xml
 <dependency>
-    <groupId>io.shardingjdbc</groupId>
-    <artifactId>sharding-jdbc-core</artifactId>
-    <version>${sharding-jdbc.version}</version>
+    <groupId>io.shardingsphere</groupId>
+    <artifactId>sharding-jdbc</artifactId>
+    <version>${sharding-sphere.version}</version>
 </dependency>
 ```
 
@@ -114,16 +114,16 @@ try (
 ```xml
 <!-- for spring boot -->
 <dependency>
-    <groupId>io.shardingjdbc</groupId>
-    <artifactId>sharding-jdbc-core-spring-boot-starter</artifactId>
-    <version>${sharding-jdbc.version}</version>
+    <groupId>io.shardingsphere</groupId>
+    <artifactId>sharding-jdbc-spring-boot-starter</artifactId>
+    <version>${sharding-sphere.version}</version>
 </dependency>
 
 <!-- for spring namespace -->
 <dependency>
-    <groupId>io.shardingjdbc</groupId>
-    <artifactId>sharding-jdbc-core-spring-namespace</artifactId>
-    <version>${sharding-jdbc.version}</version>
+    <groupId>io.shardingsphere</groupId>
+    <artifactId>sharding-jdbc-spring-namespace</artifactId>
+    <version>${sharding-sphere.version}</version>
 </dependency>
 ```
 

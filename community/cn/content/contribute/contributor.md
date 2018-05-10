@@ -9,8 +9,8 @@ chapter = true
 ## 提交issue
 
  - 在提交issue之前，请经过充分的搜索，确定该issue不是通过简单的检索即可以解决的问题。
- - 查看[issue列表](https://github.com/shardingjdbc/sharding-jdbc/issues)，确定该issue不是一个重复的问题。
- - [新建](https://github.com/shardingjdbc/sharding-jdbc/issues/new)一个issue。
+ - 查看[issue列表](https://github.com/sharding-sphere/sharding-sphere/issues)，确定该issue不是一个重复的问题。
+ - [新建](https://github.com/sharding-sphere/sharding-sphere/issues/new)一个issue。
  - 使用一个清晰并有描述性的标题来定义issue。
  - 如果您提交的是一个bug，请尽量提供如下信息：
       - 详细的描述复现bug的步骤。包括您使用的SQL，配置情况，预计产生的结果，实际产生的结果。并附加详细的TRACE日志。
@@ -35,6 +35,6 @@ chapter = true
  - 在[开发者列表](/organization/)中找到一个导师，导师会在设计与功能实现上给予即时的反馈。
  - 您需要fork一个分支到您自己的repo来开始工作。
  - 请您在开发过程中遵循Sharding的[开发规范](/contribute/convention/)。并在准备提交pull request之前完成相应的检查。
- - 完成后，发送一个pull request到shardingjdbc的dev分支，请不要提交pull request至master分支中。
+ - 完成后，发送一个pull request到sharding-sphere的dev分支，请不要提交pull request至master分支中。
  - 接着导师做CodeReview，然后他会与您讨论一些细节（包括设计，实现，性能等）。当导师对本次修改满意后，会将提交合并到当前开发版本的分支中。
  - 最后，恭喜您已经成为了Sharding的官方贡献者！

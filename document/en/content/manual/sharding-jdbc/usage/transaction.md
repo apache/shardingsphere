@@ -10,9 +10,9 @@ weight = 5
 
 ```xml
 <dependency>
-    <groupId>io.shardingjdbc</groupId>
-    <artifactId>sharding-jdbc-transaction</artifactId>
-    <version>${sharding-jdbc.version}</version>
+    <groupId>io.shardingsphere</groupId>
+    <artifactId>sharding-sphere-transaction</artifactId>
+    <version>${sharding-sphere.version}</version>
 </dependency>
 ```
 

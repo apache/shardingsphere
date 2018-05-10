@@ -179,7 +179,7 @@ weight = 1
 | defaultDataSourceName (?)                 | String                                     | If table not configure at table rule, will route to defaultDataSourceName                 |
 | defaultDatabaseShardingStrategyConfig (?) | ShardingStrategyConfiguration              | Default strategy for sharding databases                                                   |
 | defaultTableShardingStrategyConfig (?)    | ShardingStrategyConfiguration              | Default strategy for sharding tables                                                      |
-| defaultKeyGenerator (?)                   | KeyGenerator                               | Default key generator, default value is `io.shardingjdbc.core.keygen.DefaultKeyGenerator` |
+| defaultKeyGenerator (?)                   | KeyGenerator                               | Default key generator, default value is `io.shardingsphere.core.keygen.DefaultKeyGenerator` |
 | masterSlaveRuleConfigs (?)                | Collection\<MasterSlaveRuleConfiguration\> | Read-write splitting rule configuration                                                   |
 
 #### TableRuleConfiguration

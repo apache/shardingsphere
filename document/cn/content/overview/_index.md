@@ -5,10 +5,10 @@ weight = 1
 chapter = true
 +++
 
-[![GitHub release](https://img.shields.io/github/release/shardingjdbc/sharding-jdbc.svg?style=social&label=Release)](https://github.com/shardingjdbc/sharding-jdbc/releases)&nbsp;
-[![GitHub stars](https://img.shields.io/github/stars/shardingjdbc/sharding-jdbc.svg?style=social&label=Star)](https://github.com/shardingjdbc/sharding-jdbc/stargazers)&nbsp;
-[![GitHub forks](https://img.shields.io/github/forks/shardingjdbc/sharding-jdbc.svg?style=social&label=Fork)](https://github.com/shardingjdbc/sharding-jdbc/fork)&nbsp;
-[![GitHub watchers](https://img.shields.io/github/watchers/shardingjdbc/sharding-jdbc.svg?style=social&label=Watch)](https://github.com/shardingjdbc/sharding-jdbc/watchers)
+[![GitHub release](https://img.shields.io/github/release/sharding-sphere/sharding-sphere.svg?style=social&label=Release)](https://github.com/sharding-sphere/sharding-sphere/releases)&nbsp;
+[![GitHub stars](https://img.shields.io/github/stars/sharding-sphere/sharding-sphere.svg?style=social&label=Star)](https://github.com/sharding-sphere/sharding-sphere/stargazers)&nbsp;
+[![GitHub forks](https://img.shields.io/github/forks/sharding-sphere/sharding-sphere.svg?style=social&label=Fork)](https://github.com/sharding-sphere/sharding-sphere/fork)&nbsp;
+[![GitHub watchers](https://img.shields.io/github/watchers/sharding-sphere/sharding-sphere.svg?style=social&label=Watch)](https://github.com/sharding-sphere/sharding-sphere/watchers)
 
 Sharding-Sphere是一套开源的分布式数据库中间件解决方案组成的生态圈，它由Sharding-JDBC、Sharding-Proxy和Sharding-Sidecar这3款相互独立的产品组成。他们均提供标准化的数据分片、读写分离、柔性事务和数据治理功能，可适用于如Java同构、异构语言、容器、云原生等各种多样化的应用场景。
 
@@ -19,10 +19,10 @@ Sharding-Sphere定位为关系型数据库中间件，旨在充分合理地在�
 [![Gitter](https://badges.gitter.im/Sharding-JDBC/shardingjdbc.svg)](https://gitter.im/Sharding-JDBC/shardingjdbc?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 [![Maven Status](https://maven-badges.herokuapp.com/maven-central/io.shardingjdbc/sharding-jdbc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.shardingjdbc/sharding-jdbc)
-[![GitHub release](https://img.shields.io/github/release/shardingjdbc/sharding-jdbc.svg)](https://github.com/shardingjdbc/sharding-jdbc/releases)
+[![GitHub release](https://img.shields.io/github/release/sharding-sphere/sharding-sphere.svg)](https://github.com/sharding-sphere/sharding-sphere/releases)
 
-[![Build Status](https://secure.travis-ci.org/shardingjdbc/sharding-jdbc.png?branch=master)](https://travis-ci.org/shardingjdbc/sharding-jdbc)
-[![Coverage Status](https://codecov.io/github/shardingjdbc/sharding-jdbc/coverage.svg?branch=master)](https://codecov.io/github/shardingjdbc/sharding-jdbc?branch=master)
+[![Build Status](https://api.travis-ci.org/sharding-sphere/sharding-sphere.png?branch=master)](https://travis-ci.org/sharding-sphere/sharding-sphere)
+[![Coverage Status](https://codecov.io/github/sharding-sphere/sharding-sphere/coverage.svg?branch=master)](https://codecov.io/github/sharding-sphere/sharding-sphere?branch=master)
 [![OpenTracing-1.0 Badge](https://img.shields.io/badge/OpenTracing--1.0-enabled-blue.svg)](http://opentracing.io)
 [![Skywalking Tracing](https://img.shields.io/badge/Skywalking%20Tracing-enable-brightgreen.svg)](https://github.com/OpenSkywalking/skywalking)
 

@@ -47,7 +47,7 @@ shardingRule:
   
   defaultTableStrategy:
     none:
-  defaultKeyGeneratorClassName: io.shardingjdbc.core.keygen.DefaultKeyGenerator
+  defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
   
   props:
     sql.show: true
@@ -142,7 +142,7 @@ shardingRule:
   
   defaultTableStrategy:
     none:
-  defaultKeyGeneratorClassName: io.shardingjdbc.core.keygen.DefaultKeyGenerator
+  defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
   
   masterSlaveRules:
       ms_ds_0:
@@ -237,7 +237,7 @@ shardingRule:
   defaultDataSourceName: #If table not configure at table rule, will route to defaultDataSourceName  
   defaultDatabaseStrategy: #Default strategy for sharding databases, same as databases sharding strategy
   defaultTableStrategy: #Default strategy for sharding tables, same as tables sharding strategy
-  defaultKeyGeneratorClassName: #Default key generator class name, default value is `io.shardingjdbc.core.keygen.DefaultKeyGenerator`. This class need to implements KeyGenerator, and require a no argument constructor
+  defaultKeyGeneratorClassName: #Default key generator class name, default value is `io.shardingsphere.core.keygen.DefaultKeyGenerator`. This class need to implements KeyGenerator, and require a no argument constructor
   
   masterSlaveRules: #Read-write splitting rule configuration, more details can reference Read-write splitting part
     <data_source_name>: #Data sources configuration, need consist with data source map, multiple `data_source_name` available
