@@ -54,7 +54,7 @@ public final class Bootstrap {
     private static void initializeRuleRegistry() {
         try {
             Class.forName("io.shardingsphere.proxy.config.RuleRegistry");
-        } catch (ClassNotFoundException | ShardingException ex) {
+        } catch (ClassNotFoundException ex) {
             throw new ShardingException(ex);
         }
     }
