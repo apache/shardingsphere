@@ -21,7 +21,6 @@ import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssertMessag
 import io.shardingsphere.core.parsing.integrate.jaxb.limit.ExpectedLimit;
 import io.shardingsphere.core.parsing.parser.context.limit.Limit;
 import io.shardingsphere.test.sql.SQLCaseType;
-import io.shardingsphere.core.parsing.parser.context.limit.Limit;
 import lombok.RequiredArgsConstructor;
 
 import static org.hamcrest.CoreMatchers.is;

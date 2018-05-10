@@ -39,16 +39,6 @@ import io.shardingsphere.core.merger.dql.orderby.OrderByValueTest;
 import io.shardingsphere.core.merger.dql.pagination.LimitDecoratorMergedResultTest;
 import io.shardingsphere.core.merger.dql.pagination.RowNumberDecoratorMergedResultTest;
 import io.shardingsphere.core.merger.dql.pagination.TopAndRowNumberDecoratorMergedResultTest;
-import io.shardingsphere.core.merger.dal.DALMergeEngineTest;
-import io.shardingsphere.core.merger.dal.show.ShowCreateTableMergedResultTest;
-import io.shardingsphere.core.merger.dal.show.ShowDatabasesMergedResultTest;
-import io.shardingsphere.core.merger.dal.show.ShowOtherMergedResultTest;
-import io.shardingsphere.core.merger.dal.show.ShowTablesMergedResultTest;
-import io.shardingsphere.core.merger.dql.DQLMergeEngineTest;
-import io.shardingsphere.core.merger.dql.common.DecoratorMergedResultTest;
-import io.shardingsphere.core.merger.dql.common.MemoryMergedResultTest;
-import io.shardingsphere.core.merger.dql.common.MemoryQueryResultRowTest;
-import io.shardingsphere.core.merger.dql.common.StreamMergedResultTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 

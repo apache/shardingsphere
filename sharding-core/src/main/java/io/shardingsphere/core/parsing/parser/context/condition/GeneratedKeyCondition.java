@@ -18,7 +18,6 @@
 package io.shardingsphere.core.parsing.parser.context.condition;
 
 import io.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
-import io.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
 import lombok.Getter;
 import lombok.ToString;
 

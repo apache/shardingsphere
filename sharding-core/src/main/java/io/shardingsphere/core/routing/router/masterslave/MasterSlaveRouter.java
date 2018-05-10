@@ -20,7 +20,6 @@ package io.shardingsphere.core.routing.router.masterslave;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.rule.MasterSlaveRule;
-import io.shardingsphere.core.constant.SQLType;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;

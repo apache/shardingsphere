@@ -25,10 +25,6 @@ import io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.facade.Po
 import io.shardingsphere.core.parsing.parser.sql.dql.select.AbstractSelectParser;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.PostgreSQLForClauseParser;
-import io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.PostgreSQLLimitClauseParser;
-import io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.facade.PostgreSQLSelectClauseParserFacade;
 
 /**
  * Select parser for PostgreSQL.

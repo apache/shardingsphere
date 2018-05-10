@@ -18,7 +18,6 @@
 package io.shardingsphere.core.optimizer.query;
 
 import io.shardingsphere.core.optimizer.condition.ShardingCondition;
-import io.shardingsphere.core.optimizer.condition.ShardingCondition;
 
 /**
  * Always false sharding condition.

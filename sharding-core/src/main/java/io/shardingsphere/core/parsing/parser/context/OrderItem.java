@@ -19,7 +19,6 @@ package io.shardingsphere.core.parsing.parser.context;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.OrderDirection;
-import io.shardingsphere.core.constant.OrderDirection;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

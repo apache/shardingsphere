@@ -23,7 +23,6 @@ import io.shardingsphere.core.parsing.parser.clause.WhereClauseParser;
 import io.shardingsphere.core.parsing.parser.clause.facade.AbstractDeleteClauseParserFacade;
 import io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.PostgreSQLTableReferencesClauseParser;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.constant.DatabaseType;
 
 /**
  * Delete clause parser facade for PostgreSQL.

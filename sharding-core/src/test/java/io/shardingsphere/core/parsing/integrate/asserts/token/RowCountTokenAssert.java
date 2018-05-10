@@ -24,8 +24,6 @@ import io.shardingsphere.core.parsing.integrate.jaxb.token.ExpectedTokens;
 import io.shardingsphere.core.parsing.parser.token.RowCountToken;
 import io.shardingsphere.core.parsing.parser.token.SQLToken;
 import io.shardingsphere.test.sql.SQLCaseType;
-import io.shardingsphere.core.parsing.parser.token.RowCountToken;
-import io.shardingsphere.core.parsing.parser.token.SQLToken;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

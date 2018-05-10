@@ -22,7 +22,6 @@ import io.shardingsphere.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAl
 import io.shardingsphere.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
-import io.shardingsphere.core.exception.ShardingConfigurationException;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -28,7 +28,6 @@ import io.shardingsphere.core.routing.type.TableUnit;
 import io.shardingsphere.core.routing.type.hint.DatabaseHintRoutingEngine;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.util.SQLLogger;
-import io.shardingsphere.core.routing.strategy.hint.HintShardingStrategy;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;

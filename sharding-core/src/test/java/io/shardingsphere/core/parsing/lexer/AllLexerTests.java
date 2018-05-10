@@ -23,9 +23,6 @@ import io.shardingsphere.core.parsing.lexer.dialect.mysql.MySQLLexerTest;
 import io.shardingsphere.core.parsing.lexer.dialect.oracle.OracleLexerTest;
 import io.shardingsphere.core.parsing.lexer.dialect.postgresql.PostgreSQLLexerTest;
 import io.shardingsphere.core.parsing.lexer.dialect.sqlserver.SQLServerLexerTest;
-import io.shardingsphere.core.parsing.lexer.analyzer.CharTypeTest;
-import io.shardingsphere.core.parsing.lexer.analyzer.TokenizerTest;
-import io.shardingsphere.core.parsing.lexer.dialect.postgresql.PostgreSQLLexerTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 

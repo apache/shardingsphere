@@ -25,10 +25,6 @@ import io.shardingsphere.core.merger.dql.common.MemoryQueryResultRow;
 import io.shardingsphere.core.parsing.SQLParsingEngine;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.merger.dql.common.MemoryMergedResult;
-import io.shardingsphere.core.merger.dql.common.MemoryQueryResultRow;
-import io.shardingsphere.core.parsing.SQLParsingEngine;
 
 import java.sql.SQLException;
 import java.util.HashMap;

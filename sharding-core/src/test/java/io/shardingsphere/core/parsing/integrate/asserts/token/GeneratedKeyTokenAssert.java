@@ -21,10 +21,9 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssertMessage;
 import io.shardingsphere.core.parsing.integrate.jaxb.token.ExpectedGeneratedKeyToken;
 import io.shardingsphere.core.parsing.integrate.jaxb.token.ExpectedTokens;
-import io.shardingsphere.core.parsing.parser.token.SQLToken;
-import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.core.parsing.parser.token.GeneratedKeyToken;
 import io.shardingsphere.core.parsing.parser.token.SQLToken;
+import io.shardingsphere.test.sql.SQLCaseType;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

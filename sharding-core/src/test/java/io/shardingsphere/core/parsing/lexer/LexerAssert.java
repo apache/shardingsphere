@@ -19,8 +19,6 @@ package io.shardingsphere.core.parsing.lexer;
 
 import io.shardingsphere.core.parsing.lexer.token.Token;
 import io.shardingsphere.core.parsing.lexer.token.TokenType;
-import io.shardingsphere.core.parsing.lexer.token.Token;
-import io.shardingsphere.core.parsing.lexer.token.TokenType;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

@@ -22,7 +22,6 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.parser.clause.WhereClauseParser;
 import io.shardingsphere.core.parsing.parser.context.selectitem.SelectItem;
-import io.shardingsphere.core.constant.DatabaseType;
 
 import java.util.List;
 

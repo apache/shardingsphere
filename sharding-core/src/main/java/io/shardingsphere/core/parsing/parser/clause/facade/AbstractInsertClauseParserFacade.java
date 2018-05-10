@@ -21,7 +21,6 @@ import io.shardingsphere.core.parsing.parser.clause.InsertColumnsClauseParser;
 import io.shardingsphere.core.parsing.parser.clause.InsertIntoClauseParser;
 import io.shardingsphere.core.parsing.parser.clause.InsertSetClauseParser;
 import io.shardingsphere.core.parsing.parser.clause.InsertValuesClauseParser;
-import io.shardingsphere.core.parsing.parser.clause.InsertIntoClauseParser;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

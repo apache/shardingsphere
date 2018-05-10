@@ -18,7 +18,6 @@
 package io.shardingsphere.core.parsing.parser.clause.condition;
 
 import io.shardingsphere.core.parsing.parser.context.condition.Condition;
-import io.shardingsphere.core.parsing.parser.context.condition.Condition;
 
 /**
  * No sharding condition.

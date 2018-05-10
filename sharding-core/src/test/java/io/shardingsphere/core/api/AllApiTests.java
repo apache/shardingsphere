@@ -22,11 +22,6 @@ import io.shardingsphere.core.api.algorithm.masterslave.RandomMasterSlaveLoadBal
 import io.shardingsphere.core.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithmTest;
 import io.shardingsphere.core.api.algorithm.sharding.DatabaseShardingStrategyTest;
 import io.shardingsphere.core.api.algorithm.table.TableShardingStrategyTest;
-import io.shardingsphere.core.api.algorithm.common.ShardingStrategyTest;
-import io.shardingsphere.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithmTest;
-import io.shardingsphere.core.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithmTest;
-import io.shardingsphere.core.api.algorithm.sharding.DatabaseShardingStrategyTest;
-import io.shardingsphere.core.api.algorithm.table.TableShardingStrategyTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 

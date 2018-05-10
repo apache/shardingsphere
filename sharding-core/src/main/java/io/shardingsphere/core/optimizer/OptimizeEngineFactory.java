@@ -25,8 +25,6 @@ import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.routing.router.sharding.GeneratedKey;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.optimizer.insert.InsertOptimizeEngine;
-import io.shardingsphere.core.optimizer.query.QueryOptimizeEngine;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

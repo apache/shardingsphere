@@ -27,15 +27,6 @@ import io.shardingsphere.core.parsing.parser.context.condition.Column;
 import io.shardingsphere.core.parsing.parser.context.condition.Condition;
 import io.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.api.algorithm.sharding.ListShardingValue;
-import io.shardingsphere.core.api.algorithm.sharding.RangeShardingValue;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.ShardingOperator;
-import io.shardingsphere.core.parsing.SQLParsingEngine;
-import io.shardingsphere.core.parsing.parser.context.condition.Column;
-import io.shardingsphere.core.parsing.parser.context.condition.Condition;
-import io.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
-import io.shardingsphere.core.rule.ShardingRule;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 

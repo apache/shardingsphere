@@ -25,12 +25,6 @@ import io.shardingsphere.core.parsing.parser.dialect.oracle.sql.OracleSelectPars
 import io.shardingsphere.core.parsing.parser.dialect.postgresql.sql.PostgreSQLSelectParser;
 import io.shardingsphere.core.parsing.parser.dialect.sqlserver.sql.SQLServerSelectParser;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.sql.MySQLSelectParser;
-import io.shardingsphere.core.parsing.parser.dialect.oracle.sql.OracleSelectParser;
-import io.shardingsphere.core.parsing.parser.dialect.postgresql.sql.PostgreSQLSelectParser;
-import io.shardingsphere.core.parsing.parser.dialect.sqlserver.sql.SQLServerSelectParser;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

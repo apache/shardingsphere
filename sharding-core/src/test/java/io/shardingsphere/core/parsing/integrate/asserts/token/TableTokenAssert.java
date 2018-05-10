@@ -22,8 +22,6 @@ import io.shardingsphere.core.parsing.integrate.jaxb.token.ExpectedTableToken;
 import io.shardingsphere.core.parsing.integrate.jaxb.token.ExpectedTokens;
 import io.shardingsphere.core.parsing.parser.token.SQLToken;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
-import io.shardingsphere.core.parsing.parser.token.SQLToken;
-import io.shardingsphere.core.parsing.parser.token.TableToken;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;

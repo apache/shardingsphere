@@ -18,7 +18,6 @@
 package io.shardingsphere.core.merger.dql.groupby.aggregation;
 
 import io.shardingsphere.core.constant.AggregationType;
-import io.shardingsphere.core.constant.AggregationType;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 

@@ -22,7 +22,6 @@ import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.dialect.mysql.MySQLKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
 import io.shardingsphere.core.parsing.parser.clause.WhereClauseParser;
-import io.shardingsphere.core.constant.DatabaseType;
 
 /**
  * Where clause parser for MySQL.

@@ -20,7 +20,6 @@ package io.shardingsphere.core.parsing.integrate.asserts.orderby;
 import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssertMessage;
 import io.shardingsphere.core.parsing.integrate.jaxb.orderby.ExpectedOrderByColumn;
 import io.shardingsphere.core.parsing.parser.context.OrderItem;
-import io.shardingsphere.core.parsing.parser.context.OrderItem;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

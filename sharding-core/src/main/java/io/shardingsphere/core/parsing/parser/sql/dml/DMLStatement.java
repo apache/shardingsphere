@@ -19,7 +19,6 @@ package io.shardingsphere.core.parsing.parser.sql.dml;
 
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.parsing.parser.sql.AbstractSQLStatement;
-import io.shardingsphere.core.constant.SQLType;
 import lombok.ToString;
 
 /**

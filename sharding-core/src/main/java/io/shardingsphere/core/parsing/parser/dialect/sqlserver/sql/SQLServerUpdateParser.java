@@ -23,7 +23,6 @@ import io.shardingsphere.core.parsing.lexer.token.Keyword;
 import io.shardingsphere.core.parsing.parser.dialect.sqlserver.clause.facade.SQLServerUpdateClauseParserFacade;
 import io.shardingsphere.core.parsing.parser.sql.dml.update.AbstractUpdateParser;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.parsing.parser.dialect.sqlserver.clause.facade.SQLServerUpdateClauseParserFacade;
 
 /**
  * Update parser for SQLServer.

@@ -21,7 +21,6 @@ import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.parser.dialect.oracle.clause.facade.OracleUpdateClauseParserFacade;
 import io.shardingsphere.core.parsing.parser.sql.dml.update.AbstractUpdateParser;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.parsing.parser.dialect.oracle.clause.facade.OracleUpdateClauseParserFacade;
 
 /**
  * Update parser for Oracle.

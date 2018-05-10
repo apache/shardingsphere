@@ -19,7 +19,6 @@ package io.shardingsphere.core.parsing.parser.context;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.OrderDirection;
-import io.shardingsphere.core.constant.OrderDirection;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

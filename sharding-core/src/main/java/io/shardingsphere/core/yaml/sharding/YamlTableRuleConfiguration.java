@@ -21,7 +21,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.keygen.KeyGeneratorFactory;
-import io.shardingsphere.core.keygen.KeyGeneratorFactory;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -24,7 +24,6 @@ import io.shardingsphere.core.parsing.parser.clause.TableReferencesClauseParser;
 import io.shardingsphere.core.parsing.parser.sql.SQLParser;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.parsing.parser.clause.TableReferencesClauseParser;
 import lombok.AccessLevel;
 import lombok.Getter;
 

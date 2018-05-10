@@ -18,7 +18,6 @@
 package io.shardingsphere.core.merger.dql.common.fixture;
 
 import io.shardingsphere.core.merger.dql.common.StreamMergedResult;
-import io.shardingsphere.core.merger.dql.common.StreamMergedResult;
 
 public final class TestStreamMergedResult extends StreamMergedResult {
     

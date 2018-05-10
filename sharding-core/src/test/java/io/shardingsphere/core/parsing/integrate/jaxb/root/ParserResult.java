@@ -24,13 +24,6 @@ import io.shardingsphere.core.parsing.integrate.jaxb.limit.ExpectedLimit;
 import io.shardingsphere.core.parsing.integrate.jaxb.orderby.ExpectedOrderByColumn;
 import io.shardingsphere.core.parsing.integrate.jaxb.table.ExpectedTable;
 import io.shardingsphere.core.parsing.integrate.jaxb.token.ExpectedTokens;
-import io.shardingsphere.core.parsing.integrate.jaxb.condition.ExpectedOrCondition;
-import io.shardingsphere.core.parsing.integrate.jaxb.groupby.ExpectedGroupByColumn;
-import io.shardingsphere.core.parsing.integrate.jaxb.item.ExpectedAggregationSelectItem;
-import io.shardingsphere.core.parsing.integrate.jaxb.limit.ExpectedLimit;
-import io.shardingsphere.core.parsing.integrate.jaxb.orderby.ExpectedOrderByColumn;
-import io.shardingsphere.core.parsing.integrate.jaxb.table.ExpectedTable;
-import io.shardingsphere.core.parsing.integrate.jaxb.token.ExpectedTokens;
 import lombok.Getter;
 import lombok.Setter;
 

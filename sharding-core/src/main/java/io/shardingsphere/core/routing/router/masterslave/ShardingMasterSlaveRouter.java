@@ -22,7 +22,6 @@ import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.rule.MasterSlaveRule;
-import io.shardingsphere.core.constant.SQLType;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;

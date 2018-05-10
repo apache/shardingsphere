@@ -33,10 +33,6 @@ import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.util.SQLUtil;
-import io.shardingsphere.core.parsing.parser.clause.expression.AliasExpressionParser;
-import io.shardingsphere.core.parsing.parser.clause.expression.BasicExpressionParser;
-import io.shardingsphere.core.parsing.parser.context.table.Table;
-import io.shardingsphere.core.parsing.parser.dialect.ExpressionParserFactory;
 import lombok.Getter;
 
 import java.util.Arrays;

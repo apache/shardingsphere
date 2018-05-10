@@ -33,13 +33,6 @@ import io.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.util.SQLUtil;
-import io.shardingsphere.core.parsing.parser.context.condition.Column;
-import io.shardingsphere.core.parsing.parser.context.condition.Condition;
-import io.shardingsphere.core.parsing.parser.expression.SQLExpression;
-import io.shardingsphere.core.parsing.parser.expression.SQLIgnoreExpression;
-import io.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
-import io.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
-import io.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
 import lombok.RequiredArgsConstructor;
 
 /**

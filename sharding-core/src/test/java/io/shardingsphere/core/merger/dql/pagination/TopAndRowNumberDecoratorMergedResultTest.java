@@ -26,14 +26,6 @@ import io.shardingsphere.core.merger.fixture.TestQueryResult;
 import io.shardingsphere.core.parsing.parser.context.limit.Limit;
 import io.shardingsphere.core.parsing.parser.context.limit.LimitValue;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.merger.MergedResult;
-import io.shardingsphere.core.merger.QueryResult;
-import io.shardingsphere.core.merger.dql.DQLMergeEngine;
-import io.shardingsphere.core.merger.fixture.TestQueryResult;
-import io.shardingsphere.core.parsing.parser.context.limit.Limit;
-import io.shardingsphere.core.parsing.parser.context.limit.LimitValue;
-import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import org.junit.Before;
 import org.junit.Test;
 

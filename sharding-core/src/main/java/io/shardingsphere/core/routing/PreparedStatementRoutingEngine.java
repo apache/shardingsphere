@@ -24,11 +24,6 @@ import io.shardingsphere.core.routing.router.masterslave.ShardingMasterSlaveRout
 import io.shardingsphere.core.routing.router.sharding.ShardingRouter;
 import io.shardingsphere.core.routing.router.sharding.ShardingRouterFactory;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.routing.router.masterslave.ShardingMasterSlaveRouter;
-import io.shardingsphere.core.routing.router.sharding.ShardingRouter;
-import io.shardingsphere.core.routing.router.sharding.ShardingRouterFactory;
 
 import java.util.List;
 

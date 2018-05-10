@@ -24,7 +24,6 @@ import io.shardingsphere.core.parsing.lexer.token.Keyword;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.facade.MySQLDeleteClauseParserFacade;
 import io.shardingsphere.core.parsing.parser.sql.dml.delete.AbstractDeleteParser;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.facade.MySQLDeleteClauseParserFacade;
 
 /**
  * Delete parser for MySQL.

@@ -18,7 +18,6 @@
 package io.shardingsphere.core.routing;
 
 import io.shardingsphere.core.routing.router.DatabaseHintSQLRouterTest;
-import io.shardingsphere.core.routing.router.DatabaseHintSQLRouterTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 

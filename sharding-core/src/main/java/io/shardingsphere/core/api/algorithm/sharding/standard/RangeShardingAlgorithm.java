@@ -19,7 +19,6 @@ package io.shardingsphere.core.api.algorithm.sharding.standard;
 
 import io.shardingsphere.core.api.algorithm.sharding.RangeShardingValue;
 import io.shardingsphere.core.routing.strategy.ShardingAlgorithm;
-import io.shardingsphere.core.routing.strategy.ShardingAlgorithm;
 
 import java.util.Collection;
 

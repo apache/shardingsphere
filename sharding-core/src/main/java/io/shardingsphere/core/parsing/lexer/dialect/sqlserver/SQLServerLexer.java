@@ -19,7 +19,6 @@ package io.shardingsphere.core.parsing.lexer.dialect.sqlserver;
 
 import io.shardingsphere.core.parsing.lexer.Lexer;
 import io.shardingsphere.core.parsing.lexer.analyzer.Dictionary;
-import io.shardingsphere.core.parsing.lexer.analyzer.Dictionary;
 
 /**
  * SQLServer Lexical analysis.

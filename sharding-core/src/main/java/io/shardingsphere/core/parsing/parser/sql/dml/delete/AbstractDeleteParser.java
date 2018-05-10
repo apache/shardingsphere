@@ -25,8 +25,6 @@ import io.shardingsphere.core.parsing.parser.context.selectitem.SelectItem;
 import io.shardingsphere.core.parsing.parser.sql.SQLParser;
 import io.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.parsing.parser.clause.facade.AbstractDeleteClauseParserFacade;
-import io.shardingsphere.core.parsing.parser.context.selectitem.SelectItem;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collections;

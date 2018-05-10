@@ -18,7 +18,6 @@
 package io.shardingsphere.core.merger.dql.orderby;
 
 import io.shardingsphere.core.constant.OrderDirection;
-import io.shardingsphere.core.constant.OrderDirection;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

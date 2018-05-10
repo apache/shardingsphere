@@ -22,7 +22,6 @@ import io.shardingsphere.core.parsing.parser.clause.TableReferencesClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.DescribeStatement;
 import io.shardingsphere.core.parsing.parser.sql.dal.describe.AbstractDescribeParser;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.DescribeStatement;
 
 /**
  * Describe parser for MySQL.

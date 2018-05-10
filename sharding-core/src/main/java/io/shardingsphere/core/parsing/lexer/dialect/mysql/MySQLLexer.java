@@ -19,7 +19,6 @@ package io.shardingsphere.core.parsing.lexer.dialect.mysql;
 
 import io.shardingsphere.core.parsing.lexer.Lexer;
 import io.shardingsphere.core.parsing.lexer.analyzer.Dictionary;
-import io.shardingsphere.core.parsing.lexer.analyzer.Dictionary;
 
 /**
  * MySQL Lexical analysis.

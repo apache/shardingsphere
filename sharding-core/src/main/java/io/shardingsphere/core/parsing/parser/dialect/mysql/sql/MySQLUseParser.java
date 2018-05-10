@@ -19,7 +19,6 @@ package io.shardingsphere.core.parsing.parser.dialect.mysql.sql;
 
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
 import io.shardingsphere.core.parsing.parser.sql.dal.use.AbstractUseParser;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
 
 /**
  * Use parser for MySQL.

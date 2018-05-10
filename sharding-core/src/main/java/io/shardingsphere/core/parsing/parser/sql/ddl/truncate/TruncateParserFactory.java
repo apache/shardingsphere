@@ -24,11 +24,6 @@ import io.shardingsphere.core.parsing.parser.dialect.oracle.sql.OracleTruncatePa
 import io.shardingsphere.core.parsing.parser.dialect.postgresql.sql.PostgreSQLTruncateParser;
 import io.shardingsphere.core.parsing.parser.dialect.sqlserver.sql.SQLServerTruncateParser;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.sql.MySQLTruncateParser;
-import io.shardingsphere.core.parsing.parser.dialect.oracle.sql.OracleTruncateParser;
-import io.shardingsphere.core.parsing.parser.dialect.postgresql.sql.PostgreSQLTruncateParser;
-import io.shardingsphere.core.parsing.parser.dialect.sqlserver.sql.SQLServerTruncateParser;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

@@ -26,14 +26,6 @@ import io.shardingsphere.core.metadata.ColumnMetaData;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.metadata.TableMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.api.algorithm.fixture.TestComplexKeysShardingAlgorithm;
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.api.config.TableRuleConfiguration;
-import io.shardingsphere.core.api.config.strategy.ComplexShardingStrategyConfiguration;
-import io.shardingsphere.core.metadata.ColumnMetaData;
-import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.metadata.TableMetaData;
-import io.shardingsphere.core.rule.ShardingRule;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

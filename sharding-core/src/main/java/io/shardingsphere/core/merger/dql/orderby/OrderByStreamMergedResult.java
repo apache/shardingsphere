@@ -20,7 +20,6 @@ package io.shardingsphere.core.merger.dql.orderby;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.merger.dql.common.StreamMergedResult;
 import io.shardingsphere.core.parsing.parser.context.OrderItem;
-import io.shardingsphere.core.parsing.parser.context.OrderItem;
 import lombok.AccessLevel;
 import lombok.Getter;
 

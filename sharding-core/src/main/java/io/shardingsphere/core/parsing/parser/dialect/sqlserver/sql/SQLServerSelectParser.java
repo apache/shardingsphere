@@ -25,10 +25,6 @@ import io.shardingsphere.core.parsing.parser.dialect.sqlserver.clause.facade.SQL
 import io.shardingsphere.core.parsing.parser.sql.dql.select.AbstractSelectParser;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.parsing.parser.dialect.sqlserver.clause.SQLServerOffsetClauseParser;
-import io.shardingsphere.core.parsing.parser.dialect.sqlserver.clause.SQLServerTopClauseParser;
-import io.shardingsphere.core.parsing.parser.dialect.sqlserver.clause.facade.SQLServerSelectClauseParserFacade;
 
 /**
  * Select parser for SQLServer.

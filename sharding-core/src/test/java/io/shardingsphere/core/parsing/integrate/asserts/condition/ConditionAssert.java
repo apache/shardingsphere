@@ -25,9 +25,6 @@ import io.shardingsphere.core.parsing.integrate.jaxb.condition.ExpectedValue;
 import io.shardingsphere.core.parsing.parser.context.condition.AndCondition;
 import io.shardingsphere.core.parsing.parser.context.condition.Condition;
 import io.shardingsphere.core.parsing.parser.context.condition.OrCondition;
-import io.shardingsphere.core.parsing.parser.context.condition.AndCondition;
-import io.shardingsphere.core.parsing.parser.context.condition.Condition;
-import io.shardingsphere.core.parsing.parser.context.condition.OrCondition;
 import lombok.RequiredArgsConstructor;
 
 import java.lang.reflect.Field;

@@ -31,11 +31,6 @@ import io.shardingsphere.core.parsing.parser.sql.dal.show.AbstractShowParser;
 import io.shardingsphere.core.parsing.parser.token.RemoveToken;
 import io.shardingsphere.core.parsing.parser.token.SchemaToken;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowColumnsStatement;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowCreateTableStatement;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowOtherStatement;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTablesStatement;
 import lombok.RequiredArgsConstructor;
 
 /**

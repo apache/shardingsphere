@@ -24,10 +24,6 @@ import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.expression.MyS
 import io.shardingsphere.core.parsing.parser.dialect.oracle.clause.expression.OracleAliasExpressionParser;
 import io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.expression.PostgreSQLAliasExpressionParser;
 import io.shardingsphere.core.parsing.parser.dialect.sqlserver.clause.expression.SQLServerAliasExpressionParser;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.expression.MySQLAliasExpressionParser;
-import io.shardingsphere.core.parsing.parser.dialect.oracle.clause.expression.OracleAliasExpressionParser;
-import io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.expression.PostgreSQLAliasExpressionParser;
-import io.shardingsphere.core.parsing.parser.dialect.sqlserver.clause.expression.SQLServerAliasExpressionParser;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

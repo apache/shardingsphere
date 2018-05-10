@@ -25,8 +25,6 @@ import io.shardingsphere.core.parsing.parser.dialect.ExpressionParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.util.SQLUtil;
-import io.shardingsphere.core.parsing.parser.clause.expression.BasicExpressionParser;
-import io.shardingsphere.core.parsing.parser.dialect.ExpressionParserFactory;
 
 /**
  * Update set items clause parser.

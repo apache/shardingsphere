@@ -22,8 +22,6 @@ import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.dialect.oracle.OracleKeyword;
 import io.shardingsphere.core.parsing.parser.clause.OrderByClauseParser;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingException;
-import io.shardingsphere.core.constant.OrderDirection;
-import io.shardingsphere.core.parsing.parser.exception.SQLParsingException;
 
 /**
  * Order by clause parser for Oracle.

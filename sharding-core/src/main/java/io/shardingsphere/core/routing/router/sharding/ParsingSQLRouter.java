@@ -49,10 +49,6 @@ import io.shardingsphere.core.routing.type.unicast.UnicastRoutingEngine;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
 import io.shardingsphere.core.util.SQLLogger;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.optimizer.OptimizeEngineFactory;
-import io.shardingsphere.core.optimizer.condition.ShardingConditions;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;

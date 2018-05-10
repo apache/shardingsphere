@@ -23,12 +23,6 @@ import io.shardingsphere.core.parsing.lexer.analyzer.Tokenizer;
 import io.shardingsphere.core.parsing.lexer.token.Assist;
 import io.shardingsphere.core.parsing.lexer.token.Token;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingException;
-import io.shardingsphere.core.parsing.lexer.analyzer.CharType;
-import io.shardingsphere.core.parsing.lexer.analyzer.Dictionary;
-import io.shardingsphere.core.parsing.lexer.analyzer.Tokenizer;
-import io.shardingsphere.core.parsing.lexer.token.Assist;
-import io.shardingsphere.core.parsing.lexer.token.Token;
-import io.shardingsphere.core.parsing.parser.exception.SQLParsingException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
