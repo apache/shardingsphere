@@ -234,13 +234,12 @@ public class ShardingStatement extends AbstractStatementAdapter {
     }
 
     private void doRefreshInternal(ShardingContext context, TableRule tableRule, ShardingDataSourceNames shardingDataSourceNames) throws SQLException {
-        Map<String, Connection> cachedConnectionMap = new HashMap<>();
+        Map<String, Connection> connectionMap = new HashMap<>();
         for (DataNode each : tableRule.getActualDataNodes()) {
             String dataSourceName = shardingDataSourceNames.getRawMasterDataSourceName(each.getDataSourceName());
-            cachedConnectionMap.put(dataSourceName, connection.getConnection(dataSourceName));
+            connectionMap.put(dataSourceName, connection.getConnection(dataSourceName));
         }
-        context.getShardingMetaData().setCachedConnectionMap(cachedConnectionMap);
-        context.getShardingMetaData().refresh(tableRule, context.getShardingRule());
+        context.getShardingMetaData().refresh(tableRule, context.getShardingRule(), connectionMap);
     }
     
     @Override

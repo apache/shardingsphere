@@ -27,6 +27,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
@@ -45,12 +46,13 @@ public final class JDBCShardingMetaData extends ShardingMetaData {
     private final ShardingRule shardingRule;
     
     private final DatabaseType databaseType;
-    
+
     @Override
-    public Collection<ColumnMetaData> getColumnMetaDataList(final DataNode dataNode, final ShardingDataSourceNames shardingDataSourceNames) throws SQLException {
+    public Collection<ColumnMetaData> getColumnMetaDataList(final DataNode dataNode, final ShardingDataSourceNames shardingDataSourceNames,
+                                                            final Map<String, Connection> connectionMap) throws SQLException {
         String dataSourceName = shardingDataSourceNames.getRawMasterDataSourceName(dataNode.getDataSourceName());
-        if (getCachedConnectionMap().containsKey(dataSourceName)) {
-            return ShardingMetaDataHandlerFactory.newInstance(dataNode.getTableName(), databaseType).getColumnMetaDataList(getCachedConnectionMap().get(dataSourceName));
+        if (connectionMap.containsKey(dataSourceName)) {
+            return ShardingMetaDataHandlerFactory.newInstance(dataNode.getTableName(), databaseType).getColumnMetaDataList(connectionMap.get(dataSourceName));
         } else {
             return ShardingMetaDataHandlerFactory.newInstance(dataSourceMap.get(dataSourceName), dataNode.getTableName(), databaseType).getColumnMetaDataList();
         }

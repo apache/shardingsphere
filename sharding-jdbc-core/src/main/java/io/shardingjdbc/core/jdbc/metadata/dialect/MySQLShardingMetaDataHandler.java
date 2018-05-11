@@ -19,6 +19,7 @@ package io.shardingjdbc.core.jdbc.metadata.dialect;
 
 import io.shardingjdbc.core.metadata.ColumnMetaData;
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -38,29 +39,26 @@ public final class MySQLShardingMetaDataHandler extends ShardingMetaDataHandler 
     }
 
     @Override
-    public List<ColumnMetaData> geColumnMetaInternal(final Statement statement) throws SQLException {
-        List<ColumnMetaData> result = new LinkedList<>();
-        if (isTableExist(statement)) {
-            result = getExistColumnMeta(statement);
-        }
-        return result;
-    }
-
-    private boolean isTableExist(final Statement statement) throws SQLException {
-        statement.executeQuery(String.format("show tables like '%s'", getActualTableName()));
-        try (ResultSet resultSet = statement.getResultSet()) {
-            return resultSet.next();
-        }
-    }
-
-    private List<ColumnMetaData> getExistColumnMeta(final Statement statement) throws SQLException {
-        List<ColumnMetaData> result = new LinkedList<>();
-        statement.executeQuery(String.format("desc %s;", getActualTableName()));
-        try (ResultSet resultSet = statement.getResultSet()) {
-            while (resultSet.next()) {
-                result.add(new ColumnMetaData(resultSet.getString("Field"), resultSet.getString("Type"), resultSet.getString("Key")));
+    public boolean isTableExist(final Connection connection) throws SQLException {
+        try (Statement statement = connection.createStatement()) {
+            statement.executeQuery(String.format("show tables like '%s'", getActualTableName()));
+            try (ResultSet resultSet = statement.getResultSet()) {
+                return resultSet.next();
             }
         }
-        return result;
+    }
+
+    @Override
+    public List<ColumnMetaData> getExistColumnMeta(final Connection connection) throws SQLException {
+        List<ColumnMetaData> result = new LinkedList<>();
+        try (Statement statement = connection.createStatement()) {
+            statement.executeQuery(String.format("desc %s;", getActualTableName()));
+            try (ResultSet resultSet = statement.getResultSet()) {
+                while (resultSet.next()) {
+                    result.add(new ColumnMetaData(resultSet.getString("Field"), resultSet.getString("Type"), resultSet.getString("Key")));
+                }
+            }
+            return result;
+        }
     }
 }
