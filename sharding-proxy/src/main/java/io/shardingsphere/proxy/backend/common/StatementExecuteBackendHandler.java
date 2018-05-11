@@ -33,6 +33,7 @@ import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.proxy.backend.mysql.MySQLPacketStatementExecuteQueryResult;
 import io.shardingsphere.proxy.config.RuleRegistry;
+import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
@@ -133,14 +134,16 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
         if (routeResult.getExecutionUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
         }
-        List<CommandResponsePackets> result = new LinkedList<>();
+        List<CommandResponsePackets> packets = new LinkedList<>();
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             // TODO multiple threads
-            result.add(execute(routeResult.getSqlStatement(), each.getDataSource(), each.getSqlUnit().getSql()));
+            packets.add(execute(routeResult.getSqlStatement(), each.getDataSource(), each.getSqlUnit().getSql()));
         }
-        return merge(routeResult.getSqlStatement(), result);
+        CommandResponsePackets result = merge(routeResult.getSqlStatement(), packets);
+        ProxyShardingRefreshHandler.build(routeResult).execute();
+        return result;
     }
-    
+
     private CommandResponsePackets execute(final SQLStatement sqlStatement, final String dataSourceName, final String sql) {
         switch (sqlStatement.getType()) {
             case DQL:
@@ -154,7 +157,7 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
                 return executeCommon(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql);
         }
     }
-    
+
     private List<Object> getComStmtExecuteParameters() {
         List<Object> result = new ArrayList<>(32);
         for (PreparedStatementParameter each : preparedStatementParameters) {
