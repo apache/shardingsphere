@@ -12,14 +12,14 @@
     <name>${project.artifactId}</name>
     
     <properties>
-        <sharding-jdbc.version>3.0.0.M1-SNAPSHOT</sharding-jdbc.version>
+        <sharding-sphere.version>3.0.0.M1-SNAPSHOT</sharding-sphere.version>
     </properties>
     
     <dependencies>
         <dependency>
             <groupId>io.shardingsphere</groupId>
             <artifactId>sharding-jdbc</artifactId>
-            <version>${sharding-jdbc.version}</version>
+            <version>${sharding-sphere.version}</version>
         </dependency>
         
         <dependency>
