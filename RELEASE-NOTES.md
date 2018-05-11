@@ -1,8 +1,8 @@
-## 2.1.0
+## 3.0.0
 
 ### Milestones
 
-1. Sharding-Proxy launch. Support the use of Sharding-JDBC in the form of database to support for MySQL CLI and GUI client
+1. Sharding-Proxy launch. Support the use of Sharding-Sphere in the form of database to support for MySQL CLI and GUI client
 
 ### New Features
 

@@ -1,8 +1,8 @@
-## 2.1.0
+## 3.0.0
 
 ### 里程碑
 
-1. Sharding-Proxy发布. 支持以数据库的形式使用Sharding-JDBC, 全面提供对MySQL命令行以及图形化客户端的支持
+1. Sharding-Proxy发布. 支持以数据库的形式使用Sharding-Sphere, 全面提供对MySQL命令行以及图形化客户端的支持
 
 ### 新功能
 
