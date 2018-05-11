@@ -44,7 +44,7 @@
 #      algorithmExpression: demo_ds_${user_id % 2}
 #  defaultTableStrategy:
 #    none:
-#  defaultKeyGeneratorClassName: io.shardingjdbc.core.keygen.DefaultKeyGenerator
+#  defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
 #
 #  props:
 #    sql.show: true
