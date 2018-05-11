@@ -4,17 +4,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>io.shardingjdbc</groupId>
-        <artifactId>sharding-jdbc</artifactId>
-        <version>2.1.0-SNAPSHOT</version>
+        <groupId>io.shardingsphere</groupId>
+        <artifactId>sharding-sphere</artifactId>
+        <version>3.0.0.M1-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-opentracing</artifactId>
     <name>${project.artifactId}</name>
-    
+
     <dependencies>
         <dependency>
-            <groupId>io.shardingjdbc</groupId>
-            <artifactId>sharding-jdbc-core</artifactId>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>sharding-jdbc</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -34,12 +34,12 @@
             <artifactId>opentracing-mock</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito2</artifactId>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>

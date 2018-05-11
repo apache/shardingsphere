@@ -31,4 +31,3 @@ logs/
 Thumbs.db
 
 *.class
-sharding-jdbc-core/bin/
