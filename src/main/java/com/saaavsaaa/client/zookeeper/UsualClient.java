@@ -42,7 +42,7 @@ public class UsualClient extends BaseClient {
             return;
         }
         if (StrategyType.USUAL == strategyType){
-            strategy = new UsualStrategy(new BaseProvider(rootNode, this, watched, authorities));
+            strategy = new UsualStrategy(new RetryProvider(rootNode, this, watched, authorities));
         } else {
             strategy = new ContentionStrategy(new BaseProvider(rootNode, this, watched, authorities));
         }

@@ -116,7 +116,11 @@ public final class PathTree {
                         case NodeDataChanged:
                         case NodeChildrenChanged: {
                             try {
-                                put(path, provider.getDataString(path));
+                                String value = Constants.NOTHING_VALUE;
+                                if (!path.equals(getRootNode().getKey())){
+                                    value = provider.getDataString(path);
+                                }
+                                put(path, value);
                             } catch (Exception e) {
                                 logger.error("PathTree put error : " + e.getMessage());
                             }
