@@ -26,6 +26,7 @@
 
 1. [ISSUE #628](https://github.com/sharding-sphere/sharding-sphere/issues/628) 支持PostgreSQL的数据类型jsonb
 1. [ISSUE #646](https://github.com/sharding-sphere/sharding-sphere/issues/646) 当SELECT ITEMS中的别名与GROUP BY或ORDER BY的真实列名对应时，无需补列
+1. [ISSUE #735](https://github.com/sharding-sphere/sharding-sphere/issues/735) 在Mybatis中使用RoundRobinMasterSlaveLoadBalanceAlgorithm算法路由存在问题
 1. [ISSUE #806](https://github.com/sharding-sphere/sharding-sphere/issues/806) `NOT IN`解析异常
 
 ## 2.0.3
