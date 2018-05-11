@@ -42,7 +42,7 @@ Use JDBC connect databases without redirect cost for java application, best perf
 
 ### Sharding-Proxy
 
-[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://github.com/shardingjdbc/sharding-jdbc-doc/raw/master/dist/sharding-proxy-2.1.0-SNAPSHOT-assembly-v1.tar.gz)
+[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://github.com/shardingjdbc/sharding-jdbc-doc/raw/master/dist/sharding-proxy-3.0.0.M1-SNAPSHOT-v1.tar.gz)
 
 It is a database proxy. Deploy as a stateless server, support MySQL protocol for now.
 
