@@ -54,9 +54,13 @@ public final class MySQLFrontendHandler extends FrontendHandler {
     @Override
     protected void auth(final ChannelHandlerContext context, final ByteBuf message) {
         MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message);
-        // TODO use authPluginData to auth
-        HandshakeResponse41Packet response41 = new HandshakeResponse41Packet(mysqlPacketPayload);
-        context.writeAndFlush(new OKPacket(response41.getSequenceId() + 1, 0L, 0L, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+        try {
+            // TODO use authPluginData to auth
+            HandshakeResponse41Packet response41 = new HandshakeResponse41Packet(mysqlPacketPayload);
+            context.writeAndFlush(new OKPacket(response41.getSequenceId() + 1, 0L, 0L, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+        } finally {
+            mysqlPacketPayload.getByteBuf().release();
+        }
     }
     
     @Override
@@ -66,13 +70,17 @@ public final class MySQLFrontendHandler extends FrontendHandler {
             @Override
             public void run() {
                 MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message);
-                int sequenceId = mysqlPacketPayload.readInt1();
-                CommandPacket commandPacket = CommandPacketFactory.getCommandPacket(sequenceId, mysqlPacketPayload);
-                for (DatabaseProtocolPacket each : commandPacket.execute().getDatabaseProtocolPackets()) {
-                    context.writeAndFlush(each);
-                }
-                while (commandPacket.hasMoreResultValue()) {
-                    context.writeAndFlush(commandPacket.getResultValue());
+                try {
+                    int sequenceId = mysqlPacketPayload.readInt1();
+                    CommandPacket commandPacket = CommandPacketFactory.getCommandPacket(sequenceId, mysqlPacketPayload);
+                    for (DatabaseProtocolPacket each : commandPacket.execute().getDatabaseProtocolPackets()) {
+                        context.writeAndFlush(each);
+                    }
+                    while (commandPacket.hasMoreResultValue()) {
+                        context.writeAndFlush(commandPacket.getResultValue());
+                    }
+                } finally {
+                    mysqlPacketPayload.getByteBuf().release();
                 }
             }
         });
