@@ -2,6 +2,8 @@ package com.saaavsaaa.client.zookeeper;
 
 import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.utility.section.Listener;
+import com.saaavsaaa.client.zookeeper.base.BaseClient;
+import com.saaavsaaa.client.zookeeper.base.BaseClientTest;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooKeeper;
 import org.junit.Test;
@@ -37,7 +39,6 @@ public class ClientsTest extends BaseClientTest {
             System.out.println("create watch client");
             client = newWatchClient(creator);
         }
-        zooKeeper = ((BaseClient)client).getZooKeeper();
         return client;
     }
     
@@ -138,7 +139,7 @@ public class ClientsTest extends BaseClientTest {
     @Test
     public void close() throws Exception {
         for (IClient client : clients) {
-            ZooKeeper zk = ((BaseClient)client).getZooKeeper();
+            ZooKeeper zk = getZooKeeper(client);
             client.close();
             assert zk.getState() == ZooKeeper.States.CLOSED;
         }

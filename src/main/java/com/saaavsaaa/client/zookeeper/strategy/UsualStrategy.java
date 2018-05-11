@@ -2,7 +2,8 @@ package com.saaavsaaa.client.zookeeper.strategy;
 
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
-import com.saaavsaaa.client.zookeeper.Provider;
+import com.saaavsaaa.client.zookeeper.base.BaseProvider;
+import com.saaavsaaa.client.zookeeper.base.BaseStrategy;
 import com.saaavsaaa.client.zookeeper.transaction.ZKTransaction;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
@@ -18,7 +19,7 @@ import java.util.List;
  */
 public class UsualStrategy extends BaseStrategy {
     private static final Logger logger = LoggerFactory.getLogger(UsualStrategy.class);
-    public UsualStrategy(final Provider provider){
+    public UsualStrategy(final BaseProvider provider){
         super(provider);
     }
     

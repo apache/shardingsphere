@@ -5,7 +5,7 @@ import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.utility.section.ClientTask;
 import com.saaavsaaa.client.utility.section.Listener;
 import com.saaavsaaa.client.utility.section.Properties;
-import com.saaavsaaa.client.zookeeper.Provider;
+import com.saaavsaaa.client.zookeeper.base.BaseProvider;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.common.PathUtils;
@@ -28,10 +28,10 @@ public final class PathTree {
     private final AtomicReference<PathNode> rootNode = new AtomicReference<>();
     private boolean executorStart = false;
     private ScheduledExecutorService cacheService;
-    private final Provider provider;
+    private final BaseProvider provider;
     private PathStatus Status;
     
-    public PathTree(final String root, final Provider provider) {
+    public PathTree(final String root, final BaseProvider provider) {
         this.rootNode.set(new PathNode(root));
         this.Status = PathStatus.RELEASE;
         this.provider = provider;
@@ -61,7 +61,7 @@ public final class PathTree {
         }
     }
     
-    private void attechIntoNode(final List<String> children, final PathNode pathNode, final Provider provider) throws KeeperException, InterruptedException {
+    private void attechIntoNode(final List<String> children, final PathNode pathNode, final BaseProvider provider) throws KeeperException, InterruptedException {
         logger.debug("attechIntoNode children:{}", children);
         if (children.isEmpty()){
             logger.info("attechIntoNode there are no children");
@@ -88,7 +88,7 @@ public final class PathTree {
         cacheService = Executors.newSingleThreadScheduledExecutor();
         cacheService.scheduleAtFixedRate(new ClientTask(provider) {
             @Override
-            public void run(Provider provider) throws KeeperException, InterruptedException {
+            public void run(BaseProvider provider) throws KeeperException, InterruptedException {
                 logger.debug("cacheService run:{}", getStatus());
                 if (PathStatus.RELEASE == getStatus()) {
                     loading();

@@ -1,4 +1,4 @@
-package com.saaavsaaa.client.zookeeper;
+package com.saaavsaaa.client.zookeeper.base;
 
 import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.utility.PathUtil;
@@ -7,6 +7,7 @@ import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.utility.section.Listener;
 import com.saaavsaaa.client.utility.section.Properties;
 import com.saaavsaaa.client.utility.section.WatcherCreator;
+import com.saaavsaaa.client.zookeeper.ClientFactory;
 import com.saaavsaaa.client.zookeeper.strategy.StrategyType;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.ACL;
@@ -38,7 +39,7 @@ public abstract class BaseClient implements IClient {
     
     protected ZooKeeper zooKeeper;
     protected List<ACL> authorities;
-    private ClientFactory clientFactory;
+    private BaseClientFactory clientFactory;
     
     protected BaseClient(final String servers, final int sessionTimeoutMilliseconds) {
         this.servers = servers;
@@ -175,10 +176,11 @@ public abstract class BaseClient implements IClient {
         this.authorities = ZooDefs.Ids.CREATOR_ALL_ACL;
     }
     
-    void setClientFactory(ClientFactory clientFactory) {
+    void setClientFactory(BaseClientFactory clientFactory) {
         this.clientFactory = clientFactory;
     }
-    ClientFactory getClientFactory() {
+    
+    BaseClientFactory getClientFactory() {
         return clientFactory;
     }
 }

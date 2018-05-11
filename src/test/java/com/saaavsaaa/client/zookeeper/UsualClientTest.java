@@ -1,6 +1,7 @@
 package com.saaavsaaa.client.zookeeper;
 
 import com.saaavsaaa.client.action.IClient;
+import com.saaavsaaa.client.zookeeper.base.BaseClientTest;
 import org.apache.zookeeper.KeeperException;
 import org.junit.Test;
 

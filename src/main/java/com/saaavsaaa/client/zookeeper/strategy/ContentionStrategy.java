@@ -4,7 +4,7 @@ import com.saaavsaaa.client.election.LeaderElection;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.utility.section.Callback;
-import com.saaavsaaa.client.zookeeper.Provider;
+import com.saaavsaaa.client.zookeeper.base.BaseProvider;
 import com.saaavsaaa.client.zookeeper.transaction.ZKTransaction;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
@@ -21,7 +21,7 @@ import java.util.Stack;
  */
 public class ContentionStrategy extends UsualStrategy {
     private static final Logger logger = LoggerFactory.getLogger(ContentionStrategy.class);
-    public ContentionStrategy(final Provider provider) {
+    public ContentionStrategy(final BaseProvider provider) {
         super(provider);
     }
     

@@ -1,15 +1,14 @@
-package com.saaavsaaa.client.zookeeper.strategy;
+package com.saaavsaaa.client.zookeeper.base;
 
 import com.saaavsaaa.client.action.IExecStrategy;
-import com.saaavsaaa.client.zookeeper.Provider;
 import org.apache.zookeeper.KeeperException;
 
 /**
  * Created by aaa on 18-5-4.
  */
 public abstract class BaseStrategy implements IExecStrategy {
-    protected final Provider provider;
-    public BaseStrategy(final Provider provider){
+    protected final BaseProvider provider;
+    public BaseStrategy(final BaseProvider provider){
         this.provider = provider;
     }
     
@@ -18,7 +17,7 @@ public abstract class BaseStrategy implements IExecStrategy {
         return new String(getData(key));
     }
     
-    public Provider getProvider() {
+    public BaseProvider getProvider() {
         return provider;
     }
 }

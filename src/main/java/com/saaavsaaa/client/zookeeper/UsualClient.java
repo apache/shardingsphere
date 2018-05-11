@@ -1,6 +1,8 @@
 package com.saaavsaaa.client.zookeeper;
 
 import com.saaavsaaa.client.action.IExecStrategy;
+import com.saaavsaaa.client.zookeeper.base.BaseClient;
+import com.saaavsaaa.client.zookeeper.base.BaseProvider;
 import com.saaavsaaa.client.zookeeper.strategy.UsualStrategy;
 import com.saaavsaaa.client.zookeeper.strategy.ContentionStrategy;
 import com.saaavsaaa.client.zookeeper.strategy.StrategyType;
@@ -40,9 +42,9 @@ public class UsualClient extends BaseClient {
             return;
         }
         if (StrategyType.USUAL == strategyType){
-            strategy = new UsualStrategy(new Provider(rootNode, this, watched, authorities));
+            strategy = new UsualStrategy(new BaseProvider(rootNode, this, watched, authorities));
         } else {
-            strategy = new ContentionStrategy(new Provider(rootNode, this, watched, authorities));
+            strategy = new ContentionStrategy(new BaseProvider(rootNode, this, watched, authorities));
         }
         strategies.put(strategyType, strategy);
     }

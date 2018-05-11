@@ -1,6 +1,6 @@
 package com.saaavsaaa.client.utility.section;
 
-import com.saaavsaaa.client.zookeeper.Provider;
+import com.saaavsaaa.client.zookeeper.base.BaseProvider;
 import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,13 +10,13 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class ClientTask implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(ClientTask.class);
-    private final Provider provider;
+    private final BaseProvider provider;
     
-    public ClientTask(final Provider provider){
+    public ClientTask(final BaseProvider provider){
         this.provider = provider;
     }
 
-    public abstract void run(final Provider provider) throws KeeperException, InterruptedException;
+    public abstract void run(final BaseProvider provider) throws KeeperException, InterruptedException;
     
     @Override
     public void run() {

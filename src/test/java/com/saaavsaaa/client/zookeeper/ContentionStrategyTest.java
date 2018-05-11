@@ -3,6 +3,7 @@ package com.saaavsaaa.client.zookeeper;
 import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.section.Listener;
+import com.saaavsaaa.client.zookeeper.base.BaseClient;
 import com.saaavsaaa.client.zookeeper.strategy.StrategyType;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -39,14 +40,14 @@ public class ContentionStrategyTest extends UsualClientTest {
         testClient.deleteCurrentBranch(keyB); // because Constants.CHANGING_KEY, root still exist
         List<String> children = zooKeeper.getChildren(PathUtil.checkPath(TestSupport.ROOT), false);
         assert children.size() == 0;
-        ((BaseClient)testClient).deleteNamespace();
+        deleteRoot(testClient);
         assert zooKeeper.exists(PathUtil.checkPath(TestSupport.ROOT), false) == null;
         testClient.createAllNeedPath(keyB, "bbb11", CreateMode.PERSISTENT);
         assert zooKeeper.exists(PathUtil.getRealPath(TestSupport.ROOT, keyB), false) != null;
         testClient.deleteCurrentBranch(keyB);
         children = zooKeeper.getChildren(PathUtil.checkPath(TestSupport.ROOT), false);
         assert children.size() == 0;
-        ((BaseClient)testClient).deleteNamespace();
+        deleteRoot(testClient);
         assert zooKeeper.exists(PathUtil.checkPath(TestSupport.ROOT), false) == null;
     }
 }

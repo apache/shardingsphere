@@ -3,6 +3,8 @@ package com.saaavsaaa.client.zookeeper;
 import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.utility.section.Listener;
+import com.saaavsaaa.client.zookeeper.base.BaseClient;
+import com.saaavsaaa.client.zookeeper.base.BaseClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,17 +13,9 @@ import java.io.IOException;
 /**
  * Created by aaa
  */
-public class ClientFactory {
+public class ClientFactory extends BaseClientFactory {
     //    private static final String CLIENT_EXCLUSIVE_NODE = "ZKC";
     private static final Logger logger = LoggerFactory.getLogger(ClientFactory.class);
-    
-    private BaseClient client;
-    private Listener globalListener;
-    private String namespace;
-    private String scheme;
-    private byte[] auth;
-    private String servers;
-    private int sessionTimeoutMilliseconds;
     
     public ClientFactory(){}
     
@@ -53,17 +47,6 @@ public class ClientFactory {
     public ClientFactory watch(final Listener listener){
         globalListener = listener;
         return this;
-    }
-    
-    public synchronized IClient start() throws IOException, InterruptedException {
-        client.setClientFactory(this);
-        client.setRootNode(namespace);
-        client.setAuthorities(scheme , auth);
-        client.start();
-        if (globalListener != null) {
-            client.registerWatch(globalListener);
-        }
-        return client;
     }
     
     public ClientFactory setNamespace(String namespace) {

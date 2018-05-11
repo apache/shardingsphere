@@ -1,9 +1,11 @@
-package com.saaavsaaa.client.zookeeper;
+package com.saaavsaaa.client.zookeeper.base;
 
 import com.saaavsaaa.client.action.IClient;
+import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.utility.section.Listener;
-import com.saaavsaaa.client.utility.PathUtil;
+import com.saaavsaaa.client.zookeeper.ClientFactory;
+import com.saaavsaaa.client.zookeeper.TestSupport;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.junit.After;
@@ -29,7 +31,12 @@ public abstract class BaseClientTest {
     public void start() throws IOException, InterruptedException {
         ClientFactory creator = new ClientFactory();
         testClient = createClient(creator);
-        zooKeeper = ((BaseClient)testClient).getZooKeeper();
+        getZooKeeper(testClient);
+    }
+    
+    protected ZooKeeper getZooKeeper(IClient client){
+        zooKeeper = ((BaseClient)client).getZooKeeper();
+        return zooKeeper;
     }
     
     protected abstract IClient createClient(ClientFactory creator) throws IOException, InterruptedException;
@@ -43,41 +50,45 @@ public abstract class BaseClientTest {
     @Ignore
     @Test
     public void deleteRoot() throws KeeperException, InterruptedException {
-        ((BaseClient)testClient).deleteNamespace();
-        assert zooKeeper.exists(Constants.PATH_SEPARATOR + TestSupport.ROOT, false) == null;
+        deleteRoot(testClient);
+        assert getZooKeeper(testClient).exists(Constants.PATH_SEPARATOR + TestSupport.ROOT, false) == null;
+    }
+    
+    protected void deleteRoot(IClient client) throws KeeperException, InterruptedException {
+        ((BaseClient)client).deleteNamespace();
     }
     
     protected void createRoot(IClient client) throws KeeperException, InterruptedException {
         ((BaseClient)client).createNamespace();
-        assert zooKeeper.exists(Constants.PATH_SEPARATOR + TestSupport.ROOT, false) != null;
+        assert getZooKeeper(client).exists(Constants.PATH_SEPARATOR + TestSupport.ROOT, false) != null;
         ((BaseClient)client).deleteNamespace();
-        assert zooKeeper.exists(Constants.PATH_SEPARATOR + TestSupport.ROOT, false) == null;
+        assert getZooKeeper(client).exists(Constants.PATH_SEPARATOR + TestSupport.ROOT, false) == null;
     }
     
     protected void createChild(IClient client) throws KeeperException, InterruptedException {
         String key = "a/b/bb";
         client.createAllNeedPath(key, "bbb11", CreateMode.PERSISTENT);
-        assert zooKeeper.exists(PathUtil.getRealPath(TestSupport.ROOT, key)/*"/" + ROOT + "/" + key*/, false) != null;
+        assert getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, key)/*"/" + ROOT + "/" + key*/, false) != null;
         client.deleteCurrentBranch(key);
-        assert zooKeeper.exists(PathUtil.getRealPath(TestSupport.ROOT, key)/*"/" + ROOT + "/" + key*/, false) == null;
+        assert getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, key)/*"/" + ROOT + "/" + key*/, false) == null;
     }
     
     protected void deleteBranch(IClient client) throws KeeperException, InterruptedException {
         String keyB = "a/b/bb";
         client.createAllNeedPath(keyB, "bbb11", CreateMode.PERSISTENT);
-        assert zooKeeper.exists(PathUtil.getRealPath(TestSupport.ROOT, keyB), false) != null;
+        assert getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, keyB), false) != null;
         String keyC  = "a/c/cc";
         client.createAllNeedPath(keyC, "ccc11", CreateMode.PERSISTENT);
-        assert zooKeeper.exists(PathUtil.getRealPath(TestSupport.ROOT, keyC), false) != null;
+        assert getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, keyC), false) != null;
         client.deleteCurrentBranch(keyC);
-        assert zooKeeper.exists(PathUtil.getRealPath(TestSupport.ROOT, keyC), false) == null;
-        assert zooKeeper.exists(PathUtil.getRealPath(TestSupport.ROOT, "a"), false) != null;
+        assert getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, keyC), false) == null;
+        assert getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, "a"), false) != null;
         client.deleteCurrentBranch(keyB);
-        assert zooKeeper.exists(PathUtil.checkPath(TestSupport.ROOT), false) == null;
+        assert getZooKeeper(client).exists(PathUtil.checkPath(TestSupport.ROOT), false) == null;
         client.createAllNeedPath(keyB, "bbb11", CreateMode.PERSISTENT);
-        assert zooKeeper.exists(PathUtil.getRealPath(TestSupport.ROOT, keyB), false) != null;
+        assert getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, keyB), false) != null;
         client.deleteCurrentBranch(keyB);
-        assert zooKeeper.exists(PathUtil.checkPath(TestSupport.ROOT), false) == null;
+        assert getZooKeeper(client).exists(PathUtil.checkPath(TestSupport.ROOT), false) == null;
     }
     
     protected void isExisted(IClient client) throws KeeperException, InterruptedException {
@@ -162,16 +173,16 @@ public abstract class BaseClientTest {
         String key = "a/b/bb";
         String value = "b1b";
         client.createAllNeedPath(key, value, CreateMode.PERSISTENT);
-//        assert zooKeeper.exists(PathUtil.getRealPath(ROOT, key), null).getEphemeralOwner() == 0;
+//        assert getZooKeeper(client).exists(PathUtil.getRealPath(ROOT, key), null).getEphemeralOwner() == 0;
         Stat stat = new Stat();
-        zooKeeper.getData(PathUtil.getRealPath(TestSupport.ROOT, key), false, stat);
+        getZooKeeper(client).getData(PathUtil.getRealPath(TestSupport.ROOT, key), false, stat);
         assert  stat.getEphemeralOwner() == 0;
         
         client.deleteAllChildren(key);
         assert !isExisted(key, client);
         client.createAllNeedPath(key, value, CreateMode.EPHEMERAL);
         
-        assert zooKeeper.exists(PathUtil.getRealPath(TestSupport.ROOT, key), null).getEphemeralOwner() != 0; // Ephemeral node connection session id
+        assert getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, key), null).getEphemeralOwner() != 0; // Ephemeral node connection session id
         client.deleteCurrentBranch(key);
     }
     
@@ -180,11 +191,11 @@ public abstract class BaseClientTest {
         client.createAllNeedPath(key, "bb", CreateMode.PERSISTENT);
         key = "a/c/cc";
         client.createAllNeedPath(key, "cc", CreateMode.PERSISTENT);
-        System.out.println(zooKeeper.exists(PathUtil.getRealPath(TestSupport.ROOT, "a"), null).getNumChildren()); // nearest children count
-        assert zooKeeper.exists(PathUtil.getRealPath(TestSupport.ROOT, key), false) != null;
+        System.out.println(getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, "a"), null).getNumChildren()); // nearest children count
+        assert getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, key), false) != null;
         client.deleteAllChildren("a");
-        assert zooKeeper.exists(PathUtil.getRealPath(TestSupport.ROOT, key), false) == null;
-        assert zooKeeper.exists("/" + TestSupport.ROOT, false) != null;
+        assert getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, key), false) == null;
+        assert getZooKeeper(client).exists("/" + TestSupport.ROOT, false) != null;
         ((BaseClient)client).deleteNamespace();
     }
     
@@ -229,7 +240,7 @@ public abstract class BaseClientTest {
                     case NodeChildrenChanged: {
                         String result;
                         try {
-                            result = new String(zooKeeper.getData(event.getPath(),false, null));
+                            result = new String(getZooKeeper(client).getData(event.getPath(),false, null));
                             System.out.println();
                         } catch (KeeperException e) {
                             result = e.getMessage();
@@ -257,6 +268,6 @@ public abstract class BaseClientTest {
     
     protected void close(IClient client) throws Exception {
         client.close();
-        assert zooKeeper.getState() == ZooKeeper.States.CLOSED;
+        assert getZooKeeper(client).getState() == ZooKeeper.States.CLOSED;
     }
 }
