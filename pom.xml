@@ -701,6 +701,10 @@
             <name>Zhangliang</name>
             <post>zhangliang@apache.org</post>
         </mailingList>
+        <mailingList>
+            <name>Caohao</name>
+            <post>caohaoch@gmail.com</post>
+        </mailingList>
     </mailingLists>
     
     <developers>
@@ -708,6 +712,12 @@
             <id>zhangliang</id>
             <name>ZhangLiang</name>
             <email>zhangliang@apache.org</email>
+            <timezone>8</timezone>
+        </developer>
+        <developer>
+            <id>caohao</id>
+            <name>CaoHao</name>
+            <email>caohaoch@gmail.com</email>
             <timezone>8</timezone>
         </developer>
     </developers>
