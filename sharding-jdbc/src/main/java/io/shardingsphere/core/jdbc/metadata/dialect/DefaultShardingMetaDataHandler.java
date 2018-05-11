@@ -20,8 +20,8 @@ package io.shardingsphere.core.jdbc.metadata.dialect;
 import io.shardingsphere.core.metadata.ColumnMetaData;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -32,13 +32,18 @@ import java.util.List;
  * @author zhaojun
  */
 public final class DefaultShardingMetaDataHandler extends ShardingMetaDataHandler {
-    
+
     public DefaultShardingMetaDataHandler(final DataSource dataSource, final String actualTableName) {
         super(dataSource, actualTableName);
     }
-    
+
     @Override
-    public List<ColumnMetaData> geColumnMetaInternal(final Statement statement) throws SQLException {
+    public boolean isTableExist(final Connection connection) throws SQLException {
+        return true;
+    }
+
+    @Override
+    public List<ColumnMetaData> getExistColumnMeta(final Connection connection) throws SQLException {
         return new LinkedList<>();
     }
 }

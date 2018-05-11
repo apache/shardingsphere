@@ -20,6 +20,7 @@ package io.shardingsphere.core.jdbc.metadata.dialect;
 import io.shardingsphere.core.metadata.ColumnMetaData;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -33,34 +34,29 @@ import java.util.List;
  * @author zhaojun
  */
 public final class H2ShardingMetaDataHandler extends ShardingMetaDataHandler {
-    
+
     public H2ShardingMetaDataHandler(final DataSource dataSource, final String actualTableName) {
         super(dataSource, actualTableName);
     }
-    
-    @Override
-    public List<ColumnMetaData> geColumnMetaInternal(final Statement statement) throws SQLException {
-        List<ColumnMetaData> result = new LinkedList<>();
-        if (isTableExist(statement)) {
-            result = getExistColumnMeta(statement);
-        }
-        return result;
-    }
 
-    private boolean isTableExist(final Statement statement) throws SQLException {
-        try (ResultSet resultSet = statement.getConnection().getMetaData().getTables(null, null, getActualTableName(), null)) {
+    @Override
+    public boolean isTableExist(final Connection connection) throws SQLException {
+        try (ResultSet resultSet = connection.getMetaData().getTables(null, null, getActualTableName(), null)) {
             return resultSet.next();
         }
     }
 
-    private List<ColumnMetaData> getExistColumnMeta(final Statement statement) throws SQLException {
+    @Override
+    public List<ColumnMetaData> getExistColumnMeta(final Connection connection) throws SQLException {
         List<ColumnMetaData> result = new LinkedList<>();
-        statement.executeQuery(String.format("show columns from %s;", getActualTableName()));
-        try (ResultSet resultSet = statement.getResultSet()) {
-            while (resultSet.next()) {
-                result.add(new ColumnMetaData(resultSet.getString("FIELD"), resultSet.getString("TYPE"), resultSet.getString("KEY")));
+        try (Statement statement = connection.createStatement()) {
+            statement.executeQuery(String.format("show columns from %s;", getActualTableName()));
+            try (ResultSet resultSet = statement.getResultSet()) {
+                while (resultSet.next()) {
+                    result.add(new ColumnMetaData(resultSet.getString("FIELD"), resultSet.getString("TYPE"), resultSet.getString("KEY")));
+                }
             }
+            return result;
         }
-        return result;
     }
 }
