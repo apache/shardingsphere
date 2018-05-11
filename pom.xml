@@ -680,8 +680,8 @@
         </repository>
     </repositories>
     
-    <url>http://shardingjdbc.io</url>
-    <description>RDB Sharding</description>
+    <url>http://shardingsphere.io</url>
+    <description>Distributed database middleware ecosphere</description>
     <licenses>
         <license>
             <name>Apache License 2.0</name>
@@ -691,15 +691,15 @@
     </licenses>
     
     <scm>
-        <connection>scm:https://github.com/shardingjdbc/sharding-jdbc</connection>
-        <developerConnection>scm:https://github.com/shardingjdbc/sharding-jdbc</developerConnection>
-        <url>https://github.com/shardingjdbc/sharding-jdbc</url>
+        <connection>scm:https://github.com/sharding-sphere/sharding-sphere</connection>
+        <developerConnection>scm:https://github.com/sharding-sphere/sharding-sphere</developerConnection>
+        <url>https://github.com/sharding-sphere/sharding-sphere</url>
     </scm>
     
     <mailingLists>
         <mailingList>
             <name>Zhangliang</name>
-            <post>zhangliang@dangdang.com</post>
+            <post>zhangliang@apache.org</post>
         </mailingList>
     </mailingLists>
     
@@ -707,7 +707,7 @@
         <developer>
             <id>zhangliang</id>
             <name>ZhangLiang</name>
-            <email>zhangliang@dangdang.com</email>
+            <email>zhangliang@apache.org</email>
             <timezone>8</timezone>
         </developer>
     </developers>
