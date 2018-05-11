@@ -45,7 +45,7 @@ public final class RegExceptionHandler {
             return;
         }
         if (isIgnoredException(cause) || null != cause.getCause() && isIgnoredException(cause.getCause())) {
-            log.debug("Sharding-JDBC: ignored exception for: {}", cause.getMessage());
+            log.debug("Ignored exception for: {}", cause.getMessage());
         } else if (cause instanceof InterruptedException) {
             Thread.currentThread().interrupt();
         } else {
