@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.shardingsphere</groupId>
         <artifactId>sharding-sphere</artifactId>
-        <version>2.1.0-SNAPSHOT</version>
+        <version>3.0.0.M1-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-proxy</artifactId>
     <name>${project.artifactId}</name>
@@ -86,7 +86,7 @@
                 <groupId>com.spotify</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
                 <configuration>
-                    <imageName>shardingjdbc/sharding-proxy:2.1.0-SNAPSHOT</imageName>
+                    <imageName>shardingjdbc/sharding-proxy:3.0.0.M1-SNAPSHOT</imageName>
                     <dockerDirectory>${project.basedir}/src/main/docker</dockerDirectory>
                     <resources>
                         <resource>
