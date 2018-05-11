@@ -17,6 +17,7 @@
 
 package io.shardingsphere.proxy;
 
+import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.frontend.ShardingProxy;
 
 /**
@@ -35,6 +36,7 @@ public final class Bootstrap {
      * @throws InterruptedException interrupted exception
      */
     public static void main(final String[] args) throws InterruptedException {
+        initializeRuleRegistry();
         new ShardingProxy().start(getPort(args));
     }
     
@@ -47,5 +49,9 @@ public final class Bootstrap {
         } catch (final NumberFormatException ex) {
             return DEFAULT_PORT;
         }
+    }
+    
+    private static void initializeRuleRegistry() {
+        RuleRegistry.getInstance();
     }
 }

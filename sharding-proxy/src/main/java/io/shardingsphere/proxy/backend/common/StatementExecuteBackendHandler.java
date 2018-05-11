@@ -19,6 +19,7 @@ package io.shardingsphere.proxy.backend.common;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.QueryResult;
@@ -104,7 +105,15 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
     
     @Override
     public CommandResponsePackets execute() {
-        return RuleRegistry.getInstance().isOnlyMasterSlave() ? executeForMasterSlave() : executeForSharding();
+        try {
+            if (RuleRegistry.getInstance().isOnlyMasterSlave()) {
+                return executeForMasterSlave();
+            } else {
+                return executeForSharding();
+            }
+        } catch (final ShardingException ex) {
+            return new CommandResponsePackets(new ErrPacket(1, 0, "", "", ex.getMessage()));
+        }
     }
     
     private CommandResponsePackets executeForMasterSlave() {

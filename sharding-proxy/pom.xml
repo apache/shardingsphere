@@ -10,16 +10,12 @@
     </parent>
     <artifactId>sharding-proxy</artifactId>
     <name>${project.artifactId}</name>
-    
-    <properties>
-        <sharding-jdbc.version>2.1.0-SNAPSHOT</sharding-jdbc.version>
-    </properties>
-    
+
     <dependencies>
         <dependency>
             <groupId>io.shardingsphere</groupId>
-            <artifactId>sharding-jdbc-orchestration</artifactId>
-            <version>${sharding-jdbc.version}</version>
+            <artifactId>sharding-core</artifactId>
+            <version>${project.version}</version>
         </dependency>
         
         <dependency>
