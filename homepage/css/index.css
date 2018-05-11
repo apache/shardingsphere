@@ -656,7 +656,7 @@
 .w1200 { width: 1200px; margin: 0 auto; }
 
 .jdbc { min-height: 100vh; background: url(http://ovfqtdb4e.bkt.clouddn.com/homepage/bg.png) center top no-repeat; color: #fff; font-family: "PingFangSC-Regular"; }
-.jdbc img { vertical-align: middle; }
+.jdbc img { vertical-align: middle;}
 .jdbc a { color: #fff; }
 
 .jdbcTopbar { height: 80px; background-color: rgba(0, 0, 0, 0.3); color: #fff; font-size: 18px; line-height: 80px; }
@@ -676,18 +676,20 @@
 .jdbcTopbar .lan { margin-left: 20px; }
 
 .jdbcHead { position: relative; height: 820px; overflow: hidden; }
-.jdbcHead .logo { margin-top: 50px; font-size: 48px; font-family: "Helvetica-Bold"; }
-.jdbcHead .l-img { margin-right: 20px; vertical-align: bottom; }
-.jdbcHead .title { margin-top: 35px; font-size: 80px; font-family: "PingFang-SC-Medium"; }
-.jdbcHead .msg { margin-top: 15px; font-size: 20px; font-family: Helvetica; letter-spacing: 0.8px; line-height: 35px; }
-.jdbcHead .button { margin-top: 25px; }
-.jdbcHead .btn { -moz-border-radius: 100px; -webkit-border-radius: 100px; border-radius: 100px; display: block; width: 230px; height: 50px; border: 2px solid #609eff; color: #609eff; font-size: 20px; text-align: center; line-height: 50px; }
-.jdbcHead .other { position: absolute; bottom: 40px; display: flex; width: 1200px; justify-content: space-between; }
-.jdbcHead .o-list { display: inline-block; padding: 0 50px; font-size: 40px; font-family: Helvetica; text-align: center; }
+.jdbcHead .logo { margin-top: 50px; font-size: 42px; font-family: "Helvetica-Bold"; }
+.jdbcHead .l-img { margin-right: 20px; vertical-align: bottom; width: 70px; height: 70px;}
+.jdbcHead .title { margin-top: 35px; font-size: 60px; font-family: "PingFang-SC-Medium"; }
+.jdbcHead .msg { margin-top: 25px; font-size: 18px; font-family: Helvetica; letter-spacing: 0.8px; line-height: 35px; }
+.jdbcHead .button { margin-top: 30px; }
+.jdbcHead .btn { -moz-border-radius: 100px; -webkit-border-radius: 100px; border-radius: 100px; display: block; width: 160px; height: 40px; border: 2px solid #609eff; color: #609eff; font-size: 18px; text-align: center; line-height: 40px; }
+.jdbcHead .other { position: absolute; bottom: 70px; display: flex; width: 1250px; justify-content: space-between; }
+.jdbcHead .o-list { display: inline-block; padding: 0 50px; font-size: 30px; font-family: Helvetica; text-align: center; }
+.jdbcHead .o-list .nl-img {height: 110px; width: 110px;}
 
 .jdbcMsg .list { height: 300px; background-color: #161616; line-height: 300px; }
 .jdbcMsg .list:nth-child(odd) { background-color: #222222; }
 .jdbcMsg .l-image { display: inline-block; width: 180px; }
+.jdbcMsg .l-image .nl-img {height: 120px; width: 120px;}
 .jdbcMsg .l-msg { display: inline-block; vertical-align: middle; }
-.jdbcMsg .l-m-tit { font-size: 36px; letter-spacing: 1.44px; line-height: 50px; }
-.jdbcMsg .l-m-info { margin-top: 10px; font-size: 16px; letter-spacing: 0.64px; line-height: 35px; }
+.jdbcMsg .l-m-tit { font-size: 26px; letter-spacing: 1.44px; line-height: 50px; }
+.jdbcMsg .l-m-info { margin-top: 10px; font-size: 14px; letter-spacing: 0.64px; line-height: 35px; }
