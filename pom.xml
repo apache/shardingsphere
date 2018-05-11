@@ -526,8 +526,8 @@
                     <instrumentation>
                         <ignoreTrivial>true</ignoreTrivial>
                         <excludes>
-                            <exclude>io/shardingjdbc/**/*Test.class</exclude>
-                            <exclude>io/shardingjdbc/**/Test*.class</exclude>
+                            <exclude>io/shardingsphere/**/*Test.class</exclude>
+                            <exclude>io/shardingsphere/**/Test*.class</exclude>
                         </excludes>
                     </instrumentation>
                 </configuration>
