@@ -20,7 +20,7 @@ import java.util.Stack;
 public class BaseProvider implements IProvider {
     private static final Logger logger = LoggerFactory.getLogger(BaseProvider.class);
     protected final BaseClient client;
-    private final ZooKeeper zooKeeper;
+    protected final ZooKeeper zooKeeper;
     protected final boolean watched;
     protected final List<ACL> authorities;
     protected final String rootNode;
@@ -81,16 +81,6 @@ public class BaseProvider implements IProvider {
             }
         }
     }
-    
-    @Override
-    public void createInTransaction(final String key, final String value, final CreateMode createMode, final ZKTransaction transaction) throws KeeperException, InterruptedException {
-        client.createNamespace();
-        if (rootNode.equals(key)){
-            logger.info("BaseProvider createInTransaction rootNode:{}", key);
-            return;
-        }
-        transaction.create(key, value.getBytes(Constants.UTF_8), authorities, createMode);
-    }
 
     @Override
     public void update(final String key, final String value) throws KeeperException, InterruptedException {
@@ -145,6 +135,16 @@ public class BaseProvider implements IProvider {
     @Override
     public void watch(final String key, final Listener listener) {
         client.registerWatch(getRealPath(key), listener);
+    }
+    
+    @Override
+    public void createInTransaction(final String key, final String value, final CreateMode createMode, final ZKTransaction transaction) throws KeeperException, InterruptedException {
+        client.createNamespace();
+        if (rootNode.equals(key)){
+            logger.info("BaseProvider createInTransaction rootNode:{}", key);
+            return;
+        }
+        transaction.create(key, value.getBytes(Constants.UTF_8), authorities, createMode);
     }
     
     @Override
