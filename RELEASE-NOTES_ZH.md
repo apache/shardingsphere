@@ -222,7 +222,7 @@
 
 ### 缺陷修正
 
-1. [ISSUE #194](https://github.com/sharding-sphere/sharding-sphere/issues/194) Connection, Statement, Resultset等接口中的close方法中部分组件异常造成另外一部分组件的close方法没有被调用
+1. [ISSUE #194](https://github.com/sharding-sphere/sharding-sphere/issues/194) Connection, Statement, ResultSet等接口中的close方法中部分组件异常造成另外一部分组件的close方法没有被调用
 1. [ISSUE #199](https://github.com/sharding-sphere/sharding-sphere/issues/199) 分表且复用PreparedStatement对象造成数据路由错误
 1. [ISSUE #201](https://github.com/sharding-sphere/sharding-sphere/issues/201) 批量操作执行前事件发送缺失
 1. [ISSUE #203](https://github.com/sharding-sphere/sharding-sphere/issues/203) 合并batch操作发送的事件

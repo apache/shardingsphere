@@ -104,7 +104,8 @@ public final class SQLParserFactory {
         return SelectParserFactory.newInstance(dbType, shardingRule, lexerEngine, shardingMetaData);
     }
     
-    private static SQLParser getDMLParser(final DatabaseType dbType, final TokenType tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingMetaData shardingMetaData) {
+    private static SQLParser getDMLParser(
+            final DatabaseType dbType, final TokenType tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingMetaData shardingMetaData) {
         switch ((DefaultKeyword) tokenType) {
             case INSERT:
                 return InsertParserFactory.newInstance(dbType, shardingRule, lexerEngine, shardingMetaData);

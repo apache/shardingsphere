@@ -66,7 +66,7 @@ public abstract class ShardingMetaData {
      * @throws SQLException SQL Exception
      */
     public void refresh(final TableRule each, final ShardingRule shardingRule) throws SQLException {
-        refresh(each, shardingRule, Collections.EMPTY_MAP);
+        refresh(each, shardingRule, Collections.<String, Connection>emptyMap());
     }
 
     /**
