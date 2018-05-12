@@ -9,15 +9,15 @@
 
 -----
 
-Client:
-    CacheClient
+Client:   
+    CacheClient   
     UsualClient
     
-ExecStrategy:
-    public enum StrategyType {
-        USUAL,
-        CONTENTION
-    }
+ExecStrategy:   
+    public enum StrategyType {   
+        USUAL,   
+        CONTENTION   
+    }   
     
     String getDataString(final String key) throws KeeperException, InterruptedException;
     byte[] getData(final String key) throws KeeperException, InterruptedException;
