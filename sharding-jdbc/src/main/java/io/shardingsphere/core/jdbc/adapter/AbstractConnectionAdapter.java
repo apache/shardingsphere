@@ -150,8 +150,11 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     }
     
     @Override
-    public final int getTransactionIsolation() {
-        return transactionIsolation;
+    public final int getTransactionIsolation() throws SQLException {
+        if (cachedConnections.values().isEmpty()) {
+            return transactionIsolation;
+        }
+        return cachedConnections.values().iterator().next().getTransactionIsolation();
     }
     
     @Override
