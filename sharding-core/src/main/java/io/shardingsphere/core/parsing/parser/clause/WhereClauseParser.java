@@ -310,7 +310,6 @@ public class WhereClauseParser implements SQLClauseParser {
         if (lexerEngine.skipIfEqual(DefaultKeyword.IN)) {
             lexerEngine.accept(Symbol.LEFT_PAREN);
             do {
-                lexerEngine.skipIfEqual(Symbol.COMMA);
                 parseOtherCondition(sqlStatement);
                 skipsDoubleColon();
             } while (lexerEngine.skipIfEqual(Symbol.COMMA));
