@@ -223,11 +223,10 @@ public class WhereClauseParser implements SQLClauseParser {
         lexerEngine.accept(Symbol.LEFT_PAREN);
         List<SQLExpression> rights = new LinkedList<>();
         do {
-            lexerEngine.skipIfEqual(Symbol.COMMA);
             rights.add(basicExpressionParser.parse(sqlStatement));
             skipsDoubleColon();
-        } while (!lexerEngine.equalAny(Symbol.RIGHT_PAREN));
-        lexerEngine.nextToken();
+        } while (lexerEngine.skipIfEqual(Symbol.COMMA));
+        lexerEngine.accept(Symbol.RIGHT_PAREN);
         Optional<Column> column = find(sqlStatement.getTables(), left);
         if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
             return new Condition(column.get(), rights);
@@ -314,8 +313,8 @@ public class WhereClauseParser implements SQLClauseParser {
                 lexerEngine.skipIfEqual(Symbol.COMMA);
                 parseOtherCondition(sqlStatement);
                 skipsDoubleColon();
-            } while (!lexerEngine.equalAny(Symbol.RIGHT_PAREN));
-            lexerEngine.nextToken();
+            } while (lexerEngine.skipIfEqual(Symbol.COMMA));
+            lexerEngine.accept(Symbol.RIGHT_PAREN);
         } else {
             lexerEngine.nextToken();
             parseOtherCondition(sqlStatement);
