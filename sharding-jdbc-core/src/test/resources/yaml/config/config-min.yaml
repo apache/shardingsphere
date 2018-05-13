@@ -1,0 +1,4 @@
+shardingRule:
+  tables:
+    config:
+      actualDataNodes: ds.config_${0..1}

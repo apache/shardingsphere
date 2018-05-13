@@ -1,33 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
     <sql id="assertCreateTable">
-        <sharding-rule value="tbl">
-            <data expected="create/tbl.xml" />
+        <sharding-rule>
+            <data expected="create/%s.xml" />
         </sharding-rule>
     </sql>
     <sql id="assertCreateTableIfNotExist">
-        <sharding-rule value="tbl">
-            <data expected="create/tbl.xml" />
+        <sharding-rule>
+            <data expected="create/%s.xml" />
         </sharding-rule>
     </sql>
     <sql id="assertCreateTemporaryTable">
-        <sharding-rule value="tbl">
-            <data expected="create/tbl.xml" />
+        <sharding-rule>
+            <data expected="create/%s.xml" />
         </sharding-rule>
     </sql>
     <sql id="assertCreateGlobalTemporaryTable">
-        <sharding-rule value="tbl">
-            <data expected="create/tbl.xml" />
+        <sharding-rule>
+            <data expected="create/%s.xml" />
         </sharding-rule>
     </sql>
     <sql id="assertCreateLocalTempTable">
-        <sharding-rule value="tbl">
-            <data expected="create/tbl.xml" />
+        <sharding-rule>
+            <data expected="create/%s.xml" />
         </sharding-rule>
     </sql>
     <sql id="assertCreateUnloggedTable">
-        <sharding-rule value="tbl">
-            <data expected="create/tbl.xml" />
+        <sharding-rule>
+            <data expected="create/%s.xml" />
+        </sharding-rule>
+    </sql>
+    <sql id="assertCreateIndex">
+        <sharding-rule>
+            <data expected="index/%s.xml" />
+        </sharding-rule>
+    </sql>
+    <sql id="assertCreateUniqueIndex">
+        <sharding-rule>
+            <data expected="index/%s.xml" />
         </sharding-rule>
     </sql>
 </sqls>

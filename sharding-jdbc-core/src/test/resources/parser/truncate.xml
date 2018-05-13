@@ -4,10 +4,16 @@
         <tables>
             <table name="t_log" />
         </tables>
+        <table-tokens>
+            <table-token begin-position="15" original-literals="t_log" />
+        </table-tokens>
     </assert>
     <assert id="assertTruncateTableOnly">
         <tables>
             <table name="t_log" />
         </tables>
+        <table-tokens>
+            <table-token begin-position="20" original-literals="t_log" />
+        </table-tokens>
     </assert>
 </asserts>

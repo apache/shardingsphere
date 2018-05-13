@@ -1,28 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
     <sql id="assertDropTable">
-        <sharding-rule value="tbl">
-            <data expected="drop/tbl.xml" />
+        <sharding-rule>
+            <data expected="drop/%s.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertDropTableIfExist">
-        <sharding-rule value="tbl">
-            <data expected="drop/tbl.xml" />
+    <sql id="assertDropTableIfExists">
+        <sharding-rule>
+            <data expected="drop/%s.xml" />
         </sharding-rule>
     </sql>
     <sql id="assertDropTableRestrict">
-        <sharding-rule value="tbl">
-            <data expected="drop/tbl.xml" />
+        <sharding-rule>
+            <data expected="drop/%s.xml" />
         </sharding-rule>
     </sql>
     <sql id="assertDropTableCascade">
-        <sharding-rule value="tbl">
-            <data expected="drop/tbl.xml" />
+        <sharding-rule>
+            <data expected="drop/%s.xml" />
         </sharding-rule>
     </sql>
     <sql id="assertDropTableCascadeConstraintsAndPurge">
-        <sharding-rule value="tbl">
-            <data expected="drop/tbl.xml" />
+        <sharding-rule>
+            <data expected="drop/%s.xml" />
+        </sharding-rule>
+    </sql>
+    <sql id="assertDropIndex">
+        <sharding-rule>
+            <data expected="drop/%s.xml" />
+        </sharding-rule>
+    </sql>
+    <sql id="assertDropIndexWithoutOn">
+        <sharding-rule>
+            <data expected="drop/%s.xml" />
+        </sharding-rule>
+    </sql>
+    <sql id="assertDropIndexIfExists">
+        <sharding-rule>
+            <data expected="drop/%s.xml" />
         </sharding-rule>
     </sql>
 </sqls>

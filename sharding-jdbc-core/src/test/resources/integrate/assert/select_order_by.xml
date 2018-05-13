@@ -15,6 +15,11 @@
             <data expected="select_order_by/SelectForAlias.xml" />
         </sharding-rule>
     </sql>
+    <sql id="assertSelectWithOrderByForDate">
+        <sharding-rule value="tbl">
+            <data expected="select_order_by/SelectForDate.xml" />
+        </sharding-rule>
+    </sql>
     <!-- // TODO add null data -->
     <sql id="assertSelectWithOrderByForNullsFirst">
         <sharding-rule value="tbl">

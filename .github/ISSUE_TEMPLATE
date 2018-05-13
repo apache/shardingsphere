@@ -1,11 +1,15 @@
 Please answer these questions before submitting your issue. Thanks!
+开源不易，我们希望将精力放在完成新功能和解决有价值的问题上，为了让大家的配合更具有效率，请填写以下列出的全部问题
 
-### Which version of Sharding-Jdbc do you using?
+### Which version of Sharding-Jdbc do you using?（您使用的Sharding-Jdbc版本为？）
 
-### Expected behavior
+### Expected behavior （您预期的结果是）
 
-### Actual behavior
+### Actual behavior （实际运行的结果是）
 
-### Steps to reproduce the behavior
+### Steps to reproduce the behavior （可重现问题的操作步骤）
 
-### Please provide the reproduce example codes (such as github link) if possible.
+### Please provide the reproduce example codes (such as github link)，otherwise we will label the issue as Invalid and close it.（为了节省复现问题的时间，请务必提供可重现的代码，否则我们会将issue直接标记为invalid并关闭）
+
+Code should based on https://github.com/shardingjdbc/sharding-jdbc-example
+（代码请基于 https://github.com/shardingjdbc/sharding-jdbc-example）

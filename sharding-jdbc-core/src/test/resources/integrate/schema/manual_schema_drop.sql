@@ -52,6 +52,8 @@ DROP DATABASE slave_8;
 DROP DATABASE slave_9;
 DROP DATABASE jdbc_0;
 DROP DATABASE jdbc_1;
+DROP DATABASE master_only;
+DROP DATABASE slave_only;
 
 -- For Oracle
 DROP SCHEMA dbtbl_0;
@@ -107,3 +109,5 @@ DROP SCHEMA slave_8;
 DROP SCHEMA slave_9;
 DROP SCHEMA jdbc_0;
 DROP SCHEMA jdbc_1;
+DROP SCHEMA master_only;
+DROP SCHEMA slave_only;

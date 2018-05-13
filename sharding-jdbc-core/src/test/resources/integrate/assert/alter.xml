@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
     <sql id="assertAlterTable">
-        <sharding-rule value="tbl">
-            <data expected="alter/tbl.xml" />
+        <sharding-rule>
+            <data expected="alter/%s.xml" />
         </sharding-rule>
     </sql>
     <sql id="assertAlterTableIfExistAndOnly">
-        <sharding-rule value="tbl">
-            <data expected="alter/tbl.xml" />
+        <sharding-rule>
+            <data expected="alter/%s.xml" />
         </sharding-rule>
     </sql>
 </sqls>

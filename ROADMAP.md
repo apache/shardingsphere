@@ -45,10 +45,10 @@
 - [x] Java API
 - [x] Spring namespace
 - [x] YAML
-- [ ] Independent Read Write Split
+- [x] Independent Read Write Split
 - [ ] Improve Binding Table
-- [ ] Configuration Center
-- [ ] Dynamic Configuration
+- [x] Configuration Center
+- [x] Dynamic Configuration
 
 ## SQL Parser
 - [x] Lexer
@@ -73,7 +73,6 @@
 ## Sharding
 - [x] Database
 - [x] Table
-- [x] Dynamic Table
 - [x] Default Data Source
 
 ## Read Write Split

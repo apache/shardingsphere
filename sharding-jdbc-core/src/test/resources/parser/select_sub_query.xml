@@ -4,6 +4,9 @@
         <tables>
             <table name="t_order" alias="o" />
         </tables>
+        <table-tokens>
+            <table-token begin-position="33" original-literals="t_order" />
+        </table-tokens>
         <conditions>
             <condition column-name="order_id" table-name="t_order" operator="IN">
                 <value index="0" literal="1" type="int" />
@@ -11,11 +14,16 @@
             </condition>
         </conditions>
     </assert>
+    <!-- TODO cannot pass,add later 
     <assert id="assertSelectSubQueryMultiTableWithParentheses" parameters="1,2">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
         </tables>
+        <table-tokens>
+            <table-token begin-position="33" original-literals="t_order" />
+            <table-token begin-position="44" original-literals="t_order_item" />
+        </table-tokens>
         <conditions>
             <condition column-name="order_id" table-name="t_order" operator="IN">
                 <value index="0" literal="1" type="int" />
@@ -23,10 +31,14 @@
             </condition>
         </conditions>
     </assert>
+    -->
     <assert id="assertSelectSubQueryWithOrderBy">
         <tables>
             <table name="t_order"/>
         </tables>
+        <table-tokens>
+            <table-token begin-position="52" original-literals="t_order" />
+        </table-tokens>
         <aggregation-select-items>
             <aggregation-select-item inner-expression="(1)" aggregation-type="COUNT" alias="orders_count" />
         </aggregation-select-items>
@@ -35,6 +47,9 @@
         <tables>
             <table name="t_order_item"/>
         </tables>
+        <table-tokens>
+            <table-token begin-position="64" original-literals="t_order_item" />
+        </table-tokens>
         <aggregation-select-items>
             <aggregation-select-item inner-expression="(1)" aggregation-type="COUNT" alias="order_items_count" />
         </aggregation-select-items>

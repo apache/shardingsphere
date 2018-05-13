@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
     <sql id="assertTruncateTable">
-        <sharding-rule value="tbl">
-            <data expected="truncate/tbl.xml" />
+        <sharding-rule>
+            <data expected="truncate/%s.xml" />
         </sharding-rule>
     </sql>
     <sql id="assertTruncateTableOnly">
-        <sharding-rule value="tbl">
-            <data expected="truncate/tbl.xml" />
+        <sharding-rule>
+            <data expected="truncate/%s.xml" />
         </sharding-rule>
     </sql>
 </sqls>
