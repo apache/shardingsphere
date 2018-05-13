@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,6 @@
 
 package io.shardingsphere.core.yaml;
 
-import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveConfigurationTest;
-import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfigurationTest;
-import io.shardingsphere.core.yaml.sharding.YamlShardingConfigurationTest;
-import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfigurationTest;
-import io.shardingsphere.core.yaml.sharding.YamlShardingStrategyConfigurationTest;
-import io.shardingsphere.core.yaml.sharding.YamlTableRuleConfigurationTest;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveConfigurationTest;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfigurationTest;
 import io.shardingsphere.core.yaml.sharding.YamlShardingConfigurationTest;

@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,6 @@
 
 package io.shardingsphere.core.executor;
 
-import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandlerTest;
-import io.shardingsphere.core.executor.type.PreparedStatementExecutorTest;
-import io.shardingsphere.core.executor.type.BatchPreparedStatementExecutorTest;
-import io.shardingsphere.core.executor.type.StatementExecutorTest;
 import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandlerTest;
 import io.shardingsphere.core.executor.type.BatchPreparedStatementExecutorTest;
 import io.shardingsphere.core.executor.type.PreparedStatementExecutorTest;

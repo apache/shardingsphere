@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,9 +51,13 @@ public final class MySQLPacketCodec extends PacketCodec<MySQLPacket> {
     @Override
     protected void doEncode(final ChannelHandlerContext context, final MySQLPacket message, final ByteBuf out) {
         MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(context.alloc().buffer());
-        message.write(mysqlPacketPayload);
-        out.writeMediumLE(mysqlPacketPayload.getByteBuf().readableBytes());
-        out.writeByte(message.getSequenceId());
-        out.writeBytes(mysqlPacketPayload.getByteBuf());
+        try {
+            message.write(mysqlPacketPayload);
+            out.writeMediumLE(mysqlPacketPayload.getByteBuf().readableBytes());
+            out.writeByte(message.getSequenceId());
+            out.writeBytes(mysqlPacketPayload.getByteBuf());
+        } finally {
+            mysqlPacketPayload.getByteBuf().release();
+        }
     }
 }

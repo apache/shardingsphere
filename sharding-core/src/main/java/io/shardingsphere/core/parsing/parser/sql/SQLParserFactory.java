@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,21 +38,6 @@ import io.shardingsphere.core.parsing.parser.sql.dml.update.UpdateParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.tcl.TCLParserFactory;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
-import io.shardingsphere.core.parsing.parser.sql.dal.describe.DescribeParserFactory;
-import io.shardingsphere.core.parsing.parser.sql.dal.show.ShowParserFactory;
-import io.shardingsphere.core.parsing.parser.sql.dal.use.UseParserFactory;
-import io.shardingsphere.core.parsing.parser.sql.ddl.alter.AlterParserFactory;
-import io.shardingsphere.core.parsing.parser.sql.ddl.create.CreateParserFactory;
-import io.shardingsphere.core.parsing.parser.sql.ddl.drop.DropParserFactory;
-import io.shardingsphere.core.parsing.parser.sql.ddl.truncate.TruncateParserFactory;
-import io.shardingsphere.core.parsing.parser.sql.dml.delete.DeleteParserFactory;
-import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertParserFactory;
-import io.shardingsphere.core.parsing.parser.sql.dml.update.UpdateParserFactory;
-import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectParserFactory;
-import io.shardingsphere.core.parsing.parser.sql.tcl.TCLParserFactory;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -119,7 +104,8 @@ public final class SQLParserFactory {
         return SelectParserFactory.newInstance(dbType, shardingRule, lexerEngine, shardingMetaData);
     }
     
-    private static SQLParser getDMLParser(final DatabaseType dbType, final TokenType tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingMetaData shardingMetaData) {
+    private static SQLParser getDMLParser(
+            final DatabaseType dbType, final TokenType tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingMetaData shardingMetaData) {
         switch ((DefaultKeyword) tokenType) {
             case INSERT:
                 return InsertParserFactory.newInstance(dbType, shardingRule, lexerEngine, shardingMetaData);

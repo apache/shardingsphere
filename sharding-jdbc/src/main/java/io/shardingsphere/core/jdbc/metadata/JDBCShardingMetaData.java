@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,16 +23,11 @@ import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.rule.ShardingDataSourceNames;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.metadata.ColumnMetaData;
-import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.rule.DataNode;
-import io.shardingsphere.core.rule.ShardingDataSourceNames;
-import io.shardingsphere.core.rule.ShardingRule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
@@ -45,18 +40,19 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Getter
 public final class JDBCShardingMetaData extends ShardingMetaData {
-    
+
     private final Map<String, DataSource> dataSourceMap;
-    
+
     private final ShardingRule shardingRule;
-    
+
     private final DatabaseType databaseType;
-    
+
     @Override
-    public Collection<ColumnMetaData> getColumnMetaDataList(final DataNode dataNode, final ShardingDataSourceNames shardingDataSourceNames) throws SQLException {
+    public Collection<ColumnMetaData> getColumnMetaDataList(final DataNode dataNode, final ShardingDataSourceNames shardingDataSourceNames,
+                                                            final Map<String, Connection> connectionMap) throws SQLException {
         String dataSourceName = shardingDataSourceNames.getRawMasterDataSourceName(dataNode.getDataSourceName());
-        if (getCachedConnectionMap().containsKey(dataSourceName)) {
-            return ShardingMetaDataHandlerFactory.newInstance(dataNode.getTableName(), databaseType).getColumnMetaDataList(getCachedConnectionMap().get(dataSourceName));
+        if (connectionMap.containsKey(dataSourceName)) {
+            return ShardingMetaDataHandlerFactory.newInstance(dataNode.getTableName(), databaseType).getColumnMetaDataList(connectionMap.get(dataSourceName));
         } else {
             return ShardingMetaDataHandlerFactory.newInstance(dataSourceMap.get(dataSourceName), dataNode.getTableName(), databaseType).getColumnMetaDataList();
         }

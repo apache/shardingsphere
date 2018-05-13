@@ -10,9 +10,14 @@
             <value value="100000" type="int"/>
         </parameter>
     </dql-assert>
-    <dql-assert id="assertSelectNotEqualsWithSingleTableForNotIn" sql="assertSelectNotEqualsWithSingleTableForNotIn" sharding-rule-types="tbl" expected-data-file="SelectNotEqualsWithSingleTable.xml">
+    <dql-assert id="assertSelectNotEqualsWithSingleTableForNotIn" sql="assertSelectNotEqualsWithSingleTableForNotIn" sharding-rule-types="tbl" expected-data-file="SelectNotWithSingleTable.xml">
         <parameter>
-            <value value="100000" type="int"/>
+            <value value="100000,100001" type="int"/>
+        </parameter>
+    </dql-assert>
+    <dql-assert id="assertSelectNotEqualsWithSingleTableForNotBetween" sql="assertSelectNotEqualsWithSingleTableForNotBetween" sharding-rule-types="tbl" expected-data-file="SelectNotWithSingleTable.xml">
+        <parameter>
+            <value value="100000,100001" type="int"/>
         </parameter>
     </dql-assert>
     <dql-assert id="assertSelectEqualsWithSameShardingColumns" sql="assertSelectEqualsWithSameShardingColumns" sharding-rule-types="tbl" expected-data-file="SelectEqualsWithSameShardingColumns.xml">

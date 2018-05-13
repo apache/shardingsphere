@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ package io.shardingsphere.core.routing.router.masterslave;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.rule.MasterSlaveRule;
-import io.shardingsphere.core.constant.SQLType;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;

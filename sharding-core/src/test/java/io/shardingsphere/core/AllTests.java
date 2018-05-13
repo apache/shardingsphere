@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,11 +25,6 @@ import io.shardingsphere.core.optimizer.AllOptimizerTests;
 import io.shardingsphere.core.parsing.AllParsingTests;
 import io.shardingsphere.core.rewrite.AllRewriteTests;
 import io.shardingsphere.core.routing.AllRoutingTests;
-import io.shardingsphere.core.util.AllUtilTests;
-import io.shardingsphere.core.yaml.AllYamlTests;
-import io.shardingsphere.core.api.AllApiTests;
-import io.shardingsphere.core.hint.AllHintTests;
-import io.shardingsphere.core.merger.AllMergerTests;
 import io.shardingsphere.core.util.AllUtilTests;
 import io.shardingsphere.core.yaml.AllYamlTests;
 import org.junit.runner.RunWith;

@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import io.shardingsphere.core.parsing.lexer.token.Keyword;
 import io.shardingsphere.core.parsing.parser.dialect.oracle.clause.facade.OracleDeleteClauseParserFacade;
 import io.shardingsphere.core.parsing.parser.sql.dml.delete.AbstractDeleteParser;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.parsing.parser.dialect.oracle.clause.facade.OracleDeleteClauseParserFacade;
 
 /**
  * Delete parser for Oracle.

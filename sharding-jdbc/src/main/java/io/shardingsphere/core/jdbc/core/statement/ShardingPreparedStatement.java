@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,25 +29,7 @@ import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.jdbc.core.resultset.GeneratedKeysResultSet;
 import io.shardingsphere.core.jdbc.core.resultset.ShardingResultSet;
-import io.shardingsphere.core.merger.JDBCQueryResult;
-import io.shardingsphere.core.merger.MergeEngine;
-import io.shardingsphere.core.merger.MergeEngineFactory;
-import io.shardingsphere.core.merger.QueryResult;
-import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
-import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
-import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
-import io.shardingsphere.core.routing.PreparedStatementRoutingEngine;
-import io.shardingsphere.core.routing.SQLExecutionUnit;
-import io.shardingsphere.core.routing.SQLRouteResult;
-import io.shardingsphere.core.routing.router.sharding.GeneratedKey;
-import io.shardingsphere.core.executor.type.batch.BatchPreparedStatementExecutor;
-import io.shardingsphere.core.executor.type.batch.BatchPreparedStatementUnit;
-import io.shardingsphere.core.executor.type.prepared.PreparedStatementExecutor;
-import io.shardingsphere.core.executor.type.prepared.PreparedStatementUnit;
-import io.shardingsphere.core.jdbc.adapter.AbstractShardingPreparedStatementAdapter;
-import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
-import io.shardingsphere.core.jdbc.core.resultset.GeneratedKeysResultSet;
+import io.shardingsphere.core.jdbc.metadata.dialect.JDBCShardingRefreshHandler;
 import io.shardingsphere.core.merger.JDBCQueryResult;
 import io.shardingsphere.core.merger.MergeEngine;
 import io.shardingsphere.core.merger.MergeEngineFactory;
@@ -162,6 +144,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             return new PreparedStatementExecutor(
                     getConnection().getShardingContext().getExecutorEngine(), routeResult.getSqlStatement().getType(), preparedStatementUnits).executeUpdate();
         } finally {
+            JDBCShardingRefreshHandler.build(routeResult, connection).execute();
             clearBatch();
         }
     }
@@ -173,6 +156,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             return new PreparedStatementExecutor(
                     getConnection().getShardingContext().getExecutorEngine(), routeResult.getSqlStatement().getType(), preparedStatementUnits).execute();
         } finally {
+            JDBCShardingRefreshHandler.build(routeResult, connection).execute();
             clearBatch();
         }
     }

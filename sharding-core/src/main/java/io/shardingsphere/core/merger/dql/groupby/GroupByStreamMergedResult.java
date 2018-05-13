@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,6 @@ import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import io.shardingsphere.core.merger.QueryResult;
-import io.shardingsphere.core.merger.dql.groupby.aggregation.AggregationUnit;
-import io.shardingsphere.core.merger.dql.groupby.aggregation.AggregationUnitFactory;
-import io.shardingsphere.core.merger.dql.orderby.OrderByStreamMergedResult;
-import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
-import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.merger.dql.groupby.aggregation.AggregationUnit;
 import io.shardingsphere.core.merger.dql.groupby.aggregation.AggregationUnitFactory;
 import io.shardingsphere.core.merger.dql.orderby.OrderByStreamMergedResult;

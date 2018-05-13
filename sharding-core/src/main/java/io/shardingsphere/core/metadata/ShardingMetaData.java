@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import lombok.Setter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,11 +42,9 @@ import java.util.Map;
 @Getter
 @Setter
 public abstract class ShardingMetaData {
-    
+
     private Map<String, TableMetaData> tableMetaDataMap;
 
-    private Map<String, Connection> cachedConnectionMap = new HashMap<>();
-    
     /**
      * Initialize sharding metadata.
      *
@@ -67,13 +66,26 @@ public abstract class ShardingMetaData {
      * @throws SQLException SQL Exception
      */
     public void refresh(final TableRule each, final ShardingRule shardingRule) throws SQLException {
-        tableMetaDataMap.put(each.getLogicTable(), getTableMetaData(each.getLogicTable(), each.getActualDataNodes(), shardingRule.getShardingDataSourceNames()));
+        refresh(each, shardingRule, Collections.<String, Connection>emptyMap());
     }
 
-    private TableMetaData getTableMetaData(final String logicTableName, final List<DataNode> actualDataNodes, final ShardingDataSourceNames shardingDataSourceNames) throws SQLException {
+    /**
+     * refresh each tableMetaData by TableRule.
+     *
+     * @param each table rule
+     * @param shardingRule sharding rule
+     * @param connectionMap connection map passing from sharding connection
+     * @throws SQLException SQL exception
+     */
+    public void refresh(final TableRule each, final ShardingRule shardingRule, final Map<String, Connection> connectionMap) throws SQLException {
+        tableMetaDataMap.put(each.getLogicTable(), getTableMetaData(each.getLogicTable(), each.getActualDataNodes(), shardingRule.getShardingDataSourceNames(), connectionMap));
+    }
+
+    private TableMetaData getTableMetaData(final String logicTableName, final List<DataNode> actualDataNodes,
+                                           final ShardingDataSourceNames shardingDataSourceNames, final Map<String, Connection> connectionMap) throws SQLException {
         Collection<ColumnMetaData> result = null;
         for (DataNode each : actualDataNodes) {
-            Collection<ColumnMetaData> columnMetaDataList = getColumnMetaDataList(each, shardingDataSourceNames);
+            Collection<ColumnMetaData> columnMetaDataList = getColumnMetaDataList(each, shardingDataSourceNames, connectionMap);
             if (null == result) {
                 result = columnMetaDataList;
             }
@@ -83,17 +95,18 @@ public abstract class ShardingMetaData {
         }
         return new TableMetaData(result);
     }
-    
+
     /**
      * Get column metadata implementing by concrete handler.
      *
      * @param dataNode DataNode
      * @param shardingDataSourceNames ShardingDataSourceNames
+     * @param connectionMap connection map from sharding connection
      * @return ColumnMetaData
      * @throws SQLException SQL exception
      */
-    public abstract Collection<ColumnMetaData> getColumnMetaDataList(DataNode dataNode, ShardingDataSourceNames shardingDataSourceNames) throws SQLException;
-    
+    public abstract Collection<ColumnMetaData> getColumnMetaDataList(DataNode dataNode, ShardingDataSourceNames shardingDataSourceNames, Map<String, Connection> connectionMap) throws SQLException;
+
     private String getErrorMsgOfTableMetaData(final String logicTableName, final Collection<ColumnMetaData> oldColumnMetaDataList, final Collection<ColumnMetaData> newColumnMetaDataList) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(" Cannot get uniformed table structure for ").append(logicTableName).append(".");

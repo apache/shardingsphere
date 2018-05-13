@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,6 @@
 
 package io.shardingsphere.core.jdbc.core;
 
-import io.shardingsphere.core.jdbc.core.connection.ShardingConnectionTest;
-import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSourceTest;
-import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSourceTest;
-import io.shardingsphere.core.jdbc.core.resultset.GeneratedKeysResultSetMetaDataTest;
-import io.shardingsphere.core.jdbc.core.resultset.GeneratedKeysResultSetTest;
-import io.shardingsphere.core.jdbc.core.resultset.ResultSetUtilTest;
-import io.shardingsphere.core.jdbc.core.resultset.ShardingResultSetTest;
-import io.shardingsphere.core.jdbc.core.statement.ShardingPreparedStatementTest;
-import io.shardingsphere.core.jdbc.core.statement.ShardingStatementTest;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnectionTest;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSourceTest;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSourceTest;

@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,31 +19,6 @@ package io.shardingsphere.core.rewrite;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.OrderDirection;
-import io.shardingsphere.core.optimizer.condition.ShardingCondition;
-import io.shardingsphere.core.optimizer.condition.ShardingConditions;
-import io.shardingsphere.core.optimizer.insert.InsertShardingCondition;
-import io.shardingsphere.core.parsing.parser.context.OrderItem;
-import io.shardingsphere.core.parsing.parser.context.limit.Limit;
-import io.shardingsphere.core.parsing.parser.context.limit.LimitValue;
-import io.shardingsphere.core.parsing.parser.context.table.Table;
-import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
-import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
-import io.shardingsphere.core.parsing.parser.token.IndexToken;
-import io.shardingsphere.core.parsing.parser.token.InsertColumnToken;
-import io.shardingsphere.core.parsing.parser.token.InsertValuesToken;
-import io.shardingsphere.core.parsing.parser.token.ItemsToken;
-import io.shardingsphere.core.parsing.parser.token.OffsetToken;
-import io.shardingsphere.core.parsing.parser.token.OrderByToken;
-import io.shardingsphere.core.parsing.parser.token.RowCountToken;
-import io.shardingsphere.core.parsing.parser.token.SchemaToken;
-import io.shardingsphere.core.parsing.parser.token.TableToken;
-import io.shardingsphere.core.routing.type.RoutingTable;
-import io.shardingsphere.core.routing.type.TableUnit;
-import io.shardingsphere.core.rule.DataNode;
-import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.yaml.sharding.YamlShardingConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.OrderDirection;
 import io.shardingsphere.core.optimizer.condition.ShardingCondition;

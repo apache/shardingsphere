@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.jdbc.core.resultset.GeneratedKeysResultSet;
 import io.shardingsphere.core.jdbc.core.resultset.ShardingResultSet;
+import io.shardingsphere.core.jdbc.metadata.dialect.JDBCShardingRefreshHandler;
 import io.shardingsphere.core.merger.JDBCQueryResult;
 import io.shardingsphere.core.merger.MergeEngine;
 import io.shardingsphere.core.merger.MergeEngineFactory;
@@ -37,42 +38,16 @@ import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.StatementRoutingEngine;
 import io.shardingsphere.core.routing.router.sharding.GeneratedKey;
-import io.shardingsphere.core.rule.DataNode;
-import io.shardingsphere.core.rule.ShardingDataSourceNames;
-import io.shardingsphere.core.rule.TableRule;
-import io.shardingsphere.core.executor.type.statement.StatementExecutor;
-import io.shardingsphere.core.executor.type.statement.StatementUnit;
-import io.shardingsphere.core.jdbc.adapter.AbstractStatementAdapter;
-import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
-import io.shardingsphere.core.jdbc.core.resultset.GeneratedKeysResultSet;
-import io.shardingsphere.core.merger.JDBCQueryResult;
-import io.shardingsphere.core.merger.MergeEngine;
-import io.shardingsphere.core.merger.MergeEngineFactory;
-import io.shardingsphere.core.merger.QueryResult;
-import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
-import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
-import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
-import io.shardingsphere.core.routing.SQLExecutionUnit;
-import io.shardingsphere.core.routing.SQLRouteResult;
-import io.shardingsphere.core.routing.StatementRoutingEngine;
-import io.shardingsphere.core.routing.router.sharding.GeneratedKey;
-import io.shardingsphere.core.rule.DataNode;
-import io.shardingsphere.core.rule.ShardingDataSourceNames;
-import io.shardingsphere.core.rule.TableRule;
 import lombok.AccessLevel;
 import lombok.Getter;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Statement that support sharding.
@@ -143,7 +118,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
         try {
             return generateExecutor(sql).executeUpdate();
         } finally {
-            refreshShardingMetaData(routeResult);
+            JDBCShardingRefreshHandler.build(routeResult, connection).execute();
             currentResultSet = null;
         }
     }
@@ -185,7 +160,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
         try {
             return generateExecutor(sql).execute();
         } finally {
-            refreshShardingMetaData(routeResult);
+            JDBCShardingRefreshHandler.build(routeResult, connection).execute();
             currentResultSet = null;
         }
     }
@@ -243,26 +218,6 @@ public class ShardingStatement extends AbstractStatementAdapter {
         routedStatements.clear();
     }
 
-    private void refreshShardingMetaData(final SQLRouteResult routeResult) throws SQLException {
-        if (routeResult.canRefreshMetaData()) {
-            ShardingContext context = connection.getShardingContext();
-            String logicTable = routeResult.getSqlStatement().getTables().getSingleTableName();
-            TableRule tableRule = context.getShardingRule().getTableRule(logicTable);
-            ShardingDataSourceNames shardingDataSourceNames = context.getShardingRule().getShardingDataSourceNames();
-            doRefreshInternal(context, tableRule, shardingDataSourceNames);
-        }
-    }
-
-    private void doRefreshInternal(ShardingContext context, TableRule tableRule, ShardingDataSourceNames shardingDataSourceNames) throws SQLException {
-        Map<String, Connection> cachedConnectionMap = new HashMap<>();
-        for (DataNode each : tableRule.getActualDataNodes()) {
-            String dataSourceName = shardingDataSourceNames.getRawMasterDataSourceName(each.getDataSourceName());
-            cachedConnectionMap.put(dataSourceName, connection.getConnection(dataSourceName));
-        }
-        context.getShardingMetaData().setCachedConnectionMap(cachedConnectionMap);
-        context.getShardingMetaData().refresh(tableRule, context.getShardingRule());
-    }
-    
     @Override
     public ResultSet getGeneratedKeys() throws SQLException {
         Optional<GeneratedKey> generatedKey = getGeneratedKey();

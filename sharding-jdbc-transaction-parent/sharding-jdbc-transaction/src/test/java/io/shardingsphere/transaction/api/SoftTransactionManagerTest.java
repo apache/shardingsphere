@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,9 @@
 
 package io.shardingsphere.transaction.api;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.transaction.api.config.SoftTransactionConfiguration;
 import io.shardingsphere.transaction.base.AbstractSoftTransactionMockTest;
-import io.shardingsphere.transaction.constants.SoftTransactionType;
-import com.google.common.base.Optional;
 import io.shardingsphere.transaction.constants.SoftTransactionType;
 import org.junit.Test;
 

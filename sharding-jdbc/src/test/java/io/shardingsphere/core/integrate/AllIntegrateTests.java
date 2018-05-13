@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,20 +17,6 @@
 
 package io.shardingsphere.core.integrate;
 
-import io.shardingsphere.core.integrate.api.AllAPIIntegrateTests;
-import io.shardingsphere.core.integrate.type.ms.MasterSlaveOnlyDMLAndDDLTest;
-import io.shardingsphere.core.integrate.type.ms.MasterSlaveOnlyDQLTest;
-import io.shardingsphere.core.integrate.type.sharding.NullableShardingTableOnlyDMLAndDDLTest;
-import io.shardingsphere.core.integrate.type.sharding.NullableShardingTableOnlyDQLTest;
-import io.shardingsphere.core.integrate.type.sharding.ShardingDatabaseAndTableDMLAndDDLTest;
-import io.shardingsphere.core.integrate.type.sharding.ShardingDatabaseAndTableDQLTest;
-import io.shardingsphere.core.integrate.type.sharding.ShardingDatabaseOnlyDMLAndDDLTest;
-import io.shardingsphere.core.integrate.type.sharding.ShardingDatabaseOnlyDQLTest;
-import io.shardingsphere.core.integrate.type.sharding.ShardingMasterSlaveDMLAndDDLTest;
-import io.shardingsphere.core.integrate.type.sharding.ShardingMasterSlaveDQLTest;
-import io.shardingsphere.core.integrate.type.sharding.ShardingTableOnlyDMLAndDDLTest;
-import io.shardingsphere.core.integrate.type.sharding.ShardingTableOnlyDQLTest;
-import io.shardingsphere.core.integrate.type.sharding.hint.AllHintDatabaseOnlyTests;
 import io.shardingsphere.core.integrate.api.AllAPIIntegrateTests;
 import io.shardingsphere.core.integrate.type.ms.MasterSlaveOnlyDMLAndDDLTest;
 import io.shardingsphere.core.integrate.type.ms.MasterSlaveOnlyDQLTest;

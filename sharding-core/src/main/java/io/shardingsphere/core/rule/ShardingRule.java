@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,14 +23,6 @@ import com.google.common.base.Strings;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
-import io.shardingsphere.core.exception.ShardingConfigurationException;
-import io.shardingsphere.core.keygen.DefaultKeyGenerator;
-import io.shardingsphere.core.keygen.KeyGenerator;
-import io.shardingsphere.core.parsing.parser.context.condition.Column;
-import io.shardingsphere.core.routing.strategy.ShardingStrategy;
-import io.shardingsphere.core.routing.strategy.ShardingStrategyFactory;
-import io.shardingsphere.core.routing.strategy.none.NoneShardingStrategy;
-import io.shardingsphere.core.util.StringUtil;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.keygen.DefaultKeyGenerator;
 import io.shardingsphere.core.keygen.KeyGenerator;

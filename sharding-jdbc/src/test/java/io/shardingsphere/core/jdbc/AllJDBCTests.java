@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,6 @@ package io.shardingsphere.core.jdbc;
 
 import io.shardingsphere.core.jdbc.adapter.AllAdapterTests;
 import io.shardingsphere.core.jdbc.core.AllCoreTests;
-import io.shardingsphere.core.jdbc.unsupported.AllUnsupportedTests;
-import io.shardingsphere.core.jdbc.adapter.AllAdapterTests;
 import io.shardingsphere.core.jdbc.unsupported.AllUnsupportedTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

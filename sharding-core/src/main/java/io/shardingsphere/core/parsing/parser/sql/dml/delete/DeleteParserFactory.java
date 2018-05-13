@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,6 @@ import io.shardingsphere.core.parsing.parser.dialect.oracle.sql.OracleDeletePars
 import io.shardingsphere.core.parsing.parser.dialect.postgresql.sql.PostgreSQLDeleteParser;
 import io.shardingsphere.core.parsing.parser.dialect.sqlserver.sql.SQLServerDeleteParser;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.sql.MySQLDeleteParser;
-import io.shardingsphere.core.parsing.parser.dialect.oracle.sql.OracleDeleteParser;
-import io.shardingsphere.core.parsing.parser.dialect.postgresql.sql.PostgreSQLDeleteParser;
-import io.shardingsphere.core.parsing.parser.dialect.sqlserver.sql.SQLServerDeleteParser;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

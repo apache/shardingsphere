@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,6 @@ package io.shardingsphere.core.parsing.parser.dialect;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.parser.clause.expression.AliasExpressionParser;
 import io.shardingsphere.core.parsing.parser.clause.expression.BasicExpressionParser;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.expression.MySQLAliasExpressionParser;
-import io.shardingsphere.core.parsing.parser.dialect.oracle.clause.expression.OracleAliasExpressionParser;
-import io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.expression.PostgreSQLAliasExpressionParser;
-import io.shardingsphere.core.parsing.parser.dialect.sqlserver.clause.expression.SQLServerAliasExpressionParser;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.expression.MySQLAliasExpressionParser;
 import io.shardingsphere.core.parsing.parser.dialect.oracle.clause.expression.OracleAliasExpressionParser;
 import io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.expression.PostgreSQLAliasExpressionParser;

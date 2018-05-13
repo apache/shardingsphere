@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,14 +29,6 @@ import io.shardingsphere.core.parsing.integrate.jaxb.root.ParserResult;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.test.sql.SQLCaseType;
-import io.shardingsphere.core.parsing.integrate.asserts.condition.ConditionAssert;
-import io.shardingsphere.core.parsing.integrate.asserts.groupby.GroupByAssert;
-import io.shardingsphere.core.parsing.integrate.asserts.limit.LimitAssert;
-import io.shardingsphere.core.parsing.integrate.asserts.orderby.OrderByAssert;
-import io.shardingsphere.core.parsing.integrate.asserts.table.TableAssert;
-import io.shardingsphere.core.parsing.integrate.asserts.token.TokenAssert;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 
 /**
  * SQL statement assert.

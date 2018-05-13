@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,17 +19,12 @@ package io.shardingsphere.core.jdbc.core.statement;
 
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.common.base.AbstractShardingJDBCDatabaseAndTableTest;
-import io.shardingsphere.core.util.SQLPlaceholderUtil;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.executor.event.DMLExecutionEvent;
 import io.shardingsphere.core.executor.event.EventExecutionType;
 import io.shardingsphere.core.integrate.sql.DatabaseTestSQL;
 import io.shardingsphere.core.jdbc.util.JDBCTestSQL;
 import io.shardingsphere.core.util.EventBusInstance;
-import io.shardingsphere.core.common.base.AbstractShardingJDBCDatabaseAndTableTest;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.integrate.sql.DatabaseTestSQL;
-import io.shardingsphere.core.jdbc.util.JDBCTestSQL;
 import io.shardingsphere.core.util.SQLPlaceholderUtil;
 import org.junit.Test;
 

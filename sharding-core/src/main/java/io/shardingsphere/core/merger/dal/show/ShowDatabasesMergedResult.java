@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package io.shardingsphere.core.merger.dal.show;
 
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.merger.MergedResult;
-import io.shardingsphere.core.constant.ShardingConstant;
 
 import java.io.InputStream;
 import java.sql.SQLFeatureNotSupportedException;

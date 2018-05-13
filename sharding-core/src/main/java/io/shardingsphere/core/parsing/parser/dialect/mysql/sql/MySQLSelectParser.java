@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,10 +25,6 @@ import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.facade.MySQLSe
 import io.shardingsphere.core.parsing.parser.sql.dql.select.AbstractSelectParser;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.MySQLLimitClauseParser;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.MySQLSelectOptionClauseParser;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.facade.MySQLSelectClauseParserFacade;
 
 /**
  * Select parser for MySQL.

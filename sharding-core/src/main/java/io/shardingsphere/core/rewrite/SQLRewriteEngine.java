@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,15 +47,6 @@ import io.shardingsphere.core.routing.type.TableUnit;
 import io.shardingsphere.core.rule.BindingTableRule;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.util.SQLUtil;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.optimizer.condition.ShardingConditions;
-import io.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
-import io.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
-import io.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
-import io.shardingsphere.core.rewrite.placeholder.TablePlaceholder;
-import io.shardingsphere.core.routing.SQLUnit;
-import io.shardingsphere.core.routing.type.RoutingTable;
-import io.shardingsphere.core.routing.type.TableUnit;
 
 import java.util.Collections;
 import java.util.Comparator;

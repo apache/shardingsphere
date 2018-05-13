@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,6 @@ import io.shardingsphere.core.parsing.lexer.dialect.mysql.MySQLLexerTest;
 import io.shardingsphere.core.parsing.lexer.dialect.oracle.OracleLexerTest;
 import io.shardingsphere.core.parsing.lexer.dialect.postgresql.PostgreSQLLexerTest;
 import io.shardingsphere.core.parsing.lexer.dialect.sqlserver.SQLServerLexerTest;
-import io.shardingsphere.core.parsing.lexer.analyzer.CharTypeTest;
-import io.shardingsphere.core.parsing.lexer.analyzer.TokenizerTest;
-import io.shardingsphere.core.parsing.lexer.dialect.postgresql.PostgreSQLLexerTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 

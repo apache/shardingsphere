@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@ package io.shardingsphere.core.merger.dql;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.merger.MergeEngine;
-import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.merger.MergedResult;
+import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.merger.dql.groupby.GroupByMemoryMergedResult;
 import io.shardingsphere.core.merger.dql.groupby.GroupByStreamMergedResult;
 import io.shardingsphere.core.merger.dql.iterator.IteratorStreamMergedResult;
@@ -31,16 +31,6 @@ import io.shardingsphere.core.merger.dql.pagination.TopAndRowNumberDecoratorMerg
 import io.shardingsphere.core.parsing.parser.context.limit.Limit;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.util.SQLUtil;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.merger.dql.groupby.GroupByMemoryMergedResult;
-import io.shardingsphere.core.merger.dql.groupby.GroupByStreamMergedResult;
-import io.shardingsphere.core.merger.dql.iterator.IteratorStreamMergedResult;
-import io.shardingsphere.core.merger.dql.orderby.OrderByStreamMergedResult;
-import io.shardingsphere.core.merger.dql.pagination.LimitDecoratorMergedResult;
-import io.shardingsphere.core.merger.dql.pagination.RowNumberDecoratorMergedResult;
-import io.shardingsphere.core.merger.dql.pagination.TopAndRowNumberDecoratorMergedResult;
-import io.shardingsphere.core.parsing.parser.context.limit.Limit;
-import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 
 import java.sql.SQLException;
 import java.util.List;

@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,6 @@
 package io.shardingsphere.core.jdbc.core.statement;
 
 import com.google.common.base.Preconditions;
-import io.shardingsphere.core.jdbc.adapter.AbstractMasterSlavePreparedStatementAdapter;
-import io.shardingsphere.core.jdbc.core.connection.MasterSlaveConnection;
-import io.shardingsphere.core.parsing.SQLJudgeEngine;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingsphere.core.jdbc.adapter.AbstractMasterSlavePreparedStatementAdapter;
 import io.shardingsphere.core.jdbc.core.connection.MasterSlaveConnection;
 import io.shardingsphere.core.parsing.SQLJudgeEngine;

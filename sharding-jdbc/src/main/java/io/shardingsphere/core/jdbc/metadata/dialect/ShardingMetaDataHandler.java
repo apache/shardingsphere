@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
 package io.shardingsphere.core.jdbc.metadata.dialect;
 
 import io.shardingsphere.core.metadata.ColumnMetaData;
-import io.shardingsphere.core.metadata.ColumnMetaData;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +25,8 @@ import lombok.RequiredArgsConstructor;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -39,11 +38,11 @@ import java.util.List;
 @RequiredArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 public abstract class ShardingMetaDataHandler {
-    
+
     private final DataSource dataSource;
-    
+
     private final String actualTableName;
-    
+
     /**
      * Get column meta data list.
      *
@@ -51,10 +50,11 @@ public abstract class ShardingMetaDataHandler {
      * @throws SQLException SQL exception
      */
     public Collection<ColumnMetaData> getColumnMetaDataList() throws SQLException {
-        List<ColumnMetaData> result;
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
-            result = geColumnMetaInternal(statement);
+        List<ColumnMetaData> result = new LinkedList<>();
+        try (Connection connection = dataSource.getConnection()) {
+            if (isTableExist(connection)) {
+                result = getExistColumnMeta(connection);
+            }
         }
         return result;
     }
@@ -67,16 +67,28 @@ public abstract class ShardingMetaDataHandler {
      * @throws SQLException SQL exception
      */
     public Collection<ColumnMetaData> getColumnMetaDataList(final Connection connection) throws SQLException {
-        return geColumnMetaInternal(connection.createStatement());
+        List<ColumnMetaData> result = new LinkedList<>();
+        if (isTableExist(connection)) {
+            result = getExistColumnMeta(connection);
+        }
+        return result;
     }
 
     /**
-     * Get column meta data internal.
+     * Judge whether table exist or not.
      *
-     * @param statement statement
-     * @return column meta data list
+     * @param connection jdbc connection
+     * @return true or false
      * @throws SQLException SQL exception
      */
-    public abstract List<ColumnMetaData> geColumnMetaInternal(Statement statement) throws SQLException;
+    public abstract boolean isTableExist(Connection connection) throws SQLException;
 
+    /**
+     * Get exit table's column metadata list.
+     *
+     * @param connection jdbc connection
+     * @return column metadata list
+     * @throws SQLException SQL exception
+     */
+    public abstract List<ColumnMetaData> getExistColumnMeta(Connection connection) throws SQLException;
 }

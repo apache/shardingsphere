@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,22 +19,6 @@ package io.shardingsphere.core.optimizer;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import io.shardingsphere.core.api.algorithm.sharding.ListShardingValue;
-import io.shardingsphere.core.optimizer.condition.ShardingConditions;
-import io.shardingsphere.core.optimizer.insert.InsertOptimizeEngine;
-import io.shardingsphere.core.optimizer.insert.InsertShardingCondition;
-import io.shardingsphere.core.parsing.parser.context.condition.AndCondition;
-import io.shardingsphere.core.parsing.parser.context.condition.Column;
-import io.shardingsphere.core.parsing.parser.context.condition.Condition;
-import io.shardingsphere.core.parsing.parser.context.insertvalue.InsertValue;
-import io.shardingsphere.core.parsing.parser.context.table.Table;
-import io.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
-import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
-import io.shardingsphere.core.parsing.parser.token.InsertValuesToken;
-import io.shardingsphere.core.parsing.parser.token.TableToken;
-import io.shardingsphere.core.routing.router.sharding.GeneratedKey;
-import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.yaml.sharding.YamlShardingConfiguration;
 import io.shardingsphere.core.api.algorithm.sharding.ListShardingValue;
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;
 import io.shardingsphere.core.optimizer.insert.InsertOptimizeEngine;

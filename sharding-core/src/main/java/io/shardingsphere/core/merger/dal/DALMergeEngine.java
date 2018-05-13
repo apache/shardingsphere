@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@
 package io.shardingsphere.core.merger.dal;
 
 import io.shardingsphere.core.merger.MergeEngine;
-import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.merger.MergedResult;
+import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.merger.dal.show.ShowCreateTableMergedResult;
 import io.shardingsphere.core.merger.dal.show.ShowDatabasesMergedResult;
 import io.shardingsphere.core.merger.dal.show.ShowOtherMergedResult;
@@ -29,12 +29,6 @@ import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabas
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTablesStatement;
 import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.merger.dal.show.ShowCreateTableMergedResult;
-import io.shardingsphere.core.merger.dal.show.ShowTablesMergedResult;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowCreateTableStatement;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTablesStatement;
-import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.SQLException;

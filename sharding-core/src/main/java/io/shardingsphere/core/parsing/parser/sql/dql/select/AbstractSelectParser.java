@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,17 +35,6 @@ import io.shardingsphere.core.parsing.parser.sql.SQLParser;
 import io.shardingsphere.core.parsing.parser.token.ItemsToken;
 import io.shardingsphere.core.parsing.parser.token.OrderByToken;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.constant.AggregationType;
-import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.parsing.parser.clause.facade.AbstractSelectClauseParserFacade;
-import io.shardingsphere.core.parsing.parser.context.OrderItem;
-import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
-import io.shardingsphere.core.parsing.parser.context.selectitem.SelectItem;
-import io.shardingsphere.core.parsing.parser.context.selectitem.StarSelectItem;
-import io.shardingsphere.core.parsing.parser.context.table.Table;
-import io.shardingsphere.core.parsing.parser.context.table.Tables;
-import io.shardingsphere.core.parsing.parser.token.ItemsToken;
-import io.shardingsphere.core.parsing.parser.token.OrderByToken;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

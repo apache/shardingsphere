@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,16 +39,6 @@ import io.shardingsphere.core.merger.dql.orderby.OrderByValueTest;
 import io.shardingsphere.core.merger.dql.pagination.LimitDecoratorMergedResultTest;
 import io.shardingsphere.core.merger.dql.pagination.RowNumberDecoratorMergedResultTest;
 import io.shardingsphere.core.merger.dql.pagination.TopAndRowNumberDecoratorMergedResultTest;
-import io.shardingsphere.core.merger.dal.DALMergeEngineTest;
-import io.shardingsphere.core.merger.dal.show.ShowCreateTableMergedResultTest;
-import io.shardingsphere.core.merger.dal.show.ShowDatabasesMergedResultTest;
-import io.shardingsphere.core.merger.dal.show.ShowOtherMergedResultTest;
-import io.shardingsphere.core.merger.dal.show.ShowTablesMergedResultTest;
-import io.shardingsphere.core.merger.dql.DQLMergeEngineTest;
-import io.shardingsphere.core.merger.dql.common.DecoratorMergedResultTest;
-import io.shardingsphere.core.merger.dql.common.MemoryMergedResultTest;
-import io.shardingsphere.core.merger.dql.common.MemoryQueryResultRowTest;
-import io.shardingsphere.core.merger.dql.common.StreamMergedResultTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 

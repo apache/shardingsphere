@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,26 +48,6 @@ import io.shardingsphere.core.parsing.parser.token.OffsetToken;
 import io.shardingsphere.core.parsing.parser.token.RowCountToken;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.util.SQLUtil;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.parsing.parser.clause.condition.NullCondition;
-import io.shardingsphere.core.parsing.parser.clause.expression.AliasExpressionParser;
-import io.shardingsphere.core.parsing.parser.clause.expression.BasicExpressionParser;
-import io.shardingsphere.core.parsing.parser.context.condition.AndCondition;
-import io.shardingsphere.core.parsing.parser.context.condition.Column;
-import io.shardingsphere.core.parsing.parser.context.condition.Condition;
-import io.shardingsphere.core.parsing.parser.context.condition.OrCondition;
-import io.shardingsphere.core.parsing.parser.context.limit.Limit;
-import io.shardingsphere.core.parsing.parser.context.limit.LimitValue;
-import io.shardingsphere.core.parsing.parser.context.selectitem.SelectItem;
-import io.shardingsphere.core.parsing.parser.context.table.Table;
-import io.shardingsphere.core.parsing.parser.context.table.Tables;
-import io.shardingsphere.core.parsing.parser.dialect.ExpressionParserFactory;
-import io.shardingsphere.core.parsing.parser.expression.SQLExpression;
-import io.shardingsphere.core.parsing.parser.expression.SQLIdentifierExpression;
-import io.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
-import io.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
-import io.shardingsphere.core.parsing.parser.expression.SQLPropertyExpression;
-import io.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -221,10 +201,7 @@ public class WhereClauseParser implements SQLClauseParser {
             parseOtherCondition(sqlStatement);
         }
         if (lexerEngine.skipIfEqual(DefaultKeyword.NOT)) {
-            lexerEngine.nextToken();
-            lexerEngine.skipIfEqual(Symbol.LEFT_PAREN);
-            parseOtherCondition(sqlStatement);
-            lexerEngine.skipIfEqual(Symbol.RIGHT_PAREN);
+            parseNotCondition(sqlStatement);
         }
         return result;
     }
@@ -248,6 +225,7 @@ public class WhereClauseParser implements SQLClauseParser {
         do {
             lexerEngine.skipIfEqual(Symbol.COMMA);
             rights.add(basicExpressionParser.parse(sqlStatement));
+            skipsDoubleColon();
         } while (!lexerEngine.equalAny(Symbol.RIGHT_PAREN));
         lexerEngine.nextToken();
         Optional<Column> column = find(sqlStatement.getTables(), left);
@@ -320,6 +298,28 @@ public class WhereClauseParser implements SQLClauseParser {
     
     private void parseOtherCondition(final SQLStatement sqlStatement) {
         basicExpressionParser.parse(sqlStatement);
+    }
+    
+    private void parseNotCondition(final SQLStatement sqlStatement) {
+        if (lexerEngine.skipIfEqual(DefaultKeyword.BETWEEN)) {
+            parseOtherCondition(sqlStatement);
+            skipsDoubleColon();
+            lexerEngine.accept(DefaultKeyword.AND);
+            parseOtherCondition(sqlStatement);
+            return;
+        }
+        if (lexerEngine.skipIfEqual(DefaultKeyword.IN)) {
+            lexerEngine.accept(Symbol.LEFT_PAREN);
+            do {
+                lexerEngine.skipIfEqual(Symbol.COMMA);
+                parseOtherCondition(sqlStatement);
+                skipsDoubleColon();
+            } while (!lexerEngine.equalAny(Symbol.RIGHT_PAREN));
+            lexerEngine.nextToken();
+        } else {
+            lexerEngine.nextToken();
+            parseOtherCondition(sqlStatement);
+        }
     }
     
     private Optional<Column> find(final Tables tables, final SQLExpression sqlExpression) {

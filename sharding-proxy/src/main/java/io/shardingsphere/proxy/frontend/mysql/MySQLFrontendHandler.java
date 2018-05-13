@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,15 +31,6 @@ import io.shardingsphere.proxy.transport.mysql.packet.handshake.AuthPluginData;
 import io.shardingsphere.proxy.transport.mysql.packet.handshake.ConnectionIdGenerator;
 import io.shardingsphere.proxy.transport.mysql.packet.handshake.HandshakePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.handshake.HandshakeResponse41Packet;
-import io.shardingsphere.proxy.frontend.common.FrontendHandler;
-import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketFactory;
-import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.handshake.AuthPluginData;
-import io.shardingsphere.proxy.transport.mysql.packet.handshake.ConnectionIdGenerator;
-import io.shardingsphere.proxy.transport.mysql.packet.handshake.HandshakePacket;
-import io.shardingsphere.proxy.transport.mysql.packet.handshake.HandshakeResponse41Packet;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -63,9 +54,13 @@ public final class MySQLFrontendHandler extends FrontendHandler {
     @Override
     protected void auth(final ChannelHandlerContext context, final ByteBuf message) {
         MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message);
-        // TODO use authPluginData to auth
-        HandshakeResponse41Packet response41 = new HandshakeResponse41Packet(mysqlPacketPayload);
-        context.writeAndFlush(new OKPacket(response41.getSequenceId() + 1, 0L, 0L, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+        try {
+            // TODO use authPluginData to auth
+            HandshakeResponse41Packet response41 = new HandshakeResponse41Packet(mysqlPacketPayload);
+            context.writeAndFlush(new OKPacket(response41.getSequenceId() + 1, 0L, 0L, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+        } finally {
+            mysqlPacketPayload.getByteBuf().release();
+        }
     }
     
     @Override
@@ -75,13 +70,17 @@ public final class MySQLFrontendHandler extends FrontendHandler {
             @Override
             public void run() {
                 MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message);
-                int sequenceId = mysqlPacketPayload.readInt1();
-                CommandPacket commandPacket = CommandPacketFactory.getCommandPacket(sequenceId, mysqlPacketPayload);
-                for (DatabaseProtocolPacket each : commandPacket.execute().getDatabaseProtocolPackets()) {
-                    context.writeAndFlush(each);
-                }
-                while (commandPacket.hasMoreResultValue()) {
-                    context.writeAndFlush(commandPacket.getResultValue());
+                try {
+                    int sequenceId = mysqlPacketPayload.readInt1();
+                    CommandPacket commandPacket = CommandPacketFactory.getCommandPacket(sequenceId, mysqlPacketPayload);
+                    for (DatabaseProtocolPacket each : commandPacket.execute().getDatabaseProtocolPackets()) {
+                        context.writeAndFlush(each);
+                    }
+                    while (commandPacket.hasMoreResultValue()) {
+                        context.writeAndFlush(commandPacket.getResultValue());
+                    }
+                } finally {
+                    mysqlPacketPayload.getByteBuf().release();
                 }
             }
         });

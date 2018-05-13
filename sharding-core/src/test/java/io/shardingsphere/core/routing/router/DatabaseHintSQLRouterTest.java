@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,15 +22,6 @@ import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.api.config.strategy.HintShardingStrategyConfiguration;
 import io.shardingsphere.core.fixture.OrderDatabaseHintShardingAlgorithm;
-import io.shardingsphere.core.hint.HintManagerHolder;
-import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
-import io.shardingsphere.core.routing.router.sharding.DatabaseHintSQLRouter;
-import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.api.HintManager;
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.api.config.TableRuleConfiguration;
-import io.shardingsphere.core.api.config.strategy.HintShardingStrategyConfiguration;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;

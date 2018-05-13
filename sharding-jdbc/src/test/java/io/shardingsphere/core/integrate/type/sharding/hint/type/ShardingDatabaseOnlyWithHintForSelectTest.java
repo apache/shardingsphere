@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,17 +18,13 @@
 package io.shardingsphere.core.integrate.type.sharding.hint.type;
 
 import com.google.common.collect.Lists;
-import io.shardingsphere.core.util.SQLPlaceholderUtil;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.ShardingOperator;
 import io.shardingsphere.core.integrate.sql.DatabaseTestSQL;
 import io.shardingsphere.core.integrate.type.sharding.hint.base.AbstractShardingDatabaseOnlyWithHintTest;
 import io.shardingsphere.core.integrate.type.sharding.hint.helper.HintShardingValueHelper;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.ShardingOperator;
-import io.shardingsphere.core.integrate.type.sharding.hint.base.AbstractShardingDatabaseOnlyWithHintTest;
-import io.shardingsphere.core.integrate.type.sharding.hint.helper.HintShardingValueHelper;
+import io.shardingsphere.core.util.SQLPlaceholderUtil;
 import org.dbunit.DatabaseUnitException;
 import org.junit.Before;
 import org.junit.Test;
