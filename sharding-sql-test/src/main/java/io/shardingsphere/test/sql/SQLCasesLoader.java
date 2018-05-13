@@ -156,8 +156,6 @@ public final class SQLCasesLoader {
     }
     
     /**
-     * Get SQL.
-     * @param sqlCaseId SQL ID
      * Get supported SQL with placeholder.
      * 
      * @param sqlCaseId SQL case ID

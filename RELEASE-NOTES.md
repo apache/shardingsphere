@@ -222,7 +222,7 @@
 
 ### Bug Fixes
 
-1. [ISSUE #194](https://github.com/sharding-sphere/sharding-sphere/issues/194) Some component exceptions in the close method of Connection, Statement, Resultset and other interfaces cause the close method of another component to be not invoked
+1. [ISSUE #194](https://github.com/sharding-sphere/sharding-sphere/issues/194) Some component exceptions in the close method of Connection, Statement, ResultSet and other interfaces cause the close method of another component to be not invoked
 1. [ISSUE #199](https://github.com/sharding-sphere/sharding-sphere/issues/199) Sharding and reuse PreparedStatement object cause route error
 1. [ISSUE #201](https://github.com/sharding-sphere/sharding-sphere/issues/201) Event transmission missing before batch operation execution 
 1. [ISSUE #203](https://github.com/sharding-sphere/sharding-sphere/issues/203) Merge events sent by the batch operation
@@ -334,7 +334,7 @@ Automatic generation key implementation, including
 ### Refactor
 
 1. [ISSUE #49](https://github.com/sharding-sphere/sharding-sphere/issues/49) Adjust the property configuration
-1. [ISSUE #51](https://github.com/sharding-sphere/sharding-sphere/issues/51) Refector of Hint interface
+1. [ISSUE #51](https://github.com/sharding-sphere/sharding-sphere/issues/51) Refactor of Hint interface
 
 ### Bug Fixes
 
