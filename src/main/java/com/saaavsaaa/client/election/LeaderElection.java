@@ -2,6 +2,7 @@ package com.saaavsaaa.client.election;
 
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
+import com.saaavsaaa.client.utility.retry.RetryCount;
 import com.saaavsaaa.client.utility.section.Listener;
 import com.saaavsaaa.client.utility.section.Properties;
 import com.saaavsaaa.client.utility.section.WatcherCreator;
@@ -14,10 +15,16 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Created by aaa
+ * It is not recommended to be used as a global variable
  */
 public abstract class LeaderElection {
     private static final Logger logger = LoggerFactory.getLogger(LeaderElection.class);
     private boolean done = false;
+    private int retryCount;
+    
+    public LeaderElection(){
+        retryCount = RetryCount.INSTANCE.getStandCount();
+    }
 
     private boolean contend(final String node, final BaseProvider provider, final Listener listener) throws KeeperException, InterruptedException {
         boolean success = false;
@@ -43,6 +50,10 @@ public abstract class LeaderElection {
             @Override
             public void process(WatchedEvent event) {
                 try {
+                    retryCount--;
+                    if (retryCount < 0){
+                        throw new Exception("Election node exceed retry count");
+                    }
                     executeContention(realNode, provider);
                 } catch (Exception ee){
                     logger.error("Listener Exception executeContention:{}", ee.getMessage(), ee);

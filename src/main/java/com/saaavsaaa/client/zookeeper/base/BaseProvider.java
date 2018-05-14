@@ -33,6 +33,10 @@ public class BaseProvider implements IProvider {
         this.authorities = authorities;
     }
     
+    public BaseProvider(BaseClient client, boolean watched) {
+        this(client.rootNode, client, watched, client.authorities);
+    }
+    
     public String getDataString(final String key) throws KeeperException, InterruptedException {
         return new String(getData(key));
     }

@@ -1,14 +1,13 @@
 package com.saaavsaaa.client.zookeeper;
 
-import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.utility.constant.Constants;
+import com.saaavsaaa.client.utility.retry.DelayRetrial;
+import com.saaavsaaa.client.utility.retry.RetrialCenter;
+import com.saaavsaaa.client.utility.retry.RetryCount;
 import com.saaavsaaa.client.utility.section.Listener;
-import com.saaavsaaa.client.zookeeper.base.BaseClient;
 import com.saaavsaaa.client.zookeeper.base.BaseClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 
 /**
  * Created by aaa
@@ -57,12 +56,23 @@ public class ClientFactory extends BaseClientFactory {
         return this;
     }
     
-    public ClientFactory authorization(String scheme, byte[] auth){
+    public ClientFactory authorization(final String scheme, final byte[] auth){
         if (scheme == null || scheme.trim().length() == 0) {
             return this;
         }
         this.scheme = scheme;
         this.auth = auth;
+        return this;
+    }
+    
+    public ClientFactory setRetryPolicy(final int count){
+        RetryCount.INSTANCE.init(count);
+        return this;
+    }
+    
+    public ClientFactory setRetryPolicy(final DelayRetrial retrial){
+        RetrialCenter.INSTANCE.init(retrial);
+        RetrialCenter.INSTANCE.start();
         return this;
     }
 }

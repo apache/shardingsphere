@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Created by aaa on 18-5-4.
+ * Created by aaa
  */
 public class ContentionStrategyTest extends UsualClientTest {
     @Override

@@ -4,7 +4,7 @@ import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 
 /**
- * Created by aaa on 18-5-10.
+ * Created by aaa
  */
 public interface IGroupAction {
     

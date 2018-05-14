@@ -1,7 +1,10 @@
 package com.saaavsaaa.client.zookeeper;
 
+import com.saaavsaaa.client.utility.retry.RetrialCenter;
+import com.saaavsaaa.client.utility.retry.RetryCount;
 import com.saaavsaaa.client.zookeeper.base.BaseClient;
 import com.saaavsaaa.client.zookeeper.base.BaseProvider;
+import com.saaavsaaa.client.zookeeper.operation.CreateCurrentOperation;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -14,22 +17,31 @@ import java.util.List;
 
 /**
  * Created by aaa
- * todo don't block
  */
 public class RetryProvider extends BaseProvider {
     private static final Logger logger = LoggerFactory.getLogger(RetryProvider.class);
     
-    RetryProvider(String rootNode, BaseClient client, boolean watched, List<ACL> authorities) {
-        super(rootNode, client, watched, authorities);
+    RetryProvider(BaseClient client, boolean watched) {
+        super(client, watched);
     }
     
+    RetryProvider(String rootNode, BaseClient client, boolean watched, List<ACL> authorities) {
+        super(rootNode, client, watched, authorities);
+        RetryCount.INSTANCE.start();
+    }
+    // block
     @Override
     public byte[] getData(final String key) throws KeeperException, InterruptedException {
         try {
             return zooKeeper.getData(key, watched, null);
         } catch (KeeperException.SessionExpiredException ee){
             logger.warn("RetryProvider SessionExpiredException getData:{}", key);
-            return getData(key);
+            if (RetryCount.INSTANCE.continueExecute()) {
+                byte[] data = getData(key);
+                RetryCount.INSTANCE.reset();
+                return data;
+            }
+            throw ee;
         }
     }
     
@@ -39,7 +51,12 @@ public class RetryProvider extends BaseProvider {
             return null != zooKeeper.exists(key, watched);
         } catch (KeeperException.SessionExpiredException ee){
             logger.warn("RetryProvider SessionExpiredException checkExists:{}", key);
-            return checkExists(key);
+            if (RetryCount.INSTANCE.continueExecute()) {
+                boolean result = checkExists(key);
+                RetryCount.INSTANCE.reset();
+                return result;
+            }
+            throw ee;
         }
     }
     
@@ -49,7 +66,12 @@ public class RetryProvider extends BaseProvider {
             return null != zooKeeper.exists(key, watcher);
         } catch (KeeperException.SessionExpiredException ee){
             logger.warn("RetryProvider SessionExpiredException checkExists:{}", key);
-            return checkExists(key, watcher);
+            if (RetryCount.INSTANCE.continueExecute()) {
+                boolean result = checkExists(key, watcher);
+                RetryCount.INSTANCE.reset();
+                return result;
+            }
+            throw ee;
         }
     }
     
@@ -59,17 +81,23 @@ public class RetryProvider extends BaseProvider {
             return super.getChildren(key);
         } catch (KeeperException.SessionExpiredException ee){
             logger.warn("RetryProvider SessionExpiredException getChildren:{}", key);
-            return getChildren(key);
+            if (RetryCount.INSTANCE.continueExecute()) {
+                List<String> result = getChildren(key);
+                RetryCount.INSTANCE.reset();
+                return result;
+            }
+            throw ee;
         }
     }
     
+    // without block
     @Override
     public void createCurrentOnly(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
         try {
             super.createCurrentOnly(key, value, createMode);
         } catch (KeeperException.SessionExpiredException ee){
             logger.warn("RetryProvider SessionExpiredException createCurrentOnly:{}", key);
-            createCurrentOnly(key, value, createMode);
+            RetrialCenter.INSTANCE.add(new CreateCurrentOperation(this, key, value, createMode));
         }
     }
     

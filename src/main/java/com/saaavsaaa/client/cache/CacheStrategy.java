@@ -1,7 +1,7 @@
 package com.saaavsaaa.client.cache;
 
 /**
- * Created by aaa on 18-5-7.
+ * Created by aaa
  */
 public enum CacheStrategy {
     NONE,

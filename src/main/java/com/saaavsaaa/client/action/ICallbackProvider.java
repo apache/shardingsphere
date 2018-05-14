@@ -4,7 +4,7 @@ import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
 
 /**
- * Created by aaa on 18-5-11.
+ * Created by aaa
  */
 public interface ICallbackProvider {
     void exists(String path, AsyncCallback.StatCallback cb, Object ctx);
