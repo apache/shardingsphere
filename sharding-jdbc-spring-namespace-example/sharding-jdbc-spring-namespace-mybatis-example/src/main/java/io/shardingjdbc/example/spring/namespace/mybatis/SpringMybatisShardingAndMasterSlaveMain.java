@@ -21,11 +21,12 @@ import io.shardingjdbc.example.spring.namespace.mybatis.service.DemoService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-public final class SpringMybatisShardingAndMasterSlaveMain {
+/*
+ * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
+ */
+public class SpringMybatisShardingAndMasterSlaveMain {
     
-    // CHECKSTYLE:OFF
     public static void main(final String[] args) {
-    // CHECKSTYLE:ON
         ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisShardingAndMasterSlaveContext.xml");
         DemoService demo = applicationContext.getBean(DemoService.class);
         demo.demo();

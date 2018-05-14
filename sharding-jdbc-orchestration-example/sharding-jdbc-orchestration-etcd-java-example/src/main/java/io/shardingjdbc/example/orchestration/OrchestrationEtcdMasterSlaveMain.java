@@ -18,13 +18,13 @@
 package io.shardingjdbc.example.orchestration;
 
 import com.google.common.collect.Lists;
-import io.shardingjdbc.core.api.HintManager;
-import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingjdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
-import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
-import io.shardingjdbc.orchestration.api.util.OrchestrationDataSourceCloseableUtil;
-import io.shardingjdbc.orchestration.reg.api.RegistryCenterConfiguration;
-import io.shardingjdbc.orchestration.reg.etcd.EtcdConfiguration;
+import io.shardingsphere.core.api.HintManager;
+import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.jdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
+import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
+import io.shardingsphere.jdbc.orchestration.api.util.OrchestrationDataSourceCloseableUtil;
+import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenterConfiguration;
+import io.shardingsphere.jdbc.orchestration.reg.etcd.EtcdConfiguration;
 import org.apache.commons.dbcp.BasicDataSource;
 
 import javax.sql.DataSource;
@@ -37,13 +37,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public final class OrchestrationEtcdMasterSlaveMain {
+public class OrchestrationEtcdMasterSlaveMain {
     
     private static final String ETCD_CONNECTION_STRING = "http://localhost:2379";
     
-    // CHECKSTYLE:OFF
     public static void main(final String[] args) throws IOException, SQLException {
-    // CHECKSTYLE:ON
         DataSource dataSource = getDataSourceByLocalConfig();
 //        DataSource dataSource = getDataSourceByCloudConfig();
         createTable(dataSource);
@@ -166,8 +164,8 @@ public final class OrchestrationEtcdMasterSlaveMain {
     
     private static void executeUpdate(final DataSource dataSource, final String sql) throws SQLException {
         try (
-                Connection conn = dataSource.getConnection();
-                PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.executeUpdate();
         }
     }

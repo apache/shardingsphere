@@ -17,12 +17,12 @@
 
 package io.shardingjdbc.example.jdbc.java.algorithm;
 
-import io.shardingjdbc.core.api.algorithm.sharding.PreciseShardingValue;
-import io.shardingjdbc.core.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
+import io.shardingsphere.core.api.algorithm.sharding.PreciseShardingValue;
+import io.shardingsphere.core.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
 
 import java.util.Collection;
 
-public final class ModuloShardingTableAlgorithm implements PreciseShardingAlgorithm<Long> {
+public class ModuloShardingTableAlgorithm implements PreciseShardingAlgorithm<Long> {
     
     @Override
     public String doSharding(final Collection<String> tableNames, final PreciseShardingValue<Long> shardingValue) {

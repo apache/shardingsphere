@@ -18,12 +18,12 @@
 package io.shardingjdbc.example.orchestration;
 
 import com.google.common.collect.Lists;
-import io.shardingjdbc.core.api.HintManager;
-import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingjdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
-import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
-import io.shardingjdbc.orchestration.reg.api.RegistryCenterConfiguration;
-import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
+import io.shardingsphere.core.api.HintManager;
+import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.jdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
+import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
+import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenterConfiguration;
+import io.shardingsphere.jdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import org.apache.commons.dbcp.BasicDataSource;
 
 import javax.sql.DataSource;
@@ -36,15 +36,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public final class OrchestrationMasterSlaveMain {
+/*
+ * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
+ */
+public class OrchestrationMasterSlaveMain {
     
     private static final String ZOOKEEPER_CONNECTION_STRING = "localhost:2181";
     
     private static final String NAMESPACE = "orchestration-java-demo";
     
-    // CHECKSTYLE:OFF
     public static void main(final String[] args) throws IOException, SQLException {
-    // CHECKSTYLE:ON
         DataSource dataSource = getDataSourceByLocalConfig();
 //        DataSource dataSource = getDataSourceByCloudConfig();
         createTable(dataSource);

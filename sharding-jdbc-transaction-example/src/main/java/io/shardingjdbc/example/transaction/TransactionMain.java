@@ -18,16 +18,16 @@
 package io.shardingjdbc.example.transaction;
 
 import com.google.common.base.Optional;
-import io.shardingjdbc.core.api.ShardingDataSourceFactory;
-import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
-import io.shardingjdbc.core.api.config.TableRuleConfiguration;
-import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingjdbc.example.transaction.algorithm.ModuloShardingAlgorithm;
-import io.shardingjdbc.transaction.api.SoftTransactionManager;
-import io.shardingjdbc.transaction.api.config.NestedBestEffortsDeliveryJobConfiguration;
-import io.shardingjdbc.transaction.api.config.SoftTransactionConfiguration;
-import io.shardingjdbc.transaction.bed.BEDSoftTransaction;
-import io.shardingjdbc.transaction.constants.SoftTransactionType;
+import io.shardingsphere.core.api.ShardingDataSourceFactory;
+import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.core.api.config.TableRuleConfiguration;
+import io.shardingsphere.core.api.config.strategy.StandardShardingStrategyConfiguration;
+import io.shardingsphere.transaction.api.SoftTransactionManager;
+import io.shardingsphere.transaction.api.config.NestedBestEffortsDeliveryJobConfiguration;
+import io.shardingsphere.transaction.api.config.SoftTransactionConfiguration;
+import io.shardingsphere.transaction.bed.BEDSoftTransaction;
+import io.shardingsphere.transaction.constants.SoftTransactionType;
 import org.apache.commons.dbcp.BasicDataSource;
 
 import javax.sql.DataSource;
@@ -38,13 +38,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public final class TransactionMain {
+public class TransactionMain {
     
     private static boolean useNestedJob = true;
     
-    // CHECKSTYLE:OFF
     public static void main(final String[] args) throws SQLException {
-    // CHECKSTYLE:ON
         DataSource dataSource = getShardingDataSource();
         dropTable(dataSource);
         createTable(dataSource);
@@ -85,21 +83,21 @@ public final class TransactionMain {
         SoftTransactionManager transactionManager = new SoftTransactionManager(getSoftTransactionConfiguration(dataSource));
         transactionManager.init();
         BEDSoftTransaction transaction = (BEDSoftTransaction) transactionManager.getTransaction(SoftTransactionType.BestEffortsDelivery);
-        Connection conn = null;
+        Connection connection = null;
         try {
-            conn = dataSource.getConnection();
-            transaction.begin(conn);
-            PreparedStatement preparedStatement1 = conn.prepareStatement(sql1);
-            PreparedStatement preparedStatement2 = conn.prepareStatement(sql2);
+            connection = dataSource.getConnection();
+            transaction.begin(connection);
+            PreparedStatement preparedStatement1 = connection.prepareStatement(sql1);
+            PreparedStatement preparedStatement2 = connection.prepareStatement(sql2);
             preparedStatement2.setObject(1, 1000);
-            PreparedStatement preparedStatement3 = conn.prepareStatement(sql3);
+            PreparedStatement preparedStatement3 = connection.prepareStatement(sql3);
             preparedStatement1.executeUpdate();
             preparedStatement2.executeUpdate();
             preparedStatement3.executeUpdate();
         } finally {
             transaction.end();
-            if (conn != null) {
-                conn.close();
+            if (null != connection) {
+                connection.close();
             }
         }
     }

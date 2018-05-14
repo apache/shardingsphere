@@ -18,18 +18,18 @@
 package io.shardingjdbc.example.orchestration;
 
 import com.google.common.collect.Lists;
-import io.shardingjdbc.core.api.HintManager;
-import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
-import io.shardingjdbc.core.api.config.TableRuleConfiguration;
-import io.shardingjdbc.core.api.config.strategy.InlineShardingStrategyConfiguration;
-import io.shardingjdbc.core.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingjdbc.example.orchestration.algorithm.ModuloTableShardingAlgorithm;
-import io.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
-import io.shardingjdbc.orchestration.api.config.OrchestrationConfiguration;
-import io.shardingjdbc.orchestration.api.util.OrchestrationDataSourceCloseableUtil;
-import io.shardingjdbc.orchestration.reg.api.RegistryCenterConfiguration;
-import io.shardingjdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
+import io.shardingsphere.core.api.HintManager;
+import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.core.api.config.TableRuleConfiguration;
+import io.shardingsphere.core.api.config.strategy.InlineShardingStrategyConfiguration;
+import io.shardingsphere.core.api.config.strategy.StandardShardingStrategyConfiguration;
+import io.shardingsphere.jdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
+import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
+import io.shardingsphere.jdbc.orchestration.api.util.OrchestrationDataSourceCloseableUtil;
+import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenterConfiguration;
+import io.shardingsphere.jdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import org.apache.commons.dbcp.BasicDataSource;
 
 import javax.sql.DataSource;
@@ -45,15 +45,16 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
-public final class OrchestrationShardingMasterSlaveMain {
+/*
+ * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
+ */
+public class OrchestrationShardingMasterSlaveMain {
     
     private static final String ZOOKEEPER_CONNECTION_STRING = "localhost:2181";
     
     private static final String NAMESPACE = "orchestration-java-demo";
     
-    // CHECKSTYLE:OFF
     public static void main(final String[] args) throws IOException, SQLException {
-    // CHECKSTYLE:ON
         DataSource dataSource = getDataSourceByLocalConfig();
 //        DataSource dataSource = getDataSourceByCloudConfig();
         createTable(dataSource);

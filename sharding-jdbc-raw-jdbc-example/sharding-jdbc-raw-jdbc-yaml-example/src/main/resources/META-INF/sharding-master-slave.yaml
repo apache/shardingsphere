@@ -41,20 +41,18 @@ shardingRule:
       keyGeneratorColumnName: order_id
     t_order_item:
       actualDataNodes: ds_${0..1}.t_order_item_${0..1}
-      #绑定表中其余的表的策略与第一张表的策略相同
       tableStrategy:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_item_${order_id % 2}  
-  
   bindingTables:
     - t_order,t_order_item
 
-  #默认数据库分片策略
   defaultDatabaseStrategy:
     inline:
       shardingColumn: user_id
       algorithmExpression: ds_${user_id % 2}
+  defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
 
   masterSlaveRules:
     ds_0:
@@ -65,8 +63,6 @@ shardingRule:
       masterDataSourceName: ds_master_1
       slaveDataSourceNames: [ds_master_1_slave_0, ds_master_1_slave_1]
       loadBalanceAlgorithmType: ROUND_ROBIN
-  
-  defaultKeyGeneratorClassName: io.shardingjdbc.core.keygen.DefaultKeyGenerator
   
   props:
     sql.show: true

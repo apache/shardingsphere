@@ -18,19 +18,19 @@
 package io.shardingjdbc.example.orchestration.yaml;
 
 import io.shardingjdbc.example.orchestration.yaml.repository.OrchestrationYamlRepository;
-import io.shardingjdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
-import io.shardingjdbc.orchestration.api.util.OrchestrationDataSourceCloseableUtil;
+import io.shardingsphere.jdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
+import io.shardingsphere.jdbc.orchestration.api.util.OrchestrationDataSourceCloseableUtil;
 
 import javax.sql.DataSource;
 import java.io.File;
 
-public final class OrchestrationYamlMasterSlaveMain {
+/*
+ * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
+ */
+public class OrchestrationYamlMasterSlaveMain {
     
-    // CHECKSTYLE:OFF
     public static void main(final String[] args) throws Exception {
-    // CHECKSTYLE:ON
-        DataSource dataSource = OrchestrationMasterSlaveDataSourceFactory.createDataSource(new File(
-                OrchestrationYamlMasterSlaveMain.class.getResource("/META-INF/yamlMasterSlaveByLocalConfig.yaml").getFile()));
+        DataSource dataSource = OrchestrationMasterSlaveDataSourceFactory.createDataSource(new File(OrchestrationYamlMasterSlaveMain.class.getResource("/META-INF/yamlMasterSlaveByLocalConfig.yaml").getFile()));
 //        DataSource dataSource = OrchestrationMasterSlaveDataSourceFactory.createDataSource(new File(
 //                OrchestrationYamlMasterSlaveMain.class.getResource("/META-INF/yamlMasterSlaveByCloudConfig.yaml").getFile()));
         new OrchestrationYamlRepository(dataSource).demo();

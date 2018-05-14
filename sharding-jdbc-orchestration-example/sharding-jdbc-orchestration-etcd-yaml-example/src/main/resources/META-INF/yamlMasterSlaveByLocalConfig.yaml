@@ -16,10 +16,8 @@ dataSources:
     password: 
 
 masterSlaveRule:
-  name: 
-    ds_ms
-  masterDataSourceName:
-    ds_master
+  name: ds_ms
+  masterDataSourceName: ds_master
   slaveDataSourceNames: [ds_slave_0, ds_slave_1]
 
 orchestration:
