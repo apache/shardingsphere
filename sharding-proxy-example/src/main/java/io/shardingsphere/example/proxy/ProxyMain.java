@@ -24,9 +24,10 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 
 /*
- * Please make sure sharding-proxy is running before you run this example.
+ * 1. Copy resources/config.yaml to sharding-proxy conf folder and overwrite original file.
+ * 2. Please make sure sharding-proxy is running before you run this example.
  */
-public final class ServerMain {
+public final class ProxyMain {
     
     private static final String PROXY_IP = "localhost";
     
