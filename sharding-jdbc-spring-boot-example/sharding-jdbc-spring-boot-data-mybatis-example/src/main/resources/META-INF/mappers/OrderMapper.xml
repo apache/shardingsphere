@@ -4,7 +4,7 @@
     <update id="createIfNotExistsTable">
         CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT AUTO_INCREMENT, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));
     </update>
-
+    
     <update id="truncateTable">
         TRUNCATE TABLE t_order;
     </update>

@@ -25,9 +25,7 @@ import org.springframework.context.ApplicationContext;
 @SpringBootApplication
 public class SpringBootDataMybatisMain {
     
-    // CHECKSTYLE:OFF
     public static void main(final String[] args) {
-    // CHECKSTYLE:ON
         ApplicationContext applicationContext = SpringApplication.run(SpringBootDataMybatisMain.class, args);
         applicationContext.getBean(DemoService.class).demo();
     }
