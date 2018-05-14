@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.example.proxy.repository;
 
-import io.shardingjdbc.core.api.HintManager;
+import io.shardingsphere.core.api.HintManager;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -68,8 +68,8 @@ public class RawJdbcRepository {
     public void printEqualsSelect() throws SQLException {
         String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=?";
         try (
-                Connection conn = dataSource.getConnection();
-                PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, 10);
             printSimpleSelect(preparedStatement);
         }
@@ -78,8 +78,8 @@ public class RawJdbcRepository {
     public void printInSelect() throws SQLException {
         String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id IN (?, ?)";
         try (
-                Connection conn = dataSource.getConnection();
-                PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, 10);
             preparedStatement.setInt(2, 11);
             printSimpleSelect(preparedStatement);
@@ -90,8 +90,8 @@ public class RawJdbcRepository {
         String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id";
         try (
                 HintManager hintManager = HintManager.getInstance();
-                Connection conn = dataSource.getConnection();
-                PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             hintManager.addDatabaseShardingValue("t_order", "user_id", 11);
             printSimpleSelect(preparedStatement);
         }
@@ -110,8 +110,8 @@ public class RawJdbcRepository {
     
     private void execute(final DataSource dataSource, final String sql) throws SQLException {
         try (
-                Connection conn = dataSource.getConnection();
-                Statement statement = conn.createStatement()) {
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
             statement.execute(sql);
         }
     }
@@ -119,8 +119,8 @@ public class RawJdbcRepository {
     private long executeAndGetGeneratedKey(final DataSource dataSource, final String sql) throws SQLException {
         long result = -1;
         try (
-                Connection conn = dataSource.getConnection();
-                Statement statement = conn.createStatement()) {
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
             ResultSet resultSet = statement.getGeneratedKeys();
             if (resultSet.next()) {
