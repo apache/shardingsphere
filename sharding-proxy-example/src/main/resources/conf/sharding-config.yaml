@@ -10,7 +10,7 @@ dataSources:
     username: root
     password: 
 
-shardingRule:  
+shardingRule:
   tables:
     t_order: 
       actualDataNodes: ds_${0..1}.t_order_${0..1}
@@ -25,7 +25,6 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_item_${order_id % 2}  
-  
   bindingTables:
     - t_order,t_order_item
   
@@ -33,10 +32,9 @@ shardingRule:
     inline:
       shardingColumn: user_id
       algorithmExpression: ds_${user_id % 2}
-  
   defaultTableStrategy:
     none:
-  defaultKeyGeneratorClassName: io.shardingjdbc.core.keygen.DefaultKeyGenerator
+  defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
   
   props:
     sql.show: true
