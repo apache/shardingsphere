@@ -21,11 +21,9 @@ import io.shardingjdbc.example.spring.namespace.jpa.service.DemoService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-public final class SpringJpaShardingDatabaseOnlyMain {
+public class SpringJpaShardingDatabaseOnlyMain {
     
-    // CHECKSTYLE:OFF
     public static void main(final String[] args) {
-    // CHECKSTYLE:ON
         ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/jpaShardingDatabaseOnlyContext.xml");
         DemoService demoService = applicationContext.getBean(DemoService.class);
         demoService.demo();
