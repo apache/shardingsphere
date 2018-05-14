@@ -1,0 +1,17 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.shardingsphere</groupId>
+        <artifactId>sharding-jdbc-spring-boot-example</artifactId>
+        <version>3.0.0.M1-SNAPSHOT</version>
+    </parent>
+    <artifactId>spring-boot-data-mybatis-example</artifactId>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+            <version>${mybatis-spring.version}</version>
+        </dependency>
+    </dependencies>
+</project>
