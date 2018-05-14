@@ -2,7 +2,7 @@
 
 Sharding-Sphere example.
 
-Example for 1.x please see tags in `https://github.com/shardingjdbc/sharding-jdbc/tree/${tag}/sharding-jdbc-example`
+Example for 1.x please see tags in `https://github.com/sharding-sphere/sharding-sphere/tree/${tag}/sharding-jdbc-example`
 
 Example for 2.x or 3.x please see tags in `https://github.com/sharding-sphere/sharding-sphere-example/tree/${tag}`
 
