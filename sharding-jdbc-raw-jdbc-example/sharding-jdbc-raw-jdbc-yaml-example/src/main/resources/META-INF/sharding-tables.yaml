@@ -16,7 +16,6 @@ shardingRule:
       keyGeneratorColumnName: order_id
     t_order_item:
       actualDataNodes: ds.t_order_item_${0..1}
-      #绑定表中其余的表的策略与第一张表的策略相同
       tableStrategy:
         inline:
           shardingColumn: order_id
@@ -24,8 +23,7 @@ shardingRule:
   
   bindingTables:
     - t_order,t_order_item
-  
-  defaultKeyGeneratorClassName: io.shardingjdbc.core.keygen.DefaultKeyGenerator
+  defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
   
   props:
     sql.show: true

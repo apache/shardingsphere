@@ -12,7 +12,7 @@
         <module>sharding-jdbc-raw-jdbc-java-example</module>
         <module>sharding-jdbc-raw-jdbc-yaml-example</module>
     </modules>
-
+    
     <dependencies>
         <dependency>
             <groupId>io.shardingsphere</groupId>

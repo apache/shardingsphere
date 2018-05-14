@@ -17,19 +17,16 @@
 
 package io.shardingjdbc.example.jdbc.yaml;
 
-import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.example.jdbc.yaml.repository.RawJdbcYamlRepository;
+import io.shardingsphere.core.api.ShardingDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.io.File;
 
-public final class RawJdbcYamlShardingDatabaseMain {
+public class RawJdbcYamlShardingDatabaseMain {
     
-    // CHECKSTYLE:OFF
     public static void main(final String[] args) throws Exception {
-    // CHECKSTYLE:ON
-        DataSource dataSource = ShardingDataSourceFactory.createDataSource(new File(
-                RawJdbcYamlShardingDatabaseMain.class.getResource("/META-INF/yamlShardingDatabase.yaml").getFile()));
+        DataSource dataSource = ShardingDataSourceFactory.createDataSource(new File(RawJdbcYamlShardingDatabaseMain.class.getResource("/META-INF/sharding-databases.yaml").getFile()));
         new RawJdbcYamlRepository(dataSource).demo();
     }
 }

@@ -17,19 +17,19 @@
 
 package io.shardingjdbc.example.jdbc.yaml;
 
-import io.shardingjdbc.core.api.ShardingDataSourceFactory;
 import io.shardingjdbc.example.jdbc.yaml.repository.RawJdbcYamlRepository;
+import io.shardingsphere.core.api.ShardingDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.io.File;
 
-public final class RawJdbcYamlShardingAndMasterSlaveMain {
+/*
+ * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
+ */
+public class RawJdbcYamlShardingAndMasterSlaveMain {
     
-    // CHECKSTYLE:OFF
     public static void main(final String[] args) throws Exception {
-    // CHECKSTYLE:ON
-        DataSource dataSource = ShardingDataSourceFactory.createDataSource(new File(
-                RawJdbcYamlShardingAndMasterSlaveMain.class.getResource("/META-INF/yamlShardingAndMasterSlave.yaml").getFile()));
+        DataSource dataSource = ShardingDataSourceFactory.createDataSource(new File(RawJdbcYamlShardingAndMasterSlaveMain.class.getResource("/META-INF/sharding-master-slave.yaml").getFile()));
         new RawJdbcYamlRepository(dataSource).demo();
     }
 }
