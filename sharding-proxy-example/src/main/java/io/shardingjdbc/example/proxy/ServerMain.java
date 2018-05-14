@@ -23,7 +23,7 @@ public final class ServerMain {
     private static DataSource createDataSource() {
         BasicDataSource result = new BasicDataSource();
         result.setDriverClassName(com.mysql.jdbc.Driver.class.getName());
-        result.setUrl(String.format("jdbc:mysql://%s:%d/sharding_db?useServerPrepStmts=true", PROXY_IP, PROXY_PORT));
+        result.setUrl(String.format("jdbc:mysql://%s:%d/sharding_db?useServerPrepStmts=true&cachePrepStmts=true", PROXY_IP, PROXY_PORT));
         result.setUsername("root");
         result.setPassword("");
         return result;
