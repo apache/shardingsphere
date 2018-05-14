@@ -19,7 +19,7 @@
             <artifactId>sharding-jdbc-spring-boot-starter</artifactId>
             <version>${sharding-sphere.version}</version>
         </dependency>
-    
+        
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>

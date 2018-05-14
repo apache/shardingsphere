@@ -5,9 +5,9 @@
         <artifactId>sharding-sphere-example</artifactId>
         <version>3.0.0.M1-SNAPSHOT</version>
     </parent>
-    
     <artifactId>sharding-jdbc-transaction-example</artifactId>
-        <dependencies>
+    
+    <dependencies>
         <dependency>
             <groupId>io.shardingsphere</groupId>
             <artifactId>sharding-jdbc-transaction</artifactId>
