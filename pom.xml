@@ -6,11 +6,7 @@
     <packaging>pom</packaging>
     
     <modules>
-        <module>sharding-jdbc-raw-jdbc-example</module>
-        <module>sharding-jdbc-spring-namespace-example</module>
-        <module>sharding-jdbc-spring-boot-example</module>
-        <module>sharding-jdbc-orchestration-example</module>
-        <module>sharding-jdbc-orchestration-spring-example</module>
+        <module>sharding-jdbc-example</module>
         <module>sharding-jdbc-transaction-example</module>
         <module>sharding-proxy-example</module>
     </modules>
