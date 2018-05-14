@@ -698,20 +698,21 @@
 .footer .copyright { clear: both; font-size: 18px; line-height: 18px; color: #fff; text-align: center;}
 
 .footer .social { padding: 0 30px; max-width: 1200px; }
-.footer .social div { float: left; margin-top: 40px; margin-left: 330px;}
-.footer .social a { display: inline-block; background-image: url(../images/social_new.png); background-repeat: no-repeat; background-size: auto; width: 50px; height: 50px; border-radius: 5px; margin-right: 10px; }
+.footer .social div { float: left; margin-top: 40px; margin-left: 300px;}
+.footer .social a { display: inline-block; background-image: url(../images/social_all.png); background-repeat: no-repeat; background-size: auto; width: 50px; height: 50px; border-radius: 5px; margin-right: 10px; }
 .footer .social a:hover { background-color: #fff; }
 .footer .social a span { position: absolute; display: block; height: 0; overflow: hidden; }
 a.twitter { background-position: 0 0; }
 a.twitter:hover { background-position: 0 100%; }
-a.stack-overflow { background-position: -50px 0; }
-a.stack-overflow:hover { background-position: -50px 100%; }
-a.slack { background-position: -100px 0; }
-a.slack:hover { background-position: -100px 100%; }
+a.zhihu { background-position: -50px 0; }
+a.zhihu:hover { background-position: -50px 100%; }
+a.gitee { background-position: -100px 0; }
+a.gitee:hover { background-position: -100px 100%; }
 a.github { background-position: -150px 0; }
 a.github:hover { background-position: -150px 100%; }
 a.mailing-list { background-position: -200px 0; }
 a.mailing-list:hover { background-position: -200px 100%; }
-a.calendar { background-position: -250px 0; }
-a.calendar:hover { background-position: -250px 100%; }
-
+a.wechart { background-position: -250px 0; }
+a.wechart:hover { background-position: -250px 100%; }
+a.slack { background-position: -300px 0; }
+a.slack:hover { background-position: -300px 100%; }
