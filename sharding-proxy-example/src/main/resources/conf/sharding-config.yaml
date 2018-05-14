@@ -21,7 +21,6 @@ shardingRule:
       keyGeneratorColumnName: order_id
     t_order_item:
       actualDataNodes: ds_${0..1}.t_order_item_${0..1}
-      #绑定表中其余的表的策略与第一张表的策略相同
       tableStrategy:
         inline:
           shardingColumn: order_id
@@ -30,7 +29,6 @@ shardingRule:
   bindingTables:
     - t_order,t_order_item
   
-  #默认数据库分片策略
   defaultDatabaseStrategy:
     inline:
       shardingColumn: user_id

@@ -7,7 +7,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 
 /*
- * Please make sure start sharding-proxy before you run this example.
+ * Please make sure sharding-proxy is running before you run this example.
  */
 public final class ServerMain {
     

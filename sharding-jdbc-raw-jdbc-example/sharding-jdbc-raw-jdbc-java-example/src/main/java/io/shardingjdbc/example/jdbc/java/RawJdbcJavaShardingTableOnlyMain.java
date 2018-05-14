@@ -17,11 +17,11 @@
 
 package io.shardingjdbc.example.jdbc.java;
 
-import io.shardingjdbc.core.api.ShardingDataSourceFactory;
-import io.shardingjdbc.core.api.config.ShardingRuleConfiguration;
-import io.shardingjdbc.core.api.config.TableRuleConfiguration;
 import io.shardingjdbc.example.jdbc.java.repository.RawJdbcRepository;
 import io.shardingjdbc.example.jdbc.java.util.DataSourceUtil;
+import io.shardingsphere.core.api.ShardingDataSourceFactory;
+import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.core.api.config.TableRuleConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -29,11 +29,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public final class RawJdbcJavaShardingTableOnlyMain {
+public class RawJdbcJavaShardingTableOnlyMain {
     
-    // CHECKSTYLE:OFF
     public static void main(final String[] args) throws SQLException {
-    // CHECKSTYLE:ON
         new RawJdbcRepository(getShardingDataSource()).demo();
     }
     
@@ -46,22 +44,22 @@ public final class RawJdbcJavaShardingTableOnlyMain {
     }
     
     private static TableRuleConfiguration getOrderTableRuleConfiguration() {
-        TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
-        orderTableRuleConfig.setLogicTable("t_order");
-        orderTableRuleConfig.setActualDataNodes("demo_ds.t_order_${[0, 1]}");
-        orderTableRuleConfig.setKeyGeneratorColumnName("order_id");
-        return orderTableRuleConfig;
+        TableRuleConfiguration result = new TableRuleConfiguration();
+        result.setLogicTable("t_order");
+        result.setActualDataNodes("demo_ds.t_order_${[0, 1]}");
+        result.setKeyGeneratorColumnName("order_id");
+        return result;
     }
     
     private static TableRuleConfiguration getOrderItemTableRuleConfiguration() {
-        TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
-        orderItemTableRuleConfig.setLogicTable("t_order_item");
-        orderItemTableRuleConfig.setActualDataNodes("demo_ds.t_order_item_${[0, 1]}");
-        return orderItemTableRuleConfig;
+        TableRuleConfiguration result = new TableRuleConfiguration();
+        result.setLogicTable("t_order_item");
+        result.setActualDataNodes("demo_ds.t_order_item_${[0, 1]}");
+        return result;
     }
     
     private static Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>(1, 1);
+        Map<String, DataSource> result = new HashMap<>();
         result.put("demo_ds", DataSourceUtil.createDataSource("demo_ds"));
         return result;
     }

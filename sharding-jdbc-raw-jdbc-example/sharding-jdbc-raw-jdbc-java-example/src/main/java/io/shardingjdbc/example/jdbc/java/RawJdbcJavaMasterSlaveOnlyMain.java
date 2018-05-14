@@ -17,10 +17,10 @@
 
 package io.shardingjdbc.example.jdbc.java;
 
-import io.shardingjdbc.core.api.MasterSlaveDataSourceFactory;
-import io.shardingjdbc.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingjdbc.example.jdbc.java.repository.RawJdbcRepository;
 import io.shardingjdbc.example.jdbc.java.util.DataSourceUtil;
+import io.shardingsphere.core.api.MasterSlaveDataSourceFactory;
+import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -29,11 +29,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public final class RawJdbcJavaMasterSlaveOnlyMain {
+/*
+ * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave. 
+ */
+public class RawJdbcJavaMasterSlaveOnlyMain {
     
-    // CHECKSTYLE:OFF
     public static void main(final String[] args) throws SQLException {
-    // CHECKSTYLE:ON
         new RawJdbcRepository(getMasterSlaveDataSource()).demo();
     }
     
@@ -43,7 +44,7 @@ public final class RawJdbcJavaMasterSlaveOnlyMain {
     }
     
     private static Map<String, DataSource> createDataSourceMap() {
-        final Map<String, DataSource> result = new HashMap<>(3, 1);
+        Map<String, DataSource> result = new HashMap<>();
         result.put("demo_ds_master", DataSourceUtil.createDataSource("demo_ds_master"));
         result.put("demo_ds_slave_0", DataSourceUtil.createDataSource("demo_ds_slave_0"));
         result.put("demo_ds_slave_1", DataSourceUtil.createDataSource("demo_ds_slave_1"));
