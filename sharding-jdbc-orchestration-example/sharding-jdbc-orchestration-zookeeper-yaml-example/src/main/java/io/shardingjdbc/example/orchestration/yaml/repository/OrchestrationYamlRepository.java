@@ -17,7 +17,7 @@
 
 package io.shardingjdbc.example.orchestration.yaml.repository;
 
-import io.shardingjdbc.core.api.HintManager;
+import io.shardingsphere.core.api.HintManager;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

@@ -17,8 +17,8 @@
 
 package io.shardingjdbc.example.orchestration.algorithm;
 
-import io.shardingjdbc.core.api.algorithm.sharding.PreciseShardingValue;
-import io.shardingjdbc.core.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
+import io.shardingsphere.core.api.algorithm.sharding.PreciseShardingValue;
+import io.shardingsphere.core.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
 
 import java.util.Collection;
 

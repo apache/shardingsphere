@@ -18,17 +18,15 @@
 package io.shardingjdbc.example.orchestration.yaml;
 
 import io.shardingjdbc.example.orchestration.yaml.repository.OrchestrationYamlRepository;
-import io.shardingjdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
-import io.shardingjdbc.orchestration.api.util.OrchestrationDataSourceCloseableUtil;
+import io.shardingsphere.jdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
+import io.shardingsphere.jdbc.orchestration.api.util.OrchestrationDataSourceCloseableUtil;
 
 import javax.sql.DataSource;
 import java.io.File;
 
-public final class OrchestrationEtcdYamlMasterSlaveMain {
+public class OrchestrationEtcdYamlMasterSlaveMain {
     
-    // CHECKSTYLE:OFF
     public static void main(final String[] args) throws Exception {
-    // CHECKSTYLE:ON
         DataSource dataSource = OrchestrationMasterSlaveDataSourceFactory.createDataSource(new File(
                 OrchestrationEtcdYamlMasterSlaveMain.class.getResource("/META-INF/yamlMasterSlaveByLocalConfig.yaml").getFile()));
 //        DataSource dataSource = OrchestrationMasterSlaveDataSourceFactory.createDataSource(new File(
