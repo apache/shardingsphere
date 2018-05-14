@@ -7,7 +7,7 @@
         <!--<setting name="logImpl" value="STDOUT_LOGGING" />-->
     <!--</settings>-->
     <typeAliases>
-        <package name="io.shardingjdbc.example.spring.boot.mybatis.entity"/>
+        <package name="io.shardingsphere.example.spring.boot.mybatis.entity"/>
     </typeAliases>
     <mappers>
         <mapper resource="META-INF/mappers/OrderMapper.xml"/>

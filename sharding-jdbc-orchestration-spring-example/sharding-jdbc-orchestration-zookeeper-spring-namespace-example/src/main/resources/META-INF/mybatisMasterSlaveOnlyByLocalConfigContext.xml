@@ -13,7 +13,7 @@
                         http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave  
                         http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave/master-slave.xsd">
     <import resource="classpath*:META-INF/regCenter.xml" />
-    <context:component-scan base-package="io.shardingjdbc.example.orchestration.spring.namespace.mybatis" />
+    <context:component-scan base-package="io.shardingsphere.example.orchestration.spring.namespace.mybatis" />
     
     <bean id="demo_ds_master" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
@@ -51,7 +51,7 @@
     </bean>
     
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="io.shardingjdbc.example.orchestration.spring.namespace.mybatis"/>
+        <property name="basePackage" value="io.shardingsphere.example.orchestration.spring.namespace.mybatis"/>
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
     </bean>
 </beans>

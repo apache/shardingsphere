@@ -12,7 +12,7 @@
                         http://www.springframework.org/schema/context/spring-context.xsd
                         http://shardingsphere.io/schema/shardingsphere/sharding 
                         http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd">
-    <context:component-scan base-package="io.shardingjdbc.example.spring.namespace.mybatis" />
+    <context:component-scan base-package="io.shardingsphere.example.spring.namespace.mybatis" />
     
     <bean id="demo_ds_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
@@ -28,7 +28,7 @@
         <property name="password" value=""/>
     </bean>
     
-    <bean id="preciseModuloDatabaseShardingAlgorithm" class="io.shardingjdbc.example.spring.namespace.mybatis.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
+    <bean id="preciseModuloDatabaseShardingAlgorithm" class="io.shardingsphere.example.spring.namespace.mybatis.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
     
     <sharding:standard-strategy id="databaseShardingStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
     
@@ -52,7 +52,7 @@
     </bean>
     
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="io.shardingjdbc.example.spring.namespace.mybatis"/>
+        <property name="basePackage" value="io.shardingsphere.example.spring.namespace.mybatis"/>
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
     </bean>
 </beans>
