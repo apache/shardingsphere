@@ -18,16 +18,17 @@
 package io.shardingjdbc.example.orchestration.spring.namespace.mybatis;
 
 import io.shardingjdbc.example.orchestration.spring.namespace.mybatis.service.DemoService;
-import io.shardingjdbc.orchestration.api.util.OrchestrationDataSourceCloseableUtil;
-import io.shardingjdbc.orchestration.internal.OrchestrationMasterSlaveDataSource;
+import io.shardingsphere.jdbc.orchestration.api.util.OrchestrationDataSourceCloseableUtil;
+import io.shardingsphere.jdbc.orchestration.internal.OrchestrationMasterSlaveDataSource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-public final class OrchestrationSpringMybatisMasterSlaveOnlyMain {
+/*
+ * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
+ */
+public class OrchestrationSpringMybatisMasterSlaveOnlyMain {
     
-    // CHECKSTYLE:OFF
     public static void main(final String[] args) {
-    // CHECKSTYLE:ON
         ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisMasterSlaveOnlyByLocalConfigContext.xml");
 //        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisMasterSlaveOnlyByCloudConfigContext.xml");
         DemoService demoService = applicationContext.getBean(DemoService.class);

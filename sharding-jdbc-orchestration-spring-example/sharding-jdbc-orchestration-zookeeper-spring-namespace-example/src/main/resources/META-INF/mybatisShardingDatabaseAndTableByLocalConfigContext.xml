@@ -3,15 +3,15 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:sharding="http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding"
+       xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/orchestration/sharding"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans.xsd 
                         http://www.springframework.org/schema/tx 
                         http://www.springframework.org/schema/tx/spring-tx.xsd
                         http://www.springframework.org/schema/context 
                         http://www.springframework.org/schema/context/spring-context.xsd
-                        http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding 
-                        http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding/sharding.xsd">
+                        http://shardingsphere.io/schema/shardingsphere/orchestration/sharding 
+                        http://shardingsphere.io/schema/shardingsphere/orchestration/sharding/sharding.xsd">
     <import resource="classpath*:META-INF/regCenter.xml" />
     <context:component-scan base-package="io.shardingjdbc.example.orchestration.spring.namespace.mybatis" />
     
@@ -47,7 +47,7 @@
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="shardingDatabaseTableDataSource" />
     </bean>
-    <tx:annotation-driven transaction-manager="transactionManager" />
+    <tx:annotation-driven />
     
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="shardingDatabaseTableDataSource"/>
@@ -55,7 +55,7 @@
     </bean>
     
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="io.shardingjdbc.example..orchestration.spring.namespace.mybatis"/>
+        <property name="basePackage" value="io.shardingjdbc.example.orchestration.spring.namespace.mybatis"/>
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
     </bean>
 </beans>

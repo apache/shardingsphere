@@ -23,7 +23,10 @@ import io.shardingsphere.jdbc.orchestration.internal.OrchestrationMasterSlaveDat
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-public final class OrchestrationSpringMybatisMasterSlaveOnlyMain {
+/*
+ * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
+ */
+public class OrchestrationSpringMybatisMasterSlaveOnlyMain {
     
     public static void main(final String[] args) {
         ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisMasterSlaveOnlyByLocalConfigContext.xml");
