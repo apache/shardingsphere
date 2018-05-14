@@ -49,7 +49,13 @@ shardingRule:
   
   bindingTables:
     - t_order,t_order_item
-  
+
+  #默认数据库分片策略
+  defaultDatabaseStrategy:
+    inline:
+      shardingColumn: user_id
+      algorithmExpression: ds_${user_id % 2}
+
   masterSlaveRules:
     ds_0:
       masterDataSourceName: ds_master_0
@@ -60,7 +66,7 @@ shardingRule:
       slaveDataSourceNames: [ds_master_1_slave_0, ds_master_1_slave_1]
       loadBalanceAlgorithmType: ROUND_ROBIN
   
-  defaultKeyGeneratorClass: io.shardingjdbc.core.keygen.DefaultKeyGenerator
+  defaultKeyGeneratorClassName: io.shardingjdbc.core.keygen.DefaultKeyGenerator
   
   props:
     sql.show: true

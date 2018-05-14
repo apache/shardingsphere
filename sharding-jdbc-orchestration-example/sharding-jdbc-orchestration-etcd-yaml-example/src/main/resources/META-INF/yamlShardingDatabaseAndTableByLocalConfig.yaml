@@ -11,7 +11,7 @@ dataSources:
     password: 
 
 shardingRule:
-  defaultKeyGeneratorClass: io.shardingjdbc.core.keygen.DefaultKeyGenerator
+  defaultKeyGeneratorClassName: io.shardingjdbc.core.keygen.DefaultKeyGenerator
   
   tables:
     t_order: 
