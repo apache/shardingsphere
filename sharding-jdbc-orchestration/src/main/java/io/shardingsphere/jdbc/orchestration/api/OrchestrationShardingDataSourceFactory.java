@@ -184,4 +184,15 @@ public final class OrchestrationShardingDataSourceFactory {
     private static YamlOrchestrationShardingRuleConfiguration unmarshal(final byte[] yamlByteArray) {
         return new Yaml(new Constructor(YamlOrchestrationShardingRuleConfiguration.class)).loadAs(new ByteArrayInputStream(yamlByteArray), YamlOrchestrationShardingRuleConfiguration.class);
     }
+    
+    /**
+     * Close quietly.
+     *
+     * @param dataSource dataSource
+     */
+    public static void closeQuietly(final DataSource dataSource) {
+        if (dataSource instanceof OrchestrationShardingDataSource) {
+            ((OrchestrationShardingDataSource) dataSource).close();
+        }
+    }
 }

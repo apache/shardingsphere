@@ -20,7 +20,7 @@ package io.shardingsphere.core.integrate.api.yaml;
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import io.shardingsphere.core.api.ShardingDataSourceFactory;
+import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
 import lombok.RequiredArgsConstructor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,7 +62,7 @@ public class YamlShardingWithMasterSlaveIntegrateTest extends AbstractYamlDataSo
         File yamlFile = new File(YamlShardingWithMasterSlaveIntegrateTest.class.getResource(filePath).toURI());
         DataSource dataSource;
         if (hasDataSource) {
-            dataSource = ShardingDataSourceFactory.createDataSource(yamlFile);
+            dataSource = YamlShardingDataSourceFactory.createDataSource(yamlFile);
         } else {
             Map<String, DataSource> dataSourceMap = Maps.asMap(Sets.newHashSet("db0_master", "db0_slave", "db1_master", "db1_slave"), new Function<String, DataSource>() {
                 @Override
@@ -74,7 +74,7 @@ public class YamlShardingWithMasterSlaveIntegrateTest extends AbstractYamlDataSo
             for (Map.Entry<String, DataSource> each : dataSourceMap.entrySet()) {
                 result.put(each.getKey(), each.getValue());
             }
-            dataSource = ShardingDataSourceFactory.createDataSource(result, yamlFile);
+            dataSource = YamlShardingDataSourceFactory.createDataSource(result, yamlFile);
         }
         try (Connection conn = dataSource.getConnection();
              Statement stm = conn.createStatement()) {

@@ -18,6 +18,7 @@
 package io.shardingsphere.jdbc.orchestration.yaml;
 
 import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
+import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationType;
 import io.shardingsphere.jdbc.orchestration.reg.etcd.EtcdConfiguration;
 import io.shardingsphere.jdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import lombok.Getter;
@@ -40,7 +41,7 @@ public class YamlOrchestrationConfiguration {
     
     private boolean overwrite;
     
-    private String type;
+    private OrchestrationType type;
     
     /**
      * Get orchestration master-slave rule configuration from yaml.

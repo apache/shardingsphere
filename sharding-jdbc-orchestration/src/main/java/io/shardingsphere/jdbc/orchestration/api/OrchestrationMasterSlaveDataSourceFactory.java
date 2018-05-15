@@ -184,4 +184,15 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
     private static YamlOrchestrationMasterSlaveRuleConfiguration unmarshal(final byte[] yamlByteArray) {
         return new Yaml(new Constructor(YamlOrchestrationMasterSlaveRuleConfiguration.class)).loadAs(new ByteArrayInputStream(yamlByteArray), YamlOrchestrationMasterSlaveRuleConfiguration.class);
     }
+    
+    /**
+     * Close quietly.
+     *
+     * @param dataSource dataSource
+     */
+    public static void closeQuietly(final DataSource dataSource) {
+        if (dataSource instanceof OrchestrationMasterSlaveDataSource) {
+            ((OrchestrationMasterSlaveDataSource) dataSource).close();
+        }
+    }
 }

@@ -21,7 +21,7 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
-import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
+import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationType;
 import io.shardingsphere.jdbc.orchestration.spring.datasource.OrchestrationShardingDataSourceFactoryBean;
 import io.shardingsphere.jdbc.orchestration.spring.datasource.SpringShardingDataSource;
 import io.shardingsphere.jdbc.orchestration.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
@@ -77,7 +77,7 @@ public class OrchestrationShardingDataSourceBeanDefinitionParser extends Abstrac
             factory.addConstructorArgValue(parseConfigMap(element, parserContext, factory.getBeanDefinition()));
             factory.addConstructorArgValue(parseProperties(element, parserContext));
         }
-        factory.addConstructorArgValue(parseOrchestrationConfiguration(element, OrchestrationConfiguration.SHARDING));
+        factory.addConstructorArgValue(parseOrchestrationConfiguration(element, OrchestrationType.SHARDING));
         return factory.getBeanDefinition();
     }
     
