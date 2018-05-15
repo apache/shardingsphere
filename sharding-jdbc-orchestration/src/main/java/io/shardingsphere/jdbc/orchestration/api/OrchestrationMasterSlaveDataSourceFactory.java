@@ -19,23 +19,14 @@ package io.shardingsphere.jdbc.orchestration.api;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationMasterSlaveDataSource;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
-import io.shardingsphere.jdbc.orchestration.yaml.YamlOrchestrationMasterSlaveRuleConfiguration;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 
 import javax.sql.DataSource;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.Map;
 
@@ -58,56 +49,12 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
      * @return master-slave data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(
-            final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
-            final Map<String, Object> configMap, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
-        OrchestrationFacade orchestrationFacade = new OrchestrationFacade(orchestrationConfig);
+    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, 
+                                              final Map<String, Object> configMap, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         if (null == masterSlaveRuleConfig || null == masterSlaveRuleConfig.getMasterDataSourceName()) {
-            ConfigurationService configService = orchestrationFacade.getConfigService();
-            final MasterSlaveRuleConfiguration cloudMasterSlaveRuleConfig = configService.loadMasterSlaveRuleConfiguration();
-            Preconditions.checkState(null != cloudMasterSlaveRuleConfig, "Missing the master-slave rule configuration on register center");
-            return createDataSource(configService.loadDataSourceMap(), cloudMasterSlaveRuleConfig, configService.loadMasterSlaveConfigMap(), orchestrationFacade);
-        } else {
-            return createDataSource(dataSourceMap, masterSlaveRuleConfig, configMap, orchestrationFacade);
+            return createDataSource(orchestrationConfig);
         }
-    }
-    
-    /**
-     * Create master-slave data source.
-     *
-     * @param dataSourceMap data source map
-     * @param yamlMasterSlaveRuleConfig yaml master-slave rule configuration
-     * @param orchestrationConfig orchestration configuration
-     * @return master-slave data source
-     * @throws SQLException SQL exception
-     */
-    public static DataSource createDataSource(
-            final Map<String, DataSource> dataSourceMap, final YamlMasterSlaveRuleConfiguration yamlMasterSlaveRuleConfig, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
-        OrchestrationFacade orchestrationFacade = new OrchestrationFacade(orchestrationConfig);
-        if (null == yamlMasterSlaveRuleConfig) {
-            ConfigurationService configService = orchestrationFacade.getConfigService();
-            final MasterSlaveRuleConfiguration cloudMasterSlaveRuleConfig = configService.loadMasterSlaveRuleConfiguration();
-            Preconditions.checkState(null != cloudMasterSlaveRuleConfig, "Missing the master-slave rule configuration on register center");
-            return createDataSource(configService.loadDataSourceMap(), cloudMasterSlaveRuleConfig, configService.loadMasterSlaveConfigMap(), orchestrationFacade);
-        } else {
-            return createDataSource(dataSourceMap, yamlMasterSlaveRuleConfig.getMasterSlaveRuleConfiguration(), yamlMasterSlaveRuleConfig.getConfigMap(), orchestrationFacade);
-        }
-    }
-    
-    /**
-     * Create master-slave data source.
-     *
-     * @param dataSourceMap data source map
-     * @param masterSlaveRuleConfig master-slave rule configuration
-     * @param orchestrationFacade orchestration facade
-     * @param configMap config map
-     * @return master-slave data source
-     * @throws SQLException SQL exception
-     */
-    private static DataSource createDataSource(
-            final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
-            final Map<String, Object> configMap, final OrchestrationFacade orchestrationFacade) throws SQLException {
-        OrchestrationMasterSlaveDataSource result = new OrchestrationMasterSlaveDataSource(dataSourceMap, masterSlaveRuleConfig, configMap, orchestrationFacade);
+        OrchestrationMasterSlaveDataSource result = new OrchestrationMasterSlaveDataSource(dataSourceMap, masterSlaveRuleConfig, configMap, new OrchestrationFacade(orchestrationConfig));
         result.init();
         return result;
     }
@@ -115,74 +62,19 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
     /**
      * Create master-slave data source.
      *
-     * <p>One master data source can configure multiple slave data source.</p>
-     *
-     * @param yamlFile yaml file for master-slave rule configuration with data sources
-     * @return master-slave data source
-     * @throws SQLException SQL exception
-     * @throws IOException IO exception
-     */
-    public static DataSource createDataSource(final File yamlFile) throws SQLException, IOException {
-        YamlOrchestrationMasterSlaveRuleConfiguration config = unmarshal(yamlFile);
-        return createDataSource(config.getDataSources(), config.getMasterSlaveRule(), config.getOrchestration().getOrchestrationConfiguration());
-    }
-    
-    /**
-     * Create master-slave data source.
-     *
-     * <p>One master data source can configure multiple slave data source.</p>
-     *
-     * @param dataSourceMap data source map
-     * @param yamlFile yaml file for master-slave rule configuration without data sources
-     * @return master-slave data source
-     * @throws SQLException SQL exception
-     * @throws IOException IO exception
-     */
-    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final File yamlFile) throws SQLException, IOException {
-        YamlOrchestrationMasterSlaveRuleConfiguration config = unmarshal(yamlFile);
-        return createDataSource(dataSourceMap, config.getMasterSlaveRule(), config.getOrchestration().getOrchestrationConfiguration());
-    }
-    
-    /**
-     * Create master-slave data source.
-     *
-     * <p>One master data source can configure multiple slave data source.</p>
-     *
-     * @param yamlByteArray yaml byte array for master-slave rule configuration with data sources
+     * @param orchestrationConfig orchestration configuration
      * @return master-slave data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final byte[] yamlByteArray) throws SQLException {
-        YamlOrchestrationMasterSlaveRuleConfiguration config = unmarshal(yamlByteArray);
-        return createDataSource(config.getDataSources(), config.getMasterSlaveRule(), config.getOrchestration().getOrchestrationConfiguration());
-    }
-    
-    /**
-     * Create master-slave data source.
-     *
-     * <p>One master data source can configure multiple slave data source.</p>
-     *
-     * @param dataSourceMap data source map
-     * @param yamlByteArray yaml byte array for master-slave rule configuration without data sources
-     * @return master-slave data source
-     * @throws SQLException SQL exception
-     */
-    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlByteArray) throws SQLException {
-        YamlOrchestrationMasterSlaveRuleConfiguration config = unmarshal(yamlByteArray);
-        return createDataSource(dataSourceMap, config.getMasterSlaveRule(), config.getOrchestration().getOrchestrationConfiguration());
-    }
-    
-    private static YamlOrchestrationMasterSlaveRuleConfiguration unmarshal(final File yamlFile) throws IOException {
-        try (
-                FileInputStream fileInputStream = new FileInputStream(yamlFile);
-                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")
-        ) {
-            return new Yaml(new Constructor(YamlOrchestrationMasterSlaveRuleConfiguration.class)).loadAs(inputStreamReader, YamlOrchestrationMasterSlaveRuleConfiguration.class);
-        }
-    }
-    
-    private static YamlOrchestrationMasterSlaveRuleConfiguration unmarshal(final byte[] yamlByteArray) {
-        return new Yaml(new Constructor(YamlOrchestrationMasterSlaveRuleConfiguration.class)).loadAs(new ByteArrayInputStream(yamlByteArray), YamlOrchestrationMasterSlaveRuleConfiguration.class);
+    public static DataSource createDataSource(final OrchestrationConfiguration orchestrationConfig) throws SQLException {
+        OrchestrationFacade orchestrationFacade = new OrchestrationFacade(orchestrationConfig);
+        ConfigurationService configService = orchestrationFacade.getConfigService();
+        MasterSlaveRuleConfiguration masterSlaveRuleConfig = configService.loadMasterSlaveRuleConfiguration();
+        Preconditions.checkNotNull(masterSlaveRuleConfig, "Missing the master-slave rule configuration on register center");
+        OrchestrationMasterSlaveDataSource result = new OrchestrationMasterSlaveDataSource(
+                configService.loadDataSourceMap(), masterSlaveRuleConfig, configService.loadMasterSlaveConfigMap(), orchestrationFacade);
+        result.init();
+        return result;
     }
     
     /**

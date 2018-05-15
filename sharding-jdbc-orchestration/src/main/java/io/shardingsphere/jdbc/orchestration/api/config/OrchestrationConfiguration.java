@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 /**
  * Orchestration configuration.
  *
- * @author zhagliang
+ * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
@@ -35,7 +35,6 @@ public final class OrchestrationConfiguration {
     private final RegistryCenterConfiguration regCenterConfig;
     
     private final boolean overwrite;
-
+    
     private final OrchestrationType type;
-
 }
