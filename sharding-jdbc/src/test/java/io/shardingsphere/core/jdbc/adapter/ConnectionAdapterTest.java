@@ -124,6 +124,18 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
             assertThat(each.isReadOnly(), is(readOnly));
         }
     }
+    
+    @Test
+    public void assertGetTransactionIsolation() throws SQLException {
+        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+            actual.createStatement().executeQuery(sql);
+            if (DatabaseType.MySQL == getCurrentDatabaseType()) {
+                assertThat(actual.getTransactionIsolation(), is(Connection.TRANSACTION_REPEATABLE_READ));
+            } else {
+                assertThat(actual.getTransactionIsolation(), is(Connection.TRANSACTION_READ_COMMITTED));
+            }
+        }
+    }
 
     @Test
     public void assertSetTransactionIsolation() throws SQLException {
