@@ -102,16 +102,16 @@ tables:
 ```
 
 ```java
-    DataSource dataSource = ShardingDataSourceFactory.createDataSource(yamlFile);
+    DataSource dataSource = YamlShardingDataSourceFactory.createDataSource(yamlFile);
 ```
 
 ### Use raw JDBC
 
-By using ShardingDataSourceFactory factory class and rule configuration object, we can obtain ShardingDataSource which implements the standard interface of DataSource in JDBC. Thus you can choose to use native JDBC DataSource for development, or using JPA, MyBatis ORM tools, etc.
+By using ShardingDataSourceFactory or YamlShardingDataSourceFactory factory class and rule configuration object, we can obtain ShardingDataSource which implements the standard interface of DataSource in JDBC. Thus you can choose to use native JDBC DataSource for development, or using JPA, MyBatis ORM tools, etc.
 Take DataSource in JDBC as an example:
 
 ```java
-DataSource dataSource = ShardingDataSourceFactory.createDataSource(yamlFile);
+DataSource dataSource = YamlShardingDataSourceFactory.createDataSource(yamlFile);
 String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
 try (
         Connection conn = dataSource.getConnection();
