@@ -17,7 +17,7 @@
 
 package io.shardingsphere.example.jdbc.main.nodep.yaml;
 
-import io.shardingsphere.core.api.ShardingDataSourceFactory;
+import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
 import io.shardingsphere.example.jdbc.fixture.DataRepository;
 
 import javax.sql.DataSource;
@@ -26,7 +26,7 @@ import java.io.File;
 public class ShardingOnlyWithDatabasesAndTables {
     
     public static void main(final String[] args) throws Exception {
-        DataSource dataSource = ShardingDataSourceFactory.createDataSource(new File(ShardingOnlyWithDatabasesAndTables.class.getResource("/META-INF/sharding-databases-tables.yaml").getFile()));
+        DataSource dataSource = YamlShardingDataSourceFactory.createDataSource(new File(ShardingOnlyWithDatabasesAndTables.class.getResource("/META-INF/sharding-databases-tables.yaml").getFile()));
         new DataRepository(dataSource).demo();
     }
 }

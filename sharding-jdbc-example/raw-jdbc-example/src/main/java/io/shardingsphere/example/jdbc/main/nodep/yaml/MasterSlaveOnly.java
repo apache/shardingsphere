@@ -17,7 +17,7 @@
 
 package io.shardingsphere.example.jdbc.main.nodep.yaml;
 
-import io.shardingsphere.core.api.MasterSlaveDataSourceFactory;
+import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
 import io.shardingsphere.example.jdbc.fixture.DataRepository;
 
 import javax.sql.DataSource;
@@ -29,7 +29,7 @@ import java.io.File;
 public class MasterSlaveOnly {
     
     public static void main(final String[] args) throws Exception {
-        DataSource dataSource = MasterSlaveDataSourceFactory.createDataSource(new File(MasterSlaveOnly.class.getResource("/META-INF/master-slave.yaml").getFile()));
+        DataSource dataSource = YamlMasterSlaveDataSourceFactory.createDataSource(new File(MasterSlaveOnly.class.getResource("/META-INF/master-slave.yaml").getFile()));
         new DataRepository(dataSource).demo();
     }
 }
