@@ -33,7 +33,7 @@ Use orchestration feature need indicate a registry center. Configuration will sa
     OrchestrationConfiguration orchConfig = new OrchestrationConfiguration("orchestration-sharding-data-source", zkConfig, false, OrchestrationConfiguration.SHARDING);
     
     // Get data source
-    DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties());
+    DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties(), orchConfig);
 ```
 
 ### Configure orchestration with yaml
@@ -51,7 +51,7 @@ orchestration:
 ```
 
 ```java
-    DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(yamlFile);
+    DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(yamlFile);
 ```
 
 ## Using spring

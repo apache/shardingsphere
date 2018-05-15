@@ -133,7 +133,7 @@ weight = 1
 ```java
     DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
                  createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
-                 new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false));
+                 new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING));
     
     private RegistryCenterConfiguration getRegistryCenterConfiguration() {
         ZookeeperConfiguration result = new ZookeeperConfiguration();
@@ -148,7 +148,7 @@ weight = 1
 ```java
     DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
                  createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
-                 new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false));
+                 new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING));
     
     private RegistryCenterConfiguration getRegistryCenterConfiguration() {
         EtcdConfiguration result = new EtcdConfiguration();
@@ -313,7 +313,7 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | --------------- | --------------------------- | ---------------------------------------------------------- |
 | name            | String                      | 数据治理实例名称                                             |
 | overwrite       | boolean                     | 本地配置是否覆盖注册中心配置，如果可覆盖，每次启动都以本地配置为准 |
-| type            | String                      | 数据源类型，可选值：sharding，masterslave                    |
+| type            | OrchestrationType           | 数据源类型，可选值：SHARDING，MASTER_SLAVE                    |
 | regCenterConfig | RegistryCenterConfiguration | 注册中心配置                                                |
 
 #### ZookeeperConfiguration

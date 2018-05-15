@@ -33,7 +33,7 @@ weight = 4
     OrchestrationConfiguration orchConfig = new OrchestrationConfiguration("orchestration-sharding-data-source", zkConfig, false, OrchestrationConfiguration.SHARDING);
     
     // 获取数据源对象
-    DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties());
+    DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties(), orchConfig);
 ```
 
 ### 基于Yaml的规则配置
@@ -51,7 +51,7 @@ orchestration:
 ```
 
 ```java
-    DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(yamlFile);
+    DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(yamlFile);
 ```
 
 ## 使用Spring
