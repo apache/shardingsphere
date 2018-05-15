@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.main.java;
+package io.shardingsphere.example.jdbc.main.nodep.java;
 
 import io.shardingsphere.example.jdbc.fixture.algorithm.ModuloShardingTableAlgorithm;
 import io.shardingsphere.example.jdbc.fixture.DataRepository;

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.main.java;
+package io.shardingsphere.example.jdbc.main.nodep.java;
 
 import com.google.common.collect.Lists;
 import io.shardingsphere.core.api.ShardingDataSourceFactory;

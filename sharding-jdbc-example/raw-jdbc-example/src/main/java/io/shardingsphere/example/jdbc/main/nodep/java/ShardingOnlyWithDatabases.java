@@ -15,13 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.main.java;
+package io.shardingsphere.example.jdbc.main.nodep.java;
 
 import io.shardingsphere.example.jdbc.fixture.DataRepository;
 import io.shardingsphere.example.jdbc.fixture.DataSourceUtil;
 import io.shardingsphere.core.api.ShardingDataSourceFactory;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
+import io.shardingsphere.core.api.config.strategy.InlineShardingStrategyConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -29,7 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public class ShardingOnlyWithTables {
+public class ShardingOnlyWithDatabases {
     
     public static void main(final String[] args) throws SQLException {
         new DataRepository(getShardingDataSource()).demo();
@@ -39,14 +40,13 @@ public class ShardingOnlyWithTables {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
-        shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "demo_ds_${user_id % 2}"));
         return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties());
     }
     
     private static TableRuleConfiguration getOrderTableRuleConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration();
         result.setLogicTable("t_order");
-        result.setActualDataNodes("demo_ds.t_order_${[0, 1]}");
         result.setKeyGeneratorColumnName("order_id");
         return result;
     }
@@ -54,13 +54,13 @@ public class ShardingOnlyWithTables {
     private static TableRuleConfiguration getOrderItemTableRuleConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration();
         result.setLogicTable("t_order_item");
-        result.setActualDataNodes("demo_ds.t_order_item_${[0, 1]}");
         return result;
     }
     
     private static Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new HashMap<>();
-        result.put("demo_ds", DataSourceUtil.createDataSource("demo_ds"));
+        result.put("demo_ds_0", DataSourceUtil.createDataSource("demo_ds_0"));
+        result.put("demo_ds_1", DataSourceUtil.createDataSource("demo_ds_1"));
         return result;
     }
 }

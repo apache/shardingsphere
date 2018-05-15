@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.main.yaml;
+package io.shardingsphere.example.jdbc.main.nodep.yaml;
 
 import io.shardingsphere.core.api.ShardingDataSourceFactory;
 import io.shardingsphere.example.jdbc.fixture.DataRepository;
@@ -23,13 +23,10 @@ import io.shardingsphere.example.jdbc.fixture.DataRepository;
 import javax.sql.DataSource;
 import java.io.File;
 
-/*
- * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
- */
-public class ShardingAndMasterSlaveTogether {
+public class ShardingOnlyWithDatabases {
     
     public static void main(final String[] args) throws Exception {
-        DataSource dataSource = ShardingDataSourceFactory.createDataSource(new File(ShardingAndMasterSlaveTogether.class.getResource("/META-INF/sharding-master-slave.yaml").getFile()));
+        DataSource dataSource = ShardingDataSourceFactory.createDataSource(new File(ShardingOnlyWithDatabases.class.getResource("/META-INF/sharding-databases.yaml").getFile()));
         new DataRepository(dataSource).demo();
     }
 }
