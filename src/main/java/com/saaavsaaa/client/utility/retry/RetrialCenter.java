@@ -11,7 +11,7 @@ import java.util.concurrent.PriorityBlockingQueue;
 public enum RetrialCenter {
     INSTANCE;
 
-    private final int CAPACITY = 100;
+    private final int CAPACITY = 1000;
     private final PriorityBlockingQueue<BaseOperation> queue = new PriorityBlockingQueue<>(CAPACITY, new OperationComparator());
     private DelayRetrial retrial;
     

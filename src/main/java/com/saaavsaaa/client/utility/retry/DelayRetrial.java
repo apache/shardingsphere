@@ -7,12 +7,15 @@ public class DelayRetrial {
     
     private final int retryCount;
     private final long baseDelay;
-    private final long delayIncrease;
+    private final long delayUpperBound;
     
-    public DelayRetrial(int retryCount, long baseDelay, long delayIncrease) {
+    /*
+    * Millis
+    */
+    public DelayRetrial(int retryCount, long baseDelay, long delayUpperBound) {
         this.retryCount = retryCount;
         this.baseDelay = baseDelay;
-        this.delayIncrease = delayIncrease;
+        this.delayUpperBound = delayUpperBound;
     }
     
     public int getRetryCount() {
@@ -23,7 +26,7 @@ public class DelayRetrial {
         return baseDelay;
     }
     
-    public long getDelayIncrease() {
-        return delayIncrease;
+    public long getDelayUpperBound() {
+        return delayUpperBound;
     }
 }
