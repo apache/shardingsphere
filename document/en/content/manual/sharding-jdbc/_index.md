@@ -8,7 +8,7 @@ chapter = true
 ## Introduction
 
 Sharding-JDBC is first project of Sharding-Sphere, it is precursor of Sharding-Sphere.
-It use JDBC connect databases without redirect cost for java application, best performance for production.
+It uses JDBC to connect databases without redirect cost for java application, best performance for production.
 
 * ORM compatible. JPA, Hibernate, Mybatis, Spring JDBC Template or JDBC supported.
 * Connection-pool compatible. DBCP, C3P0, BoneCP, Druid supported.

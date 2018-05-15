@@ -8,7 +8,7 @@ chapter = true
 ## Introduction
 
 Sharding-Proxy is second project of Sharding-Sphere.
-It is a database proxy, Deploy as a stateless server, support MySQL protocol for now.
+It is a database proxy, is deployed as a stateless server, and supports MySQL protocol now.
 
 * Use standard MySQL protocol, application do not care about whether proxy or real MySQL.
 * Any MySQL command line and UI workbench supported in theoretically. MySQL Workbench are fully compatible right now.

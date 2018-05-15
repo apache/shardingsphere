@@ -8,8 +8,8 @@ chapter = true
 ## Introduction
 
 Sharding-Sidecar is third project of Sharding-Sphere, we just plan to do it in future.
-It can mesh interactions between applications and databases, must run in Kubernetes or Mesos environment.
-It is a centre-less solution, can support any languages, we call it as `Database Mesh`.
+It can mesh interactions between applications and databases, must be running in Kubernetes or Mesos environment.
+It is a centre-less solution, and can support any languages, we call it as `Database Mesh`.
 
 Database Mesh is focused on how to connect the distributed data-access-layer and databases together. It pays more attention on interaction, which means the messy interaction among the applications and databases will be effectively orchestrate. By using Database Mesh, applications and databases will form a large grid system, and they just need to be put into the right position on grid system accordingly.
 
