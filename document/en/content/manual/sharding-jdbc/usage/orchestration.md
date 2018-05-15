@@ -43,7 +43,7 @@ To configure by yaml, similar with the configuration method of java codes:
 ```yaml
 orchestration:
   name: orchestration-sharding-data-source
-  type: sharding
+  type: SHARDING
   overwrite: false
   zookeeper:
     serverLists: localhost:2181

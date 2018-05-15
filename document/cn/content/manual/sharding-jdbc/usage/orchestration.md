@@ -43,7 +43,7 @@ weight = 4
 ```yaml
 orchestration:
   name: orchestration-sharding-data-source
-  type: sharding
+  type: SHARDING
   overwrite: false
   zookeeper:
     serverLists: localhost:2181
