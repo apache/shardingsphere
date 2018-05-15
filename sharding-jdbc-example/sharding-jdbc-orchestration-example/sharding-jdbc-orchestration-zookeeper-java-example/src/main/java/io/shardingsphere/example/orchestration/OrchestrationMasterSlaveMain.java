@@ -22,6 +22,7 @@ import io.shardingsphere.core.api.HintManager;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.jdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
 import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
+import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationType;
 import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.jdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import org.apache.commons.dbcp.BasicDataSource;
@@ -60,12 +61,13 @@ public class OrchestrationMasterSlaveMain {
     
     private static DataSource getDataSourceByLocalConfig() throws SQLException {
         return OrchestrationMasterSlaveDataSourceFactory.createDataSource(
-                createDataSourceMap(), crateMasterSlaveRuleConfig(), new ConcurrentHashMap<String, Object>(), new OrchestrationConfiguration("orchestration-master-slave-data-source", getZookeeperConfiguration(), true, OrchestrationConfiguration.MASTER_SLAVE));
+                createDataSourceMap(), crateMasterSlaveRuleConfig(), new ConcurrentHashMap<String, Object>(), 
+                new OrchestrationConfiguration("orchestration-master-slave-data-source", getZookeeperConfiguration(), true, OrchestrationType.MASTER_SLAVE));
     }
     
     private static DataSource getDataSourceByCloudConfig() throws SQLException {
         return OrchestrationMasterSlaveDataSourceFactory.createDataSource(
-                null, null, null, new OrchestrationConfiguration("orchestration-master-slave-data-source", getZookeeperConfiguration(), false, OrchestrationConfiguration.MASTER_SLAVE));
+                new OrchestrationConfiguration("orchestration-master-slave-data-source", getZookeeperConfiguration(), false, OrchestrationType.MASTER_SLAVE));
     }
     
     private static RegistryCenterConfiguration getZookeeperConfiguration() {

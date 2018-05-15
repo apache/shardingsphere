@@ -22,7 +22,7 @@ import io.shardingsphere.core.api.HintManager;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.jdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
 import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
-import io.shardingsphere.jdbc.orchestration.api.util.OrchestrationDataSourceCloseableUtil;
+import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationType;
 import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.jdbc.orchestration.reg.etcd.EtcdConfiguration;
 import org.apache.commons.dbcp.BasicDataSource;
@@ -52,17 +52,18 @@ public class OrchestrationEtcdMasterSlaveMain {
         System.out.println("--------------");
         printHintSimpleSelect(dataSource);
         dropTable(dataSource);
-        OrchestrationDataSourceCloseableUtil.closeQuietly(dataSource);
+        OrchestrationMasterSlaveDataSourceFactory.closeQuietly(dataSource);
     }
     
     private static DataSource getDataSourceByLocalConfig() throws SQLException {
         return OrchestrationMasterSlaveDataSourceFactory.createDataSource(
-                createDataSourceMap(), crateMasterSlaveRuleConfig(), new ConcurrentHashMap<String, Object>(), new OrchestrationConfiguration("orchestration-master-slave-data-source", getRegistryCenterConfiguration(), true, OrchestrationConfiguration.MASTER_SLAVE));
+                createDataSourceMap(), crateMasterSlaveRuleConfig(), new ConcurrentHashMap<String, Object>(), 
+                new OrchestrationConfiguration("orchestration-master-slave-data-source", getRegistryCenterConfiguration(), true, OrchestrationType.MASTER_SLAVE));
     }
     
     private static DataSource getDataSourceByCloudConfig() throws SQLException {
         return OrchestrationMasterSlaveDataSourceFactory.createDataSource(
-                null, null, null, new OrchestrationConfiguration("orchestration-master-slave-data-source", getRegistryCenterConfiguration(), false, OrchestrationConfiguration.MASTER_SLAVE));
+                new OrchestrationConfiguration("orchestration-master-slave-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.MASTER_SLAVE));
     }
     
     private static RegistryCenterConfiguration getRegistryCenterConfiguration() {

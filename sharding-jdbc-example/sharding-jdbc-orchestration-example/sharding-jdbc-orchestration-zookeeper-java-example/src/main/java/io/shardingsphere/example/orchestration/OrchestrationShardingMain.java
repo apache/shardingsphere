@@ -25,7 +25,7 @@ import io.shardingsphere.core.api.config.strategy.StandardShardingStrategyConfig
 import io.shardingsphere.example.orchestration.algorithm.ModuloTableShardingAlgorithm;
 import io.shardingsphere.jdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
-import io.shardingsphere.jdbc.orchestration.api.util.OrchestrationDataSourceCloseableUtil;
+import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationType;
 import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.jdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import org.apache.commons.dbcp.BasicDataSource;
@@ -58,17 +58,18 @@ public class OrchestrationShardingMain {
         System.out.println("--------------");
         printHintSimpleSelect(dataSource);
         dropTable(dataSource);
-        OrchestrationDataSourceCloseableUtil.closeQuietly(dataSource);
+        OrchestrationShardingDataSourceFactory.closeQuietly(dataSource);
     }
     
     private static DataSource getDataSourceByLocalConfig() throws SQLException {
         return OrchestrationShardingDataSourceFactory.createDataSource(
-                createDataSourceMap(), createShardingRuleConfig(), new ConcurrentHashMap<String, Object>(), new Properties(), new OrchestrationConfiguration("orchestration-sharding-data-source", getZookeeperConfiguration(), true, OrchestrationConfiguration.SHARDING));
+                createDataSourceMap(), createShardingRuleConfig(), new ConcurrentHashMap<String, Object>(), new Properties(), 
+                new OrchestrationConfiguration("orchestration-sharding-data-source", getZookeeperConfiguration(), true, OrchestrationType.SHARDING));
     }
     
     private static DataSource getDataSourceByCloudConfig() throws SQLException {
         return OrchestrationShardingDataSourceFactory.createDataSource(
-                null, null, null, null, new OrchestrationConfiguration("orchestration-sharding-data-source", getZookeeperConfiguration(), false, OrchestrationConfiguration.SHARDING));
+                new OrchestrationConfiguration("orchestration-sharding-data-source", getZookeeperConfiguration(), false, OrchestrationType.SHARDING));
     }
     
     private static RegistryCenterConfiguration getZookeeperConfiguration() {

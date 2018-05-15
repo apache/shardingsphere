@@ -19,6 +19,7 @@ package io.shardingsphere.example.orchestration.yaml;
 
 import io.shardingsphere.example.orchestration.yaml.repository.OrchestrationYamlRepository;
 import io.shardingsphere.jdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
+import io.shardingsphere.jdbc.orchestration.api.yaml.YamlOrchestrationShardingDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -26,7 +27,7 @@ import java.io.File;
 public class OrchestrationEtcdYamlShardingAndMasterSlaveMain {
     
     public static void main(final String[] args) throws Exception {
-        DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(new File(
+        DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(new File(
                 OrchestrationEtcdYamlShardingAndMasterSlaveMain.class.getResource("/META-INF/yamlShardingAndMasterSlaveByLocalConfig.yaml").getFile()));
 //        DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(new File(
 //                OrchestrationEtcdYamlShardingAndMasterSlaveMain.class.getResource("/META-INF/yamlShardingAndMasterSlaveByCloudConfig.yaml").getFile()));
