@@ -23,5 +23,5 @@ shardingRule:
           shardingColumn: order_id
           algorithmExpression: t_order_${order_id % 2}
       keyGeneratorColumnName: order_id
-      keyGeneratorClassName: io.shardingjdbc.core.keygen.DefaultKeyGenerator
+      keyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
       logicIndex: order_index

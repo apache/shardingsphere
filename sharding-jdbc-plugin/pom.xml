@@ -3,13 +3,13 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>io.shardingjdbc</groupId>
+    <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-jdbc-plugin</artifactId>
-    <version>2.1.0-SNAPSHOT</version>
+    <version>3.0.0.M1-SNAPSHOT</version>
     <packaging>pom</packaging>
     
     <properties>
-        <sharding-jdbc.version>2.1.0-SNAPSHOT</sharding-jdbc.version>
+        <sharding-sphere.version>3.0.0.M1-SNAPSHOT</sharding-sphere.version>
         <junit.version>4.12</junit.version>
         <powermock.version>1.6.6</powermock.version>
         <java.version>1.7</java.version>
@@ -21,9 +21,9 @@
     
     <dependencies>
         <dependency>
-            <groupId>io.shardingjdbc</groupId>
-            <artifactId>sharding-jdbc-core</artifactId>
-            <version>${sharding-jdbc.version}</version>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>sharding-jdbc</artifactId>
+            <version>${sharding-sphere.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

@@ -1,15 +1,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>io.shardingjdbc</groupId>
-    <artifactId>sharding-jdbc</artifactId>
-    <version>2.1.0-SNAPSHOT</version>
+    <groupId>io.shardingsphere</groupId>
+    <artifactId>sharding-sphere</artifactId>
+    <version>3.0.0.M1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
         <module>sharding-core</module>
-        <module>sharding-jdbc-core</module>
-        <module>sharding-jdbc-core-spring</module>
+        <module>sharding-jdbc</module>
+        <module>sharding-jdbc-spring</module>
         <module>sharding-jdbc-transaction-parent</module>
         <module>sharding-jdbc-orchestration</module>
         <module>sharding-jdbc-orchestration-spring</module>
@@ -526,8 +526,8 @@
                     <instrumentation>
                         <ignoreTrivial>true</ignoreTrivial>
                         <excludes>
-                            <exclude>io/shardingjdbc/**/*Test.class</exclude>
-                            <exclude>io/shardingjdbc/**/Test*.class</exclude>
+                            <exclude>io/shardingsphere/**/*Test.class</exclude>
+                            <exclude>io/shardingsphere/**/Test*.class</exclude>
                         </excludes>
                     </instrumentation>
                 </configuration>
@@ -680,8 +680,8 @@
         </repository>
     </repositories>
     
-    <url>http://shardingjdbc.io</url>
-    <description>RDB Sharding</description>
+    <url>http://shardingsphere.io</url>
+    <description>Distributed database middleware ecosphere</description>
     <licenses>
         <license>
             <name>Apache License 2.0</name>
@@ -691,15 +691,19 @@
     </licenses>
     
     <scm>
-        <connection>scm:https://github.com/shardingjdbc/sharding-jdbc</connection>
-        <developerConnection>scm:https://github.com/shardingjdbc/sharding-jdbc</developerConnection>
-        <url>https://github.com/shardingjdbc/sharding-jdbc</url>
+        <connection>scm:https://github.com/sharding-sphere/sharding-sphere</connection>
+        <developerConnection>scm:https://github.com/sharding-sphere/sharding-sphere</developerConnection>
+        <url>https://github.com/sharding-sphere/sharding-sphere</url>
     </scm>
     
     <mailingLists>
         <mailingList>
             <name>Zhangliang</name>
-            <post>zhangliang@dangdang.com</post>
+            <post>zhangliang@apache.org</post>
+        </mailingList>
+        <mailingList>
+            <name>Caohao</name>
+            <post>caohaoch@gmail.com</post>
         </mailingList>
     </mailingLists>
     
@@ -707,7 +711,13 @@
         <developer>
             <id>zhangliang</id>
             <name>ZhangLiang</name>
-            <email>zhangliang@dangdang.com</email>
+            <email>zhangliang@apache.org</email>
+            <timezone>8</timezone>
+        </developer>
+        <developer>
+            <id>caohao</id>
+            <name>CaoHao</name>
+            <email>caohaoch@gmail.com</email>
             <timezone>8</timezone>
         </developer>
     </developers>

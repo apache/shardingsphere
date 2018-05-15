@@ -4,22 +4,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>sharding-jdbc</artifactId>
-        <groupId>io.shardingjdbc</groupId>
-        <version>2.1.0-SNAPSHOT</version>
+        <groupId>io.shardingsphere</groupId>
+        <artifactId>sharding-sphere</artifactId>
+        <version>3.0.0.M1-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-proxy</artifactId>
     <name>${project.artifactId}</name>
     
-    <properties>
-        <sharding-jdbc.version>2.1.0-SNAPSHOT</sharding-jdbc.version>
-    </properties>
-    
     <dependencies>
         <dependency>
-            <groupId>io.shardingjdbc</groupId>
-            <artifactId>sharding-jdbc-orchestration</artifactId>
-            <version>${sharding-jdbc.version}</version>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>sharding-core</artifactId>
+            <version>${project.version}</version>
         </dependency>
         
         <dependency>
@@ -104,7 +100,7 @@
                 <groupId>com.spotify</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
                 <configuration>
-                    <imageName>shardingjdbc/sharding-proxy:2.1.0-SNAPSHOT</imageName>
+                    <imageName>shardingsphere/sharding-proxy:3.0.0.M1-SNAPSHOT</imageName>
                     <dockerDirectory>${project.basedir}/src/main/docker</dockerDirectory>
                     <resources>
                         <resource>

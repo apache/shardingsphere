@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:sharding="http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding"
+    xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/orchestration/sharding"
     xmlns="http://www.springframework.org/schema/beans"
     xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd
-                        http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding 
-                        http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding/sharding.xsd 
+                        http://shardingsphere.io/schema/shardingsphere/orchestration/sharding 
+                        http://shardingsphere.io/schema/shardingsphere/orchestration/sharding/sharding.xsd 
                         ">
     <import resource="regCenter.xml" />
     <import resource="datasource/dataSource.xml" />
     
-    <bean id="preciseModuloDatabaseShardingAlgorithm" class="io.shardingjdbc.orchestration.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
-    <bean id="preciseModuloTableShardingAlgorithm" class="io.shardingjdbc.orchestration.spring.algorithm.PreciseModuloTableShardingAlgorithm" />
-    <bean id="rangeModuloTableShardingAlgorithm" class="io.shardingjdbc.orchestration.spring.algorithm.RangeModuloTableShardingAlgorithm" />
-    <bean id="defaultComplexKeysShardingAlgorithm" class="io.shardingjdbc.orchestration.spring.algorithm.DefaultComplexKeysShardingAlgorithm" />
-    <bean id="defaultHintShardingAlgorithm" class="io.shardingjdbc.orchestration.spring.algorithm.DefaultHintShardingAlgorithm" />
+    <bean id="preciseModuloDatabaseShardingAlgorithm" class="io.shardingsphere.jdbc.orchestration.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
+    <bean id="preciseModuloTableShardingAlgorithm" class="io.shardingsphere.jdbc.orchestration.spring.algorithm.PreciseModuloTableShardingAlgorithm" />
+    <bean id="rangeModuloTableShardingAlgorithm" class="io.shardingsphere.jdbc.orchestration.spring.algorithm.RangeModuloTableShardingAlgorithm" />
+    <bean id="defaultComplexKeysShardingAlgorithm" class="io.shardingsphere.jdbc.orchestration.spring.algorithm.DefaultComplexKeysShardingAlgorithm" />
+    <bean id="defaultHintShardingAlgorithm" class="io.shardingsphere.jdbc.orchestration.spring.algorithm.DefaultHintShardingAlgorithm" />
     
-    <bean id="keyGenerator" class="io.shardingjdbc.orchestration.spring.fixture.IncrementKeyGenerator" />
+    <bean id="keyGenerator" class="io.shardingsphere.jdbc.orchestration.spring.fixture.IncrementKeyGenerator" />
     
     <sharding:standard-strategy id="standardStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
     <sharding:standard-strategy id="rangeStandardStrategy" sharding-column="order_id" precise-algorithm-ref="preciseModuloTableShardingAlgorithm" range-algorithm-ref="rangeModuloTableShardingAlgorithm" />
