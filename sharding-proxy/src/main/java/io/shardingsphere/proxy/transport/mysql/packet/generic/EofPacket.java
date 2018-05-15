@@ -26,12 +26,13 @@ import lombok.Getter;
  * EOF packet protocol.
  * @see <a href="https://dev.mysql.com/doc/internals/en/packet-EOF_Packet.html">EOF Packet</a>
  * 
- * @author zhangliang 
+ * @author zhangliang
+ * @author wangkai
  */
 @Getter
 public class EofPacket extends MySQLPacket {
     
-    private static final int HEADER = 0xfe;
+    public static final int HEADER = 0xfe;
     
     private final int warnings;
     

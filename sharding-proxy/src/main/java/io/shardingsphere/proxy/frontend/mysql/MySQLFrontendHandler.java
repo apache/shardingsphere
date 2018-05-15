@@ -20,6 +20,7 @@ package io.shardingsphere.proxy.frontend.mysql;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.EventLoopGroup;
+import io.shardingsphere.proxy.util.MySQLResultCache;
 import io.shardingsphere.proxy.frontend.common.FrontendHandler;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
@@ -37,6 +38,7 @@ import lombok.RequiredArgsConstructor;
  * MySQL frontend handler.
  *
  * @author zhangliang
+ * @author wangkai
  */
 @RequiredArgsConstructor
 public final class MySQLFrontendHandler extends FrontendHandler {
@@ -48,6 +50,8 @@ public final class MySQLFrontendHandler extends FrontendHandler {
     @Override
     protected void handshake(final ChannelHandlerContext context) {
         authPluginData = new AuthPluginData();
+        int connectionId = ConnectionIdGenerator.getInstance().nextId();
+        MySQLResultCache.getInstance().putConnectionMap(context.channel().id().asShortText(),connectionId);
         context.writeAndFlush(new HandshakePacket(ConnectionIdGenerator.getInstance().nextId(), authPluginData));
     }
     
@@ -72,7 +76,8 @@ public final class MySQLFrontendHandler extends FrontendHandler {
                 MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message);
                 try {
                     int sequenceId = mysqlPacketPayload.readInt1();
-                    CommandPacket commandPacket = CommandPacketFactory.getCommandPacket(sequenceId, mysqlPacketPayload);
+                    int connectionId = MySQLResultCache.getInstance().getonnectionMap(context.channel().id().asShortText());
+                    CommandPacket commandPacket = CommandPacketFactory.getCommandPacket(sequenceId, connectionId, mysqlPacketPayload);
                     for (DatabaseProtocolPacket each : commandPacket.execute().getDatabaseProtocolPackets()) {
                         context.writeAndFlush(each);
                     }

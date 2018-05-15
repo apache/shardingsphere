@@ -26,12 +26,13 @@ import lombok.Getter;
  * ERR packet protocol.
  * @see <a href="https://dev.mysql.com/doc/internals/en/packet-ERR_Packet.html">ERR Packet</a>
  * 
- * @author zhangliang 
+ * @author zhangliang
+ * @author wangkai
  */
 @Getter
 public class ErrPacket extends MySQLPacket {
     
-    private static final int HEADER = 0xff;
+    public static final int HEADER = 0xff;
     
     private final int errorCode;
     

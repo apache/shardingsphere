@@ -42,13 +42,17 @@ import java.util.Map;
  * @author zhangliang
  * @author zhangyonglun
  * @author panjuan
+ * @author wangkai
  */
 @Getter
 public final class RuleRegistry {
+    public static final boolean WITHOUT_JDBC = true;
     
     private static final RuleRegistry INSTANCE = new RuleRegistry();
     
     private final Map<String, DataSource> dataSourceMap;
+    
+    private Map<String, HikariConfig> dataSourceConfigurationMap;
     
     private final ShardingRule shardingRule;
     
@@ -65,9 +69,13 @@ public final class RuleRegistry {
         } catch (final IOException ex) {
             throw new ShardingException(ex);
         }
+        dataSourceConfigurationMap = new HashMap<>(128, 1);
         dataSourceMap = new HashMap<>(128, 1);
         Map<String, DataSourceParameter> dataSourceParameters = yamlProxyConfiguration.getDataSources();
         for (String each : dataSourceParameters.keySet()) {
+            if (WITHOUT_JDBC) {
+                dataSourceConfigurationMap.put(each, getDataSourceConfiguration(dataSourceParameters.get(each)));
+            }
             dataSourceMap.put(each, getDataSource(dataSourceParameters.get(each)));
         }
         shardingRule = yamlProxyConfiguration.obtainShardingRule(Collections.<String>emptyList());
@@ -83,7 +91,7 @@ public final class RuleRegistry {
         }
     }
     
-    private DataSource getDataSource(final DataSourceParameter dataSourceParameter) {
+    private HikariConfig getDataSourceConfiguration(final DataSourceParameter dataSourceParameter) {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("com.mysql.jdbc.Driver");
         config.setJdbcUrl(dataSourceParameter.getUrl());
@@ -96,7 +104,11 @@ public final class RuleRegistry {
         config.setMaximumPoolSize(100);
         config.addDataSourceProperty("useServerPrepStmts", "true");
         config.addDataSourceProperty("cachePrepStmts", "true");
-        return new HikariDataSource(config);
+        return config;
+    }
+    
+    private DataSource getDataSource(final DataSourceParameter dataSourceParameter) {
+        return new HikariDataSource(getDataSourceConfiguration(dataSourceParameter));
     }
     
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,18 +18,18 @@
 package io.shardingsphere.proxy.backend.common;
 
 import io.netty.channel.Channel;
-import io.shardingjdbc.core.constant.DatabaseType;
-import io.shardingjdbc.core.parsing.parser.sql.SQLStatement;
-import io.shardingjdbc.core.routing.SQLExecutionUnit;
-import io.shardingjdbc.core.routing.SQLRouteResult;
-import io.shardingjdbc.core.routing.StatementRoutingEngine;
-import io.shardingjdbc.proxy.backend.ShardingProxyClient;
-import io.shardingjdbc.proxy.config.RuleRegistry;
-import io.shardingjdbc.proxy.transport.mysql.constant.StatusFlag;
-import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandResponsePackets;
-import io.shardingjdbc.proxy.transport.mysql.packet.generic.OKPacket;
-import io.shardingjdbc.proxy.util.MySQLResultCache;
-import io.shardingjdbc.proxy.util.SynchronizedFuture;
+import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.routing.SQLExecutionUnit;
+import io.shardingsphere.core.routing.SQLRouteResult;
+import io.shardingsphere.core.routing.StatementRoutingEngine;
+import io.shardingsphere.proxy.backend.ShardingProxyClient;
+import io.shardingsphere.proxy.config.RuleRegistry;
+import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
+import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
+import io.shardingsphere.proxy.util.MySQLResultCache;
+import io.shardingsphere.proxy.util.SynchronizedFuture;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -50,9 +50,8 @@ public final class SQLPacketsBackendHandler extends SQLExecuteBackendHandler {
     }
     
     @Override
-    public CommandResponsePackets executeForSharding() {
-        StatementRoutingEngine routingEngine = new StatementRoutingEngine(RuleRegistry.getInstance().getShardingRule(), RuleRegistry.getInstance().getShardingMetaData(), getDatabaseType(),
-                isShowSQL());
+    protected CommandResponsePackets executeForSharding() {
+        StatementRoutingEngine routingEngine = new StatementRoutingEngine(RuleRegistry.getInstance().getShardingRule(), RuleRegistry.getInstance().getShardingMetaData(), getDatabaseType(), isShowSQL());
         SQLRouteResult routeResult = routingEngine.route(getSql());
         if (routeResult.getExecutionUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));

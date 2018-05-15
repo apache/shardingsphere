@@ -44,6 +44,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextRes
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
+import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -61,11 +62,13 @@ import java.util.List;
  *
  * @author zhangliang
  * @author panjuan
+ * @author wangkai
  */
-public final class SQLExecuteBackendHandler implements BackendHandler {
+public class SQLExecuteBackendHandler implements BackendHandler {
     
     private static final Integer FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
     
+    @Getter
     private final String sql;
    
     private List<Connection> connections;
@@ -82,8 +85,10 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
     
     private boolean hasMoreResultValueFlag;
     
+    @Getter
     private final DatabaseType databaseType;
     
+    @Getter
     private final boolean showSQL;
     
     public SQLExecuteBackendHandler(final String sql, final DatabaseType databaseType, final boolean showSQL) {
@@ -118,7 +123,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
         return merge(sqlStatement, result);
     }
     
-    private CommandResponsePackets executeForSharding() {
+    protected CommandResponsePackets executeForSharding() {
         StatementRoutingEngine routingEngine = new StatementRoutingEngine(RuleRegistry.getInstance().getShardingRule(), RuleRegistry.getInstance().getShardingMetaData(), databaseType, showSQL);
         SQLRouteResult routeResult = routingEngine.route(sql);
         if (routeResult.getExecutionUnits().isEmpty()) {
@@ -134,7 +139,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
         return result;
     }
     
-    private CommandResponsePackets execute(final SQLStatement sqlStatement, final String dataSourceName, final String sql) {
+    protected CommandResponsePackets execute(final SQLStatement sqlStatement, final String dataSourceName, final String sql) {
         switch (sqlStatement.getType()) {
             case DQL:
             case DAL:
@@ -270,7 +275,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
         return result;
     }
     
-    private CommandResponsePackets merge(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets) {
+    protected CommandResponsePackets merge(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets) {
         CommandResponsePackets headPackets = new CommandResponsePackets();
         for (CommandResponsePackets each : packets) {
             headPackets.addPacket(each.getHeadPacket());

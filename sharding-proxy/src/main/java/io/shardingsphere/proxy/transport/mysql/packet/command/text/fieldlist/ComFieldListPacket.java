@@ -17,6 +17,8 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command.text.fieldlist;
 
+import io.shardingsphere.proxy.backend.common.SQLPacketsBackendHandler;
+import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.proxy.backend.common.SQLExecuteBackendHandler;
@@ -32,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-field-list.html">COM_FIELD_LIST</a>
  *
  * @author zhangliang
+ * @author wangkai
  */
 @Slf4j
 public final class ComFieldListPacket extends CommandPacket {
@@ -40,7 +43,7 @@ public final class ComFieldListPacket extends CommandPacket {
     
     private final String fieldWildcard;
     
-    public ComFieldListPacket(final int sequenceId, final MySQLPacketPayload mysqlPacketPayload) {
+    public ComFieldListPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload mysqlPacketPayload) {
         super(sequenceId);
         table = mysqlPacketPayload.readStringNul();
         fieldWildcard = mysqlPacketPayload.readStringEOF();
@@ -59,7 +62,11 @@ public final class ComFieldListPacket extends CommandPacket {
         log.debug("field wildcard received for Sharding-Proxy: {}", fieldWildcard);
         String sql = String.format("SHOW COLUMNS FROM %s FROM %s", table, ShardingConstant.LOGIC_SCHEMA_NAME);
         // TODO use common database type
-        return new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, true).execute();
+        if (RuleRegistry.WITHOUT_JDBC) {
+            return new SQLPacketsBackendHandler(sql, getConnectionId(), DatabaseType.MySQL, true).execute();
+        } else {
+            return new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, true).execute();
+        }
     }
     
     @Override

@@ -30,17 +30,19 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.text.quit.ComQuitP
  * Command packet factory.
  *
  * @author zhangliang
+ * @author wangkai
  */
 public final class CommandPacketFactory {
     
     /**
      * Get command Packet.
-     * 
-     * @param sequenceId sequence ID
+     *
+     * @param sequenceId         sequence ID
+     * @param connectionId       MYSQL connection id
      * @param mysqlPacketPayload MySQL packet payload
      * @return Command packet
      */
-    public static CommandPacket getCommandPacket(final int sequenceId, final MySQLPacketPayload mysqlPacketPayload) {
+    public static CommandPacket getCommandPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload mysqlPacketPayload) {
         int commandPacketTypeValue = mysqlPacketPayload.readInt1();
         CommandPacketType type = CommandPacketType.valueOf(commandPacketTypeValue);
         switch (type) {
@@ -49,9 +51,9 @@ public final class CommandPacketFactory {
             case COM_INIT_DB:
                 return new ComInitDbPacket(sequenceId, mysqlPacketPayload);
             case COM_FIELD_LIST:
-                return new ComFieldListPacket(sequenceId, mysqlPacketPayload);
+                return new ComFieldListPacket(sequenceId, connectionId, mysqlPacketPayload);
             case COM_QUERY:
-                return new ComQueryPacket(sequenceId, mysqlPacketPayload);
+                return new ComQueryPacket(sequenceId, connectionId, mysqlPacketPayload);
             case COM_STMT_PREPARE:
                 return new ComStmtPreparePacket(sequenceId, mysqlPacketPayload);
             case COM_STMT_EXECUTE:

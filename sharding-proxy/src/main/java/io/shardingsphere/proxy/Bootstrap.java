@@ -20,10 +20,13 @@ package io.shardingsphere.proxy;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.frontend.ShardingProxy;
 
+import java.net.MalformedURLException;
+
 /**
  * Sharding-Proxy Bootstrap.
  *
  * @author zhangliang
+ * @author wangkai
  */
 public final class Bootstrap {
     
@@ -34,8 +37,9 @@ public final class Bootstrap {
      * 
      * @param args startup arguments
      * @throws InterruptedException interrupted exception
+     * @throws MalformedURLException URL exception
      */
-    public static void main(final String[] args) throws InterruptedException {
+    public static void main(final String[] args) throws InterruptedException, MalformedURLException {
         initializeRuleRegistry();
         new ShardingProxy().start(getPort(args));
     }

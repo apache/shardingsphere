@@ -27,6 +27,7 @@ import lombok.Getter;
  * @see <a href="https://dev.mysql.com/doc/internals/en/connection-phase-packets.html#packet-Protocol::HandshakeResponse41">HandshakeResponse41</a>
  * 
  * @author zhangliang
+ * @author wangkai
  */
 @Getter
 public final class HandshakeResponse41Packet extends MySQLPacket {
@@ -52,6 +53,17 @@ public final class HandshakeResponse41Packet extends MySQLPacket {
         username = mysqlPacketPayload.readStringNul();
         readAuthResponse(mysqlPacketPayload);
         readDatabase(mysqlPacketPayload);
+    }
+    
+    public HandshakeResponse41Packet(final int sequenceId, final int capabilityFlags, final int maxPacketSize, final int characterSet, final String username, final byte[] authResponse, final String
+            database) {
+        super(sequenceId);
+        this.capabilityFlags = capabilityFlags;
+        this.maxPacketSize = maxPacketSize;
+        this.characterSet = characterSet;
+        this.username = username;
+        this.authResponse = authResponse;
+        this.database = database;
     }
     
     private void readAuthResponse(final MySQLPacketPayload mysqlPacketPayload) {
@@ -87,14 +99,14 @@ public final class HandshakeResponse41Packet extends MySQLPacket {
             mysqlPacketPayload.writeStringLenenc(new String(authResponse));
         } else if (0 != (capabilityFlags & CapabilityFlag.CLIENT_SECURE_CONNECTION.getValue())) {
             mysqlPacketPayload.writeInt1(authResponse.length);
-            mysqlPacketPayload.writeStringFix(new String(authResponse));
+            mysqlPacketPayload.writeBytes(authResponse);
         } else {
             mysqlPacketPayload.writeStringNul(new String(authResponse));
         }
     }
     
     private void writeDatabase(final MySQLPacketPayload mysqlPacketPayload) {
-        if (0 != (capabilityFlags & CapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue())) { 
+        if (0 != (capabilityFlags & CapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue())) {
             mysqlPacketPayload.writeStringNul(database);
         }
     }

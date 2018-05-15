@@ -17,6 +17,8 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command.text.query;
 
+import io.shardingsphere.proxy.backend.common.SQLPacketsBackendHandler;
+import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.proxy.backend.common.SQLExecuteBackendHandler;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
@@ -32,6 +34,7 @@ import java.sql.SQLException;
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-query.html">COM_QUERY</a>
  *
  * @author zhangliang
+ * @author wangkai
  */
 @Slf4j
 public final class ComQueryPacket extends CommandPacket {
@@ -40,10 +43,13 @@ public final class ComQueryPacket extends CommandPacket {
     
     private final SQLExecuteBackendHandler sqlExecuteBackendHandler;
     
-    public ComQueryPacket(final int sequenceId, final MySQLPacketPayload mysqlPacketPayload) {
-        super(sequenceId);
+    private final SQLPacketsBackendHandler sqlPacketsBackendHandler;
+    
+    public ComQueryPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload mysqlPacketPayload) {
+        super(sequenceId, connectionId);
         sql = mysqlPacketPayload.readStringEOF();
         sqlExecuteBackendHandler = new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, true);
+        sqlPacketsBackendHandler = new SQLPacketsBackendHandler(sql, connectionId, DatabaseType.MySQL, true);
     }
     
     @Override
@@ -54,7 +60,11 @@ public final class ComQueryPacket extends CommandPacket {
     @Override
     public CommandResponsePackets execute() {
         log.debug("COM_QUERY received for Sharding-Proxy: {}", sql);
-        return sqlExecuteBackendHandler.execute();
+        if (RuleRegistry.WITHOUT_JDBC) {
+            return sqlPacketsBackendHandler.execute();
+        } else {
+            return sqlExecuteBackendHandler.execute();
+        }
     }
     
     /**
@@ -64,7 +74,11 @@ public final class ComQueryPacket extends CommandPacket {
      */
     public boolean hasMoreResultValue() {
         try {
-            return sqlExecuteBackendHandler.hasMoreResultValue();
+            if (RuleRegistry.WITHOUT_JDBC) {
+                return false;
+            } else {
+                return sqlExecuteBackendHandler.hasMoreResultValue();
+            }
         } catch (final SQLException ex) {
             return false;
         }

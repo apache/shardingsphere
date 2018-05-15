@@ -19,16 +19,26 @@ package io.shardingsphere.proxy.transport.mysql.packet.command;
 
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
+import lombok.Getter;
 
 /**
  * Command packet.
  *
  * @author zhangliang
+ * @author wangkai
  */
 public abstract class CommandPacket extends MySQLPacket {
+    @Getter
+    private final int connectionId;
+    
+    public CommandPacket(final int sequenceId, final int connectionId) {
+        super(sequenceId);
+        this.connectionId = connectionId;
+    }
     
     public CommandPacket(final int sequenceId) {
         super(sequenceId);
+        this.connectionId = 0;
     }
     
     /**

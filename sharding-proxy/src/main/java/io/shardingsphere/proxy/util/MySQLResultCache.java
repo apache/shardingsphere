@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@ package io.shardingsphere.proxy.util;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import io.shardingjdbc.proxy.transport.mysql.packet.command.CommandResponsePackets;
-import io.shardingjdbc.proxy.util.SynchronizedFuture;
+import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.proxy.util.SynchronizedFuture;
 
 import java.util.concurrent.TimeUnit;
 
