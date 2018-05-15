@@ -17,25 +17,12 @@
 
 package io.shardingsphere.jdbc.orchestration.api.config;
 
-import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenterConfiguration;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 /**
- * Orchestration configuration.
+ * Orchestration type.
  *
- * @author zhagliang
+ * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class OrchestrationConfiguration {
+public enum OrchestrationType {
     
-    private final String name;
-    
-    private final RegistryCenterConfiguration regCenterConfig;
-    
-    private final boolean overwrite;
-
-    private final OrchestrationType type;
-
+    SHARDING, MASTER_SLAVE
 }
