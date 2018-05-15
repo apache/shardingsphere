@@ -113,7 +113,7 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
             } else {
                 return executeForSharding();
             }
-        } catch (final ShardingException | ShardingConfigurationException ex) {
+        } catch (final Exception ex) {
             return new CommandResponsePackets(new ErrPacket(1, 0, "", "", ex.getMessage()));
         }
     }
