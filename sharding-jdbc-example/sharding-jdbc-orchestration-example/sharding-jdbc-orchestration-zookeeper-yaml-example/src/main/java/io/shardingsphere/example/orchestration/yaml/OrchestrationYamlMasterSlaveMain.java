@@ -19,7 +19,6 @@ package io.shardingsphere.example.orchestration.yaml;
 
 import io.shardingsphere.example.orchestration.yaml.repository.OrchestrationYamlRepository;
 import io.shardingsphere.jdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
-import io.shardingsphere.jdbc.orchestration.api.util.OrchestrationDataSourceCloseableUtil;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -34,6 +33,6 @@ public class OrchestrationYamlMasterSlaveMain {
 //        DataSource dataSource = OrchestrationMasterSlaveDataSourceFactory.createDataSource(new File(
 //                OrchestrationYamlMasterSlaveMain.class.getResource("/META-INF/yamlMasterSlaveByCloudConfig.yaml").getFile()));
         new OrchestrationYamlRepository(dataSource).demo();
-        OrchestrationDataSourceCloseableUtil.closeQuietly(dataSource);
+        OrchestrationMasterSlaveDataSourceFactory.closeQuietly(dataSource);
     }
 }

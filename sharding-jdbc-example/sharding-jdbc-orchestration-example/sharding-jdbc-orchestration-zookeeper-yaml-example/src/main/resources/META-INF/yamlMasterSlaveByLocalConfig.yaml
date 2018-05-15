@@ -22,7 +22,7 @@ masterSlaveRule:
 
 orchestration:
   name: demo_yaml_ds_ms
-  type: masterslave
+  type: MASTER_SLAVE
   overwrite: true
   zookeeper:
     namespace: orchestration-yaml-demo

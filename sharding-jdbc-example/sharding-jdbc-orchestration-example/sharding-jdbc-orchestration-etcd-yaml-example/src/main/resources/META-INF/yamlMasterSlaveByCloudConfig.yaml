@@ -1,6 +1,6 @@
 orchestration:
   name: demo_yaml_ds_ms
-  type: masterslave
+  type: MASTER_SLAVE
   overwrite: false
   etcd:
     serverLists: http://localhost:2379
