@@ -18,25 +18,16 @@
 package io.shardingsphere.example.orchestration.spring.boot.jpa;
 
 import io.shardingsphere.example.orchestration.spring.boot.jpa.service.DemoService;
-import io.shardingsphere.jdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
-import io.shardingsphere.jdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
-import io.shardingsphere.jdbc.orchestration.internal.OrchestrationMasterSlaveDataSource;
-import io.shardingsphere.jdbc.orchestration.internal.OrchestrationShardingDataSource;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 
 @SpringBootApplication
 public class OrchestrationSpringBootDataJpaMain {
     
     public static void main(final String[] args) {
-        ApplicationContext applicationContext = SpringApplication.run(OrchestrationSpringBootDataJpaMain.class, args);
+        ConfigurableApplicationContext applicationContext = SpringApplication.run(OrchestrationSpringBootDataJpaMain.class, args);
         applicationContext.getBean(DemoService.class).demo();
-        try {
-            OrchestrationShardingDataSourceFactory.closeQuietly(applicationContext.getBean(OrchestrationShardingDataSource.class));
-        } catch (final NoSuchBeanDefinitionException ex) {
-            OrchestrationMasterSlaveDataSourceFactory.closeQuietly(applicationContext.getBean(OrchestrationMasterSlaveDataSource.class));
-        }
+        applicationContext.close();
     }
 }
