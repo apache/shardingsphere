@@ -70,8 +70,12 @@ public class MasterSlaveNamespaceTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void assertDefaultShardingDataSource() {
         Map<String, DataSource> dataSourceMap = getDataSourceMap("defaultShardingDataSource");
-        assertNotNull(dataSourceMap.get("randomMasterSlaveDataSource"));
-        assertNotNull(dataSourceMap.get("refMasterSlaveDataSource"));
+        assertNotNull(dataSourceMap.get("dbtbl_0_master"));
+        assertNotNull(dataSourceMap.get("dbtbl_0_slave_0"));
+        assertNotNull(dataSourceMap.get("dbtbl_0_slave_1"));
+        assertNotNull(dataSourceMap.get("dbtbl_1_master"));
+        assertNotNull(dataSourceMap.get("dbtbl_1_slave_0"));
+        assertNotNull(dataSourceMap.get("dbtbl_1_slave_1"));
         ShardingRule shardingRule = getShardingRule("defaultShardingDataSource");
         assertThat(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName(), is("randomMasterSlaveDataSource"));
         assertThat(shardingRule.getTableRules().size(), is(1));

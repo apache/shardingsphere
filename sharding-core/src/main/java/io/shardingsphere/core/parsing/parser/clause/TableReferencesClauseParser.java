@@ -18,6 +18,7 @@
 package io.shardingsphere.core.parsing.parser.clause;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.dialect.mysql.MySQLKeyword;
@@ -107,7 +108,9 @@ public class TableReferencesClauseParser implements SQLClauseParser {
         if (skipIfForce) {
             lexerEngine.accept(Symbol.LEFT_PAREN);
             do {
+                lexerEngine.skipIfEqual(Symbol.COMMA);
                 String literals = lexerEngine.getCurrentToken().getLiterals();
+                Preconditions.checkState(!Symbol.RIGHT_PAREN.getLiterals().equals(literals), "There is an error in the vicinity of the force index syntax.");
                 if (shardingRule.isLogicIndex(literals, tableName)) {
                     int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - literals.length();
                     sqlStatement.getSqlTokens().add(new IndexToken(beginPosition, literals, tableName));
