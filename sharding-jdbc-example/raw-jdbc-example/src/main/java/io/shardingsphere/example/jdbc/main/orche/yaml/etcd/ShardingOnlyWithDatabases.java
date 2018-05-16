@@ -35,7 +35,7 @@ public class ShardingOnlyWithDatabases {
     }
     
     private static File getYamlFile() {
-        String path = LOAD_CONFIG_FROM_REG_CENTER ? "/META-INF/orche/etcd/sharding-databases-cloud.yaml" : "/META-INF/orche/etcd/sharding-databases-local.yaml";
+        String path = LOAD_CONFIG_FROM_REG_CENTER ? "/META-INF/orche/etcd/cloud/sharding-databases.yaml" : "/META-INF/orche/etcd/local/sharding-databases.yaml";
         return new File(ShardingOnlyWithDatabases.class.getResource(path).getFile());
     }
 }

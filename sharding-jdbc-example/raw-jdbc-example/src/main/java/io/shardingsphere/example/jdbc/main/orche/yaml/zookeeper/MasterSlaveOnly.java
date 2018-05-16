@@ -38,7 +38,7 @@ public class MasterSlaveOnly {
     }
     
     private static File getYamlFile() {
-        String path = LOAD_CONFIG_FROM_REG_CENTER ? "/META-INF/orche/zookeeper/master-slave-cloud.yaml" : "/META-INF/orche/zookeeper/master-slave-local.yaml";
+        String path = LOAD_CONFIG_FROM_REG_CENTER ? "/META-INF/orche/zookeeper/cloud/master-slave.yaml" : "/META-INF/orche/zookeeper/local/master-slave.yaml";
         return new File(MasterSlaveOnly.class.getResource(path).getFile());
     }
 }

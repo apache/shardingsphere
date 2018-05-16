@@ -35,7 +35,7 @@ public class ShardingOnlyWithDatabases {
     }
     
     private static File getYamlFile() {
-        String path = LOAD_CONFIG_FROM_REG_CENTER ? "/META-INF/orche/zookeeper/sharding-databases-cloud.yaml" : "/META-INF/orche/zookeeper/sharding-databases-local.yaml";
+        String path = LOAD_CONFIG_FROM_REG_CENTER ? "/META-INF/orche/zookeeper/cloud/sharding-databases.yaml" : "/META-INF/orche/zookeeper/local/sharding-databases.yaml";
         return new File(ShardingOnlyWithDatabases.class.getResource(path).getFile());
     }
 }

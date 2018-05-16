@@ -35,7 +35,7 @@ public class MasterSlaveOnly {
     }
     
     private static File getYamlFile() {
-        String path = LOAD_CONFIG_FROM_REG_CENTER ? "/META-INF/orche/etcd/master-slave-cloud.yaml" : "/META-INF/orche/etcd/master-slave-local.yaml";
+        String path = LOAD_CONFIG_FROM_REG_CENTER ? "/META-INF/orche/etcd/cloud/master-slave.yaml" : "/META-INF/orche/etcd/local/master-slave.yaml";
         return new File(MasterSlaveOnly.class.getResource(path).getFile());
     }
 }

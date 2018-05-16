@@ -35,7 +35,7 @@ public class ShardingAndMasterSlaveTogether {
     }
     
     private static File getYamlFile() {
-        String path = LOAD_CONFIG_FROM_REG_CENTER ? "/META-INF/orche/etcd/sharding-master-slave-cloud.yaml" : "/META-INF/orche/etcd/sharding-master-slave-local.yaml";
+        String path = LOAD_CONFIG_FROM_REG_CENTER ? "/META-INF/orche/etcd/cloud/sharding-master-slave.yaml" : "/META-INF/orche/etcd/local/sharding-master-slave.yaml";
         return new File(ShardingAndMasterSlaveTogether.class.getResource(path).getFile());
     }
 }
