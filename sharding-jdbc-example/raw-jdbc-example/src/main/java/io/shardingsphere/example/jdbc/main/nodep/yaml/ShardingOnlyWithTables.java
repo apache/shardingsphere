@@ -26,7 +26,11 @@ import java.io.File;
 public class ShardingOnlyWithTables {
     
     public static void main(final String[] args) throws Exception {
-        DataSource dataSource = YamlShardingDataSourceFactory.createDataSource(new File(ShardingOnlyWithTables.class.getResource("/META-INF/nodep/sharding-tables.yaml").getFile()));
+        DataSource dataSource = YamlShardingDataSourceFactory.createDataSource(getYamlFile());
         new DataRepository(dataSource).demo();
+    }
+    
+    private static File getYamlFile() {
+        return new File(ShardingOnlyWithTables.class.getResource("/META-INF/nodep/sharding-tables.yaml").getFile());
     }
 }

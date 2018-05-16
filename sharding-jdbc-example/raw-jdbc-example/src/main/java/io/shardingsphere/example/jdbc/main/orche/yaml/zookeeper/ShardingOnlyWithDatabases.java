@@ -15,25 +15,27 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.main.nodep.yaml;
+package io.shardingsphere.example.jdbc.main.orche.yaml.zookeeper;
 
-import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
 import io.shardingsphere.example.jdbc.fixture.DataRepository;
+import io.shardingsphere.jdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
+import io.shardingsphere.jdbc.orchestration.api.yaml.YamlOrchestrationShardingDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.io.File;
 
-/*
- * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
- */
-public class MasterSlaveOnly {
+public class ShardingOnlyWithDatabases {
+    
+    private static final boolean LOAD_CONFIG_FROM_REG_CENTER = false;
     
     public static void main(final String[] args) throws Exception {
-        DataSource dataSource = YamlMasterSlaveDataSourceFactory.createDataSource(getYamlFile());
+        DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(getYamlFile());
         new DataRepository(dataSource).demo();
+        OrchestrationShardingDataSourceFactory.closeQuietly(dataSource);
     }
     
     private static File getYamlFile() {
-        return new File(MasterSlaveOnly.class.getResource("/META-INF/nodep/master-slave.yaml").getFile());
+        String path = LOAD_CONFIG_FROM_REG_CENTER ? "/META-INF/orche/zookeeper/cloud/sharding-databases.yaml" : "/META-INF/orche/zookeeper/local/sharding-databases.yaml";
+        return new File(ShardingOnlyWithDatabases.class.getResource(path).getFile());
     }
 }
