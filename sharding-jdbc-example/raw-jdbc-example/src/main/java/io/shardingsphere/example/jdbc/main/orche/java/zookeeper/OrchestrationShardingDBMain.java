@@ -25,6 +25,7 @@ import io.shardingsphere.example.jdbc.fixture.DataSourceUtil;
 import io.shardingsphere.jdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationType;
+import io.shardingsphere.jdbc.orchestration.internal.OrchestrationShardingDataSource;
 import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.jdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
 
@@ -45,7 +46,7 @@ public class OrchestrationShardingDBMain {
         //        new DataRepository(getDataSourceByCloudConfig()).demo();
         DataSource dataSource = getDataSourceByLocalConfig();
         new DataRepository(dataSource).demo();
-        OrchestrationShardingDataSourceFactory.closeQuietly(dataSource);
+        ((OrchestrationShardingDataSource) dataSource).close();
     }
     
     private static DataSource getDataSourceByLocalConfig() throws SQLException {

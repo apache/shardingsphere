@@ -29,10 +29,9 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class OrchestrationSpringMybatisMasterSlaveOnlyMain {
     
     public static void main(final String[] args) {
-        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisMasterSlaveOnlyByLocalConfigContext.xml");
-//        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisMasterSlaveOnlyByCloudConfigContext.xml");
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisMasterSlaveOnlyByLocalConfigContext.xml");
         DemoService demoService = applicationContext.getBean(DemoService.class);
         demoService.demo();
-        OrchestrationMasterSlaveDataSourceFactory.closeQuietly(applicationContext.getBean(OrchestrationMasterSlaveDataSource.class));
+        applicationContext.close();
     }
 }

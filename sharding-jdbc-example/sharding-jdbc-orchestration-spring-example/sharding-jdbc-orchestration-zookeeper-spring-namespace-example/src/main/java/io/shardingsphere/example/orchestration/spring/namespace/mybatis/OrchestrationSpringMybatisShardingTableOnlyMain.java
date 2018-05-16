@@ -18,18 +18,14 @@
 package io.shardingsphere.example.orchestration.spring.namespace.mybatis;
 
 import io.shardingsphere.example.orchestration.spring.namespace.mybatis.service.DemoService;
-import io.shardingsphere.jdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
-import io.shardingsphere.jdbc.orchestration.internal.OrchestrationShardingDataSource;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class OrchestrationSpringMybatisShardingTableOnlyMain {
     
     public static void main(final String[] args) {
-        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisShardingTableOnlyByLocalConfigContext.xml");
-//        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisShardingTableOnlyByCloudConfigContext.xml");
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisShardingTableOnlyByLocalConfigContext.xml");
         DemoService demoService = applicationContext.getBean(DemoService.class);
         demoService.demo();
-        OrchestrationShardingDataSourceFactory.closeQuietly(applicationContext.getBean(OrchestrationShardingDataSource.class));
+        applicationContext.close();
     }
 }

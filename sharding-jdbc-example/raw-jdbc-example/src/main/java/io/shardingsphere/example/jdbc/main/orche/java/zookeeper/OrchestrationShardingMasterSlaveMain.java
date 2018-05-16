@@ -29,6 +29,7 @@ import io.shardingsphere.example.jdbc.fixture.algorithm.ModuloShardingTableAlgor
 import io.shardingsphere.jdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationType;
+import io.shardingsphere.jdbc.orchestration.internal.OrchestrationShardingDataSource;
 import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.jdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
 
@@ -51,10 +52,9 @@ public class OrchestrationShardingMasterSlaveMain {
     private static final String NAMESPACE = "orchestration-java-demo";
     
     public static void main(final String[] args) throws SQLException {
-        //        new DataRepository(getDataSourceByCloudConfig()).demo();
         DataSource dataSource = getDataSourceByLocalConfig();
         new DataRepository(dataSource).demo();
-        OrchestrationShardingDataSourceFactory.closeQuietly(dataSource);
+        ((OrchestrationShardingDataSource) dataSource).close();
     }
     
     private static DataSource getDataSourceByLocalConfig() throws SQLException {
