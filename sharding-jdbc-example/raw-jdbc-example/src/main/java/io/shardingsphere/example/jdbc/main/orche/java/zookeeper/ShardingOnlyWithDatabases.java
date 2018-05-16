@@ -33,55 +33,63 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
-public class OrchestrationShardingDBMain {
+public class ShardingOnlyWithDatabases {
     
     private static final String ZOOKEEPER_CONNECTION_STRING = "localhost:2181";
     
     private static final String NAMESPACE = "orchestration-java-demo";
     
+    private static final boolean LOAD_CONFIG_FROM_REG_CENTER = false;
+    
     public static void main(final String[] args) throws SQLException {
-        //        new DataRepository(getDataSourceByCloudConfig()).demo();
-        DataSource dataSource = getDataSourceByLocalConfig();
+        DataSource dataSource = getDataSource();
         new DataRepository(dataSource).demo();
         OrchestrationShardingDataSourceFactory.closeQuietly(dataSource);
     }
     
-    private static DataSource getDataSourceByLocalConfig() throws SQLException {
-        return OrchestrationShardingDataSourceFactory.createDataSource(
-                createDataSourceMap(), createShardingRuleConfig(), new ConcurrentHashMap<String, Object>(), new Properties(), new OrchestrationConfiguration("orchestration-sharding-data-source", getZookeeperConfiguration(), true, OrchestrationType.SHARDING));
+    private static DataSource getDataSource() throws SQLException {
+        return LOAD_CONFIG_FROM_REG_CENTER ? getDataSourceFromRegCenter() : getDataSourceFromLocalConfiguration();
     }
     
-    private static DataSource getDataSourceByCloudConfig() throws SQLException {
+    private static DataSource getDataSourceFromRegCenter() throws SQLException {
         return OrchestrationShardingDataSourceFactory.createDataSource(
-                null, null, null, null, new OrchestrationConfiguration("orchestration-sharding-data-source", getZookeeperConfiguration(), false, OrchestrationType.SHARDING));
+                new OrchestrationConfiguration("orchestration-sharding-db-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING));
     }
     
-    private static RegistryCenterConfiguration getZookeeperConfiguration() {
-        ZookeeperConfiguration result = new ZookeeperConfiguration();
-        result.setServerLists(ZOOKEEPER_CONNECTION_STRING);
-        result.setNamespace(NAMESPACE);
+    private static DataSource getDataSourceFromLocalConfiguration() throws SQLException {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
+        shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "demo_ds_${user_id % 2}"));
+        return OrchestrationShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties(),
+                new OrchestrationConfiguration("orchestration-sharding-db-data-source", getRegistryCenterConfiguration(), true, OrchestrationType.SHARDING));
+    }
+    
+    private static TableRuleConfiguration getOrderTableRuleConfiguration() {
+        TableRuleConfiguration result = new TableRuleConfiguration();
+        result.setLogicTable("t_order");
+        result.setKeyGeneratorColumnName("order_id");
+        return result;
+    }
+    
+    private static TableRuleConfiguration getOrderItemTableRuleConfiguration() {
+        TableRuleConfiguration result = new TableRuleConfiguration();
+        result.setLogicTable("t_order_item");
         return result;
     }
     
     private static Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>(2, 1);
+        Map<String, DataSource> result = new HashMap<>();
         result.put("demo_ds_0", DataSourceUtil.createDataSource("demo_ds_0"));
         result.put("demo_ds_1", DataSourceUtil.createDataSource("demo_ds_1"));
         return result;
     }
     
-    private static ShardingRuleConfiguration createShardingRuleConfig() {
-        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
-        orderTableRuleConfig.setLogicTable("t_order");
-        orderTableRuleConfig.setKeyGeneratorColumnName("order_id");
-        result.getTableRuleConfigs().add(orderTableRuleConfig);
-        TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
-        orderItemTableRuleConfig.setLogicTable("t_order_item");
-        result.getTableRuleConfigs().add(orderItemTableRuleConfig);
-        result.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "demo_ds_${user_id % 2}"));
+    private static RegistryCenterConfiguration getRegistryCenterConfiguration() {
+        ZookeeperConfiguration result = new ZookeeperConfiguration();
+        result.setServerLists(ZOOKEEPER_CONNECTION_STRING);
+        result.setNamespace(NAMESPACE);
         return result;
     }
 }

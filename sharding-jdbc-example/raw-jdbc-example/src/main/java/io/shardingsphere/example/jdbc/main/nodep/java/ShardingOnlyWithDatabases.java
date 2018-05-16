@@ -33,10 +33,10 @@ import java.util.Properties;
 public class ShardingOnlyWithDatabases {
     
     public static void main(final String[] args) throws SQLException {
-        new DataRepository(getShardingDataSource()).demo();
+        new DataRepository(getDataSource()).demo();
     }
     
-    private static DataSource getShardingDataSource() throws SQLException {
+    private static DataSource getDataSource() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
