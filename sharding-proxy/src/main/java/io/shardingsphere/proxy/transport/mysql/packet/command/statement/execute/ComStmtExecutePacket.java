@@ -81,7 +81,7 @@ public final class ComStmtExecutePacket extends CommandPacket {
         }
         newParametersBoundFlag = NewParametersBoundFlag.valueOf(mysqlPacketPayload.readInt1());
         setParameterList(mysqlPacketPayload, numParameters, newParametersBoundFlag);
-        statementExecuteBackendHandler = new StatementExecuteBackendHandler(preparedStatementParameters, statementId, DatabaseType.MySQL, true);
+        statementExecuteBackendHandler = new StatementExecuteBackendHandler(preparedStatementParameters, statementId, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
     }
     
     private void setParameterList(final MySQLPacketPayload mysqlPacketPayload, final int numParameters, final NewParametersBoundFlag newParametersBoundFlag) {
