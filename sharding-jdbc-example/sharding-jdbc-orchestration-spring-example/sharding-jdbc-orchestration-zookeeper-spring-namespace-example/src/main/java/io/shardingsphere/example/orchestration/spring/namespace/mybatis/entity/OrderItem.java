@@ -25,8 +25,6 @@ public final class OrderItem {
     
     private int userId;
     
-    private String status;
-    
     public long getOrderItemId() {
         return orderItemId;
     }
@@ -51,16 +49,8 @@ public final class OrderItem {
         this.userId = userId;
     }
     
-    public String getStatus() {
-        return status;
-    }
-    
-    public void setStatus(final String status) {
-        this.status = status;
-    }
-    
     @Override
     public String toString() {
-        return String.format("order_item_id:%s, order_id: %s, user_id: %s, status: %s", orderItemId, orderId, userId, status);
+        return String.format("order_item_id:%s, order_id: %s, user_id: %s", orderItemId, orderId, userId);
     }
 }

@@ -54,7 +54,6 @@ public class DemoService {
             OrderItem item = new OrderItem();
             item.setOrderId(orderId);
             item.setUserId(51);
-            item.setStatus("INSERT_TEST");
             orderItemRepository.insert(item);
         }
         System.out.println(orderItemRepository.selectAll());
