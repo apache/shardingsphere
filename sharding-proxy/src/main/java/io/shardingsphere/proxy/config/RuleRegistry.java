@@ -19,6 +19,8 @@ package io.shardingsphere.proxy.config;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import io.shardingsphere.core.constant.ShardingProperties;
+import io.shardingsphere.core.constant.ShardingPropertiesConstant;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.MasterSlaveRule;
@@ -35,6 +37,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Sharding rule registry.
@@ -58,6 +61,8 @@ public final class RuleRegistry {
     
     private final boolean isOnlyMasterSlave;
     
+    private final boolean showSQL;
+    
     private RuleRegistry() {
         YamlProxyConfiguration yamlProxyConfiguration;
         try {
@@ -73,6 +78,9 @@ public final class RuleRegistry {
         shardingRule = yamlProxyConfiguration.obtainShardingRule(Collections.<String>emptyList());
         masterSlaveRule = yamlProxyConfiguration.obtainMasterSlaveRule();
         isOnlyMasterSlave = shardingRule.getTableRules().isEmpty() && !masterSlaveRule.getMasterDataSourceName().isEmpty();
+        Properties properties = yamlProxyConfiguration.getShardingRule().getProps();
+        ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
+        showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         try {
             shardingMetaData = new ProxyShardingMetaData(dataSourceMap);
             if (!isOnlyMasterSlave) {
@@ -93,7 +101,7 @@ public final class RuleRegistry {
         config.setConnectionTimeout(30000);
         config.setIdleTimeout(60000);
         config.setMaxLifetime(1800000);
-        config.setMaximumPoolSize(100);
+        config.setMaximumPoolSize(200);
         config.addDataSourceProperty("useServerPrepStmts", "true");
         config.addDataSourceProperty("cachePrepStmts", "true");
         return new HikariDataSource(config);
