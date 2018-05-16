@@ -19,8 +19,6 @@ As a member of PMC, you **must** contribute and maintain the features or modules
 
 1. Start a vote for promoting contributor to Committer Team and PMC, pull request or feature discussion.
 
-1. For now, only 张亮 [@terrymanu](https://github.com/terrymanu) has right to remove people from PMC or Committer Team.
-
 The current Project Management Committee is as follows (in chronological order):
 
 * 张亮, Liang Zhang, [@terrymanu](https://github.com/terrymanu) Java and architect expert, Jingdong
@@ -30,6 +28,8 @@ The current Project Management Committee is as follows (in chronological order):
 * 吴晟, Sheng Wu, [@wu-sheng](https://github.com/wu-sheng) APM and tracing expert, Apache SkyWalking(incubator) creator & PMC member
 
 * 高洪涛, Hongtao Gao, [@hanahmily](https://github.com/hanahmily) Database and APM expert, Apache SkyWalking(incubator) PMC member
+
+* 史海峰, Haifeng Shi, [@PegasusS](https://github.com/PegasusS) Ex-Director, ele.me
 
 ## Voting
 

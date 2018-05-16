@@ -19,8 +19,6 @@ chapter = true
 
 1. 为Contributor晋升Committer或PMC成员、pull request和feature讨论发起投票的权限。
 
-1. 目前为止，只有 张亮 [@terrymanu](https://github.com/terrymanu) 有权删除PMC和Committer成员。
-
 当前项目管理委员会名单（按时间先后排序）如下：
 
 * 张亮, Liang Zhang, [@terrymanu](https://github.com/terrymanu) Java技术和架构专家, 京东
@@ -30,6 +28,8 @@ chapter = true
 * 吴晟, Sheng Wu, [@wu-sheng](https://github.com/wu-sheng) APM和tracing专家, Apache SkyWalking（孵化器）创建者 & PMC成员
 
 * 高洪涛, Hongtao Gao, [@hanahmily](https://github.com/hanahmily) 数据库和APM专家, Apache SkyWalking（孵化器）PMC成员
+
+* 史海峰, Haifeng Shi, [@PegasusS](https://github.com/PegasusS) 高级总监, 饿了么
 
 ## 投票
 
