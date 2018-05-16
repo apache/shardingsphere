@@ -26,7 +26,7 @@ import java.io.File;
 public class ShardingOnlyWithDatabases {
     
     public static void main(final String[] args) throws Exception {
-        DataSource dataSource = YamlShardingDataSourceFactory.createDataSource(new File(ShardingOnlyWithDatabases.class.getResource("/META-INF/sharding-databases.yaml").getFile()));
+        DataSource dataSource = YamlShardingDataSourceFactory.createDataSource(new File(ShardingOnlyWithDatabases.class.getResource("/META-INF/nodep/sharding-databases.yaml").getFile()));
         new DataRepository(dataSource).demo();
     }
 }

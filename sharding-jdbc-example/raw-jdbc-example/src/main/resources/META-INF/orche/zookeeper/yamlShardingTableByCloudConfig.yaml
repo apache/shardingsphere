@@ -1,0 +1,7 @@
+orchestration:
+  name: demo_yaml_ds_sharding
+  type: SHARDING
+  overwrite: false
+  zookeeper:
+    namespace: orchestration-yaml-demo
+    serverLists: localhost:2181

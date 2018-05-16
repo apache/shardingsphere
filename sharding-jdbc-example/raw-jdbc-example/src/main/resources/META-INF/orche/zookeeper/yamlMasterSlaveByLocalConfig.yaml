@@ -1,0 +1,29 @@
+dataSources:
+  ds_master: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/demo_ds_master
+    username: root
+    password:
+  ds_slave_0: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/demo_ds_slave_0
+    username: root
+    password:
+  ds_slave_1: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/demo_ds_slave_1
+    username: root
+    password:
+
+masterSlaveRule:
+  name: ds_ms
+  masterDataSourceName: ds_master
+  slaveDataSourceNames: [ds_slave_0, ds_slave_1]
+
+orchestration:
+  name: demo_yaml_ds_ms
+  type: MASTER_SLAVE
+  overwrite: true
+  zookeeper:
+    namespace: orchestration-yaml-demo
+    serverLists: localhost:2181

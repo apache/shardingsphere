@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.shardingsphere</groupId>
-        <artifactId>sharding-jdbc-spring-namespace-example</artifactId>
+        <artifactId>spring-namespace-example</artifactId>
         <version>3.0.0.M1-SNAPSHOT</version>
     </parent>
     <artifactId>spring-namespace-jpa-example</artifactId>

@@ -29,7 +29,7 @@ import java.io.File;
 public class ShardingAndMasterSlaveTogether {
     
     public static void main(final String[] args) throws Exception {
-        DataSource dataSource = YamlShardingDataSourceFactory.createDataSource(new File(ShardingAndMasterSlaveTogether.class.getResource("/META-INF/sharding-master-slave.yaml").getFile()));
+        DataSource dataSource = YamlShardingDataSourceFactory.createDataSource(new File(ShardingAndMasterSlaveTogether.class.getResource("/META-INF/nodep/sharding-master-slave.yaml").getFile()));
         new DataRepository(dataSource).demo();
     }
 }

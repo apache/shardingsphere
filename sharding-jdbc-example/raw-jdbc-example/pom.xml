@@ -13,5 +13,15 @@
             <artifactId>sharding-jdbc</artifactId>
             <version>${sharding-sphere.version}</version>
         </dependency>
+        <dependency>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>sharding-jdbc-orchestration</artifactId>
+            <version>${sharding-sphere.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>sharding-core</artifactId>
+            <version>${sharding-sphere.version}</version>
+        </dependency>
     </dependencies>
 </project>

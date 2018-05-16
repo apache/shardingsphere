@@ -43,7 +43,9 @@ public class DataRepository {
         queryWithIn();
         System.out.println("3.Query with Hint--------------");
         queryWithHint();
+        System.out.println("4.Drop tables--------------");
         dropTable();
+        System.out.println("5.All done-----------");
     }
     
     private void createTable() throws SQLException {

@@ -1,0 +1,6 @@
+orchestration:
+  name: demo_yaml_ds_sharding
+  type: SHARDING
+  overwrite: false
+  etcd:
+    serverLists: http://localhost:2379
