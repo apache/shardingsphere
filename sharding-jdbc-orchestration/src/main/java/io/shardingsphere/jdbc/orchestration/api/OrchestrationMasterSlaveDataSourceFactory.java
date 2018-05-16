@@ -76,15 +76,4 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
         result.init();
         return result;
     }
-    
-    /**
-     * Close quietly.
-     *
-     * @param dataSource dataSource
-     */
-    public static void closeQuietly(final DataSource dataSource) {
-        if (dataSource instanceof OrchestrationMasterSlaveDataSource) {
-            ((OrchestrationMasterSlaveDataSource) dataSource).close();
-        }
-    }
 }
