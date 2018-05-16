@@ -43,7 +43,9 @@ public class OrchestrationShardingDBMain {
     
     public static void main(final String[] args) throws SQLException {
         //        new DataRepository(getDataSourceByCloudConfig()).demo();
-        new DataRepository(getDataSourceByLocalConfig()).demo();
+        DataSource dataSource = getDataSourceByLocalConfig();
+        new DataRepository(dataSource).demo();
+        OrchestrationShardingDataSourceFactory.closeQuietly(dataSource);
     }
     
     private static DataSource getDataSourceByLocalConfig() throws SQLException {

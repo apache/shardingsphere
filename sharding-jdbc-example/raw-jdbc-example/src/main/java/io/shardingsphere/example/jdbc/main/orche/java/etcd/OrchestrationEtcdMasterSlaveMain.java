@@ -38,8 +38,10 @@ public class OrchestrationEtcdMasterSlaveMain {
     private static final String ETCD_CONNECTION_STRING = "http://localhost:2379";
     
     public static void main(final String[] args) throws SQLException {
-//        new DataRepository(getDataSourceByCloudConfig()).demo();
-        new DataRepository(getDataSourceByLocalConfig()).demo();
+        //        new DataRepository(getDataSourceByCloudConfig()).demo();
+        DataSource dataSource = getDataSourceByLocalConfig();
+        new DataRepository(dataSource).demo();
+        OrchestrationMasterSlaveDataSourceFactory.closeQuietly(dataSource);
     }
     
     private static DataSource getDataSourceByLocalConfig() throws SQLException {

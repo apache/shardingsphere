@@ -18,7 +18,7 @@
 package io.shardingsphere.example.jdbc.main.orche.yaml.zookeeper;
 
 import io.shardingsphere.example.jdbc.fixture.DataRepository;
-import io.shardingsphere.jdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
+import io.shardingsphere.jdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 import io.shardingsphere.jdbc.orchestration.api.yaml.YamlOrchestrationShardingDataSourceFactory;
 
 import javax.sql.DataSource;
@@ -35,5 +35,5 @@ public class OrchestrationYamlShardingAndMasterSlaveMain {
 //        DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(new File(
 //                OrchestrationYamlShardingAndMasterSlaveMain.class.getResource("/META-INF/orche/yamlShardingAndMasterSlaveByCloudConfig.yaml").getFile()));
         new DataRepository(dataSource).demo();
-        OrchestrationMasterSlaveDataSourceFactory.closeQuietly(dataSource);    }
+        OrchestrationShardingDataSourceFactory.closeQuietly(dataSource);    }
 }
