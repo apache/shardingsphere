@@ -23,6 +23,7 @@ import io.shardingsphere.example.jdbc.fixture.DataSourceUtil;
 import io.shardingsphere.jdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
 import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationType;
+import io.shardingsphere.jdbc.orchestration.internal.OrchestrationMasterSlaveDataSource;
 import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.jdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
 
@@ -47,7 +48,7 @@ public class MasterSlaveOnly {
     public static void main(final String[] args) throws SQLException {
         DataSource dataSource = getDataSource();
         new DataRepository(dataSource).demo();
-        OrchestrationMasterSlaveDataSourceFactory.closeQuietly(dataSource);
+        ((OrchestrationMasterSlaveDataSource) dataSource).close();
     }
     
     private static DataSource getDataSource() throws SQLException {
