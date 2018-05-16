@@ -3,7 +3,7 @@ dataSources:
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/demo_ds_master
     username: root
-    password: 
+    password:
   ds_slave_0: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/demo_ds_slave_0
@@ -13,7 +13,7 @@ dataSources:
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/demo_ds_slave_1
     username: root
-    password: 
+    password:
 
 masterSlaveRule:
   name: ds_ms

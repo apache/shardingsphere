@@ -3,12 +3,12 @@ dataSources:
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/demo_ds_0
     username: root
-    password: 
+    password:
   ds_1: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/demo_ds_1
     username: root
-    password: 
+    password:
 
 shardingRule:  
   tables:

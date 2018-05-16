@@ -3,7 +3,7 @@ dataSources:
       driverClassName: com.mysql.jdbc.Driver
       url: jdbc:mysql://localhost:3306/demo_ds_master_0
       username: root
-      password: 
+      password:
   ds_master_0_slave_0: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/demo_ds_master_0_slave_0
@@ -13,12 +13,12 @@ dataSources:
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/demo_ds_master_0_slave_1
     username: root
-    password: 
+    password:
   ds_master_1: !!org.apache.commons.dbcp.BasicDataSource
         driverClassName: com.mysql.jdbc.Driver
         url: jdbc:mysql://localhost:3306/demo_ds_master_1
         username: root
-        password: 
+        password:
   ds_master_1_slave_0: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/demo_ds_master_1_slave_0
@@ -28,7 +28,7 @@ dataSources:
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/demo_ds_master_1_slave_1
     username: root
-    password: 
+    password:
     
 shardingRule:
   tables:
