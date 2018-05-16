@@ -23,10 +23,6 @@ public class DelayRetryExecution {
     }
     
     public long getNextTick() {
-        if (!hasNext()){
-//            throw new IllegalAccessException("has not next");
-            return -1;
-        }
         next();
         return executeTick;
     }

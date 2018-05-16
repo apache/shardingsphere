@@ -1,18 +1,28 @@
 package com.saaavsaaa.client.utility.retry;
 
 import com.saaavsaaa.client.zookeeper.base.BaseOperation;
+import org.apache.zookeeper.KeeperException;
 
-import java.util.Comparator;
-import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by aaa
  */
 public enum RetrialCenter {
     INSTANCE;
-
-    private final int CAPACITY = 1000;
-    private final PriorityBlockingQueue<BaseOperation> queue = new PriorityBlockingQueue<>(CAPACITY, new OperationComparator());
+    
+    private static final DelayQueue<BaseOperation> queue = new DelayQueue<>();
+    private static final ThreadPoolExecutor retryExecution = new ThreadPoolExecutor(1, 10, 200, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(10), new ThreadFactory() {
+        private final AtomicInteger threadIndex = new AtomicInteger(0);
+        @Override
+        public Thread newThread(Runnable r) {
+            Thread thread = new Thread(r);
+            thread.setDaemon(true);
+            thread.setName("zk-retry-" + threadIndex.incrementAndGet());
+            return thread;
+        }
+    });
     private DelayRetrial retrial;
     
     public void init(DelayRetrial retrial) {
@@ -22,18 +32,39 @@ public enum RetrialCenter {
     }
     
     public void start(){
-        
+        for (;;) {
+            BaseOperation op;
+            try {
+                op = queue.take();
+            } catch (InterruptedException e) {
+                continue;
+            }
+            retryExecution.submit(new Runnable() {
+                @Override
+                public void run() {
+                    boolean result;
+                    try {
+                        result = op.executeOperation();
+                    } catch (Exception e) {
+                        result = false;
+                    }
+                    if (result){
+                        queue.offer(op);
+                    }
+                }
+            });
+        }
+    }
+    
+    public void stop(){
+        retryExecution.shutdown();
     }
     
     public void add(BaseOperation operation){
+        if (retrial == null){
+            retrial = DelayRetrial.newNoInitDelayRetrial();
+        }
+        operation.setRetrial(new DelayRetryExecution(retrial));
         queue.put(operation);
-    }
-}
-
-class OperationComparator implements Comparator<BaseOperation>{
-    @Override
-    public int compare(BaseOperation o1, BaseOperation o2) {
-        long result = o1.getNextExecuteTick() - o2.getNextExecuteTick();
-        return (int)result;
     }
 }
