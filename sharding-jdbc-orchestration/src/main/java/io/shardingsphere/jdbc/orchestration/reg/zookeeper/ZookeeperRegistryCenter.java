@@ -257,7 +257,6 @@ public final class ZookeeperRegistryCenter implements RegistryCenter {
             each.getValue().close();
         }
         waitForCacheClose();
-        client.close();
         CloseableUtils.closeQuietly(client);
     }
     
