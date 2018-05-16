@@ -49,6 +49,8 @@ import java.util.Properties;
 @Getter
 public final class RuleRegistry {
     
+    private static final int MAXIMUM_POOL_SIZE = Runtime.getRuntime().availableProcessors() * 2 + 1;
+    
     private static final RuleRegistry INSTANCE = new RuleRegistry();
     
     private final Map<String, DataSource> dataSourceMap;
@@ -101,7 +103,7 @@ public final class RuleRegistry {
         config.setConnectionTimeout(30000);
         config.setIdleTimeout(60000);
         config.setMaxLifetime(1800000);
-        config.setMaximumPoolSize(200);
+        config.setMaximumPoolSize(MAXIMUM_POOL_SIZE);
         config.addDataSourceProperty("useServerPrepStmts", "true");
         config.addDataSourceProperty("cachePrepStmts", "true");
         return new HikariDataSource(config);
