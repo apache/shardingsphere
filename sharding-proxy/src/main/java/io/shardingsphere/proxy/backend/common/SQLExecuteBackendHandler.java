@@ -19,6 +19,7 @@ package io.shardingsphere.proxy.backend.common;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.MergedResult;
@@ -104,7 +105,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
             } else {
                 return executeForSharding();
             }
-        } catch (final ShardingException ex) {
+        } catch (final Exception ex) {
             return new CommandResponsePackets(new ErrPacket(1, 0, "", "", ex.getMessage()));
         }
     }
@@ -291,13 +292,15 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
     
     private CommandResponsePackets mergeDML(final CommandResponsePackets firstPackets) {
         int affectedRows = 0;
+        long lastInsertId = 0;
         for (DatabaseProtocolPacket each : firstPackets.getDatabaseProtocolPackets()) {
             if (each instanceof OKPacket) {
                 OKPacket okPacket = (OKPacket) each;
                 affectedRows += okPacket.getAffectedRows();
+                lastInsertId = okPacket.getLastInsertId();
             }
         }
-        return new CommandResponsePackets(new OKPacket(1, affectedRows, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+        return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
     }
     
     private CommandResponsePackets mergeDQLorDAL(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets) {

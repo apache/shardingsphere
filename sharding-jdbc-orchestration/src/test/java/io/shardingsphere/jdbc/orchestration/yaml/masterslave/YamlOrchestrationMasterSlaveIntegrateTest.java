@@ -21,7 +21,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import io.shardingsphere.jdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
-import io.shardingsphere.jdbc.orchestration.api.util.OrchestrationDataSourceCloseableUtil;
+import io.shardingsphere.jdbc.orchestration.api.yaml.YamlOrchestrationMasterSlaveDataSourceFactory;
 import io.shardingsphere.jdbc.orchestration.yaml.AbstractYamlDataSourceTest;
 import lombok.RequiredArgsConstructor;
 import org.junit.Test;
@@ -59,9 +59,9 @@ public class YamlOrchestrationMasterSlaveIntegrateTest extends AbstractYamlDataS
         File yamlFile = new File(YamlOrchestrationMasterSlaveIntegrateTest.class.getResource(filePath).toURI());
         DataSource dataSource;
         if (hasDataSource) {
-            dataSource = OrchestrationMasterSlaveDataSourceFactory.createDataSource(yamlFile);
+            dataSource = YamlOrchestrationMasterSlaveDataSourceFactory.createDataSource(yamlFile);
         } else {
-            dataSource = OrchestrationMasterSlaveDataSourceFactory.createDataSource(Maps.asMap(Sets.newHashSet("db_master", "db_slave_0", "db_slave_1"), new Function<String, DataSource>() {
+            dataSource = YamlOrchestrationMasterSlaveDataSourceFactory.createDataSource(Maps.asMap(Sets.newHashSet("db_master", "db_slave_0", "db_slave_1"), new Function<String, DataSource>() {
                 @Override
                 public DataSource apply(final String key) {
                     return createDataSource(key);
@@ -74,6 +74,6 @@ public class YamlOrchestrationMasterSlaveIntegrateTest extends AbstractYamlDataS
             stm.executeQuery("SELECT * FROM t_order_item");
             stm.executeQuery("SELECT * FROM t_config");
         }
-        OrchestrationDataSourceCloseableUtil.closeQuietly(dataSource);
+        OrchestrationMasterSlaveDataSourceFactory.closeQuietly(dataSource);
     }
 }

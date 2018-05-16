@@ -21,7 +21,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import io.shardingsphere.core.api.ConfigMapContext;
-import io.shardingsphere.core.api.ShardingDataSourceFactory;
+import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
 import io.shardingsphere.core.constant.ShardingProperties;
 import io.shardingsphere.core.constant.ShardingPropertiesConstant;
 import lombok.RequiredArgsConstructor;
@@ -70,9 +70,9 @@ public class YamlShardingIntegrateTest extends AbstractYamlDataSourceTest {
         File yamlFile = new File(YamlShardingIntegrateTest.class.getResource(filePath).toURI());
         DataSource dataSource;
         if (hasDataSource) {
-            dataSource = ShardingDataSourceFactory.createDataSource(yamlFile);
+            dataSource = YamlShardingDataSourceFactory.createDataSource(yamlFile);
         } else {
-            dataSource = ShardingDataSourceFactory.createDataSource(Maps.asMap(Sets.newHashSet("db0", "db1"), new Function<String, DataSource>() {
+            dataSource = YamlShardingDataSourceFactory.createDataSource(Maps.asMap(Sets.newHashSet("db0", "db1"), new Function<String, DataSource>() {
                 @Override
                 public DataSource apply(final String key) {
                     return createDataSource(key);
