@@ -21,7 +21,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import io.shardingsphere.core.api.ConfigMapContext;
-import io.shardingsphere.core.api.MasterSlaveDataSourceFactory;
+import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
 import lombok.RequiredArgsConstructor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -72,20 +72,20 @@ public class YamlMasterSlaveIntegrateTest extends AbstractYamlDataSourceTest {
         DataSource dataSource;
         if (hasDataSource) {
             if (isByteArray) {
-                dataSource = MasterSlaveDataSourceFactory.createDataSource(toByteArray(yamlFile.getPath()));
+                dataSource = YamlMasterSlaveDataSourceFactory.createDataSource(toByteArray(yamlFile.getPath()));
             } else {
-                dataSource = MasterSlaveDataSourceFactory.createDataSource(yamlFile);
+                dataSource = YamlMasterSlaveDataSourceFactory.createDataSource(yamlFile);
             }
         } else {
             if (isByteArray) {
-                dataSource = MasterSlaveDataSourceFactory.createDataSource(Maps.asMap(Sets.newHashSet("db_master", "db_slave_0", "db_slave_1"), new Function<String, DataSource>() {
+                dataSource = YamlMasterSlaveDataSourceFactory.createDataSource(Maps.asMap(Sets.newHashSet("db_master", "db_slave_0", "db_slave_1"), new Function<String, DataSource>() {
                     @Override
                     public DataSource apply(final String key) {
                         return createDataSource(key);
                     }
                 }), toByteArray(yamlFile.getPath()));
             } else {
-                dataSource = MasterSlaveDataSourceFactory.createDataSource(Maps.asMap(Sets.newHashSet("db_master", "db_slave_0", "db_slave_1"), new Function<String, DataSource>() {
+                dataSource = YamlMasterSlaveDataSourceFactory.createDataSource(Maps.asMap(Sets.newHashSet("db_master", "db_slave_0", "db_slave_1"), new Function<String, DataSource>() {
                     @Override
                     public DataSource apply(final String key) {
                         return createDataSource(key);

@@ -18,6 +18,7 @@
 package io.shardingsphere.jdbc.orchestration.spring.namespace.parser;
 
 import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
+import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationType;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -34,7 +35,7 @@ public abstract class AbstractOrchestrationBeanDefinitionParser extends Abstract
         return element.getAttribute("registry-center-ref");
     }
     
-    protected BeanDefinition parseOrchestrationConfiguration(final Element element, final String type) {
+    protected BeanDefinition parseOrchestrationConfiguration(final Element element, final OrchestrationType type) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute("id"));
         factory.addConstructorArgReference(element.getAttribute("registry-center-ref"));

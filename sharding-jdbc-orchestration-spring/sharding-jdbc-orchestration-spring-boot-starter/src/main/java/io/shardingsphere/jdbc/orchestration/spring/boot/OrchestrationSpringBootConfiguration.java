@@ -17,12 +17,12 @@
 
 package io.shardingsphere.jdbc.orchestration.spring.boot;
 
-import java.sql.SQLException;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import javax.sql.DataSource;
-
+import com.google.common.base.Preconditions;
+import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.core.util.DataSourceUtil;
+import io.shardingsphere.jdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
+import io.shardingsphere.jdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
+import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationType;
 import io.shardingsphere.jdbc.orchestration.spring.boot.masterslave.SpringBootMasterSlaveRuleConfigurationProperties;
 import io.shardingsphere.jdbc.orchestration.spring.boot.orchestration.SpringBootOrchestrationConfigurationProperties;
 import io.shardingsphere.jdbc.orchestration.spring.boot.sharding.SpringBootShardingRuleConfigurationProperties;
@@ -35,13 +35,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
-import com.google.common.base.Preconditions;
-
-import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.util.DataSourceUtil;
-import io.shardingsphere.jdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
-import io.shardingsphere.jdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
-import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
+import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Orchestration spring boot sharding and master-slave configuration.
@@ -71,9 +68,9 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
      */
     @Bean
     public DataSource dataSource() throws SQLException {
-        String type = orchestrationProperties.getType();
+        OrchestrationType type = orchestrationProperties.getType();
         Preconditions.checkState(null != type, "Missing the type of datasource configuration in orchestration configuration");
-        return OrchestrationConfiguration.SHARDING.equals(type)
+        return OrchestrationType.SHARDING == type
                 ? OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap,
                 shardingProperties.getShardingRuleConfiguration(), shardingProperties.getConfigMap(), shardingProperties.getProps(), orchestrationProperties.getOrchestrationConfiguration())
                 : OrchestrationMasterSlaveDataSourceFactory.createDataSource(dataSourceMap,

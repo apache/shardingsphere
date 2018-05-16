@@ -23,6 +23,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute.
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.prepare.ComStmtPreparePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.fieldlist.ComFieldListPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.initdb.ComInitDbPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.text.ping.ComPingPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ComQueryPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.quit.ComQuitPacket;
 
@@ -58,6 +59,8 @@ public final class CommandPacketFactory {
                 return new ComStmtExecutePacket(sequenceId, mysqlPacketPayload);
             case COM_STMT_CLOSE:
                 return new ComStmtClosePacket(sequenceId, mysqlPacketPayload);
+            case COM_PING:
+                return new ComPingPacket(sequenceId);
             case COM_SLEEP:
             case COM_CREATE_DB:
             case COM_DROP_DB:
@@ -68,7 +71,6 @@ public final class CommandPacketFactory {
             case COM_CONNECT:
             case COM_PROCESS_KILL:
             case COM_DEBUG:
-            case COM_PING:
             case COM_TIME:
             case COM_DELAYED_INSERT:
             case COM_CHANGE_USER:

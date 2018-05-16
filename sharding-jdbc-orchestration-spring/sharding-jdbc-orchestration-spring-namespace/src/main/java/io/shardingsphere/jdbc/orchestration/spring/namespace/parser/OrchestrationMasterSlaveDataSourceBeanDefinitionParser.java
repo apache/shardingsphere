@@ -21,7 +21,7 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import io.shardingsphere.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
+import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationType;
 import io.shardingsphere.jdbc.orchestration.spring.datasource.OrchestrationMasterSlaveDataSourceFactoryBean;
 import io.shardingsphere.jdbc.orchestration.spring.datasource.SpringMasterSlaveDataSource;
 import io.shardingsphere.jdbc.orchestration.spring.namespace.constants.MasterSlaveDataSourceBeanDefinitionParserTag;
@@ -81,7 +81,7 @@ public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends Abst
             factory.addConstructorArgValue(parseMasterSlaveRuleConfig(element));
             factory.addConstructorArgValue(parseConfigMap(element, parserContext, factory.getBeanDefinition()));
         }
-        factory.addConstructorArgValue(parseOrchestrationConfiguration(element, OrchestrationConfiguration.MASTER_SLAVE));
+        factory.addConstructorArgValue(parseOrchestrationConfiguration(element, OrchestrationType.MASTER_SLAVE));
         return factory.getBeanDefinition();
     }
     
