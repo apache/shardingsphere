@@ -19,8 +19,8 @@ package io.shardingsphere.example.jdbc.main.orche.yaml.etcd;
 
 import io.shardingsphere.example.jdbc.fixture.DataRepository;
 import io.shardingsphere.example.jdbc.main.orche.yaml.zookeeper.ShardingOnlyWithTables;
-import io.shardingsphere.jdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 import io.shardingsphere.jdbc.orchestration.api.yaml.YamlOrchestrationShardingDataSourceFactory;
+import io.shardingsphere.jdbc.orchestration.internal.OrchestrationShardingDataSource;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -32,7 +32,7 @@ public class ShardingOnlyWithDatabasesAndTables {
     public static void main(final String[] args) throws Exception {
         DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(getYamlFile());
         new DataRepository(dataSource).demo();
-        OrchestrationShardingDataSourceFactory.closeQuietly(dataSource);
+        ((OrchestrationShardingDataSource) dataSource).close();
     }
     
     private static File getYamlFile() {
