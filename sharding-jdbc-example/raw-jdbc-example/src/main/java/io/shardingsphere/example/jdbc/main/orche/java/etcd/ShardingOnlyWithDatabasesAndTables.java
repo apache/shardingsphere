@@ -15,16 +15,20 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.main.nodep.java;
+package io.shardingsphere.example.jdbc.main.orche.java.etcd;
 
-import io.shardingsphere.example.jdbc.fixture.algorithm.ModuloShardingTableAlgorithm;
-import io.shardingsphere.example.jdbc.fixture.DataRepository;
-import io.shardingsphere.example.jdbc.fixture.DataSourceUtil;
-import io.shardingsphere.core.api.ShardingDataSourceFactory;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingsphere.core.api.config.strategy.StandardShardingStrategyConfiguration;
+import io.shardingsphere.example.jdbc.fixture.DataRepository;
+import io.shardingsphere.example.jdbc.fixture.DataSourceUtil;
+import io.shardingsphere.example.jdbc.fixture.algorithm.ModuloShardingTableAlgorithm;
+import io.shardingsphere.jdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
+import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
+import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationType;
+import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenterConfiguration;
+import io.shardingsphere.jdbc.orchestration.reg.etcd.EtcdConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -34,18 +38,34 @@ import java.util.Properties;
 
 public class ShardingOnlyWithDatabasesAndTables {
     
+    private static final String ETCD_CONNECTION_STRING = "http://localhost:2379";
+    
+    private static final boolean LOAD_CONFIG_FROM_REG_CENTER = false;
+    
     public static void main(final String[] args) throws SQLException {
-        new DataRepository(getDataSource()).demo();
+        DataSource dataSource = getDataSource();
+        new DataRepository(dataSource).demo();
+        OrchestrationShardingDataSourceFactory.closeQuietly(dataSource);
     }
     
     private static DataSource getDataSource() throws SQLException {
+        return LOAD_CONFIG_FROM_REG_CENTER ? getDataSourceFromRegCenter() : getDataSourceFromLocalConfiguration();
+    }
+    
+    private static DataSource getDataSourceFromRegCenter() throws SQLException {
+        return OrchestrationShardingDataSourceFactory.createDataSource(
+                new OrchestrationConfiguration("orchestration-sharding-dbtbl-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING));
+    }
+    
+    private static DataSource getDataSourceFromLocalConfiguration() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "demo_ds_${user_id % 2}"));
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new ModuloShardingTableAlgorithm()));
-        return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties());
+        return OrchestrationShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties(),
+                new OrchestrationConfiguration("orchestration-sharding-dbtbl-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING));
     }
     
     private static TableRuleConfiguration getOrderTableRuleConfiguration() {
@@ -67,6 +87,12 @@ public class ShardingOnlyWithDatabasesAndTables {
         Map<String, DataSource> result = new HashMap<>();
         result.put("demo_ds_0", DataSourceUtil.createDataSource("demo_ds_0"));
         result.put("demo_ds_1", DataSourceUtil.createDataSource("demo_ds_1"));
+        return result;
+    }
+    
+    private static RegistryCenterConfiguration getRegistryCenterConfiguration() {
+        EtcdConfiguration result = new EtcdConfiguration();
+        result.setServerLists(ETCD_CONNECTION_STRING);
         return result;
     }
 }

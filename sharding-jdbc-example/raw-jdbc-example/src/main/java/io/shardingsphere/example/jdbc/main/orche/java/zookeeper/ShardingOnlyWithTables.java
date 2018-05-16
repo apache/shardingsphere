@@ -15,13 +15,17 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.main.nodep.java;
+package io.shardingsphere.example.jdbc.main.orche.java.zookeeper;
 
-import io.shardingsphere.example.jdbc.fixture.DataRepository;
-import io.shardingsphere.example.jdbc.fixture.DataSourceUtil;
-import io.shardingsphere.core.api.ShardingDataSourceFactory;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
+import io.shardingsphere.example.jdbc.fixture.DataRepository;
+import io.shardingsphere.example.jdbc.fixture.DataSourceUtil;
+import io.shardingsphere.jdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
+import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
+import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationType;
+import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenterConfiguration;
+import io.shardingsphere.jdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -31,16 +35,34 @@ import java.util.Properties;
 
 public class ShardingOnlyWithTables {
     
+    private static final String ZOOKEEPER_CONNECTION_STRING = "localhost:2181";
+    
+    private static final String NAMESPACE = "orchestration-java-demo";
+    
+    private static final boolean LOAD_CONFIG_FROM_REG_CENTER = false;
+    
     public static void main(final String[] args) throws SQLException {
-        new DataRepository(getDataSource()).demo();
+        DataSource dataSource = getDataSource();
+        new DataRepository(dataSource).demo();
+        OrchestrationShardingDataSourceFactory.closeQuietly(dataSource);
     }
     
     private static DataSource getDataSource() throws SQLException {
+        return LOAD_CONFIG_FROM_REG_CENTER ? getDataSourceFromRegCenter() : getDataSourceFromLocalConfiguration();
+    }
+    
+    private static DataSource getDataSourceFromRegCenter() throws SQLException {
+        return OrchestrationShardingDataSourceFactory.createDataSource(
+                new OrchestrationConfiguration("orchestration-sharding-tbl-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING));
+    }
+    
+    private static DataSource getDataSourceFromLocalConfiguration() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
-        return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties());
+        return OrchestrationShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties(),
+                new OrchestrationConfiguration("orchestration-sharding-tbl-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING));
     }
     
     private static TableRuleConfiguration getOrderTableRuleConfiguration() {
@@ -61,6 +83,13 @@ public class ShardingOnlyWithTables {
     private static Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new HashMap<>();
         result.put("demo_ds", DataSourceUtil.createDataSource("demo_ds"));
+        return result;
+    }
+    
+    private static RegistryCenterConfiguration getRegistryCenterConfiguration() {
+        ZookeeperConfiguration result = new ZookeeperConfiguration();
+        result.setServerLists(ZOOKEEPER_CONNECTION_STRING);
+        result.setNamespace(NAMESPACE);
         return result;
     }
 }

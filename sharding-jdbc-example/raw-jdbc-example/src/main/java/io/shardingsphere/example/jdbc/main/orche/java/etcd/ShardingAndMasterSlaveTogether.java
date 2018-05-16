@@ -15,10 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.main.nodep.java;
+package io.shardingsphere.example.jdbc.main.orche.java.etcd;
 
 import com.google.common.collect.Lists;
-import io.shardingsphere.core.api.ShardingDataSourceFactory;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
@@ -27,6 +26,11 @@ import io.shardingsphere.example.jdbc.fixture.DataRepository;
 import io.shardingsphere.example.jdbc.fixture.DataSourceUtil;
 import io.shardingsphere.example.jdbc.fixture.algorithm.ModuloShardingDatabaseAlgorithm;
 import io.shardingsphere.example.jdbc.fixture.algorithm.ModuloShardingTableAlgorithm;
+import io.shardingsphere.jdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
+import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
+import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationType;
+import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenterConfiguration;
+import io.shardingsphere.jdbc.orchestration.reg.etcd.EtcdConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -36,16 +40,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-/*
- * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
- */
 public class ShardingAndMasterSlaveTogether {
     
+    private static final String ETCD_CONNECTION_STRING = "http://localhost:2379";
+    
+    private static final boolean LOAD_CONFIG_FROM_REG_CENTER = false;
+    
     public static void main(final String[] args) throws SQLException {
-        new DataRepository(getDataSource()).demo();
+        DataSource dataSource = getDataSource();
+        new DataRepository(dataSource).demo();
+        OrchestrationShardingDataSourceFactory.closeQuietly(dataSource);
     }
     
     private static DataSource getDataSource() throws SQLException {
+        return LOAD_CONFIG_FROM_REG_CENTER ? getDataSourceFromRegCenter() : getDataSourceFromLocalConfiguration();
+    }
+    
+    private static DataSource getDataSourceFromRegCenter() throws SQLException {
+        return OrchestrationShardingDataSourceFactory.createDataSource(
+                new OrchestrationConfiguration("orchestration-sharding-master-slave-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING));
+    }
+    
+    private static DataSource getDataSourceFromLocalConfiguration() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
@@ -53,7 +69,8 @@ public class ShardingAndMasterSlaveTogether {
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", new ModuloShardingDatabaseAlgorithm()));
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new ModuloShardingTableAlgorithm()));
         shardingRuleConfig.setMasterSlaveRuleConfigs(getMasterSlaveRuleConfigurations());
-        return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties());
+        return OrchestrationShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties(),
+                new OrchestrationConfiguration("orchestration-sharding-master-slave-data-source", getRegistryCenterConfiguration(), true, OrchestrationType.SHARDING));
     }
     
     private static TableRuleConfiguration getOrderTableRuleConfiguration() {
@@ -85,6 +102,12 @@ public class ShardingAndMasterSlaveTogether {
         result.put("demo_ds_master_1", DataSourceUtil.createDataSource("demo_ds_master_1"));
         result.put("demo_ds_master_1_slave_0", DataSourceUtil.createDataSource("demo_ds_master_1_slave_0"));
         result.put("demo_ds_master_1_slave_1", DataSourceUtil.createDataSource("demo_ds_master_1_slave_1"));
+        return result;
+    }
+    
+    private static RegistryCenterConfiguration getRegistryCenterConfiguration() {
+        EtcdConfiguration result = new EtcdConfiguration();
+        result.setServerLists(ETCD_CONNECTION_STRING);
         return result;
     }
 }
