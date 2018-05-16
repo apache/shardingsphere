@@ -1,7 +1,6 @@
 package com.saaavsaaa.client.utility.retry;
 
 import com.saaavsaaa.client.zookeeper.base.BaseOperation;
-import org.apache.zookeeper.KeeperException;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -65,6 +64,6 @@ public enum RetrialCenter {
             retrial = DelayRetrial.newNoInitDelayRetrial();
         }
         operation.setRetrial(new DelayRetryExecution(retrial));
-        queue.put(operation);
+        queue.offer(operation);
     }
 }
