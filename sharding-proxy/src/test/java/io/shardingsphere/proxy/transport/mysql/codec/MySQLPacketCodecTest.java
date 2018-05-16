@@ -22,16 +22,13 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
-import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ComQueryPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.quit.ComQuitPacket;
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.any;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -39,7 +36,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * ${DESCRIPTION}.
+ * Test class for MySQLPacketCodec.
  *
  * @author zhaojun
  */
@@ -59,7 +56,7 @@ public class MySQLPacketCodecTest {
 
     @Test
     public void assertMySQLPacketDoDecode() {
-        List<Object> out = Lists.newArrayList();
+        final List<Object> out = Lists.newArrayList();
         when(byteBuf.markReaderIndex()).thenReturn(byteBuf);
         when(byteBuf.markReaderIndex().readMedium()).thenReturn(50);
         when(byteBuf.readRetainedSlice(anyInt())).thenReturn(byteBuf);
@@ -69,12 +66,12 @@ public class MySQLPacketCodecTest {
 
     @Test
     public void assertMySQLPacketDoEncode() {
-        MySQLPacket message = new ComQuitPacket(10);
+        final MySQLPacket message = new ComQuitPacket(10);
         when(channelHandlerContext.alloc()).thenReturn(mock(ByteBufAllocator.class));
         when(channelHandlerContext.alloc().buffer()).thenReturn(byteBuf);
         when(byteBuf.writeMediumLE(anyInt())).thenReturn(byteBuf);
         when(byteBuf.writeByte(anyInt())).thenReturn(byteBuf);
-        when(byteBuf.writeBytes((ByteBuf) Matchers.any(ByteBuf.class))).thenReturn(byteBuf);
+        when(byteBuf.writeBytes(ArgumentMatchers.<ByteBuf>any())).thenReturn(byteBuf);
         mySQLPacketCodec.doEncode(channelHandlerContext, message, byteBuf);
     }
 }
