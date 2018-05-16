@@ -1,9 +1,9 @@
 dataSources:
   ds_master_0: !!org.apache.commons.dbcp.BasicDataSource
-      driverClassName: com.mysql.jdbc.Driver
-      url: jdbc:mysql://localhost:3306/demo_ds_master_0
-      username: root
-      password:
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/demo_ds_master_0
+    username: root
+    password:
   ds_master_0_slave_0: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/demo_ds_master_0_slave_0
@@ -15,10 +15,10 @@ dataSources:
     username: root
     password:
   ds_master_1: !!org.apache.commons.dbcp.BasicDataSource
-        driverClassName: com.mysql.jdbc.Driver
-        url: jdbc:mysql://localhost:3306/demo_ds_master_1
-        username: root
-        password:
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/demo_ds_master_1
+    username: root
+    password:
   ds_master_1_slave_0: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/demo_ds_master_1_slave_0

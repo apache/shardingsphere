@@ -24,14 +24,18 @@ import io.shardingsphere.jdbc.orchestration.api.yaml.YamlOrchestrationShardingDa
 import javax.sql.DataSource;
 import java.io.File;
 
-public class OrchestrationEtcdYamlShardingAndMasterSlaveMain {
+public class ShardingOnlyWithTables {
+    
+    private static final boolean LOAD_CONFIG_FROM_REG_CENTER = false;
     
     public static void main(final String[] args) throws Exception {
-//        DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(new File(
-//                OrchestrationEtcdYamlShardingAndMasterSlaveMain.class.getResource("/META-INF/orche/etcd/yamlShardingAndMasterSlaveByConfig.yaml").getFile()));
-        DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(new File(
-                OrchestrationEtcdYamlShardingAndMasterSlaveMain.class.getResource("/META-INF/orche/etcd/yamlShardingAndMasterSlaveByLocalConfig.yaml").getFile()));
+        DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(getYamlFile());
         new DataRepository(dataSource).demo();
         OrchestrationShardingDataSourceFactory.closeQuietly(dataSource);
+    }
+    
+    private static File getYamlFile() {
+        String path = LOAD_CONFIG_FROM_REG_CENTER ? "/META-INF/orche/etcd/sharding-tables-cloud.yaml" : "/META-INF/orche/etcd/sharding-tables-local.yaml";
+        return new File(ShardingOnlyWithTables.class.getResource(path).getFile());
     }
 }

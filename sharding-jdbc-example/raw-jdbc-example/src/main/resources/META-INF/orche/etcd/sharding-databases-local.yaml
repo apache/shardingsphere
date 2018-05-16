@@ -20,7 +20,7 @@ shardingRule:
       keyGeneratorColumnName: order_item_id
   bindingTables:
     - t_order,t_order_item
-
+  
   defaultDatabaseStrategy:
     inline:
       shardingColumn: user_id

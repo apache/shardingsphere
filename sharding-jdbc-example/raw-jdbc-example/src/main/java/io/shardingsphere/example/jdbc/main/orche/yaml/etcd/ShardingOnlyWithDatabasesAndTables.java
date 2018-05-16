@@ -15,22 +15,28 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.main.orche.yaml.zookeeper;
+package io.shardingsphere.example.jdbc.main.orche.yaml.etcd;
 
 import io.shardingsphere.example.jdbc.fixture.DataRepository;
+import io.shardingsphere.example.jdbc.main.orche.yaml.zookeeper.ShardingOnlyWithTables;
 import io.shardingsphere.jdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 import io.shardingsphere.jdbc.orchestration.api.yaml.YamlOrchestrationShardingDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.io.File;
 
-public final class OrchestrationYamlShardingMain {
+public class ShardingOnlyWithDatabasesAndTables {
+    
+    private static final boolean LOAD_CONFIG_FROM_REG_CENTER = false;
     
     public static void main(final String[] args) throws Exception {
-        DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(new File(
-                OrchestrationYamlShardingMain.class.getResource("/META-INF/orche/zookeeper/yamlShardingDatabaseAndTableByLocalConfig.yaml").getFile()));
-//        DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(new File(
-//                OrchestrationYamlShardingMain.class.getResource("/META-INF/orche/yamlShardingDatabaseAndTableByCloudConfig.yaml").getFile()));
+        DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(getYamlFile());
         new DataRepository(dataSource).demo();
-        OrchestrationShardingDataSourceFactory.closeQuietly(dataSource);    }
+        OrchestrationShardingDataSourceFactory.closeQuietly(dataSource);
+    }
+    
+    private static File getYamlFile() {
+        String path = LOAD_CONFIG_FROM_REG_CENTER ? "/META-INF/orche/etcd/sharding-databases-tables-cloud.yaml" : "/META-INF/orche/etcd/sharding-databases-tables-local.yaml";
+        return new File(ShardingOnlyWithTables.class.getResource(path).getFile());
+    }
 }

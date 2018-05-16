@@ -12,19 +12,12 @@ dataSources:
 
 shardingRule:
   tables:
-    t_order: 
-      actualDataNodes: ds_${0..1}.t_order_${0..1}
-      tableStrategy: 
-        inline:
-          shardingColumn: order_id
-          algorithmExpression: t_order_${order_id % 2}
+    t_order:
+      actualDataNodes: ds_${0..1}.t_order
       keyGeneratorColumnName: order_id
     t_order_item:
-      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
-      tableStrategy:
-        inline:
-          shardingColumn: order_id
-          algorithmExpression: t_order_item_${order_id % 2}  
+      actualDataNodes: ds_${0..1}.t_order_item
+      keyGeneratorColumnName: order_item_id
   bindingTables:
     - t_order,t_order_item
   
@@ -37,11 +30,12 @@ shardingRule:
   defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
   
   props:
-    sql.show: false
+    sql.show: true
 
 orchestration:
   name: demo_yaml_ds_sharding
   type: SHARDING
   overwrite: true
-  etcd:
-    serverLists: http://localhost:2379
+  zookeeper:
+    namespace: orchestration-yaml-demo
+    serverLists: localhost:2181

@@ -47,6 +47,11 @@ shardingRule:
           algorithmExpression: t_order_item_${order_id % 2}  
   bindingTables:
     - t_order,t_order_item
+  
+  defaultDatabaseStrategy:
+    inline:
+      shardingColumn: user_id
+      algorithmExpression: ds_${user_id % 2}
   defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
   
   masterSlaveRules:
@@ -60,11 +65,12 @@ shardingRule:
       loadBalanceAlgorithmType: ROUND_ROBIN
   
   props:
-    sql.show: false
+    sql.show: true
 
 orchestration:
   name: demo_yaml_ds_sharding_ms
   type: SHARDING
   overwrite: true
-  etcd:
-    serverLists: http://localhost:2379
+  zookeeper:
+    namespace: orchestration-yaml-demo
+    serverLists: localhost:2181

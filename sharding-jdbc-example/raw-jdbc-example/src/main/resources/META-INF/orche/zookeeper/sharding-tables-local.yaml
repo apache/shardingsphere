@@ -20,11 +20,10 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_item_${order_id % 2}
-
   bindingTables:
     - t_order,t_order_item
   defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
-
+  
   props:
     sql.show: true
 
@@ -32,5 +31,6 @@ orchestration:
   name: demo_yaml_ds_sharding
   type: SHARDING
   overwrite: true
-  etcd:
-    serverLists: http://localhost:2379
+  zookeeper:
+    namespace: orchestration-yaml-demo
+    serverLists: localhost:2181

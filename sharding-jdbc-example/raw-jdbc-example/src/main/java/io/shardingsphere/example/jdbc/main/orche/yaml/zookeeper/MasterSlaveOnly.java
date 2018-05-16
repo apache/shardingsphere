@@ -18,8 +18,8 @@
 package io.shardingsphere.example.jdbc.main.orche.yaml.zookeeper;
 
 import io.shardingsphere.example.jdbc.fixture.DataRepository;
-import io.shardingsphere.jdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
-import io.shardingsphere.jdbc.orchestration.api.yaml.YamlOrchestrationShardingDataSourceFactory;
+import io.shardingsphere.jdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
+import io.shardingsphere.jdbc.orchestration.api.yaml.YamlOrchestrationMasterSlaveDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -27,13 +27,18 @@ import java.io.File;
 /*
  * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
  */
-public class OrchestrationYamlShardingAndMasterSlaveMain {
+public class MasterSlaveOnly {
+    
+    private static final boolean LOAD_CONFIG_FROM_REG_CENTER = false;
     
     public static void main(final String[] args) throws Exception {
-        DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(new File(
-                OrchestrationYamlShardingAndMasterSlaveMain.class.getResource("/META-INF/orche/zookeeper/yamlShardingAndMasterSlaveByLocalConfig.yaml").getFile()));
-//        DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(new File(
-//                OrchestrationYamlShardingAndMasterSlaveMain.class.getResource("/META-INF/orche/yamlShardingAndMasterSlaveByCloudConfig.yaml").getFile()));
+        DataSource dataSource = YamlOrchestrationMasterSlaveDataSourceFactory.createDataSource(getYamlFile());
         new DataRepository(dataSource).demo();
-        OrchestrationShardingDataSourceFactory.closeQuietly(dataSource);    }
+        OrchestrationMasterSlaveDataSourceFactory.closeQuietly(dataSource);
+    }
+    
+    private static File getYamlFile() {
+        String path = LOAD_CONFIG_FROM_REG_CENTER ? "/META-INF/orche/zookeeper/master-slave-cloud.yaml" : "/META-INF/orche/zookeeper/master-slave-local.yaml";
+        return new File(MasterSlaveOnly.class.getResource(path).getFile());
+    }
 }

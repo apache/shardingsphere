@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.main.orche.yaml.zookeeper;
+package io.shardingsphere.example.jdbc.main.orche.yaml.etcd;
 
 import io.shardingsphere.example.jdbc.fixture.DataRepository;
 import io.shardingsphere.jdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
@@ -24,15 +24,18 @@ import io.shardingsphere.jdbc.orchestration.api.yaml.YamlOrchestrationMasterSlav
 import javax.sql.DataSource;
 import java.io.File;
 
-/*
- * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
- */
-public class OrchestrationYamlMasterSlaveMain {
+public class MasterSlaveOnly {
+    
+    private static final boolean LOAD_CONFIG_FROM_REG_CENTER = false;
     
     public static void main(final String[] args) throws Exception {
-        DataSource dataSource = YamlOrchestrationMasterSlaveDataSourceFactory.createDataSource(new File(OrchestrationYamlMasterSlaveMain.class.getResource("/META-INF/orche/zookeeper/yamlMasterSlaveByLocalConfig.yaml").getFile()));
-//        DataSource dataSource = YamlOrchestrationMasterSlaveDataSourceFactory.createDataSource(new File(
-//                OrchestrationYamlMasterSlaveMain.class.getResource("/META-INF/orche/yamlMasterSlaveByCloudConfig.yaml").getFile()));
+        DataSource dataSource = YamlOrchestrationMasterSlaveDataSourceFactory.createDataSource(getYamlFile());
         new DataRepository(dataSource).demo();
-        OrchestrationMasterSlaveDataSourceFactory.closeQuietly(dataSource);    }
+        OrchestrationMasterSlaveDataSourceFactory.closeQuietly(dataSource);
+    }
+    
+    private static File getYamlFile() {
+        String path = LOAD_CONFIG_FROM_REG_CENTER ? "/META-INF/orche/etcd/master-slave-cloud.yaml" : "/META-INF/orche/etcd/master-slave-local.yaml";
+        return new File(MasterSlaveOnly.class.getResource(path).getFile());
+    }
 }

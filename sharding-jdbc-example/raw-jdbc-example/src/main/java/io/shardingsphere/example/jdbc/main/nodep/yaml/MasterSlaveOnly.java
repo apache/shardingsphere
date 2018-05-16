@@ -29,7 +29,11 @@ import java.io.File;
 public class MasterSlaveOnly {
     
     public static void main(final String[] args) throws Exception {
-        DataSource dataSource = YamlMasterSlaveDataSourceFactory.createDataSource(new File(MasterSlaveOnly.class.getResource("/META-INF/nodep/master-slave.yaml").getFile()));
+        DataSource dataSource = YamlMasterSlaveDataSourceFactory.createDataSource(getYamlFile());
         new DataRepository(dataSource).demo();
+    }
+    
+    private static File getYamlFile() {
+        return new File(MasterSlaveOnly.class.getResource("/META-INF/nodep/master-slave.yaml").getFile());
     }
 }

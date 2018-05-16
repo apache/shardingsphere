@@ -24,13 +24,21 @@ import io.shardingsphere.jdbc.orchestration.api.yaml.YamlOrchestrationShardingDa
 import javax.sql.DataSource;
 import java.io.File;
 
-public final class OrchestrationYamlShardingDBMain {
+/*
+ * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
+ */
+public class ShardingAndMasterSlaveTogether {
+    
+    private static final boolean LOAD_CONFIG_FROM_REG_CENTER = false;
     
     public static void main(final String[] args) throws Exception {
-        DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(new File(
-                OrchestrationYamlShardingDBMain.class.getResource("/META-INF/orche/zookeeper/yamlShardingDatabaseByLocalConfig.yaml").getFile()));
-//        DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(new File(
-//                OrchestrationYamlShardingMain.class.getResource("/META-INF/orche/yamlShardingDatabaseAndTableByCloudConfig.yaml").getFile()));
+        DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(getYamlFile());
         new DataRepository(dataSource).demo();
-        OrchestrationShardingDataSourceFactory.closeQuietly(dataSource);    }
+        OrchestrationShardingDataSourceFactory.closeQuietly(dataSource);
+    }
+    
+    private static File getYamlFile() {
+        String path = LOAD_CONFIG_FROM_REG_CENTER ? "/META-INF/orche/zookeeper/sharding-master-slave-cloud.yaml" : "/META-INF/orche/zookeeper/sharding-master-slave-local.yaml";
+        return new File(ShardingAndMasterSlaveTogether.class.getResource(path).getFile());
+    }
 }
