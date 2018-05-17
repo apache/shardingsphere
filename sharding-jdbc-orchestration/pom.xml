@@ -5,14 +5,14 @@
     <parent>
         <groupId>io.shardingsphere</groupId>
         <artifactId>sharding-sphere</artifactId>
-        <version>3.0.0.M1-SNAPSHOT</version>
+        <version>3.0.0.M1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>sharding-jdbc-orchestration</artifactId>
     <name>${project.artifactId}</name>
     
     <properties>
-        <sharding-sphere.version>3.0.0.M1-SNAPSHOT</sharding-sphere.version>
+        <sharding-sphere.version>3.0.0.M1</sharding-sphere.version>
     </properties>
     
     <dependencies>
