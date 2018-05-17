@@ -3,11 +3,9 @@ package com.saaavsaaa.client.zookeeper;
 import com.saaavsaaa.client.cache.CacheStrategy;
 import com.saaavsaaa.client.cache.PathTree;
 import com.saaavsaaa.client.utility.PathUtil;
-import com.saaavsaaa.client.utility.section.Listener;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.WatchedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

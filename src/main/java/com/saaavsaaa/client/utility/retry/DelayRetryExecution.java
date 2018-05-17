@@ -3,7 +3,7 @@ package com.saaavsaaa.client.utility.retry;
 import java.util.Random;
 
 /**
- * Created by aaa on 18-5-15.
+ * Created by aaa
  */
 public class DelayRetryExecution {
     private final DelayRetrial delayRetrial;

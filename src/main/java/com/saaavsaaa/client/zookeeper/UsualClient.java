@@ -3,9 +3,7 @@ package com.saaavsaaa.client.zookeeper;
 import com.saaavsaaa.client.action.IExecStrategy;
 import com.saaavsaaa.client.zookeeper.base.BaseClient;
 import com.saaavsaaa.client.zookeeper.base.BaseProvider;
-import com.saaavsaaa.client.zookeeper.strategy.UsualStrategy;
-import com.saaavsaaa.client.zookeeper.strategy.ContentionStrategy;
-import com.saaavsaaa.client.zookeeper.strategy.StrategyType;
+import com.saaavsaaa.client.zookeeper.strategy.*;
 import com.saaavsaaa.client.zookeeper.transaction.ZKTransaction;
 import org.apache.zookeeper.*;
 import org.slf4j.Logger;
@@ -41,11 +39,30 @@ public class UsualClient extends BaseClient {
             strategy = strategies.get(strategyType);
             return;
         }
-        if (StrategyType.USUAL == strategyType){
-            strategy = new UsualStrategy(new RetryProvider(rootNode, this, watched, authorities));
-        } else {
-            strategy = new ContentionStrategy(new BaseProvider(rootNode, this, watched, authorities));
+
+        switch (strategyType){
+            case USUAL:{
+                strategy = new UsualStrategy(new BaseProvider(rootNode, this, watched, authorities));
+                break;
+            }
+            case CONTEND:{
+                strategy = new ContentionStrategy(new BaseProvider(rootNode, this, watched, authorities));
+                break;
+            }
+            case RETRY:{
+                strategy = new RetryStrategy(rootNode, this, watched, authorities);
+                break;
+            }
+            case ALL_RETRY:{
+                strategy = new AllRetryStrategy(rootNode, this, watched, authorities);
+                break;
+            }
+            default:{
+                strategy = new UsualStrategy(new BaseProvider(rootNode, this, watched, authorities));
+                break;
+            }
         }
+        
         strategies.put(strategyType, strategy);
     }
     

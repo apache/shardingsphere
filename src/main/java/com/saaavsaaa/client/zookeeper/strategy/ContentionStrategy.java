@@ -1,11 +1,10 @@
 package com.saaavsaaa.client.zookeeper.strategy;
 
+import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.election.LeaderElection;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.utility.section.Callback;
-import com.saaavsaaa.client.zookeeper.base.BaseProvider;
-import com.saaavsaaa.client.zookeeper.transaction.ZKTransaction;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -21,7 +20,7 @@ import java.util.Stack;
  */
 public class ContentionStrategy extends UsualStrategy {
     private static final Logger logger = LoggerFactory.getLogger(ContentionStrategy.class);
-    public ContentionStrategy(final BaseProvider provider) {
+    public ContentionStrategy(final IProvider provider) {
         super(provider);
     }
     

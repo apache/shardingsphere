@@ -8,14 +8,14 @@ import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by aaa on 18-5-14.
+ * Created by aaa
  */
 public abstract class BaseOperation implements Delayed {
     protected final IProvider provider;
     protected DelayRetryExecution retryExecution;
     
-    protected BaseOperation(final BaseProvider baseProvider) {
-        this.provider = baseProvider;
+    protected BaseOperation(final IProvider provider) {
+        this.provider = provider;
     }
     
     public void setRetrial(final DelayRetryExecution retryExecution){
@@ -46,10 +46,5 @@ public abstract class BaseOperation implements Delayed {
             return true;
         }
         return false;
-    }
-    
-    @Deprecated
-    public long getNextExecuteTick() {
-        return retryExecution.getNextTick();
     }
 }

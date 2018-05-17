@@ -5,5 +5,7 @@ package com.saaavsaaa.client.zookeeper.strategy;
  */
 public enum StrategyType {
     USUAL,
-    CONTENTION
+    CONTEND,
+    RETRY,
+    ALL_RETRY
 }

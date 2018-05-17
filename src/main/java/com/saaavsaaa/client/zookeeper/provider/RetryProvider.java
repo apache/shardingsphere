@@ -1,11 +1,12 @@
-package com.saaavsaaa.client.zookeeper;
+package com.saaavsaaa.client.zookeeper.provider;
 
 import com.saaavsaaa.client.utility.retry.RetrialCenter;
 import com.saaavsaaa.client.utility.retry.RetryCount;
 import com.saaavsaaa.client.zookeeper.base.BaseClient;
 import com.saaavsaaa.client.zookeeper.base.BaseProvider;
 import com.saaavsaaa.client.zookeeper.operation.CreateCurrentOperation;
-import org.apache.zookeeper.AsyncCallback;
+import com.saaavsaaa.client.zookeeper.operation.DeleteCurrentOperation;
+import com.saaavsaaa.client.zookeeper.operation.UpdateOperation;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.Watcher;
@@ -18,6 +19,7 @@ import java.util.List;
 /**
  * Created by aaa
  */
+@Deprecated
 public class RetryProvider extends BaseProvider {
     private static final Logger logger = LoggerFactory.getLogger(RetryProvider.class);
     
@@ -107,7 +109,7 @@ public class RetryProvider extends BaseProvider {
             super.update(key, value);
         } catch (KeeperException.SessionExpiredException ee){
             logger.warn("RetryProvider SessionExpiredException update:{}", key);
-            update(key, value);
+            RetrialCenter.INSTANCE.add(new UpdateOperation(this, key, value));
         }
     }
     
@@ -117,17 +119,7 @@ public class RetryProvider extends BaseProvider {
             super.deleteOnlyCurrent(key);
         } catch (KeeperException.SessionExpiredException ee){
             logger.warn("RetryProvider SessionExpiredException deleteOnlyCurrent:{}", key);
-            deleteOnlyCurrent(key);
-        }
-    }
-    
-    @Override
-    public void deleteOnlyCurrent(final String key, final AsyncCallback.VoidCallback callback, final Object ctx) throws KeeperException, InterruptedException {
-        try {
-            super.deleteOnlyCurrent(key, callback, ctx);
-        } catch (KeeperException.SessionExpiredException ee){
-            logger.warn("RetryProvider SessionExpiredException deleteOnlyCurrent:{}", key);
-            deleteOnlyCurrent(key, callback, ctx);
+            RetrialCenter.INSTANCE.add(new DeleteCurrentOperation(this, key));
         }
     }
 }
