@@ -4,7 +4,7 @@
     <parent>
         <groupId>io.shardingsphere</groupId>
         <artifactId>sharding-jdbc-orchestration-spring-example</artifactId>
-        <version>3.0.0.M1-SNAPSHOT</version>
+        <version>3.0.0.M1</version>
     </parent>
     <artifactId>sharding-jdbc-orchestration-etcd-spring-namespace-example</artifactId>
     

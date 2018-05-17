@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-sphere-example</artifactId>
-    <version>3.0.0.M1-SNAPSHOT</version>
+    <version>3.0.0.M1</version>
     <packaging>pom</packaging>
     
     <modules>
@@ -17,7 +17,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.locale>zh_CN</project.build.locale>
         
-        <sharding-sphere.version>3.0.0.M1-SNAPSHOT</sharding-sphere.version>
+        <sharding-sphere.version>3.0.0.M1</sharding-sphere.version>
         
         <spring-framework.version>4.3.6.RELEASE</spring-framework.version>
         <spring-boot.version>1.5.0.RELEASE</spring-boot.version>
