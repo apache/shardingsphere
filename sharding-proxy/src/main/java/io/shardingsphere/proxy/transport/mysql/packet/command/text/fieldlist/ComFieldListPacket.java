@@ -17,11 +17,10 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command.text.fieldlist;
 
-import io.shardingsphere.proxy.backend.common.SQLPacketsBackendHandler;
-import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.proxy.backend.common.SQLExecuteBackendHandler;
+import io.shardingsphere.proxy.backend.common.SQLPacketsBackendHandler;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
@@ -32,10 +31,10 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * COM_FIELD_LIST command packet.
- * @see <a href="https://dev.mysql.com/doc/internals/en/com-field-list.html">COM_FIELD_LIST</a>
  *
  * @author zhangliang
  * @author wangkai
+ * @see <a href="https://dev.mysql.com/doc/internals/en/com-field-list.html">COM_FIELD_LIST</a>
  */
 @Slf4j
 public final class ComFieldListPacket extends CommandPacket {
@@ -45,7 +44,7 @@ public final class ComFieldListPacket extends CommandPacket {
     private final String fieldWildcard;
     
     public ComFieldListPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload mysqlPacketPayload) {
-        super(sequenceId);
+        super(sequenceId, connectionId);
         table = mysqlPacketPayload.readStringNul();
         fieldWildcard = mysqlPacketPayload.readStringEOF();
     }
