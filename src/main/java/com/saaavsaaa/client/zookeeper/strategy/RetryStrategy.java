@@ -22,19 +22,20 @@ import java.util.List;
 public class RetryStrategy extends UsualStrategy {
     private static final Logger logger = LoggerFactory.getLogger(RetryStrategy.class);
     
-    public RetryStrategy(String rootNode, BaseClient client, boolean watched, List<ACL> authorities){
+    public RetryStrategy(final String rootNode, final BaseClient client, final boolean watched, final List<ACL> authorities){
         super(new BaseProvider(rootNode, client, watched, authorities));
         RetryCount.INSTANCE.start();
     }
     
     @Override
-    public byte[] getData(String key) throws KeeperException, InterruptedException {
+    public byte[] getData(final String key) throws KeeperException, InterruptedException {
+        String path = provider.getRealPath(key);
         try {
-            return provider.getData(key);
+            return provider.getData(path);
         } catch (KeeperException.SessionExpiredException ee){
-            logger.warn("RetryStrategy SessionExpiredException getData:{}", key);
+            logger.warn("RetryStrategy SessionExpiredException getData:{}", path);
             if (RetryCount.INSTANCE.continueExecute()) {
-                byte[] data = getData(key);
+                byte[] data = getData(path);
                 RetryCount.INSTANCE.reset();
                 return data;
             }
@@ -43,13 +44,14 @@ public class RetryStrategy extends UsualStrategy {
     }
     
     @Override
-    public boolean checkExists(String key) throws KeeperException, InterruptedException {
+    public boolean checkExists(final String key) throws KeeperException, InterruptedException {
+        String path = provider.getRealPath(key);
         try {
-            return provider.checkExists(key);
+            return provider.checkExists(path);
         } catch (KeeperException.SessionExpiredException ee){
-            logger.warn("RetryStrategy SessionExpiredException checkExists:{}", key);
+            logger.warn("RetryStrategy SessionExpiredException checkExists:{}", path);
             if (RetryCount.INSTANCE.continueExecute()) {
-                boolean result = checkExists(key);
+                boolean result = checkExists(path);
                 RetryCount.INSTANCE.reset();
                 return result;
             }
@@ -58,13 +60,14 @@ public class RetryStrategy extends UsualStrategy {
     }
     
     @Override
-    public boolean checkExists(String key, Watcher watcher) throws KeeperException, InterruptedException {
+    public boolean checkExists(final String key, final Watcher watcher) throws KeeperException, InterruptedException {
+        String path = provider.getRealPath(key);
         try {
-            return provider.checkExists(key, watcher);
+            return provider.checkExists(path, watcher);
         } catch (KeeperException.SessionExpiredException ee){
-            logger.warn("RetryStrategy SessionExpiredException checkExists:{}", key);
+            logger.warn("RetryStrategy SessionExpiredException checkExists:{}", path);
             if (RetryCount.INSTANCE.continueExecute()) {
-                boolean result = checkExists(key, watcher);
+                boolean result = checkExists(path, watcher);
                 RetryCount.INSTANCE.reset();
                 return result;
             }
@@ -73,13 +76,14 @@ public class RetryStrategy extends UsualStrategy {
     }
     
     @Override
-    public List<String> getChildren(String key) throws KeeperException, InterruptedException {
+    public List<String> getChildren(final String key) throws KeeperException, InterruptedException {
+        String path = provider.getRealPath(key);
         try {
-            return provider.getChildren(key);
+            return provider.getChildren(path);
         } catch (KeeperException.SessionExpiredException ee){
-            logger.warn("RetryStrategy SessionExpiredException getChildren:{}", key);
+            logger.warn("RetryStrategy SessionExpiredException getChildren:{}", path);
             if (RetryCount.INSTANCE.continueExecute()) {
-                List<String> result = getChildren(key);
+                List<String> result = getChildren(path);
                 RetryCount.INSTANCE.reset();
                 return result;
             }
@@ -88,32 +92,35 @@ public class RetryStrategy extends UsualStrategy {
     }
     
     @Override
-    public void createCurrentOnly(String key, String value, CreateMode createMode) throws KeeperException, InterruptedException {
+    public void createCurrentOnly(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
+        String path = provider.getRealPath(key);
         try {
-            provider.createCurrentOnly(key, value, createMode);
+            provider.createCurrentOnly(path, value, createMode);
         } catch (KeeperException.SessionExpiredException ee){
-            logger.warn("RetryStrategy SessionExpiredException createCurrentOnly:{}", key);
-            RetrialCenter.INSTANCE.add(new CreateCurrentOperation(provider, key, value, createMode));
+            logger.warn("RetryStrategy SessionExpiredException createCurrentOnly:{}", path);
+            RetrialCenter.INSTANCE.add(new CreateCurrentOperation(provider, path, value, createMode));
         }
     }
     
     @Override
-    public void update(String key, String value) throws KeeperException, InterruptedException {
+    public void update(final String key, final String value) throws KeeperException, InterruptedException {
+        String path = provider.getRealPath(key);
         try {
-            provider.update(key, value);
+            provider.update(path, value);
         } catch (KeeperException.SessionExpiredException ee){
-            logger.warn("RetryStrategy SessionExpiredException update:{}", key);
-            RetrialCenter.INSTANCE.add(new UpdateOperation(provider, key, value));
+            logger.warn("RetryStrategy SessionExpiredException update:{}", path);
+            RetrialCenter.INSTANCE.add(new UpdateOperation(provider, path, value));
         }
     }
     
     @Override
-    public void deleteOnlyCurrent(String key) throws KeeperException, InterruptedException {
+    public void deleteOnlyCurrent(final String key) throws KeeperException, InterruptedException {
+        String path = provider.getRealPath(key);
         try {
-            provider.deleteOnlyCurrent(key);
+            provider.deleteOnlyCurrent(path);
         } catch (KeeperException.SessionExpiredException ee){
-            logger.warn("RetryStrategy SessionExpiredException deleteOnlyCurrent:{}", key);
-            RetrialCenter.INSTANCE.add(new DeleteCurrentOperation(provider, key));
+            logger.warn("RetryStrategy SessionExpiredException deleteOnlyCurrent:{}", path);
+            RetrialCenter.INSTANCE.add(new DeleteCurrentOperation(provider, path));
         }
     }
 }
