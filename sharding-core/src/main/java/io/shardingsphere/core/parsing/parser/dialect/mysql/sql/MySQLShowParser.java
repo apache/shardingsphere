@@ -17,10 +17,13 @@
 
 package io.shardingsphere.core.parsing.parser.dialect.mysql.sql;
 
+import com.google.common.base.Optional;
+import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.dialect.mysql.MySQLKeyword;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.parser.clause.TableReferencesClauseParser;
+import io.shardingsphere.core.parsing.parser.context.table.Table;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowColumnsStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowCreateTableStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
@@ -30,7 +33,9 @@ import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingsphere.core.parsing.parser.sql.dal.show.AbstractShowParser;
 import io.shardingsphere.core.parsing.parser.token.RemoveToken;
 import io.shardingsphere.core.parsing.parser.token.SchemaToken;
+import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.core.util.SQLUtil;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -40,6 +45,16 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 public final class MySQLShowParser extends AbstractShowParser {
+    
+    private static final int LOGIC_SCHEMA_LENTGH = 11;
+    
+    private static final int LOGIC_SCHEMA_WITH_BACK_QUOTE_LENTGH = 13;
+    
+    private static final int DOT_LENGTH = 1;
+    
+    private static final String LOGIC_SCHEMA_PLACEHOLDER = "            ";
+    
+    private static final String LOGIC_SCHEMA_WITH_BACK_QUOTE_PLACEHOLDER = "              ";
     
     private final LexerEngine lexerEngine;
     
@@ -68,11 +83,27 @@ public final class MySQLShowParser extends AbstractShowParser {
             return result;
         }
         if (lexerEngine.skipIfEqual(MySQLKeyword.COLUMNS, MySQLKeyword.FIELDS)) {
-            DALStatement result = new ShowColumnsStatement();
+            int beginPosition = 0;
+            String whiteSpacePlaceholder = "";
+            final DALStatement result = new ShowColumnsStatement();
             lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN);
-            tableReferencesClauseParser.parseSingleTableWithoutAlias(result);
+            if (lexerEngine.getCurrentToken().getLiterals().equals("`" + ShardingConstant.LOGIC_SCHEMA_NAME + "`")) {
+                beginPosition = beginPosition - LOGIC_SCHEMA_WITH_BACK_QUOTE_LENTGH - DOT_LENGTH;
+                whiteSpacePlaceholder = LOGIC_SCHEMA_WITH_BACK_QUOTE_PLACEHOLDER;
+                lexerEngine.nextToken();
+                lexerEngine.nextToken();
+            } else if (lexerEngine.getCurrentToken().getLiterals().equals(ShardingConstant.LOGIC_SCHEMA_NAME)) {
+                whiteSpacePlaceholder = LOGIC_SCHEMA_PLACEHOLDER;
+                beginPosition = beginPosition - LOGIC_SCHEMA_LENTGH - DOT_LENGTH;
+                lexerEngine.nextToken();
+                lexerEngine.nextToken();
+            }
+            beginPosition += lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
+            result.getSqlTokens().add(new TableToken(beginPosition, lexerEngine.getCurrentToken().getLiterals() + whiteSpacePlaceholder));
+            result.getTables().add(new Table(SQLUtil.getExactlyValue(lexerEngine.getCurrentToken().getLiterals()), Optional.<String>absent()));
+            lexerEngine.nextToken();
             if (lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN)) {
-                int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
+                beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
                 result.getSqlTokens().add(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getLiterals(), result.getTables().getSingleTableName()));
             }
             return result;

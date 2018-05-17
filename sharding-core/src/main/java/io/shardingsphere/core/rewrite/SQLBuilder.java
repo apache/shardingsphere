@@ -102,7 +102,7 @@ public final class SQLBuilder {
                 result.append(each);
                 continue;
             }
-            String logicTableName = ((ShardingPlaceholder) each).getLogicTableName();
+            String logicTableName = ((ShardingPlaceholder) each).getLogicTableName().trim();
             String actualTableName = logicAndActualTableMap.get(logicTableName);
             if (each instanceof TablePlaceholder) {
                 result.append(null == actualTableName ? logicTableName : actualTableName);
