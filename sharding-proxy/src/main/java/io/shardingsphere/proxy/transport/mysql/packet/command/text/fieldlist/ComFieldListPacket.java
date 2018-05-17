@@ -22,6 +22,7 @@ import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.proxy.backend.common.SQLExecuteBackendHandler;
+import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
@@ -63,9 +64,9 @@ public final class ComFieldListPacket extends CommandPacket {
         String sql = String.format("SHOW COLUMNS FROM %s FROM %s", table, ShardingConstant.LOGIC_SCHEMA_NAME);
         // TODO use common database type
         if (RuleRegistry.WITHOUT_JDBC) {
-            return new SQLPacketsBackendHandler(sql, getConnectionId(), DatabaseType.MySQL, true).execute();
+            return new SQLPacketsBackendHandler(sql, getConnectionId(), DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL()).execute();
         } else {
-            return new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, true).execute();
+            return new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL()).execute();
         }
     }
     

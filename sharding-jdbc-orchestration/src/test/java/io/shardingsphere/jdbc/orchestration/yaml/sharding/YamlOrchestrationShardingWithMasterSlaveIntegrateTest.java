@@ -20,7 +20,8 @@ package io.shardingsphere.jdbc.orchestration.yaml.sharding;
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import io.shardingsphere.jdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
+import io.shardingsphere.jdbc.orchestration.api.yaml.YamlOrchestrationShardingDataSourceFactory;
+import io.shardingsphere.jdbc.orchestration.internal.OrchestrationShardingDataSource;
 import io.shardingsphere.jdbc.orchestration.yaml.AbstractYamlDataSourceTest;
 import lombok.RequiredArgsConstructor;
 import org.junit.Test;
@@ -62,7 +63,7 @@ public class YamlOrchestrationShardingWithMasterSlaveIntegrateTest extends Abstr
         File yamlFile = new File(YamlOrchestrationShardingWithMasterSlaveIntegrateTest.class.getResource(filePath).toURI());
         DataSource dataSource;
         if (hasDataSource) {
-            dataSource = OrchestrationShardingDataSourceFactory.createDataSource(yamlFile);
+            dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(yamlFile);
         } else {
             Map<String, DataSource> dataSourceMap = Maps.asMap(Sets.newHashSet("db0_master", "db0_slave", "db1_master", "db1_slave"), new Function<String, DataSource>() {
                 @Override
@@ -74,7 +75,7 @@ public class YamlOrchestrationShardingWithMasterSlaveIntegrateTest extends Abstr
             for (Map.Entry<String, DataSource> each : dataSourceMap.entrySet()) {
                 result.put(each.getKey(), each.getValue());
             }
-            dataSource = OrchestrationShardingDataSourceFactory.createDataSource(result, yamlFile);
+            dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(result, yamlFile);
         }
         try (Connection conn = dataSource.getConnection();
              Statement stm = conn.createStatement()) {
@@ -83,6 +84,7 @@ public class YamlOrchestrationShardingWithMasterSlaveIntegrateTest extends Abstr
             stm.executeQuery("SELECT * FROM t_order_item");
             stm.executeQuery("SELECT * FROM config");
         }
-        OrchestrationShardingDataSourceFactory.closeQuietly(dataSource);
+
+        ((OrchestrationShardingDataSource) dataSource).close();
     }
 }
