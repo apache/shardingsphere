@@ -123,10 +123,6 @@ public final class ShardingRule {
     private TableRule createTableRuleWithDefaultDataSource(final String logicTableName) {
         Map<String, DataSource> defaultDataSourceMap = new HashMap<>(1, 1);
         defaultDataSourceMap.put(defaultDataSourceName, dataSourceMap.get(defaultDataSourceName));
-        TableRuleConfiguration config = new TableRuleConfiguration();
-        config.setLogicTable(logicTableName);
-        config.setDatabaseShardingStrategyConfig(new NoneShardingStrategyConfiguration());
-        config.setTableShardingStrategyConfig(new NoneShardingStrategyConfiguration());
         return new TableRule(logicTableName, null, defaultDataSourceMap, null, null, null, null, null);
     }
     

@@ -101,7 +101,7 @@ public final class DefaultKeyGenerator implements KeyGenerator {
         long currentMillis = timeService.getCurrentMillis();
         Preconditions.checkState(lastTime <= currentMillis, "Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds", lastTime, currentMillis);
         if (lastTime == currentMillis) {
-            if (0L == (sequence = ++sequence & SEQUENCE_MASK)) {
+            if (0L == (sequence = (sequence + 1) & SEQUENCE_MASK)) {
                 currentMillis = waitUntilNextTime(currentMillis);
             }
         } else {
