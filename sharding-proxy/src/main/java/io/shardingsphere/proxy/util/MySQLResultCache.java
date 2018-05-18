@@ -20,7 +20,6 @@ package io.shardingsphere.proxy.util;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
-import io.shardingsphere.proxy.util.SynchronizedFuture;
 
 import java.util.concurrent.TimeUnit;
 
@@ -41,6 +40,7 @@ public class MySQLResultCache {
     
     /**
      * put synchronizedFuture by connectionId.
+     *
      * @param connectionId       mysql connection id.
      * @param synchronizedFuture multiple result set.
      */
@@ -50,6 +50,7 @@ public class MySQLResultCache {
     
     /**
      * get SynchronizedFuture by connectionId.
+     *
      * @param connectionId mysql connection id.
      * @return multiple result set.
      */
@@ -59,6 +60,7 @@ public class MySQLResultCache {
     
     /**
      * delete SynchronizedFuture by connectionId.
+     *
      * @param connectionId mysql connection id.
      */
     public void delete(final int connectionId) {
@@ -67,6 +69,7 @@ public class MySQLResultCache {
     
     /**
      * put connectionId by channelId.
+     *
      * @param channelId    netty channel id.
      * @param connectionId mysql connection id.
      */
@@ -76,6 +79,7 @@ public class MySQLResultCache {
     
     /**
      * get connectionId by channelId.
+     *
      * @param channelId netty channel id.
      * @return connectionId   mysql connection id.
      */

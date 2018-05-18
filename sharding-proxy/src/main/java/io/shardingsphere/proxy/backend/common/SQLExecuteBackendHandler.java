@@ -19,8 +19,6 @@ package io.shardingsphere.proxy.backend.common;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.exception.ShardingConfigurationException;
-import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.QueryResult;
@@ -71,7 +69,7 @@ public class SQLExecuteBackendHandler implements BackendHandler {
     
     @Getter
     private final String sql;
-   
+    
     private List<Connection> connections;
     
     private List<ResultSet> resultSets;
@@ -115,7 +113,7 @@ public class SQLExecuteBackendHandler implements BackendHandler {
         }
     }
     
-    private CommandResponsePackets executeForMasterSlave() {
+    protected CommandResponsePackets executeForMasterSlave() {
         MasterSlaveRouter masterSlaveRouter = new MasterSlaveRouter(RuleRegistry.getInstance().getMasterSlaveRule());
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
         String dataSourceName = masterSlaveRouter.route(sqlStatement.getType()).iterator().next();
@@ -169,8 +167,8 @@ public class SQLExecuteBackendHandler implements BackendHandler {
     
     private CommandResponsePackets executeUpdate(final DataSource dataSource, final String sql, final SQLStatement sqlStatement) {
         try (
-            Connection connection = dataSource.getConnection();
-            Statement statement = connection.createStatement()) {
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
             int affectedRows;
             long lastInsertId = 0;
             if (sqlStatement instanceof InsertStatement) {
@@ -206,8 +204,8 @@ public class SQLExecuteBackendHandler implements BackendHandler {
     
     private CommandResponsePackets executeCommon(final DataSource dataSource, final String sql) {
         try (
-            Connection connection = dataSource.getConnection();
-            Statement statement = connection.createStatement()) {
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
             boolean hasResultSet = statement.execute(sql);
             if (hasResultSet) {
                 return getCommonDatabaseProtocolPackets(statement.getResultSet());
@@ -252,8 +250,8 @@ public class SQLExecuteBackendHandler implements BackendHandler {
         result.addPacket(new FieldCountPacket(++currentSequenceId, columnCount));
         for (int i = 1; i <= columnCount; i++) {
             result.addPacket(new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData.getSchemaName(i), resultSetMetaData.getTableName(i),
-                resultSetMetaData.getTableName(i), resultSetMetaData.getColumnLabel(i), resultSetMetaData.getColumnName(i),
-                resultSetMetaData.getColumnDisplaySize(i), ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(i)), 0));
+                    resultSetMetaData.getTableName(i), resultSetMetaData.getColumnLabel(i), resultSetMetaData.getColumnName(i),
+                    resultSetMetaData.getColumnDisplaySize(i), ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(i)), 0));
         }
         result.addPacket(new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
         while (resultSet.next()) {

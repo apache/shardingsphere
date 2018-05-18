@@ -68,6 +68,11 @@ public final class SQLPacketsBackendHandler extends SQLExecuteBackendHandler {
     }
     
     @Override
+    protected CommandResponsePackets executeForMasterSlave() {
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
     protected CommandResponsePackets execute(final SQLStatement sqlStatement, final String dataSourceName, final String sql) {
         Channel channel = ShardingProxyClient.getInstance().getChannelMap().get(dataSourceName);
         //MySQLResultCache.getInstance().putConnectionMap(channel.id().asShortText(), connectionId);

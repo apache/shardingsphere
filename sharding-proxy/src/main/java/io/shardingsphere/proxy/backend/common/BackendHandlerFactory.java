@@ -18,7 +18,6 @@
 package io.shardingsphere.proxy.backend.common;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.proxy.backend.common.CommandResponsePacketsHandler;
 import io.shardingsphere.proxy.backend.mysql.MySQLBackendHandler;
 
 /**
@@ -40,7 +39,7 @@ public final class BackendHandlerFactory {
      * @return backend handler instance
      */
     public static CommandResponsePacketsHandler createBackendHandlerInstance(final DatabaseType databaseType, final String ip, final int port, final String database, final String username, final
-        String password) {
+    String password) {
         switch (databaseType) {
             case MySQL:
                 return new MySQLBackendHandler(ip, port, database, username, password);
