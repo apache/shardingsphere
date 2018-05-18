@@ -175,6 +175,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
         if (lexerEngine.skipIfEqual(Symbol.DOT)) {
             skippedSchemaNameLength = literals.length() + Symbol.DOT.getLiterals().length();
             literals = lexerEngine.getCurrentToken().getLiterals();
+            lexerEngine.nextToken();
         }
         sqlStatement.getSqlTokens().add(new TableToken(beginPosition, skippedSchemaNameLength, literals));
         sqlStatement.getTables().add(new Table(SQLUtil.getExactlyValue(literals), Optional.<String>absent()));
