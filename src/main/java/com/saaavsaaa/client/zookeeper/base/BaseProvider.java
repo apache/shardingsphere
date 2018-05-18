@@ -1,5 +1,6 @@
 package com.saaavsaaa.client.zookeeper.base;
 
+import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.election.LeaderElection;
 import com.saaavsaaa.client.utility.PathUtil;
@@ -25,16 +26,16 @@ public class BaseProvider implements IProvider {
     protected final List<ACL> authorities;
     protected final String rootNode;
     
-    public BaseProvider(final String rootNode, final BaseClient client, final boolean watched, final List<ACL> authorities){
+    public BaseProvider(IClient client, boolean watched) {
+        this(((BaseClient)client).rootNode, ((BaseClient)client), watched, ((BaseClient)client).authorities);
+    }
+    
+    private BaseProvider(final String rootNode, final BaseClient client, final boolean watched, final List<ACL> authorities){
         this.rootNode = rootNode;
         this.client = client;
         this.zooKeeper = client.getZooKeeper();
         this.watched = watched;
         this.authorities = authorities;
-    }
-    
-    public BaseProvider(BaseClient client, boolean watched) {
-        this(client.rootNode, client, watched, client.authorities);
     }
     
     public String getDataString(final String key) throws KeeperException, InterruptedException {

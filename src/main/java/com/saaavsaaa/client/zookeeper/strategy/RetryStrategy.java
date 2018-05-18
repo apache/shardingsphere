@@ -23,7 +23,7 @@ public class RetryStrategy extends UsualStrategy {
     private static final Logger logger = LoggerFactory.getLogger(RetryStrategy.class);
     
     public RetryStrategy(final String rootNode, final BaseClient client, final boolean watched, final List<ACL> authorities){
-        super(new BaseProvider(rootNode, client, watched, authorities));
+        super(new BaseProvider(client, watched));
         RetryCount.INSTANCE.start();
     }
     

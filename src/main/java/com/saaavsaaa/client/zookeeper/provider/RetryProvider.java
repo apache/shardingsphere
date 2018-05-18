@@ -28,7 +28,7 @@ public class RetryProvider extends BaseProvider {
     }
     
     RetryProvider(String rootNode, BaseClient client, boolean watched, List<ACL> authorities) {
-        super(rootNode, client, watched, authorities);
+        super(client, watched);
         RetryCount.INSTANCE.start();
     }
     // block

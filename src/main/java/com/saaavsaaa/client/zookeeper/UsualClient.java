@@ -42,11 +42,11 @@ public class UsualClient extends BaseClient {
 
         switch (strategyType){
             case USUAL:{
-                strategy = new UsualStrategy(new BaseProvider(rootNode, this, watched, authorities));
+                strategy = new UsualStrategy(new BaseProvider(this, watched));
                 break;
             }
             case CONTEND:{
-                strategy = new ContentionStrategy(new BaseProvider(rootNode, this, watched, authorities));
+                strategy = new ContentionStrategy(new BaseProvider(this, watched));
                 break;
             }
             case RETRY:{
@@ -58,7 +58,7 @@ public class UsualClient extends BaseClient {
                 break;
             }
             default:{
-                strategy = new UsualStrategy(new BaseProvider(rootNode, this, watched, authorities));
+                strategy = new UsualStrategy(new BaseProvider(this, watched));
                 break;
             }
         }
