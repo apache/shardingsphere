@@ -26,7 +26,8 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class OrchestrationSpringMybatisShardingAndMasterSlaveMain {
     
     public static void main(final String[] args) {
-        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisZookeeperMasterSlaveOnlyByLocalConfigContext.xml");
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisEtcdMasterSlaveOnlyByLocalConfigContext.xml");
+//        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisZookeeperMasterSlaveOnlyByLocalConfigContext.xml");
         DemoService demoService = applicationContext.getBean(DemoService.class);
         demoService.demo();
         applicationContext.close();

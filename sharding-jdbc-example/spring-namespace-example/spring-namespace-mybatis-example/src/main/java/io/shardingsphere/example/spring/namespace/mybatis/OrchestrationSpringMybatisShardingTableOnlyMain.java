@@ -23,7 +23,8 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class OrchestrationSpringMybatisShardingTableOnlyMain {
     
     public static void main(final String[] args) {
-        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisZookeeperShardingTableOnlyByLocalConfigContext.xml");
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisEtcdShardingTableOnlyByLocalConfigContext.xml");
+//        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisZookeeperShardingTableOnlyByLocalConfigContext.xml");
         DemoService demoService = applicationContext.getBean(DemoService.class);
         demoService.demo();
         applicationContext.close();
