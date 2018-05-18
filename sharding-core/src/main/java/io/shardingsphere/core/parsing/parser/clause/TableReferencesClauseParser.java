@@ -168,7 +168,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
     public final void parseSingleTableWithoutAlias(final SQLStatement sqlStatement) {
         int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
         sqlStatement.getSqlTokens().add(new TableToken(beginPosition, lexerEngine.getCurrentToken().getLiterals()));
-        sqlStatement.getTables().add(new Table(lexerEngine.getCurrentToken().getLiterals(), Optional.<String>absent()));
+        sqlStatement.getTables().add(new Table(SQLUtil.getExactlyValue(lexerEngine.getCurrentToken().getLiterals()), Optional.<String>absent()));
         lexerEngine.nextToken();
     }
 }
