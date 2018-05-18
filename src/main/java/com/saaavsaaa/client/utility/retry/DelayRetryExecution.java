@@ -6,20 +6,20 @@ import java.util.Random;
  * Created by aaa
  */
 public class DelayRetryExecution {
-    private final DelayRetrial delayRetrial;
+    private final DelayRetry delayRetry;
     private final Random random;
     
     private int executeCount = 0;
     private long executeTick;
     
-    public DelayRetryExecution(final DelayRetrial delayRetrial) {
-        this.delayRetrial = delayRetrial;
+    public DelayRetryExecution(final DelayRetry delayRetry) {
+        this.delayRetry = delayRetry;
         this.executeTick = System.currentTimeMillis();
         this.random = new Random();
     }
     
     public boolean hasNext() {
-        return executeCount < delayRetrial.getRetryCount();
+        return executeCount < delayRetry.getRetryCount();
     }
     
     public long getNextTick() {
@@ -29,11 +29,11 @@ public class DelayRetryExecution {
     
     private void next() {
         executeCount ++;
-        long sleep = delayRetrial.getBaseDelay() * Math.max(1, this.random.nextInt(1 << delayRetrial.getRetryCount() + 1));
-        if (sleep < delayRetrial.getDelayUpperBound()){
+        long sleep = delayRetry.getBaseDelay() * Math.max(1, this.random.nextInt(1 << delayRetry.getRetryCount() + 1));
+        if (sleep < delayRetry.getDelayUpperBound()){
             executeTick += sleep;
         } else {
-            executeTick += delayRetrial.getDelayUpperBound();
+            executeTick += delayRetry.getDelayUpperBound();
         }
     }
 }

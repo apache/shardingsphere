@@ -3,9 +3,8 @@ package com.saaavsaaa.client.utility.retry;
 /**
  * Created by aaa
  */
-public class DelayRetrial {
+public class DelayRetry {
     private static final long BASE_DELAY = 1;
-    private static final long DELAY_UPPER_BOUND = 2147483647;
     
     private final int retryCount;
     private final long baseDelay;
@@ -14,7 +13,13 @@ public class DelayRetrial {
     /*
     * Millis
     */
-    public DelayRetrial(int retryCount, long baseDelay, long delayUpperBound) {
+    public DelayRetry(int retryCount, long baseDelay) {
+        this.retryCount = retryCount;
+        this.baseDelay = baseDelay;
+        this.delayUpperBound = Integer.MAX_VALUE;
+    }
+    
+    public DelayRetry(int retryCount, long baseDelay, long delayUpperBound) {
         this.retryCount = retryCount;
         this.baseDelay = baseDelay;
         this.delayUpperBound = delayUpperBound;
@@ -32,7 +37,7 @@ public class DelayRetrial {
         return delayUpperBound;
     }
     
-    public static DelayRetrial newNoInitDelayRetrial(){
-        return new DelayRetrial(RetryCount.INSTANCE.getStandCount(), BASE_DELAY, DELAY_UPPER_BOUND);
+    public static DelayRetry newNoInitDelayRetrial(){
+        return new DelayRetry(RetryCount.INSTANCE.getStandCount(), BASE_DELAY);
     }
 }

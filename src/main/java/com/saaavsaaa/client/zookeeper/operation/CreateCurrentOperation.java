@@ -15,7 +15,7 @@ public class CreateCurrentOperation extends BaseOperation {
     
     public CreateCurrentOperation(final IProvider provider, final String key, final String value, final CreateMode createMode) {
         super(provider);
-        this.key = key;
+        this.key = provider.getRealPath(key);
         this.value = value;
         this.createMode = createMode;
     }

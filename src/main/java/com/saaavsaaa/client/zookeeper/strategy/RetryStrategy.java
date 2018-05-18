@@ -1,6 +1,6 @@
 package com.saaavsaaa.client.zookeeper.strategy;
 
-import com.saaavsaaa.client.utility.retry.RetrialCenter;
+import com.saaavsaaa.client.utility.retry.RetryCenter;
 import com.saaavsaaa.client.utility.retry.RetryCount;
 import com.saaavsaaa.client.zookeeper.base.BaseClient;
 import com.saaavsaaa.client.zookeeper.base.BaseProvider;
@@ -98,7 +98,7 @@ public class RetryStrategy extends UsualStrategy {
             provider.createCurrentOnly(path, value, createMode);
         } catch (KeeperException.SessionExpiredException ee){
             logger.warn("RetryStrategy SessionExpiredException createCurrentOnly:{}", path);
-            RetrialCenter.INSTANCE.add(new CreateCurrentOperation(provider, path, value, createMode));
+            RetryCenter.INSTANCE.add(new CreateCurrentOperation(provider, path, value, createMode));
         }
     }
     
@@ -109,7 +109,7 @@ public class RetryStrategy extends UsualStrategy {
             provider.update(path, value);
         } catch (KeeperException.SessionExpiredException ee){
             logger.warn("RetryStrategy SessionExpiredException update:{}", path);
-            RetrialCenter.INSTANCE.add(new UpdateOperation(provider, path, value));
+            RetryCenter.INSTANCE.add(new UpdateOperation(provider, path, value));
         }
     }
     
@@ -120,7 +120,7 @@ public class RetryStrategy extends UsualStrategy {
             provider.deleteOnlyCurrent(path);
         } catch (KeeperException.SessionExpiredException ee){
             logger.warn("RetryStrategy SessionExpiredException deleteOnlyCurrent:{}", path);
-            RetrialCenter.INSTANCE.add(new DeleteCurrentOperation(provider, path));
+            RetryCenter.INSTANCE.add(new DeleteCurrentOperation(provider, path));
         }
     }
 }

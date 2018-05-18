@@ -3,17 +3,17 @@ package com.saaavsaaa.client.retry;
 import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.utility.PathUtil;
-import com.saaavsaaa.client.utility.retry.RetrialCenter;
+import com.saaavsaaa.client.utility.retry.DelayRetry;
+import com.saaavsaaa.client.utility.retry.RetryCenter;
 import com.saaavsaaa.client.utility.section.Listener;
 import com.saaavsaaa.client.zookeeper.ClientFactory;
 import com.saaavsaaa.client.zookeeper.TestSupport;
 import com.saaavsaaa.client.zookeeper.base.BaseClient;
-import com.saaavsaaa.client.zookeeper.base.BaseClientTest;
 import com.saaavsaaa.client.zookeeper.base.BaseProvider;
 import com.saaavsaaa.client.zookeeper.operation.CreateCurrentOperation;
 import com.saaavsaaa.client.zookeeper.strategy.StrategyType;
 import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.KeeperException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -24,13 +24,14 @@ import java.io.IOException;
 /**
  * Created by aaa
  */
-public class RetrialCenterTest{
+public class RetryCenterTest {
     private IProvider provider;
     
     @Before
     public void start() throws IOException, InterruptedException {
-        provider = new BaseProvider(createClient(), true);
-        RetrialCenter.INSTANCE.start();
+        provider = new BaseProvider(createClient(), false);
+        RetryCenter.INSTANCE.init(new DelayRetry(1, 1));
+        RetryCenter.INSTANCE.start();
     }
     
     protected IClient createClient() throws IOException, InterruptedException {
@@ -52,13 +53,16 @@ public class RetrialCenterTest{
         
     }
     
-//    @Test
-    public void create(){
-        String key = "a/b/bb";
-//        RetrialCenter.INSTANCE.add(new CreateCurrentOperation(provider, path, value, createMode));
-        /*client.createAllNeedPath(key, "bbb11", CreateMode.PERSISTENT);
-        assert getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, key)*//*"/" + ROOT + "/" + key*//*, false) != null;
-        client.deleteCurrentBranch(key);
-        assert getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, key)*//*"/" + ROOT + "/" + key*//*, false) == null;*/
+    @Test
+    public void create() throws InterruptedException, KeeperException {
+        String key = "a";
+        String value = "bbb11";
+        Thread.sleep(1000);
+        RetryCenter.INSTANCE.add(new CreateCurrentOperation(provider, key, value, CreateMode.PERSISTENT));
+        Thread.sleep(1000);
+        String path = PathUtil.getRealPath(TestSupport.ROOT, key);
+        assert provider.checkExists(path);
+        provider.deleteOnlyCurrent(path);
+        assert !provider.checkExists(path);
     }
 }

@@ -1,6 +1,6 @@
 package com.saaavsaaa.client.zookeeper.strategy;
 
-import com.saaavsaaa.client.utility.retry.RetrialCenter;
+import com.saaavsaaa.client.utility.retry.RetryCenter;
 import com.saaavsaaa.client.zookeeper.base.BaseClient;
 import com.saaavsaaa.client.zookeeper.operation.CreateAllNeedOperation;
 import com.saaavsaaa.client.zookeeper.operation.DeleteAllChildrenOperation;
@@ -28,7 +28,7 @@ public class AllRetryStrategy extends RetryStrategy {
             super.createAllNeedPath(key, value, createMode);
         } catch (KeeperException.SessionExpiredException ee){
             logger.warn("AllRetryStrategy SessionExpiredException CreateAllNeedOperation:{}", key);
-            RetrialCenter.INSTANCE.add(new CreateAllNeedOperation(provider, key, value, createMode));
+            RetryCenter.INSTANCE.add(new CreateAllNeedOperation(provider, key, value, createMode));
         }
     }
     
@@ -38,7 +38,7 @@ public class AllRetryStrategy extends RetryStrategy {
             super.deleteAllChildren(key);
         } catch (KeeperException.SessionExpiredException ee){
             logger.warn("AllRetryStrategy SessionExpiredException deleteAllChildren:{}", key);
-            RetrialCenter.INSTANCE.add(new DeleteAllChildrenOperation(provider, key));
+            RetryCenter.INSTANCE.add(new DeleteAllChildrenOperation(provider, key));
         }
     }
     
@@ -48,7 +48,7 @@ public class AllRetryStrategy extends RetryStrategy {
             super.deleteCurrentBranch(key);
         } catch (KeeperException.SessionExpiredException ee){
             logger.warn("AllRetryStrategy SessionExpiredException deleteCurrentBranch:{}", key);
-            RetrialCenter.INSTANCE.add(new DeleteCurrentBranchOperation(provider, key));
+            RetryCenter.INSTANCE.add(new DeleteCurrentBranchOperation(provider, key));
         }
     }
 }

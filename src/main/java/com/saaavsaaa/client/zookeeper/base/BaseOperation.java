@@ -24,7 +24,8 @@ public abstract class BaseOperation implements Delayed {
     
     @Override
     public long getDelay(TimeUnit unit) {
-        return unit.convert(this.retryExecution.getNextTick() - System.currentTimeMillis() , TimeUnit.MILLISECONDS);
+        long result = unit.convert(this.retryExecution.getNextTick() - System.currentTimeMillis() , TimeUnit.MILLISECONDS);
+        return result;
     }
     
     /**

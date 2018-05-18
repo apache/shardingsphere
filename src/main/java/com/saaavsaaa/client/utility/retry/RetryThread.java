@@ -10,21 +10,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by aaa
  */
-public enum RetrialCenter {
-    INSTANCE;
-    
-    private static final Logger logger = LoggerFactory.getLogger(RetrialCenter.class);
-    private final DelayQueue<BaseOperation> queue = new DelayQueue<>();
+public class RetryThread extends Thread {
+    private static final Logger logger = LoggerFactory.getLogger(RetryThread.class);
     private final ThreadPoolExecutor retryExecution;
     private final int corePoolSize = Runtime.getRuntime().availableProcessors();
     private final int maximumPoolSize = corePoolSize;
     private final long keepAliveTime = 0;
     private final int closeDelay = 60;
+    private final DelayQueue<BaseOperation> queue;
     
-    private boolean started = false;
-    private DelayRetrial retrial;
-    
-    private RetrialCenter(){
+    public RetryThread(DelayQueue<BaseOperation> queue) {
+        this.queue = queue;
         retryExecution = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(10), new ThreadFactory() {
             private final AtomicInteger threadIndex = new AtomicInteger(0);
             @Override
@@ -37,21 +33,10 @@ public enum RetrialCenter {
         });
         addDelayedShutdownHook(retryExecution, closeDelay, TimeUnit.SECONDS);
     }
-    
-    public void init(DelayRetrial retrial) {
-        logger.debug("retrial init");
-        if (retrial == null) {
-            logger.debug("retrial real init");
-            this.retrial = retrial;
-        }
-    }
-    
-    public synchronized void start(){
-        if (started){
-            return;
-        }
-        this.started = true;
-        logger.debug("RetrialCenter start");
+
+    @Override
+    public void run(){
+        logger.debug("RetryThread start");
         for (;;) {
             BaseOperation operation;
             try {
@@ -85,8 +70,8 @@ public enum RetrialCenter {
             @Override
             public void run() {
                 try {
-                    started = false;
-                    logger.debug("RetrialCenter stop");
+                    logger.debug("RetryCenter stop");
+                    queue.clear();
                     service.shutdown();
                     service.awaitTermination(terminationTimeout, timeUnit);
                 } catch (InterruptedException ignored) {
@@ -96,15 +81,5 @@ public enum RetrialCenter {
         });
         thread.setName("retry shutdown hook");
         Runtime.getRuntime().addShutdownHook(thread);
-    }
-    
-    public void add(BaseOperation operation){
-        if (retrial == null){
-            logger.debug("retrial no init");
-            retrial = DelayRetrial.newNoInitDelayRetrial();
-        }
-        operation.setRetrial(new DelayRetryExecution(retrial));
-        queue.offer(operation);
-        logger.debug("enqueue operation:{}", operation.toString());
     }
 }

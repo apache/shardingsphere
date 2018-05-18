@@ -37,7 +37,11 @@ public enum  RetryCount {
     
     public int getStandCount(){
         Integer sc = standCount.get();
-        if (sc == null || sc > RETRY_COUNT_BOUND){
+        if (sc == null){
+            standCount.set(3);
+            return 3;
+        }
+        if (sc > RETRY_COUNT_BOUND){
             standCount.set(RETRY_COUNT_BOUND);
         }
         return standCount.get();
