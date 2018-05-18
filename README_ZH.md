@@ -46,7 +46,7 @@ Sharding-Sphere定位为关系型数据库中间件，旨在充分合理地在�
 * 向应用程序完全透明，可直接当做MySQL使用。
 * 适用于任何兼容MySQL协议的的客户端。
 
-![Sharding-Proxy Architecture](http://ovfqtdb4e.bkt.clouddn.com/sharding-proxy-brief_v2.png)
+![Sharding-Proxy Architecture](http://ovfotjrsi.bkt.clouddn.com/sharding-proxy-brief_v2.png)
 
 ### Sharding-Sidecar（TBD）
 
