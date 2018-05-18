@@ -17,8 +17,6 @@
 
 package io.shardingsphere.proxy.frontend;
 
-import io.shardingsphere.proxy.frontend.netty.ServerHandlerInitializer;
-
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
@@ -58,7 +56,7 @@ public final class ShardingProxy {
      * Start Sharding-Proxy.
      *
      * @param port port
-     * @throws InterruptedException interrupted exception
+     * @throws InterruptedException  interrupted exception
      * @throws MalformedURLException URL exception
      */
     public void start(final int port) throws InterruptedException, MalformedURLException {

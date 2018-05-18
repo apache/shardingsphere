@@ -51,7 +51,8 @@ public final class SQLPacketsBackendHandler extends SQLExecuteBackendHandler {
     
     @Override
     protected CommandResponsePackets executeForSharding() {
-        StatementRoutingEngine routingEngine = new StatementRoutingEngine(RuleRegistry.getInstance().getShardingRule(), RuleRegistry.getInstance().getShardingMetaData(), getDatabaseType(), isShowSQL());
+        StatementRoutingEngine routingEngine = new StatementRoutingEngine(RuleRegistry.getInstance().getShardingRule(), RuleRegistry.getInstance().getShardingMetaData(), getDatabaseType(),
+                isShowSQL());
         SQLRouteResult routeResult = routingEngine.route(getSql());
         if (routeResult.getExecutionUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
