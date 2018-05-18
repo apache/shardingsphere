@@ -133,12 +133,12 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
     }
     
     @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+    public void channelInactive(final ChannelHandlerContext ctx) throws Exception {
         //TODO delete connection map.
         super.channelInactive(ctx);
     }
     
-    private byte[] securePasswordAuthentication(byte[] password, byte[] authPluginData) {
+    private byte[] securePasswordAuthentication(final byte[] password, final byte[] authPluginData) {
         try {
             MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
             byte[] part1 = sha1.digest(password);
