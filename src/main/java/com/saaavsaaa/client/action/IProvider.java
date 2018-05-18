@@ -1,7 +1,7 @@
 package com.saaavsaaa.client.action;
 
 import com.saaavsaaa.client.election.LeaderElection;
-import com.saaavsaaa.client.utility.section.Listener;
+import com.saaavsaaa.client.section.Listener;
 import com.saaavsaaa.client.zookeeper.transaction.ZKTransaction;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;

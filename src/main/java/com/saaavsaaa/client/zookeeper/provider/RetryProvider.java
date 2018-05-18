@@ -1,7 +1,7 @@
 package com.saaavsaaa.client.zookeeper.provider;
 
-import com.saaavsaaa.client.utility.retry.RetryCenter;
-import com.saaavsaaa.client.utility.retry.RetryCount;
+import com.saaavsaaa.client.retry.RetryCenter;
+import com.saaavsaaa.client.retry.RetryCount;
 import com.saaavsaaa.client.zookeeper.base.BaseClient;
 import com.saaavsaaa.client.zookeeper.base.BaseProvider;
 import com.saaavsaaa.client.zookeeper.operation.CreateCurrentOperation;

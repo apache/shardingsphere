@@ -2,10 +2,10 @@ package com.saaavsaaa.client.election;
 
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
-import com.saaavsaaa.client.utility.retry.RetryCount;
-import com.saaavsaaa.client.utility.section.Listener;
-import com.saaavsaaa.client.utility.section.Properties;
-import com.saaavsaaa.client.utility.section.WatcherCreator;
+import com.saaavsaaa.client.retry.RetryCount;
+import com.saaavsaaa.client.section.Listener;
+import com.saaavsaaa.client.section.Properties;
+import com.saaavsaaa.client.section.WatcherCreator;
 import com.saaavsaaa.client.zookeeper.base.BaseProvider;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;

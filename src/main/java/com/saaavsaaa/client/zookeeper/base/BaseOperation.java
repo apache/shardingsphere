@@ -1,7 +1,7 @@
 package com.saaavsaaa.client.zookeeper.base;
 
 import com.saaavsaaa.client.action.IProvider;
-import com.saaavsaaa.client.utility.retry.DelayRetryExecution;
+import com.saaavsaaa.client.retry.DelayRetryExecution;
 import org.apache.zookeeper.KeeperException;
 
 import java.util.concurrent.Delayed;

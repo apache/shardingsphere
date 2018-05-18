@@ -1,4 +1,4 @@
-package com.saaavsaaa.client.utility.retry;
+package com.saaavsaaa.client.retry;
 
 import com.saaavsaaa.client.zookeeper.base.BaseOperation;
 import org.slf4j.Logger;

@@ -1,4 +1,4 @@
-package com.saaavsaaa.client.utility.retry;
+package com.saaavsaaa.client.retry;
 
 import java.util.Random;
 
