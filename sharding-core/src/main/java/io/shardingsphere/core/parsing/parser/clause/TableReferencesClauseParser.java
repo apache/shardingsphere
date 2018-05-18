@@ -80,7 +80,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
     }
     
     protected final void parseTableFactor(final SQLStatement sqlStatement, final boolean isSingleTableOnly) {
-        int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
+        final int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
         String literals = lexerEngine.getCurrentToken().getLiterals();
         int skippedSchemaNameLength = 0;
         lexerEngine.nextToken();
