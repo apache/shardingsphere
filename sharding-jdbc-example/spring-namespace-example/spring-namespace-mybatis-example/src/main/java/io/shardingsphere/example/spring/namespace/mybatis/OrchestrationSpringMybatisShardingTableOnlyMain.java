@@ -20,13 +20,10 @@ package io.shardingsphere.example.spring.namespace.mybatis;
 import io.shardingsphere.example.spring.namespace.mybatis.service.DemoService;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-/*
- * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
- */
-public class OrchestrationSpringMybatisMasterSlaveOnlyMain {
+public class OrchestrationSpringMybatisShardingTableOnlyMain {
     
     public static void main(final String[] args) {
-        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisZookeeperMasterSlaveOnlyByLocalConfigContext.xml");
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisZookeeperShardingTableOnlyByLocalConfigContext.xml");
         DemoService demoService = applicationContext.getBean(DemoService.class);
         demoService.demo();
         applicationContext.close();

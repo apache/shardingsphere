@@ -9,9 +9,7 @@
     <packaging>pom</packaging>
     
     <modules>
-        <module>sharding-jdbc-orchestration-zookeeper-spring-boot-example</module>
         <module>sharding-jdbc-orchestration-zookeeper-spring-namespace-example</module>
-        <module>sharding-jdbc-orchestration-etcd-spring-boot-example</module>
         <module>sharding-jdbc-orchestration-etcd-spring-namespace-example</module>
     </modules>
 </project>

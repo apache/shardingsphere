@@ -19,7 +19,11 @@
             <artifactId>sharding-jdbc-spring-namespace</artifactId>
             <version>${sharding-sphere.version}</version>
         </dependency>
-        
+        <dependency>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>sharding-jdbc-orchestration-spring-namespace</artifactId>
+            <version>${sharding-sphere.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
