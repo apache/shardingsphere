@@ -6,7 +6,7 @@ package com.saaavsaaa.client.utility.retry;
 public enum  RetryCount {
     INSTANCE;
     
-    private static final int MAX_RETRIES_LIMIT = 10;
+    private static final int RETRY_COUNT_BOUND = 29;
     private static final ThreadLocal<Integer> count = new ThreadLocal<>();
     private static final ThreadLocal<Integer> standCount = new ThreadLocal<>();
     
@@ -37,8 +37,8 @@ public enum  RetryCount {
     
     public int getStandCount(){
         Integer sc = standCount.get();
-        if (sc == null || sc == 0 || sc > MAX_RETRIES_LIMIT){
-            standCount.set(MAX_RETRIES_LIMIT);
+        if (sc == null || sc > RETRY_COUNT_BOUND){
+            standCount.set(RETRY_COUNT_BOUND);
         }
         return standCount.get();
     }

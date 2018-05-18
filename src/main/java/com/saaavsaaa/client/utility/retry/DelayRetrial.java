@@ -4,7 +4,6 @@ package com.saaavsaaa.client.utility.retry;
  * Created by aaa
  */
 public class DelayRetrial {
-    private static final int RETRY_COUNT = 29;
     private static final long BASE_DELAY = 1;
     private static final long DELAY_UPPER_BOUND = 2147483647;
     
@@ -34,6 +33,6 @@ public class DelayRetrial {
     }
     
     public static DelayRetrial newNoInitDelayRetrial(){
-        return new DelayRetrial(RETRY_COUNT, BASE_DELAY, DELAY_UPPER_BOUND);
+        return new DelayRetrial(RetryCount.INSTANCE.getStandCount(), BASE_DELAY, DELAY_UPPER_BOUND);
     }
 }
