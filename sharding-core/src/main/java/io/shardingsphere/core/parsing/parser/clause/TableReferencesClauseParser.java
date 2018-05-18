@@ -82,8 +82,10 @@ public class TableReferencesClauseParser implements SQLClauseParser {
     protected final void parseTableFactor(final SQLStatement sqlStatement, final boolean isSingleTableOnly) {
         final int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
         String literals = lexerEngine.getCurrentToken().getLiterals();
+        int skippedSchemaNameLength = 0;
         lexerEngine.nextToken();
         if (lexerEngine.skipIfEqual(Symbol.DOT)) {
+            skippedSchemaNameLength = literals.length() + Symbol.DOT.getLiterals().length();
             literals = lexerEngine.getCurrentToken().getLiterals();
         }
         String tableName = SQLUtil.getExactlyValue(literals);
@@ -93,7 +95,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
         Optional<String> alias = aliasExpressionParser.parseTableAlias();
         if (isSingleTableOnly || shardingRule.tryFindTableRuleByLogicTable(tableName).isPresent() || shardingRule.findBindingTableRule(tableName).isPresent()
                 || shardingRule.getShardingDataSourceNames().getDataSourceNames().contains(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName())) {
-            sqlStatement.getSqlTokens().add(new TableToken(beginPosition, literals));
+            sqlStatement.getSqlTokens().add(new TableToken(beginPosition, skippedSchemaNameLength, literals));
             sqlStatement.getTables().add(new Table(tableName, alias));
         }
         parseForceIndex(tableName, sqlStatement);
@@ -167,8 +169,15 @@ public class TableReferencesClauseParser implements SQLClauseParser {
      */
     public final void parseSingleTableWithoutAlias(final SQLStatement sqlStatement) {
         int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
-        sqlStatement.getSqlTokens().add(new TableToken(beginPosition, lexerEngine.getCurrentToken().getLiterals()));
-        sqlStatement.getTables().add(new Table(SQLUtil.getExactlyValue(lexerEngine.getCurrentToken().getLiterals()), Optional.<String>absent()));
+        String literals = lexerEngine.getCurrentToken().getLiterals();
+        int skippedSchemaNameLength = 0;
         lexerEngine.nextToken();
+        if (lexerEngine.skipIfEqual(Symbol.DOT)) {
+            skippedSchemaNameLength = literals.length() + Symbol.DOT.getLiterals().length();
+            literals = lexerEngine.getCurrentToken().getLiterals();
+            lexerEngine.nextToken();
+        }
+        sqlStatement.getSqlTokens().add(new TableToken(beginPosition, skippedSchemaNameLength, literals));
+        sqlStatement.getTables().add(new Table(SQLUtil.getExactlyValue(literals), Optional.<String>absent()));
     }
 }
