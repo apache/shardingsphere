@@ -41,12 +41,13 @@ public class ShardingOnlyWithDatabases {
         } else {
             stringBuilder.append("zookeeper/");
         }
-        stringBuilder.append(configType);
         if (LOAD_CONFIG_FROM_REG_CENTER) {
-            stringBuilder.append("ByCloudConfig.xml");
+            stringBuilder.append("cloud/");
         } else {
-            stringBuilder.append("ByLocalConfig.xml");
+            stringBuilder.append("local/");
         }
+        stringBuilder.append(configType);
+        stringBuilder.append(".xml");
         return stringBuilder.toString();
     }
 }
