@@ -54,4 +54,5 @@
         <property name="basePackage" value="io.shardingsphere.example.spring.namespace.mybatis"/>
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
     </bean>
+
 </beans>

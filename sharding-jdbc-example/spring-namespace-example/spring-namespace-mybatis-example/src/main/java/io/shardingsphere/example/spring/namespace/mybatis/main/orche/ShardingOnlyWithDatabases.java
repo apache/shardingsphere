@@ -22,11 +22,31 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class ShardingOnlyWithDatabases {
     
+    private static final boolean LOAD_CONFIG_FROM_REG_CENTER = false;
+    
+    private static final boolean REG_CENTER_IS_ETCD = false;
+    
     public static void main(final String[] args) {
-        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/orche/etcd/shardingDatabasesByLocalConfig.xml");
-//        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisZookeeperShardingDatabaseOnlyByLocalConfigContext.xml");
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext(getConfigFileName("shardingDatabases"));
         DemoService demoService = applicationContext.getBean(DemoService.class);
         demoService.demo();
         applicationContext.close();
+    }
+    
+    private static String getConfigFileName(final String configType) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("META-INF/orche/");
+        if (REG_CENTER_IS_ETCD) {
+            stringBuilder.append("etcd/");
+        } else {
+            stringBuilder.append("zookeeper/");
+        }
+        stringBuilder.append(configType);
+        if (LOAD_CONFIG_FROM_REG_CENTER) {
+            stringBuilder.append("ByCloudConfig.xml");
+        } else {
+            stringBuilder.append("ByLocalConfig.xml");
+        }
+        return stringBuilder.toString();
     }
 }
