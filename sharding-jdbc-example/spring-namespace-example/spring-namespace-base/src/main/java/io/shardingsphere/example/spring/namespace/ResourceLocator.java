@@ -16,16 +16,17 @@
 package io.shardingsphere.example.spring.namespace;
 
 public class ResourceLocator {
+    
     private RegTypeEnum regTypeEnum;
-
+    
     public ResourceLocator() {
         this.regTypeEnum = RegTypeEnum.ZK_LOCAL;
     }
-
+    
     public ResourceLocator(RegTypeEnum regTypeEnum) {
         this.regTypeEnum = regTypeEnum;
     }
-
+    
     public String getConfigFileName(final String fileName) {
         switch (regTypeEnum) {
             case ZK_LOCAL:
@@ -40,9 +41,8 @@ public class ResourceLocator {
                  return doBuild("zookeeper/local/", fileName);
         }
     }
-
+    
     private String doBuild(String regPath, String fileName) {
-        StringBuilder builder = new StringBuilder("META-INF/orche/");
-        return builder.append(regPath).append(fileName).toString();
+        return "META-INF/orche/" + regPath + fileName;
     }
 }

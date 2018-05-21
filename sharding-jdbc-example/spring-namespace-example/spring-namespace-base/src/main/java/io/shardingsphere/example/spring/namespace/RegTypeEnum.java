@@ -16,6 +16,7 @@
 package io.shardingsphere.example.spring.namespace;
 
 public enum RegTypeEnum {
+    
     ETCD_CLOUD,
     ETCD_LOCAL,
     ZK_CLOUD,
