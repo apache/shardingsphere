@@ -15,17 +15,18 @@
  * </p>
  */
 
-package io.shardingsphere.example.spring.namespace.jpa;
+package io.shardingsphere.example.spring.namespace.jpa.main.nodep;
 
 import io.shardingsphere.example.spring.namespace.jpa.service.DemoService;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-public class ShardingAndMasterSlaveTogether {
+public class ShardingOnlyWithTables {
     
     public static void main(final String[] args) {
-        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/jpaShardingAndMasterSlaveTogetherContext.xml");
+        ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/nodep/shardingDatabases.xml");
         DemoService demoService = applicationContext.getBean(DemoService.class);
         demoService.demo();
+        applicationContext.close();
     }
 }
