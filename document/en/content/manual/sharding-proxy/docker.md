@@ -21,13 +21,13 @@ Create /${your_work_dir}/conf/config.yaml file to configure sharding rule. More 
 ## Run docker
 
 ```
-docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf --env PORT=3308 -p13308:3308 sharding-sphere/sharding-proxy:2.1.0-SNAPSHOT
+docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf --env PORT=3308 -p13308:3308 shardingsphere/sharding-proxy:latest
 ```
 
 The port `3308` and `13308` could be customized, `3308` represents port of docker container, `13308` represents port of host machine.
 
 ```
-docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf --env JVM_OPTS="-Djava.awt.headless=true" --env PORT=3308 -p13308:3308 sharding-sphere/sharding-proxy:2.1.0-SNAPSHOT
+docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf --env JVM_OPTS="-Djava.awt.headless=true" --env PORT=3308 -p13308:3308 shardingsphere/sharding-proxy:latest
 ```
 
 Set JVM relative parameters into `JVM_OPTS`.
