@@ -4,16 +4,17 @@
        xmlns:p="http://www.springframework.org/schema/p"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/sharding"
+       xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/orchestration/sharding"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd
-                        http://shardingsphere.io/schema/shardingsphere/sharding 
-                        http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
+                        http://shardingsphere.io/schema/shardingsphere/orchestration/sharding
+                        http://shardingsphere.io/schema/shardingsphere/orchestration/sharding/sharding.xsd
                         http://www.springframework.org/schema/context
                         http://www.springframework.org/schema/context/spring-context.xsd
                         http://www.springframework.org/schema/tx
                         http://www.springframework.org/schema/tx/spring-tx.xsd">
     <context:annotation-config />
+    <import resource="classpath*:META-INF/orche/etcd/regCenter.xml" />
     <context:component-scan base-package="io.shardingsphere.example.spring.namespace.jpa"/>
     
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
@@ -33,29 +34,22 @@
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" p:entityManagerFactory-ref="entityManagerFactory" />
     <tx:annotation-driven />
     
-    <bean id="demo_ds_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="demo_ds" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_0"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>
     
-    <bean id="demo_ds_1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_1"/>
-        <property name="username" value="root"/>
-        <property name="password" value=""/>
-    </bean>
+    <bean id="preciseModuloTableShardingAlgorithm" class="io.shardingsphere.example.spring.namespace.jpa.algorithm.PreciseModuloTableShardingAlgorithm" />
     
-    <bean id="preciseModuloDatabaseShardingAlgorithm" class="io.shardingsphere.example.spring.namespace.jpa.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
+    <sharding:standard-strategy id="tableShardingStrategy" sharding-column="order_id" precise-algorithm-ref="preciseModuloTableShardingAlgorithm" />
     
-    <sharding:standard-strategy id="databaseShardingStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
-    
-    <sharding:data-source id="shardingDataSource">
-        <sharding:sharding-rule data-source-names="demo_ds_0, demo_ds_1">
+    <sharding:data-source id="shardingDataSource" registry-center-ref="regCenter" overwrite="true">
+        <sharding:sharding-rule data-source-names="demo_ds">
             <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" database-strategy-ref="databaseShardingStrategy" generate-key-column-name="order_id" />
-                <sharding:table-rule logic-table="t_order_item" database-strategy-ref="databaseShardingStrategy" generate-key-column-name="order_item_id" />
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="demo_ds.t_order_${0..1}" table-strategy-ref="tableShardingStrategy" generate-key-column-name="order_id" />
+                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_ds.t_order_item_${0..1}" table-strategy-ref="tableShardingStrategy" generate-key-column-name="order_item_id" />
             </sharding:table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>
