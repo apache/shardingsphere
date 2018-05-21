@@ -70,7 +70,7 @@ public class RetryThread extends Thread {
             @Override
             public void run() {
                 try {
-                    logger.debug("RetryCenter stop");
+                    logger.debug("AsyncRetryCenter stop");
                     queue.clear();
                     service.shutdown();
                     service.awaitTermination(terminationTimeout, timeUnit);

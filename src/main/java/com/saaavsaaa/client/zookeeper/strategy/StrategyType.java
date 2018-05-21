@@ -6,6 +6,7 @@ package com.saaavsaaa.client.zookeeper.strategy;
 public enum StrategyType {
     USUAL,
     CONTEND,
-    RETRY,
-    ALL_RETRY
+    SYNC_RETRY,
+    ASYNC_RETRY,
+    ALL_ASYNC_RETRY
 }

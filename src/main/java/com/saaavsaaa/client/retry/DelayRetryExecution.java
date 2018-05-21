@@ -12,6 +12,10 @@ public class DelayRetryExecution {
     private int executeCount = 0;
     private long executeTick;
     
+    public DelayRetryExecution(){
+        this(DelayRetry.newNoInitDelayRetrial());
+    }
+    
     public DelayRetryExecution(final DelayRetry delayRetry) {
         this.delayRetry = delayRetry;
         this.executeTick = System.currentTimeMillis();
@@ -30,7 +34,7 @@ public class DelayRetryExecution {
     private void next() {
         executeCount ++;
         long sleep = delayRetry.getBaseDelay() * Math.max(1, this.random.nextInt(1 << delayRetry.getRetryCount() + 1));
-        if (sleep < delayRetry.getDelayUpperBound()){
+        if (sleep > delayRetry.getDelayUpperBound()){
             executeTick += sleep;
         } else {
             executeTick += delayRetry.getDelayUpperBound();

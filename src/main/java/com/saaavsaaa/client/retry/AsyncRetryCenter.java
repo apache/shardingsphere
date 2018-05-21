@@ -9,10 +9,10 @@ import java.util.concurrent.DelayQueue;
 /**
  * Created by aaa
  */
-public enum RetryCenter {
+public enum AsyncRetryCenter {
     INSTANCE;
     
-    private static final Logger logger = LoggerFactory.getLogger(RetryCenter.class);
+    private static final Logger logger = LoggerFactory.getLogger(AsyncRetryCenter.class);
     private final DelayQueue<BaseOperation> queue = new DelayQueue<>();
     private final RetryThread retryThread = new RetryThread(queue);
     
@@ -21,10 +21,7 @@ public enum RetryCenter {
     
     public void init(DelayRetry retrial) {
         logger.debug("retrial init");
-        if (retrial == null) {
-            logger.debug("retrial real init");
-            this.retrial = retrial;
-        }
+        this.retrial = retrial;
     }
     
     public synchronized void start(){

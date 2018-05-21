@@ -10,12 +10,12 @@ import java.io.IOException;
 /**
  * Created by aaa
  */
-public class RetryStrategyTest extends UsualClientTest{
+public class AsyncRetryStrategyTest extends UsualClientTest{
     @Override
     protected IClient createClient(final ClientFactory creator) throws IOException, InterruptedException {
         Listener listener = TestSupport.buildListener();
         IClient client = creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes()).newClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).watch(listener).start();
-        ((BaseClient)client).useExecStrategy(StrategyType.RETRY);
+        ((BaseClient)client).useExecStrategy(StrategyType.ASYNC_RETRY);
         return client;
     }
 }

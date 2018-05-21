@@ -22,21 +22,21 @@ import java.io.IOException;
 /**
  * Created by aaa
  */
-public class RetryCenterTest {
+public class AsyncRetryCenterTest {
     private IProvider provider;
     
     @Before
     public void start() throws IOException, InterruptedException {
         provider = new BaseProvider(createClient(), false);
-        RetryCenter.INSTANCE.init(new DelayRetry(1, 1));
-        RetryCenter.INSTANCE.start();
+        AsyncRetryCenter.INSTANCE.init(DelayRetry.newNoInitDelayRetrial());
+        AsyncRetryCenter.INSTANCE.start();
     }
     
     protected IClient createClient() throws IOException, InterruptedException {
         ClientFactory creator = new ClientFactory();
         Listener listener = TestSupport.buildListener();
         IClient client = creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes()).newClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).watch(listener).start();
-        ((BaseClient)client).useExecStrategy(StrategyType.RETRY);
+        ((BaseClient)client).useExecStrategy(StrategyType.ASYNC_RETRY);
         return client;
     }
     
@@ -55,8 +55,7 @@ public class RetryCenterTest {
     public void create() throws InterruptedException, KeeperException {
         String key = "a";
         String value = "bbb11";
-        Thread.sleep(1000);
-        RetryCenter.INSTANCE.add(new CreateCurrentOperation(provider, key, value, CreateMode.PERSISTENT));
+        AsyncRetryCenter.INSTANCE.add(new CreateCurrentOperation(provider, key, value, CreateMode.PERSISTENT));
         Thread.sleep(1000);
         String path = PathUtil.getRealPath(TestSupport.ROOT, key);
         assert provider.checkExists(path);

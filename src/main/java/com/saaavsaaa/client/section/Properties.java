@@ -48,4 +48,12 @@ public enum Properties {
         }
         return Long.valueOf(result);
     }
+    
+    public int getNodeElectionCount(){
+        String result = bundle.getString("node.election.count");
+        if (StringUtil.isNullOrBlank(result)){
+            throw new IllegalArgumentException("node.election.count doesn't exist");
+        }
+        return Integer.valueOf(result);
+    }
 }

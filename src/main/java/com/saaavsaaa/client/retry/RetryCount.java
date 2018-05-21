@@ -3,6 +3,7 @@ package com.saaavsaaa.client.retry;
 /**
  * Created by aaa
  */
+@Deprecated
 public enum  RetryCount {
     INSTANCE;
     

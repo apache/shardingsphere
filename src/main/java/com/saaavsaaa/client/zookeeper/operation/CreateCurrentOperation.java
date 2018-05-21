@@ -1,6 +1,7 @@
 package com.saaavsaaa.client.zookeeper.operation;
 
 import com.saaavsaaa.client.action.IProvider;
+import com.saaavsaaa.client.section.Connection;
 import com.saaavsaaa.client.zookeeper.base.BaseOperation;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -25,7 +26,8 @@ public class CreateCurrentOperation extends BaseOperation {
         try {
             provider.createCurrentOnly(key, value, createMode);
             return true;
-        } catch (KeeperException.SessionExpiredException ee) {
+        } catch (KeeperException ee) {
+            Connection.check(ee);
             return false;
         }
     }

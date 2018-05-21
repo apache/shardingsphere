@@ -1,10 +1,9 @@
 package com.saaavsaaa.client.zookeeper;
 
-import com.saaavsaaa.client.utility.constant.Constants;
+import com.saaavsaaa.client.retry.AsyncRetryCenter;
 import com.saaavsaaa.client.retry.DelayRetry;
-import com.saaavsaaa.client.retry.RetryCenter;
-import com.saaavsaaa.client.retry.RetryCount;
 import com.saaavsaaa.client.section.Listener;
+import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.zookeeper.base.BaseClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,14 +64,8 @@ public class ClientFactory extends BaseClientFactory {
         return this;
     }
     
-    public ClientFactory setRetryPolicy(final int count){
-        RetryCount.INSTANCE.init(count);
-        return this;
-    }
-    
     public ClientFactory setRetryPolicy(final DelayRetry retrial){
-        RetryCenter.INSTANCE.init(retrial);
-        RetryCenter.INSTANCE.start();
+        AsyncRetryCenter.INSTANCE.init(retrial);
         return this;
     }
 }

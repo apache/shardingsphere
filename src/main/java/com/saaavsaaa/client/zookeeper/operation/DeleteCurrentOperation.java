@@ -1,6 +1,7 @@
 package com.saaavsaaa.client.zookeeper.operation;
 
 import com.saaavsaaa.client.action.IProvider;
+import com.saaavsaaa.client.section.Connection;
 import com.saaavsaaa.client.zookeeper.base.BaseOperation;
 import org.apache.zookeeper.KeeperException;
 
@@ -19,7 +20,8 @@ public class DeleteCurrentOperation extends BaseOperation {
         try {
             provider.deleteOnlyCurrent(key);
             return true;
-        } catch (KeeperException.SessionExpiredException ee) {
+        } catch (KeeperException ee) {
+            Connection.check(ee);
             return false;
         }
     }

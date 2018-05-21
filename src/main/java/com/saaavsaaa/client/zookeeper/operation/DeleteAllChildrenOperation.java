@@ -1,6 +1,7 @@
 package com.saaavsaaa.client.zookeeper.operation;
 
 import com.saaavsaaa.client.action.IProvider;
+import com.saaavsaaa.client.section.Connection;
 import com.saaavsaaa.client.zookeeper.base.BaseOperation;
 import com.saaavsaaa.client.zookeeper.strategy.UsualStrategy;
 import org.apache.zookeeper.KeeperException;
@@ -21,7 +22,8 @@ public class DeleteAllChildrenOperation extends BaseOperation {
         try {
             new UsualStrategy(provider).deleteAllChildren(key);
             return true;
-        } catch (KeeperException.SessionExpiredException ee) {
+        } catch (KeeperException ee) {
+            Connection.check(ee);
             return false;
         }
     }

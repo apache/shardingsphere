@@ -49,12 +49,17 @@ public class UsualClient extends BaseClient {
                 strategy = new ContentionStrategy(new BaseProvider(this, watched));
                 break;
             }
-            case RETRY:{
-                strategy = new RetryStrategy(rootNode, this, watched, authorities);
+    
+            case SYNC_RETRY:{
+                strategy = new SyncRetryStrategy(this, watched);
                 break;
             }
-            case ALL_RETRY:{
-                strategy = new AllRetryStrategy(rootNode, this, watched, authorities);
+            case ASYNC_RETRY:{
+                strategy = new AsyncRetryStrategy(this, watched);
+                break;
+            }
+            case ALL_ASYNC_RETRY:{
+                strategy = new AllAsyncRetryStrategy(this, watched);
                 break;
             }
             default:{

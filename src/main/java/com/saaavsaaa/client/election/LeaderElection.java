@@ -1,12 +1,11 @@
 package com.saaavsaaa.client.election;
 
-import com.saaavsaaa.client.utility.PathUtil;
-import com.saaavsaaa.client.utility.constant.Constants;
-import com.saaavsaaa.client.retry.RetryCount;
+import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.section.Listener;
 import com.saaavsaaa.client.section.Properties;
 import com.saaavsaaa.client.section.WatcherCreator;
-import com.saaavsaaa.client.zookeeper.base.BaseProvider;
+import com.saaavsaaa.client.utility.PathUtil;
+import com.saaavsaaa.client.utility.constant.Constants;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
@@ -23,13 +22,13 @@ public abstract class LeaderElection {
     private int retryCount;
     
     public LeaderElection(){
-        retryCount = RetryCount.INSTANCE.getStandCount();
+        retryCount = Properties.INSTANCE.getNodeElectionCount();
     }
 
-    private boolean contend(final String node, final BaseProvider provider, final Listener listener) throws KeeperException, InterruptedException {
+    private boolean contend(final String node, final IProvider provider, final Listener listener) throws KeeperException, InterruptedException {
         boolean success = false;
         try {
-            provider.createCurrentOnly(node, Properties.INSTANCE.getClientId(), CreateMode.EPHEMERAL);
+            provider.createCurrentOnly(node, Properties.INSTANCE.getClientId(), CreateMode.EPHEMERAL); // todo EPHEMERAL_SEQUENTIAL check index value
             success = true;
         } catch (KeeperException.NodeExistsException e) {
             logger.info("contend not success");
@@ -42,7 +41,7 @@ public abstract class LeaderElection {
     /*
     * listener will be register when the contention of the path is unsuccessful
     */
-    public void executeContention(final String nodeBeCompete, final BaseProvider provider) throws KeeperException, InterruptedException {
+    public void executeContention(final String nodeBeCompete, final IProvider provider) throws KeeperException, InterruptedException {
         boolean canBegin;
         String realNode = provider.getRealPath(nodeBeCompete);
         String contendNode = PathUtil.getRealPath(realNode, Constants.CHANGING_KEY);
