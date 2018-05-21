@@ -21,7 +21,7 @@
         <property name="password" value=""/>
     </bean>
     
-    <bean id="preciseModuloTableShardingAlgorithm" class="io.shardingsphere.example.spring.namespace.mybatis.algorithm.PreciseModuloTableShardingAlgorithm" />
+    <bean id="preciseModuloTableShardingAlgorithm" class="io.shardingsphere.example.spring.namespace.mybatis.fixtrue.algorithm.PreciseModuloTableShardingAlgorithm" />
     
     <sharding:standard-strategy id="orderTableShardingStrategy" sharding-column="order_id" precise-algorithm-ref="preciseModuloTableShardingAlgorithm" />
     <sharding:standard-strategy id="orderItemTableShardingStrategy" sharding-column="order_id" precise-algorithm-ref="preciseModuloTableShardingAlgorithm" />
