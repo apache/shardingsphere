@@ -28,5 +28,10 @@
             <artifactId>spring-orm</artifactId>
             <version>${spring-framework.version}</version>
         </dependency>
+        <dependency>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>spring-namespace-base</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>
