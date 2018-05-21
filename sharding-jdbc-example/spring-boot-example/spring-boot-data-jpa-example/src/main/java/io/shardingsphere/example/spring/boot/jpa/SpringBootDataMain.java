@@ -20,13 +20,14 @@ package io.shardingsphere.example.spring.boot.jpa;
 import io.shardingsphere.example.spring.boot.jpa.service.DemoService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 
 @SpringBootApplication
-public class SpringBootDataNodepMain {
+public class SpringBootDataMain {
     
     public static void main(final String[] args) {
-        ApplicationContext applicationContext = SpringApplication.run(SpringBootDataNodepMain.class, args);
+        ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootDataMain.class, args);
         applicationContext.getBean(DemoService.class).demo();
+        applicationContext.close();
     }
 }

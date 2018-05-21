@@ -5,11 +5,10 @@
         <result column="order_item_id" property="orderItemId" jdbcType="INTEGER" />
         <result column="order_id" property="orderId" jdbcType="INTEGER" />
         <result column="user_id" property="userId" jdbcType="INTEGER" />
-        <result column="status" property="status" jdbcType="VARCHAR" />
     </resultMap>
     
     <update id="createIfNotExistsTable">
-        CREATE TABLE IF NOT EXISTS t_order_item (order_item_id BIGINT AUTO_INCREMENT, order_id BIGINT, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_item_id));
+        CREATE TABLE IF NOT EXISTS t_order_item (order_item_id BIGINT AUTO_INCREMENT, order_id BIGINT, user_id INT NOT NULL, PRIMARY KEY (order_item_id));
     </update>
     
     <update id="truncateTable">
@@ -22,12 +21,11 @@
     
     <insert id="insert" useGeneratedKeys="true" keyProperty="orderItemId">
         INSERT INTO t_order_item (
-          order_id, user_id, status
+          order_id, user_id
         )
         VALUES (
         #{orderId,jdbcType=INTEGER},
-        #{userId,jdbcType=INTEGER},
-        #{status,jdbcType=VARCHAR}
+        #{userId,jdbcType=INTEGER}
         )
     </insert>
     
