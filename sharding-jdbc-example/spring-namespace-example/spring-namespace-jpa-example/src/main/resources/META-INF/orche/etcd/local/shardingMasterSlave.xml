@@ -17,7 +17,6 @@
                         http://shardingsphere.io/schema/shardingsphere/masterslave
                         http://shardingsphere.io/schema/shardingsphere/masterslave/master-slave.xsd">
     <import resource="classpath*:META-INF/orche/etcd/regCenter.xml" />
-    <context:annotation-config />
     <context:component-scan base-package="io.shardingsphere.example.spring.namespace.jpa"/>
     
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">

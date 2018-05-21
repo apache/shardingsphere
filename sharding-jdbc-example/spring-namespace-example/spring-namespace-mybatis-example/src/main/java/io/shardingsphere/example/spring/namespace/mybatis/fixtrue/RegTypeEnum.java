@@ -16,8 +16,6 @@
 package io.shardingsphere.example.spring.namespace.mybatis.fixtrue;
 
 public enum RegTypeEnum {
-    ETCD_CLOUD,
-    ETCD_LOCAL,
-    ZK_CLOUD,
-    ZK_LOCAL
+
+    ETCD_CLOUD, ETCD_LOCAL, ZK_CLOUD, ZK_LOCAL
 }
