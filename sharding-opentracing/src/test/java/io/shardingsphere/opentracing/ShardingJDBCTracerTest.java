@@ -17,10 +17,13 @@
 
 package io.shardingsphere.opentracing;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.eventbus.EventBus;
 import io.opentracing.NoopTracerFactory;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.opentracing.fixture.FooTracer;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -41,6 +44,7 @@ public final class ShardingJDBCTracerTest {
 	public void setUp() throws Exception {
 		System.setProperty("shardingjdbc.opentracing.tracer.class", FooTracer.class.getName());
 		clearGlobalTracer();
+		unregisterEventBus();
 	}
 
 	@After
@@ -76,5 +80,13 @@ public final class ShardingJDBCTracerTest {
 		Field tracerField = GlobalTracer.class.getDeclaredField("tracer");
 		tracerField.setAccessible(true);
 		tracerField.set(GlobalTracer.class, NoopTracerFactory.create());
+
 	}
+
+	private static void unregisterEventBus() throws NoSuchFieldException, IllegalAccessException {
+		Field subscribersByTypeField = EventBus.class.getDeclaredField("subscribersByType");
+		subscribersByTypeField.setAccessible(true);
+		subscribersByTypeField.set(EventBusInstance.getInstance(), HashMultimap.create());
+	}
+
 }
