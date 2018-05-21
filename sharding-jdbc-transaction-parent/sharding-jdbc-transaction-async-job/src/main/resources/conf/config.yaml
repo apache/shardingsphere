@@ -1,52 +1,36 @@
-#事务日志的数据源.
+#Transaction log data source.
 targetDataSource:
-  ds_0: !!org.apache.commons.dbcp.BasicDataSource
+  ds_trans_0: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_0
+    url: jdbc:mysql://localhost:3306/ds_trans_0
     username: root
     password:
-  ds_1: !!org.apache.commons.dbcp.BasicDataSource
+  ds_trans_1: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_1
+    url: jdbc:mysql://localhost:3306/ds_trans_1
     username: root
     password:
 
-#事务日志的数据源.
+#Data source for transaction manager.
 transactionLogDataSource:
-  ds_trans: !!org.apache.commons.dbcp.BasicDataSource
+  ds_trans: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/trans_log
     username: root
     password:
 
-zkConfig:
-  #注册中心的连接地址
-  connectionString: localhost:2181
-  
-  #作业的命名空间
-  namespace: Best-Efforts-Delivery-Job
-  
-  #注册中心的等待重试的间隔时间的初始值
-  baseSleepTimeMilliseconds: 1000
-  
-  #注册中心的等待重试的间隔时间的最大值
-  maxSleepTimeMilliseconds: 3000
-  
-  #注册中心的最大重试次数
-  maxRetries: 3
-
 jobConfig:
-  #作业名称
-  name: bestEffortsDeliveryJob
+  #job name
+  name: BASETransaction
   
-  #触发作业的cron表达式
+  #cron expression
   cron: 0/5 * * * * ?
   
-  #每次作业获取的事务日志最大数量
+  #The maximum number of transaction logs fetch from each job
   transactionLogFetchDataCount: 100
   
-  #事务送达的最大尝试次数.
+  #The maximum number of try to deliver a transaction.
   maxDeliveryTryTimes: 3
   
-  #执行送达事务的延迟毫秒数,早于此间隔时间的入库事务才会被作业执行
+  #The milliseconds of delay delivery of the transaction.
   maxDeliveryTryDelayMillis: 60000

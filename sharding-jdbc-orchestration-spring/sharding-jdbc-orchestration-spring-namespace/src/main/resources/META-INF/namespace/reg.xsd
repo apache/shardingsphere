@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:beans="http://www.springframework.org/schema/beans"
-            xmlns="http://shardingjdbc.io/schema/shardingjdbc/orchestration/reg"
-            targetNamespace="http://shardingjdbc.io/schema/shardingjdbc/orchestration/reg"
-        elementFormDefault="qualified"
-        attributeFormDefault="unqualified">
+            xmlns="http://shardingsphere.io/schema/shardingsphere/orchestration/reg"
+            targetNamespace="http://shardingsphere.io/schema/shardingsphere/orchestration/reg"
+        elementFormDefault="qualified">
     <xsd:import namespace="http://www.springframework.org/schema/beans"/>
-    
     <xsd:element name="zookeeper">
         <xsd:complexType>
             <xsd:complexContent>
@@ -23,7 +21,6 @@
             </xsd:complexContent>
         </xsd:complexType>
     </xsd:element>
-    
     <xsd:element name="etcd">
         <xsd:complexType>
             <xsd:complexContent>

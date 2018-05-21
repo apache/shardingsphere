@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql-cases>
+    <sql-case id="assertSelectOne" value="SELECT 1 as a" db-types="MySQL,PostgreSQL,SQLServer" />
+    <sql-case id="assertSelectNotEqualsWithSingleTable" value="SELECT * FROM t_order_item WHERE item_id &lt;&gt; %s ORDER BY item_id" />
+    <sql-case id="assertSelectNotEqualsWithSingleTableForExclamationEqual" value="SELECT * FROM t_order_item WHERE item_id != %s ORDER BY item_id" />
+    <sql-case id="assertSelectNotEqualsWithSingleTableForNotIn" value="SELECT * FROM t_order_item WHERE item_id IS NOT NULL AND item_id NOT IN (%s, %s) ORDER BY item_id" />
+    <sql-case id="assertSelectNotEqualsWithSingleTableForNotBetween" value="SELECT * FROM t_order_item WHERE item_id IS NOT NULL AND item_id NOT BETWEEN %s AND %s ORDER BY item_id" />
+    <sql-case id="assertSelectEqualsWithSingleTable" value="SELECT * FROM t_order WHERE user_id = %s AND order_id = %s" />
+    <sql-case id="assertSelectEqualsWithSameShardingColumns" value="SELECT * FROM t_order WHERE order_id = %s AND order_id = %s" />
+    <sql-case id="assertSelectBetweenWithSingleTable" value="SELECT * FROM t_order WHERE user_id BETWEEN %s AND %s AND order_id BETWEEN %s AND %s ORDER BY user_id, order_id" />
+    <sql-case id="assertSelectInWithSingleTable" value="SELECT * FROM t_order WHERE user_id IN (%s, %s, %s) AND order_id IN (%s, %s) ORDER BY user_id, order_id" />
+    <sql-case id="assertSelectInWithSameShardingColumns" value="SELECT * FROM t_order WHERE order_id IN (%s, %s) AND order_id IN (%s, %s) ORDER BY order_id" />
+    <sql-case id="assertSelectIterator" value="SELECT t.* FROM t_order_item t WHERE t.item_id IN (%s, %s)" />
+    <sql-case id="assertSelectNoShardingTable" value="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id ORDER BY i.item_id" />
+    <sql-case id="assertSelectLikeWithCount" value="SELECT count(0) as orders_count FROM `t_order` o WHERE o.status LIKE CONCAT('%%', %s, '%%') AND o.`user_id` IN (%s, %s) AND o.`order_id` BETWEEN %s AND %s" db-types="MySQL,H2" />
+    <sql-case id="assertSelectWithBindingTable" value="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s ORDER BY i.item_id" />
+    <sql-case id="assertSelectWithBindingTableAndConfigTable" value="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN t_config c ON o.status = c.status WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s AND c.status = %s ORDER BY i.item_id" />
+    <sql-case id="assertSelectWithUpperCaseBindingTable" value="SELECT i.* FROM T_ORDER o JOIN T_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s ORDER BY i.item_id" />
+    <sql-case id="assertSelectWithUpperCaseBindingTableAndConfigTable" value="SELECT i.*,c.status c_status FROM T_ORDER o JOIN T_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN t_config c ON o.status = c.status WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s AND c.status = %s ORDER BY i.item_id" />
+    <sql-case id="assertSelectCountWithBindingTable" value="SELECT COUNT(*) AS items_count FROM t_order o, t_order_item i WHERE o.user_id = i.user_id AND o.order_id = i.order_id AND o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s" />
+    <sql-case id="assertSelectCountWithBindingTableWithJoin" value="SELECT COUNT(*) AS items_count FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s" />
+    <sql-case id="assertSelectAliasWithKeyword" value="SELECT length.item_id password FROM t_order_item length where length.item_id = %s " db-types="MySQL,H2,SQLServer,Oracle" />
+
+<!--
+
+    <sql-case id="assertSelectEqualsWithSingleTableExpected" value="SELECT * FROM t_order WHERE user_id in (%s,%s,%s,%s,%s,%s,%s,%s,%s) AND order_id in (%s,%s,%s,%s,%s,%s,%s,%s,%s)" />
+    <sql-case id="assertSelectUpdateWithoutAliasExpected" value="SELECT * FROM t_order WHERE user_id in (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) AND order_id in (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)" />
+-->
+
+
+    <sql-case id="assertSelectWithJoinForceIndex" value="SELECT i.* FROM t_order o FORCE INDEX(order_index) JOIN t_order_item i WHERE o.order_id = %s" db-types="MySQL" />
+    <sql-case id="assertSelectEqualsWithJsonAnGeo" value="SELECT * FROM t_place WHERE rule = %s::jsonb AND start_point=ST_GeographyFromText('SRID=4326;POINT('||%s||' '||%s||')') AND user_new_id = %s" db-types="PostgreSQL" />
+    <sql-case id="assertSelectInWithJsonAnGeo" value="SELECT * FROM t_place WHERE rule IN (%s::jsonb, %s::jsonb) AND start_point=ST_GeographyFromText('SRID=4326;POINT('||%s||' '||%s||')') AND user_new_id = %s" db-types="PostgreSQL" />
+    <sql-case id="assertSelectBetweenWithJsonAnGeo" value="SELECT * FROM t_place WHERE rule BETWEEN %s::jsonb AND %s::jsonb AND start_point=ST_GeographyFromText('SRID=4326;POINT('||%s||' '||%s||')') AND user_new_id = %s" db-types="PostgreSQL" />
+
+</sql-cases>

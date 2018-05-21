@@ -1,17 +1,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>io.shardingjdbc</groupId>
-    <artifactId>sharding-jdbc</artifactId>
-    <version>2.0.3</version>
+    <groupId>io.shardingsphere</groupId>
+    <artifactId>sharding-sphere</artifactId>
+    <version>3.0.0.M1</version>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>sharding-jdbc-core</module>
-        <module>sharding-jdbc-core-spring</module>
+        <module>sharding-core</module>
+        <module>sharding-jdbc</module>
+        <module>sharding-jdbc-spring</module>
         <module>sharding-jdbc-transaction-parent</module>
         <module>sharding-jdbc-orchestration</module>
         <module>sharding-jdbc-orchestration-spring</module>
+        <module>sharding-opentracing</module>
+        <module>sharding-proxy</module>
+        <module>sharding-sql-test</module>
     </modules>
     
     <properties>
@@ -24,13 +28,14 @@
         <guava.version>18.0</guava.version>
         <common-lang3>3.6</common-lang3>
         <commons-pool.version>1.6</commons-pool.version>
-        <commons-dbcp.version>1.4</commons-dbcp.version>
+        <commons-dbcp2.version>2.2.0</commons-dbcp2.version>
         <gson.version>2.6.1</gson.version>
         <curator.version>2.10.0</curator.version>
         <logback.version>1.1.2</logback.version>
         <slf4j.version>1.7.7</slf4j.version>
         <groovy.version>2.4.5</groovy.version>
         <snakeyaml.version>1.16</snakeyaml.version>
+        <netty.version>4.1.16.Final</netty.version>
         <springframework.version>[4.3.6.RELEASE,5.0.0.M1)</springframework.version>
         <spring-boot.version>[1.5.0.RELEASE,2.0.0.M1)</spring-boot.version>
         <mysql-connector-java.version>5.1.30</mysql-connector-java.version>
@@ -42,13 +47,14 @@
         <hamcrest.version>1.3</hamcrest.version>
         <dbunit.version>2.5.3</dbunit.version>
         <mockito.version>2.7.21</mockito.version>
-        <elastic-job.version>1.0.6</elastic-job.version>
         <grpc.version>1.7.0</grpc.version>
         <protobuf.version>3.4.0</protobuf.version>
         <guava-retrying.version>2.0.0</guava-retrying.version>
-        
+        <quartz.version>2.3.0</quartz.version>
+        <opentracing.version>0.30.0</opentracing.version>
+
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
-        <maven-assembly-plugin.version>2.5.5</maven-assembly-plugin.version>
+        <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
         <maven-resources-plugin.version>2.7</maven-resources-plugin.version>
         <maven-jar-plugin.version>2.6</maven-jar-plugin.version>
         <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
@@ -70,6 +76,8 @@
         <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
         <protobuf-maven-plugin.version>0.5.0</protobuf-maven-plugin.version>
         <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
+        <coveralls-maven-plugin.version>4.1.0</coveralls-maven-plugin.version>
+        <docker-maven-plugin.version>0.4.14</docker-maven-plugin.version>
         
         <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
     </properties>
@@ -93,6 +101,11 @@
                 <version>${slf4j.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jcl-over-slf4j</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.codehaus.groovy</groupId>
                 <artifactId>groovy</artifactId>
                 <version>${groovy.version}</version>
@@ -102,6 +115,11 @@
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
                 <version>${snakeyaml.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-all</artifactId>
+                <version>${netty.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -117,6 +135,12 @@
                 <groupId>org.apache.curator</groupId>
                 <artifactId>curator-client</artifactId>
                 <version>${curator.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>netty</artifactId>
+                        <groupId>io.netty</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.apache.curator</groupId>
@@ -142,6 +166,11 @@
                 <groupId>com.github.rholder</groupId>
                 <artifactId>guava-retrying</artifactId>
                 <version>${guava-retrying.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.opentracing</groupId>
+                <artifactId>opentracing-util</artifactId>
+                <version>${opentracing.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.curator</groupId>
@@ -192,9 +221,9 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>commons-dbcp</groupId>
-                <artifactId>commons-dbcp</artifactId>
-                <version>${commons-dbcp.version}</version>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-dbcp2</artifactId>
+                <version>${commons-dbcp2.version}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>commons-pool</groupId>
@@ -263,11 +292,6 @@
                 <version>${gson.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.dangdang</groupId>
-                <artifactId>elastic-job-core</artifactId>
-                <version>${elastic-job.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter</artifactId>
                 <version>${spring-boot.version}</version>
@@ -283,6 +307,12 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-test</artifactId>
                 <version>${spring-boot.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.opentracing</groupId>
+                <artifactId>opentracing-mock</artifactId>
+                <version>${opentracing.version}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
@@ -325,6 +355,10 @@
                     <configuration>
                         <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>${maven-assembly-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -492,8 +526,8 @@
                     <instrumentation>
                         <ignoreTrivial>true</ignoreTrivial>
                         <excludes>
-                            <exclude>io/shardingjdbc/**/*Test.class</exclude>
-                            <exclude>io/shardingjdbc/**/Test*.class</exclude>
+                            <exclude>io/shardingsphere/**/*Test.class</exclude>
+                            <exclude>io/shardingsphere/**/Test*.class</exclude>
                         </excludes>
                     </instrumentation>
                 </configuration>
@@ -516,6 +550,11 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>${docker-maven-plugin.version}</version>
             </plugin>
             <!--
             <plugin>
@@ -641,8 +680,8 @@
         </repository>
     </repositories>
     
-    <url>http://shardingjdbc.io</url>
-    <description>RDB Sharding</description>
+    <url>http://shardingsphere.io</url>
+    <description>Distributed database middleware ecosphere</description>
     <licenses>
         <license>
             <name>Apache License 2.0</name>
@@ -652,15 +691,19 @@
     </licenses>
     
     <scm>
-        <connection>scm:https://github.com/shardingjdbc/sharding-jdbc</connection>
-        <developerConnection>scm:https://github.com/shardingjdbc/sharding-jdbc</developerConnection>
-        <url>https://github.com/shardingjdbc/sharding-jdbc</url>
+        <connection>scm:https://github.com/sharding-sphere/sharding-sphere</connection>
+        <developerConnection>scm:https://github.com/sharding-sphere/sharding-sphere</developerConnection>
+        <url>https://github.com/sharding-sphere/sharding-sphere</url>
     </scm>
     
     <mailingLists>
         <mailingList>
             <name>Zhangliang</name>
-            <post>zhangliang@dangdang.com</post>
+            <post>zhangliang@apache.org</post>
+        </mailingList>
+        <mailingList>
+            <name>Caohao</name>
+            <post>caohaoch@gmail.com</post>
         </mailingList>
     </mailingLists>
     
@@ -668,7 +711,13 @@
         <developer>
             <id>zhangliang</id>
             <name>ZhangLiang</name>
-            <email>zhangliang@dangdang.com</email>
+            <email>zhangliang@apache.org</email>
+            <timezone>8</timezone>
+        </developer>
+        <developer>
+            <id>caohao</id>
+            <name>CaoHao</name>
+            <email>caohaoch@gmail.com</email>
             <timezone>8</timezone>
         </developer>
     </developers>
