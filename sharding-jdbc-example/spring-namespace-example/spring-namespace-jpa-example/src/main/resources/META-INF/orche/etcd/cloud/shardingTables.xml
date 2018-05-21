@@ -15,7 +15,9 @@
                         http://www.springframework.org/schema/tx/spring-tx.xsd">
     <import resource="classpath*:META-INF/orche/etcd/regCenter.xml" />
     <context:component-scan base-package="io.shardingsphere.example.spring.namespace.jpa"/>
-    
+
+    <sharding:data-source id="shardingDataSource" registry-center-ref="regCenter" />
+
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="shardingDataSource" />
         <property name="jpaVendorAdapter">
@@ -32,13 +34,4 @@
     </bean>
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" p:entityManagerFactory-ref="entityManagerFactory" />
     <tx:annotation-driven />
-    
-    <bean id="demo_ds" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds"/>
-        <property name="username" value="root"/>
-        <property name="password" value=""/>
-    </bean>
-
-    <sharding:data-source id="shardingDataSource" registry-center-ref="regCenter" />
 </beans>
