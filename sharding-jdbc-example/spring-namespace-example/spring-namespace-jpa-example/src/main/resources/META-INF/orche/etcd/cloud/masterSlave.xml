@@ -57,5 +57,5 @@
     
     <bean id="randomStrategy" class="io.shardingsphere.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
     
-    <master-slave:data-source id="masterSlaveDataSource" master-data-source-name="demo_ds_master" slave-data-source-names="demo_ds_slave_0, demo_ds_slave_1" strategy-ref="randomStrategy" registry-center-ref="regCenter" overwrite="true"/>
+    <master-slave:data-source id="masterSlaveDataSource" registry-center-ref="regCenter"/>
 </beans>
