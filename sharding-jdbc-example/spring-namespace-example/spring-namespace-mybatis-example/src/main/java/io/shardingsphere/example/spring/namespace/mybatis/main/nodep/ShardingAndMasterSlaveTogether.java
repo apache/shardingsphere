@@ -18,7 +18,7 @@
 package io.shardingsphere.example.spring.namespace.mybatis.main.nodep;
 
 import io.shardingsphere.example.spring.namespace.mybatis.service.DemoService;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /*
@@ -27,8 +27,9 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class ShardingAndMasterSlaveTogether {
     
     public static void main(final String[] args) {
-        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/nodep/shardingMasterSlave.xml");
+        ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/nodep/shardingMasterSlave.xml");
         DemoService demo = applicationContext.getBean(DemoService.class);
         demo.demo();
+        applicationContext.close();
     }
 }

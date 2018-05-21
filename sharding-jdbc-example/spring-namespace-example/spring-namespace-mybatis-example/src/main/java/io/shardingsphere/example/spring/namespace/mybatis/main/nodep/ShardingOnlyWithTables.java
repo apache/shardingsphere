@@ -18,14 +18,15 @@
 package io.shardingsphere.example.spring.namespace.mybatis.main.nodep;
 
 import io.shardingsphere.example.spring.namespace.mybatis.service.DemoService;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class ShardingOnlyWithTables {
     
     public static void main(final String[] args) {
-        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/nodep/shardingTables.xml");
+        ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/nodep/shardingTables.xml");
         DemoService demoService = applicationContext.getBean(DemoService.class);
         demoService.demo();
+        applicationContext.close();
     }
 }
