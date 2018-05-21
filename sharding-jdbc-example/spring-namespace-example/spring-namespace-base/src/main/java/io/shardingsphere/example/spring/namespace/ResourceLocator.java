@@ -27,7 +27,6 @@ public class ResourceLocator {
     }
 
     public String getConfigFileName(final String fileName) {
-        StringBuilder builder = new StringBuilder("META-INF/orche/");
         switch (regTypeEnum) {
             case ZK_LOCAL:
                 return doBuild("zookeeper/local/", fileName);
