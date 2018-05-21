@@ -18,50 +18,6 @@
     <import resource="classpath*:META-INF/orche/etcd/regCenter.xml" />
     <context:component-scan base-package="io.shardingsphere.example.spring.namespace.mybatis" />
     
-    <bean id="demo_ds_master_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_master_0"/>
-        <property name="username" value="root"/>
-        <property name="password" value=""/>
-    </bean>
-    
-    <bean id="demo_ds_master_0_slave_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_master_0_slave_0"/>
-        <property name="username" value="root"/>
-        <property name="password" value=""/>
-    </bean>
-    
-    <bean id="demo_ds_master_0_slave_1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_master_0_slave_1"/>
-        <property name="username" value="root"/>
-        <property name="password" value=""/>
-    </bean>
-
-    <bean id="demo_ds_master_1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_master_1"/>
-        <property name="username" value="root"/>
-        <property name="password" value=""/>
-    </bean>
-
-    <bean id="demo_ds_master_1_slave_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_master_1_slave_0"/>
-        <property name="username" value="root"/>
-        <property name="password" value=""/>
-    </bean>
-    
-    <bean id="demo_ds_master_1_slave_1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_master_1_slave_1"/>
-        <property name="username" value="root"/>
-        <property name="password" value=""/>
-    </bean>
-    
-    <bean id="randomStrategy" class="io.shardingsphere.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
-    
     <sharding:data-source id="shardingMasterSlaveDataSource" registry-center-ref="regCenter" />
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
