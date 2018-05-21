@@ -127,7 +127,7 @@ public final class BasicExpressionParser {
     private void setTableToken(final SQLStatement sqlStatement, final int beginPosition, final SQLPropertyExpression propertyExpr) {
         String owner = propertyExpr.getOwner().getName();
         if (sqlStatement.getTables().getTableNames().contains(SQLUtil.getExactlyValue(propertyExpr.getOwner().getName()))) {
-            sqlStatement.getSqlTokens().add(new TableToken(beginPosition - owner.length(), owner));
+            sqlStatement.getSqlTokens().add(new TableToken(beginPosition - owner.length(), 0, owner));
         }
     }
 }
