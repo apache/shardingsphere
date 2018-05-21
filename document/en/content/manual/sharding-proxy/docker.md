@@ -5,7 +5,14 @@ title = "Docker Image"
 weight = 3
 +++
 
-## Build docker image
+
+## Pull official docker image
+
+``` 
+docker pull shardingsphere/sharding-proxy
+```
+
+## Manual build docker image（Optional）
 
 ``` 
 git clone https://github.com/sharding-sphere/sharding-sphere
