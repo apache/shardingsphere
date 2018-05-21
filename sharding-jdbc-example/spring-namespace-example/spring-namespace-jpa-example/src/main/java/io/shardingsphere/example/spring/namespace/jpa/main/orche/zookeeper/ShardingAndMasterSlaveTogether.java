@@ -22,9 +22,9 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
  */
 public class ShardingAndMasterSlaveTogether {
-
+    
     private static final boolean LOAD_CONFIG_FROM_REG_CENTER = false;
-
+    
     public static void main(final String[] args) {
         String configFileName = LOAD_CONFIG_FROM_REG_CENTER ? "META-INF/orche/zookeeper/cloud/shardingMasterSlave.xml" : "META-INF/orche/zookeeper/local/shardingMasterSlave.xml";
         try (ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext(configFileName)) {

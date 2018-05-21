@@ -24,6 +24,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 @SpringBootApplication
 public class SpringBootDataMain {
+    
     public static void main(final String[] args) {
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootDataMain.class, args)) {
             applicationContext.getBean(DemoService.class).demo();

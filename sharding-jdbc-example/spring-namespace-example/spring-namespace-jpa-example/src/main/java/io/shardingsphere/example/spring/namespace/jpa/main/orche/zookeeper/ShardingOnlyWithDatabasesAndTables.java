@@ -19,9 +19,9 @@ import io.shardingsphere.example.spring.namespace.jpa.fixture.service.DemoServic
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class ShardingOnlyWithDatabasesAndTables {
-
+    
     private static final boolean LOAD_CONFIG_FROM_REG_CENTER = false;
-
+    
     public static void main(final String[] args) {
         String configFileName = LOAD_CONFIG_FROM_REG_CENTER ? "META-INF/orche/zookeeper/cloud/shardingDatabasesTables.xml" : "META-INF/orche/zookeeper/local/shardingDatabasesTables.xml";
         try (ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext(configFileName)) {

@@ -45,7 +45,7 @@ public class ShardingAndMasterSlaveTogether {
     
     private static final String ETCD_CONNECTION_STRING = "http://localhost:2379";
     
-    private static final boolean LOAD_CONFIG_FROM_REG_CENTER = true;
+    private static final boolean LOAD_CONFIG_FROM_REG_CENTER = false;
     
     public static void main(final String[] args) throws SQLException {
         DataSource dataSource = getDataSource();
