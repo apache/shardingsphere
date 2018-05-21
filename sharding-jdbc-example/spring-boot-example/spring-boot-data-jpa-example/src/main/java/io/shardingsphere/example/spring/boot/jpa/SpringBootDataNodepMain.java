@@ -15,10 +15,18 @@
  * </p>
  */
 
-package io.shardingsphere.example.orchestration.spring.boot.jpa.repository;
+package io.shardingsphere.example.spring.boot.jpa;
 
-import io.shardingsphere.example.orchestration.spring.boot.jpa.entity.Order;
-import org.springframework.data.jpa.repository.JpaRepository;
+import io.shardingsphere.example.spring.boot.jpa.service.DemoService;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
 
-public interface OrderRepository extends JpaRepository<Order, Long> {
+@SpringBootApplication
+public class SpringBootDataNodepMain {
+    
+    public static void main(final String[] args) {
+        ApplicationContext applicationContext = SpringApplication.run(SpringBootDataNodepMain.class, args);
+        applicationContext.getBean(DemoService.class).demo();
+    }
 }

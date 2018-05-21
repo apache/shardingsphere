@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.example.orchestration.spring.boot.jpa.entity;
+package io.shardingsphere.example.spring.boot.jpa.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

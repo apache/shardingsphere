@@ -15,18 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.example.orchestration.spring.boot.jpa.main.nodep;
+package io.shardingsphere.example.spring.boot.jpa;
 
-import io.shardingsphere.example.orchestration.spring.boot.jpa.service.DemoService;
+import io.shardingsphere.example.spring.boot.jpa.service.DemoService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 
 @SpringBootApplication
-public class SpringBootDataJpaMain {
+public class SpringBootDataOrcheMain {
     
     public static void main(final String[] args) {
-        ApplicationContext applicationContext = SpringApplication.run(SpringBootDataJpaMain.class, args);
+        ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootDataOrcheMain.class, args);
         applicationContext.getBean(DemoService.class).demo();
+        applicationContext.close();
     }
 }

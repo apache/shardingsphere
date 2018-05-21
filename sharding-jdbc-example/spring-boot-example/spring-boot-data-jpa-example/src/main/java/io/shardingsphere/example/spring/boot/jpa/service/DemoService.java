@@ -15,12 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.example.orchestration.spring.boot.jpa.service;
+package io.shardingsphere.example.spring.boot.jpa.service;
 
-import io.shardingsphere.example.orchestration.spring.boot.jpa.entity.Order;
-import io.shardingsphere.example.orchestration.spring.boot.jpa.entity.OrderItem;
-import io.shardingsphere.example.orchestration.spring.boot.jpa.repository.OrderItemRepository;
-import io.shardingsphere.example.orchestration.spring.boot.jpa.repository.OrderRepository;
+import io.shardingsphere.example.spring.boot.jpa.entity.Order;
+import io.shardingsphere.example.spring.boot.jpa.entity.OrderItem;
+import io.shardingsphere.example.spring.boot.jpa.repository.OrderItemRepository;
+import io.shardingsphere.example.spring.boot.jpa.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
