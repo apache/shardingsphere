@@ -13,36 +13,32 @@
  * </p>
  */
 
-package io.shardingsphere.example.spring.namespace;
+package io.shardingsphere.example.spring.namespace.jpa.fixture;
 
 public class ResourceLocator {
-    
+
     private RegTypeEnum regTypeEnum;
-    
+
     public ResourceLocator() {
         this.regTypeEnum = RegTypeEnum.ZK_LOCAL;
     }
-    
+
     public ResourceLocator(RegTypeEnum regTypeEnum) {
         this.regTypeEnum = regTypeEnum;
     }
-    
+
     public String getConfigFileName(final String fileName) {
         switch (regTypeEnum) {
             case ZK_LOCAL:
-                return doBuild("zookeeper/local/", fileName);
+                return "META-INF/orche/zookeeper/local/" + fileName;
             case ZK_CLOUD:
-                return doBuild("zookeeper/cloud/", fileName);
+                return "META-INF/orche/zookeeper/cloud/" + fileName;
             case ETCD_LOCAL:
-                return doBuild("etcd/local/", fileName);
+                return "META-INF/orche/etcd/local/" + fileName;
             case ETCD_CLOUD:
-                return doBuild("etcd/cloud/", fileName);
+                return "META-INF/orche/etcd/cloud/" + fileName;
             default:
-                 return doBuild("zookeeper/local/", fileName);
+                return "META-INF/orche/zookeeper/local/" + fileName;
         }
-    }
-    
-    private String doBuild(String regPath, String fileName) {
-        return "META-INF/orche/" + regPath + fileName;
     }
 }

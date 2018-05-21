@@ -13,12 +13,9 @@
  * </p>
  */
 
-package io.shardingsphere.example.spring.namespace;
+package io.shardingsphere.example.spring.namespace.jpa.fixture;
 
 public enum RegTypeEnum {
-    
-    ETCD_CLOUD,
-    ETCD_LOCAL,
-    ZK_CLOUD,
-    ZK_LOCAL
+
+    ETCD_CLOUD, ETCD_LOCAL, ZK_CLOUD, ZK_LOCAL
 }

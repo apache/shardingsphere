@@ -17,7 +17,7 @@
 
 package io.shardingsphere.example.spring.namespace.mybatis.bootstrap.orche;
 
-import io.shardingsphere.example.spring.namespace.ResourceLocator;
+import io.shardingsphere.example.spring.namespace.mybatis.fixtrue.ResourceLocator;
 import io.shardingsphere.example.spring.namespace.mybatis.fixtrue.service.DemoService;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 

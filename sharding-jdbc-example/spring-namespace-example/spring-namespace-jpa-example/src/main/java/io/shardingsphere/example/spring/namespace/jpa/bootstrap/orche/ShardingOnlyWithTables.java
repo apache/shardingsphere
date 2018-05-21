@@ -17,7 +17,7 @@
 
 package io.shardingsphere.example.spring.namespace.jpa.bootstrap.orche;
 
-import io.shardingsphere.example.spring.namespace.ResourceLocator;
+import io.shardingsphere.example.spring.namespace.jpa.fixture.ResourceLocator;
 import io.shardingsphere.example.spring.namespace.jpa.fixture.service.DemoService;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 

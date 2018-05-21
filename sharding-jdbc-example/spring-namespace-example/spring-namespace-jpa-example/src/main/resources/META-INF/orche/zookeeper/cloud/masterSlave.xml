@@ -13,8 +13,8 @@
                         http://www.springframework.org/schema/tx/spring-tx.xsd
                         http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave
                         http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave/master-slave.xsd">
-    <context:annotation-config />
     <import resource="classpath*:META-INF/orche/zookeeper/regCenter.xml" />
+    <context:annotation-config />
     <context:component-scan base-package="io.shardingsphere.example.spring.namespace.jpa"/>
     
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">

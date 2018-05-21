@@ -17,14 +17,14 @@
 
 package io.shardingsphere.example.spring.namespace.jpa.bootstrap.orche;
 
-import io.shardingsphere.example.spring.namespace.ResourceLocator;
+import io.shardingsphere.example.spring.namespace.jpa.fixture.ResourceLocator;
 import io.shardingsphere.example.spring.namespace.jpa.fixture.service.DemoService;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /*
  * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
  */
-public class MasterSlaveOnly extends ResourceLocator {
+public class MasterSlaveOnly {
     public static void main(final String[] args) {
         String configFileName = new ResourceLocator().getConfigFileName("masterSlave.xml");
         try (ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext(configFileName)) {

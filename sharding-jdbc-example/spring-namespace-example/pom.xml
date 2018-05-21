@@ -11,7 +11,6 @@
     <modules>
         <module>spring-namespace-mybatis-example</module>
         <module>spring-namespace-jpa-example</module>
-        <module>spring-namespace-base</module>
     </modules>
     
     <dependencies>
