@@ -21,13 +21,13 @@ mvn clean package docker:build
 ## 运行Docker
 
 ```
-docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf --env PORT=3308 -p13308:3308 sharding-sphere/sharding-proxy:2.1.0-SNAPSHOT
+docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf --env PORT=3308 -p13308:3308 shardingsphere/sharding-proxy:latest
 ```
 
 可以自定义端口`3308`和`13308`。`3308`表示docker容器端口, `13308`表示宿主机端口。
 
 ```
-docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf --env JVM_OPTS="-Djava.awt.headless=true" --env PORT=3308 -p13308:3308 sharding-sphere/sharding-proxy:2.1.0-SNAPSHOT
+docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf --env JVM_OPTS="-Djava.awt.headless=true" --env PORT=3308 -p13308:3308 shardingsphere/sharding-proxy:latest
 ```
 
 可以自定义JVM相关参数到环境变量`JVM_OPTS`中。
