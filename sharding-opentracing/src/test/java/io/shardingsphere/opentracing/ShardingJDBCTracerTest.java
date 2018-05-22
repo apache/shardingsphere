@@ -25,68 +25,65 @@ import io.opentracing.util.GlobalTracer;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.opentracing.fixture.FooTracer;
-
-import static org.hamcrest.CoreMatchers.is;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.Is.isA;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class ShardingJDBCTracerTest {
-
-	@Before
-	public void setUp() throws Exception {
-		System.setProperty("shardingjdbc.opentracing.tracer.class", FooTracer.class.getName());
-		clearGlobalTracer();
-		unregisterEventBus();
-	}
-
-	@After
-	public void tearDown() {
-		System.getProperties().remove("shardingjdbc.opentracing.tracer.class");
-	}
-
-	@Test
-	public void assertDuplicatedLoading() {
-		ShardingJDBCTracer.init(mock(Tracer.class));
-		Tracer t1 = ShardingJDBCTracer.get();
-		ShardingJDBCTracer.init();
-		assertEquals(t1, ShardingJDBCTracer.get());
-		ShardingJDBCTracer.init(mock(Tracer.class));
-		assertEquals(t1, ShardingJDBCTracer.get());
-	}
-
-	@Test
-	public void assertTracer() {
-		assertThat((GlobalTracer) ShardingJDBCTracer.get(), isA(GlobalTracer.class));
-		assertTrue(GlobalTracer.isRegistered());
-		assertThat(ShardingJDBCTracer.get(), is(ShardingJDBCTracer.get()));
-	}
-
-	@Test(expected = ShardingException.class)
-	public void assertTracerClassError() {
-		System.setProperty("shardingjdbc.opentracing.tracer.class", "com.foo.FooTracer");
-		ShardingJDBCTracer.get();
-
-	}
-
-	private static void clearGlobalTracer() throws NoSuchFieldException, IllegalAccessException {
-		Field tracerField = GlobalTracer.class.getDeclaredField("tracer");
-		tracerField.setAccessible(true);
-		tracerField.set(GlobalTracer.class, NoopTracerFactory.create());
-
-	}
-
-	private static void unregisterEventBus() throws NoSuchFieldException, IllegalAccessException {
-		Field subscribersByTypeField = EventBus.class.getDeclaredField("subscribersByType");
-		subscribersByTypeField.setAccessible(true);
-		subscribersByTypeField.set(EventBusInstance.getInstance(), HashMultimap.create());
-	}
-
+    
+    @Before
+    public void setUp() throws Exception {
+        System.setProperty("shardingjdbc.opentracing.tracer.class", FooTracer.class.getName());
+        clearGlobalTracer();
+        unregisterEventBus();
+    }
+    
+    @After
+    public void tearDown() {
+        System.getProperties().remove("shardingjdbc.opentracing.tracer.class");
+    }
+    
+    @Test
+    public void assertDuplicatedLoading() {
+        ShardingJDBCTracer.init(mock(Tracer.class));
+        Tracer t1 = ShardingJDBCTracer.get();
+        ShardingJDBCTracer.init();
+        assertEquals(t1, ShardingJDBCTracer.get());
+        ShardingJDBCTracer.init(mock(Tracer.class));
+        assertEquals(t1, ShardingJDBCTracer.get());
+    }
+    
+    @Test
+    public void assertTracer() {
+        assertThat((GlobalTracer) ShardingJDBCTracer.get(), isA(GlobalTracer.class));
+        assertTrue(GlobalTracer.isRegistered());
+        assertThat(ShardingJDBCTracer.get(), is(ShardingJDBCTracer.get()));
+    }
+    
+    @Test(expected = ShardingException.class)
+    public void assertTracerClassError() {
+        System.setProperty("shardingjdbc.opentracing.tracer.class", "com.foo.FooTracer");
+        ShardingJDBCTracer.get();
+    }
+    
+    private static void clearGlobalTracer() throws NoSuchFieldException, IllegalAccessException {
+        Field tracerField = GlobalTracer.class.getDeclaredField("tracer");
+        tracerField.setAccessible(true);
+        tracerField.set(GlobalTracer.class, NoopTracerFactory.create());
+    }
+    
+    private static void unregisterEventBus() throws NoSuchFieldException, IllegalAccessException {
+        Field subscribersByTypeField = EventBus.class.getDeclaredField("subscribersByType");
+        subscribersByTypeField.setAccessible(true);
+        subscribersByTypeField.set(EventBusInstance.getInstance(), HashMultimap.create());
+    }
 }
