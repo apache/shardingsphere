@@ -30,6 +30,7 @@ import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.parsing.SQLParsingEngine;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
 import io.shardingsphere.core.parsing.parser.context.condition.Condition;
+import io.shardingsphere.core.parsing.parser.exception.SQLParsingException;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.rule.ShardingRule;
@@ -174,6 +175,18 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         Condition condition = insertStatement.getConditions().find(new Column("field1", "TABLE_XXX")).get();
         assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
         assertThat(((ListShardingValue<? extends Comparable>) condition.getShardingValue(Collections.emptyList())).getValues().iterator().next(), is((Comparable) 1));
+    }
+    
+    @Test
+    public void parseInsertOnDuplicateKeyUpdateWithNoShardingColumn() {
+        ShardingRule shardingRule = createShardingRule();
+        new SQLParsingEngine(DatabaseType.MySQL, "INSERT ALL INTO TABLE_XXX (field8) VALUES (field8) ON DUPLICATE KEY UPDATE field8 = VALUES(field8)", shardingRule, null).parse(false);
+    }
+    
+    @Test(expected = SQLParsingException.class)
+    public void parseInsertOnDuplicateKeyUpdateWithShardingColumn() {
+        ShardingRule shardingRule = createShardingRule();
+        new SQLParsingEngine(DatabaseType.MySQL, "INSERT ALL INTO TABLE_XXX (field1) VALUES (field1) ON DUPLICATE KEY UPDATE field1 = VALUES(field1)", shardingRule, null).parse(false);
     }
     
     @Test
