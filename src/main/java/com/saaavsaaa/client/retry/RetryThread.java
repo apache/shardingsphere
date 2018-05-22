@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class RetryThread extends Thread {
     private static final Logger logger = LoggerFactory.getLogger(RetryThread.class);
-    private final ThreadPoolExecutor retryExecution;
+    private final ThreadPoolExecutor retryExecutor;
     private final int corePoolSize = Runtime.getRuntime().availableProcessors();
     private final int maximumPoolSize = corePoolSize;
     private final long keepAliveTime = 0;
@@ -21,17 +21,18 @@ public class RetryThread extends Thread {
     
     public RetryThread(DelayQueue<BaseOperation> queue) {
         this.queue = queue;
-        retryExecution = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(10), new ThreadFactory() {
+        retryExecutor = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(10), new ThreadFactory() {
             private final AtomicInteger threadIndex = new AtomicInteger(0);
             @Override
             public Thread newThread(Runnable r) {
                 Thread thread = new Thread(r);
                 thread.setDaemon(true);
                 thread.setName("zk-retry-" + threadIndex.incrementAndGet());
+                logger.debug("new thread:{}", thread.getName());
                 return thread;
             }
         });
-        addDelayedShutdownHook(retryExecution, closeDelay, TimeUnit.SECONDS);
+        addDelayedShutdownHook(retryExecutor, closeDelay, TimeUnit.SECONDS);
     }
 
     @Override
@@ -46,7 +47,7 @@ public class RetryThread extends Thread {
                 logger.error("retry interrupt e:{}", e.getMessage());
                 continue;
             }
-            retryExecution.submit(new Runnable() {
+            retryExecutor.submit(new Runnable() {
                 @Override
                 public void run() {
                     boolean result;

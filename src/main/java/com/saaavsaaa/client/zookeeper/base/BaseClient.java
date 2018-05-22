@@ -1,11 +1,13 @@
 package com.saaavsaaa.client.zookeeper.base;
 
 import com.saaavsaaa.client.action.IClient;
+import com.saaavsaaa.client.retry.RetryPolicy;
+import com.saaavsaaa.client.section.ClientContext;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.StringUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.section.Listener;
-import com.saaavsaaa.client.section.Properties;
+import com.saaavsaaa.client.utility.Properties;
 import com.saaavsaaa.client.section.WatcherCreator;
 import com.saaavsaaa.client.zookeeper.strategy.StrategyType;
 import org.apache.zookeeper.*;
@@ -35,6 +37,7 @@ public abstract class BaseClient implements IClient {
     private final int sessionTimeOut;
     private String scheme;
     private byte[] auth;
+    protected ClientContext context;
     
     protected ZooKeeper zooKeeper;
     protected List<ACL> authorities;
@@ -143,7 +146,7 @@ public abstract class BaseClient implements IClient {
         }
         try {
             zooKeeper.create(rootNode, date, authorities, CreateMode.PERSISTENT);
-            logger.debug("create root:{}", rootNode);
+            logger.debug("creating root:{}", rootNode);
         } catch (KeeperException.NodeExistsException ee){
             logger.warn("root create:{}", ee.getMessage());
             rootExist = true;
@@ -156,7 +159,7 @@ public abstract class BaseClient implements IClient {
                 rootExist = false;
             }
         }));
-        logger.debug("create root:{}", rootNode);
+        logger.debug("created root:{}", rootNode);
     }
     
     void deleteNamespace() throws KeeperException, InterruptedException {
@@ -173,6 +176,16 @@ public abstract class BaseClient implements IClient {
         this.scheme = scheme;
         this.auth = auth;
         this.authorities = ZooDefs.Ids.CREATOR_ALL_ACL;
+    }
+    
+    void setContext(final ClientContext context){
+        this.context = context;
+    }
+    public ClientContext getContext(){
+        if (context == null){
+            context = new ClientContext();
+        }
+        return context;
     }
     
     void setClientFactory(BaseClientFactory clientFactory) {

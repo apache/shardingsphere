@@ -2,6 +2,7 @@ package com.saaavsaaa.client.zookeeper.strategy;
 
 import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.retry.RetryCount;
+import com.saaavsaaa.client.retry.RetryPolicy;
 import com.saaavsaaa.client.section.Callable;
 import com.saaavsaaa.client.zookeeper.base.BaseClient;
 import com.saaavsaaa.client.zookeeper.base.BaseProvider;
@@ -18,14 +19,11 @@ import java.util.List;
  */
 public class SyncRetryStrategy extends UsualStrategy{
     private static final Logger logger = LoggerFactory.getLogger(SyncRetryStrategy.class);
-    
-    public SyncRetryStrategy(final IProvider provider){
-        super(provider);
-        RetryCount.INSTANCE.start();
-    }
+    protected final RetryPolicy retryPolicy;
     
     public SyncRetryStrategy(final BaseClient client, final boolean watched){
-        this(new BaseProvider(client, watched));
+        super(new BaseProvider(client, watched));
+        retryPolicy = client.getContext().getRetryPolicy();
     }
 
     @Override

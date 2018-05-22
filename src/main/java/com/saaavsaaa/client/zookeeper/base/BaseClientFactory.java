@@ -1,6 +1,8 @@
 package com.saaavsaaa.client.zookeeper.base;
 
 import com.saaavsaaa.client.action.IClient;
+import com.saaavsaaa.client.retry.RetryPolicy;
+import com.saaavsaaa.client.section.ClientContext;
 import com.saaavsaaa.client.section.Listener;
 
 import java.io.IOException;
@@ -14,6 +16,7 @@ public abstract class BaseClientFactory {
     protected String namespace;
     protected String scheme;
     protected byte[] auth;
+    protected ClientContext context;
     
     protected String servers;
     protected int sessionTimeoutMilliseconds;
@@ -22,6 +25,7 @@ public abstract class BaseClientFactory {
         client.setClientFactory(this);
         client.setRootNode(namespace);
         client.setAuthorities(scheme , auth);
+        client.setContext(context);
         client.start();
         if (globalListener != null) {
             client.registerWatch(globalListener);

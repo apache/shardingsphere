@@ -17,11 +17,15 @@ public enum AsyncRetryCenter {
     private final RetryThread retryThread = new RetryThread(queue);
     
     private boolean started = false;
-    private DelayRetry retrial;
+    private RetryPolicy retryPolicy;
     
-    public void init(DelayRetry retrial) {
-        logger.debug("retrial init");
-        this.retrial = retrial;
+    public void init(RetryPolicy retryPolicy) {
+        logger.debug("retryPolicy init");
+        if (retryPolicy == null){
+            logger.warn("retryPolicy is null and auto init with RetryPolicy.newNoInitDelayPolicy");
+            retryPolicy = RetryPolicy.newNoInitDelayPolicy();
+        }
+        this.retryPolicy = retryPolicy;
     }
     
     public synchronized void start(){
@@ -34,11 +38,11 @@ public enum AsyncRetryCenter {
     }
     
     public void add(BaseOperation operation){
-        if (retrial == null){
-            logger.debug("retrial no init");
-            retrial = DelayRetry.newNoInitDelayRetrial();
+        if (retryPolicy == null){
+            logger.warn("retryPolicy no init and auto init with RetryPolicy.newNoInitDelayPolicy");
+            retryPolicy = RetryPolicy.newNoInitDelayPolicy();
         }
-        operation.setRetrial(new DelayRetryExecution(retrial));
+        operation.setRetrial(new DelayRetryExecution(retryPolicy));
         queue.offer(operation);
         logger.debug("enqueue operation:{}", operation.toString());
     }

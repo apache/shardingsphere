@@ -28,7 +28,7 @@ public class AsyncRetryCenterTest {
     @Before
     public void start() throws IOException, InterruptedException {
         provider = new BaseProvider(createClient(), false);
-        AsyncRetryCenter.INSTANCE.init(DelayRetry.newNoInitDelayRetrial());
+        AsyncRetryCenter.INSTANCE.init(new RetryPolicy(3, 3, 10));
         AsyncRetryCenter.INSTANCE.start();
     }
     
@@ -55,11 +55,12 @@ public class AsyncRetryCenterTest {
     public void create() throws InterruptedException, KeeperException {
         String key = "a";
         String value = "bbb11";
-        AsyncRetryCenter.INSTANCE.add(new CreateCurrentOperation(provider, key, value, CreateMode.PERSISTENT));
+        AsyncRetryCenter.INSTANCE.add(new TestCreateCurrentOperation(provider, key, value, CreateMode.PERSISTENT));
         Thread.sleep(1000);
         String path = PathUtil.getRealPath(TestSupport.ROOT, key);
         assert provider.checkExists(path);
         provider.deleteOnlyCurrent(path);
+        provider.deleteOnlyCurrent(provider.getRealPath(TestSupport.ROOT));
         assert !provider.checkExists(path);
     }
 }

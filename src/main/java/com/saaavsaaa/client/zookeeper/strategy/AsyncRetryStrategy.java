@@ -18,7 +18,8 @@ public class AsyncRetryStrategy extends SyncRetryStrategy {
     private static final Logger logger = LoggerFactory.getLogger(AsyncRetryStrategy.class);
     
     public AsyncRetryStrategy(final BaseClient client, final boolean watched){
-        super(new BaseProvider(client, watched));
+        super(client, watched);
+        AsyncRetryCenter.INSTANCE.init(retryPolicy);
         AsyncRetryCenter.INSTANCE.start();
     }
     

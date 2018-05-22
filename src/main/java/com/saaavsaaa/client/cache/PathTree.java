@@ -5,7 +5,7 @@ import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.section.ClientTask;
 import com.saaavsaaa.client.section.Listener;
-import com.saaavsaaa.client.section.Properties;
+import com.saaavsaaa.client.utility.Properties;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.common.PathUtils;
