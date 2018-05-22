@@ -49,6 +49,10 @@ mysql -u${your_user_name} -p${your_password} -h${your_host} -P13308
 
 ## FAQ
 
-Q: I/O exception (java.io.IOException) caught when processing request to {}->unix://localhost:80: Connection refused?
+Q1: I/O exception (java.io.IOException) caught when processing request to {}->unix://localhost:80: Connection refused?
 
 A: Please make sure docker is running before you build or run.
+
+Q2：Can't connect to database when starting the container？
+
+A：Please make sure /${your_work_dir}/conf/sharding-config.yaml's mysql database ip can be accessed by docker container.
