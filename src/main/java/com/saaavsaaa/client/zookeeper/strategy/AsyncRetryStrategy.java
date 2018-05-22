@@ -30,7 +30,7 @@ public class AsyncRetryStrategy extends SyncRetryStrategy {
             provider.createCurrentOnly(path, value, createMode);
         } catch (KeeperException.SessionExpiredException ee){
             logger.warn("AsyncRetryStrategy SessionExpiredException createCurrentOnly:{}", path);
-            AsyncRetryCenter.INSTANCE.add(new CreateCurrentOperation(provider, path, value, createMode));
+            AsyncRetryCenter.INSTANCE.add(new CreateCurrentOperation(client, path, value, createMode));
         }
     }
     
@@ -41,7 +41,7 @@ public class AsyncRetryStrategy extends SyncRetryStrategy {
             provider.update(path, value);
         } catch (KeeperException.SessionExpiredException ee){
             logger.warn("AsyncRetryStrategy SessionExpiredException update:{}", path);
-            AsyncRetryCenter.INSTANCE.add(new UpdateOperation(provider, path, value));
+            AsyncRetryCenter.INSTANCE.add(new UpdateOperation(client, path, value));
         }
     }
     
@@ -52,7 +52,7 @@ public class AsyncRetryStrategy extends SyncRetryStrategy {
             provider.deleteOnlyCurrent(path);
         } catch (KeeperException.SessionExpiredException ee){
             logger.warn("AsyncRetryStrategy SessionExpiredException deleteOnlyCurrent:{}", path);
-            AsyncRetryCenter.INSTANCE.add(new DeleteCurrentOperation(provider, path));
+            AsyncRetryCenter.INSTANCE.add(new DeleteCurrentOperation(client, path));
         }
     }
 }

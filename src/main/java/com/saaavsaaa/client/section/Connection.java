@@ -1,6 +1,7 @@
 package com.saaavsaaa.client.section;
 
 import com.saaavsaaa.client.action.IClient;
+import com.saaavsaaa.client.zookeeper.base.BaseClient;
 import org.apache.zookeeper.KeeperException;
 
 import java.util.Map;
@@ -26,14 +27,14 @@ public class Connection {
         this.client = client;
     }
     
-    public static void check(KeeperException e) throws KeeperException {
+    public void check(KeeperException e) throws KeeperException {
         int code = e.code().intValue();
         if (!exceptionResets.containsKey(code)){
             throw e;
         }
         boolean reset = exceptionResets.get(code);
         if (reset){
-            
+//            this.client = ((BaseClient)client).getContext()
         } else {
             // block
         }

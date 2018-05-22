@@ -25,7 +25,7 @@ public class AllAsyncRetryStrategy extends AsyncRetryStrategy {
             super.createAllNeedPath(key, value, createMode);
         } catch (KeeperException.SessionExpiredException ee){
             logger.warn("AllAsyncRetryStrategy SessionExpiredException CreateAllNeedOperation:{}", key);
-            AsyncRetryCenter.INSTANCE.add(new CreateAllNeedOperation(provider, key, value, createMode));
+            AsyncRetryCenter.INSTANCE.add(new CreateAllNeedOperation(client, key, value, createMode));
         }
     }
     
@@ -35,7 +35,7 @@ public class AllAsyncRetryStrategy extends AsyncRetryStrategy {
             super.deleteAllChildren(key);
         } catch (KeeperException.SessionExpiredException ee){
             logger.warn("AllAsyncRetryStrategy SessionExpiredException deleteAllChildren:{}", key);
-            AsyncRetryCenter.INSTANCE.add(new DeleteAllChildrenOperation(provider, key));
+            AsyncRetryCenter.INSTANCE.add(new DeleteAllChildrenOperation(client, key));
         }
     }
     
@@ -45,7 +45,7 @@ public class AllAsyncRetryStrategy extends AsyncRetryStrategy {
             super.deleteCurrentBranch(key);
         } catch (KeeperException.SessionExpiredException ee){
             logger.warn("AllAsyncRetryStrategy SessionExpiredException deleteCurrentBranch:{}", key);
-            AsyncRetryCenter.INSTANCE.add(new DeleteCurrentBranchOperation(provider, key));
+            AsyncRetryCenter.INSTANCE.add(new DeleteCurrentBranchOperation(client, key));
         }
     }
 }

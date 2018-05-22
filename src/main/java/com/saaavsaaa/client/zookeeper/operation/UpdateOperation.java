@@ -1,8 +1,10 @@
 package com.saaavsaaa.client.zookeeper.operation;
 
+import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.section.Connection;
 import com.saaavsaaa.client.zookeeper.base.BaseOperation;
+import com.saaavsaaa.client.zookeeper.base.BaseProvider;
 import org.apache.zookeeper.KeeperException;
 
 /**
@@ -12,21 +14,16 @@ public class UpdateOperation extends BaseOperation {
     private final String key;
     private final String value;
     
-    public UpdateOperation(final IProvider provider, final String key, final String value) {
-        super(provider);
+    public UpdateOperation(final IClient client, final String key, final String value) {
+        super(client);
         this.key = key;
         this.value = value;
     }
     
     @Override
-    protected boolean execute() throws KeeperException, InterruptedException {
-        try {
-            provider.update(key, value);
-            return true;
-        } catch (KeeperException ee) {
-            Connection.check(ee);
-            return false;
-        }
+    protected void execute() throws KeeperException, InterruptedException {
+        IProvider provider = new BaseProvider(client, false);
+        provider.update(provider.getRealPath(key), value);
     }
     
     @Override

@@ -1,8 +1,10 @@
 package com.saaavsaaa.client.zookeeper.operation;
 
+import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.section.Connection;
 import com.saaavsaaa.client.zookeeper.base.BaseOperation;
+import com.saaavsaaa.client.zookeeper.base.BaseProvider;
 import org.apache.zookeeper.KeeperException;
 
 /**
@@ -10,20 +12,15 @@ import org.apache.zookeeper.KeeperException;
  */
 public class DeleteCurrentOperation extends BaseOperation {
     private final String key;
-    public DeleteCurrentOperation(final IProvider provider, final String key) {
-        super(provider);
+    public DeleteCurrentOperation(final IClient client, final String key) {
+        super(client);
         this.key = key;
     }
     
     @Override
-    protected boolean execute() throws KeeperException, InterruptedException {
-        try {
-            provider.deleteOnlyCurrent(key);
-            return true;
-        } catch (KeeperException ee) {
-            Connection.check(ee);
-            return false;
-        }
+    protected void execute() throws KeeperException, InterruptedException {
+        IProvider provider = new BaseProvider(client, false);
+        provider.deleteOnlyCurrent(provider.getRealPath(key));
     }
     
     @Override

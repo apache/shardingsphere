@@ -99,7 +99,7 @@ public class RetryProvider extends BaseProvider {
             super.createCurrentOnly(key, value, createMode);
         } catch (KeeperException.SessionExpiredException ee){
             logger.warn("RetryProvider SessionExpiredException createCurrentOnly:{}", key);
-            AsyncRetryCenter.INSTANCE.add(new CreateCurrentOperation(this, key, value, createMode));
+            AsyncRetryCenter.INSTANCE.add(new CreateCurrentOperation(client, key, value, createMode));
         } catch (KeeperException.ConnectionLossException ee){
             
         }
@@ -111,7 +111,7 @@ public class RetryProvider extends BaseProvider {
             super.update(key, value);
         } catch (KeeperException.SessionExpiredException ee){
             logger.warn("RetryProvider SessionExpiredException update:{}", key);
-            AsyncRetryCenter.INSTANCE.add(new UpdateOperation(this, key, value));
+            AsyncRetryCenter.INSTANCE.add(new UpdateOperation(client, key, value));
         }
     }
     
@@ -121,7 +121,7 @@ public class RetryProvider extends BaseProvider {
             super.deleteOnlyCurrent(key);
         } catch (KeeperException.SessionExpiredException ee){
             logger.warn("RetryProvider SessionExpiredException deleteOnlyCurrent:{}", key);
-            AsyncRetryCenter.INSTANCE.add(new DeleteCurrentOperation(this, key));
+            AsyncRetryCenter.INSTANCE.add(new DeleteCurrentOperation(client, key));
         }
     }
 }

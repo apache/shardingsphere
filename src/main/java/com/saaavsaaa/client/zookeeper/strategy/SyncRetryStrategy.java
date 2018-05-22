@@ -1,5 +1,6 @@
 package com.saaavsaaa.client.zookeeper.strategy;
 
+import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.retry.RetryCount;
 import com.saaavsaaa.client.retry.RetryPolicy;
@@ -20,14 +21,23 @@ import java.util.List;
 public class SyncRetryStrategy extends UsualStrategy{
     private static final Logger logger = LoggerFactory.getLogger(SyncRetryStrategy.class);
     protected final RetryPolicy retryPolicy;
+    protected final IClient client;
     
     public SyncRetryStrategy(final BaseClient client, final boolean watched){
         super(new BaseProvider(client, watched));
+        this.client = client;
         retryPolicy = client.getContext().getRetryPolicy();
     }
 
     @Override
     public byte[] getData(final String key) throws KeeperException, InterruptedException {
+            Callable<byte[]> callable = new Callable() {
+            @Override
+            public byte[] call() throws KeeperException, InterruptedException {
+                return provider.getData(provider.getRealPath(key));
+            }
+        };
+        
         String path = provider.getRealPath(key);
         try {
             return provider.getData(path);
@@ -96,8 +106,9 @@ public class SyncRetryStrategy extends UsualStrategy{
         String path = provider.getRealPath(key);
         Callable callable = new Callable() {
             @Override
-            public void call() throws KeeperException, InterruptedException {
+            public Object call() throws KeeperException, InterruptedException {
                 provider.createCurrentOnly(path, value, createMode);
+                return null;
             }
         };
         /*try {

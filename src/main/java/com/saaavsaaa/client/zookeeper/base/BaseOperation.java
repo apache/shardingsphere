@@ -1,7 +1,10 @@
 package com.saaavsaaa.client.zookeeper.base;
 
+import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.retry.DelayRetryExecution;
+import com.saaavsaaa.client.section.Connection;
+import com.saaavsaaa.client.zookeeper.strategy.UsualStrategy;
 import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,11 +17,11 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class BaseOperation implements Delayed {
     private static final Logger logger = LoggerFactory.getLogger(BaseOperation.class);
-    protected final IProvider provider;
+    protected final IClient client;
     protected DelayRetryExecution retryExecution;
     
-    protected BaseOperation(final IProvider provider) {
-        this.provider = provider;
+    protected BaseOperation(final IClient client) {
+        this.client = client;
     }
     
     public void setRetrial(final DelayRetryExecution retryExecution){
@@ -41,13 +44,20 @@ public abstract class BaseOperation implements Delayed {
         return (int) (this.getDelay(TimeUnit.MILLISECONDS) - delayed.getDelay(TimeUnit.MILLISECONDS));
     }
 
-    protected abstract boolean execute() throws KeeperException, InterruptedException;
+    protected abstract void execute() throws KeeperException, InterruptedException;
     
     /*
     * @Return whether or not continue enqueue
     */
     public boolean executeOperation() throws KeeperException, InterruptedException {
-        boolean result = execute();
+        boolean result;
+        try {
+            execute();
+            result = true;
+        } catch (KeeperException ee) {
+            new Connection(client).check(ee);
+            result = false;
+        }
         if (!result && retryExecution.hasNext()){
             retryExecution.next();
             return true;
