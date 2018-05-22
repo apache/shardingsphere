@@ -88,6 +88,26 @@
         </or-condition>
     </parser-result>
 
+    <parser-result sql-case-id="assertInsertWithDuplicateKeyUpdate" parameters="1 1 'init'">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+            <insert-values-token begin-position="55" table-name="t_order"/>
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="1" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+
     <parser-result sql-case-id="assertBatchInsertWithGenerateKeyColumn" parameters="10000 1000 10 10010 1001 10">
         <tables>
             <table name="t_order_item" />
