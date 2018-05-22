@@ -88,7 +88,7 @@
         </or-condition>
     </parser-result>
 
-    <parser-result sql-case-id="assertInsertWithDuplicateKeyUpdate" parameters="1 1 'init'">
+    <parser-result sql-case-id="assertInsertOnDuplicateKeyUpdate" parameters="1 1 'init'">
         <tables>
             <table name="t_order" />
         </tables>
