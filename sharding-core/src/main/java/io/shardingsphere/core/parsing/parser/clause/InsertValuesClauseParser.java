@@ -120,8 +120,8 @@ public class InsertValuesClauseParser implements SQLClauseParser {
                     parametersCount++;
                 }
             }
+            endPosition = lexerEngine.getCurrentToken().getEndPosition();
             lexerEngine.accept(Symbol.RIGHT_PAREN);
-            endPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
             insertStatement.getInsertValues().getInsertValues().add(new InsertValue(lexerEngine.getInput().substring(beginPosition, endPosition), parametersCount));
             insertStatement.getConditions().getOrCondition().getAndConditions().add(andCondition);
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));

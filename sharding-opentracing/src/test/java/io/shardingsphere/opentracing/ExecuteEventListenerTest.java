@@ -17,7 +17,11 @@
 
 package io.shardingsphere.opentracing;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.eventbus.EventBus;
+import io.opentracing.NoopTracerFactory;
 import io.opentracing.mock.MockTracer;
+import io.opentracing.util.GlobalTracer;
 import io.opentracing.util.ThreadLocalActiveSpanSource;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.BaseStatementUnit;
@@ -26,10 +30,13 @@ import io.shardingsphere.core.executor.ExecutorEngine;
 import io.shardingsphere.core.executor.type.statement.StatementUnit;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLUnit;
+import io.shardingsphere.core.util.EventBusInstance;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -44,14 +51,18 @@ import static org.mockito.Mockito.when;
 
 public final class ExecuteEventListenerTest {
     
-    private static final MockTracer TRACER = new MockTracer(new ThreadLocalActiveSpanSource(),
-            MockTracer.Propagator.TEXT_MAP);
+    private static final MockTracer TRACER = new MockTracer(new ThreadLocalActiveSpanSource(), MockTracer.Propagator.TEXT_MAP);
     
     private final ExecutorEngine executorEngine = new ExecutorEngine(5);
     
     @BeforeClass
     public static void init() {
         ShardingJDBCTracer.init(TRACER);
+    }
+    
+    @AfterClass
+    public static void tearDown() throws Exception {
+        releaseTracer();
     }
     
     @Before
@@ -63,7 +74,7 @@ public final class ExecuteEventListenerTest {
     public void assertSingleStatement() throws Exception {
         Statement statement = mock(Statement.class);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        executorEngine.execute(SQLType.DML, Collections.singleton(new StatementUnit(new SQLExecutionUnit("ds_0", 
+        executorEngine.execute(SQLType.DML, Collections.singleton(new StatementUnit(new SQLExecutionUnit("ds_0",
                 new SQLUnit("insert into ...", Collections.singletonList(Collections.<Object>singletonList(1)))), statement)), new ExecuteCallback<Integer>() {
             
             @Override
@@ -84,8 +95,9 @@ public final class ExecuteEventListenerTest {
         when(stm2.getConnection()).thenReturn(mock(Connection.class));
         statementUnitList.add(new StatementUnit(new SQLExecutionUnit("ds_0", new SQLUnit("insert into ...", Collections.singletonList(Collections.<Object>singletonList(1)))), stm2));
         executorEngine.execute(SQLType.DML, statementUnitList, new ExecuteCallback<Integer>() {
+            
             @Override
-            public Integer execute(final BaseStatementUnit baseStatementUnit) throws Exception {
+            public Integer execute(final BaseStatementUnit baseStatementUnit) {
                 return 0;
             }
         });
@@ -96,7 +108,7 @@ public final class ExecuteEventListenerTest {
     public void assertSQLException() throws Exception {
         Statement statement = mock(Statement.class);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        executorEngine.execute(SQLType.DQL, Collections.singleton(new StatementUnit(new SQLExecutionUnit("ds_0", 
+        executorEngine.execute(SQLType.DQL, Collections.singleton(new StatementUnit(new SQLExecutionUnit("ds_0",
                 new SQLUnit("select ...", Collections.singletonList(Collections.<Object>singletonList(1)))), statement)), new ExecuteCallback<Integer>() {
             
             @Override
@@ -104,5 +116,14 @@ public final class ExecuteEventListenerTest {
                 throw new SQLException();
             }
         });
+    }
+    
+    private static void releaseTracer() throws NoSuchFieldException, IllegalAccessException {
+        Field tracerField = GlobalTracer.class.getDeclaredField("tracer");
+        tracerField.setAccessible(true);
+        tracerField.set(GlobalTracer.class, NoopTracerFactory.create());
+        Field subscribersByTypeField = EventBus.class.getDeclaredField("subscribersByType");
+        subscribersByTypeField.setAccessible(true);
+        subscribersByTypeField.set(EventBusInstance.getInstance(), HashMultimap.create());
     }
 }

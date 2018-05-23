@@ -47,10 +47,10 @@ public class OrchestrationShardingDataSource extends ShardingDataSource {
     
     public OrchestrationShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig,
                                            final Map<String, Object> configMap, final Properties props, final OrchestrationFacade orchestrationFacade) throws SQLException {
-        super(dataSourceMap, new ShardingRule(shardingRuleConfig, dataSourceMap.keySet()), configMap, props);
+        super(getRawDataSourceMap(dataSourceMap), new ShardingRule(getShardingRuleConfiguration(dataSourceMap, shardingRuleConfig), getRawDataSourceMap(dataSourceMap).keySet()), configMap, props);
         this.orchestrationFacade = orchestrationFacade;
-        this.dataSourceMap = dataSourceMap;
-        this.shardingRuleConfig = shardingRuleConfig;
+        this.dataSourceMap = getRawDataSourceMap(dataSourceMap);
+        this.shardingRuleConfig = getShardingRuleConfiguration(dataSourceMap, shardingRuleConfig);
         this.configMap = configMap;
         this.props = props;
     }

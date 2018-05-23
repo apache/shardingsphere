@@ -34,6 +34,8 @@ public final class TableToken implements SQLToken {
     
     private final int beginPosition;
     
+    private final int skippedSchemaNameLength;
+    
     private final String originalLiterals;
     
     /**
