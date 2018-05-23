@@ -18,7 +18,7 @@
     <context:component-scan base-package="io.shardingsphere.example.spring.namespace.jpa"/>
     
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-        <property name="dataSource" ref="shardingDataSource" />
+        <property name="dataSource" ref="shardingDatabasesSource" />
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:database="MYSQL" />
         </property>
@@ -52,7 +52,7 @@
     
     <sharding:standard-strategy id="databaseShardingStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
     
-    <sharding:data-source id="shardingDataSource" registry-center-ref="regCenter" overwrite="true">
+    <sharding:data-source id="shardingDatabasesSource" registry-center-ref="regCenter" overwrite="true">
         <sharding:sharding-rule data-source-names="demo_ds_0, demo_ds_1">
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" database-strategy-ref="databaseShardingStrategy" generate-key-column-name="order_id" />
