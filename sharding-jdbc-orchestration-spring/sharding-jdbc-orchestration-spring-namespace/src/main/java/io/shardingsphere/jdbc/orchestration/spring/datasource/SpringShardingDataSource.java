@@ -46,6 +46,9 @@ public class SpringShardingDataSource extends ShardingDataSource {
     
     private static Map<String, DataSource> getRawDataSourceMap(final Map<String, DataSource> dataSourceMap) {
         Map<String, DataSource> result = new LinkedHashMap<>();
+        if (null == dataSourceMap) {
+            return result;
+        }
         for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             String dataSourceName = entry.getKey();
             DataSource dataSource = entry.getValue();
@@ -60,6 +63,9 @@ public class SpringShardingDataSource extends ShardingDataSource {
     
     private static ShardingRuleConfiguration addMasterSlaveRuleConfigurations(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig) {
         Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigs = new LinkedList<>();
+        if (null == dataSourceMap) {
+            return shardingRuleConfig;
+        }
         for (DataSource each : dataSourceMap.values()) {
             if (!(each instanceof MasterSlaveDataSource)) {
                 continue;
