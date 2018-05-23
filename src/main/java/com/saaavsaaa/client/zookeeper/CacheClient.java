@@ -38,7 +38,7 @@ public final class CacheClient extends UsualClient {
         logger.debug("use cache strategy:{}", cacheStrategy);
         switch (cacheStrategy){
             case WATCH:{
-                pathTree  = new PathTree(rootNode, strategy.getProvider());
+                pathTree  = new PathTree(rootNode, this);
                 pathTree.watch(null);
                 return;
             }
@@ -58,7 +58,7 @@ public final class CacheClient extends UsualClient {
     }
     
     public PathTree loadPathTree(final String treeRoot) throws KeeperException, InterruptedException {
-        PathTree tree = new PathTree(treeRoot, strategy.getProvider());
+        PathTree tree = new PathTree(treeRoot, this);
         logger.debug("load path tree:{}", treeRoot);
         tree.loading();
         return tree;
@@ -66,20 +66,20 @@ public final class CacheClient extends UsualClient {
     
     @Override
     public void createCurrentOnly(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
-        strategy.createCurrentOnly(key, value, createMode);
+        super.createCurrentOnly(key, value, createMode);
         pathTree.put(PathUtil.getRealPath(rootNode, key), value);
     }
     
     
     @Override
     public void deleteOnlyCurrent(final String key) throws KeeperException, InterruptedException {
-        strategy.deleteOnlyCurrent(key);
+        super.deleteOnlyCurrent(key);
         pathTree.delete(PathUtil.getRealPath(rootNode, key));
     }
     
     @Override
     public void deleteOnlyCurrent(final String key, final AsyncCallback.VoidCallback callback, final Object ctx) throws KeeperException, InterruptedException {
-        strategy.deleteOnlyCurrent(key, callback, ctx);
+        super.deleteOnlyCurrent(key, callback, ctx);
         pathTree.delete(PathUtil.getRealPath(rootNode, key));
     }
     

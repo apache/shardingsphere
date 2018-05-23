@@ -1,6 +1,7 @@
 package com.saaavsaaa.client.zookeeper.base;
 
 import com.saaavsaaa.client.action.IClient;
+import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.retry.RetryPolicy;
 import com.saaavsaaa.client.section.ClientContext;
 import com.saaavsaaa.client.utility.PathUtil;
@@ -41,7 +42,7 @@ public abstract class BaseClient implements IClient {
     
     protected ZooKeeper zooKeeper;
     protected List<ACL> authorities;
-    private BaseClientFactory clientFactory;
+//    private BaseClientFactory clientFactory;
     
     protected BaseClient(final String servers, final int sessionTimeoutMilliseconds) {
         this.servers = servers;
@@ -135,7 +136,7 @@ public abstract class BaseClient implements IClient {
         }
     }
     
-    void createNamespace() throws KeeperException, InterruptedException {
+    protected void createNamespace() throws KeeperException, InterruptedException {
         createNamespace(Constants.NOTHING_DATA);
     }
     
@@ -162,10 +163,10 @@ public abstract class BaseClient implements IClient {
         logger.debug("created root:{}", rootNode);
     }
     
-    void deleteNamespace() throws KeeperException, InterruptedException {
+    protected void deleteNamespace() throws KeeperException, InterruptedException {
         zooKeeper.delete(rootNode, Constants.VERSION);
         rootExist = false;
-        logger.debug("create root:{},rootExist:{}", rootNode, rootExist);
+        logger.debug("delete root:{},rootExist:{}", rootNode, rootExist);
     }
     
     void setRootNode(final String rootNode) {
@@ -178,21 +179,14 @@ public abstract class BaseClient implements IClient {
         this.authorities = ZooDefs.Ids.CREATOR_ALL_ACL;
     }
     
-    void setContext(final ClientContext context){
-        this.context = context;
+    void setContext(final RetryPolicy retryPolicy, final BaseClientFactory clientFactory){
+        this.context = new ClientContext(retryPolicy, clientFactory, new BaseProvider(rootNode, zooKeeper, watched, authorities));
     }
     public ClientContext getContext(){
-        if (context == null){
-            context = new ClientContext();
-        }
         return context;
     }
     
-    void setClientFactory(BaseClientFactory clientFactory) {
-        this.clientFactory = clientFactory;
-    }
-    
     BaseClientFactory getClientFactory() {
-        return clientFactory;
+        return context.getClientFactory();
     }
 }

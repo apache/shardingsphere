@@ -35,12 +35,12 @@ public class UsualStrategy extends BaseStrategy {
     
     @Override
     public boolean checkExists(final String key) throws KeeperException, InterruptedException {
-        return provider.checkExists(provider.getRealPath(key));
+        return provider.exists(provider.getRealPath(key));
     }
     
     @Override
     public boolean checkExists(final String key, final Watcher watcher) throws KeeperException, InterruptedException {
-        return provider.checkExists(provider.getRealPath(key), watcher);
+        return provider.exists(provider.getRealPath(key), watcher);
     }
     
     @Override
@@ -50,7 +50,7 @@ public class UsualStrategy extends BaseStrategy {
     
     @Override
     public void createCurrentOnly(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
-        provider.createCurrentOnly(provider.getRealPath(key), value, createMode);
+        provider.create(provider.getRealPath(key), value, createMode);
     }
     
     @Override
@@ -60,12 +60,12 @@ public class UsualStrategy extends BaseStrategy {
     
     @Override
     public void deleteOnlyCurrent(final String key) throws KeeperException, InterruptedException {
-        provider.deleteOnlyCurrent(provider.getRealPath(key));
+        provider.delete(provider.getRealPath(key));
     }
     
     @Override
     public void deleteOnlyCurrent(final String key, final AsyncCallback.VoidCallback callback, final Object ctx) throws KeeperException, InterruptedException {
-        provider.deleteOnlyCurrent(provider.getRealPath(key), callback, ctx);
+        provider.delete(provider.getRealPath(key), callback, ctx);
     }
     
     @Override
@@ -159,10 +159,5 @@ public class UsualStrategy extends BaseStrategy {
             logger.info("deleteRecursively {} exist other children:{}", path, this.getChildren(path));
             return;
         }
-    }
-    
-    @Override
-    public ZKTransaction transaction() {
-        return provider.transaction();
     }
 }

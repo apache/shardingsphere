@@ -65,7 +65,7 @@ public class ClientFactory extends BaseClientFactory {
     }
     
     public ClientFactory setRetryPolicy(final RetryPolicy retryPolicy){
-        this.context = new ClientContext(retryPolicy);
+        this.retryPolicy = retryPolicy;
         return this;
     }
 }

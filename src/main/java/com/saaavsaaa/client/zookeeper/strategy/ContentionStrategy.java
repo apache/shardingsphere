@@ -52,7 +52,7 @@ public class ContentionStrategy extends UsualStrategy {
         return new LeaderElection() {
             @Override
             public void action() throws KeeperException, InterruptedException {
-                provider.createCurrentOnly(provider.getRealPath(key), value, createMode);
+                provider.create(provider.getRealPath(key), value, createMode);
             }
             @Override
             public void callback(){
@@ -99,7 +99,7 @@ public class ContentionStrategy extends UsualStrategy {
         return new LeaderElection() {
             @Override
             public void action() throws KeeperException, InterruptedException {
-                provider.deleteOnlyCurrent(provider.getRealPath(key));
+                provider.delete(provider.getRealPath(key));
             }
             @Override
             public void callback(){
@@ -115,7 +115,7 @@ public class ContentionStrategy extends UsualStrategy {
         provider.executeContention(new LeaderElection() {
             @Override
             public void action() throws KeeperException, InterruptedException {
-                provider.deleteOnlyCurrent(provider.getRealPath(key), callback, ctx);
+                provider.delete(provider.getRealPath(key), callback, ctx);
                 logger.debug("ContentionStrategy deleteOnlyCurrent action:{},ctx:{}", key, ctx);
             }
         });
@@ -134,7 +134,7 @@ public class ContentionStrategy extends UsualStrategy {
             @Override
             public void action() throws KeeperException, InterruptedException {
                 logger.debug("ContentionStrategy createAllNeedPath action:{}", key);
-                createBegin(key, value, createMode);
+                createBegin(provider.getRealPath(key), value, createMode);
             }
             @Override
             public void callback(){
@@ -147,20 +147,20 @@ public class ContentionStrategy extends UsualStrategy {
     
     private void createBegin(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
         if (key.indexOf(Constants.PATH_SEPARATOR) < -1){
-            provider.createCurrentOnly(key, value, createMode);
+            provider.create(key, value, createMode);
             return;
         }
         List<String> nodes = provider.getNecessaryPaths(key);
         for (int i = 0; i < nodes.size(); i++) {
-            if (provider.checkExists(nodes.get(i))){
+            if (provider.exists(nodes.get(i))){
                 logger.info("create node exist:{}", nodes.get(i));
                 continue;
             }
             logger.debug("create node not exist:", nodes.get(i));
             if (i == nodes.size() - 1){
-                provider.createCurrentOnly(nodes.get(i), value, createMode);
+                provider.create(nodes.get(i), value, createMode);
             } else {
-                provider.createCurrentOnly(nodes.get(i), Constants.NOTHING_VALUE, createMode);
+                provider.create(nodes.get(i), Constants.NOTHING_VALUE, createMode);
             }
         }
     }
@@ -182,7 +182,7 @@ public class ContentionStrategy extends UsualStrategy {
         logger.debug("deleteChildren:{}", children);
         for (int i = 0; i < children.size(); i++) {
             String child = PathUtil.getRealPath(key, children.get(i));
-            if (!provider.checkExists(child)){
+            if (!provider.exists(child)){
                 logger.info("delete not exist:{}", child);
                 continue;
             }
@@ -190,7 +190,7 @@ public class ContentionStrategy extends UsualStrategy {
             deleteChildren(child, true);
         }
         if (deleteCurrentNode){
-            provider.deleteOnlyCurrent(key);
+            provider.delete(key);
         }
     }
     
@@ -211,9 +211,9 @@ public class ContentionStrategy extends UsualStrategy {
         while (!pathStack.empty()){
             String node = pathStack.pop();
             // contrast cache
-            if (provider.checkExists(node)){
+            if (provider.exists(node)){
                 try {
-                    provider.deleteOnlyCurrent(node);
+                    provider.delete(node);
                 } catch (KeeperException.NotEmptyException ee){
                     logger.warn("deleteBranch {} exist other children:{}", node, this.getChildren(node));
                     logger.debug(ee.getMessage());

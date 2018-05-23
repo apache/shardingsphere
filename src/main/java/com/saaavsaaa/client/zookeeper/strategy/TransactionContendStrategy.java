@@ -5,6 +5,7 @@ import com.saaavsaaa.client.election.LeaderElection;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.section.Callback;
+import com.saaavsaaa.client.zookeeper.base.BaseProvider;
 import com.saaavsaaa.client.zookeeper.transaction.ZKTransaction;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -16,6 +17,7 @@ import java.util.Stack;
 
 /**
  * Created by aaa
+ * nothing use
  * since zookeeper 3.4.0
  */
 public class TransactionContendStrategy extends ContentionStrategy {
@@ -37,7 +39,7 @@ public class TransactionContendStrategy extends ContentionStrategy {
             @Override
             public void action() throws KeeperException, InterruptedException {
                 logger.debug("ContentionStrategy createAllNeedPath action:{}", key);
-                ZKTransaction transaction = provider.transaction();
+                ZKTransaction transaction = new ZKTransaction(((BaseProvider)provider).getRootNode(), ((BaseProvider)provider).getZooKeeper());
                 createBegin(key, value, createMode, transaction);
                 transaction.commit();
             }
@@ -57,7 +59,7 @@ public class TransactionContendStrategy extends ContentionStrategy {
         }
         List<String> nodes = provider.getNecessaryPaths(key);
         for (int i = 0; i < nodes.size(); i++) {
-            if (provider.checkExists(nodes.get(i))){
+            if (provider.exists(nodes.get(i))){
                 logger.info("create node exist:{}", nodes.get(i));
                 continue;
             }
@@ -75,7 +77,7 @@ public class TransactionContendStrategy extends ContentionStrategy {
         provider.executeContention(new LeaderElection() {
             @Override
             public void action() throws KeeperException, InterruptedException {
-                ZKTransaction transaction = provider.transaction();
+                ZKTransaction transaction = new ZKTransaction(((BaseProvider)provider).getRootNode(), ((BaseProvider)provider).getZooKeeper());
                 deleteChildren(provider.getRealPath(key), true, transaction);
                 transaction.commit();
             }
@@ -87,7 +89,7 @@ public class TransactionContendStrategy extends ContentionStrategy {
         List<String> children = provider.getChildren(key);
         for (int i = 0; i < children.size(); i++) {
             String child = PathUtil.getRealPath(key, children.get(i));
-            if (!provider.checkExists(child)){
+            if (!provider.exists(child)){
                 logger.info("delete not exist:{}", child);
                 continue;
             }
@@ -104,7 +106,7 @@ public class TransactionContendStrategy extends ContentionStrategy {
         provider.executeContention(new LeaderElection() {
             @Override
             public void action() throws KeeperException, InterruptedException {
-                ZKTransaction transaction = provider.transaction();
+                ZKTransaction transaction = new ZKTransaction(((BaseProvider)provider).getRootNode(), ((BaseProvider)provider).getZooKeeper());
                 deleteBranch(provider.getRealPath(key), transaction);
                 transaction.commit();
             }
@@ -127,7 +129,7 @@ public class TransactionContendStrategy extends ContentionStrategy {
                     canDelete = false;
                 }
             }
-            if (provider.checkExists(node) && canDelete){
+            if (provider.exists(node) && canDelete){
                 transaction.delete(node, Constants.VERSION);
             }
             prePath = node;

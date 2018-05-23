@@ -16,16 +16,15 @@ public abstract class BaseClientFactory {
     protected String namespace;
     protected String scheme;
     protected byte[] auth;
-    protected ClientContext context;
+    protected RetryPolicy retryPolicy;
     
     protected String servers;
     protected int sessionTimeoutMilliseconds;
     
     public synchronized IClient start() throws IOException, InterruptedException {
-        client.setClientFactory(this);
         client.setRootNode(namespace);
         client.setAuthorities(scheme , auth);
-        client.setContext(context);
+        client.setContext(retryPolicy, this); // wait expand
         client.start();
         if (globalListener != null) {
             client.registerWatch(globalListener);

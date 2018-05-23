@@ -1,6 +1,7 @@
 package com.saaavsaaa.client.zookeeper;
 
 import com.saaavsaaa.client.action.IExecStrategy;
+import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.zookeeper.base.BaseClient;
 import com.saaavsaaa.client.zookeeper.base.BaseProvider;
 import com.saaavsaaa.client.zookeeper.strategy.*;
@@ -40,30 +41,31 @@ public class UsualClient extends BaseClient {
             return;
         }
 
+        IProvider provider = getContext().getProvider();
         switch (strategyType){
             case USUAL:{
-                strategy = new UsualStrategy(new BaseProvider(this, watched));
+                strategy = new UsualStrategy(provider);
                 break;
             }
             case CONTEND:{
-                strategy = new ContentionStrategy(new BaseProvider(this, watched));
+                strategy = new ContentionStrategy(provider);
                 break;
             }
     
             case SYNC_RETRY:{
-                strategy = new SyncRetryStrategy(this, watched);
+                strategy = new SyncRetryStrategy(provider, context.getRetryPolicy());
                 break;
             }
             case ASYNC_RETRY:{
-                strategy = new AsyncRetryStrategy(this, watched);
+                strategy = new AsyncRetryStrategy(provider, context);
                 break;
             }
             case ALL_ASYNC_RETRY:{
-                strategy = new AllAsyncRetryStrategy(this, watched);
+                strategy = new AllAsyncRetryStrategy(provider, context);
                 break;
             }
             default:{
-                strategy = new UsualStrategy(new BaseProvider(this, watched));
+                strategy = new UsualStrategy(provider);
                 break;
             }
         }
@@ -103,11 +105,19 @@ public class UsualClient extends BaseClient {
     
     @Override
     public void createCurrentOnly(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
+        this.createNamespace();
+        if (rootNode.equals(key)){
+            return;
+        }
         strategy.createCurrentOnly(key, value, createMode);
     }
     
     @Override
     public void createAllNeedPath(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
+        this.createNamespace();
+        if (rootNode.equals(key)){
+            return;
+        }
         strategy.createAllNeedPath(key, value, createMode);
     }
     
@@ -118,26 +128,42 @@ public class UsualClient extends BaseClient {
     
     @Override
     public void deleteOnlyCurrent(final String key) throws KeeperException, InterruptedException {
+        if (rootNode.equals(key)){
+            deleteNamespace();
+            return;
+        }
         strategy.deleteOnlyCurrent(key);
     }
     
     @Override
     public void deleteOnlyCurrent(final String key, final AsyncCallback.VoidCallback callback, final Object ctx) throws KeeperException, InterruptedException {
+        if (rootNode.equals(key)){
+            deleteNamespace();
+            return;
+        }
         strategy.deleteOnlyCurrent(key, callback, ctx);
     }
     
     @Override
     public void deleteAllChildren(final String key) throws KeeperException, InterruptedException {
         strategy.deleteAllChildren(key);
+        if (rootNode.equals(key)){
+            rootExist = false;
+            logger.debug("deleteAllChildren delete root:{}", rootNode);
+        }
     }
     
     @Override
     public void deleteCurrentBranch(final String key) throws KeeperException, InterruptedException {
         strategy.deleteCurrentBranch(key);
+        if (!strategy.checkExists(rootNode)){
+            rootExist = false;
+            logger.debug("deleteCurrentBranch delete root:{}", rootNode);
+        }
     }
     
     @Override
     public ZKTransaction transaction() {
-        return strategy.transaction();
+        return new ZKTransaction(rootNode, zooKeeper);
     }
 }

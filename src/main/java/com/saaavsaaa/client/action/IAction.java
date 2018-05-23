@@ -22,5 +22,4 @@ public interface IAction {
     void update(final String key, final String value) throws KeeperException, InterruptedException;
     void deleteOnlyCurrent(final String key) throws KeeperException, InterruptedException;
     void deleteOnlyCurrent(final String key, final AsyncCallback.VoidCallback callback, final Object ctx) throws KeeperException, InterruptedException;
-    ZKTransaction transaction();
 }

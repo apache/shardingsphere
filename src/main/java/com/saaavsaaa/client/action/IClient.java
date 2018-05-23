@@ -1,6 +1,7 @@
 package com.saaavsaaa.client.action;
 
 import com.saaavsaaa.client.section.Listener;
+import com.saaavsaaa.client.zookeeper.transaction.ZKTransaction;
 import org.apache.zookeeper.Watcher;
 
 import java.io.IOException;
@@ -14,6 +15,7 @@ public interface IClient extends IAction, IGroupAction{
     Watcher registerWatch(String key, Listener listener);
     void unregisterWatch(String key);
     
+    ZKTransaction transaction();
     /*
     void createNamespace();
     void deleteNamespace();

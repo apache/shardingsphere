@@ -1,11 +1,9 @@
 package com.saaavsaaa.client.zookeeper.base;
 
-import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.election.LeaderElection;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
-import com.saaavsaaa.client.section.Listener;
 import com.saaavsaaa.client.zookeeper.transaction.ZKTransaction;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.ACL;
@@ -20,20 +18,14 @@ import java.util.Stack;
  */
 public class BaseProvider implements IProvider {
     private static final Logger logger = LoggerFactory.getLogger(BaseProvider.class);
-    protected final BaseClient client;
     protected final ZooKeeper zooKeeper;
     protected final boolean watched;
     protected final List<ACL> authorities;
     protected final String rootNode;
     
-    public BaseProvider(IClient client, boolean watched) {
-        this(((BaseClient)client).rootNode, ((BaseClient)client), watched, ((BaseClient)client).authorities);
-    }
-    
-    private BaseProvider(final String rootNode, final BaseClient client, final boolean watched, final List<ACL> authorities){
+    public BaseProvider(final String rootNode, final ZooKeeper zooKeeper, final boolean watched, final List<ACL> authorities){
         this.rootNode = rootNode;
-        this.client = client;
-        this.zooKeeper = client.getZooKeeper();
+        this.zooKeeper = zooKeeper;
         this.watched = watched;
         this.authorities = authorities;
     }
@@ -53,12 +45,12 @@ public class BaseProvider implements IProvider {
     }
     
     @Override
-    public boolean checkExists(final String key) throws KeeperException, InterruptedException {
+    public boolean exists(final String key) throws KeeperException, InterruptedException {
         return null != zooKeeper.exists(key, watched);
     }
     
     @Override
-    public boolean checkExists(final String key, final Watcher watcher) throws KeeperException, InterruptedException {
+    public boolean exists(final String key, final Watcher watcher) throws KeeperException, InterruptedException {
         return null != zooKeeper.exists(key, watcher);
     }
     
@@ -68,21 +60,17 @@ public class BaseProvider implements IProvider {
     }
     
     @Override
-    public void createCurrentOnly(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
-        client.createNamespace();
-        if (rootNode.equals(key)){
-            return;
-        }
+    public void create(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
         try {
             zooKeeper.create(key, value.getBytes(Constants.UTF_8), authorities, createMode);
             logger.debug("BaseProvider createCurrentOnly:{}", key);
         } catch (KeeperException.NoNodeException e) {
             logger.error("BaseProvider createCurrentOnly:{}", e.getMessage(), e);
             // I don't know whether it will happen or not, if root watcher don't update rootExist timely
-            if (e.getMessage().contains(key)) {
-                logger.info("BaseProvider createCurrentOnly rootExist:{}", client.rootExist);
+            if (!exists(rootNode)){
+                logger.info("BaseProvider createCurrentOnly root not exist");
                 Thread.sleep(50);
-                this.createCurrentOnly(key, value, createMode);
+                this.create(key, value, createMode);
             }
         }
     }
@@ -93,21 +81,15 @@ public class BaseProvider implements IProvider {
     }
     
     @Override
-    public void deleteOnlyCurrent(final String key) throws KeeperException, InterruptedException {
+    public void delete(final String key) throws KeeperException, InterruptedException {
         zooKeeper.delete(key, Constants.VERSION);
         logger.debug("BaseProvider deleteOnlyCurrent:{}", key);
-        if (rootNode.equals(key)){
-            client.rootExist = false; //protected
-        }
     }
     
     @Override
-    public void deleteOnlyCurrent(final String key, final AsyncCallback.VoidCallback callback, final Object ctx) throws KeeperException, InterruptedException {
+    public void delete(final String key, final AsyncCallback.VoidCallback callback, final Object ctx) throws KeeperException, InterruptedException {
         zooKeeper.delete(key, Constants.VERSION, callback, ctx);
         logger.debug("BaseProvider deleteOnlyCurrent:{},ctx:{}", key, ctx);
-        if (rootNode.equals(key)){
-            client.rootExist = false;
-        }
     }
     
     
@@ -138,22 +120,15 @@ public class BaseProvider implements IProvider {
     }
     
     @Override
-    public void watch(final String key, final Listener listener) {
-        client.registerWatch(getRealPath(key), listener);
-    }
-    
-    @Override
     public void createInTransaction(final String key, final String value, final CreateMode createMode, final ZKTransaction transaction) throws KeeperException, InterruptedException {
-        client.createNamespace();
-        if (rootNode.equals(key)){
-            logger.info("BaseProvider createInTransaction rootNode:{}", key);
-            return;
-        }
         transaction.create(key, value.getBytes(Constants.UTF_8), authorities, createMode);
     }
     
-    @Override
-    public ZKTransaction transaction() {
-        return new ZKTransaction(rootNode, zooKeeper);
+    public String getRootNode(){
+        return rootNode;
+    }
+    
+    public ZooKeeper getZooKeeper(){
+        return zooKeeper;
     }
 }

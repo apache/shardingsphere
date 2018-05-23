@@ -3,6 +3,7 @@ package com.saaavsaaa.client.zookeeper.base;
 import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.retry.DelayRetryExecution;
+import com.saaavsaaa.client.section.ClientContext;
 import com.saaavsaaa.client.section.Connection;
 import com.saaavsaaa.client.zookeeper.strategy.UsualStrategy;
 import org.apache.zookeeper.KeeperException;
@@ -17,11 +18,11 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class BaseOperation implements Delayed {
     private static final Logger logger = LoggerFactory.getLogger(BaseOperation.class);
-    protected final IClient client;
+    protected final ClientContext context;
     protected DelayRetryExecution retryExecution;
     
-    protected BaseOperation(final IClient client) {
-        this.client = client;
+    protected BaseOperation(final ClientContext context) {
+        this.context = context;
     }
     
     public void setRetrial(final DelayRetryExecution retryExecution){
@@ -55,7 +56,7 @@ public abstract class BaseOperation implements Delayed {
             execute();
             result = true;
         } catch (KeeperException ee) {
-            new Connection(client).check(ee);
+            new Connection(context).check(ee);
             result = false;
         }
         if (!result && retryExecution.hasNext()){

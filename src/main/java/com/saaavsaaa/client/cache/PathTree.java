@@ -1,11 +1,13 @@
 package com.saaavsaaa.client.cache;
 
+import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.section.ClientTask;
 import com.saaavsaaa.client.section.Listener;
 import com.saaavsaaa.client.utility.Properties;
+import com.saaavsaaa.client.zookeeper.base.BaseClient;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.common.PathUtils;
@@ -22,19 +24,22 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /*
  * Created by aaa
+ * todo provider
  */
 public final class PathTree {
     private static final Logger logger = LoggerFactory.getLogger(PathTree.class);
     private final AtomicReference<PathNode> rootNode = new AtomicReference<>();
     private boolean executorStart = false;
     private ScheduledExecutorService cacheService;
+    private final IClient client;
     private final IProvider provider;
     private PathStatus Status;
     
-    public PathTree(final String root, final IProvider provider) {
+    public PathTree(final String root, final IClient client) {
         this.rootNode.set(new PathNode(root));
         this.Status = PathStatus.RELEASE;
-        this.provider = provider;
+        this.client = client;
+        this.provider = ((BaseClient)client).getContext().getProvider();
     }
     
     public synchronized void loading() throws KeeperException, InterruptedException {
@@ -44,8 +49,8 @@ public final class PathTree {
     
             PathNode newRoot = new PathNode(rootNode.get().getKey());
             List<String> children = provider.getChildren(rootNode.get().getKey());
-            children.remove(provider.getRealPath(Constants.CHANGING_KEY));
-            this.attechIntoNode(children, newRoot, provider);
+            children.remove(PathUtil.getRealPath(rootNode.get().getKey(), Constants.CHANGING_KEY));
+            this.attechIntoNode(children, newRoot);
             rootNode.set(newRoot);
     
             this.setStatus(PathStatus.RELEASE);
@@ -61,7 +66,7 @@ public final class PathTree {
         }
     }
     
-    private void attechIntoNode(final List<String> children, final PathNode pathNode, final IProvider provider) throws KeeperException, InterruptedException {
+    private void attechIntoNode(final List<String> children, final PathNode pathNode) throws KeeperException, InterruptedException {
         logger.debug("attechIntoNode children:{}", children);
         if (children.isEmpty()){
             logger.info("attechIntoNode there are no children");
@@ -72,7 +77,7 @@ public final class PathTree {
             PathNode current = new PathNode(PathUtil.checkPath(child), provider.getData(childPath));
             pathNode.attachChild(current);
             List<String> subs = provider.getChildren(childPath);
-            this.attechIntoNode(subs, current, provider);
+            this.attechIntoNode(subs, current);
         }
     }
     
@@ -86,12 +91,16 @@ public final class PathTree {
         }
         logger.debug("refreshPeriodic:{}", period);
         cacheService = Executors.newSingleThreadScheduledExecutor();
-        cacheService.scheduleAtFixedRate(new ClientTask(provider) {
+        cacheService.scheduleAtFixedRate(new Runnable() {
             @Override
-            public void run(IProvider provider) throws KeeperException, InterruptedException {
+            public void run() {
                 logger.debug("cacheService run:{}", getStatus());
                 if (PathStatus.RELEASE == getStatus()) {
-                    loading();
+                    try {
+                        loading();
+                    } catch (Exception e) {
+                        logger.error(e.getMessage(), e);
+                    }
                 }
             }
         }, Properties.INSTANCE.getThreadInitialDelay(), threadPeriod, TimeUnit.MILLISECONDS);
@@ -137,7 +146,7 @@ public final class PathTree {
             };
         }
         logger.debug("PathTree Watch:{}", rootNode.get().getKey());
-        provider.watch(rootNode.get().getKey(), listener);
+        client.registerWatch(rootNode.get().getKey(), listener);
     }
     
     public PathStatus getStatus() {

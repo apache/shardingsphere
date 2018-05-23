@@ -5,6 +5,7 @@ import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.retry.RetryCount;
 import com.saaavsaaa.client.retry.RetryPolicy;
 import com.saaavsaaa.client.section.Callable;
+import com.saaavsaaa.client.section.ClientContext;
 import com.saaavsaaa.client.zookeeper.base.BaseClient;
 import com.saaavsaaa.client.zookeeper.base.BaseProvider;
 import org.apache.zookeeper.CreateMode;
@@ -21,12 +22,10 @@ import java.util.List;
 public class SyncRetryStrategy extends UsualStrategy{
     private static final Logger logger = LoggerFactory.getLogger(SyncRetryStrategy.class);
     protected final RetryPolicy retryPolicy;
-    protected final IClient client;
     
-    public SyncRetryStrategy(final BaseClient client, final boolean watched){
-        super(new BaseProvider(client, watched));
-        this.client = client;
-        retryPolicy = client.getContext().getRetryPolicy();
+    public SyncRetryStrategy(final IProvider provider, final RetryPolicy retryPolicy) {
+        super(provider);
+        this.retryPolicy = retryPolicy;
     }
 
     @Override
@@ -57,7 +56,7 @@ public class SyncRetryStrategy extends UsualStrategy{
     public boolean checkExists(final String key) throws KeeperException, InterruptedException {
         String path = provider.getRealPath(key);
         try {
-            return provider.checkExists(path);
+            return super.checkExists(path);
         } catch (KeeperException.SessionExpiredException ee){
             logger.warn("AsyncRetryStrategy KeeperException checkExists:{}", path);
             if (RetryCount.INSTANCE.continueExecute()) {
@@ -73,7 +72,7 @@ public class SyncRetryStrategy extends UsualStrategy{
     public boolean checkExists(final String key, final Watcher watcher) throws KeeperException, InterruptedException {
         String path = provider.getRealPath(key);
         try {
-            return provider.checkExists(path, watcher);
+            return super.checkExists(path, watcher);
         } catch (KeeperException.SessionExpiredException ee){
             logger.warn("AsyncRetryStrategy KeeperException checkExists:{}", path);
             if (RetryCount.INSTANCE.continueExecute()) {
@@ -107,7 +106,7 @@ public class SyncRetryStrategy extends UsualStrategy{
         Callable callable = new Callable() {
             @Override
             public Object call() throws KeeperException, InterruptedException {
-                provider.createCurrentOnly(path, value, createMode);
+                provider.create(path, value, createMode);
                 return null;
             }
         };

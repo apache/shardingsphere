@@ -28,12 +28,12 @@ public abstract class LeaderElection {
     private boolean contend(final String node, final IProvider provider, final Listener listener) throws KeeperException, InterruptedException {
         boolean success = false;
         try {
-            provider.createCurrentOnly(node, Properties.INSTANCE.getClientId(), CreateMode.EPHEMERAL); // todo EPHEMERAL_SEQUENTIAL check index value
+            provider.create(node, Properties.INSTANCE.getClientId(), CreateMode.EPHEMERAL); // todo EPHEMERAL_SEQUENTIAL check index value
             success = true;
         } catch (KeeperException.NodeExistsException e) {
             logger.info("contend not success");
             // TODO: or changing_key node value == current client id
-            provider.checkExists(node, WatcherCreator.deleteWatcher(node, listener));
+            provider.exists(node, WatcherCreator.deleteWatcher(node, listener));
         }
         return success;
     }
@@ -69,7 +69,7 @@ public abstract class LeaderElection {
             } catch (Exception ee){
                 logger.error("action Exception executeContention:{}", ee.getMessage(), ee);
             }
-            provider.deleteOnlyCurrent(contendNode);
+            provider.delete(contendNode);
         }
     }
     

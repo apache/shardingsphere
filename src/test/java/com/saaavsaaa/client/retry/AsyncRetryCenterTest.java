@@ -2,12 +2,12 @@ package com.saaavsaaa.client.retry;
 
 import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.action.IProvider;
+import com.saaavsaaa.client.section.ClientContext;
 import com.saaavsaaa.client.section.Listener;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.zookeeper.ClientFactory;
 import com.saaavsaaa.client.zookeeper.TestSupport;
 import com.saaavsaaa.client.zookeeper.base.BaseClient;
-import com.saaavsaaa.client.zookeeper.base.BaseProvider;
 import com.saaavsaaa.client.zookeeper.strategy.StrategyType;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -23,11 +23,11 @@ import java.io.IOException;
  */
 public class AsyncRetryCenterTest {
     private IProvider provider;
-    private IClient client;
+    private ClientContext context;
     
     @Before
     public void start() throws IOException, InterruptedException {
-        provider = new BaseProvider(createClient(), false);
+        provider = ((BaseClient)createClient()).getContext().getProvider();
         AsyncRetryCenter.INSTANCE.init(new RetryPolicy(3, 3, 10));
         AsyncRetryCenter.INSTANCE.start();
     }
@@ -35,7 +35,7 @@ public class AsyncRetryCenterTest {
     protected IClient createClient() throws IOException, InterruptedException {
         ClientFactory creator = new ClientFactory();
         Listener listener = TestSupport.buildListener();
-        client = creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes()).newClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).watch(listener).start();
+        IClient client = creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes()).newClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).watch(listener).start();
         ((BaseClient)client).useExecStrategy(StrategyType.ASYNC_RETRY);
         return client;
     }
@@ -55,12 +55,12 @@ public class AsyncRetryCenterTest {
     public void create() throws InterruptedException, KeeperException {
         String key = "a";
         String value = "bbb11";
-        AsyncRetryCenter.INSTANCE.add(new TestCreateCurrentOperation(client, key, value, CreateMode.PERSISTENT));
+        AsyncRetryCenter.INSTANCE.add(new TestCreateCurrentOperation(context, key, value, CreateMode.PERSISTENT));
         Thread.sleep(1000);
         String path = PathUtil.getRealPath(TestSupport.ROOT, key);
-        assert provider.checkExists(path);
-        provider.deleteOnlyCurrent(path);
-        provider.deleteOnlyCurrent(provider.getRealPath(TestSupport.ROOT));
-        assert !provider.checkExists(path);
+        assert provider.exists(path);
+        provider.delete(path);
+        provider.delete(provider.getRealPath(TestSupport.ROOT));
+        assert !provider.exists(path);
     }
 }

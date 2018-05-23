@@ -14,7 +14,7 @@ public class Connection {
     
     //is need reset
     private static final Map<Integer, Boolean> exceptionResets = new ConcurrentHashMap<>();
-    private final IClient client;
+    private final ClientContext context;
     
     static {
         exceptionResets.put(KeeperException.Code.SESSIONEXPIRED.intValue(), true);
@@ -23,8 +23,8 @@ public class Connection {
         exceptionResets.put(KeeperException.Code.OPERATIONTIMEOUT.intValue(), false);
     }
     
-    public Connection(final IClient client){
-        this.client = client;
+    public Connection(final ClientContext context){
+        this.context = context;
     }
     
     public void check(KeeperException e) throws KeeperException {

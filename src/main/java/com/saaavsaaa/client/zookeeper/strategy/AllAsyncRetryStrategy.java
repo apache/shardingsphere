@@ -1,6 +1,8 @@
 package com.saaavsaaa.client.zookeeper.strategy;
 
+import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.retry.AsyncRetryCenter;
+import com.saaavsaaa.client.section.ClientContext;
 import com.saaavsaaa.client.zookeeper.base.BaseClient;
 import com.saaavsaaa.client.zookeeper.operation.CreateAllNeedOperation;
 import com.saaavsaaa.client.zookeeper.operation.DeleteAllChildrenOperation;
@@ -15,8 +17,8 @@ import org.slf4j.LoggerFactory;
  */
 public class AllAsyncRetryStrategy extends AsyncRetryStrategy {
     private static final Logger logger = LoggerFactory.getLogger(AllAsyncRetryStrategy.class);
-    public AllAsyncRetryStrategy(final BaseClient client, final boolean watched) {
-        super(client, watched);
+    public AllAsyncRetryStrategy(final IProvider provider, final ClientContext context) {
+        super(provider, context);
     }
     
     @Override
@@ -25,7 +27,7 @@ public class AllAsyncRetryStrategy extends AsyncRetryStrategy {
             super.createAllNeedPath(key, value, createMode);
         } catch (KeeperException.SessionExpiredException ee){
             logger.warn("AllAsyncRetryStrategy SessionExpiredException CreateAllNeedOperation:{}", key);
-            AsyncRetryCenter.INSTANCE.add(new CreateAllNeedOperation(client, key, value, createMode));
+            AsyncRetryCenter.INSTANCE.add(new CreateAllNeedOperation(context, key, value, createMode));
         }
     }
     
@@ -35,7 +37,7 @@ public class AllAsyncRetryStrategy extends AsyncRetryStrategy {
             super.deleteAllChildren(key);
         } catch (KeeperException.SessionExpiredException ee){
             logger.warn("AllAsyncRetryStrategy SessionExpiredException deleteAllChildren:{}", key);
-            AsyncRetryCenter.INSTANCE.add(new DeleteAllChildrenOperation(client, key));
+            AsyncRetryCenter.INSTANCE.add(new DeleteAllChildrenOperation(context, key));
         }
     }
     
@@ -45,7 +47,7 @@ public class AllAsyncRetryStrategy extends AsyncRetryStrategy {
             super.deleteCurrentBranch(key);
         } catch (KeeperException.SessionExpiredException ee){
             logger.warn("AllAsyncRetryStrategy SessionExpiredException deleteCurrentBranch:{}", key);
-            AsyncRetryCenter.INSTANCE.add(new DeleteCurrentBranchOperation(client, key));
+            AsyncRetryCenter.INSTANCE.add(new DeleteCurrentBranchOperation(context, key));
         }
     }
 }
