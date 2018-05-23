@@ -23,8 +23,10 @@ import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
 import io.shardingsphere.core.parsing.lexer.token.Literals;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
+import io.shardingsphere.core.parsing.parser.clause.expression.BasicExpressionParser;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
 import io.shardingsphere.core.parsing.parser.context.condition.Condition;
+import io.shardingsphere.core.parsing.parser.dialect.ExpressionParserFactory;
 import io.shardingsphere.core.parsing.parser.expression.SQLExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLIgnoreExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
@@ -33,19 +35,26 @@ import io.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.util.SQLUtil;
-import lombok.RequiredArgsConstructor;
 
 /**
  * Insert set clause parser.
  *
  * @author zhangliang
+ * @author maxiaoguang
  */
-@RequiredArgsConstructor
 public class InsertSetClauseParser implements SQLClauseParser {
     
     private final ShardingRule shardingRule;
     
     private final LexerEngine lexerEngine;
+    
+    private final BasicExpressionParser basicExpressionParser;
+    
+    public InsertSetClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        this.shardingRule = shardingRule;
+        this.lexerEngine = lexerEngine;
+        basicExpressionParser = ExpressionParserFactory.createBasicExpressionParser(lexerEngine);
+    }
     
     /**
      * Parse insert set.
@@ -58,7 +67,7 @@ public class InsertSetClauseParser implements SQLClauseParser {
         }
         do {
             Column column = new Column(SQLUtil.getExactlyValue(lexerEngine.getCurrentToken().getLiterals()), insertStatement.getTables().getSingleTableName());
-            lexerEngine.nextToken();
+            basicExpressionParser.parse(insertStatement);
             lexerEngine.accept(Symbol.EQ);
             SQLExpression sqlExpression;
             if (lexerEngine.equalAny(Literals.INT)) {

@@ -21,24 +21,32 @@ import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
+import io.shardingsphere.core.parsing.parser.clause.expression.BasicExpressionParser;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
+import io.shardingsphere.core.parsing.parser.dialect.ExpressionParserFactory;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingException;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.util.SQLUtil;
-import lombok.RequiredArgsConstructor;
 
 /**
  * Insert duplicate key update clause parser.
  *
  * @author maxiaoguang
  */
-@RequiredArgsConstructor
 public class InsertDuplicateKeyUpdateClauseParser implements SQLClauseParser {
     
     private final ShardingRule shardingRule;
     
     private final LexerEngine lexerEngine;
+    
+    private final BasicExpressionParser basicExpressionParser;
+    
+    public InsertDuplicateKeyUpdateClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        this.shardingRule = shardingRule;
+        this.lexerEngine = lexerEngine;
+        basicExpressionParser = ExpressionParserFactory.createBasicExpressionParser(lexerEngine);
+    }
     
     /**
      * Parse insert duplicate key update.
@@ -55,9 +63,18 @@ public class InsertDuplicateKeyUpdateClauseParser implements SQLClauseParser {
         do {
             Column column = new Column(SQLUtil.getExactlyValue(lexerEngine.getCurrentToken().getLiterals()), insertStatement.getTables().getSingleTableName());
             if (shardingRule.isShardingColumn(column)) {
-                throw new SQLParsingException("INSERT INTO .... ON DUPLICATE KEY UPDATE can not support on sharding column", column);
+                throw new SQLParsingException("INSERT INTO .... ON DUPLICATE KEY UPDATE can not support on sharding column, token is '%s', literals is '%s'.",
+                        lexerEngine.getCurrentToken().getType(), lexerEngine.getCurrentToken().getLiterals());
             }
-            lexerEngine.skipUntil(Symbol.COMMA, DefaultKeyword.END);
+            basicExpressionParser.parse(insertStatement);
+            lexerEngine.accept(Symbol.EQ);
+            if (lexerEngine.skipIfEqual(DefaultKeyword.VALUES)) {
+                lexerEngine.accept(Symbol.LEFT_PAREN);
+                basicExpressionParser.parse(insertStatement);
+                lexerEngine.accept(Symbol.RIGHT_PAREN);
+            } else {
+                lexerEngine.nextToken();
+            }
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));
     }
     

@@ -22,13 +22,14 @@ import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.Assist;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
+import io.shardingsphere.core.parsing.parser.clause.expression.BasicExpressionParser;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
+import io.shardingsphere.core.parsing.parser.dialect.ExpressionParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.token.InsertColumnToken;
 import io.shardingsphere.core.parsing.parser.token.ItemsToken;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.util.SQLUtil;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -38,13 +39,21 @@ import java.util.List;
  * Insert columns clause parser.
  *
  * @author zhangliang
+ * @author maxiaoguang
  */
-@RequiredArgsConstructor
 public final class InsertColumnsClauseParser implements SQLClauseParser {
     
     private final ShardingRule shardingRule;
     
     private final LexerEngine lexerEngine;
+    
+    private final BasicExpressionParser basicExpressionParser;
+    
+    public InsertColumnsClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        this.shardingRule = shardingRule;
+        this.lexerEngine = lexerEngine;
+        basicExpressionParser = ExpressionParserFactory.createBasicExpressionParser(lexerEngine);
+    }
     
     /**
      * Parse insert columns.
@@ -62,7 +71,7 @@ public final class InsertColumnsClauseParser implements SQLClauseParser {
                 lexerEngine.nextToken();
                 String columnName = SQLUtil.getExactlyValue(lexerEngine.getCurrentToken().getLiterals());
                 result.add(new Column(columnName, tableName));
-                lexerEngine.nextToken();
+                basicExpressionParser.parse(insertStatement);
                 if (generateKeyColumn.isPresent() && generateKeyColumn.get().getName().equalsIgnoreCase(columnName)) {
                     insertStatement.setGenerateKeyColumnIndex(count);
                 }
