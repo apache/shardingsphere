@@ -106,7 +106,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
                 return executeForSharding();
             }
         } catch (final Exception ex) {
-            return new CommandResponsePackets(new ErrPacket(1, 0, "", "", ex.getMessage()));
+            return new CommandResponsePackets(new ErrPacket(1, 0, "", "", "" + ex.getMessage()));
         }
     }
     
