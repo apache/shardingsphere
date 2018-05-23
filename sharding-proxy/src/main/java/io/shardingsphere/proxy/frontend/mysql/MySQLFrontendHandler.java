@@ -76,7 +76,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
                 MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message);
                 try {
                     int sequenceId = mysqlPacketPayload.readInt1();
-                    int connectionId = MySQLResultCache.getInstance().getonnectionMap(context.channel().id().asShortText());
+                    int connectionId = MySQLResultCache.getInstance().getConnectionMap(context.channel().id().asShortText());
                     CommandPacket commandPacket = CommandPacketFactory.getCommandPacket(sequenceId, connectionId, mysqlPacketPayload);
                     for (DatabaseProtocolPacket each : commandPacket.execute().getDatabaseProtocolPackets()) {
                         context.writeAndFlush(each);

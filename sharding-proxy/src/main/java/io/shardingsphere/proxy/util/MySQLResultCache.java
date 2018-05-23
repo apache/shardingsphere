@@ -83,7 +83,7 @@ public class MySQLResultCache {
      * @param channelId netty channel id.
      * @return connectionId   mysql connection id.
      */
-    public int getonnectionMap(final String channelId) {
+    public int getConnectionMap(final String channelId) {
         return connectionCache.getIfPresent(channelId);
     }
     

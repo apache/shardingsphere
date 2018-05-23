@@ -26,6 +26,7 @@ import io.shardingsphere.core.routing.StatementRoutingEngine;
 import io.shardingsphere.proxy.backend.ShardingProxyClient;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
+import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.proxy.util.MySQLResultCache;
@@ -42,10 +43,13 @@ import java.util.concurrent.TimeUnit;
 public final class SQLPacketsBackendHandler extends SQLExecuteBackendHandler {
     private SynchronizedFuture<CommandResponsePackets> synchronizedFuture;
     
+    private final CommandPacket commandPacket;
+    
     private int connectionId;
     
-    public SQLPacketsBackendHandler(final String sql, final int connectionId, final DatabaseType databaseType, final boolean showSQL) {
+    public SQLPacketsBackendHandler(final CommandPacket commandPacket, final String sql, final int connectionId, final DatabaseType databaseType, final boolean showSQL) {
         super(sql, databaseType, showSQL);
+        this.commandPacket = commandPacket;
         this.connectionId = connectionId;
     }
     
@@ -63,9 +67,9 @@ public final class SQLPacketsBackendHandler extends SQLExecuteBackendHandler {
             execute(routeResult.getSqlStatement(), each.getDataSource(), each.getSqlUnit().getSql());
         }
         //TODO timeout should be set.
-        List<CommandResponsePackets> result = synchronizedFuture.get(30, TimeUnit.SECONDS);
+        CommandResponsePackets result = synchronizedFuture.get(30, TimeUnit.SECONDS);
         MySQLResultCache.getInstance().delete(connectionId);
-        return merge(routeResult.getSqlStatement(), result);
+        return result;
     }
     
     @Override
@@ -91,17 +95,18 @@ public final class SQLPacketsBackendHandler extends SQLExecuteBackendHandler {
         return null;
     }
     
-    //TODO
     private void executeQuery(final Channel channel, final String sql) {
-        channel.writeAndFlush("");
-        
+        MySQLResultCache.getInstance().putConnectionMap(channel.id().asShortText(), connectionId);
+        channel.writeAndFlush(commandPacket);
     }
     
-    //TODO
     private void executeUpdate(final Channel channel, final String sql, final SQLStatement sqlStatement) {
+        MySQLResultCache.getInstance().putConnectionMap(channel.id().asShortText(), connectionId);
+        channel.writeAndFlush(commandPacket);
     }
     
-    //TODO
     private void executeCommon(final Channel channel, final String sql) {
+        MySQLResultCache.getInstance().putConnectionMap(channel.id().asShortText(), connectionId);
+        channel.writeAndFlush(commandPacket);
     }
 }

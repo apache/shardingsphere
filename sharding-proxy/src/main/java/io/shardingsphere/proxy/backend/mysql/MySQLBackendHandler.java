@@ -17,13 +17,25 @@
 
 package io.shardingsphere.proxy.backend.mysql;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.common.primitives.Bytes;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.shardingsphere.proxy.backend.common.CommandResponsePacketsHandler;
 import io.shardingsphere.proxy.transport.mysql.constant.CapabilityFlag;
+import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerInfo;
+import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
+import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
+import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextResultSetRowPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
@@ -31,9 +43,6 @@ import io.shardingsphere.proxy.transport.mysql.packet.handshake.HandshakeRespons
 import io.shardingsphere.proxy.util.MySQLResultCache;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 /**
  * Backend handler.
@@ -63,11 +72,11 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
         int sequenceId = mysqlPacketPayload.readInt1();
         int header = mysqlPacketPayload.readInt1() & 0xFF;
         if (OKPacket.HEADER == header || ErrPacket.HEADER == header || EofPacket.HEADER == header) {
-            genericResponsePacket(context, header, mysqlPacketPayload);
+            genericResponsePacket(context, sequenceId, header, mysqlPacketPayload);
         } else if (!authorized) {
             auth(context, sequenceId, header, mysqlPacketPayload);
         } else {
-            executeCommandResponsePackets(context, header, mysqlPacketPayload);
+            executeCommandResponsePackets(context, sequenceId, header, mysqlPacketPayload);
         }
     }
     
@@ -95,7 +104,8 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
     }
     
     @Override
-    protected void genericResponsePacket(final ChannelHandlerContext context, final int header, final MySQLPacketPayload mysqlPacketPayload) {
+    protected void genericResponsePacket(final ChannelHandlerContext context, final int sequenceId, final int header, final MySQLPacketPayload mysqlPacketPayload) {
+        CommandResponsePackets commandResponsePackets = null;
         switch (header) {
             case OKPacket.HEADER:
                 if (!authorized) {
@@ -107,6 +117,7 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
                 int warnings = mysqlPacketPayload.readInt2();
                 String info = mysqlPacketPayload.readStringEOF();
                 log.debug("OKPacket[affectedRows={},lastInsertId={},statusFlags={},warnings={},info={}]", affectedRows, lastInsertId, statusFlags, warnings, info);
+                commandResponsePackets = new CommandResponsePackets(new OKPacket(sequenceId + 1, affectedRows, lastInsertId, statusFlags, warnings, info));
                 break;
             case ErrPacket.HEADER:
                 int errorCode = mysqlPacketPayload.readInt2();
@@ -114,22 +125,66 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
                 String sqlState = mysqlPacketPayload.readStringFix(5);
                 String errorMessage = mysqlPacketPayload.readStringEOF();
                 log.debug("ErrPacket[errorCode={},sqlStateMarker={},sqlState={},errorMessage={}]", errorCode, sqlStateMarker, sqlState, errorMessage);
+                commandResponsePackets = new CommandResponsePackets(new ErrPacket(sequenceId + 1, errorCode, sqlStateMarker, sqlState, errorMessage));
                 break;
             case EofPacket.HEADER:
                 warnings = mysqlPacketPayload.readInt2();
                 statusFlags = mysqlPacketPayload.readInt2();
                 log.debug("EofPacket[warnings={},statusFlags={}]", warnings, statusFlags);
+                commandResponsePackets = new CommandResponsePackets(new EofPacket(sequenceId + 1, warnings, statusFlags));
                 break;
             default:
                 break;
+        }
+        int connectionId = MySQLResultCache.getInstance().getConnectionMap(context.channel().id().asShortText());
+        if (MySQLResultCache.getInstance().get(connectionId) != null) {
+            MySQLResultCache.getInstance().get(connectionId).setResponse(commandResponsePackets);
         }
     }
     
     //TODO
     @Override
-    protected void executeCommandResponsePackets(final ChannelHandlerContext context, final int header, final MySQLPacketPayload mysqlPacketPayload) {
-        int connectionId = MySQLResultCache.getInstance().getonnectionMap(context.channel().id().asShortText());
-        MySQLResultCache.getInstance().get(connectionId).setResponse(null);
+    protected void executeCommandResponsePackets(final ChannelHandlerContext context, final int sequenceId, final int header, final MySQLPacketPayload mysqlPacketPayload) {
+CommandResponsePackets result = new CommandResponsePackets();
+        
+        //TODO
+        int columnCount = header <= 0xfb ? header : (int) mysqlPacketPayload.readIntLenenc();
+        if (0 == columnCount) {
+            result.addPacket(new OKPacket(sequenceId + 1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+        } else {
+            result.addPacket(new FieldCountPacket(sequenceId + 1, columnCount));
+            for (int i = 1; i <= columnCount; i++) {
+                String catalog = mysqlPacketPayload.readStringLenenc();
+                String schema = mysqlPacketPayload.readStringLenenc();
+                String table = mysqlPacketPayload.readStringLenenc();
+                String orgTable = mysqlPacketPayload.readStringLenenc();
+                String name = mysqlPacketPayload.readStringLenenc();
+                String orgName = mysqlPacketPayload.readStringLenenc();
+                mysqlPacketPayload.skipReserved(1 + 2); // fixed value and charset
+                int columnLength = mysqlPacketPayload.readInt4();
+                int columnType = mysqlPacketPayload.readInt1();
+                mysqlPacketPayload.skipReserved(2); // field flags
+                int decimals = mysqlPacketPayload.readInt1();
+                mysqlPacketPayload.skipReserved(2); // filler value 0x00 0x00
+                result.addPacket(new ColumnDefinition41Packet(sequenceId + 1, schema, table, orgTable, name, orgName,
+                        columnLength, ColumnType.valueOfJDBCType(columnType), decimals));
+            }
+            result.addPacket(new EofPacket(sequenceId + 1, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
+            
+            if (mysqlPacketPayload.isReadable()) {
+                while (mysqlPacketPayload.isReadable()) {
+                    List<Object> data = new ArrayList<>(columnCount);
+                    for (int i = 1; i <= columnCount; i++) {
+                        data.add(mysqlPacketPayload.readStringLenenc());
+                    }
+                    result.addPacket(new TextResultSetRowPacket(sequenceId + 1, data));
+                }
+                result.addPacket(new EofPacket(sequenceId + 1, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
+            }
+        }
+        
+        int connectionId = MySQLResultCache.getInstance().getConnectionMap(context.channel().id().asShortText());
+        MySQLResultCache.getInstance().get(connectionId).setResponse(result);
     }
     
     @Override
