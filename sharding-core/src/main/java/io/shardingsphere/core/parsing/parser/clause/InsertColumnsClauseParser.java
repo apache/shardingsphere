@@ -27,6 +27,7 @@ import io.shardingsphere.core.parsing.parser.context.condition.Column;
 import io.shardingsphere.core.parsing.parser.dialect.ExpressionParserFactory;
 import io.shardingsphere.core.parsing.parser.expression.SQLExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLIdentifierExpression;
+import io.shardingsphere.core.parsing.parser.expression.SQLIgnoreExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLPropertyExpression;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.token.InsertColumnToken;
@@ -80,6 +81,9 @@ public final class InsertColumnsClauseParser implements SQLClauseParser {
                 }
                 if (sqlExpression instanceof SQLIdentifierExpression) {
                     columnName = SQLUtil.getExactlyValue(((SQLIdentifierExpression) sqlExpression).getName());
+                }
+                if (sqlExpression instanceof SQLIgnoreExpression) {
+                    columnName = SQLUtil.getExactlyValue(((SQLIgnoreExpression) sqlExpression).getExpression());
                 }
                 result.add(new Column(columnName, tableName));
                 if (generateKeyColumn.isPresent() && generateKeyColumn.get().getName().equalsIgnoreCase(columnName)) {
