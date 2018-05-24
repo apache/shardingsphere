@@ -25,6 +25,9 @@ import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.parser.clause.expression.BasicExpressionParser;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
 import io.shardingsphere.core.parsing.parser.dialect.ExpressionParserFactory;
+import io.shardingsphere.core.parsing.parser.expression.SQLExpression;
+import io.shardingsphere.core.parsing.parser.expression.SQLIdentifierExpression;
+import io.shardingsphere.core.parsing.parser.expression.SQLPropertyExpression;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.token.InsertColumnToken;
 import io.shardingsphere.core.parsing.parser.token.ItemsToken;
@@ -69,9 +72,16 @@ public final class InsertColumnsClauseParser implements SQLClauseParser {
         if (lexerEngine.equalAny(Symbol.LEFT_PAREN)) {
             do {
                 lexerEngine.nextToken();
-                String columnName = SQLUtil.getExactlyValue(lexerEngine.getCurrentToken().getLiterals());
+                SQLExpression sqlExpression = basicExpressionParser.parse(insertStatement);
+                String columnName = null;
+                if (sqlExpression instanceof SQLPropertyExpression) {
+                    columnName = SQLUtil.getExactlyValue(((SQLPropertyExpression) sqlExpression).getName());
+                   
+                }
+                if (sqlExpression instanceof SQLIdentifierExpression) {
+                    columnName = SQLUtil.getExactlyValue(((SQLIdentifierExpression) sqlExpression).getName());
+                }
                 result.add(new Column(columnName, tableName));
-                basicExpressionParser.parse(insertStatement);
                 if (generateKeyColumn.isPresent() && generateKeyColumn.get().getName().equalsIgnoreCase(columnName)) {
                     insertStatement.setGenerateKeyColumnIndex(count);
                 }
