@@ -171,7 +171,7 @@ public final class MySQLPacketPayload {
      * @return length encoded integer
      */
     public long readIntLenenc() {
-        int firstByte = byteBuf.readByte();
+        int firstByte = byteBuf.readByte() & 0xFF;
         if (firstByte <= 0xfb) {
             return firstByte;
         }
@@ -195,7 +195,7 @@ public final class MySQLPacketPayload {
             byteBuf.writeByte((int) value);
             return;
         }
-        if (value >= 251 && value < Math.pow(2, 16)) {
+        if (value < Math.pow(2, 16)) {
             byteBuf.writeByte(0xfc);
             byteBuf.writeShortLE((int) value);
             return;

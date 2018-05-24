@@ -74,8 +74,8 @@ public final class RuleRegistry {
         }
         dataSourceMap = new HashMap<>(128, 1);
         Map<String, DataSourceParameter> dataSourceParameters = yamlProxyConfiguration.getDataSources();
-        for (String each : dataSourceParameters.keySet()) {
-            dataSourceMap.put(each, getDataSource(dataSourceParameters.get(each)));
+        for (Map.Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
+            dataSourceMap.put(entry.getKey(), getDataSource(entry.getValue()));
         }
         shardingRule = yamlProxyConfiguration.obtainShardingRule(Collections.<String>emptyList());
         masterSlaveRule = yamlProxyConfiguration.obtainMasterSlaveRule();
