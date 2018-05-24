@@ -1,7 +1,6 @@
 package com.saaavsaaa.client.retry;
 
 import com.saaavsaaa.client.action.IClient;
-import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.section.ClientContext;
 import com.saaavsaaa.client.section.Listener;
 import com.saaavsaaa.client.utility.PathUtil;
@@ -14,7 +13,6 @@ import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -28,7 +26,7 @@ public class AsyncRetryCenterTest {
     @Before
     public void start() throws IOException, InterruptedException {
         context = ((BaseClient)createClient()).getContext();
-        AsyncRetryCenter.INSTANCE.init(new RetryPolicy(3, 3, 10));
+        AsyncRetryCenter.INSTANCE.init(new DelayRetryPolicy(3, 3, 10));
         AsyncRetryCenter.INSTANCE.start();
     }
     

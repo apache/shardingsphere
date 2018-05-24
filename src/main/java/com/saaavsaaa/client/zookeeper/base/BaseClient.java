@@ -1,8 +1,6 @@
 package com.saaavsaaa.client.zookeeper.base;
 
 import com.saaavsaaa.client.action.IClient;
-import com.saaavsaaa.client.action.IProvider;
-import com.saaavsaaa.client.retry.RetryPolicy;
 import com.saaavsaaa.client.section.ClientContext;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.StringUtil;
@@ -50,7 +48,7 @@ public abstract class BaseClient implements IClient {
     }
     
     @Override
-    public synchronized void start() throws IOException, InterruptedException {
+    public void start() throws IOException, InterruptedException {
         logger.debug("BaseClient servers:{},sessionTimeOut:{}", servers, sessionTimeOut);
         zooKeeper = new ZooKeeper(servers, sessionTimeOut, startWatcher());
         if (!StringUtil.isNullOrBlank(scheme)) {

@@ -3,8 +3,6 @@ package com.saaavsaaa.client.zookeeper.strategy;
 import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.retry.AsyncRetryCenter;
 import com.saaavsaaa.client.section.ClientContext;
-import com.saaavsaaa.client.zookeeper.base.BaseClient;
-import com.saaavsaaa.client.zookeeper.base.BaseProvider;
 import com.saaavsaaa.client.zookeeper.operation.CreateCurrentOperation;
 import com.saaavsaaa.client.zookeeper.operation.DeleteCurrentOperation;
 import com.saaavsaaa.client.zookeeper.operation.UpdateOperation;
@@ -20,10 +18,10 @@ public class AsyncRetryStrategy extends SyncRetryStrategy {
     private static final Logger logger = LoggerFactory.getLogger(AsyncRetryStrategy.class);
     protected final ClientContext context;
     
-    public AsyncRetryStrategy(final IProvider provider, final ClientContext context){
-        super(provider, context.getRetryPolicy());
+    public AsyncRetryStrategy(final ClientContext context){
+        super(context);
         this.context = context;
-        AsyncRetryCenter.INSTANCE.init(retryPolicy);
+        AsyncRetryCenter.INSTANCE.init(context.getDelayRetryPolicy());
         AsyncRetryCenter.INSTANCE.start();
     }
     

@@ -1,11 +1,8 @@
 package com.saaavsaaa.client.zookeeper.base;
 
-import com.saaavsaaa.client.action.IClient;
-import com.saaavsaaa.client.action.IProvider;
-import com.saaavsaaa.client.retry.DelayRetryExecution;
+import com.saaavsaaa.client.retry.DelayPolicyExecutor;
 import com.saaavsaaa.client.section.ClientContext;
 import com.saaavsaaa.client.section.Connection;
-import com.saaavsaaa.client.zookeeper.strategy.UsualStrategy;
 import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,19 +16,21 @@ import java.util.concurrent.TimeUnit;
 public abstract class BaseOperation implements Delayed {
     private static final Logger logger = LoggerFactory.getLogger(BaseOperation.class);
     protected final ClientContext context;
-    protected DelayRetryExecution retryExecution;
+    private final Connection connection;
+    protected DelayPolicyExecutor delayPolicyExecutor;
     
     protected BaseOperation(final ClientContext context) {
         this.context = context;
+        connection = new Connection(context);
     }
     
-    public void setRetrial(final DelayRetryExecution retryExecution){
-        this.retryExecution = retryExecution;
+    public void setRetrial(final DelayPolicyExecutor delayPolicyExecutor){
+        this.delayPolicyExecutor = delayPolicyExecutor;
     }
     
     @Override
     public long getDelay(TimeUnit unit) {
-        long absoluteBlock = this.retryExecution.getNextTick() - System.currentTimeMillis();
+        long absoluteBlock = this.delayPolicyExecutor.getNextTick() - System.currentTimeMillis();
         logger.debug("queue getDelay block:{}", absoluteBlock);
         long result = unit.convert(absoluteBlock, TimeUnit.MILLISECONDS);
         return result;
@@ -56,11 +55,11 @@ public abstract class BaseOperation implements Delayed {
             execute();
             result = true;
         } catch (KeeperException ee) {
-            new Connection(context).check(ee);
+            connection.check(ee);
             result = false;
         }
-        if (!result && retryExecution.hasNext()){
-            retryExecution.next();
+        if (!result && delayPolicyExecutor.hasNext()){
+            delayPolicyExecutor.next();
             return true;
         }
         return false;

@@ -3,7 +3,6 @@ package com.saaavsaaa.client.zookeeper;
 import com.saaavsaaa.client.action.IExecStrategy;
 import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.zookeeper.base.BaseClient;
-import com.saaavsaaa.client.zookeeper.base.BaseProvider;
 import com.saaavsaaa.client.zookeeper.strategy.*;
 import com.saaavsaaa.client.zookeeper.transaction.ZKTransaction;
 import org.apache.zookeeper.*;
@@ -28,7 +27,7 @@ public class UsualClient extends BaseClient {
     }
 
     @Override
-    public synchronized void start() throws IOException, InterruptedException {
+    public void start() throws IOException, InterruptedException {
         super.start();
         useExecStrategy(StrategyType.USUAL);
     }
@@ -53,15 +52,15 @@ public class UsualClient extends BaseClient {
             }
     
             case SYNC_RETRY:{
-                strategy = new SyncRetryStrategy(provider, context.getRetryPolicy());
+                strategy = new SyncRetryStrategy(context);
                 break;
             }
             case ASYNC_RETRY:{
-                strategy = new AsyncRetryStrategy(provider, context);
+                strategy = new AsyncRetryStrategy(context);
                 break;
             }
             case ALL_ASYNC_RETRY:{
-                strategy = new AllAsyncRetryStrategy(provider, context);
+                strategy = new AllAsyncRetryStrategy(context);
                 break;
             }
             default:{

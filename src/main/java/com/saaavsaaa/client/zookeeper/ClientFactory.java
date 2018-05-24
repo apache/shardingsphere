@@ -1,7 +1,6 @@
 package com.saaavsaaa.client.zookeeper;
 
-import com.saaavsaaa.client.retry.RetryPolicy;
-import com.saaavsaaa.client.section.ClientContext;
+import com.saaavsaaa.client.retry.DelayRetryPolicy;
 import com.saaavsaaa.client.section.Listener;
 import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.zookeeper.base.BaseClientFactory;
@@ -64,8 +63,8 @@ public class ClientFactory extends BaseClientFactory {
         return this;
     }
     
-    public ClientFactory setRetryPolicy(final RetryPolicy retryPolicy){
-        this.retryPolicy = retryPolicy;
+    public ClientFactory setRetryPolicy(final DelayRetryPolicy delayRetryPolicy){
+        this.delayRetryPolicy = delayRetryPolicy;
         return this;
     }
 }

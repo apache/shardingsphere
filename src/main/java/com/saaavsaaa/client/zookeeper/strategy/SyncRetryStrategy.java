@@ -1,13 +1,10 @@
 package com.saaavsaaa.client.zookeeper.strategy;
 
-import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.action.IProvider;
+import com.saaavsaaa.client.retry.DelayRetryPolicy;
 import com.saaavsaaa.client.retry.RetryCount;
-import com.saaavsaaa.client.retry.RetryPolicy;
 import com.saaavsaaa.client.section.Callable;
 import com.saaavsaaa.client.section.ClientContext;
-import com.saaavsaaa.client.zookeeper.base.BaseClient;
-import com.saaavsaaa.client.zookeeper.base.BaseProvider;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.Watcher;
@@ -21,99 +18,66 @@ import java.util.List;
  */
 public class SyncRetryStrategy extends UsualStrategy{
     private static final Logger logger = LoggerFactory.getLogger(SyncRetryStrategy.class);
-    protected final RetryPolicy retryPolicy;
+    protected final ClientContext context;
     
-    public SyncRetryStrategy(final IProvider provider, final RetryPolicy retryPolicy) {
-        super(provider);
-        this.retryPolicy = retryPolicy;
+    public SyncRetryStrategy(final ClientContext context) {
+        super(context.getProvider());
+        this.context = context;
     }
 
     @Override
     public byte[] getData(final String key) throws KeeperException, InterruptedException {
-            Callable<byte[]> callable = new Callable() {
+        Callable<byte[]> callable = new Callable(context) {
             @Override
-            public byte[] call() throws KeeperException, InterruptedException {
-                return provider.getData(provider.getRealPath(key));
+            public void call() throws KeeperException, InterruptedException {
+                setResult(provider.getData(provider.getRealPath(key)));
             }
         };
-        
-        String path = provider.getRealPath(key);
-        try {
-            return provider.getData(path);
-        } catch (KeeperException ee){
-            logger.warn("AsyncRetryStrategy KeeperException getData:{}", path);
-            
-            if (RetryCount.INSTANCE.continueExecute()) {
-                byte[] data = getData(path);
-                RetryCount.INSTANCE.reset();
-                return data;
-            }
-            throw ee;
-        }
+        return callable.getResult();
     }
     
     @Override
     public boolean checkExists(final String key) throws KeeperException, InterruptedException {
-        String path = provider.getRealPath(key);
-        try {
-            return super.checkExists(path);
-        } catch (KeeperException.SessionExpiredException ee){
-            logger.warn("AsyncRetryStrategy KeeperException checkExists:{}", path);
-            if (RetryCount.INSTANCE.continueExecute()) {
-                boolean result = checkExists(path);
-                RetryCount.INSTANCE.reset();
-                return result;
+        Callable<Boolean> callable = new Callable(context) {
+            @Override
+            public void call() throws KeeperException, InterruptedException {
+                setResult(provider.exists(provider.getRealPath(key)));
             }
-            throw ee;
-        }
+        };
+        return callable.getResult();
     }
     
     @Override
     public boolean checkExists(final String key, final Watcher watcher) throws KeeperException, InterruptedException {
-        String path = provider.getRealPath(key);
-        try {
-            return super.checkExists(path, watcher);
-        } catch (KeeperException.SessionExpiredException ee){
-            logger.warn("AsyncRetryStrategy KeeperException checkExists:{}", path);
-            if (RetryCount.INSTANCE.continueExecute()) {
-                boolean result = checkExists(path, watcher);
-                RetryCount.INSTANCE.reset();
-                return result;
+        Callable<Boolean> callable = new Callable(context) {
+            @Override
+            public void call() throws KeeperException, InterruptedException {
+                setResult(provider.exists(provider.getRealPath(key), watcher));
             }
-            throw ee;
-        }
+        };
+        return callable.getResult();
     }
     
     @Override
     public List<String> getChildren(final String key) throws KeeperException, InterruptedException {
-        String path = provider.getRealPath(key);
-        try {
-            return provider.getChildren(path);
-        } catch (KeeperException.SessionExpiredException ee){
-            logger.warn("AsyncRetryStrategy KeeperException getChildren:{}", path);
-            if (RetryCount.INSTANCE.continueExecute()) {
-                List<String> result = getChildren(path);
-                RetryCount.INSTANCE.reset();
-                return result;
+        Callable<List<String>> callable = new Callable(context) {
+            @Override
+            public void call() throws KeeperException, InterruptedException {
+                setResult(provider.getChildren(provider.getRealPath(key)));
             }
-            throw ee;
-        }
+        };
+        return callable.getResult();
     }
     
     @Override
     public void createCurrentOnly(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
         String path = provider.getRealPath(key);
-        Callable callable = new Callable() {
+        Callable callable = new Callable(context) {
             @Override
-            public Object call() throws KeeperException, InterruptedException {
+            public void call() throws KeeperException, InterruptedException {
                 provider.create(path, value, createMode);
-                return null;
             }
         };
-        /*try {
-            
-        } catch (KeeperException.SessionExpiredException ee){
-            logger.warn("AsyncRetryStrategy SessionExpiredException createCurrentOnly:{}", path);
-        }*/
+        callable.exec();
     }
 }

@@ -17,32 +17,32 @@ public enum AsyncRetryCenter {
     private final RetryThread retryThread = new RetryThread(queue);
     
     private boolean started = false;
-    private RetryPolicy retryPolicy;
+    private DelayRetryPolicy delayRetryPolicy;
     
-    public void init(RetryPolicy retryPolicy) {
-        logger.debug("retryPolicy init");
-        if (retryPolicy == null){
-            logger.warn("retryPolicy is null and auto init with RetryPolicy.newNoInitDelayPolicy");
-            retryPolicy = RetryPolicy.newNoInitDelayPolicy();
+    public void init(DelayRetryPolicy delayRetryPolicy) {
+        logger.debug("delayRetryPolicy init");
+        if (delayRetryPolicy == null){
+            logger.warn("delayRetryPolicy is null and auto init with DelayRetryPolicy.newNoInitDelayPolicy");
+            delayRetryPolicy = DelayRetryPolicy.newNoInitDelayPolicy();
         }
-        this.retryPolicy = retryPolicy;
+        this.delayRetryPolicy = delayRetryPolicy;
     }
     
     public synchronized void start(){
         if (started){
             return;
         }
-        this.started = true;
         retryThread.setName("retry-thread");
         retryThread.start();
+        this.started = true;
     }
     
     public void add(BaseOperation operation){
-        if (retryPolicy == null){
-            logger.warn("retryPolicy no init and auto init with RetryPolicy.newNoInitDelayPolicy");
-            retryPolicy = RetryPolicy.newNoInitDelayPolicy();
+        if (delayRetryPolicy == null){
+            logger.warn("delayRetryPolicy no init and auto init with DelayRetryPolicy.newNoInitDelayPolicy");
+            delayRetryPolicy = DelayRetryPolicy.newNoInitDelayPolicy();
         }
-        operation.setRetrial(new DelayRetryExecution(retryPolicy));
+        operation.setRetrial(new DelayPolicyExecutor(delayRetryPolicy));
         queue.offer(operation);
         logger.debug("enqueue operation:{}", operation.toString());
     }

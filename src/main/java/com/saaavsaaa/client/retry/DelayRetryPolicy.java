@@ -3,7 +3,7 @@ package com.saaavsaaa.client.retry;
 /**
  * Created by aaa
  */
-public class RetryPolicy {
+public class DelayRetryPolicy {
     private static final long BASE_DELAY = 10;
     private static final int BASE_COUNT = 3;
     private static final int RETRY_COUNT_BOUND = 29;
@@ -15,11 +15,11 @@ public class RetryPolicy {
     /*
     * Millis
     */
-    public RetryPolicy(long baseDelay) {
+    public DelayRetryPolicy(long baseDelay) {
         this(RETRY_COUNT_BOUND, baseDelay, Integer.MAX_VALUE);
     }
     
-    public RetryPolicy(int retryCount, long baseDelay, long delayUpperBound) {
+    public DelayRetryPolicy(int retryCount, long baseDelay, long delayUpperBound) {
         this.retryCount = retryCount;
         this.baseDelay = baseDelay;
         this.delayUpperBound = delayUpperBound;
@@ -37,7 +37,7 @@ public class RetryPolicy {
         return delayUpperBound;
     }
     
-    public static RetryPolicy newNoInitDelayPolicy(){
-        return new RetryPolicy(BASE_COUNT, BASE_DELAY, Integer.MAX_VALUE);
+    public static DelayRetryPolicy newNoInitDelayPolicy(){
+        return new DelayRetryPolicy(BASE_COUNT, BASE_DELAY, Integer.MAX_VALUE);
     }
 }

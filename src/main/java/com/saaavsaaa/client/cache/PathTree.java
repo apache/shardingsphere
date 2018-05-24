@@ -21,6 +21,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.ReentrantLock;
 
 /*
  * Created by aaa
@@ -28,6 +29,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public final class PathTree {
     private static final Logger logger = LoggerFactory.getLogger(PathTree.class);
+    private final transient ReentrantLock lock = new ReentrantLock();
     private final AtomicReference<PathNode> rootNode = new AtomicReference<>();
     private boolean executorStart = false;
     private ScheduledExecutorService cacheService;
@@ -42,27 +44,33 @@ public final class PathTree {
         this.provider = ((BaseClient)client).getContext().getProvider();
     }
     
-    public synchronized void loading() throws KeeperException, InterruptedException {
-        if (Status == Status.RELEASE){
-            logger.debug("loading Status:{}", Status);
-            this.setStatus(PathStatus.CHANGING);
-    
-            PathNode newRoot = new PathNode(rootNode.get().getKey());
-            List<String> children = provider.getChildren(rootNode.get().getKey());
-            children.remove(PathUtil.getRealPath(rootNode.get().getKey(), Constants.CHANGING_KEY));
-            this.attechIntoNode(children, newRoot);
-            rootNode.set(newRoot);
-    
-            this.setStatus(PathStatus.RELEASE);
-            logger.debug("loading release:{}", Status);
-        } else {
-            logger.info("loading but cache status not release");
-            try {
-                Thread.sleep(10L);
-            } catch (InterruptedException e) {
-                logger.error("loading sleep error:{}", e.getMessage(), e);
+    public void loading() throws KeeperException, InterruptedException {
+        final ReentrantLock lock = this.lock;
+        lock.lockInterruptibly();
+        try {
+            if (Status == Status.RELEASE) {
+                logger.debug("loading Status:{}", Status);
+                this.setStatus(PathStatus.CHANGING);
+        
+                PathNode newRoot = new PathNode(rootNode.get().getKey());
+                List<String> children = provider.getChildren(rootNode.get().getKey());
+                children.remove(PathUtil.getRealPath(rootNode.get().getKey(), Constants.CHANGING_KEY));
+                this.attechIntoNode(children, newRoot);
+                rootNode.set(newRoot);
+        
+                this.setStatus(PathStatus.RELEASE);
+                logger.debug("loading release:{}", Status);
+            } else {
+                logger.info("loading but cache status not release");
+                try {
+                    Thread.sleep(10L);
+                } catch (InterruptedException e) {
+                    logger.error("loading sleep error:{}", e.getMessage(), e);
+                }
+                loading();
             }
-            loading();
+        } finally {
+            lock.unlock();
         }
     }
     
@@ -82,29 +90,41 @@ public final class PathTree {
     }
     
     public void refreshPeriodic(final long period){
-        if (executorStart){
-            throw new IllegalArgumentException("period already set");
-        }
-        long threadPeriod = period;
-        if (threadPeriod < 1){
-            threadPeriod = Properties.INSTANCE.getThreadPeriod();
-        }
-        logger.debug("refreshPeriodic:{}", period);
-        cacheService = Executors.newSingleThreadScheduledExecutor();
-        cacheService.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                logger.debug("cacheService run:{}", getStatus());
-                if (PathStatus.RELEASE == getStatus()) {
-                    try {
-                        loading();
-                    } catch (Exception e) {
-                        logger.error(e.getMessage(), e);
+        final ReentrantLock lock = this.lock;
+        lock.lock();
+        try {
+            if (executorStart) {
+                throw new IllegalArgumentException("period already set");
+            }
+            long threadPeriod = period;
+            if (threadPeriod < 1) {
+                threadPeriod = Properties.INSTANCE.getThreadPeriod();
+            }
+            logger.debug("refreshPeriodic:{}", period);
+            cacheService = Executors.newSingleThreadScheduledExecutor();
+            cacheService.scheduleAtFixedRate(new Runnable() {
+                @Override
+                public void run() {
+                    logger.debug("cacheService run:{}", getStatus());
+                    if (PathStatus.RELEASE == getStatus()) {
+                        try {
+                            loading();
+                        } catch (Exception e) {
+                            logger.error(e.getMessage(), e);
+                        }
                     }
                 }
-            }
-        }, Properties.INSTANCE.getThreadInitialDelay(), threadPeriod, TimeUnit.MILLISECONDS);
-        executorStart = true;
+            }, Properties.INSTANCE.getThreadInitialDelay(), threadPeriod, TimeUnit.MILLISECONDS);
+            executorStart = true;
+            Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    stopRefresh();
+                }
+            }));
+        } finally {
+            lock.unlock();
+        }
     }
     
     public void stopRefresh(){
@@ -214,34 +234,46 @@ public final class PathTree {
         return null;
     }
     
-    public synchronized void put(final String path, final String value) {
-        logger.debug("cache put:{},value:{}", path, value);
-        PathUtils.validatePath(path);
-        logger.debug("put Status:{}", Status);
-        if (Status == Status.RELEASE){
-            if (path.equals(rootNode.get().getKey())){
-                rootNode.set(new PathNode(rootNode.get().getKey(), value.getBytes(Constants.UTF_8)));
-                return;
+    public void put(final String path, final String value) {
+        final ReentrantLock lock = this.lock;
+        lock.lock();
+        try {
+            logger.debug("cache put:{},value:{}", path, value);
+            PathUtils.validatePath(path);
+            logger.debug("put Status:{}", Status);
+            if (Status == Status.RELEASE) {
+                if (path.equals(rootNode.get().getKey())) {
+                    rootNode.set(new PathNode(rootNode.get().getKey(), value.getBytes(Constants.UTF_8)));
+                    return;
+                }
+                this.setStatus(PathStatus.CHANGING);
+                rootNode.get().set(keyIterator(path), value);
+                this.setStatus(PathStatus.RELEASE);
+            } else {
+                try {
+                    logger.debug("put but cache status not release");
+                    Thread.sleep(10L);
+                } catch (InterruptedException e) {
+                    logger.error("put sleep error:{}", e.getMessage(), e);
+                }
+                put(path, value);
             }
-            this.setStatus(PathStatus.CHANGING);
-            rootNode.get().set(keyIterator(path), value);
-            this.setStatus(PathStatus.RELEASE);
-        } else {
-            try {
-                logger.debug("put but cache status not release");
-                Thread.sleep(10L);
-            } catch (InterruptedException e) {
-                logger.error("put sleep error:{}", e.getMessage(), e);
-            }
-            put(path, value);
+        } finally {
+            lock.unlock();
         }
     }
     
-    public synchronized void delete(String path) {
-        PathUtils.validatePath(path);
-        String prxpath = path.substring(0, path.lastIndexOf(Constants.PATH_SEPARATOR));
-        PathNode node = get(prxpath);
-        node.getChildren().remove(path);
-        logger.debug("PathTree delete:{}", path);
+    public void delete(String path) {
+        final ReentrantLock lock = this.lock;
+        lock.lock();
+        try {
+            PathUtils.validatePath(path);
+            String prxpath = path.substring(0, path.lastIndexOf(Constants.PATH_SEPARATOR));
+            PathNode node = get(prxpath);
+            node.getChildren().remove(path);
+            logger.debug("PathTree delete:{}", path);
+        } finally {
+            lock.unlock();
+        }
     }
 }

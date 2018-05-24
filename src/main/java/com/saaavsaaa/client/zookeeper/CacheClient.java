@@ -24,7 +24,7 @@ public final class CacheClient extends UsualClient {
     }
     
     @Override
-    public synchronized void start() throws IOException, InterruptedException {
+    public void start() throws IOException, InterruptedException {
         super.start();
         try {
             useCacheStrategy(CacheStrategy.WATCH);

@@ -17,8 +17,8 @@ import org.slf4j.LoggerFactory;
  */
 public class AllAsyncRetryStrategy extends AsyncRetryStrategy {
     private static final Logger logger = LoggerFactory.getLogger(AllAsyncRetryStrategy.class);
-    public AllAsyncRetryStrategy(final IProvider provider, final ClientContext context) {
-        super(provider, context);
+    public AllAsyncRetryStrategy(final ClientContext context) {
+        super(context);
     }
     
     @Override
