@@ -8,6 +8,7 @@
 
 1. [ISSUE #290](https://github.com/sharding-sphere/sharding-sphere/issues/290) 支持批量INSERT语句
 1. [ISSUE #501](https://github.com/sharding-sphere/sharding-sphere/issues/501) 支持OR语句
+1. [ISSUE #862](https://github.com/sharding-sphere/sharding-sphere/issues/862) 支持在Cloud端进行数据治理
 
 ### 功能提升
 
@@ -20,7 +21,7 @@
 1. [ISSUE #702](https://github.com/sharding-sphere/sharding-sphere/issues/702) 支持以 $->{..} 作为inline表达式的标记
 1. [ISSUE #719](https://github.com/sharding-sphere/sharding-sphere/issues/719) 支持Spring bean的方式在命名空间中注入自增序列生成器对象
 1. [ISSUE #720](https://github.com/sharding-sphere/sharding-sphere/issues/720) 支持Spring bean的方式在命名空间中注入分片算法对象
-1. [ISSUE #773](https://github.com/sharding-sphere/sharding-sphere/issues/773) 支持不包含列名的INSERT语句的分片与自增主键 
+1. [ISSUE #773](https://github.com/sharding-sphere/sharding-sphere/issues/773) 支持不包含列名的INSERT语句的分片与自增主键
 
 ### 缺陷修正
 
