@@ -77,7 +77,6 @@ public final class InsertColumnsClauseParser implements SQLClauseParser {
                 String columnName = null;
                 if (sqlExpression instanceof SQLPropertyExpression) {
                     columnName = SQLUtil.getExactlyValue(((SQLPropertyExpression) sqlExpression).getName());
-                   
                 }
                 if (sqlExpression instanceof SQLIdentifierExpression) {
                     columnName = SQLUtil.getExactlyValue(((SQLIdentifierExpression) sqlExpression).getName());

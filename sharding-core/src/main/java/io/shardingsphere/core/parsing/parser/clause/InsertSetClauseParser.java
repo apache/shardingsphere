@@ -29,9 +29,11 @@ import io.shardingsphere.core.parsing.parser.context.condition.Condition;
 import io.shardingsphere.core.parsing.parser.context.insertvalue.InsertValue;
 import io.shardingsphere.core.parsing.parser.dialect.ExpressionParserFactory;
 import io.shardingsphere.core.parsing.parser.expression.SQLExpression;
+import io.shardingsphere.core.parsing.parser.expression.SQLIdentifierExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLIgnoreExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
+import io.shardingsphere.core.parsing.parser.expression.SQLPropertyExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.token.InsertColumnToken;
@@ -77,10 +79,18 @@ public class InsertSetClauseParser implements SQLClauseParser {
         insertStatement.getSqlTokens().add(new InsertValuesToken(beginPosition, insertStatement.getTables().getSingleTableName()));
         int parametersCount = 0;
         do {
-            Column column = new Column(SQLUtil.getExactlyValue(lexerEngine.getCurrentToken().getLiterals()), insertStatement.getTables().getSingleTableName());
-            basicExpressionParser.parse(insertStatement);
+            SQLExpression sqlExpression = basicExpressionParser.parse(insertStatement);
+            Column column = null;
+            if (sqlExpression instanceof SQLPropertyExpression) {
+                column = new Column(SQLUtil.getExactlyValue(((SQLPropertyExpression) sqlExpression).getName()), insertStatement.getTables().getSingleTableName());
+            }
+            if (sqlExpression instanceof SQLIdentifierExpression) {
+                column = new Column(SQLUtil.getExactlyValue(((SQLIdentifierExpression) sqlExpression).getName()), insertStatement.getTables().getSingleTableName());
+            }
+            if (sqlExpression instanceof SQLIgnoreExpression) {
+                column = new Column(SQLUtil.getExactlyValue(((SQLIgnoreExpression) sqlExpression).getExpression()), insertStatement.getTables().getSingleTableName());
+            }
             lexerEngine.accept(Symbol.EQ);
-            SQLExpression sqlExpression;
             if (lexerEngine.equalAny(Literals.INT)) {
                 sqlExpression = new SQLNumberExpression(Integer.parseInt(lexerEngine.getCurrentToken().getLiterals()));
             } else if (lexerEngine.equalAny(Literals.FLOAT)) {
