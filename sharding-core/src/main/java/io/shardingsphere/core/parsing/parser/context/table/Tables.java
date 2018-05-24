@@ -21,7 +21,10 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.ToString;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 /**
  * Tables collection.
