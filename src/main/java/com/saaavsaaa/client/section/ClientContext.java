@@ -10,7 +10,11 @@ import com.saaavsaaa.client.zookeeper.base.BaseClientFactory;
 public final class ClientContext {
     private final RetryPolicy retryPolicy;
     private final BaseClientFactory clientFactory;
-    private final IProvider provider;
+    private IProvider provider;
+    
+    public ClientContext(final RetryPolicy retryPolicy, final BaseClientFactory clientFactory) {
+        this(retryPolicy, clientFactory, null);
+    }
     
     public ClientContext(final RetryPolicy retryPolicy, final BaseClientFactory clientFactory, final IProvider provider) {
         this.retryPolicy = retryPolicy;
@@ -28,5 +32,8 @@ public final class ClientContext {
     
     public IProvider getProvider() {
         return provider;
+    }
+    public void setProvider(IProvider provider){
+        this.provider = provider;
     }
 }

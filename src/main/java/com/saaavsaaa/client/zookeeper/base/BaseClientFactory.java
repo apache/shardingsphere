@@ -22,9 +22,9 @@ public abstract class BaseClientFactory {
     protected int sessionTimeoutMilliseconds;
     
     public synchronized IClient start() throws IOException, InterruptedException {
+        client.setContext(new ClientContext(retryPolicy, this)); // wait expand
         client.setRootNode(namespace);
         client.setAuthorities(scheme , auth);
-        client.setContext(retryPolicy, this); // wait expand
         client.start();
         if (globalListener != null) {
             client.registerWatch(globalListener);

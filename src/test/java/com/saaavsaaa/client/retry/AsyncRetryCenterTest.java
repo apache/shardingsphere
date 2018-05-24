@@ -5,6 +5,7 @@ import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.section.ClientContext;
 import com.saaavsaaa.client.section.Listener;
 import com.saaavsaaa.client.utility.PathUtil;
+import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.zookeeper.ClientFactory;
 import com.saaavsaaa.client.zookeeper.TestSupport;
 import com.saaavsaaa.client.zookeeper.base.BaseClient;
@@ -22,12 +23,11 @@ import java.io.IOException;
  * Created by aaa
  */
 public class AsyncRetryCenterTest {
-    private IProvider provider;
     private ClientContext context;
     
     @Before
     public void start() throws IOException, InterruptedException {
-        provider = ((BaseClient)createClient()).getContext().getProvider();
+        context = ((BaseClient)createClient()).getContext();
         AsyncRetryCenter.INSTANCE.init(new RetryPolicy(3, 3, 10));
         AsyncRetryCenter.INSTANCE.start();
     }
@@ -55,12 +55,13 @@ public class AsyncRetryCenterTest {
     public void create() throws InterruptedException, KeeperException {
         String key = "a";
         String value = "bbb11";
+        context.getProvider().create("/" + TestSupport.ROOT, Constants.NOTHING_VALUE, CreateMode.PERSISTENT);
         AsyncRetryCenter.INSTANCE.add(new TestCreateCurrentOperation(context, key, value, CreateMode.PERSISTENT));
         Thread.sleep(1000);
         String path = PathUtil.getRealPath(TestSupport.ROOT, key);
-        assert provider.exists(path);
-        provider.delete(path);
-        provider.delete(provider.getRealPath(TestSupport.ROOT));
-        assert !provider.exists(path);
+        assert context.getProvider().exists(path);
+        context.getProvider().delete(path);
+        context.getProvider().delete(context.getProvider().getRealPath(TestSupport.ROOT));
+        assert !context.getProvider().exists(path);
     }
 }

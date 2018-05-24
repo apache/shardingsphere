@@ -58,6 +58,7 @@ public abstract class BaseClient implements IClient {
             logger.debug("BaseClient scheme:{},auth:{}", scheme, auth);
         }
         CONNECTED.await();
+        context.setProvider(new BaseProvider(rootNode, zooKeeper, watched, authorities));
     }
     
     @Override
@@ -179,8 +180,8 @@ public abstract class BaseClient implements IClient {
         this.authorities = ZooDefs.Ids.CREATOR_ALL_ACL;
     }
     
-    void setContext(final RetryPolicy retryPolicy, final BaseClientFactory clientFactory){
-        this.context = new ClientContext(retryPolicy, clientFactory, new BaseProvider(rootNode, zooKeeper, watched, authorities));
+    void setContext(final ClientContext context){
+        this.context = context;
     }
     public ClientContext getContext(){
         return context;
