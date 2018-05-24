@@ -45,12 +45,6 @@ public class AsyncRetryCenterTest {
         
     }
     
-    @Ignore
-    @Test
-    public void nothing(){
-        
-    }
-    
     @Test
     public void create() throws InterruptedException, KeeperException {
         String key = "a";

@@ -210,9 +210,14 @@ public abstract class BaseClientTest {
         Listener listener = buildListener(client, actual);
         
         String key = "a";
-        Watcher watcher = client.registerWatch(key, listener);
+        client.registerWatch(key, listener);
         client.createCurrentOnly(key, "aaa", CreateMode.EPHEMERAL);
-        client.checkExists(key, watcher);
+        client.checkExists(key, new Watcher() {
+            @Override
+            public void process(WatchedEvent event) {
+                listener.process(event);
+            }
+        });
         client.update(key, "value");
         System.out.println(new String(client.getData(key)));
         assert client.getDataString(key).equals("value");
@@ -220,15 +225,15 @@ public abstract class BaseClientTest {
         assert client.getDataString(key).equals("value1");
         client.update(key, "value2");
         assert client.getDataString(key).equals("value2");
-        client.deleteCurrentBranch(key);
         Thread.sleep(100);
+        client.deleteCurrentBranch(key);
         assert expected.size() == actual.size();
         assert expected.containsAll(actual);
         client.unregisterWatch(key);
     }
     
     protected Listener buildListener(IClient client, List<String> actual){
-        Listener listener = new Listener() {
+        Listener listener = new Listener(null) {
             @Override
             public void process(WatchedEvent event) {
                 System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
@@ -241,10 +246,10 @@ public abstract class BaseClientTest {
                         String result;
                         try {
                             result = new String(getZooKeeper(client).getData(event.getPath(),false, null));
-                            System.out.println();
+                            System.out.println(result);
                         } catch (KeeperException e) {
                             result = e.getMessage();
-                            e.printStackTrace();
+                            System.out.println(result);
                         } catch (InterruptedException e) {
                             result = e.getMessage();
                             e.printStackTrace();

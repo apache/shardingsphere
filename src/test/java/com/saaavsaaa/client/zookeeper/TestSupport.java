@@ -13,7 +13,7 @@ public class TestSupport {
     public static final String ROOT = "test";
     
     public static Listener buildListener(){
-        Listener listener = new Listener() {
+        Listener listener = new Listener(null) {
             @Override
             public void process(WatchedEvent event) {
                 System.out.println("==========================================================");

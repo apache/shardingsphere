@@ -28,7 +28,7 @@ import java.util.concurrent.CountDownLatch;
 public abstract class BaseClient implements IClient {
     private static final Logger logger = LoggerFactory.getLogger(BaseClient.class);
     private static final CountDownLatch CONNECTED = new CountDownLatch(1);
-    protected static final Map<String, Watcher> watchers = new ConcurrentHashMap<>();
+    protected static final Map<String, Listener> watchers = new ConcurrentHashMap<>();
     
     protected final boolean watched = true; //false
     private boolean globalListenerRegistered = false;
@@ -88,8 +88,12 @@ public abstract class BaseClient implements IClient {
                     watchers.get(Constants.GLOBAL_LISTENER_KEY).process(event);
                     logger.debug("BaseClient " + Constants.GLOBAL_LISTENER_KEY + " process");
                 }
-                if (Properties.INSTANCE.watchOn() && watchers.containsKey(event.getPath())){
-                     watchers.get(event.getPath()).process(event);
+                if (Properties.INSTANCE.watchOn()){
+                    for (Listener listener : watchers.values()) {
+                        if (listener.getPath() == null || listener.getPath().equals(event.getPath())){
+                            listener.process(event);
+                        }
+                    }
                 }
             }
         };
@@ -100,29 +104,17 @@ public abstract class BaseClient implements IClient {
             logger.warn("global listener can only register one");
             return;
         }
-        watchers.put(Constants.GLOBAL_LISTENER_KEY, new Watcher() {
-            @Override
-            public void process(WatchedEvent event) {
-                globalListener.process(event);
-            }
-        });
+        watchers.put(Constants.GLOBAL_LISTENER_KEY, globalListener);
         globalListenerRegistered = true;
         logger.debug("globalListenerRegistered:{}", globalListenerRegistered);
     }
     
     @Override
-    public Watcher registerWatch(final String key, final Listener listener){
+    public void registerWatch(final String key, final Listener listener){
         String path = PathUtil.getRealPath(rootNode, key);
-//        listener.setKey(path);
-        Watcher watcher = new Watcher() {
-            @Override
-            public void process(WatchedEvent event) {
-                listener.process(event);
-            }
-        };
-        watchers.put(path, watcher);
+        listener.setPath(path);
+        watchers.put(listener.getKey(), listener);
         logger.debug("register watcher:{}", path);
-        return watcher;
     }
     
     @Override
@@ -155,7 +147,7 @@ public abstract class BaseClient implements IClient {
             return;
         }
         rootExist = true;
-        zooKeeper.exists(rootNode, WatcherCreator.deleteWatcher(rootNode, new Listener() {
+        zooKeeper.exists(rootNode, WatcherCreator.deleteWatcher(new Listener(rootNode) {
             @Override
             public void process(WatchedEvent event) {
                 rootExist = false;

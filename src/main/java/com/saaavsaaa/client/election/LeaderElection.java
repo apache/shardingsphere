@@ -33,7 +33,7 @@ public abstract class LeaderElection {
         } catch (KeeperException.NodeExistsException e) {
             logger.info("contend not success");
             // TODO: or changing_key node value == current client id
-            provider.exists(node, WatcherCreator.deleteWatcher(node, listener));
+            provider.exists(node, WatcherCreator.deleteWatcher(listener));
         }
         return success;
     }
@@ -45,7 +45,7 @@ public abstract class LeaderElection {
         boolean canBegin;
         String realNode = provider.getRealPath(nodeBeCompete);
         String contendNode = PathUtil.getRealPath(realNode, Constants.CHANGING_KEY);
-        canBegin = this.contend(contendNode, provider, new Listener() {
+        canBegin = this.contend(contendNode, provider, new Listener(contendNode) {
             @Override
             public void process(WatchedEvent event) {
                 try {

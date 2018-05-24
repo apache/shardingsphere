@@ -115,7 +115,7 @@ public final class PathTree {
     
     public void watch(Listener listener){
         if (listener == null){
-            listener = new Listener() {
+            listener = new Listener(rootNode.get().getKey()) {
                 @Override
                 public void process(WatchedEvent event) {
                     String path = event.getPath();

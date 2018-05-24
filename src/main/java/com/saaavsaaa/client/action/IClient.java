@@ -12,7 +12,7 @@ import java.io.IOException;
 public interface IClient extends IAction, IGroupAction{
     void start() throws IOException, InterruptedException;
     void close() throws InterruptedException;
-    Watcher registerWatch(String key, Listener listener);
+    void registerWatch(String key, Listener listener);
     void unregisterWatch(String key);
     
     ZKTransaction transaction();

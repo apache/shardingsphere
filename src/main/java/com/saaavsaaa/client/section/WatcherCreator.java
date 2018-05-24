@@ -12,11 +12,11 @@ import static org.apache.zookeeper.Watcher.Event.EventType.NodeDeleted;
  */
 public class WatcherCreator {
     private static final Logger logger = LoggerFactory.getLogger(WatcherCreator.class);
-    public static Watcher deleteWatcher(final String path, Listener listener){
+    public static Watcher deleteWatcher(Listener listener){
         return new Watcher() {
             @Override
             public void process(WatchedEvent event) {
-                if (path.equals(event.getPath()) && NodeDeleted.equals(event.getType())){
+                if (listener.getPath().equals(event.getPath()) && NodeDeleted.equals(event.getType())){
                     listener.process(event);
                     logger.debug("delete node event:{}", event.toString());
                 }
