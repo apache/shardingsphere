@@ -171,7 +171,7 @@ public final class MySQLPacketPayload {
      * @return length encoded integer
      */
     public long readIntLenenc() {
-        int firstByte = byteBuf.readByte() & 0xff;
+        int firstByte = readInt1();
         if (firstByte <= 0xfb) {
             return firstByte;
         }
