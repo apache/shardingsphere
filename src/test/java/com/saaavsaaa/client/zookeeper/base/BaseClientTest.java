@@ -229,7 +229,7 @@ public abstract class BaseClientTest {
         client.deleteCurrentBranch(key);
         assert expected.size() == actual.size();
         assert expected.containsAll(actual);
-        client.unregisterWatch(key);
+        client.unregisterWatch(listener.getKey());
     }
     
     protected Listener buildListener(IClient client, List<String> actual){
@@ -249,7 +249,7 @@ public abstract class BaseClientTest {
                             System.out.println(result);
                         } catch (KeeperException e) {
                             result = e.getMessage();
-                            System.out.println(result);
+                            e.printStackTrace();
                         } catch (InterruptedException e) {
                             result = e.getMessage();
                             e.printStackTrace();

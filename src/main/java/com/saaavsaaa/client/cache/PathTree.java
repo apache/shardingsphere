@@ -145,8 +145,16 @@ public final class PathTree {
                 }
             };
         }
-        logger.debug("PathTree Watch:{}", rootNode.get().getKey());
+        final String key = listener.getKey();
+        logger.debug("PathTree Watch:{}", key);
         client.registerWatch(rootNode.get().getKey(), listener);
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            @Override
+            public void run() {
+                logger.debug("PathTree Unregister Watch:{}", key);
+                client.unregisterWatch(key);
+            }
+        }));
     }
     
     public PathStatus getStatus() {

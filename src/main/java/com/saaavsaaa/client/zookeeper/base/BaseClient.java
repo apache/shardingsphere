@@ -122,10 +122,10 @@ public abstract class BaseClient implements IClient {
         if (StringUtil.isNullOrBlank(key)){
             throw new IllegalArgumentException("key should not be blank");
         }
-        String path = PathUtil.getRealPath(rootNode, key);
-        if (watchers.containsKey(path)){
-            watchers.remove(path);
-            logger.debug("unregisterWatch:{}", path);
+//        String path = PathUtil.getRealPath(rootNode, key);
+        if (watchers.containsKey(key)){
+            watchers.remove(key);
+            logger.debug("unregisterWatch:{}", key);
         }
     }
     
