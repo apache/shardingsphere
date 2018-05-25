@@ -59,7 +59,7 @@ Organizations using Sharding in chronological order.
 * [Totoro live](http://www.tvlongmao.com)
 * [BBGame](http://www.bbgameonline.com/)
 * [500px](https://500px.me/)
-
+* [bilibili](https://www.bilibili.com/)
 ## Smart Device
 
 * [hiveview](http://www.hiveview.com/)
