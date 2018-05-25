@@ -22,19 +22,24 @@ import com.zaxxer.hikari.HikariConfig;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.EpollChannelOption;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.pool.AbstractChannelPoolMap;
+import io.netty.channel.pool.ChannelPoolHandler;
+import io.netty.channel.pool.ChannelPoolMap;
+import io.netty.channel.pool.FixedChannelPool;
+import io.netty.channel.pool.SimpleChannelPool;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.shardingsphere.proxy.backend.netty.ClientHandlerInitializer;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -45,6 +50,7 @@ import java.util.Map;
  *
  * @author wangkai
  */
+@Slf4j
 public final class ShardingProxyClient {
     private static final ShardingProxyClient INSTANCE = new ShardingProxyClient();
     
@@ -53,10 +59,9 @@ public final class ShardingProxyClient {
     private EventLoopGroup workerGroup;
     
     @Getter
-    private Map<String, Channel> channelMap = Maps.newHashMap();
+    private ChannelPoolMap<String, SimpleChannelPool> poolMap;
     
-    @Getter
-    private Map<String, Bootstrap> bootstrapMap = Maps.newHashMap();
+    private Map<String, DataScourceConfig> dataScourceConfigMap = Maps.newHashMap();
     
     /**
      * Start Sharding-Proxy.
@@ -68,22 +73,27 @@ public final class ShardingProxyClient {
         Map<String, HikariConfig> dataSourceConfigurationMap = RuleRegistry.getInstance().getDataSourceConfigurationMap();
         for (Map.Entry<String, HikariConfig> each : dataSourceConfigurationMap.entrySet()) {
             URL url = new URL(each.getValue().getJdbcUrl().replaceAll("jdbc:mysql:", "http:"));
-            String ip = url.getHost();
-            int port = url.getPort();
-            String database = url.getPath().substring(1);
-            String username = (each.getValue()).getUsername();
-            String password = (each.getValue()).getPassword();
-            Bootstrap bootstrap = new Bootstrap();
-            if (workerGroup instanceof EpollEventLoopGroup) {
-                groupsEpoll(bootstrap, ip, port, database, username, password);
-            } else {
-                groupsNio(bootstrap, ip, port, database, username, password);
-            }
-            //TODO use connection pool.
-            bootstrapMap.put(each.getKey(), bootstrap);
-            ChannelFuture future = bootstrap.connect(ip, port).sync();
-            channelMap.put(each.getKey(), future.channel());
+            final String ip = url.getHost();
+            final int port = url.getPort();
+            final String database = url.getPath().substring(1);
+            final String username = (each.getValue()).getUsername();
+            final String password = (each.getValue()).getPassword();
+            dataScourceConfigMap.put(each.getKey(), new DataScourceConfig(ip, port, database, username, password));
         }
+        final Bootstrap bootstrap = new Bootstrap();
+        if (workerGroup instanceof EpollEventLoopGroup) {
+            groupsEpoll(bootstrap);
+        } else {
+            groupsNio(bootstrap);
+        }
+        poolMap = new AbstractChannelPoolMap<String, SimpleChannelPool>() {
+            @Override
+            protected SimpleChannelPool newPool(String datasourceName) {
+                DataScourceConfig dataScourceConfig = dataScourceConfigMap.get(datasourceName);
+                //TODO maxConnection should be set.
+                return new FixedChannelPool(bootstrap.remoteAddress(dataScourceConfig.ip, dataScourceConfig.port), new NettyChannelPoolHandler(dataScourceConfig), 10);
+            }
+        };
     }
     
     /**
@@ -95,19 +105,17 @@ public final class ShardingProxyClient {
         }
     }
     
-    private void groupsEpoll(final Bootstrap bootstrap, final String ip, final int port, final String database, final String username, final String password) {
+    private void groupsEpoll(final Bootstrap bootstrap) {
         workerGroup = new EpollEventLoopGroup(WORKER_MAX_THREADS);
         bootstrap.group(workerGroup)
                 .channel(EpollSocketChannel.class)
                 .option(EpollChannelOption.TCP_CORK, true)
                 .option(EpollChannelOption.SO_KEEPALIVE, true)
                 .option(EpollChannelOption.SO_BACKLOG, 128)
-                .option(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                .handler(new LoggingHandler(LogLevel.INFO))
-                .handler(new ClientHandlerInitializer(ip, port, database, username, password));
+                .option(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
     }
     
-    private void groupsNio(final Bootstrap bootstrap, final String ip, final int port, final String database, final String username, final String password) {
+    private void groupsNio(final Bootstrap bootstrap) {
         workerGroup = new NioEventLoopGroup(WORKER_MAX_THREADS);
         bootstrap.group(workerGroup)
                 .channel(NioSocketChannel.class)
@@ -115,9 +123,7 @@ public final class ShardingProxyClient {
                 .option(ChannelOption.TCP_NODELAY, true)
                 .option(ChannelOption.SO_BACKLOG, 128)
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 100)
-                .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                .handler(new LoggingHandler(LogLevel.INFO))
-                .handler(new ClientHandlerInitializer(ip, port, database, username, password));
+                .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
     }
     
     /**
@@ -127,5 +133,47 @@ public final class ShardingProxyClient {
      */
     public static ShardingProxyClient getInstance() {
         return INSTANCE;
+    }
+    
+    class DataScourceConfig {
+        private final String ip;
+        private final int port;
+        private final String database;
+        private final String username;
+        private final String password;
+        
+        public DataScourceConfig(String ip, int port, String database, String username, String password) {
+            this.ip = ip;
+            this.port = port;
+            this.database = database;
+            this.username = username;
+            this.password = password;
+        }
+    }
+    
+    class NettyChannelPoolHandler implements ChannelPoolHandler {
+        private final DataScourceConfig dataScourceConfig;
+        
+        public NettyChannelPoolHandler(final DataScourceConfig dataScourceConfig) {
+            this.dataScourceConfig = dataScourceConfig;
+        }
+        
+        @Override
+        public void channelReleased(Channel channel) throws Exception {
+            log.info("channelReleased. Channel ID: {}" + channel.id().asShortText());
+        }
+        
+        @Override
+        public void channelAcquired(Channel channel) throws Exception {
+            log.info("channelAcquired. Channel ID: {}" + channel.id().asShortText());
+        }
+        
+        @Override
+        public void channelCreated(Channel channel) throws Exception {
+            channel.pipeline()
+                    .addLast(new LoggingHandler(LogLevel.INFO))
+                    .addLast(new ClientHandlerInitializer(dataScourceConfig.ip, dataScourceConfig.port, dataScourceConfig.database, dataScourceConfig.username, dataScourceConfig.password));
+            log.info("channelCreated. Channel ID: {}" + channel.id().asShortText());
+        }
     }
 }
