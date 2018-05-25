@@ -33,6 +33,12 @@ public class UsualClient extends BaseClient {
     }
     
     @Override
+    public void close(){
+        super.close();
+        this.strategies.clear();
+    }
+    
+    @Override
     public synchronized void useExecStrategy(StrategyType strategyType) {
         logger.debug("useExecStrategy:{}", strategyType);
         if (strategies.containsKey(strategyType)){

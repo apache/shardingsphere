@@ -1,5 +1,6 @@
 package com.saaavsaaa.client.zookeeper;
 
+import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.retry.DelayRetryPolicy;
 import com.saaavsaaa.client.section.Listener;
 import com.saaavsaaa.client.utility.constant.Constants;
@@ -26,13 +27,22 @@ public class ClientFactory extends BaseClientFactory {
     
     /*
     * used for create new clients through a existing client
+    * this client is not perhaps the client
     */
-    ClientFactory newClient() {
+    @Override
+    public synchronized BaseClientFactory newClientByOriginal(boolean closeOriginal) {
+        IClient oldClient = this.client;
         client = new UsualClient(servers, sessionTimeoutMilliseconds);
+        if (closeOriginal){
+            oldClient.close();
+        }
         logger.debug("new usual client by a existing client");
         return this;
     }
     
+    /*
+    * partially prepared products
+    */
     public ClientFactory newCacheClient(final String servers, final int sessionTimeoutMilliseconds) {
         this.servers = servers;
         this.sessionTimeoutMilliseconds = sessionTimeoutMilliseconds;

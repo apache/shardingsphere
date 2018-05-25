@@ -46,7 +46,7 @@ public abstract class Callable<T> {
         }
     }
     
-    private void execDelay() throws KeeperException, InterruptedException {
+    protected void execDelay() throws KeeperException, InterruptedException {
         for (;;) {
             long delay = delayPolicyExecutor.getNextTick() - System.currentTimeMillis();
             if (delay > 0){

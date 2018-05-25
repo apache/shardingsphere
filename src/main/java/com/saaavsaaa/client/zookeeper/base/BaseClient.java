@@ -26,10 +26,10 @@ import java.util.concurrent.CountDownLatch;
 public abstract class BaseClient implements IClient {
     private static final Logger logger = LoggerFactory.getLogger(BaseClient.class);
     private static final CountDownLatch CONNECTED = new CountDownLatch(1);
-    protected static final Map<String, Listener> watchers = new ConcurrentHashMap<>();
+//    protected static final Map<String, Listener> watchers = new ConcurrentHashMap<>();
     
     protected final boolean watched = true; //false
-    private boolean globalListenerRegistered = false;
+    private Listener globalListener;
     protected String rootNode = "/InitValue";
     protected boolean rootExist = false;
     private final String servers;
@@ -60,9 +60,14 @@ public abstract class BaseClient implements IClient {
     }
     
     @Override
-    public void close() throws InterruptedException {
-        zooKeeper.close();
-        logger.debug("zk closed");
+    public void close() {
+        try {
+            zooKeeper.close();
+            logger.debug("zk closed");
+            this.context.close();
+        } catch (Exception ee){
+            logger.warn("BaseClient close:{}", ee.getMessage());
+        }
     }
     
     public abstract void useExecStrategy(StrategyType strategyType);
@@ -75,19 +80,25 @@ public abstract class BaseClient implements IClient {
         return new Watcher(){
             public void process(WatchedEvent event) {
                 logger.debug("BaseClient process event:{}", event.toString());
-                if(Event.KeeperState.SyncConnected == event.getState()){
-                    if(Event.EventType.None == event.getType()){
+                if(Event.EventType.None == event.getType()){
+                    if(Event.KeeperState.SyncConnected == event.getState()){
                         CONNECTED.countDown();
                         logger.debug("BaseClient startWatcher SyncConnected");
                         return;
+                    } else if (Event.KeeperState.Expired == event.getState()){
+                        try {
+                            start();
+                        } catch (Exception ee){
+                            logger.error("event state Expired:{}", ee.getMessage(), ee);
+                        }
                     }
                 }
-                if (globalListenerRegistered){
-                    watchers.get(Constants.GLOBAL_LISTENER_KEY).process(event);
+                if (globalListener != null){
+                    globalListener.process(event);
                     logger.debug("BaseClient " + Constants.GLOBAL_LISTENER_KEY + " process");
                 }
                 if (Properties.INSTANCE.watchOn()){
-                    for (Listener listener : watchers.values()) {
+                    for (Listener listener : context.getWatchers().values()) {
                         if (listener.getPath() == null || listener.getPath().equals(event.getPath())){
                             listener.process(event);
                         }
@@ -98,20 +109,19 @@ public abstract class BaseClient implements IClient {
     }
     
     void registerWatch(final Listener globalListener){
-        if (globalListenerRegistered){
+        if (globalListener != null){
             logger.warn("global listener can only register one");
             return;
         }
-        watchers.put(Constants.GLOBAL_LISTENER_KEY, globalListener);
-        globalListenerRegistered = true;
-        logger.debug("globalListenerRegistered:{}", globalListenerRegistered);
+        this.globalListener = globalListener;
+        logger.debug("globalListenerRegistered:{}", globalListener.getKey());
     }
     
     @Override
     public void registerWatch(final String key, final Listener listener){
         String path = PathUtil.getRealPath(rootNode, key);
         listener.setPath(path);
-        watchers.put(listener.getKey(), listener);
+        context.getWatchers().put(listener.getKey(), listener);
         logger.debug("register watcher:{}", path);
     }
     
@@ -121,8 +131,8 @@ public abstract class BaseClient implements IClient {
             throw new IllegalArgumentException("key should not be blank");
         }
 //        String path = PathUtil.getRealPath(rootNode, key);
-        if (watchers.containsKey(key)){
-            watchers.remove(key);
+        if (context.getWatchers().containsKey(key)){
+            context.getWatchers().remove(key);
             logger.debug("unregisterWatch:{}", key);
         }
     }

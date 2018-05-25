@@ -14,6 +14,7 @@ import java.util.List;
 
 /**
  * Created by aaa
+ * partially prepared products
  */
 public final class CacheClient extends UsualClient {
     private static final Logger logger = LoggerFactory.getLogger(CacheClient.class);
@@ -33,12 +34,19 @@ public final class CacheClient extends UsualClient {
         }
     }
     
+    @Override
+    public void close(){
+        super.close();
+        this.strategies.clear();
+        this.pathTree.close();
+    }
+    
     //todo put it here?
     void useCacheStrategy(CacheStrategy cacheStrategy) throws KeeperException, InterruptedException {
         logger.debug("use cache strategy:{}", cacheStrategy);
         switch (cacheStrategy){
             case WATCH:{
-                pathTree  = new PathTree(rootNode, this);
+                pathTree = new PathTree(rootNode, this);
                 pathTree.watch(null);
                 return;
             }

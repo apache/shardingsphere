@@ -1,8 +1,5 @@
 package com.saaavsaaa.client.zookeeper.strategy;
 
-import com.saaavsaaa.client.action.IProvider;
-import com.saaavsaaa.client.retry.DelayRetryPolicy;
-import com.saaavsaaa.client.retry.RetryCount;
 import com.saaavsaaa.client.section.Callable;
 import com.saaavsaaa.client.section.ClientContext;
 import org.apache.zookeeper.CreateMode;
@@ -71,11 +68,65 @@ public class SyncRetryStrategy extends UsualStrategy{
     
     @Override
     public void createCurrentOnly(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
-        String path = provider.getRealPath(key);
         Callable callable = new Callable(context) {
             @Override
             public void call() throws KeeperException, InterruptedException {
-                provider.create(path, value, createMode);
+                provider.create(provider.getRealPath(key), value, createMode);
+            }
+        };
+        callable.exec();
+    }
+    
+    @Override
+    public void update(final String key, final String value) throws KeeperException, InterruptedException {
+        Callable callable = new Callable(context) {
+            @Override
+            public void call() throws KeeperException, InterruptedException {
+                provider.update(provider.getRealPath(key), value);
+            }
+        };
+        callable.exec();
+    }
+    
+    @Override
+    public void deleteOnlyCurrent(final String key) throws KeeperException, InterruptedException {
+        Callable callable = new Callable(context) {
+            @Override
+            public void call() throws KeeperException, InterruptedException {
+                provider.delete(provider.getRealPath(key));
+            }
+        };
+        callable.exec();
+    }
+    
+    @Override
+    public void createAllNeedPath(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
+        Callable callable = new Callable(context) {
+            @Override
+            public void call() throws KeeperException, InterruptedException {
+                new UsualStrategy(provider).createAllNeedPath(key, value, createMode);
+            }
+        };
+        callable.exec();
+    }
+    
+    @Override
+    public void deleteAllChildren(final String key) throws KeeperException, InterruptedException {
+        Callable callable = new Callable(context) {
+            @Override
+            public void call() throws KeeperException, InterruptedException {
+                new UsualStrategy(provider).deleteAllChildren(key);
+            }
+        };
+        callable.exec();
+    }
+    
+    @Override
+    public void deleteCurrentBranch(final String key) throws KeeperException, InterruptedException {
+        Callable callable = new Callable(context) {
+            @Override
+            public void call() throws KeeperException, InterruptedException {
+                new UsualStrategy(provider).deleteCurrentBranch(key);
             }
         };
         callable.exec();

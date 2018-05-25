@@ -3,18 +3,23 @@ package com.saaavsaaa.client.section;
 import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.zookeeper.base.BaseClient;
 import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.WatchedEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Created by aaa
  */
 public class Connection {
-    
+    private static final Logger logger = LoggerFactory.getLogger(Connection.class);
     //is need reset
     private static final Map<Integer, Boolean> exceptionResets = new ConcurrentHashMap<>();
-    private final ClientContext context;
+    private ClientContext context;
     
     static {
         exceptionResets.put(KeeperException.Code.SESSIONEXPIRED.intValue(), true);
@@ -33,10 +38,32 @@ public class Connection {
             throw e;
         }
         boolean reset = exceptionResets.get(code);
-        if (reset){
-//            this.client = ((BaseClient)client).getContext()
-        } else {
-            // block
+        try {
+            if (reset){
+                resetConnection();
+            } else {
+                // block
+                block();
+            }
+        } catch (Exception ee){
+            logger.error("check reconnect:{}", ee.getMessage(), ee);
         }
+    }
+    
+    private void resetConnection() throws IOException, InterruptedException {
+        IClient client = context.getClientFactory().newClientByOriginal(true).start();
+        this.context = ((BaseClient)client).getContext();
+    }
+    
+    private void block() throws InterruptedException {
+        final CountDownLatch autoReconnect = new CountDownLatch(1);
+        Listener listener = new Listener() {
+            @Override
+            public void process(WatchedEvent event) {
+                autoReconnect.countDown();
+            }
+        };
+        context.getWatchers().put(listener.getKey(), listener);
+        autoReconnect.await();
     }
 }

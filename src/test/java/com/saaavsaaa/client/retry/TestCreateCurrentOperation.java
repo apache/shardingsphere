@@ -19,7 +19,8 @@ public class TestCreateCurrentOperation extends CreateCurrentOperation {
     public void execute() throws KeeperException, InterruptedException {
         if (count < 2){
             count++;
-            throw new KeeperException.SessionExpiredException();
+//            throw new KeeperException.SessionExpiredException();
+            throw new KeeperException.ConnectionLossException();
         }
         super.execute();
     }

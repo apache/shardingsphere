@@ -22,10 +22,12 @@ import java.io.IOException;
  */
 public class AsyncRetryCenterTest {
     private ClientContext context;
+    private BaseClient client;
     
     @Before
     public void start() throws IOException, InterruptedException {
-        context = ((BaseClient)createClient()).getContext();
+        client = ((BaseClient)createClient());
+        context = client.getContext();
         AsyncRetryCenter.INSTANCE.init(new DelayRetryPolicy(3, 3, 10));
         AsyncRetryCenter.INSTANCE.start();
     }
@@ -47,11 +49,14 @@ public class AsyncRetryCenterTest {
     public void create() throws InterruptedException, KeeperException {
         String key = "a";
         String value = "bbb11";
-        context.getProvider().create("/" + TestSupport.ROOT, Constants.NOTHING_VALUE, CreateMode.PERSISTENT);
+        if (!context.getProvider().exists("/" + TestSupport.ROOT)) {
+            context.getProvider().create("/" + TestSupport.ROOT, Constants.NOTHING_VALUE, CreateMode.PERSISTENT);
+        }
         AsyncRetryCenter.INSTANCE.add(new TestCreateCurrentOperation(context, key, value, CreateMode.PERSISTENT));
-        Thread.sleep(1000);
+        Thread.sleep(2000);
         String path = PathUtil.getRealPath(TestSupport.ROOT, key);
-        assert context.getProvider().exists(path);
+//        assert context.getProvider().exists(path);
+        assert client.checkExists(path);
         context.getProvider().delete(path);
         context.getProvider().delete(context.getProvider().getRealPath(TestSupport.ROOT));
         assert !context.getProvider().exists(path);

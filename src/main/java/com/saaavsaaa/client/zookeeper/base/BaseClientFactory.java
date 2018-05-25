@@ -31,4 +31,6 @@ public abstract class BaseClientFactory {
         }
         return client;
     }
+    
+    public abstract BaseClientFactory newClientByOriginal(boolean closeOriginal);
 }
