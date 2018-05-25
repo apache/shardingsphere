@@ -127,10 +127,47 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
     
     //TODO
     @Override
-    protected void executeCommandResponsePackets(final ChannelHandlerContext context, final int header, final MySQLPacketPayload mysqlPacketPayload) {
-        int connectionId = MySQLResultCache.getInstance().getonnectionMap(context.channel().id().asShortText());
+    protected void executeCommandResponsePackets(final ChannelHandlerContext context, final int sequenceId, final int header, final MySQLPacketPayload mysqlPacketPayload) {
+CommandResponsePackets result = new CommandResponsePackets();
         
-        MySQLResultCache.getInstance().get(connectionId).setResponse(null);
+        //TODO
+        int columnCount = header <= 0xfb ? header : (int) mysqlPacketPayload.readIntLenenc();
+        if (0 == columnCount) {
+            result.addPacket(new OKPacket(sequenceId + 1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+        } else {
+            result.addPacket(new FieldCountPacket(sequenceId + 1, columnCount));
+            for (int i = 1; i <= columnCount; i++) {
+                String catalog = mysqlPacketPayload.readStringLenenc();
+                String schema = mysqlPacketPayload.readStringLenenc();
+                String table = mysqlPacketPayload.readStringLenenc();
+                String orgTable = mysqlPacketPayload.readStringLenenc();
+                String name = mysqlPacketPayload.readStringLenenc();
+                String orgName = mysqlPacketPayload.readStringLenenc();
+                mysqlPacketPayload.skipReserved(1 + 2); // fixed value and charset
+                int columnLength = mysqlPacketPayload.readInt4();
+                int columnType = mysqlPacketPayload.readInt1();
+                mysqlPacketPayload.skipReserved(2); // field flags
+                int decimals = mysqlPacketPayload.readInt1();
+                mysqlPacketPayload.skipReserved(2); // filler value 0x00 0x00
+                result.addPacket(new ColumnDefinition41Packet(sequenceId + 1, schema, table, orgTable, name, orgName,
+                        columnLength, ColumnType.valueOfJDBCType(columnType), decimals));
+            }
+            result.addPacket(new EofPacket(sequenceId + 1, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
+            
+            if (mysqlPacketPayload.isReadable()) {
+                while (mysqlPacketPayload.isReadable()) {
+                    List<Object> data = new ArrayList<>(columnCount);
+                    for (int i = 1; i <= columnCount; i++) {
+                        data.add(mysqlPacketPayload.readStringLenenc());
+                    }
+                    result.addPacket(new TextResultSetRowPacket(sequenceId + 1, data));
+                }
+                result.addPacket(new EofPacket(sequenceId + 1, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
+            }
+        }
+        
+        int connectionId = MySQLResultCache.getInstance().getConnectionMap(context.channel().id().asShortText());
+        MySQLResultCache.getInstance().get(connectionId).setResponse(result);
     }
     
     @Override

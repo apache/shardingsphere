@@ -17,23 +17,35 @@
 
 package io.shardingsphere.proxy.util;
 
-import com.google.common.collect.Lists;
-
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+
+import com.google.common.collect.Lists;
+
+import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
+import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 
 /**
  * sync get multiple netty return.
  *
  * @author wangkai
  */
-public class SynchronizedFuture<T> implements Future<List<T>> {
+public class SynchronizedFuture<T> implements Future<CommandResponsePackets> {
+    private boolean merged;
     
     private CountDownLatch latch;
     
-    private List<T> responses;
+    private List<CommandResponsePackets> responses;
     
     private long beginTime = System.currentTimeMillis();
     
@@ -54,16 +66,13 @@ public class SynchronizedFuture<T> implements Future<List<T>> {
     
     @Override
     public boolean isDone() {
-        if (null != responses && responses.size() > 0) {
-            return true;
-        }
-        return false;
+        return merged ? true : false;
     }
     
     @Override
-    public List<T> get() throws InterruptedException {
+    public CommandResponsePackets get() throws InterruptedException {
         latch.await();
-        return this.responses;
+        return merge();
     }
     
     /**
@@ -73,24 +82,87 @@ public class SynchronizedFuture<T> implements Future<List<T>> {
      * @return responses.
      */
     @Override
-    public List<T> get(final long timeout, final TimeUnit unit) {
+    public CommandResponsePackets get(final long timeout, final TimeUnit unit) {
         try {
-            if (latch.await(timeout, unit)) {
-                return this.responses;
-            }
+            latch.await(timeout, unit);
         } catch (InterruptedException e) {
             //TODO
         }
-        return this.responses;
+        return merge();
     }
     
     /**
      * set response and count down.
      * @param response sql command result.
      */
-    public void setResponse(final T response) {
-        this.responses.add(response);
+    public void setResponse(final CommandResponsePackets response) {
+        responses.add(response);
         latch.countDown();
     }
     
+    private CommandResponsePackets merge() {
+        boolean isOkPacket = false;
+        int affectedRows = 0;
+        long lastInsertId = 0;
+        int sequenceId = 0;
+        CommandResponsePackets headPackets = new CommandResponsePackets();
+        for (CommandResponsePackets each : responses) {
+            headPackets.addPacket(each.getHeadPacket());
+        }
+        
+        for (DatabaseProtocolPacket each : headPackets.getDatabaseProtocolPackets()) {
+            if (each instanceof ErrPacket) {
+                return new CommandResponsePackets(each);
+            }
+            if (each instanceof OKPacket) {
+                isOkPacket = true;
+                OKPacket okPacket = (OKPacket) each;
+                affectedRows += okPacket.getAffectedRows();
+                lastInsertId = okPacket.getLastInsertId();
+                sequenceId = okPacket.getSequenceId();
+            }
+        }
+        if (isOkPacket) {
+            return new CommandResponsePackets(new OKPacket(sequenceId, affectedRows, lastInsertId, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+        }
+        
+        CommandResponsePackets result = new CommandResponsePackets();
+        FieldCountPacket fieldCountPacket = (FieldCountPacket) headPackets.getHeadPacket();
+        result.addPacket(fieldCountPacket);
+        boolean isHeadReaded = false;
+        for (CommandResponsePackets each : responses) {
+            Iterator<DatabaseProtocolPacket> databaseProtocolPackets = each.getDatabaseProtocolPackets().iterator();
+            
+            List<DatabaseProtocolPacket> columnDefinitionAndEOFPackets = Collections.emptyList();
+            for (int i = 0; i < fieldCountPacket.getColumnCount(); i++) {
+                MySQLPacket columnDefinitionPacket = (MySQLPacket) databaseProtocolPackets.next();
+                columnDefinitionPacket.setSequenceId(++sequenceId);
+                columnDefinitionAndEOFPackets.add(columnDefinitionPacket); // ColumnDefinition41Packet
+            }
+            MySQLPacket eofPacket = (MySQLPacket) databaseProtocolPackets.next();
+            eofPacket.setSequenceId(++sequenceId);
+            columnDefinitionAndEOFPackets.add(eofPacket); // EofPacket
+            
+            List<DatabaseProtocolPacket> textResultSetRowPackets = Collections.emptyList();
+            if (databaseProtocolPackets.hasNext()) {
+                while (databaseProtocolPackets.hasNext()) {
+                    MySQLPacket textResultSetRowPacket = (MySQLPacket) databaseProtocolPackets.next();
+                    textResultSetRowPacket.setSequenceId(++sequenceId);
+                    textResultSetRowPackets.add(textResultSetRowPacket); // TextResultSetRowPacket
+                }
+                textResultSetRowPackets.remove(textResultSetRowPackets.size() - 1); // remove EofPacket
+            }
+            
+            if (!isHeadReaded) {
+                isHeadReaded = true;
+                result.addPackets(columnDefinitionAndEOFPackets);
+            } else {
+                result.addPackets(textResultSetRowPackets);
+            }
+        }
+        result.addPacket(new EofPacket(++sequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
+        
+        merged = true;
+        return result;
+    }
 }

@@ -18,7 +18,6 @@
 package io.shardingsphere.proxy.backend.common;
 
 import io.netty.channel.Channel;
-import io.netty.channel.pool.SimpleChannelPool;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
@@ -76,27 +75,18 @@ public final class SQLPacketsBackendHandler extends SQLExecuteBackendHandler {
     
     @Override
     protected CommandResponsePackets execute(final SQLStatement sqlStatement, final String dataSourceName, final String sql) {
-        SimpleChannelPool pool = null;
-        Channel channel = null;
-        try{
-            pool = ShardingProxyClient.getInstance().getPoolMap().get(dataSourceName);
-            channel = pool.acquire().getNow();
-            //MySQLResultCache.getInstance().putConnectionMap(channel.id().asShortText(), connectionId);
-            switch (sqlStatement.getType()) {
-                case DQL:
-                    executeQuery(channel, sql);
-                    break;
-                case DML:
-                case DDL:
-                    executeUpdate(channel, sql, sqlStatement);
-                    break;
-                default:
-                    executeCommon(channel, sql);
-            }
-        }finally {
-            if(null != pool && null != channel){
-                pool.release(channel);
-            }
+        Channel channel = ShardingProxyClient.getInstance().getChannelMap().get(dataSourceName);
+        //MySQLResultCache.getInstance().putConnectionMap(channel.id().asShortText(), connectionId);
+        switch (sqlStatement.getType()) {
+            case DQL:
+                executeQuery(channel, sql);
+                break;
+            case DML:
+            case DDL:
+                executeUpdate(channel, sql, sqlStatement);
+                break;
+            default:
+                executeCommon(channel, sql);
         }
         return null;
     }

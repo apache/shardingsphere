@@ -48,7 +48,7 @@ public final class ComQueryPacket extends CommandPacket {
         super(sequenceId, connectionId);
         sql = mysqlPacketPayload.readStringEOF();
         sqlExecuteBackendHandler = new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
-        sqlPacketsBackendHandler = new SQLPacketsBackendHandler(sql, connectionId, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
+        sqlPacketsBackendHandler = new SQLPacketsBackendHandler(this, sql, connectionId, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
     }
     
     @Override
