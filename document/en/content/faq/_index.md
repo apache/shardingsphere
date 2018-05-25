@@ -11,7 +11,7 @@ The answer is:
 
 Sharding-Sphere uses lombok to implement minimal code. For details, please refer to [lombok](https://projectlombok.org/download.html).
 
-sharding-jdbc-orchestration module needs to perform ` MVN install` command to generate gRPC-related Java file according to the protobuf file.
+sharding-jdbc-orchestration module needs to perform ` mvn install` command to generate gRPC-related Java file according to the protobuf file.
 
 #### 2. How to solve the Error of Cloud not resolve placeholder ... in string value ...?
 
