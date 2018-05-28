@@ -101,6 +101,7 @@ public abstract class BaseClient implements IClient {
                 if (Properties.INSTANCE.watchOn()){
                     for (Listener listener : context.getWatchers().values()) {
                         if (listener.getPath() == null || listener.getPath().equals(event.getPath())){
+                            logger.debug("listener process:{}, listener:{}", listener.getPath(), listener.getKey());
                             listener.process(event);
                         }
                     }
@@ -110,7 +111,7 @@ public abstract class BaseClient implements IClient {
     }
     
     void registerWatch(final Listener globalListener){
-        if (globalListener != null){
+        if (this.globalListener != null){
             logger.warn("global listener can only register one");
             return;
         }
