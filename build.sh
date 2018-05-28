@@ -13,17 +13,22 @@ cp -rf document/legacy/2.x/cn target/document/legacy/2.x/cn
 cp -rf document/legacy/2.x/en target/document/legacy/2.x/en
 cp -rf document/legacy/1.x/cn target/document/legacy/1.x/cn
 
-cd document/cn
+cd document/current
 hugo
-cd ..
-cd ..
-mv document/cn/public target/document/cn
 
-cd document/en
-hugo
+find ./ -name '*.html' -exec sed -i -e 's|[[:space:]]*<option id="\([a-zA-Z]\+\)" value="|<option id="\1" value="/document/current|g' {} \;
+
+cd public/en
+sed -i -e 's/cn/current\/en/g' index.html
+cd ../..
+
+cd public/cn
+sed -i -e 's/cn/current\/cn/g' index.html
+cd ../..
+
 cd ..
 cd ..
-mv document/en/public target/document/en
+mv document/current/public target/document/current
 
 mkdir target/community
 
