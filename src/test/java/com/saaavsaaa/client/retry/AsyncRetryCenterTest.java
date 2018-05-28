@@ -50,13 +50,14 @@ public class AsyncRetryCenterTest {
         String key = "a";
         String value = "bbb11";
         if (!context.getProvider().exists("/" + TestSupport.ROOT)) {
+            System.out.println("exist root");
             context.getProvider().create("/" + TestSupport.ROOT, Constants.NOTHING_VALUE, CreateMode.PERSISTENT);
         }
         AsyncRetryCenter.INSTANCE.add(new TestCreateCurrentOperation(context, key, value, CreateMode.PERSISTENT));
         Thread.sleep(2000);
         String path = PathUtil.getRealPath(TestSupport.ROOT, key);
-//        assert context.getProvider().exists(path);
-        assert client.checkExists(path);
+        assert context.getProvider().exists(path);
+//        assert client.checkExists(path);
         context.getProvider().delete(path);
         context.getProvider().delete(context.getProvider().getRealPath(TestSupport.ROOT));
         assert !context.getProvider().exists(path);

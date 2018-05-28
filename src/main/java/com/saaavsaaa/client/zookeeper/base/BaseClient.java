@@ -87,6 +87,7 @@ public abstract class BaseClient implements IClient {
                         return;
                     } else if (Event.KeeperState.Expired == event.getState()){
                         try {
+                            logger.warn("startWatcher Event.KeeperState.Expired");
                             start();
                         } catch (Exception ee){
                             logger.error("event state Expired:{}", ee.getMessage(), ee);

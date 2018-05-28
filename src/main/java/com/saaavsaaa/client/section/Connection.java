@@ -43,7 +43,7 @@ public class Connection {
                 resetConnection();
             } else {
                 // block
-                block();
+//                block();
             }
         } catch (Exception ee){
             logger.error("check reconnect:{}", ee.getMessage(), ee);
@@ -51,16 +51,20 @@ public class Connection {
     }
     
     private void resetConnection() throws IOException, InterruptedException {
+        logger.debug("resetConnection......................................................");
         IClient client = context.getClientFactory().newClientByOriginal(true).start();
-        this.context = ((BaseClient)client).getContext();
+        this.context.updateContext(((BaseClient)client).getContext());
+        logger.debug("......................................................connection reset");
     }
     
     private void block() throws InterruptedException {
+        logger.debug("block auto reconnection");
         final CountDownLatch autoReconnect = new CountDownLatch(1);
         Listener listener = new Listener() {
             @Override
             public void process(WatchedEvent event) {
                 autoReconnect.countDown();
+                logger.debug("block reconnected");
             }
         };
         context.getWatchers().put(listener.getKey(), listener);
