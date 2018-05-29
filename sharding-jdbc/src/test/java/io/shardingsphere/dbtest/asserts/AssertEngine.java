@@ -23,6 +23,7 @@ import com.google.common.base.Strings;
 import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
 import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.util.InlineExpressionParser;
 import io.shardingsphere.dbtest.common.DatabaseUtil;
 import io.shardingsphere.dbtest.config.DataSetsParser;
@@ -189,8 +190,7 @@ public final class AssertEngine {
         String rootSQL = dmlDefinition.getSql();
         rootSQL = SQLCasesLoader.getInstance().getSupportedSQL(rootSQL);
         Map<String, DatasetDefinition> mapDatasetDefinition = new HashMap<>();
-        Map<String, String> sqls = new HashMap<>();
-        getInitDatas(initDataFile, mapDatasetDefinition, sqls);
+        Map<String, String> sqls = getInitDatas(initDataFile, mapDatasetDefinition);
         Preconditions.checkState(!mapDatasetDefinition.isEmpty(), "Use cases cannot be parsed");
         Preconditions.checkState(!sqls.isEmpty(), "The use case cannot initialize the data");
         String expectedDataFile = rootPath + "asserts/dml/" + shardingRuleType + "/" + dmlDefinition.getExpectedDataFile();
@@ -319,8 +319,7 @@ public final class AssertEngine {
         String rootSQL = dqlDefinition.getSql();
         rootSQL = SQLCasesLoader.getInstance().getSupportedSQL(rootSQL);
         Map<String, DatasetDefinition> mapDatasetDefinition = new HashMap<>();
-        Map<String, String> sqls = new HashMap<>();
-        getInitDatas(initDataFile, mapDatasetDefinition, sqls);
+        Map<String, String> sqls = getInitDatas(initDataFile, mapDatasetDefinition);
         Preconditions.checkState(!mapDatasetDefinition.isEmpty(), "Use cases cannot be parsed");
         Preconditions.checkState(!sqls.isEmpty(), "The use case cannot initialize the data");
         try {
@@ -617,44 +616,44 @@ public final class AssertEngine {
         }
     }
     
-    private static void getInitDatas(final String initDataFile, final Map<String, DatasetDefinition> mapDatasetDefinition, final Map<String, String> sqls) throws IOException, JAXBException {
+    private static Map<String, String> getInitDatas(final String initDataFile, final Map<String, DatasetDefinition> mapDatasetDefinition) throws IOException, JAXBException {
         DataSetsRoot dataSetsRoot = unmarshal(initDataFile);
         for (DataSetMetadata each : dataSetsRoot.getMetadataList()) {
             List<String> dataNodes = new InlineExpressionParser(each.getDataNodes()).evaluate();
-            for (String dataNode : dataNodes) {
-                String dataSourceName = dataNode.split("\\.")[0];
-                String tableName = dataNode.split("\\.")[1];
-                if (!mapDatasetDefinition.containsKey(dataSourceName)) {
-                    mapDatasetDefinition.put(dataSourceName, new DatasetDefinition());
+            for (String dataNodeStr : dataNodes) {
+                DataNode dataNode = new DataNode(dataNodeStr);
+                if (!mapDatasetDefinition.containsKey(dataNode.getDataSourceName())) {
+                    mapDatasetDefinition.put(dataNode.getDataSourceName(), new DatasetDefinition());
                 }
-                DatasetDefinition datasetDefinition = mapDatasetDefinition.get(dataSourceName);
-                datasetDefinition.getMetadatas().put(tableName, each.getColumnMetadataList());
-                datasetDefinition.getIndexMetadataList().put(tableName, each.getIndexMetadataList());
-                mapDatasetDefinition.put(dataSourceName, datasetDefinition);
+                DatasetDefinition datasetDefinition = mapDatasetDefinition.get(dataNode.getDataSourceName());
+                datasetDefinition.getMetadatas().put(dataNode.getTableName(), each.getColumnMetadataList());
+                datasetDefinition.getIndexMetadataList().put(dataNode.getTableName(), each.getIndexMetadataList());
+                mapDatasetDefinition.put(dataNode.getDataSourceName(), datasetDefinition);
             }
         }
+        Map<String, String> result = new LinkedHashMap<>();
         for (DataSetRow each : dataSetsRoot.getDataSetRows()) {
-            String dataSourceName = each.getDataNode().split("\\.")[0];
-            String tableName = each.getDataNode().split("\\.")[1];
-            if (!mapDatasetDefinition.get(dataSourceName).getDatas().containsKey(tableName)) {
-                mapDatasetDefinition.get(dataSourceName).getDatas().put(tableName, new LinkedList<Map<String, String>>());
+            DataNode dataNode = new DataNode(each.getDataNode());
+            if (!mapDatasetDefinition.get(dataNode.getDataSourceName()).getDatas().containsKey(dataNode.getTableName())) {
+                mapDatasetDefinition.get(dataNode.getDataSourceName()).getDatas().put(dataNode.getTableName(), new LinkedList<Map<String, String>>());
             }
-            List<Map<String, String>> tableDataList = mapDatasetDefinition.get(dataSourceName).getDatas().get(tableName);
+            List<Map<String, String>> tableDataList = mapDatasetDefinition.get(dataNode.getDataSourceName()).getDatas().get(dataNode.getTableName());
             List<String> values = Splitter.on(',').trimResults().splitToList(each.getValues());
             int count = 0;
             Map<String, String> map = new LinkedHashMap<>(values.size(), 1);
-            for (DataSetColumnMetadata column : mapDatasetDefinition.get(dataSourceName).getMetadatas().get(tableName)) {
+            for (DataSetColumnMetadata column : mapDatasetDefinition.get(dataNode.getDataSourceName()).getMetadatas().get(dataNode.getTableName())) {
                 map.put(column.getName(), values.get(count));
                 count++;
             }
-            String sql = DatabaseUtil.analyzeSQL(tableName, mapDatasetDefinition.get(dataSourceName).getMetadatas().get(tableName));
-            sqls.put(tableName, sql);
-            if (!mapDatasetDefinition.get(dataSourceName).getDatas().containsKey(tableName)) {
-                mapDatasetDefinition.get(dataSourceName).getDatas().put(tableName, new LinkedList<Map<String, String>>());
+            String sql = DatabaseUtil.analyzeSQL(dataNode.getTableName(), mapDatasetDefinition.get(dataNode.getDataSourceName()).getMetadatas().get(dataNode.getTableName()));
+            result.put(dataNode.getTableName(), sql);
+            if (!mapDatasetDefinition.get(dataNode.getDataSourceName()).getDatas().containsKey(dataNode.getTableName())) {
+                mapDatasetDefinition.get(dataNode.getDataSourceName()).getDatas().put(dataNode.getTableName(), new LinkedList<Map<String, String>>());
             }
             tableDataList.add(map);
-            mapDatasetDefinition.get(dataSourceName).getDatas().put(tableName, tableDataList);
+            mapDatasetDefinition.get(dataNode.getDataSourceName()).getDatas().put(dataNode.getTableName(), tableDataList);
         }
+        return result;
     }
     
     private static DataSetsRoot unmarshal(final String path) throws IOException, JAXBException {
