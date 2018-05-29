@@ -17,6 +17,7 @@
 
 package io.shardingsphere.dbtest.asserts;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.util.InlineExpressionParser;
@@ -40,6 +41,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Data initializer.
@@ -48,20 +50,22 @@ import java.util.Map;
  */
 public final class DataInitializer {
     
-    private final DataSetsRoot dataSetsRoot;
+    private final Map<String, DatasetDefinition> datasetDefinitionMap;
+    
+    private final Map<String, String> tableAndSQLMap;
     
     public DataInitializer(final String path) throws IOException, JAXBException {
+        DataSetsRoot dataSetsRoot;
         try (FileReader reader = new FileReader(path)) {
             dataSetsRoot = (DataSetsRoot) JAXBContext.newInstance(DataSetsRoot.class).createUnmarshaller().unmarshal(reader);
         }
+        datasetDefinitionMap = loadDatasetDefinitionMap(dataSetsRoot);
+        tableAndSQLMap = loadInitialData(dataSetsRoot);
+        Preconditions.checkState(!datasetDefinitionMap.isEmpty(), "Use case cannot be parsed.");
+        Preconditions.checkState(!tableAndSQLMap.isEmpty(), "Use case cannot initialize the data.");
     }
     
-    /**
-     * Get dataset definition map.
-     * 
-     * @return dataset definition map
-     */
-    public Map<String, DatasetDefinition> getDatasetDefinitionMap() {
+    private Map<String, DatasetDefinition> loadDatasetDefinitionMap(final DataSetsRoot dataSetsRoot) {
         Map<String, DatasetDefinition> result = new HashMap<>();
         for (DataSetMetadata each : dataSetsRoot.getMetadataList()) {
             for (String dataNodeStr : new InlineExpressionParser(each.getDataNodes()).evaluate()) {
@@ -78,13 +82,7 @@ public final class DataInitializer {
         return result;
     }
     
-    /**
-     * Get initial data.
-     * 
-     * @param datasetDefinitionMap dataset definition map
-     * @return map of table and SQL
-     */
-    public Map<String, String> getInitialData(final Map<String, DatasetDefinition> datasetDefinitionMap) {
+    private Map<String, String> loadInitialData(final DataSetsRoot dataSetsRoot) {
         Map<String, String> result = new LinkedHashMap<>();
         for (DataSetRow each : dataSetsRoot.getDataSetRows()) {
             DataNode dataNode = new DataNode(each.getDataNode());
@@ -114,23 +112,21 @@ public final class DataInitializer {
      * Initialize data.
      * 
      * @param dataSourceMap data source map
-     * @param tableAndSQLMap map of table and SQL
-     * @param datasetDefinitionMap dataset definition map
      * @throws SQLException SQL exception
      * @throws ParseException parse exception
      */
-    public void initializeData(
-            final Map<String, DataSource> dataSourceMap, final Map<String, String> tableAndSQLMap, final Map<String, DatasetDefinition> datasetDefinitionMap) throws SQLException, ParseException {
-        clearData(dataSourceMap, datasetDefinitionMap);
-        for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            initializeData(entry.getValue(), tableAndSQLMap, datasetDefinitionMap.get(entry.getKey()));
+    public void initializeData(final Map<String, DataSource> dataSourceMap) throws SQLException, ParseException {
+        clearData(dataSourceMap);
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            initializeData(entry.getValue(), datasetDefinitionMap.get(entry.getKey()));
         }
     }
     
-    private void initializeData(final DataSource dataSource, final Map<String, String> sqls, final DatasetDefinition datasetDefinition) throws SQLException, ParseException {
-        for (Map.Entry<String, List<Map<String, String>>> entry : datasetDefinition.getDatas().entrySet()) {
+    private void initializeData(final DataSource dataSource, final DatasetDefinition datasetDefinition) throws SQLException, ParseException {
+        for (Entry<String, List<Map<String, String>>> entry : datasetDefinition.getDatas().entrySet()) {
             try (Connection connection = dataSource.getConnection()) {
-                DatabaseUtil.insertUsePreparedStatement(connection, sqls.get(entry.getKey()), datasetDefinition.getDatas().get(entry.getKey()), datasetDefinition.getMetadatas().get(entry.getKey()));
+                DatabaseUtil.insertUsePreparedStatement(
+                        connection, tableAndSQLMap.get(entry.getKey()), datasetDefinition.getDatas().get(entry.getKey()), datasetDefinition.getMetadatas().get(entry.getKey()));
             }
         }
     }
@@ -139,17 +135,16 @@ public final class DataInitializer {
      * Clear data.
      * 
      * @param dataSourceMap data source map
-     * @param datasetDefinitionMap dataset definition map
      * @throws SQLException SQL exception
      */
-    public void clearData(final Map<String, DataSource> dataSourceMap, final Map<String, DatasetDefinition> datasetDefinitionMap) throws SQLException {
-        for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+    public void clearData(final Map<String, DataSource> dataSourceMap) throws SQLException {
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             clearData(entry.getValue(), datasetDefinitionMap.get(entry.getKey()));
         }
     }
     
     private void clearData(final DataSource dataSource, final DatasetDefinition datasetDefinition) throws SQLException {
-        for (Map.Entry<String, List<Map<String, String>>> entry : datasetDefinition.getDatas().entrySet()) {
+        for (Entry<String, List<Map<String, String>>> entry : datasetDefinition.getDatas().entrySet()) {
             try (Connection connection = dataSource.getConnection()) {
                 DatabaseUtil.cleanAllUsePreparedStatement(connection, entry.getKey());
             }
