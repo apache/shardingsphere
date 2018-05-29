@@ -39,7 +39,7 @@ import static org.junit.Assert.assertThat;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-class RowCountTokenAssert {
+final class RowCountTokenAssert {
     
     private final SQLCaseType sqlCaseType;
     

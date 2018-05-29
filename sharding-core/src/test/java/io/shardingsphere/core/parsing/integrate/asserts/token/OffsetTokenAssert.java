@@ -39,7 +39,7 @@ import static org.junit.Assert.assertThat;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-class OffsetTokenAssert {
+final class OffsetTokenAssert {
     
     private final SQLCaseType sqlCaseType;
     
