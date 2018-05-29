@@ -2,8 +2,8 @@ package com.saaavsaaa.client.zookeeper.base;
 
 import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.retry.DelayRetryPolicy;
-import com.saaavsaaa.client.section.ClientContext;
-import com.saaavsaaa.client.section.Listener;
+import com.saaavsaaa.client.zookeeper.section.ClientContext;
+import com.saaavsaaa.client.zookeeper.section.Listener;
 
 import java.io.IOException;
 
@@ -16,13 +16,9 @@ public abstract class BaseClientFactory {
     protected String namespace;
     protected String scheme;
     protected byte[] auth;
-    protected DelayRetryPolicy delayRetryPolicy;
-    
-    protected String servers;
-    protected int sessionTimeoutMilliseconds;
+    protected BaseContext context;
     
     public IClient start() throws IOException, InterruptedException {
-        client.setContext(new ClientContext(delayRetryPolicy, this)); // wait expand
         client.setRootNode(namespace);
         client.setAuthorities(scheme , auth);
         client.start();
@@ -31,6 +27,4 @@ public abstract class BaseClientFactory {
         }
         return client;
     }
-    
-    public abstract BaseClientFactory newClientByOriginal(boolean closeOriginal);
 }

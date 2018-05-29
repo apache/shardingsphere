@@ -1,11 +1,9 @@
 package com.saaavsaaa.client.zookeeper.operation;
 
-import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.action.IProvider;
-import com.saaavsaaa.client.section.ClientContext;
-import com.saaavsaaa.client.section.Connection;
+import com.saaavsaaa.client.zookeeper.section.ClientContext;
+import com.saaavsaaa.client.zookeeper.section.Connection;
 import com.saaavsaaa.client.zookeeper.base.BaseOperation;
-import com.saaavsaaa.client.zookeeper.base.BaseProvider;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 
@@ -17,8 +15,8 @@ public class CreateCurrentOperation extends BaseOperation {
     private final String value;
     private final CreateMode createMode;
     
-    public CreateCurrentOperation(final ClientContext context, final String key, final String value, final CreateMode createMode) {
-        super(context);
+    public CreateCurrentOperation(final IProvider provider, final String key, final String value, final CreateMode createMode) {
+        super(provider);
         this.key = key;
         this.value = value;
         this.createMode = createMode;
@@ -26,7 +24,6 @@ public class CreateCurrentOperation extends BaseOperation {
     
     @Override
     public void execute() throws KeeperException, InterruptedException {
-        IProvider provider = context.getProvider();
         provider.create(provider.getRealPath(key), value, createMode);
     }
     

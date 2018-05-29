@@ -4,6 +4,7 @@ import com.saaavsaaa.client.retry.AsyncRetryCenter;
 import com.saaavsaaa.client.retry.RetryCount;
 import com.saaavsaaa.client.zookeeper.base.BaseClient;
 import com.saaavsaaa.client.zookeeper.base.BaseProvider;
+import com.saaavsaaa.client.zookeeper.base.Holder;
 import com.saaavsaaa.client.zookeeper.operation.CreateCurrentOperation;
 import com.saaavsaaa.client.zookeeper.operation.DeleteCurrentOperation;
 import com.saaavsaaa.client.zookeeper.operation.UpdateOperation;
@@ -24,8 +25,8 @@ import java.util.List;
 public class RetryProvider extends BaseProvider {
     private static final Logger logger = LoggerFactory.getLogger(RetryProvider.class);
     
-    public RetryProvider(String rootNode, ZooKeeper zooKeeper, boolean watched, List<ACL> authorities) {
-        super(rootNode, zooKeeper, watched, authorities);
+    public RetryProvider(String rootNode, Holder holder, boolean watched, List<ACL> authorities) {
+        super(rootNode, holder, watched, authorities);
         RetryCount.INSTANCE.start();
     }
     
@@ -33,7 +34,7 @@ public class RetryProvider extends BaseProvider {
     @Override
     public byte[] getData(final String key) throws KeeperException, InterruptedException {
         try {
-            return zooKeeper.getData(key, watched, null);
+            return holder.getZooKeeper().getData(key, watched, null);
         } catch (KeeperException.SessionExpiredException ee){
             logger.warn("RetryProvider SessionExpiredException getData:{}", key);
             if (RetryCount.INSTANCE.continueExecute()) {
@@ -48,7 +49,7 @@ public class RetryProvider extends BaseProvider {
     @Override
     public boolean exists(final String key) throws KeeperException, InterruptedException {
         try {
-            return null != zooKeeper.exists(key, watched);
+            return null != holder.getZooKeeper().exists(key, watched);
         } catch (KeeperException.SessionExpiredException ee){
             logger.warn("RetryProvider SessionExpiredException checkExists:{}", key);
             if (RetryCount.INSTANCE.continueExecute()) {
@@ -63,7 +64,7 @@ public class RetryProvider extends BaseProvider {
     @Override
     public boolean exists(final String key, final Watcher watcher) throws KeeperException, InterruptedException {
         try {
-            return null != zooKeeper.exists(key, watcher);
+            return null != holder.getZooKeeper().exists(key, watcher);
         } catch (KeeperException.SessionExpiredException ee){
             logger.warn("RetryProvider SessionExpiredException checkExists:{}", key);
             if (RetryCount.INSTANCE.continueExecute()) {

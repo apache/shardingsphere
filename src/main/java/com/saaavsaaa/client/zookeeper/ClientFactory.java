@@ -2,11 +2,14 @@ package com.saaavsaaa.client.zookeeper;
 
 import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.retry.DelayRetryPolicy;
-import com.saaavsaaa.client.section.Listener;
+import com.saaavsaaa.client.zookeeper.section.ClientContext;
+import com.saaavsaaa.client.zookeeper.section.Listener;
 import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.zookeeper.base.BaseClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 /**
  * Created by aaa
@@ -18,9 +21,8 @@ public class ClientFactory extends BaseClientFactory {
     public ClientFactory(){}
     
     public ClientFactory newClient(final String servers, final int sessionTimeoutMilliseconds) {
-        this.servers = servers;
-        this.sessionTimeoutMilliseconds = sessionTimeoutMilliseconds;
-        client = new UsualClient(servers, sessionTimeoutMilliseconds);
+        this.context = new ClientContext(servers, sessionTimeoutMilliseconds);
+        client = new UsualClient(context);
         logger.debug("new usual client");
         return this;
     }
@@ -29,10 +31,9 @@ public class ClientFactory extends BaseClientFactory {
     * used for create new clients through a existing client
     * this client is not perhaps the client
     */
-    @Override
     public synchronized BaseClientFactory newClientByOriginal(boolean closeOriginal) {
         IClient oldClient = this.client;
-        client = new UsualClient(servers, sessionTimeoutMilliseconds);
+        client = new UsualClient(context);
         if (closeOriginal){
             oldClient.close();
         }
@@ -44,9 +45,8 @@ public class ClientFactory extends BaseClientFactory {
     * partially prepared products
     */
     public ClientFactory newCacheClient(final String servers, final int sessionTimeoutMilliseconds) {
-        this.servers = servers;
-        this.sessionTimeoutMilliseconds = sessionTimeoutMilliseconds;
-        client = new CacheClient(servers, sessionTimeoutMilliseconds);
+        this.context = new ClientContext(servers, sessionTimeoutMilliseconds);
+        client = new CacheClient(context);
         logger.debug("new cache client");
         return this;
     }
@@ -74,7 +74,13 @@ public class ClientFactory extends BaseClientFactory {
     }
     
     public ClientFactory setRetryPolicy(final DelayRetryPolicy delayRetryPolicy){
-        this.delayRetryPolicy = delayRetryPolicy;
+        ((ClientContext)context).setDelayRetryPolicy(delayRetryPolicy);
         return this;
+    }
+    
+    @Override
+    public IClient start() throws IOException, InterruptedException {
+        ((ClientContext)context).setClientFactory(this);
+        return super.start();
     }
 }

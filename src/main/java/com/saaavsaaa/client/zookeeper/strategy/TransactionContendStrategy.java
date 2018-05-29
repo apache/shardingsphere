@@ -4,7 +4,7 @@ import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.election.LeaderElection;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
-import com.saaavsaaa.client.section.Callback;
+import com.saaavsaaa.client.action.Callback;
 import com.saaavsaaa.client.zookeeper.base.BaseProvider;
 import com.saaavsaaa.client.zookeeper.transaction.ZKTransaction;
 import org.apache.zookeeper.CreateMode;
@@ -39,7 +39,7 @@ public class TransactionContendStrategy extends ContentionStrategy {
             @Override
             public void action() throws KeeperException, InterruptedException {
                 logger.debug("ContentionStrategy createAllNeedPath action:{}", key);
-                ZKTransaction transaction = new ZKTransaction(((BaseProvider)provider).getRootNode(), ((BaseProvider)provider).getZooKeeper());
+                ZKTransaction transaction = new ZKTransaction(((BaseProvider)provider).getRootNode(), ((BaseProvider)provider).getHolder());
                 createBegin(key, value, createMode, transaction);
                 transaction.commit();
             }
@@ -77,7 +77,7 @@ public class TransactionContendStrategy extends ContentionStrategy {
         provider.executeContention(new LeaderElection() {
             @Override
             public void action() throws KeeperException, InterruptedException {
-                ZKTransaction transaction = new ZKTransaction(((BaseProvider)provider).getRootNode(), ((BaseProvider)provider).getZooKeeper());
+                ZKTransaction transaction = new ZKTransaction(((BaseProvider)provider).getRootNode(), ((BaseProvider)provider).getHolder());
                 deleteChildren(provider.getRealPath(key), true, transaction);
                 transaction.commit();
             }
@@ -106,7 +106,7 @@ public class TransactionContendStrategy extends ContentionStrategy {
         provider.executeContention(new LeaderElection() {
             @Override
             public void action() throws KeeperException, InterruptedException {
-                ZKTransaction transaction = new ZKTransaction(((BaseProvider)provider).getRootNode(), ((BaseProvider)provider).getZooKeeper());
+                ZKTransaction transaction = new ZKTransaction(((BaseProvider)provider).getRootNode(), ((BaseProvider)provider).getHolder());
                 deleteBranch(provider.getRealPath(key), transaction);
                 transaction.commit();
             }

@@ -1,8 +1,9 @@
 package com.saaavsaaa.client.zookeeper.base;
 
+import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.retry.DelayPolicyExecutor;
-import com.saaavsaaa.client.section.ClientContext;
-import com.saaavsaaa.client.section.Connection;
+import com.saaavsaaa.client.zookeeper.section.ClientContext;
+import com.saaavsaaa.client.zookeeper.section.Connection;
 import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,13 +16,11 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class BaseOperation implements Delayed {
     private static final Logger logger = LoggerFactory.getLogger(BaseOperation.class);
-    protected final ClientContext context;
-    private final Connection connection;
+    protected final IProvider provider;
     protected DelayPolicyExecutor delayPolicyExecutor;
     
-    protected BaseOperation(final ClientContext context) {
-        this.context = context;
-        connection = new Connection(context);
+    protected BaseOperation(final IProvider provider) {
+        this.provider = provider;
     }
     
     public void setRetrial(final DelayPolicyExecutor delayPolicyExecutor){
@@ -55,7 +54,7 @@ public abstract class BaseOperation implements Delayed {
             execute();
             result = true;
         } catch (KeeperException ee) {
-            connection.check(ee);
+            provider.checkConnection(ee);
             result = false;
         }
         if (!result && delayPolicyExecutor.hasNext()){

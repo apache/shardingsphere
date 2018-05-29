@@ -1,7 +1,5 @@
-package com.saaavsaaa.client.section;
+package com.saaavsaaa.client.zookeeper.section;
 
-import com.saaavsaaa.client.action.IClient;
-import com.saaavsaaa.client.zookeeper.base.BaseClient;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.slf4j.Logger;
@@ -28,10 +26,20 @@ public class Connection {
         exceptionResets.put(KeeperException.Code.OPERATIONTIMEOUT.intValue(), false);
     }
     
+    @Deprecated
     public Connection(final ClientContext context){
         this.context = context;
     }
     
+    public static boolean needReset(KeeperException e) throws KeeperException {
+        int code = e.code().intValue();
+        if (!exceptionResets.containsKey(code)){
+            throw e;
+        }
+        return exceptionResets.get(code);
+    }
+    
+    @Deprecated
     public void check(KeeperException e) throws KeeperException {
         int code = e.code().intValue();
         if (!exceptionResets.containsKey(code)){
@@ -52,8 +60,8 @@ public class Connection {
     
     private void resetConnection() throws IOException, InterruptedException {
         logger.debug("resetConnection......................................................");
-        IClient client = context.getClientFactory().newClientByOriginal(true).start();
-        this.context.updateContext(((BaseClient)client).getContext());
+//        IClient client = context.getClientFactory().newClientByOriginal(true).start();
+//        this.context.updateContext(((BaseClient)client).getContext());
         logger.debug("......................................................connection reset");
     }
     

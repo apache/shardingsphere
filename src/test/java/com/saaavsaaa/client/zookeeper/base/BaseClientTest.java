@@ -3,7 +3,7 @@ package com.saaavsaaa.client.zookeeper.base;
 import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
-import com.saaavsaaa.client.section.Listener;
+import com.saaavsaaa.client.zookeeper.section.Listener;
 import com.saaavsaaa.client.zookeeper.ClientFactory;
 import com.saaavsaaa.client.zookeeper.TestSupport;
 import org.apache.zookeeper.*;
@@ -35,7 +35,7 @@ public abstract class BaseClientTest {
     }
     
     protected ZooKeeper getZooKeeper(IClient client){
-        zooKeeper = ((BaseClient)client).getZooKeeper();
+        zooKeeper = ((BaseClient)client).holder.getZooKeeper();
         return zooKeeper;
     }
     

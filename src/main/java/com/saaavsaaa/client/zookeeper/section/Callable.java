@@ -1,5 +1,6 @@
-package com.saaavsaaa.client.section;
+package com.saaavsaaa.client.zookeeper.section;
 
+import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.retry.DelayPolicyExecutor;
 import com.saaavsaaa.client.retry.DelayRetryPolicy;
 import org.apache.zookeeper.KeeperException;
@@ -11,17 +12,13 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class Callable<T> {
     private static final Logger logger = LoggerFactory.getLogger(Callable.class);
-    private final Connection connection;
+
     protected final DelayPolicyExecutor delayPolicyExecutor;
+    protected final IProvider provider;
     private T result;
-    public Callable(final ClientContext context){
-        this.connection = new Connection(context);
-        DelayRetryPolicy delayRetryPolicy = context.getDelayRetryPolicy();
-        if (delayRetryPolicy == null){
-            logger.warn("Callable constructor context's delayRetryPolicy is null");
-            delayRetryPolicy = DelayRetryPolicy.newNoInitDelayPolicy();
-        }
+    public Callable(final IProvider provider, final DelayRetryPolicy delayRetryPolicy){
         this.delayPolicyExecutor = new DelayPolicyExecutor(delayRetryPolicy);
+        this.provider = provider;
     }
     public abstract void call() throws KeeperException, InterruptedException;
     
@@ -39,7 +36,7 @@ public abstract class Callable<T> {
         } catch (KeeperException e) {
             logger.warn("exec KeeperException:{}", e.getMessage());
             delayPolicyExecutor.next();
-            connection.check(e);
+            provider.checkConnection(e);
             execDelay();
         } catch (InterruptedException e) {
             throw e;

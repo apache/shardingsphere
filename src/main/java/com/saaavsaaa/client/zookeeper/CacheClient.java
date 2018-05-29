@@ -3,6 +3,7 @@ package com.saaavsaaa.client.zookeeper;
 import com.saaavsaaa.client.cache.CacheStrategy;
 import com.saaavsaaa.client.cache.PathTree;
 import com.saaavsaaa.client.utility.PathUtil;
+import com.saaavsaaa.client.zookeeper.base.BaseContext;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -20,8 +21,8 @@ public final class CacheClient extends UsualClient {
     private static final Logger logger = LoggerFactory.getLogger(CacheClient.class);
     protected PathTree pathTree = null;
     
-    CacheClient(String servers, int sessionTimeoutMilliseconds) {
-        super(servers, sessionTimeoutMilliseconds);
+    CacheClient(final BaseContext context) {
+        super(context);
     }
     
     @Override
@@ -112,6 +113,6 @@ public final class CacheClient extends UsualClient {
             return keys;
         }
         logger.debug("getChildren cache not hit:{}", keys);
-        return zooKeeper.getChildren(PathUtil.getRealPath(rootNode, key), false);
+        return strategy.getChildren(PathUtil.getRealPath(rootNode, key));
     }
 }

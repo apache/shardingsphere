@@ -1,8 +1,8 @@
 package com.saaavsaaa.client.action;
 
-import com.saaavsaaa.client.section.Listener;
+import com.saaavsaaa.client.zookeeper.section.Listener;
+import com.saaavsaaa.client.zookeeper.strategy.StrategyType;
 import com.saaavsaaa.client.zookeeper.transaction.ZKTransaction;
-import org.apache.zookeeper.Watcher;
 
 import java.io.IOException;
 
@@ -14,6 +14,7 @@ public interface IClient extends IAction, IGroupAction{
     void close();
     void registerWatch(String key, Listener listener);
     void unregisterWatch(String key);
+    void useExecStrategy(StrategyType strategyType);
     
     ZKTransaction transaction();
     /*

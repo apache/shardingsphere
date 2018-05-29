@@ -3,11 +3,10 @@ package com.saaavsaaa.client.cache;
 import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.utility.PathUtil;
-import com.saaavsaaa.client.utility.constant.Constants;
-import com.saaavsaaa.client.section.ClientTask;
-import com.saaavsaaa.client.section.Listener;
 import com.saaavsaaa.client.utility.Properties;
+import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.zookeeper.base.BaseClient;
+import com.saaavsaaa.client.zookeeper.section.Listener;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.common.PathUtils;
@@ -42,7 +41,7 @@ public final class PathTree {
         this.rootNode.set(new PathNode(root));
         this.Status = PathStatus.RELEASE;
         this.client = client;
-        this.provider = ((BaseClient)client).getContext().getProvider();
+        this.provider = ((BaseClient)client).getStrategy().getProvider();
     }
     
     public void loading() throws KeeperException, InterruptedException {

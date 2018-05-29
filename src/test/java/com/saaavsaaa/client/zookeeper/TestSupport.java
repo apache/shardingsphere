@@ -1,6 +1,6 @@
 package com.saaavsaaa.client.zookeeper;
 
-import com.saaavsaaa.client.section.Listener;
+import com.saaavsaaa.client.zookeeper.section.Listener;
 import org.apache.zookeeper.WatchedEvent;
 
 /**

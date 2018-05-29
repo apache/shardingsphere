@@ -1,8 +1,9 @@
-package com.saaavsaaa.client.section;
+package com.saaavsaaa.client.zookeeper.section;
 
 import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.retry.DelayRetryPolicy;
 import com.saaavsaaa.client.zookeeper.base.BaseClientFactory;
+import com.saaavsaaa.client.zookeeper.base.BaseContext;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -10,21 +11,24 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by aaa
  */
-public final class ClientContext {
-    private final Map<String, Listener> watchers = new ConcurrentHashMap<>();
+public final class ClientContext extends BaseContext {
+    
     private DelayRetryPolicy delayRetryPolicy;
     private BaseClientFactory clientFactory;
-    private IProvider provider;
     
     
-    public ClientContext(final DelayRetryPolicy delayRetryPolicy, final BaseClientFactory clientFactory) {
-        this(delayRetryPolicy, clientFactory, null);
+    public ClientContext(final String servers, final int sessionTimeoutMilliseconds) {
+        super();
+        super.servers = servers;
+        super.sessionTimeOut = sessionTimeoutMilliseconds;
     }
     
-    public ClientContext(final DelayRetryPolicy delayRetryPolicy, final BaseClientFactory clientFactory, final IProvider provider) {
+    public void setDelayRetryPolicy(DelayRetryPolicy delayRetryPolicy) {
         this.delayRetryPolicy = delayRetryPolicy;
+    }
+    
+    public void setClientFactory(BaseClientFactory clientFactory) {
         this.clientFactory = clientFactory;
-        this.provider = provider;
     }
     
     public DelayRetryPolicy getDelayRetryPolicy() {
@@ -35,28 +39,15 @@ public final class ClientContext {
         return clientFactory;
     }
     
-    public IProvider getProvider() {
-        return provider;
-    }
-    public void setProvider(IProvider provider){
-        this.provider = provider;
-    }
-    
-    public Map<String, Listener> getWatchers(){
-        return watchers;
-    }
-    
     public void close() {
+        super.close();
         this.delayRetryPolicy = null;
         this.clientFactory = null;
-        this.provider = null;
-        this.watchers.clear();
     }
     
     public void updateContext(final ClientContext context){
         this.delayRetryPolicy = context.getDelayRetryPolicy();
         this.clientFactory = context.clientFactory;
-        this.provider = context.getProvider();
         this.watchers.clear();
         this.watchers.putAll(context.getWatchers());
     }

@@ -3,6 +3,9 @@ package com.saaavsaaa.client.zookeeper;
 import com.saaavsaaa.client.action.IExecStrategy;
 import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.zookeeper.base.BaseClient;
+import com.saaavsaaa.client.zookeeper.base.BaseContext;
+import com.saaavsaaa.client.zookeeper.base.BaseProvider;
+import com.saaavsaaa.client.zookeeper.section.ClientContext;
 import com.saaavsaaa.client.zookeeper.strategy.*;
 import com.saaavsaaa.client.zookeeper.transaction.ZKTransaction;
 import org.apache.zookeeper.*;
@@ -19,63 +22,15 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class UsualClient extends BaseClient {
     private static final Logger logger = LoggerFactory.getLogger(UsualClient.class);
-    protected final Map<StrategyType, IExecStrategy> strategies = new ConcurrentHashMap<>();
-    protected IExecStrategy strategy;
     
-    UsualClient(final String servers, final int sessionTimeoutMilliseconds) {
-        super(servers, sessionTimeoutMilliseconds);
+    UsualClient(final BaseContext context) {
+        super(context);
     }
 
     @Override
     public void start() throws IOException, InterruptedException {
         super.start();
         useExecStrategy(StrategyType.USUAL);
-    }
-    
-    @Override
-    public void close(){
-        super.close();
-        this.strategies.clear();
-    }
-    
-    @Override
-    public synchronized void useExecStrategy(StrategyType strategyType) {
-        logger.debug("useExecStrategy:{}", strategyType);
-        if (strategies.containsKey(strategyType)){
-            strategy = strategies.get(strategyType);
-            return;
-        }
-
-        IProvider provider = getContext().getProvider();
-        switch (strategyType){
-            case USUAL:{
-                strategy = new UsualStrategy(provider);
-                break;
-            }
-            case CONTEND:{
-                strategy = new ContentionStrategy(provider);
-                break;
-            }
-    
-            case SYNC_RETRY:{
-                strategy = new SyncRetryStrategy(context);
-                break;
-            }
-            case ASYNC_RETRY:{
-                strategy = new AsyncRetryStrategy(context);
-                break;
-            }
-            case ALL_ASYNC_RETRY:{
-                strategy = new AllAsyncRetryStrategy(context);
-                break;
-            }
-            default:{
-                strategy = new UsualStrategy(provider);
-                break;
-            }
-        }
-        
-        strategies.put(strategyType, strategy);
     }
     
     @Override
@@ -169,6 +124,6 @@ public class UsualClient extends BaseClient {
     
     @Override
     public ZKTransaction transaction() {
-        return new ZKTransaction(rootNode, zooKeeper);
+        return new ZKTransaction(rootNode, holder);
     }
 }

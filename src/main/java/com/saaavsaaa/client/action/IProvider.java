@@ -1,13 +1,13 @@
 package com.saaavsaaa.client.action;
 
 import com.saaavsaaa.client.election.LeaderElection;
-import com.saaavsaaa.client.section.Listener;
 import com.saaavsaaa.client.zookeeper.transaction.ZKTransaction;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.Watcher;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Stack;
 
@@ -32,4 +32,6 @@ public interface IProvider {
     void executeContention(final LeaderElection election) throws KeeperException, InterruptedException;
     
     void createInTransaction(final String key, final String value, final CreateMode createMode, final ZKTransaction transaction) throws KeeperException, InterruptedException;
+    
+    void checkConnection(final KeeperException e) throws KeeperException, InterruptedException;
 }

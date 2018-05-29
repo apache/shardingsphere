@@ -2,8 +2,8 @@ package com.saaavsaaa.client.zookeeper.strategy;
 
 import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.retry.AsyncRetryCenter;
-import com.saaavsaaa.client.section.ClientContext;
-import com.saaavsaaa.client.zookeeper.base.BaseClient;
+import com.saaavsaaa.client.retry.DelayRetryPolicy;
+import com.saaavsaaa.client.zookeeper.section.ClientContext;
 import com.saaavsaaa.client.zookeeper.operation.CreateAllNeedOperation;
 import com.saaavsaaa.client.zookeeper.operation.DeleteAllChildrenOperation;
 import com.saaavsaaa.client.zookeeper.operation.DeleteCurrentBranchOperation;
@@ -17,8 +17,8 @@ import org.slf4j.LoggerFactory;
  */
 public class AllAsyncRetryStrategy extends AsyncRetryStrategy {
     private static final Logger logger = LoggerFactory.getLogger(AllAsyncRetryStrategy.class);
-    public AllAsyncRetryStrategy(final ClientContext context) {
-        super(context);
+    public AllAsyncRetryStrategy(final IProvider provider, final DelayRetryPolicy delayRetryPolicy) {
+        super(provider, delayRetryPolicy);
     }
     
     @Override
@@ -27,7 +27,7 @@ public class AllAsyncRetryStrategy extends AsyncRetryStrategy {
             super.createAllNeedPath(key, value, createMode);
         } catch (KeeperException.SessionExpiredException ee){
             logger.warn("AllAsyncRetryStrategy SessionExpiredException CreateAllNeedOperation:{}", key);
-            AsyncRetryCenter.INSTANCE.add(new CreateAllNeedOperation(context, key, value, createMode));
+            AsyncRetryCenter.INSTANCE.add(new CreateAllNeedOperation(provider, key, value, createMode));
         }
     }
     
@@ -37,7 +37,7 @@ public class AllAsyncRetryStrategy extends AsyncRetryStrategy {
             super.deleteAllChildren(key);
         } catch (KeeperException.SessionExpiredException ee){
             logger.warn("AllAsyncRetryStrategy SessionExpiredException deleteAllChildren:{}", key);
-            AsyncRetryCenter.INSTANCE.add(new DeleteAllChildrenOperation(context, key));
+            AsyncRetryCenter.INSTANCE.add(new DeleteAllChildrenOperation(provider, key));
         }
     }
     
@@ -47,7 +47,7 @@ public class AllAsyncRetryStrategy extends AsyncRetryStrategy {
             super.deleteCurrentBranch(key);
         } catch (KeeperException.SessionExpiredException ee){
             logger.warn("AllAsyncRetryStrategy SessionExpiredException deleteCurrentBranch:{}", key);
-            AsyncRetryCenter.INSTANCE.add(new DeleteCurrentBranchOperation(context, key));
+            AsyncRetryCenter.INSTANCE.add(new DeleteCurrentBranchOperation(provider, key));
         }
     }
 }

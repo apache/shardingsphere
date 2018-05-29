@@ -1,6 +1,7 @@
 package com.saaavsaaa.client.retry;
 
-import com.saaavsaaa.client.section.ClientContext;
+import com.saaavsaaa.client.action.IProvider;
+import com.saaavsaaa.client.zookeeper.section.ClientContext;
 import com.saaavsaaa.client.zookeeper.base.BaseProvider;
 import com.saaavsaaa.client.zookeeper.operation.CreateCurrentOperation;
 import org.apache.zookeeper.CreateMode;
@@ -12,8 +13,8 @@ import org.apache.zookeeper.KeeperException;
 public class TestCreateCurrentOperation extends CreateCurrentOperation {
     private int count = 0;
     
-    public TestCreateCurrentOperation(final ClientContext context, String key, String value, CreateMode createMode) {
-        super(context, key, value, createMode);
+    public TestCreateCurrentOperation(final IProvider provider, String key, String value, CreateMode createMode) {
+        super(provider, key, value, createMode);
     }
     
     @Override
@@ -24,7 +25,7 @@ public class TestCreateCurrentOperation extends CreateCurrentOperation {
 //            throw new KeeperException.ConnectionLossException();
     
             System.out.println("test injectSessionExpiration==================================================" + count);
-            ((BaseProvider)context.getProvider()).getZooKeeper().getTestable().injectSessionExpiration();
+            ((BaseProvider)provider).getHolder().getZooKeeper().getTestable().injectSessionExpiration();
         }
         System.out.println("test ================================================" + count);
         super.execute();

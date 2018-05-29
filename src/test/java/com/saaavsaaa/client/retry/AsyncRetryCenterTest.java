@@ -1,8 +1,9 @@
 package com.saaavsaaa.client.retry;
 
 import com.saaavsaaa.client.action.IClient;
-import com.saaavsaaa.client.section.ClientContext;
-import com.saaavsaaa.client.section.Listener;
+import com.saaavsaaa.client.action.IProvider;
+import com.saaavsaaa.client.zookeeper.section.ClientContext;
+import com.saaavsaaa.client.zookeeper.section.Listener;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.zookeeper.ClientFactory;
@@ -21,13 +22,13 @@ import java.io.IOException;
  * Created by aaa
  */
 public class AsyncRetryCenterTest {
-    private ClientContext context;
-    private BaseClient client;
+    private IProvider provider;
+    private IClient client;
     
     @Before
     public void start() throws IOException, InterruptedException {
-        client = ((BaseClient)createClient());
-        context = client.getContext();
+        client = createClient();
+        provider = ((BaseClient)client).getStrategy().getProvider();
         AsyncRetryCenter.INSTANCE.init(new DelayRetryPolicy(3, 3, 10));
         AsyncRetryCenter.INSTANCE.start();
     }
@@ -36,7 +37,7 @@ public class AsyncRetryCenterTest {
         ClientFactory creator = new ClientFactory();
         Listener listener = TestSupport.buildListener();
         IClient client = creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes()).newClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).watch(listener).start();
-        ((BaseClient)client).useExecStrategy(StrategyType.ASYNC_RETRY);
+        client.useExecStrategy(StrategyType.ASYNC_RETRY);
         return client;
     }
     
@@ -49,17 +50,17 @@ public class AsyncRetryCenterTest {
     public void create() throws InterruptedException, KeeperException {
         String key = "a";
         String value = "bbb11";
-        if (!context.getProvider().exists("/" + TestSupport.ROOT)) {
+        if (!provider.exists("/" + TestSupport.ROOT)) {
             System.out.println("exist root");
-            context.getProvider().create("/" + TestSupport.ROOT, Constants.NOTHING_VALUE, CreateMode.PERSISTENT);
+            provider.create("/" + TestSupport.ROOT, Constants.NOTHING_VALUE, CreateMode.PERSISTENT);
         }
-        AsyncRetryCenter.INSTANCE.add(new TestCreateCurrentOperation(context, key, value, CreateMode.PERSISTENT));
+        AsyncRetryCenter.INSTANCE.add(new TestCreateCurrentOperation(provider, key, value, CreateMode.PERSISTENT));
         Thread.sleep(2000);
         String path = PathUtil.getRealPath(TestSupport.ROOT, key);
-        assert context.getProvider().exists(path);
+        assert provider.exists(path);
 //        assert client.checkExists(path);
-        context.getProvider().delete(path);
-        context.getProvider().delete(context.getProvider().getRealPath(TestSupport.ROOT));
-        assert !context.getProvider().exists(path);
+        provider.delete(path);
+        provider.delete(provider.getRealPath(TestSupport.ROOT));
+        assert !provider.exists(path);
     }
 }

@@ -1,6 +1,7 @@
 package com.saaavsaaa.client.zookeeper.transaction;
 
 import com.saaavsaaa.client.utility.PathUtil;
+import com.saaavsaaa.client.zookeeper.base.Holder;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.ACL;
 import org.slf4j.Logger;
@@ -16,8 +17,8 @@ public class ZKTransaction {
     private final Transaction transaction;
     private final String rootNode;
 
-    public ZKTransaction(final String root, final ZooKeeper zk) {
-        transaction = zk.transaction();
+    public ZKTransaction(final String root, final Holder holder) {
+        transaction = holder.getZooKeeper().transaction();
         rootNode = root;
         logger.debug("ZKTransaction root:{}", rootNode);
     }
