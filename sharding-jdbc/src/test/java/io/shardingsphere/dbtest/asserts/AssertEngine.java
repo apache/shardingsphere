@@ -617,6 +617,29 @@ public final class AssertEngine {
         }
     }
     
+    private static DataSetsRoot unmarshal(final String path) throws IOException, JAXBException {
+        try (FileReader reader = new FileReader(path)) {
+            return (DataSetsRoot) JAXBContext.newInstance(DataSetsRoot.class).createUnmarshaller().unmarshal(reader);
+        }
+    }
+    
+    private static Map<String, DatasetDefinition> getDatasetDefinitionMap(final DataSetsRoot dataSetsRoot) {
+        Map<String, DatasetDefinition> result = new HashMap<>();
+        for (DataSetMetadata each : dataSetsRoot.getMetadataList()) {
+            for (String dataNodeStr : new InlineExpressionParser(each.getDataNodes()).evaluate()) {
+                DataNode dataNode = new DataNode(dataNodeStr);
+                if (!result.containsKey(dataNode.getDataSourceName())) {
+                    result.put(dataNode.getDataSourceName(), new DatasetDefinition());
+                }
+                DatasetDefinition datasetDefinition = result.get(dataNode.getDataSourceName());
+                datasetDefinition.getMetadatas().put(dataNode.getTableName(), each.getColumnMetadataList());
+                datasetDefinition.getIndexMetadataList().put(dataNode.getTableName(), each.getIndexMetadataList());
+                result.put(dataNode.getDataSourceName(), datasetDefinition);
+            }
+        }
+        return result;
+    }
+    
     private static Map<String, String> getInitDatas(final DataSetsRoot dataSetsRoot, final Map<String, DatasetDefinition> datasetDefinitionMap) {
         Map<String, String> result = new LinkedHashMap<>();
         for (DataSetRow each : dataSetsRoot.getDataSetRows()) {
@@ -643,34 +666,11 @@ public final class AssertEngine {
         return result;
     }
     
-    private static Map<String, DatasetDefinition> getDatasetDefinitionMap(final DataSetsRoot dataSetsRoot) {
-        Map<String, DatasetDefinition> result = new HashMap<>();
-        for (DataSetMetadata each : dataSetsRoot.getMetadataList()) {
-            for (String dataNodeStr : new InlineExpressionParser(each.getDataNodes()).evaluate()) {
-                DataNode dataNode = new DataNode(dataNodeStr);
-                if (!result.containsKey(dataNode.getDataSourceName())) {
-                    result.put(dataNode.getDataSourceName(), new DatasetDefinition());
-                }
-                DatasetDefinition datasetDefinition = result.get(dataNode.getDataSourceName());
-                datasetDefinition.getMetadatas().put(dataNode.getTableName(), each.getColumnMetadataList());
-                datasetDefinition.getIndexMetadataList().put(dataNode.getTableName(), each.getIndexMetadataList());
-                result.put(dataNode.getDataSourceName(), datasetDefinition);
-            }
-        }
-        return result;
-    }
-    
-    private static DataSetsRoot unmarshal(final String path) throws IOException, JAXBException {
-        try (FileReader reader = new FileReader(path)) {
-            return (DataSetsRoot) JAXBContext.newInstance(DataSetsRoot.class).createUnmarshaller().unmarshal(reader);
-        }
-    }
-    
     private static void initData(
-            final Map<String, DataSource> dataSourceMaps, final Map<String, String> sqls, final Map<String, DatasetDefinition> mapDatasetDefinition) throws SQLException, ParseException {
-        clearData(dataSourceMaps, mapDatasetDefinition);
-        for (Entry<String, DataSource> entry : dataSourceMaps.entrySet()) {
-            initData(entry.getValue(), sqls, mapDatasetDefinition.get(entry.getKey()));
+            final Map<String, DataSource> dataSourceMap, final Map<String, String> sqls, final Map<String, DatasetDefinition> datasetDefinitionMap) throws SQLException, ParseException {
+        clearData(dataSourceMap, datasetDefinitionMap);
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            initData(entry.getValue(), sqls, datasetDefinitionMap.get(entry.getKey()));
         }
     }
     
