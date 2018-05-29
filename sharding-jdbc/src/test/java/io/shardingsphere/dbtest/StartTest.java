@@ -133,6 +133,6 @@ public final class StartTest {
     @Test
     // TODO ignore new test engine, because it is not completed yet, will continue to do it in 3.0.0.m2
     public void test() throws JAXBException, SAXException, ParseException, IOException, XPathExpressionException, SQLException, ParserConfigurationException {
-        AssertEngine.runAssert(assertDefinition, shardingRuleType, databaseTypeEnvironment, caseType);
+        new AssertEngine(assertDefinition, shardingRuleType, databaseTypeEnvironment, caseType).run();
     }
 }
