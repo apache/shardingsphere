@@ -19,8 +19,6 @@ package io.shardingsphere.proxy.backend.common;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.exception.ShardingConfigurationException;
-import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.QueryResult;
@@ -106,7 +104,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
                 return executeForSharding();
             }
         } catch (final Exception ex) {
-            return new CommandResponsePackets(new ErrPacket(1, 0, "", "", ex.getMessage()));
+            return new CommandResponsePackets(new ErrPacket(1, 0, "", "", "" + ex.getMessage()));
         }
     }
     

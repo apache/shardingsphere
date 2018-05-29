@@ -19,8 +19,6 @@ package io.shardingsphere.proxy.backend.common;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.exception.ShardingConfigurationException;
-import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.QueryResult;
@@ -144,7 +142,7 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
         ProxyShardingRefreshHandler.build(routeResult).execute();
         return result;
     }
-
+    
     private CommandResponsePackets execute(final SQLStatement sqlStatement, final String dataSourceName, final String sql) {
         switch (sqlStatement.getType()) {
             case DQL:
@@ -158,7 +156,7 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
                 return executeCommon(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql);
         }
     }
-
+    
     private List<Object> getComStmtExecuteParameters() {
         List<Object> result = new ArrayList<>(32);
         for (PreparedStatementParameter each : preparedStatementParameters) {

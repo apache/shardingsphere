@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.parser.context.insertvalue;
 
+import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -32,6 +33,8 @@ import lombok.ToString;
 @Setter
 @ToString
 public final class InsertValue {
+    
+    private final DefaultKeyword type;
     
     private final String expression;
     

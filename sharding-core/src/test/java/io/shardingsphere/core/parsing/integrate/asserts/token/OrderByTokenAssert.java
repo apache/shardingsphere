@@ -38,7 +38,7 @@ import static org.junit.Assert.assertThat;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-class OrderByTokenAssert {
+final class OrderByTokenAssert {
     
     private final SQLCaseType sqlCaseType;
     
