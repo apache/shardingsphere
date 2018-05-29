@@ -1,11 +1,11 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,18 +15,18 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.core.yaml.fixture;
+package io.shardingsphere.dbtest.fixture;
 
 import io.shardingsphere.core.keygen.KeyGenerator;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public final class IncrementKeyGenerator implements KeyGenerator {
+public final class DecrementKeyGenerator implements KeyGenerator {
     
-    private static final AtomicInteger SEQUENCE = new AtomicInteger(100);
+    private final AtomicInteger sequence = new AtomicInteger(100);
     
     @Override
     public Number generateKey() {
-        return SEQUENCE.incrementAndGet();
+        return sequence.decrementAndGet();
     }
 }
