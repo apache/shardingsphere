@@ -62,7 +62,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -189,9 +188,10 @@ public final class AssertEngine {
     private static void dmlRun(final DMLDataSetAssert dmlDefinition, final String shardingRuleType, final DatabaseType databaseType, final String initDataFile, final String rootPath, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException, JAXBException {
         String rootSQL = dmlDefinition.getSql();
         rootSQL = SQLCasesLoader.getInstance().getSupportedSQL(rootSQL);
-        Map<String, DatasetDefinition> mapDatasetDefinition = new HashMap<>();
-        Map<String, String> sqls = getInitDatas(initDataFile, mapDatasetDefinition);
-        Preconditions.checkState(!mapDatasetDefinition.isEmpty(), "Use cases cannot be parsed");
+        DataSetsRoot dataSetsRoot = unmarshal(initDataFile);
+        Map<String, DatasetDefinition> datasetDefinitionMap = getDatasetDefinitionMap(dataSetsRoot);
+        Map<String, String> sqls = getInitDatas(dataSetsRoot, datasetDefinitionMap);
+        Preconditions.checkState(!datasetDefinitionMap.isEmpty(), "Use cases cannot be parsed");
         Preconditions.checkState(!sqls.isEmpty(), "The use case cannot initialize the data");
         String expectedDataFile = rootPath + "asserts/dml/" + shardingRuleType + "/" + dmlDefinition.getExpectedDataFile();
         if (!new File(expectedDataFile).exists()) {
@@ -204,10 +204,10 @@ public final class AssertEngine {
         if (dmlDefinition.getParameter().getValues().isEmpty() && dmlDefinition.getParameter().getValueReplaces().isEmpty()) {
             List<AssertSubDefinition> subAsserts = dmlDefinition.getSubAsserts();
             if (subAsserts.isEmpty()) {
-                resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFile, dataSource, dataSourceMaps, dmlDefinition, rootSQL, mapDatasetDefinition, sqls);
-                resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFile, dataSource, dataSourceMaps, dmlDefinition, rootSQL, mapDatasetDefinition, sqls);
-                resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFile, dataSource, dataSourceMaps, dmlDefinition, rootSQL, mapDatasetDefinition, sqls);
-                resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFile, dataSource, dataSourceMaps, dmlDefinition, rootSQL, mapDatasetDefinition, sqls);
+                resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFile, dataSource, dataSourceMaps, dmlDefinition, rootSQL, datasetDefinitionMap, sqls);
+                resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFile, dataSource, dataSourceMaps, dmlDefinition, rootSQL, datasetDefinitionMap, sqls);
+                resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFile, dataSource, dataSourceMaps, dmlDefinition, rootSQL, datasetDefinitionMap, sqls);
+                resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFile, dataSource, dataSourceMaps, dmlDefinition, rootSQL, datasetDefinitionMap, sqls);
             } else {
                 for (AssertSubDefinition subAssert : subAsserts) {
                     if (!subAssert.getDatabaseTypes().contains(databaseType)) {
@@ -248,17 +248,17 @@ public final class AssertEngine {
                     DMLDataSetAssert anAssertSub = new DMLDataSetAssert(dmlDefinition.getId(),
                             expectedDataFileSub, dmlDefinition.getShardingRuleTypes(), dmlDefinition.getDatabaseTypes(), subAssert.getExpectedUpdate(), dmlDefinition.getSql(),
                             dmlDefinition.getExpectedSql(), parameter, expectedParameter, dmlDefinition.getSubAsserts(), "");
-                    resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, mapDatasetDefinition, sqls);
-                    resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, mapDatasetDefinition, sqls);
-                    resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, mapDatasetDefinition, sqls);
-                    resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, mapDatasetDefinition, sqls);
+                    resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, datasetDefinitionMap, sqls);
+                    resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, datasetDefinitionMap, sqls);
+                    resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, datasetDefinitionMap, sqls);
+                    resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, datasetDefinitionMap, sqls);
                 }
             }
         } else {
-            resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFile, dataSource, dataSourceMaps, dmlDefinition, rootSQL, mapDatasetDefinition, sqls);
-            resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFile, dataSource, dataSourceMaps, dmlDefinition, rootSQL, mapDatasetDefinition, sqls);
-            resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFile, dataSource, dataSourceMaps, dmlDefinition, rootSQL, mapDatasetDefinition, sqls);
-            resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFile, dataSource, dataSourceMaps, dmlDefinition, rootSQL, mapDatasetDefinition, sqls);
+            resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFile, dataSource, dataSourceMaps, dmlDefinition, rootSQL, datasetDefinitionMap, sqls);
+            resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFile, dataSource, dataSourceMaps, dmlDefinition, rootSQL, datasetDefinitionMap, sqls);
+            resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFile, dataSource, dataSourceMaps, dmlDefinition, rootSQL, datasetDefinitionMap, sqls);
+            resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFile, dataSource, dataSourceMaps, dmlDefinition, rootSQL, datasetDefinitionMap, sqls);
             List<AssertSubDefinition> subAsserts = dmlDefinition.getSubAsserts();
             if (!subAsserts.isEmpty()) {
                 for (AssertSubDefinition subAssert : subAsserts) {
@@ -300,10 +300,10 @@ public final class AssertEngine {
                     DMLDataSetAssert anAssertSub = new DMLDataSetAssert(dmlDefinition.getId(),
                             expectedDataFileSub, dmlDefinition.getShardingRuleTypes(), dmlDefinition.getDatabaseTypes(), subAssert.getExpectedUpdate(), dmlDefinition.getSql(),
                             dmlDefinition.getExpectedSql(), parameter, expectedParameter, dmlDefinition.getSubAsserts(), "");
-                    resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, mapDatasetDefinition, sqls);
-                    resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, mapDatasetDefinition, sqls);
-                    resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, mapDatasetDefinition, sqls);
-                    resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, mapDatasetDefinition, sqls);
+                    resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, datasetDefinitionMap, sqls);
+                    resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, datasetDefinitionMap, sqls);
+                    resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, datasetDefinitionMap, sqls);
+                    resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFileTmp, dataSource, dataSourceMaps, anAssertSub, rootSQL, datasetDefinitionMap, sqls);
                 }
             }
         }
@@ -318,12 +318,13 @@ public final class AssertEngine {
     private static void dqlRun(final DQLDataSetAssert dqlDefinition, final String shardingRuleType, final DatabaseType databaseType, final String initDataFile, final String rootPath, final DataSource dataSource, final Map<String, DataSource> dataSourceMaps) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException, JAXBException {
         String rootSQL = dqlDefinition.getSql();
         rootSQL = SQLCasesLoader.getInstance().getSupportedSQL(rootSQL);
-        Map<String, DatasetDefinition> mapDatasetDefinition = new HashMap<>();
-        Map<String, String> sqls = getInitDatas(initDataFile, mapDatasetDefinition);
-        Preconditions.checkState(!mapDatasetDefinition.isEmpty(), "Use cases cannot be parsed");
+        DataSetsRoot dataSetsRoot = unmarshal(initDataFile);
+        Map<String, DatasetDefinition> datasetDefinitionMap = getDatasetDefinitionMap(dataSetsRoot);
+        Map<String, String> sqls = getInitDatas(dataSetsRoot, datasetDefinitionMap);
+        Preconditions.checkState(!datasetDefinitionMap.isEmpty(), "Use cases cannot be parsed");
         Preconditions.checkState(!sqls.isEmpty(), "The use case cannot initialize the data");
         try {
-            initData(dataSourceMaps, sqls, mapDatasetDefinition);
+            initData(dataSourceMaps, sqls, datasetDefinitionMap);
             String expectedDataFile = rootPath + "asserts/dql/" + shardingRuleType + "/" + dqlDefinition.getExpectedDataFile();
             if (!new File(expectedDataFile).exists()) {
                 expectedDataFile = rootPath + "asserts/dql/" + dqlDefinition.getExpectedDataFile();
@@ -349,7 +350,7 @@ public final class AssertEngine {
                 }
             }
         } finally {
-            clearData(dataSourceMaps, mapDatasetDefinition);
+            clearData(dataSourceMaps, datasetDefinitionMap);
         }
     }
     
@@ -616,42 +617,45 @@ public final class AssertEngine {
         }
     }
     
-    private static Map<String, String> getInitDatas(final String initDataFile, final Map<String, DatasetDefinition> mapDatasetDefinition) throws IOException, JAXBException {
-        DataSetsRoot dataSetsRoot = unmarshal(initDataFile);
-        for (DataSetMetadata each : dataSetsRoot.getMetadataList()) {
-            List<String> dataNodes = new InlineExpressionParser(each.getDataNodes()).evaluate();
-            for (String dataNodeStr : dataNodes) {
-                DataNode dataNode = new DataNode(dataNodeStr);
-                if (!mapDatasetDefinition.containsKey(dataNode.getDataSourceName())) {
-                    mapDatasetDefinition.put(dataNode.getDataSourceName(), new DatasetDefinition());
-                }
-                DatasetDefinition datasetDefinition = mapDatasetDefinition.get(dataNode.getDataSourceName());
-                datasetDefinition.getMetadatas().put(dataNode.getTableName(), each.getColumnMetadataList());
-                datasetDefinition.getIndexMetadataList().put(dataNode.getTableName(), each.getIndexMetadataList());
-                mapDatasetDefinition.put(dataNode.getDataSourceName(), datasetDefinition);
-            }
-        }
+    private static Map<String, String> getInitDatas(final DataSetsRoot dataSetsRoot, final Map<String, DatasetDefinition> datasetDefinitionMap) {
         Map<String, String> result = new LinkedHashMap<>();
         for (DataSetRow each : dataSetsRoot.getDataSetRows()) {
             DataNode dataNode = new DataNode(each.getDataNode());
-            if (!mapDatasetDefinition.get(dataNode.getDataSourceName()).getDatas().containsKey(dataNode.getTableName())) {
-                mapDatasetDefinition.get(dataNode.getDataSourceName()).getDatas().put(dataNode.getTableName(), new LinkedList<Map<String, String>>());
+            if (!datasetDefinitionMap.get(dataNode.getDataSourceName()).getDatas().containsKey(dataNode.getTableName())) {
+                datasetDefinitionMap.get(dataNode.getDataSourceName()).getDatas().put(dataNode.getTableName(), new LinkedList<Map<String, String>>());
             }
-            List<Map<String, String>> tableDataList = mapDatasetDefinition.get(dataNode.getDataSourceName()).getDatas().get(dataNode.getTableName());
+            List<Map<String, String>> tableDataList = datasetDefinitionMap.get(dataNode.getDataSourceName()).getDatas().get(dataNode.getTableName());
             List<String> values = Splitter.on(',').trimResults().splitToList(each.getValues());
             int count = 0;
             Map<String, String> map = new LinkedHashMap<>(values.size(), 1);
-            for (DataSetColumnMetadata column : mapDatasetDefinition.get(dataNode.getDataSourceName()).getMetadatas().get(dataNode.getTableName())) {
+            for (DataSetColumnMetadata column : datasetDefinitionMap.get(dataNode.getDataSourceName()).getMetadatas().get(dataNode.getTableName())) {
                 map.put(column.getName(), values.get(count));
                 count++;
             }
-            String sql = DatabaseUtil.analyzeSQL(dataNode.getTableName(), mapDatasetDefinition.get(dataNode.getDataSourceName()).getMetadatas().get(dataNode.getTableName()));
+            String sql = DatabaseUtil.analyzeSQL(dataNode.getTableName(), datasetDefinitionMap.get(dataNode.getDataSourceName()).getMetadatas().get(dataNode.getTableName()));
             result.put(dataNode.getTableName(), sql);
-            if (!mapDatasetDefinition.get(dataNode.getDataSourceName()).getDatas().containsKey(dataNode.getTableName())) {
-                mapDatasetDefinition.get(dataNode.getDataSourceName()).getDatas().put(dataNode.getTableName(), new LinkedList<Map<String, String>>());
+            if (!datasetDefinitionMap.get(dataNode.getDataSourceName()).getDatas().containsKey(dataNode.getTableName())) {
+                datasetDefinitionMap.get(dataNode.getDataSourceName()).getDatas().put(dataNode.getTableName(), new LinkedList<Map<String, String>>());
             }
             tableDataList.add(map);
-            mapDatasetDefinition.get(dataNode.getDataSourceName()).getDatas().put(dataNode.getTableName(), tableDataList);
+            datasetDefinitionMap.get(dataNode.getDataSourceName()).getDatas().put(dataNode.getTableName(), tableDataList);
+        }
+        return result;
+    }
+    
+    private static Map<String, DatasetDefinition> getDatasetDefinitionMap(final DataSetsRoot dataSetsRoot) {
+        Map<String, DatasetDefinition> result = new HashMap<>();
+        for (DataSetMetadata each : dataSetsRoot.getMetadataList()) {
+            for (String dataNodeStr : new InlineExpressionParser(each.getDataNodes()).evaluate()) {
+                DataNode dataNode = new DataNode(dataNodeStr);
+                if (!result.containsKey(dataNode.getDataSourceName())) {
+                    result.put(dataNode.getDataSourceName(), new DatasetDefinition());
+                }
+                DatasetDefinition datasetDefinition = result.get(dataNode.getDataSourceName());
+                datasetDefinition.getMetadatas().put(dataNode.getTableName(), each.getColumnMetadataList());
+                datasetDefinition.getIndexMetadataList().put(dataNode.getTableName(), each.getIndexMetadataList());
+                result.put(dataNode.getDataSourceName(), datasetDefinition);
+            }
         }
         return result;
     }
@@ -690,16 +694,5 @@ public final class AssertEngine {
                 DatabaseUtil.cleanAllUsePreparedStatement(connection, entry.getKey());
             }
         }
-    }
-    
-    private static List<DatabaseType> getDatabaseTypes1(final String databaseTypes) {
-        List<DatabaseType> result = new LinkedList<>();
-        if (Strings.isNullOrEmpty(databaseTypes)) {
-            return Arrays.asList(DatabaseType.values());
-        }
-        for (String eachType : databaseTypes.split(",")) {
-            result.add(DatabaseType.valueOf(eachType));
-        }
-        return result;
     }
 }
