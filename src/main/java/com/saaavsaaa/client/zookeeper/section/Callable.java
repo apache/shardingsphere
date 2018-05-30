@@ -26,7 +26,9 @@ public abstract class Callable<T> {
         this.result = result;
     }
     public T getResult() throws KeeperException, InterruptedException {
-        exec();
+        if (result == null) {
+            exec();
+        }
         return result;
     }
     
