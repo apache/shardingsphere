@@ -12,9 +12,9 @@ weight = 4
 
 ```xml
 <dependency>
-    <groupId>io.shardingjdbc</groupId>
+    <groupId>shardingsphere</groupId>
     <artifactId>sharding-jdbc-orchestration</artifactId>
-    <version>${sharding-jdbc.version}</version>
+    <version>${sharding-sphere.version}</version>
 </dependency>
 ```
 
@@ -61,16 +61,16 @@ orchestration:
 ```xml
 <!-- for spring boot -->
 <dependency>
-    <groupId>io.shardingjdbc</groupId>
+    <groupId>shardingsphere</groupId>
     <artifactId>sharding-jdbc-orchestration-spring-boot-starter</artifactId>
-    <version>${sharding-jdbc.version}</version>
+    <version>${sharding-sphere.version}</version>
 </dependency>
 
 <!-- for spring namespace -->
 <dependency>
-    <groupId>io.shardingjdbc</groupId>
+    <groupId>shardingsphere</groupId>
     <artifactId>sharding-jdbc-orchestration-spring-namespace</artifactId>
-    <version>${sharding-jdbc.version}</version>
+    <version>${sharding-sphere.version}</version>
 </dependency>
 ```
 
