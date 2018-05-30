@@ -42,17 +42,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Data initializer.
+ * Data set environment manager.
  *
  * @author zhangliang
  */
-public final class DataInitializer {
+public final class DataSetEnvironmentManager {
     
     private final DataSetsRoot dataSetsRoot;
     
     private final Map<String, DataSource> dataSourceMap;
     
-    public DataInitializer(final String path, final Map<String, DataSource> dataSourceMap) throws IOException, JAXBException {
+    public DataSetEnvironmentManager(final String path, final Map<String, DataSource> dataSourceMap) throws IOException, JAXBException {
         try (FileReader reader = new FileReader(path)) {
             dataSetsRoot = (DataSetsRoot) JAXBContext.newInstance(DataSetsRoot.class).createUnmarshaller().unmarshal(reader);
         }
@@ -65,8 +65,8 @@ public final class DataInitializer {
      * @throws SQLException SQL exception
      * @throws ParseException parse exception
      */
-    public void initializeData() throws SQLException, ParseException {
-        clearData();
+    public void initialize() throws SQLException, ParseException {
+        clear();
         Map<DataNode, List<DataSetRow>> dataNodeListMap = getDataSetRowMap();
         for (Entry<DataNode, List<DataSetRow>> entry : dataNodeListMap.entrySet()) {
             DataNode dataNode = entry.getKey();
@@ -99,8 +99,8 @@ public final class DataInitializer {
         List<String> values = Splitter.on(',').trimResults().splitToList(dataSetRow.getValues());
         int count = 0;
         Map<String, String> result = new LinkedHashMap<>(values.size(), 1);
-        for (DataSetColumnMetadata column : dataSetMetadata.getColumnMetadataList()) {
-            result.put(column.getName(), values.get(count));
+        for (DataSetColumnMetadata each : dataSetMetadata.getColumnMetadataList()) {
+            result.put(each.getName(), values.get(count));
             count++;
         }
         return result;
@@ -111,13 +111,13 @@ public final class DataInitializer {
      * 
      * @throws SQLException SQL exception
      */
-    public void clearData() throws SQLException {
+    public void clear() throws SQLException {
         for (Entry<String, Collection<String>> entry : getDataNodeMap().entrySet()) {
-            clearData(entry.getKey(), entry.getValue());
+            clear(entry.getKey(), entry.getValue());
         }
     }
     
-    private void clearData(final String dataSourceName, final Collection<String> tableNames) throws SQLException {
+    private void clear(final String dataSourceName, final Collection<String> tableNames) throws SQLException {
         try (Connection connection = dataSourceMap.get(dataSourceName).getConnection()) {
             for (String each : tableNames) {
                 DatabaseUtil.cleanAllUsePreparedStatement(connection, each);
