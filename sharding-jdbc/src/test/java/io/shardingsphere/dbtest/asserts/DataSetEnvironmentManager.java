@@ -17,6 +17,7 @@
 
 package io.shardingsphere.dbtest.asserts;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.util.InlineExpressionParser;
@@ -72,13 +73,13 @@ public final class DataSetEnvironmentManager {
             DataNode dataNode = entry.getKey();
             List<DataSetRow> dataSetRows = entry.getValue();
             DataSetMetadata dataSetMetadata = dataSetsRoot.findDataSetMetadata(dataNode);
-            String sql = DatabaseUtil.generateInsertSQL(dataNode.getTableName(), dataSetMetadata.getColumnMetadataList());
+            String insertSQL = generateInsertSQL(dataNode.getTableName(), dataSetMetadata.getColumnMetadataList());
             List<Map<String, String>> valueMaps = new LinkedList<>();
             for (DataSetRow row : dataSetRows) {
                 valueMaps.add(getValueMap(row, dataSetMetadata));
             }
             try (Connection connection = dataSourceMap.get(dataNode.getDataSourceName()).getConnection()) {
-                DatabaseUtil.insertUsePreparedStatement(connection, sql, valueMaps, dataSetMetadata.getColumnMetadataList());
+                DatabaseUtil.insertUsePreparedStatement(connection, insertSQL, valueMaps, dataSetMetadata.getColumnMetadataList());
             }
         }
     }
@@ -93,6 +94,16 @@ public final class DataSetEnvironmentManager {
             result.get(dataNode).add(each);
         }
         return result;
+    }
+    
+    private String generateInsertSQL(final String tableName, final List<DataSetColumnMetadata> columnMetadata) {
+        List<String> columnNames = new LinkedList<>();
+        List<String> placeholders = new LinkedList<>();
+        for (DataSetColumnMetadata each : columnMetadata) {
+            columnNames.add(each.getName());
+            placeholders.add("?");
+        }
+        return String.format("INSERT INTO %s (%s) VALUES (%s)", tableName, Joiner.on(",").join(columnNames), Joiner.on(",").join(placeholders));
     }
     
     private Map<String, String> getValueMap(final DataSetRow dataSetRow, final DataSetMetadata dataSetMetadata) {

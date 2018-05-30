@@ -17,7 +17,6 @@
 
 package io.shardingsphere.dbtest.common;
 
-import com.google.common.base.Joiner;
 import io.shardingsphere.dbtest.config.bean.ColumnDefinition;
 import io.shardingsphere.dbtest.config.bean.DatasetDatabase;
 import io.shardingsphere.dbtest.config.bean.DatasetDefinition;
@@ -43,7 +42,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -69,23 +67,6 @@ import static org.junit.Assert.fail;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseUtil {
-    
-    /**
-     * Generate insert SQL.
-     *
-     * @param tableName table name
-     * @param columnMetadata column meta data
-     * @return generated insert SQL
-     */
-    public static String generateInsertSQL(final String tableName, final List<DataSetColumnMetadata> columnMetadata) {
-        List<String> colsConfigs = new LinkedList<>();
-        List<String> valueConfigs = new LinkedList<>();
-        for (DataSetColumnMetadata each : columnMetadata) {
-            colsConfigs.add(each.getName());
-            valueConfigs.add("?");
-        }
-        return "INSERT INTO " + tableName + " ( " + Joiner.on(",").join(colsConfigs) + " )" + " VALUES " + " ( " + Joiner.on(",").join(valueConfigs) + " )";
-    }
     
     /**
      * Insert initialization data.
