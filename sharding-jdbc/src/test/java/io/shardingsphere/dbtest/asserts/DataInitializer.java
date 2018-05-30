@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -110,28 +111,41 @@ public final class DataInitializer {
      * @throws SQLException SQL exception
      */
     public void clearData(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        DataNodes dataNodes = new DataNodes();
-        for (DataSetMetadata each : dataSetsRoot.getMetadataList()) {
-            dataNodes.add(getDataNodes(each));
-        }
-        for (String each : dataNodes.getDataSourceNames()) {
-            clearData(dataSourceMap, each, dataNodes);
+        for (Entry<String, Collection<String>> entry : getDataNodeMap().entrySet()) {
+            clearData(dataSourceMap, entry.getKey(), entry.getValue());
         }
     }
     
-    private void clearData(final Map<String, DataSource> dataSourceMap, final String dataSourceName, final DataNodes dataNodes) throws SQLException {
+    private void clearData(final Map<String, DataSource> dataSourceMap, final String dataSourceName, final Collection<String> tableNames) throws SQLException {
         try (Connection connection = dataSourceMap.get(dataSourceName).getConnection()) {
-            for (String each : dataNodes.getTableNames(dataSourceName)) {
+            for (String each : tableNames) {
                 DatabaseUtil.cleanAllUsePreparedStatement(connection, each);
             }
         }
     }
     
-    private List<DataNode> getDataNodes(final DataSetMetadata dataSetMetadata) {
-        List<DataNode> result = new LinkedList<>();
+    private Map<String, Collection<String>> getDataNodeMap() {
+        Map<String, Collection<String>> dataNodeMap = new LinkedHashMap<>();
+        for (DataSetMetadata each : dataSetsRoot.getMetadataList()) {
+            for (Entry<String, Collection<String>> entry : getDataNodeMap(each).entrySet()) {
+                if (!dataNodeMap.containsKey(entry.getKey())) {
+                    dataNodeMap.put(entry.getKey(), new LinkedList<String>());
+                }
+                dataNodeMap.get(entry.getKey()).addAll(entry.getValue());
+            }
+        }
+        return dataNodeMap;
+    }
+    
+    private Map<String, Collection<String>> getDataNodeMap(final DataSetMetadata dataSetMetadata) {
+        Map<String, Collection<String>> result = new LinkedHashMap<>();
         for (String each : new InlineExpressionParser(dataSetMetadata.getDataNodes()).evaluate()) {
             DataNode dataNode = new DataNode(each);
-            result.add(dataNode);
+            if (!result.containsKey(dataNode.getDataSourceName())) {
+                result.put(dataNode.getDataSourceName(), new LinkedList<String>());
+            }
+            result.get(dataNode.getDataSourceName()).add(dataNode.getTableName());
+            
         }
         return result;
     }
