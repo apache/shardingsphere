@@ -79,7 +79,7 @@ public final class DataSetEnvironmentManager {
                 valueMaps.add(getValueMap(row, dataSetMetadata));
             }
             try (Connection connection = dataSourceMap.get(dataNode.getDataSourceName()).getConnection()) {
-                DatabaseUtil.insertUsePreparedStatement(connection, insertSQL, valueMaps, dataSetMetadata.getColumnMetadataList());
+                DatabaseUtil.executeUpdate(connection, insertSQL, valueMaps, dataSetMetadata.getColumnMetadataList());
             }
         }
     }

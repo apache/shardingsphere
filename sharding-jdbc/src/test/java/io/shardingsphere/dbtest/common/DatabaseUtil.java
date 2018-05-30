@@ -73,24 +73,23 @@ public final class DatabaseUtil {
      *
      * @param connection connection
      * @param sql SQL
-     * @param datas init data
+     * @param dataList data list
      * @param dataSetColumnMetadataList data set column meta data list
-     * @return Success or failure
-     * @throws SQLException   SQL exception
-     * @throws ParseException Precompiled anomaly
+     * @throws SQLException SQL exception
+     * @throws ParseException date format parse exception
      */
-    public static boolean insertUsePreparedStatement(
-            final Connection connection, final String sql, final List<Map<String, String>> datas, final List<DataSetColumnMetadata> dataSetColumnMetadataList) throws SQLException, ParseException {
+    public static void executeUpdate(
+            final Connection connection, final String sql, final List<Map<String, String>> dataList, final List<DataSetColumnMetadata> dataSetColumnMetadataList) throws SQLException, ParseException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            for (Map<String, String> entry : datas) {
+            for (Map<String, String> entry : dataList) {
                 setParameters(dataSetColumnMetadataList, preparedStatement, entry);
                 preparedStatement.executeUpdate();
             }
         }
-        return true;
     }
     
-    private static void setParameters(final List<DataSetColumnMetadata> dataSetColumnMetadataList, final PreparedStatement preparedStatement, final Map<String, String> data) throws SQLException, ParseException {
+    private static void setParameters(
+            final List<DataSetColumnMetadata> dataSetColumnMetadataList, final PreparedStatement preparedStatement, final Map<String, String> data) throws SQLException, ParseException {
         int index = 0;
         for (Entry<String, String> entry : data.entrySet()) {
             String type = null;
@@ -128,15 +127,15 @@ public final class DatabaseUtil {
     }
     
     /**
-     * clear table.
+     * Clear table.
      *
-     * @param connection  Jdbc connection
-     * @param table table
-     * @throws SQLException SQL executes exceptions
+     * @param connection  connection
+     * @param tableName table name
+     * @throws SQLException SQL exception
      */
-    public static void cleanAllUsePreparedStatement(final Connection connection, final String table) throws SQLException {
+    public static void cleanAllUsePreparedStatement(final Connection connection, final String tableName) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            statement.execute("DELETE FROM " + table);
+            statement.execute("DELETE FROM " + tableName);
         }
     }
     
@@ -200,7 +199,7 @@ public final class DatabaseUtil {
                 case "long":
                 case "float":
                 case "double":
-                    result = Pattern.compile("#s", Pattern.LITERAL).matcher(result).replaceFirst(Matcher.quoteReplacement(dataColumn.toString()));
+                    result = Pattern.compile("#s", Pattern.LITERAL).matcher(result).replaceFirst(Matcher.quoteReplacement(dataColumn));
                     break;
                 case "boolean":
                     result = Pattern.compile("#s", Pattern.LITERAL).matcher(result).replaceFirst(Matcher.quoteReplacement(Boolean.valueOf(dataColumn).toString()));
@@ -244,7 +243,7 @@ public final class DatabaseUtil {
      * @throws ParseException parse exception
      */
     public static int updateUsePreparedStatementToExecuteUpdate(final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
-        String newSQL = sql.replaceAll("\\%s", "?");
+        String newSQL = sql.replaceAll("%s", "?");
         newSQL = sqlReplaceStatement(newSQL, parameterDefinition.getValueReplaces());
         try (PreparedStatement preparedStatement = connection.prepareStatement(newSQL)) {
             sqlPreparedStatement(parameterDefinition.getValues(), preparedStatement);
@@ -263,7 +262,7 @@ public final class DatabaseUtil {
      * @throws ParseException parse exception
      */
     public static int updateUsePreparedStatementToExecute(final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
-        String newSQL = sql.replaceAll("\\%s", "?");
+        String newSQL = sql.replaceAll("%s", "?");
         newSQL = sqlReplaceStatement(newSQL, parameterDefinition.getValueReplaces());
         try (PreparedStatement preparedStatement = connection.prepareStatement(newSQL)) {
             sqlPreparedStatement(parameterDefinition.getValues(), preparedStatement);
@@ -287,7 +286,7 @@ public final class DatabaseUtil {
     public static DatasetDatabase selectUsePreparedStatement(final Connection conn, final String sql, final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
         List<ParameterValueDefinition> parameters = parameterDefinition.getValues();
         String newSQL = sqlReplaceStatement(sql, parameterDefinition.getValueReplaces());
-        newSQL = newSQL.replaceAll("\\%s", "?");
+        newSQL = newSQL.replaceAll("%s", "?");
         try (PreparedStatement preparedStatement = conn.prepareStatement(newSQL)) {
             sqlPreparedStatement(parameters, preparedStatement);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -306,10 +305,11 @@ public final class DatabaseUtil {
      * @throws SQLException   SQL exception
      * @throws ParseException parse exception
      */
-    public static DatasetDatabase selectUsePreparedStatementToExecuteSelect(final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
+    public static DatasetDatabase selectUsePreparedStatementToExecuteSelect(
+            final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
         List<ParameterValueDefinition> parameter = parameterDefinition.getValues();
         String newSQL = sqlReplaceStatement(sql, parameterDefinition.getValueReplaces());
-        newSQL = newSQL.replaceAll("\\%s", "?");
+        newSQL = newSQL.replaceAll("%s", "?");
         try (PreparedStatement preparedStatement = connection.prepareStatement(newSQL)) {
             sqlPreparedStatement(parameter, preparedStatement);
             boolean flag = preparedStatement.execute();
@@ -639,7 +639,8 @@ public final class DatabaseUtil {
         }
     }
     
-    private static List<DataSetColumnMetadata> geIndexDefinitions(final DatabaseMetaData databaseMetaData, final List<DataSetColumnMetadata> columnDefinitions, final String table) throws SQLException {
+    private static List<DataSetColumnMetadata> geIndexDefinitions(
+            final DatabaseMetaData databaseMetaData, final List<DataSetColumnMetadata> columnDefinitions, final String table) throws SQLException {
         try (ResultSet resultSet = databaseMetaData.getIndexInfo(null, null, table, false, false)) {
             while (resultSet.next()) {
                 IndexDefinition index = new IndexDefinition();
