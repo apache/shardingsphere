@@ -77,6 +77,9 @@ public final class MySQLFrontendHandler extends FrontendHandler {
                         context.writeAndFlush(each);
                     }
                     while (commandPacket.hasMoreResultValue()) {
+                        while (!context.channel().isWritable()) {
+                            continue;
+                        }
                         context.writeAndFlush(commandPacket.getResultValue());
                     }
                 } finally {
