@@ -72,7 +72,7 @@ public final class DataSetEnvironmentManager {
             DataNode dataNode = entry.getKey();
             List<DataSetRow> dataSetRows = entry.getValue();
             DataSetMetadata dataSetMetadata = dataSetsRoot.findDataSetMetadata(dataNode);
-            String sql = DatabaseUtil.analyzeSQL(dataNode.getTableName(), dataSetMetadata.getColumnMetadataList());
+            String sql = DatabaseUtil.generateInsertSQL(dataNode.getTableName(), dataSetMetadata.getColumnMetadataList());
             List<Map<String, String>> valueMaps = new LinkedList<>();
             for (DataSetRow row : dataSetRows) {
                 valueMaps.add(getValueMap(row, dataSetMetadata));

@@ -17,6 +17,7 @@
 
 package io.shardingsphere.dbtest.common;
 
+import com.google.common.base.Joiner;
 import io.shardingsphere.dbtest.config.bean.ColumnDefinition;
 import io.shardingsphere.dbtest.config.bean.DatasetDatabase;
 import io.shardingsphere.dbtest.config.bean.DatasetDefinition;
@@ -24,6 +25,8 @@ import io.shardingsphere.dbtest.config.bean.IndexDefinition;
 import io.shardingsphere.dbtest.config.bean.ParameterDefinition;
 import io.shardingsphere.dbtest.config.bean.ParameterValueDefinition;
 import io.shardingsphere.dbtest.config.dataset.DataSetColumnMetadata;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.sql.Connection;
@@ -40,6 +43,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -61,33 +65,26 @@ import static org.junit.Assert.fail;
  * </p>
  * 
  * @author liu ze jian
+ * @author zhangliang
  */
-public class DatabaseUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DatabaseUtil {
     
     /**
-     * Generating sql.
+     * Generate insert SQL.
      *
-     * @param table  table
-     * @param columnMetadata column metadata
-     * @return sql
+     * @param tableName table name
+     * @param columnMetadata column meta data
+     * @return generated insert SQL
      */
-    public static String analyzeSQL(final String table, final List<DataSetColumnMetadata> columnMetadata) {
-        List<String> colsConfigs = new ArrayList<>();
-        List<String> valueConfigs = new ArrayList<>();
+    public static String generateInsertSQL(final String tableName, final List<DataSetColumnMetadata> columnMetadata) {
+        List<String> colsConfigs = new LinkedList<>();
+        List<String> valueConfigs = new LinkedList<>();
         for (DataSetColumnMetadata each : columnMetadata) {
             colsConfigs.add(each.getName());
             valueConfigs.add("?");
         }
-        StringBuilder result = new StringBuilder("insert into ");
-        result.append(table);
-        result.append(" ( ");
-        result.append(StringUtils.join(colsConfigs, ","));
-        result.append(" )");
-        result.append(" values ");
-        result.append(" ( ");
-        result.append(StringUtils.join(valueConfigs, ","));
-        result.append(" )");
-        return result.toString();
+        return "INSERT INTO " + tableName + " ( " + Joiner.on(",").join(colsConfigs) + " )" + " VALUES " + " ( " + Joiner.on(",").join(valueConfigs) + " )";
     }
     
     /**
