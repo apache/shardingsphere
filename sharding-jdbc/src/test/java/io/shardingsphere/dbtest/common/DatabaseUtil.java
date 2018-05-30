@@ -25,8 +25,6 @@ import io.shardingsphere.dbtest.config.bean.ParameterDefinition;
 import io.shardingsphere.dbtest.config.bean.ParameterValueDefinition;
 import io.shardingsphere.dbtest.config.dataset.DataSetColumnMetadata;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateFormatUtils;
-import org.apache.commons.lang3.time.FastDateFormat;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -37,7 +35,9 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -154,8 +154,8 @@ public class DatabaseUtil {
                 preparedStatement.setBoolean(index, Boolean.valueOf(dataColumn));
                 break;
             case "Date":
-                FastDateFormat fdf = FastDateFormat.getInstance("yyyy-MM-dd");
-                preparedStatement.setDate(index, new Date(fdf.parse(dataColumn).getTime()));
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                preparedStatement.setDate(index, new Date(dateFormat.parse(dataColumn).getTime()));
                 break;
             case "String":
                 preparedStatement.setString(index, dataColumn);
@@ -457,8 +457,7 @@ public class DatabaseUtil {
                         data.put(name, String.valueOf(resultSet.getString(name)));
                         break;
                     case "Date":
-                        data.put(name, DateFormatUtils.format(new java.util.Date(resultSet.getDate(name).getTime()),
-                                "yyyy-MM-dd"));
+                        data.put(name, new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date(resultSet.getDate(name).getTime())));
                         break;
                     case "Blob":
                         data.put(name, String.valueOf(resultSet.getBlob(name)));
