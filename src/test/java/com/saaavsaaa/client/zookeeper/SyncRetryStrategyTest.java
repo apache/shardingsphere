@@ -8,7 +8,7 @@ import com.saaavsaaa.client.retry.TestCallable;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.zookeeper.base.BaseClient;
 import com.saaavsaaa.client.zookeeper.section.Listener;
-import com.saaavsaaa.client.zookeeper.strategy.StrategyType;
+import com.saaavsaaa.client.zookeeper.section.StrategyType;
 import com.saaavsaaa.client.zookeeper.strategy.UsualStrategy;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;

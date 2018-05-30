@@ -33,5 +33,5 @@ public interface IProvider {
     
     void createInTransaction(final String key, final String value, final CreateMode createMode, final ZKTransaction transaction) throws KeeperException, InterruptedException;
     
-    void checkConnection(final KeeperException e) throws KeeperException, InterruptedException;
+    void checkConnection(final KeeperException e);
 }

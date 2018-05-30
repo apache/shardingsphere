@@ -2,8 +2,6 @@ package com.saaavsaaa.client.zookeeper.base;
 
 import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.retry.DelayPolicyExecutor;
-import com.saaavsaaa.client.zookeeper.section.ClientContext;
-import com.saaavsaaa.client.zookeeper.section.Connection;
 import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

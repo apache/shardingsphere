@@ -1,7 +1,5 @@
 package com.saaavsaaa.client.utility;
 
-import com.saaavsaaa.client.utility.StringUtil;
-
 import java.util.ResourceBundle;
 
 /**

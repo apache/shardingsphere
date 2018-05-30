@@ -1,12 +1,8 @@
 package com.saaavsaaa.client.zookeeper;
 
-import com.saaavsaaa.client.action.IExecStrategy;
-import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.zookeeper.base.BaseClient;
 import com.saaavsaaa.client.zookeeper.base.BaseContext;
-import com.saaavsaaa.client.zookeeper.base.BaseProvider;
-import com.saaavsaaa.client.zookeeper.section.ClientContext;
-import com.saaavsaaa.client.zookeeper.strategy.*;
+import com.saaavsaaa.client.zookeeper.section.StrategyType;
 import com.saaavsaaa.client.zookeeper.transaction.ZKTransaction;
 import org.apache.zookeeper.*;
 import org.slf4j.Logger;
@@ -14,8 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by aaa

@@ -2,14 +2,13 @@ package com.saaavsaaa.client.retry;
 
 import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.action.IProvider;
-import com.saaavsaaa.client.zookeeper.section.ClientContext;
 import com.saaavsaaa.client.zookeeper.section.Listener;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.zookeeper.ClientFactory;
 import com.saaavsaaa.client.zookeeper.TestSupport;
 import com.saaavsaaa.client.zookeeper.base.BaseClient;
-import com.saaavsaaa.client.zookeeper.strategy.StrategyType;
+import com.saaavsaaa.client.zookeeper.section.StrategyType;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.junit.After;

@@ -1,8 +1,6 @@
 package com.saaavsaaa.client.zookeeper.base;
 
 import com.saaavsaaa.client.action.IClient;
-import com.saaavsaaa.client.retry.DelayRetryPolicy;
-import com.saaavsaaa.client.zookeeper.section.ClientContext;
 import com.saaavsaaa.client.zookeeper.section.Listener;
 
 import java.io.IOException;

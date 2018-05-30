@@ -3,7 +3,7 @@ package com.saaavsaaa.client.zookeeper;
 import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.zookeeper.section.Listener;
 import com.saaavsaaa.client.zookeeper.base.BaseClient;
-import com.saaavsaaa.client.zookeeper.strategy.StrategyType;
+import com.saaavsaaa.client.zookeeper.section.StrategyType;
 
 import java.io.IOException;
 

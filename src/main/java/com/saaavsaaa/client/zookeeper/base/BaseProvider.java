@@ -2,16 +2,18 @@ package com.saaavsaaa.client.zookeeper.base;
 
 import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.election.LeaderElection;
-import com.saaavsaaa.client.zookeeper.section.Connection;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
+import com.saaavsaaa.client.zookeeper.section.Connection;
 import com.saaavsaaa.client.zookeeper.transaction.ZKTransaction;
-import org.apache.zookeeper.*;
+import org.apache.zookeeper.AsyncCallback;
+import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.data.ACL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Stack;
 
@@ -127,13 +129,13 @@ public class BaseProvider implements IProvider {
     }
     
     @Override
-    public void checkConnection(final KeeperException e) throws KeeperException, InterruptedException {
-        if (Connection.needReset(e)){
-            try {
+    public void checkConnection(final KeeperException e) {
+        try {
+            if (Connection.needReset(e)){
                 holder.reset();
-            } catch (IOException e1) {
-                e1.printStackTrace();
             }
+        } catch (Exception ee) {
+            logger.error("checkConnection error:{} KeeperException:{}", ee.getMessage(), e.getMessage(), ee);
         }
     }
     

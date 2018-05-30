@@ -1,7 +1,7 @@
 package com.saaavsaaa.client.action;
 
 import com.saaavsaaa.client.zookeeper.section.Listener;
-import com.saaavsaaa.client.zookeeper.strategy.StrategyType;
+import com.saaavsaaa.client.zookeeper.section.StrategyType;
 import com.saaavsaaa.client.zookeeper.transaction.ZKTransaction;
 
 import java.io.IOException;
