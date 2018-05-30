@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +70,8 @@ public final class AssertEngine {
     
     private final DataInitializer dataInitializer;
     
-    public AssertEngine(final DataSetAssert dataSetAssert, final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException {
+    public AssertEngine(
+            final DataSetAssert dataSetAssert, final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException {
         this.dataSetAssert = dataSetAssert;
         this.shardingRuleType = shardingRuleType;
         this.databaseTypeEnvironment = databaseTypeEnvironment;
@@ -178,13 +179,13 @@ public final class AssertEngine {
                     anAssert.getSql(), anAssert.getTable(),
                     parameter, anAssert.getSubAsserts(), "");
             doUpdateUseStatementToExecuteUpdateDDL(expectedDataFileTmp, dataSource, anAssertSub, rootSQL);
-            doUpdateUseStatementToExecuteDDL( expectedDataFileTmp, dataSource, anAssertSub, rootSQL);
+            doUpdateUseStatementToExecuteDDL(expectedDataFileTmp, dataSource, anAssertSub, rootSQL);
             doUpdateUsePreparedStatementToExecuteUpdateDDL(expectedDataFileTmp, dataSource, anAssertSub, rootSQL);
             doUpdateUsePreparedStatementToExecuteDDL(expectedDataFileTmp, dataSource, anAssertSub, rootSQL);
         }
     }
     
-    private void dmlRun(final DMLDataSetAssert dmlDefinition, final DataSource dataSource, final Map<String, DataSource> dataSourceMap) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException, JAXBException {
+    private void dmlRun(final DMLDataSetAssert dmlDefinition, final DataSource dataSource, final Map<String, DataSource> dataSourceMap) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
         String rootSQL = dmlDefinition.getSql();
         rootSQL = SQLCasesLoader.getInstance().getSupportedSQL(rootSQL);
         String expectedDataFile = rootPath + "asserts/dml/" + shardingRuleType + "/" + dmlDefinition.getExpectedDataFile();

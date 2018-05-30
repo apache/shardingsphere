@@ -86,10 +86,6 @@ public final class DataInitializer {
         Map<String, String> result = new LinkedHashMap<>();
         for (DataSetRow each : dataSetsRoot.getDataSetRows()) {
             DataNode dataNode = new DataNode(each.getDataNode());
-            if (!datasetDefinitionMap.get(dataNode.getDataSourceName()).getDatas().containsKey(dataNode.getTableName())) {
-                datasetDefinitionMap.get(dataNode.getDataSourceName()).getDatas().put(dataNode.getTableName(), new LinkedList<Map<String, String>>());
-            }
-            List<Map<String, String>> tableDataList = datasetDefinitionMap.get(dataNode.getDataSourceName()).getDatas().get(dataNode.getTableName());
             List<String> values = Splitter.on(',').trimResults().splitToList(each.getValues());
             int count = 0;
             Map<String, String> map = new LinkedHashMap<>(values.size(), 1);
@@ -102,8 +98,7 @@ public final class DataInitializer {
             if (!datasetDefinitionMap.get(dataNode.getDataSourceName()).getDatas().containsKey(dataNode.getTableName())) {
                 datasetDefinitionMap.get(dataNode.getDataSourceName()).getDatas().put(dataNode.getTableName(), new LinkedList<Map<String, String>>());
             }
-            tableDataList.add(map);
-            datasetDefinitionMap.get(dataNode.getDataSourceName()).getDatas().put(dataNode.getTableName(), tableDataList);
+            datasetDefinitionMap.get(dataNode.getDataSourceName()).getDatas().get(dataNode.getTableName()).add(map);
         }
         return result;
     }
