@@ -27,7 +27,7 @@ public final class ModuloShardingAlgorithm implements PreciseShardingAlgorithm<I
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
         for (String each : availableTargetNames) {
-            if (each.endsWith(shardingValue.getValue() % 2 + "")) {
+            if (each.endsWith(shardingValue.getValue() % 10 + "")) {
                 return each;
             }
         }
