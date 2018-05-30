@@ -145,7 +145,7 @@ public class BaseProvider implements IProvider {
                 holder.reset();
             }
         } catch (Exception ee) {
-            logger.error("checkConnection error:{} KeeperException:{}", ee.getMessage(), e.getMessage(), ee);
+            logger.error("checkConnection input KeeperException:{}", e.getMessage(), ee);
         }
     }
     

@@ -17,7 +17,7 @@
 
 group 'com.saaavsaaa'
 //version '1.0-SNAPSHOT'
-version '1.2'
+version '1.6'
 
 apply plugin: 'idea'
 apply plugin: 'java'
@@ -33,6 +33,8 @@ dependencies {
     compile group: 'org.apache.zookeeper', name: 'zookeeper', version: '3.4.11'
 
     testCompile group: 'junit', name: 'junit', version: '4.11'
+    // https://mvnrepository.com/artifact/org.apache.zookeeper/zookeeper
+    testCompile group: 'org.apache.zookeeper', name: 'zookeeper', version: '3.5.3-beta'
 }
 
 uploadArchives {
