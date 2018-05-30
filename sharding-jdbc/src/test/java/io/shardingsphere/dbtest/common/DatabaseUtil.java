@@ -83,29 +83,28 @@ public final class DatabaseUtil {
             final Connection connection, final String sql, final List<Map<String, String>> datas, final List<DataSetColumnMetadata> dataSetColumnMetadataList) throws SQLException, ParseException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             for (Map<String, String> entry : datas) {
-                sqlParameterProcessing(dataSetColumnMetadataList, preparedStatement, entry);
+                setParameters(dataSetColumnMetadataList, preparedStatement, entry);
                 preparedStatement.executeUpdate();
             }
         }
         return true;
     }
     
-    private static void sqlParameterProcessing(final List<DataSetColumnMetadata> dataSetColumnMetadata, final PreparedStatement preparedStatement, final Map<String, String> data) throws SQLException, ParseException {
-        int index = 1;
+    private static void setParameters(final List<DataSetColumnMetadata> dataSetColumnMetadataList, final PreparedStatement preparedStatement, final Map<String, String> data) throws SQLException, ParseException {
+        int index = 0;
         for (Entry<String, String> entry : data.entrySet()) {
-            String type = "String";
-            for (DataSetColumnMetadata each : dataSetColumnMetadata) {
-                if (entry.getKey().equals(each.getName()) && null != each.getType()) {
+            String type = null;
+            for (DataSetColumnMetadata each : dataSetColumnMetadataList) {
+                if (entry.getKey().equals(each.getName())) {
                     type = each.getType();
                 }
             }
-            setParameter(preparedStatement, index, entry.getValue(), type);
-            index++;
+            setParameter(preparedStatement, ++index, entry.getValue(), type);
         }
     }
     
     private static void setParameter(final PreparedStatement preparedStatement, final int index, final String value, final String type) throws SQLException, ParseException {
-        if ("varchar".equals(type) || "char".equals(type) || "String".equals(type)) {
+        if (null == type || "varchar".equals(type) || "char".equals(type) || "String".equals(type)) {
             preparedStatement.setString(index, value);
             return;
         }
