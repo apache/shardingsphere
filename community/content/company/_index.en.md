@@ -28,6 +28,7 @@ Organizations using Sharding in chronological order.
 * [auto ifeng](http://auto.ifeng.com/)
 * [tianya](http://www.tianya.cn/)
 * [yiche](http://www.yiche.com/)
+* [baixing](http://www.baixing.com/)
 
 ## O2O
 

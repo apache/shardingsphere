@@ -28,6 +28,7 @@ chapter = true
 * [凤凰汽车](http://auto.ifeng.com/)
 * [天涯社区](http://www.tianya.cn/)
 * [易车网](http://www.yiche.com/)
+* [百姓网](http://www.baixing.com/)
 
 ## O2O
 
