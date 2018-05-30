@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 
 package io.shardingsphere.dbtest.config.dataset;
 
+import io.shardingsphere.core.rule.DataNode;
+import io.shardingsphere.core.util.InlineExpressionParser;
 import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -32,4 +34,28 @@ public class DataSetsRoot {
     
     @XmlElement(name = "dataset")
     private List<DataSetRow> dataSetRows;
+    
+    /**
+     * find data set meta data.
+     * 
+     * @param dataNode data node
+     * @return data set meta data
+     */
+    public DataSetMetadata findDataSetMetadata(final DataNode dataNode) {
+        for (DataSetMetadata each : metadataList) {
+            if (contains(new InlineExpressionParser(each.getDataNodes()).evaluate(), dataNode)) {
+                return each;
+            }
+        }
+        throw new IllegalArgumentException(String.format("Cannot find data node: %s", dataNode.toString()));
+    }
+    
+    private boolean contains(final List<String> dataNodes, final DataNode dataNode) {
+        for (String each : dataNodes) {
+            if (new DataNode(each).equals(dataNode)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
