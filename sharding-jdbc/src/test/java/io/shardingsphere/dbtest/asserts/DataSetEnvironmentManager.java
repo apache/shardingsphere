@@ -131,9 +131,13 @@ public final class DataSetEnvironmentManager {
     private void clear(final String dataSourceName, final Collection<String> tableNames) throws SQLException {
         try (Connection connection = dataSourceMap.get(dataSourceName).getConnection()) {
             for (String each : tableNames) {
-                DatabaseUtil.cleanAllUsePreparedStatement(connection, each);
+                DatabaseUtil.executeUpdate(connection, generateDeleteSQL(each));
             }
         }
+    }
+    
+    private String generateDeleteSQL(final String tableName) {
+        return String.format("DELETE FROM %s", tableName);
     }
     
     private Map<String, Collection<String>> getDataNodeMap() {

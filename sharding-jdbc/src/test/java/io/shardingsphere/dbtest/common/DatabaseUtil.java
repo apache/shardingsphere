@@ -69,7 +69,20 @@ import static org.junit.Assert.fail;
 public final class DatabaseUtil {
     
     /**
-     * Insert initialization data.
+     * Execute update.
+     *
+     * @param connection connection
+     * @param sql SQL
+     * @throws SQLException SQL exception
+     */
+    public static void executeUpdate(final Connection connection, final String sql) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.executeUpdate();
+        }
+    }
+    
+    /**
+     * Execute update.
      *
      * @param connection connection
      * @param sql SQL
@@ -124,19 +137,6 @@ public final class DatabaseUtil {
             return;
         }
         throw new UnsupportedOperationException(String.format("Cannot support type: '%s'", type));
-    }
-    
-    /**
-     * Clear table.
-     *
-     * @param connection  connection
-     * @param tableName table name
-     * @throws SQLException SQL exception
-     */
-    public static void cleanAllUsePreparedStatement(final Connection connection, final String tableName) throws SQLException {
-        try (Statement statement = connection.createStatement()) {
-            statement.execute("DELETE FROM " + tableName);
-        }
     }
     
     /**
