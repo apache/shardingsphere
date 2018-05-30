@@ -37,13 +37,13 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -74,74 +74,58 @@ public final class DatabaseUtil {
      * @param connection connection
      * @param sql SQL
      * @param datas init data
-     * @param config table field type
+     * @param dataSetColumnMetadataList data set column meta data list
      * @return Success or failure
      * @throws SQLException   SQL exception
      * @throws ParseException Precompiled anomaly
      */
-    public static boolean insertUsePreparedStatement(final Connection connection, final String sql, final List<Map<String, String>> datas, final List<DataSetColumnMetadata> config)
-            throws SQLException, ParseException {
+    public static boolean insertUsePreparedStatement(
+            final Connection connection, final String sql, final List<Map<String, String>> datas, final List<DataSetColumnMetadata> dataSetColumnMetadataList) throws SQLException, ParseException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             for (Map<String, String> entry : datas) {
-                sqlParameterProcessing(config, preparedStatement, entry);
+                sqlParameterProcessing(dataSetColumnMetadataList, preparedStatement, entry);
                 preparedStatement.executeUpdate();
             }
         }
         return true;
     }
     
-    private static void sqlParameterProcessing(final List<DataSetColumnMetadata> config, final PreparedStatement preparedStatement, final Map<String, String> data) throws SQLException, ParseException {
+    private static void sqlParameterProcessing(final List<DataSetColumnMetadata> dataSetColumnMetadata, final PreparedStatement preparedStatement, final Map<String, String> data) throws SQLException, ParseException {
         int index = 1;
-        for (Map.Entry<String, String> entry : data.entrySet()) {
-            String key = entry.getKey();
-            String dataColumn = entry.getValue();
+        for (Entry<String, String> entry : data.entrySet()) {
             String type = "String";
-            if (null != config) {
-                for (DataSetColumnMetadata each : config) {
-                    if (key.equals(each.getName()) && null != each.getType()) {
-                        type = each.getType();
-                    }
+            for (DataSetColumnMetadata each : dataSetColumnMetadata) {
+                if (entry.getKey().equals(each.getName()) && null != each.getType()) {
+                    type = each.getType();
                 }
             }
-            processingParameters(preparedStatement, index, dataColumn, type);
+            setParameter(preparedStatement, index, entry.getValue(), type);
             index++;
         }
     }
     
-    private static void processingParameters(final PreparedStatement preparedStatement, final int index, final String dataColumn, final String type) throws SQLException, ParseException {
-        switch (type) {
-            case "byte":
-                preparedStatement.setByte(index, Byte.valueOf(dataColumn));
-                break;
-            case "short":
-                preparedStatement.setShort(index, Short.valueOf(dataColumn));
-                break;
-            case "int":
-                preparedStatement.setInt(index, Integer.valueOf(dataColumn));
-                break;
-            case "long":
-                preparedStatement.setLong(index, Long.valueOf(dataColumn));
-                break;
-            case "float":
-                preparedStatement.setFloat(index, Float.valueOf(dataColumn));
-                break;
-            case "double":
-                preparedStatement.setDouble(index, Double.valueOf(dataColumn));
-                break;
-            case "boolean":
-                preparedStatement.setBoolean(index, Boolean.valueOf(dataColumn));
-                break;
-            case "Date":
-                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                preparedStatement.setDate(index, new Date(dateFormat.parse(dataColumn).getTime()));
-                break;
-            case "String":
-                preparedStatement.setString(index, dataColumn);
-                break;
-            default:
-                preparedStatement.setString(index, dataColumn);
-                break;
+    private static void setParameter(final PreparedStatement preparedStatement, final int index, final String value, final String type) throws SQLException, ParseException {
+        if ("varchar".equals(type) || "char".equals(type) || "String".equals(type)) {
+            preparedStatement.setString(index, value);
+            return;
         }
+        if ("int".equals(type)) {
+            preparedStatement.setInt(index, Integer.valueOf(value));
+            return;
+        }
+        if ("numeric".equals(type) && !value.contains("//.")) {
+            preparedStatement.setLong(index, Long.valueOf(value));
+            return;
+        }
+        if ("numeric".equals(type) && value.contains("//.")) {
+            preparedStatement.setDouble(index, Double.valueOf(value));
+            return;
+        }
+        if ("datetime".equals(type)) {
+            preparedStatement.setDate(index, new Date(new SimpleDateFormat("yyyy-MM-dd").parse(value).getTime()));
+            return;
+        }
+        throw new UnsupportedOperationException(String.format("Cannot support type: '%s'", type));
     }
     
     /**
@@ -455,7 +439,7 @@ public final class DatabaseUtil {
         }
         int index = 1;
         for (ParameterValueDefinition each : parameterValueDefinitions) {
-            processingParameters(preparedStatement, index, each.getValue(), each.getType());
+            setParameter(preparedStatement, index, each.getValue(), each.getType());
             index++;
         }
     }
@@ -577,7 +561,7 @@ public final class DatabaseUtil {
     public static void assertDatas(final DatasetDefinition expected, final DatasetDatabase actual) {
         Map<String, List<DataSetColumnMetadata>> actualConfigs = actual.getMetadatas();
         Map<String, List<DataSetColumnMetadata>> expectedConfigs = expected.getMetadatas();
-        for (Map.Entry<String, List<DataSetColumnMetadata>> entry : expectedConfigs.entrySet()) {
+        for (Entry<String, List<DataSetColumnMetadata>> entry : expectedConfigs.entrySet()) {
             List<DataSetColumnMetadata> expectedConfig = entry.getValue();
             List<DataSetColumnMetadata> actualConfig = actualConfigs.get(entry.getKey());
             assertNotNull(actualConfig);
@@ -585,7 +569,7 @@ public final class DatabaseUtil {
         }
         Map<String, List<Map<String, String>>> actualDatass = actual.getDatas();
         Map<String, List<Map<String, String>>> expectDedatas = expected.getDatas();
-        for (Map.Entry<String, List<Map<String, String>>> entry : expectDedatas.entrySet()) {
+        for (Entry<String, List<Map<String, String>>> entry : expectDedatas.entrySet()) {
             List<Map<String, String>> data = entry.getValue();
             List<Map<String, String>> actualDatas = actualDatass.get(entry.getKey());
             assertEquals(actualDatas.size(), data.size());
@@ -597,7 +581,7 @@ public final class DatabaseUtil {
         for (int i = 0; i < data.size(); i++) {
             Map<String, String> expectData = data.get(i);
             Map<String, String> actualData = actualDatas.get(i);
-            for (Map.Entry<String, String> entry : expectData.entrySet()) {
+            for (Entry<String, String> entry : expectData.entrySet()) {
                 if (!entry.getValue().equals(actualData.get(entry.getKey()))) {
                     String actualMsg = actualDatas.toString();
                     String expectMsg = data.toString();
