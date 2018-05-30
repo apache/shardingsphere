@@ -50,21 +50,23 @@ public final class DataInitializer {
     
     private final DataSetsRoot dataSetsRoot;
     
-    public DataInitializer(final String path) throws IOException, JAXBException {
+    private final Map<String, DataSource> dataSourceMap;
+    
+    public DataInitializer(final String path, final Map<String, DataSource> dataSourceMap) throws IOException, JAXBException {
         try (FileReader reader = new FileReader(path)) {
             dataSetsRoot = (DataSetsRoot) JAXBContext.newInstance(DataSetsRoot.class).createUnmarshaller().unmarshal(reader);
         }
+        this.dataSourceMap = dataSourceMap;
     }
     
     /**
      * Initialize data.
      * 
-     * @param dataSourceMap data source map
      * @throws SQLException SQL exception
      * @throws ParseException parse exception
      */
-    public void initializeData(final Map<String, DataSource> dataSourceMap) throws SQLException, ParseException {
-        clearData(dataSourceMap);
+    public void initializeData() throws SQLException, ParseException {
+        clearData();
         Map<DataNode, List<DataSetRow>> dataNodeListMap = getDataSetRowMap();
         for (Entry<DataNode, List<DataSetRow>> entry : dataNodeListMap.entrySet()) {
             DataNode dataNode = entry.getKey();
@@ -107,16 +109,15 @@ public final class DataInitializer {
     /**
      * Clear data.
      * 
-     * @param dataSourceMap data source map
      * @throws SQLException SQL exception
      */
-    public void clearData(final Map<String, DataSource> dataSourceMap) throws SQLException {
+    public void clearData() throws SQLException {
         for (Entry<String, Collection<String>> entry : getDataNodeMap().entrySet()) {
-            clearData(dataSourceMap, entry.getKey(), entry.getValue());
+            clearData(entry.getKey(), entry.getValue());
         }
     }
     
-    private void clearData(final Map<String, DataSource> dataSourceMap, final String dataSourceName, final Collection<String> tableNames) throws SQLException {
+    private void clearData(final String dataSourceName, final Collection<String> tableNames) throws SQLException {
         try (Connection connection = dataSourceMap.get(dataSourceName).getConnection()) {
             for (String each : tableNames) {
                 DatabaseUtil.cleanAllUsePreparedStatement(connection, each);
@@ -125,16 +126,16 @@ public final class DataInitializer {
     }
     
     private Map<String, Collection<String>> getDataNodeMap() {
-        Map<String, Collection<String>> dataNodeMap = new LinkedHashMap<>();
+        Map<String, Collection<String>> result = new LinkedHashMap<>();
         for (DataSetMetadata each : dataSetsRoot.getMetadataList()) {
             for (Entry<String, Collection<String>> entry : getDataNodeMap(each).entrySet()) {
-                if (!dataNodeMap.containsKey(entry.getKey())) {
-                    dataNodeMap.put(entry.getKey(), new LinkedList<String>());
+                if (!result.containsKey(entry.getKey())) {
+                    result.put(entry.getKey(), new LinkedList<String>());
                 }
-                dataNodeMap.get(entry.getKey()).addAll(entry.getValue());
+                result.get(entry.getKey()).addAll(entry.getValue());
             }
         }
-        return dataNodeMap;
+        return result;
     }
     
     private Map<String, Collection<String>> getDataNodeMap(final DataSetMetadata dataSetMetadata) {
