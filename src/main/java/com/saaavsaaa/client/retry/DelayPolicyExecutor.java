@@ -24,7 +24,7 @@ public class DelayPolicyExecutor {
         this.delayRetryPolicy = delayRetryPolicy;
         this.executeTick = System.currentTimeMillis();
         this.random = new Random();
-        next();
+//        next();
     }
     
     public boolean hasNext() {

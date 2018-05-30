@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Stack;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by aaa
@@ -65,6 +66,13 @@ public class BaseProvider implements IProvider {
     
     @Override
     public void create(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
+        holder.getZooKeeper().create(key, value.getBytes(Constants.UTF_8), authorities, createMode);
+        logger.debug("BaseProvider createCurrentOnly:{}", key);
+//        create(key, value, createMode, new AtomicInteger());
+    }
+    
+    @Deprecated
+    private void create(final String key, final String value, final CreateMode createMode, final AtomicInteger count) throws KeeperException, InterruptedException {
         try {
             holder.getZooKeeper().create(key, value.getBytes(Constants.UTF_8), authorities, createMode);
             logger.debug("BaseProvider createCurrentOnly:{}", key);
@@ -72,9 +80,11 @@ public class BaseProvider implements IProvider {
             logger.error("BaseProvider createCurrentOnly:{}", e.getMessage(), e);
             // I don't know whether it will happen or not, if root watcher don't update rootExist timely
             if (!exists(rootNode)){
-                logger.info("BaseProvider createCurrentOnly root not exist");
+                logger.info("BaseProvider createCurrentOnly root not exist:{}", count.get());
                 Thread.sleep(50);
-                this.create(key, value, createMode);
+                if (count.incrementAndGet() < 3) {
+                    this.create(key, value, createMode, count);
+                }
             }
         }
     }

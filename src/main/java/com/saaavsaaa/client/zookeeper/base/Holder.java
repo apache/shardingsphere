@@ -49,7 +49,7 @@ public class Holder {
                     } else if (Event.KeeperState.Expired == event.getState()){
                         try {
                             logger.warn("startWatcher Event.KeeperState.Expired");
-                            start();
+                            reset();
                         } catch (Exception ee){
                             logger.error("event state Expired:{}", ee.getMessage(), ee);
                         }

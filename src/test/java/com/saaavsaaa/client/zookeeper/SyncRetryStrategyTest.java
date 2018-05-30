@@ -22,12 +22,11 @@ import java.io.IOException;
  */
 public class SyncRetryStrategyTest extends UsualClientTest{
     private IProvider provider;
-    private IClient client;
     
     @Before
     public void start() throws IOException, InterruptedException {
-        client = createClient();
-        provider = ((BaseClient)client).getStrategy().getProvider();
+        testClient = createClient();
+        provider = ((BaseClient)testClient).getStrategy().getProvider();
         AsyncRetryCenter.INSTANCE.init(new DelayRetryPolicy(3, 3, 10));
         AsyncRetryCenter.INSTANCE.start();
     }
@@ -43,17 +42,20 @@ public class SyncRetryStrategyTest extends UsualClientTest{
     @Test
     public void createChild() throws KeeperException, InterruptedException {
         String key = "a/b/bb";
+        new UsualStrategy(provider).deleteCurrentBranch(key);
         TestCallable callable = new TestCallable(provider, DelayRetryPolicy.newNoInitDelayPolicy()) {
             @Override
             public void test() throws KeeperException, InterruptedException {
-                new UsualStrategy(provider).createAllNeedPath(key, "bbb11", CreateMode.PERSISTENT);
+                testClient.useExecStrategy(StrategyType.USUAL);
+                testClient.createAllNeedPath(key, "bbb11", CreateMode.PERSISTENT);
+                testClient.useExecStrategy(StrategyType.SYNC_RETRY);
             }
         };
         callable.exec();
         
-        assert getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, key), false) != null;
+        assert getZooKeeper(testClient).exists(PathUtil.getRealPath(TestSupport.ROOT, key), false) != null;
         new UsualStrategy(provider).deleteCurrentBranch(key);
-        assert getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, key), false) == null;
+        assert getZooKeeper(testClient).exists(PathUtil.getRealPath(TestSupport.ROOT, key), false) == null;
     }
     
     @Test
@@ -61,10 +63,10 @@ public class SyncRetryStrategyTest extends UsualClientTest{
         String keyB = "a/b/bb";
         String value = "bbb11";
         new UsualStrategy(provider).createAllNeedPath(keyB, value, CreateMode.PERSISTENT);
-        assert getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, keyB), false) != null;
+        assert getZooKeeper(testClient).exists(PathUtil.getRealPath(TestSupport.ROOT, keyB), false) != null;
         String keyC  = "a/c/cc";
         new UsualStrategy(provider).createAllNeedPath(keyC, "ccc11", CreateMode.PERSISTENT);
-        assert getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, keyC), false) != null;
+        assert getZooKeeper(testClient).exists(PathUtil.getRealPath(TestSupport.ROOT, keyC), false) != null;
         
         TestCallable callable = new TestCallable(provider, DelayRetryPolicy.newNoInitDelayPolicy()) {
             @Override

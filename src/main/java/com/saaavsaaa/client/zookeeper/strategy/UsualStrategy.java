@@ -139,6 +139,8 @@ public class UsualStrategy extends BaseStrategy {
         } catch (KeeperException.NotEmptyException ee){
             logger.warn("deleteCurrentBranch exist children:{},e:{}", path, ee.getMessage());
             return;
+        } catch (KeeperException.NoNodeException ee){
+            logger.warn("deleteCurrentBranch NoNodeException:{},e:{}", superPath, ee.getMessage());
         }
     }
     
