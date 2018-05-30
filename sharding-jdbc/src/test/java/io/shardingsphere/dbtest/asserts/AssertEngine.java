@@ -135,7 +135,7 @@ public final class AssertEngine {
                 doUpdateUsePreparedStatementToExecuteUpdateDDL(expectedDataFile, ddlDefinition, rootSQL);
                 doUpdateUsePreparedStatementToExecuteDDL(expectedDataFile, ddlDefinition, rootSQL);
             } else {
-                ddlSubRun(dataSource, ddlDefinition, rootSQL, expectedDataFile, subAsserts);
+                ddlSubRun(ddlDefinition, rootSQL, expectedDataFile, subAsserts);
             }
         } else {
             doUpdateUseStatementToExecuteUpdateDDL(expectedDataFile, ddlDefinition, rootSQL);
@@ -144,12 +144,12 @@ public final class AssertEngine {
             doUpdateUsePreparedStatementToExecuteDDL(expectedDataFile, ddlDefinition, rootSQL);
             List<AssertSubDefinition> subAsserts = ddlDefinition.getSubAsserts();
             if (!subAsserts.isEmpty()) {
-                ddlSubRun(dataSource, ddlDefinition, rootSQL, expectedDataFile, subAsserts);
+                ddlSubRun(ddlDefinition, rootSQL, expectedDataFile, subAsserts);
             }
         }
     }
     
-    private void ddlSubRun(final DataSource dataSource, final DDLDataSetAssert anAssert, final String rootSQL, final String expectedDataFile, final List<AssertSubDefinition> subAsserts) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
+    private void ddlSubRun(final DDLDataSetAssert anAssert, final String rootSQL, final String expectedDataFile, final List<AssertSubDefinition> subAsserts) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
         for (AssertSubDefinition each : subAsserts) {
             if (!each.getDatabaseTypes().contains(databaseTypeEnvironment.getDatabaseType())) {
                 break;
