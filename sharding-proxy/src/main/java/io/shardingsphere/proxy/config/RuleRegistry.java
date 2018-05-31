@@ -29,14 +29,10 @@ import io.shardingsphere.core.yaml.proxy.YamlProxyConfiguration;
 import io.shardingsphere.core.yaml.sharding.DataSourceParameter;
 import io.shardingsphere.proxy.metadata.ProxyShardingMetaData;
 import lombok.Getter;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 
 import javax.sql.DataSource;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -52,33 +48,25 @@ import java.util.Properties;
  */
 @Getter
 public final class RuleRegistry {
-
-    private static final int MAXIMUM_POOL_SIZE = Runtime.getRuntime().availableProcessors() * 2 + 1;
-
+    
     private static final RuleRegistry INSTANCE = new RuleRegistry();
-
+    
     private final Map<String, DataSource> dataSourceMap;
-
+    
     private final ShardingRule shardingRule;
-
+    
     private final MasterSlaveRule masterSlaveRule;
-
+    
     private final ShardingMetaData shardingMetaData;
-
+    
     private final boolean isOnlyMasterSlave;
-
+    
     private final boolean showSQL;
-
-    private final HiKariCPParameter cpParameter;
-
+    
     private RuleRegistry() {
         YamlProxyConfiguration yamlProxyConfiguration;
-        try (FileInputStream fileInputStream = new FileInputStream(getClass().getResource("/conf/config-hikaricp.yaml").getFile());
-             InputStreamReader in = new InputStreamReader(fileInputStream, "UTF-8")
-        ) {
+        try {
             yamlProxyConfiguration = YamlProxyConfiguration.unmarshal(new File(getClass().getResource("/conf/config.yaml").getFile()));
-            HiKariCPParameter parameter = new Yaml(new Constructor(HiKariCPParameter.class)).loadAs(in, HiKariCPParameter.class);
-            cpParameter = parameter == null ? new HiKariCPParameter() : parameter;
         } catch (final IOException ex) {
             throw new ShardingException(ex);
         }
@@ -102,23 +90,23 @@ public final class RuleRegistry {
             throw new ShardingException(ex);
         }
     }
-
+    
     private DataSource getDataSource(final DataSourceParameter dataSourceParameter) {
         HikariConfig config = new HikariConfig();
-        config.setDriverClassName(cpParameter.getDriverClass());
+        config.setDriverClassName("com.mysql.jdbc.Driver");
         config.setJdbcUrl(dataSourceParameter.getUrl());
         config.setUsername(dataSourceParameter.getUsername());
         config.setPassword(dataSourceParameter.getPassword());
-        config.setAutoCommit(cpParameter.getIsAutoCommit());
-        config.setConnectionTimeout(cpParameter.getConnectionTimeout());
-        config.setIdleTimeout(cpParameter.getIdleTimeout());
-        config.setMaxLifetime(cpParameter.getMaxLifetime());
-        config.setMaximumPoolSize(cpParameter.getMaxPoolSize());
+        config.setAutoCommit(dataSourceParameter.getAutoCommit());
+        config.setConnectionTimeout(dataSourceParameter.getConnectionTimeout());
+        config.setIdleTimeout(dataSourceParameter.getIdleTimeout());
+        config.setMaxLifetime(dataSourceParameter.getMaxLifetime());
+        config.setMaximumPoolSize(dataSourceParameter.getMaximumPoolSize());
         config.addDataSourceProperty("useServerPrepStmts", "true");
         config.addDataSourceProperty("cachePrepStmts", "true");
         return new HikariDataSource(config);
     }
-
+    
     /**
      * Get instance of sharding rule registry.
      *
