@@ -84,6 +84,7 @@ public class Holder {
     public void close() {
         try {
             zooKeeper.close();
+            connected = false;
             logger.debug("zk closed");
             this.context.close();
         } catch (Exception ee){

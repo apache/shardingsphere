@@ -2,6 +2,7 @@ package com.saaavsaaa.client.retry;
 
 import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.action.IProvider;
+import com.saaavsaaa.client.zookeeper.base.BaseProvider;
 import com.saaavsaaa.client.zookeeper.section.Listener;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
@@ -42,7 +43,13 @@ public class AsyncRetryCenterTest {
     
     @After
     public void stop(){
-        
+        client.close();
+    }
+    
+    @Test
+    public void close() throws Exception {
+        client.close();
+        assert !((BaseProvider)provider).getHolder().isConnected();
     }
     
     @Test
@@ -58,8 +65,10 @@ public class AsyncRetryCenterTest {
         String path = PathUtil.getRealPath(TestSupport.ROOT, key);
         assert provider.exists(path);
 //        assert client.checkExists(path);
-        provider.delete(path);
-        provider.delete(provider.getRealPath(TestSupport.ROOT));
+        client.useExecStrategy(StrategyType.USUAL);
+        client.deleteAllChildren(path);
+        client.deleteCurrentBranch(path);
+        client.useExecStrategy(StrategyType.ASYNC_RETRY);
         assert !provider.exists(path);
     }
 }

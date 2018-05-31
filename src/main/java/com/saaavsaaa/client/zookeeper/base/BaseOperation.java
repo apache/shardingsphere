@@ -2,6 +2,7 @@ package com.saaavsaaa.client.zookeeper.base;
 
 import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.retry.DelayPolicyExecutor;
+import com.saaavsaaa.client.zookeeper.section.Connection;
 import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,8 +53,12 @@ public abstract class BaseOperation implements Delayed {
             execute();
             result = true;
         } catch (KeeperException ee) {
-            provider.checkConnection(ee);
-            result = false;
+            if (Connection.needReset(ee)){
+                provider.resetConnection();
+                result = false;
+            } else {
+                throw ee;
+            }
         }
         if (!result && delayPolicyExecutor.hasNext()){
             delayPolicyExecutor.next();

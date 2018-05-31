@@ -38,7 +38,11 @@ public abstract class Callable<T> {
         } catch (KeeperException e) {
             logger.warn("exec KeeperException:{}", e.getMessage());
             delayPolicyExecutor.next();
-            provider.checkConnection(e);
+            if (Connection.needReset(e)){
+                provider.resetConnection();
+            } else {
+                throw e;
+            }
             execDelay();
         } catch (InterruptedException e) {
             throw e;

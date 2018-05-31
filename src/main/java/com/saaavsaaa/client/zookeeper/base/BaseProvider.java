@@ -4,7 +4,6 @@ import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.election.LeaderElection;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
-import com.saaavsaaa.client.zookeeper.section.Connection;
 import com.saaavsaaa.client.zookeeper.transaction.ZKTransaction;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
@@ -139,13 +138,11 @@ public class BaseProvider implements IProvider {
     }
     
     @Override
-    public void checkConnection(final KeeperException e) {
+    public void resetConnection() {
         try {
-            if (Connection.needReset(e)){
-                holder.reset();
-            }
+            holder.reset();
         } catch (Exception ee) {
-            logger.error("checkConnection input KeeperException:{}", e.getMessage(), ee);
+            logger.error("resetConnection Exception:{}", ee.getMessage(), ee);
         }
     }
     

@@ -7,7 +7,6 @@ import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.Watcher;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Stack;
 
@@ -33,5 +32,5 @@ public interface IProvider {
     
     void createInTransaction(final String key, final String value, final CreateMode createMode, final ZKTransaction transaction) throws KeeperException, InterruptedException;
     
-    void checkConnection(final KeeperException e);
+    void resetConnection();
 }
