@@ -112,7 +112,7 @@ public final class AssertEngine {
             return;
         }
         if (dataSetAssert instanceof DQLDataSetAssert) {
-            dqlRun((DQLDataSetAssert) dataSetAssert);
+            assertDQL((DQLDataSetAssert) dataSetAssert);
         } else if (dataSetAssert instanceof DMLDataSetAssert) {
             dmlRun((DMLDataSetAssert) dataSetAssert);
         } else if (dataSetAssert instanceof DDLDataSetAssert) {
@@ -120,72 +120,55 @@ public final class AssertEngine {
         }
     }
     
-    private void dqlRun(final DQLDataSetAssert dqlDataSetAssert) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
+    private void assertDQL(final DQLDataSetAssert dqlDataSetAssert) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
         String rootSQL = SQLCasesLoader.getInstance().getSupportedSQL(dqlDataSetAssert.getId());
+        String expectedDataFile = getExpectedDataFile(dqlDataSetAssert.getExpectedDataFile());
         try {
             dataSetEnvironmentManager.initialize();
-            String expectedDataFile = getExpectedDataFile(dqlDataSetAssert);
             if (dqlDataSetAssert.getSubAsserts().isEmpty()) {
                 doSelectUsePreparedStatement(expectedDataFile, dqlDataSetAssert, rootSQL);
                 doSelectUsePreparedStatementToExecuteSelect(expectedDataFile, dqlDataSetAssert, rootSQL);
                 doSelectUseStatement(expectedDataFile, dqlDataSetAssert, rootSQL);
                 doSelectUseStatementToExecuteSelect(expectedDataFile, dqlDataSetAssert, rootSQL);
             } else {
-                dqlSubRun(dqlDataSetAssert, rootSQL, expectedDataFile, dqlDataSetAssert.getSubAsserts());
+                subAssertDQL(dqlDataSetAssert, rootSQL);
             }
         } finally {
             dataSetEnvironmentManager.clear();
         }
     }
     
-    private String getExpectedDataFile(final DQLDataSetAssert dqlDataSetAssert) {
-        String result = rootPath + "asserts/dql/" + shardingRuleType + "/" + dqlDataSetAssert.getExpectedDataFile();
-        if (!new File(result).exists()) {
-            result = rootPath + "asserts/dql/" + dqlDataSetAssert.getExpectedDataFile();
-        }
-        return result;
-    }
-    
-    private void dqlSubRun(final DQLDataSetAssert anAssert, final String rootSQL, final String expectedDataFile, final List<AssertSubDefinition> subAsserts) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
-        for (AssertSubDefinition each : subAsserts) {
+    private void subAssertDQL(final DQLDataSetAssert dqlDataSetAssert, final String rootSQL) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+        for (AssertSubDefinition each : dqlDataSetAssert.getSubAsserts()) {
             if (!each.getDatabaseTypes().contains(databaseTypeEnvironment.getDatabaseType())) {
                 break;
             }
-            String baseSubConfig = each.getShardingRuleTypes();
-            if (StringUtils.isNotBlank(baseSubConfig)) {
-                String[] baseConfigs = StringUtils.split(baseSubConfig, ",");
-                boolean flag = true;
-                for (String config : baseConfigs) {
-                    if (rootPath.equals(config)) {
-                        flag = false;
-                    }
-                }
-                //Skip use cases that do not need to run
-                if (flag) {
-                    continue;
+            boolean flag = true;
+            for (String shardingRuleType : StringUtils.split(each.getShardingRuleTypes(), ",")) {
+                if (rootPath.equals(shardingRuleType)) {
+                    flag = false;
                 }
             }
-            String expectedDataFileSub = each.getExpectedDataFile();
-            ParameterDefinition parameter = each.getParameter();
-            String expectedDataFileTmp = expectedDataFile;
-            if (StringUtils.isBlank(expectedDataFileSub)) {
-                expectedDataFileSub = anAssert.getExpectedDataFile();
-            } else {
-                expectedDataFileTmp = rootPath + "asserts/dql/" + rootPath + "/" + expectedDataFileSub;
-                if (!new File(expectedDataFileTmp).exists()) {
-                    expectedDataFileTmp = rootPath + "asserts/dql/" + expectedDataFileSub;
-                }
+            //Skip use cases that do not need to run
+            if (flag) {
+                continue;
             }
-            if (null == parameter) {
-                parameter = anAssert.getParameter();
-            }
+            String expectedDataFile = getExpectedDataFile(each.getExpectedDataFile());
             DQLDataSetAssert anAssertSub = new DQLDataSetAssert(
-                    anAssert.getId(), expectedDataFileSub, anAssert.getShardingRuleTypes(), anAssert.getDatabaseTypes(), parameter, anAssert.getSubAsserts(), "");
-            doSelectUsePreparedStatement(expectedDataFileTmp, anAssertSub, rootSQL);
-            doSelectUsePreparedStatementToExecuteSelect(expectedDataFileTmp, anAssertSub, rootSQL);
-            doSelectUseStatement(expectedDataFileTmp, anAssertSub, rootSQL);
-            doSelectUseStatementToExecuteSelect(expectedDataFileTmp, anAssertSub, rootSQL);
+                    dqlDataSetAssert.getId(), expectedDataFile, dqlDataSetAssert.getShardingRuleTypes(), dqlDataSetAssert.getDatabaseTypes(), each.getParameter(), dqlDataSetAssert.getSubAsserts(), "");
+            doSelectUsePreparedStatement(expectedDataFile, anAssertSub, rootSQL);
+            doSelectUsePreparedStatementToExecuteSelect(expectedDataFile, anAssertSub, rootSQL);
+            doSelectUseStatement(expectedDataFile, anAssertSub, rootSQL);
+            doSelectUseStatementToExecuteSelect(expectedDataFile, anAssertSub, rootSQL);
         }
+    }
+    
+    private String getExpectedDataFile(final String expectedDataFile) {
+        String result = rootPath + "asserts/dql/" + shardingRuleType + "/" + expectedDataFile;
+        if (!new File(result).exists()) {
+            result = rootPath + "asserts/dql/" + expectedDataFile;
+        }
+        return result;
     }
     
     private void ddlRun(final DDLDataSetAssert ddlDefinition) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {

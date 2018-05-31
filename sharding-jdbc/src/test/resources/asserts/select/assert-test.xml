@@ -36,7 +36,7 @@
             <value value="1100" type="int"/>
         </parameter>
     </dql-assert>
-    <dql-assert id="assertSelectEqualsWithSingleTable" sharding-rule-types="tbl,db,masterslave,dbtbl" expected-data-file="SelectEqualsWithSingleTable_1.xml">
+    <dql-assert id="assertSelectEqualsWithSingleTable">
         <subAssert expected-data-file="SelectEqualsWithSingleTable_0.xml" sharding-rule-types="tbl">
             <parameter>
                 <value value="10" type="int"/>
@@ -55,10 +55,10 @@
                 <value value="1201" type="int"/>
             </parameter>
         </subAssert>
-        <subAssert expected-data-file="Empty.xml">
+        <subAssert expected-data-file="Empty.xml" sharding-rule-types="tbl,db,masterslave,dbtbl">
             <parameter>
-                <value value="12" type="int"/>
-                <value value="1000" type="int"/>
+                <value value="12" type="int" />
+                <value value="1000" type="int" />
             </parameter>
         </subAssert>
     </dql-assert>
