@@ -78,16 +78,10 @@ public final class AssertEngine {
         this.shardingRuleType = shardingRuleType;
         this.databaseTypeEnvironment = databaseTypeEnvironment;
         this.caseType = caseType;
-        if (databaseTypeEnvironment.isEnabled()) {
-            Map<String, DataSource> dataSourceMap = createDataSourceMap(SchemaEnvironmentManager.getDataSourceNames(shardingRuleType), databaseTypeEnvironment.getDatabaseType());
-            dataSource = createDataSource(dataSourceMap);
-            rootPath = dataSetAssert.getPath().substring(0, dataSetAssert.getPath().lastIndexOf(File.separator) + 1);
-            dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(shardingRuleType), dataSourceMap);
-        } else {
-            dataSource = null;
-            rootPath = null;
-            dataSetEnvironmentManager = null;
-        }
+        Map<String, DataSource> dataSourceMap = createDataSourceMap(SchemaEnvironmentManager.getDataSourceNames(shardingRuleType), databaseTypeEnvironment.getDatabaseType());
+        dataSource = createDataSource(dataSourceMap);
+        rootPath = dataSetAssert.getPath().substring(0, dataSetAssert.getPath().lastIndexOf(File.separator) + 1);
+        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(shardingRuleType), dataSourceMap);
     }
     
     private Map<String, DataSource> createDataSourceMap(final Collection<String> dataSourceNames, final DatabaseType databaseType) {
@@ -108,9 +102,6 @@ public final class AssertEngine {
      * Run assert.
      */
     public void run() throws IOException, SQLException, SAXException, ParserConfigurationException, XPathExpressionException, ParseException, JAXBException {
-        if (!databaseTypeEnvironment.isEnabled()) {
-            return;
-        }
         if (dataSetAssert instanceof DQLDataSetAssert) {
             assertDQL((DQLDataSetAssert) dataSetAssert);
         } else if (dataSetAssert instanceof DMLDataSetAssert) {
