@@ -126,7 +126,7 @@ public final class DataSetEnvironmentManager {
     }
     
     private String generateDeleteSQL(final String tableName) {
-        return String.format("DELETE FROM %s", tableName);
+        return String.format("TRUNCATE TABLE %s", tableName);
     }
     
     private Map<String, Collection<String>> getDataNodeMap() {
