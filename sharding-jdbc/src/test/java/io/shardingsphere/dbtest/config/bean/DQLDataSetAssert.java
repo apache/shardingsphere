@@ -48,9 +48,6 @@ public class DQLDataSetAssert implements DataSetAssert {
     @XmlAttribute(name = "database-types")
     private String databaseTypes;
     
-    @XmlAttribute(name = "sql")
-    private String sql;
-    
     @XmlElement(name = "parameter")
     private ParameterDefinition parameter = new ParameterDefinition();
     

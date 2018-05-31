@@ -1,34 +1,34 @@
 <asserts sharding-rule-types="db,tbl,dbtbl,masterslave">
-    <dql-assert id="assertSelectOne" sql="assertSelectOne" expected-data-file="SelectOne.xml" />
-    <dql-assert id="assertSelectNotEqualsWithSingleTable" sql="assertSelectNotEqualsWithSingleTable" sharding-rule-types="tbl" expected-data-file="SelectNotEqualsWithSingleTable.xml">
+    <dql-assert id="assertSelectOne" expected-data-file="SelectOne.xml" />
+    <dql-assert id="assertSelectNotEqualsWithSingleTable" sharding-rule-types="tbl" expected-data-file="SelectNotEqualsWithSingleTable.xml">
         <parameter>
             <value value="100000" type="int"/>
         </parameter>
     </dql-assert>
-    <dql-assert id="assertSelectNotEqualsWithSingleTableForExclamationEqual" sql="assertSelectNotEqualsWithSingleTableForExclamationEqual" sharding-rule-types="tbl" expected-data-file="SelectNotEqualsWithSingleTable.xml">
+    <dql-assert id="assertSelectNotEqualsWithSingleTableForExclamationEqual" sharding-rule-types="tbl" expected-data-file="SelectNotEqualsWithSingleTable.xml">
         <parameter>
             <value value="100000" type="int"/>
         </parameter>
     </dql-assert>
-    <dql-assert id="assertSelectNotEqualsWithSingleTableForNotIn" sql="assertSelectNotEqualsWithSingleTableForNotIn" sharding-rule-types="tbl" expected-data-file="SelectNotWithSingleTable.xml">
-        <parameter>
-            <value value="100000" type="int"/>
-            <value value="100001" type="int"/>
-        </parameter>
-    </dql-assert>
-    <dql-assert id="assertSelectNotEqualsWithSingleTableForNotBetween" sql="assertSelectNotEqualsWithSingleTableForNotBetween" sharding-rule-types="tbl" expected-data-file="SelectNotWithSingleTable.xml">
+    <dql-assert id="assertSelectNotEqualsWithSingleTableForNotIn" sharding-rule-types="tbl" expected-data-file="SelectNotWithSingleTable.xml">
         <parameter>
             <value value="100000" type="int"/>
             <value value="100001" type="int"/>
         </parameter>
     </dql-assert>
-    <dql-assert id="assertSelectEqualsWithSameShardingColumns" sql="assertSelectEqualsWithSameShardingColumns" sharding-rule-types="tbl" expected-data-file="SelectEqualsWithSameShardingColumns.xml">
+    <dql-assert id="assertSelectNotEqualsWithSingleTableForNotBetween" sharding-rule-types="tbl" expected-data-file="SelectNotWithSingleTable.xml">
+        <parameter>
+            <value value="100000" type="int"/>
+            <value value="100001" type="int"/>
+        </parameter>
+    </dql-assert>
+    <dql-assert id="assertSelectEqualsWithSameShardingColumns" sharding-rule-types="tbl" expected-data-file="SelectEqualsWithSameShardingColumns.xml">
         <parameter>
             <value value="1000" type="int"/>
             <value value="1001" type="int"/>
         </parameter>
     </dql-assert>
-    <dql-assert id="assertSelectInWithSameShardingColumns" sql="assertSelectInWithSameShardingColumns" sharding-rule-types="tbl" expected-data-file="SelectInWithSameShardingColumns.xml">
+    <dql-assert id="assertSelectInWithSameShardingColumns" sharding-rule-types="tbl" expected-data-file="SelectInWithSameShardingColumns.xml">
         <parameter>
             <value value="1000" type="int"/>
             <value value="1001" type="int"/>
@@ -36,7 +36,7 @@
             <value value="1100" type="int"/>
         </parameter>
     </dql-assert>
-    <dql-assert id="assertSelectEqualsWithSingleTable" sql="assertSelectEqualsWithSingleTable" sharding-rule-types="tbl,db,masterslave,dbtbl" expected-data-file="SelectEqualsWithSingleTable_1.xml">
+    <dql-assert id="assertSelectEqualsWithSingleTable" sharding-rule-types="tbl,db,masterslave,dbtbl" expected-data-file="SelectEqualsWithSingleTable_1.xml">
         <subAssert expected-data-file="SelectEqualsWithSingleTable_0.xml" sharding-rule-types="tbl">
             <parameter>
                 <value value="10" type="int"/>
@@ -63,7 +63,7 @@
         </subAssert>
     </dql-assert>
 
-    <!--<dql-assert id="assertSelectBetweenWithSingleTable" sql="assertSelectBetweenWithSingleTable" sharding-rule-types="tbl,db,dbtbl">
+    <!--<dql-assert id="assertSelectBetweenWithSingleTable" sharding-rule-types="tbl,db,dbtbl">
         <subAssert expected-data-file="SelectBetweenWithSingleTable.xml" sharding-rule-types="tbl,dbtbl">
             <parameter>
                 <value value="10" type="int"/>

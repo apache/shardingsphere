@@ -1,5 +1,5 @@
 <asserts sharding-rule-types="db">
-   <dml-assert id="assertInsertWithAllPlaceholders" expected-update="9" sql="assertInsertWithAllPlaceholders" sharding-rule-types="db" expected-sql="assertSelectEqualsWithSingleTable">
+   <dml-assert id="assertInsertWithAllPlaceholders" expected-update="9" sharding-rule-types="db" expected-sql="assertSelectEqualsWithSingleTable">
         <subAssert expected-data-file="insert/db_1.xml">
             <parameter>
                 <value value="1" type="int"/>
@@ -100,7 +100,7 @@
             </expected-parameter>
         </subAssert>
     </dml-assert>
-    <dml-assert id="assertInsertWithoutPlaceholder" expected-update="9" sql="assertInsertWithPartialPlaceholder" sharding-rule-types="db" expected-sql="assertSelectEqualsWithSingleTable">
+    <dml-assert id="assertInsertWithoutPlaceholder" expected-update="9" sharding-rule-types="db" expected-sql="assertSelectEqualsWithSingleTable">
         <subAssert expected-data-file="insert/db_1.xml">
             <parameter>
                 <value value="1" type="int"/>
@@ -193,7 +193,7 @@
         </subAssert>
     </dml-assert>
 <!--
-<dml-assert id="assertInsertWithPartialPlaceholders" expected-update="9" sql="assertInsertWithPartialPlaceholders" sharding-rule-types="db" expected-sql="assertSelectEqualsWithSingleTable">
+<dml-assert id="assertInsertWithPartialPlaceholders" expected-update="9" sharding-rule-types="db" expected-sql="assertSelectEqualsWithSingleTable">
         <subAssert expected-data-file="insert/db_1.xml">
             <parameter>
                 <value-replace value="1" type="int"/>
@@ -295,7 +295,7 @@
         </subAssert>
     </dml-assert>-->
     
-    <dml-assert id="assertUpdateWithoutAlias"  expected-update="10" sql="assertUpdateWithoutAlias" expected-sql="assertSelectEqualsWithSingleTable">
+    <dml-assert id="assertUpdateWithoutAlias"  expected-update="10" expected-sql="assertSelectEqualsWithSingleTable">
         <subAssert expected-data-file="update/db_0.xml">
             <parameter>
                 <value value="update" />
@@ -408,7 +408,7 @@
         </subAssert>
     </dml-assert>
     
-    <dml-assert id="assertUpdateWithAlias"  expected-update="10" sql="assertUpdateWithAlias" databaseConfig="MySQL,H2" expected-sql="assertSelectEqualsWithSingleTable">
+    <dml-assert id="assertUpdateWithAlias"  expected-update="10" databaseConfig="MySQL,H2" expected-sql="assertSelectEqualsWithSingleTable">
         <subAssert expected-data-file="update/db_0.xml">
             <parameter>
                 <value value="update" />
@@ -520,7 +520,7 @@
             </expected-parameter>
         </subAssert>
     </dml-assert>
-    <dml-assert id="assertDeleteWithoutAlias"  expected-update="40" sql="assertDeleteWithShardingValue" expected-sql="assertSelectEqualsWithSingleTable">
+    <dml-assert id="assertDeleteWithoutAlias"  expected-update="40" expected-sql="assertSelectEqualsWithSingleTable">
         <subAssert expected-data-file="delete.xml">
             <parameter>
                 <value value="1000" type="int"/>

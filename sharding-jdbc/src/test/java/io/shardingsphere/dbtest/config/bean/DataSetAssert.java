@@ -17,21 +17,59 @@
 
 package io.shardingsphere.dbtest.config.bean;
 
+/**
+ * Data set assert.
+ * 
+ * @author zhangliang 
+ */
 public interface DataSetAssert {
     
+    /**
+     * Get ID.
+     * 
+     * @return ID
+     */
     String getId();
     
+    /**
+     * Get sharding rule types.
+     * 
+     * @return sharding rule types
+     */
     String getShardingRuleTypes();
     
+    /**
+     * Set sharding rule types.
+     * 
+     * @param shardingRuleTypes sharding rule types
+     */
     void setShardingRuleTypes(String shardingRuleTypes);
     
+    /**
+     * Get database types.
+     * 
+     * @return database types
+     */
     String getDatabaseTypes();
     
+    /**
+     * Set database types.
+     * 
+     * @param databaseTypes database types
+     */
     void setDatabaseTypes(String databaseTypes);
     
-    String getSql();
-    
+    /**
+     * Get path.
+     * 
+     * @return path
+     */
     String getPath();
     
+    /**
+     * Set path.
+     * 
+     * @param path path
+     */
     void setPath(String path);
 }

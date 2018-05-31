@@ -54,9 +54,6 @@ public class DDLDataSetAssert implements DataSetAssert {
     @XmlAttribute(name = "expected-data-file")
     private String expectedDataFile;
     
-    @XmlAttribute(name = "sql")
-    private String sql;
-    
     @XmlAttribute(name = "table")
     private String table;
 

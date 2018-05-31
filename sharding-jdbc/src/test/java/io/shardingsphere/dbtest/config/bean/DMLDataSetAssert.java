@@ -51,9 +51,6 @@ public class DMLDataSetAssert implements DataSetAssert {
     @XmlAttribute(name = "expected-update")
     private Integer expectedUpdate;
     
-    @XmlAttribute(name = "sql")
-    private String sql;
-    
     @XmlAttribute(name = "expected-sql")
     private String expectedSql;
 
