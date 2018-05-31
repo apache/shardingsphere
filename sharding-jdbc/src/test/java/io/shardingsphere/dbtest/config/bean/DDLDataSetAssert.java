@@ -35,10 +35,10 @@ import java.util.List;
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public class DDLDataSetAssert implements DataSetAssert {
-
+    
     @XmlAttribute(name = "id")
     private String id;
-
+    
     @XmlAttribute(name = "init-sql")
     private String initSql;
     
@@ -50,13 +50,13 @@ public class DDLDataSetAssert implements DataSetAssert {
     
     @XmlAttribute(name = "clean-sql")
     private String cleanSql;
-
+    
     @XmlAttribute(name = "expected-data-file")
     private String expectedDataFile;
     
     @XmlAttribute(name = "table")
     private String table;
-
+    
     @XmlElement(name = "parameter")
     private ParameterDefinition parameter = new ParameterDefinition();
     

@@ -58,7 +58,7 @@ public final class StartTest {
     
     private static boolean isCleaned = IntegrateTestEnvironment.getInstance().isInitialized();
     
-    private final DataSetAssert assertDefinition;
+    private final DataSetAssert dataSetAssert;
     
     private final String shardingRuleType;
     
@@ -136,6 +136,6 @@ public final class StartTest {
         if (!databaseTypeEnvironment.isEnabled()) {
             return;
         }
-        new AssertEngine(assertDefinition, shardingRuleType, databaseTypeEnvironment, caseType).run();
+        new AssertEngine(dataSetAssert, shardingRuleType, databaseTypeEnvironment, caseType).run();
     }
 }

@@ -35,10 +35,10 @@ import java.util.List;
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public class DMLDataSetAssert implements DataSetAssert {
-
+    
     @XmlAttribute(name = "id")
     private String id;
-
+    
     @XmlAttribute(name = "expected-data-file")
     private String expectedDataFile;
     
@@ -53,7 +53,7 @@ public class DMLDataSetAssert implements DataSetAssert {
     
     @XmlAttribute(name = "expected-sql")
     private String expectedSql;
-
+    
     @XmlElement(name = "parameter")
     private ParameterDefinition parameter = new ParameterDefinition();
     
