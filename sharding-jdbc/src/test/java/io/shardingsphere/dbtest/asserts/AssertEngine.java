@@ -134,14 +134,7 @@ public final class AssertEngine {
             if (!each.getDatabaseTypes().contains(databaseTypeEnvironment.getDatabaseType())) {
                 break;
             }
-            boolean flag = true;
-            for (String shardingRuleType : StringUtils.split(each.getShardingRuleTypes(), ",")) {
-                if (rootPath.equals(shardingRuleType)) {
-                    flag = false;
-                }
-            }
-            //Skip use cases that do not need to run
-            if (flag) {
+            if (isSkip(each)) {
                 continue;
             }
             String expectedDataFile = getExpectedDataFile(each.getExpectedDataFile());
@@ -195,19 +188,8 @@ public final class AssertEngine {
             if (!each.getDatabaseTypes().contains(databaseTypeEnvironment.getDatabaseType())) {
                 break;
             }
-            String baseConfig = each.getShardingRuleTypes();
-            if (StringUtils.isNotBlank(baseConfig)) {
-                String[] baseConfigs = StringUtils.split(baseConfig, ",");
-                boolean flag = true;
-                for (String config : baseConfigs) {
-                    if (shardingRuleType.equals(config)) {
-                        flag = false;
-                    }
-                }
-                //Skip use cases that do not need to run
-                if (flag) {
-                    continue;
-                }
+            if (isSkip(each)) {
+                continue;
             }
             String expectedDataFileSub = each.getExpectedDataFile();
             ParameterDefinition parameter = each.getParameter();
@@ -231,6 +213,15 @@ public final class AssertEngine {
             doUpdateUsePreparedStatementToExecuteUpdateDDL(expectedDataFileTmp, anAssertSub, rootSQL);
             doUpdateUsePreparedStatementToExecuteDDL(expectedDataFileTmp, anAssertSub, rootSQL);
         }
+    }
+    
+    private boolean isSkip(final AssertSubDefinition assertSubDefinition) {
+        for (String each : StringUtils.split(assertSubDefinition.getShardingRuleTypes(), ",")) {
+            if (shardingRuleType.equals(each)) {
+                return false;
+            }
+        }
+        return true;
     }
     
     private void dmlRun(final DMLDataSetAssert dmlDefinition) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
