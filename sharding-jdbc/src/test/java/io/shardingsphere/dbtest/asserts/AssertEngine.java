@@ -26,7 +26,6 @@ import io.shardingsphere.dbtest.config.DataSetsParser;
 import io.shardingsphere.dbtest.config.bean.AssertSubDefinition;
 import io.shardingsphere.dbtest.config.bean.DDLDataSetAssert;
 import io.shardingsphere.dbtest.config.bean.DMLDataSetAssert;
-import io.shardingsphere.dbtest.config.bean.DQLDataSetAssert;
 import io.shardingsphere.dbtest.config.bean.DataSetAssert;
 import io.shardingsphere.dbtest.config.bean.DatasetDatabase;
 import io.shardingsphere.dbtest.config.bean.DatasetDefinition;
@@ -102,54 +101,11 @@ public final class AssertEngine {
      * Run assert.
      */
     public void run() throws IOException, SQLException, SAXException, ParserConfigurationException, XPathExpressionException, ParseException, JAXBException {
-        if (dataSetAssert instanceof DQLDataSetAssert) {
-            assertDQL((DQLDataSetAssert) dataSetAssert);
-        } else if (dataSetAssert instanceof DMLDataSetAssert) {
+        if (dataSetAssert instanceof DMLDataSetAssert) {
             dmlRun((DMLDataSetAssert) dataSetAssert);
         } else if (dataSetAssert instanceof DDLDataSetAssert) {
             ddlRun((DDLDataSetAssert) dataSetAssert);
         }
-    }
-    
-    private void assertDQL(final DQLDataSetAssert dqlDataSetAssert) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
-        String rootSQL = SQLCasesLoader.getInstance().getSupportedSQL(dqlDataSetAssert.getId());
-        String expectedDataFile = getExpectedDataFile(dqlDataSetAssert.getExpectedDataFile());
-        try {
-            dataSetEnvironmentManager.initialize();
-            if (dqlDataSetAssert.getSubAsserts().isEmpty()) {
-                doSelectUsePreparedStatement(expectedDataFile, dqlDataSetAssert, rootSQL);
-                doSelectUsePreparedStatementToExecuteSelect(expectedDataFile, dqlDataSetAssert, rootSQL);
-                doSelectUseStatement(expectedDataFile, dqlDataSetAssert, rootSQL);
-                doSelectUseStatementToExecuteSelect(expectedDataFile, dqlDataSetAssert, rootSQL);
-            } else {
-                subAssertDQL(dqlDataSetAssert, rootSQL);
-            }
-        } finally {
-            dataSetEnvironmentManager.clear();
-        }
-    }
-    
-    private void subAssertDQL(final DQLDataSetAssert dqlDataSetAssert, final String rootSQL) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
-        for (AssertSubDefinition each : dqlDataSetAssert.getSubAsserts()) {
-            if (isSkip(each)) {
-                continue;
-            }
-            String expectedDataFile = getExpectedDataFile(each.getExpectedDataFile());
-            DQLDataSetAssert anAssertSub = new DQLDataSetAssert(
-                    dqlDataSetAssert.getId(), expectedDataFile, dqlDataSetAssert.getShardingRuleTypes(), dqlDataSetAssert.getDatabaseTypes(), each.getParameter(), dqlDataSetAssert.getSubAsserts(), "");
-            doSelectUsePreparedStatement(expectedDataFile, anAssertSub, rootSQL);
-            doSelectUsePreparedStatementToExecuteSelect(expectedDataFile, anAssertSub, rootSQL);
-            doSelectUseStatement(expectedDataFile, anAssertSub, rootSQL);
-            doSelectUseStatementToExecuteSelect(expectedDataFile, anAssertSub, rootSQL);
-        }
-    }
-    
-    private String getExpectedDataFile(final String expectedDataFile) {
-        String result = rootPath + "asserts/dql/" + shardingRuleType + "/" + expectedDataFile;
-        if (!new File(result).exists()) {
-            result = rootPath + "asserts/dql/" + expectedDataFile;
-        }
-        return result;
     }
     
     private void ddlRun(final DDLDataSetAssert ddlDefinition) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
@@ -519,38 +475,6 @@ public final class AssertEngine {
             if (!Strings.isNullOrEmpty(anAssert.getInitSql())) {
                 SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), anAssert.getInitSql());
             }
-        }
-    }
-    
-    private void doSelectUseStatement(final String expectedDataFile, final DQLDataSetAssert anAssert, final String rootSQL) throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
-        try (Connection connection = dataSource.getConnection()) {
-            DatasetDatabase datasetDatabase = DatabaseUtil.selectUseStatement(connection, rootSQL, anAssert.getParameter());
-            DatasetDefinition checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
-            DatabaseUtil.assertDatas(checkDataset, datasetDatabase);
-        }
-    }
-    
-    private void doSelectUseStatementToExecuteSelect(final String expectedDataFile, final DQLDataSetAssert anAssert, final String rootSQL) throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
-        try (Connection connection = dataSource.getConnection()) {
-            DatasetDatabase datasetDatabase = DatabaseUtil.selectUseStatementToExecuteSelect(connection, rootSQL, anAssert.getParameter());
-            DatasetDefinition checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
-            DatabaseUtil.assertDatas(checkDataset, datasetDatabase);
-        }
-    }
-    
-    private void doSelectUsePreparedStatement(final String expectedDataFile, final DQLDataSetAssert anAssert, final String rootSQL) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
-        try (Connection connection = dataSource.getConnection()) {
-            DatasetDatabase ddPreparedStatement = DatabaseUtil.selectUsePreparedStatement(connection, rootSQL, anAssert.getParameter());
-            DatasetDefinition checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
-            DatabaseUtil.assertDatas(checkDataset, ddPreparedStatement);
-        }
-    }
-    
-    private void doSelectUsePreparedStatementToExecuteSelect(final String expectedDataFile, final DQLDataSetAssert anAssert, final String rootSQL) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
-        try (Connection connection = dataSource.getConnection()) {
-            DatasetDatabase datasetDatabase = DatabaseUtil.selectUsePreparedStatementToExecuteSelect(connection, rootSQL, anAssert.getParameter());
-            DatasetDefinition checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
-            DatabaseUtil.assertDatas(checkDataset, datasetDatabase);
         }
     }
 }

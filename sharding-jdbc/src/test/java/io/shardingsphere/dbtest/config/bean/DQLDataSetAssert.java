@@ -39,17 +39,8 @@ public class DQLDataSetAssert implements DataSetAssert {
     @XmlAttribute(name = "id")
     private String id;
     
-    @XmlAttribute(name = "expected-data-file")
-    private String expectedDataFile;
-    
-    @XmlAttribute(name = "sharding-rule-types")
-    private String shardingRuleTypes;
-    
     @XmlAttribute(name = "database-types")
     private String databaseTypes;
-    
-    @XmlElement(name = "parameter")
-    private ParameterDefinition parameter = new ParameterDefinition();
     
     @XmlElement(name = "subAssert")
     private List<AssertSubDefinition> subAsserts = new ArrayList<>();
@@ -59,5 +50,16 @@ public class DQLDataSetAssert implements DataSetAssert {
     @Override
     public String toString() {
         return id;
+    }
+    
+    // TODO remove
+    @Override
+    public String getShardingRuleTypes() {
+        return null;
+    }
+    
+    @Override
+    public void setShardingRuleTypes(final String shardingRuleTypes) {
+        
     }
 }

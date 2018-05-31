@@ -5,21 +5,21 @@
         <subAssert expected-data-file="SelectOne.xml" sharding-rule-types="dbtbl" />
         <subAssert expected-data-file="SelectOne.xml" sharding-rule-types="masterslave" />
     </dql-assert>
-    <dql-assert id="assertSelectNotEqualsWithSingleTable" sharding-rule-types="tbl" expected-data-file="SelectNotEqualsWithSingleTable.xml">
+    <dql-assert id="assertSelectNotEqualsWithSingleTable">
         <subAssert sharding-rule-types="tbl" expected-data-file="SelectNotEqualsWithSingleTable.xml">
             <parameter>
                 <value value="100000" type="int"/>
             </parameter>
         </subAssert>
     </dql-assert>
-    <dql-assert id="assertSelectNotEqualsWithSingleTableForExclamationEqual" sharding-rule-types="tbl" expected-data-file="SelectNotEqualsWithSingleTable.xml">
+    <dql-assert id="assertSelectNotEqualsWithSingleTableForExclamationEqual">
         <subAssert sharding-rule-types="tbl" expected-data-file="SelectNotEqualsWithSingleTable.xml">
             <parameter>
                 <value value="100000" type="int"/>
             </parameter>
         </subAssert>
     </dql-assert>
-    <dql-assert id="assertSelectNotEqualsWithSingleTableForNotIn" sharding-rule-types="tbl" expected-data-file="SelectNotWithSingleTable.xml">
+    <dql-assert id="assertSelectNotEqualsWithSingleTableForNotIn">
         <subAssert sharding-rule-types="tbl" expected-data-file="SelectNotWithSingleTable.xml">
             <parameter>
                 <value value="100000" type="int"/>
@@ -27,7 +27,7 @@
             </parameter>
         </subAssert>
     </dql-assert>
-    <dql-assert id="assertSelectNotEqualsWithSingleTableForNotBetween" sharding-rule-types="tbl" expected-data-file="SelectNotWithSingleTable.xml">
+    <dql-assert id="assertSelectNotEqualsWithSingleTableForNotBetween">
         <subAssert sharding-rule-types="tbl" expected-data-file="SelectNotWithSingleTable.xml">
             <parameter>
                 <value value="100000" type="int"/>
@@ -35,7 +35,7 @@
             </parameter>
         </subAssert>
     </dql-assert>
-    <dql-assert id="assertSelectEqualsWithSameShardingColumns" sharding-rule-types="tbl" expected-data-file="SelectEqualsWithSameShardingColumns.xml">
+    <dql-assert id="assertSelectEqualsWithSameShardingColumns">
         <subAssert sharding-rule-types="tbl" expected-data-file="SelectEqualsWithSameShardingColumns.xml">
             <parameter>
                 <value value="1000" type="int"/>
@@ -43,7 +43,7 @@
             </parameter>
         </subAssert>
     </dql-assert>
-    <dql-assert id="assertSelectInWithSameShardingColumns" sharding-rule-types="tbl" expected-data-file="SelectInWithSameShardingColumns.xml">
+    <dql-assert id="assertSelectInWithSameShardingColumns">
         <subAssert sharding-rule-types="tbl" expected-data-file="SelectInWithSameShardingColumns.xml">
             <parameter>
                 <value value="1000" type="int"/>
@@ -72,12 +72,12 @@
                 <value value="1201" type="int"/>
             </parameter>
         </subAssert>
-        <!--<subAssert expected-data-file="SelectEqualsWithSingleTable_2.xml" sharding-rule-types="masterslave">-->
-            <!--<parameter>-->
-                <!--<value value="12" type="int"/>-->
-                <!--<value value="1201" type="int"/>-->
-            <!--</parameter>-->
-        <!--</subAssert>-->
+        <subAssert expected-data-file="SelectEqualsWithSingleTable_2.xml" sharding-rule-types="masterslave">
+            <parameter>
+                <value value="12" type="int"/>
+                <value value="1201" type="int"/>
+            </parameter>
+        </subAssert>
         <subAssert expected-data-file="SelectEqualsWithSingleTable_2.xml" sharding-rule-types="dbtbl">
             <parameter>
                 <value value="12" type="int"/>
@@ -96,12 +96,12 @@
                 <value value="1000" type="int" />
             </parameter>
         </subAssert>
-        <!--<subAssert expected-data-file="Empty.xml" sharding-rule-types="masterslave">-->
-            <!--<parameter>-->
-                <!--<value value="12" type="int" />-->
-                <!--<value value="1000" type="int" />-->
-            <!--</parameter>-->
-        <!--</subAssert>-->
+        <subAssert expected-data-file="Empty.xml" sharding-rule-types="masterslave">
+            <parameter>
+                <value value="12" type="int" />
+                <value value="1000" type="int" />
+            </parameter>
+        </subAssert>
         <subAssert expected-data-file="Empty.xml" sharding-rule-types="dbtbl">
             <parameter>
                 <value value="12" type="int" />

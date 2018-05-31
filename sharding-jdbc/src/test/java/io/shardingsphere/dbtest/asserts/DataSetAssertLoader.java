@@ -19,6 +19,8 @@ package io.shardingsphere.dbtest.asserts;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import io.shardingsphere.dbtest.config.bean.AssertSubDefinition;
+import io.shardingsphere.dbtest.config.bean.DQLDataSetAssert;
 import io.shardingsphere.dbtest.config.bean.DataSetAssert;
 import io.shardingsphere.dbtest.config.bean.DataSetsAssert;
 import lombok.Getter;
@@ -43,6 +45,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Data set assert loader.
@@ -90,25 +93,38 @@ public final class DataSetAssertLoader {
     }
     
     private Map<String, DataSetAssert> loadDataSetAssert(final String file) throws IOException, JAXBException {
-        DataSetsAssert assertsDefinition = unmarshal(file);
-        Map<String, DataSetAssert> result = new HashMap<>(assertsDefinition.getDqlDataSetAsserts().size() + assertsDefinition.getDmlDataSetAsserts().size() + assertsDefinition.getDdlDataSetAsserts().size(), 1);
-        shardingRuleTypes.addAll(Arrays.asList(assertsDefinition.getShardingRuleTypes().split(",")));
-        result.putAll(loadDataSetAssert(file, assertsDefinition.getDqlDataSetAsserts(), assertsDefinition.getShardingRuleTypes(), assertsDefinition.getDatabaseTypes()));
-        result.putAll(loadDataSetAssert(file, assertsDefinition.getDmlDataSetAsserts(), assertsDefinition.getShardingRuleTypes(), assertsDefinition.getDatabaseTypes()));
-        result.putAll(loadDataSetAssert(file, assertsDefinition.getDdlDataSetAsserts(), assertsDefinition.getShardingRuleTypes(), assertsDefinition.getDatabaseTypes()));
+        DataSetsAssert dataSetsAssert = unmarshal(file);
+        Map<String, DataSetAssert> result = new HashMap<>(dataSetsAssert.getDqlDataSetAsserts().size() + dataSetsAssert.getDmlDataSetAsserts().size() + dataSetsAssert.getDdlDataSetAsserts().size(), 1);
+        shardingRuleTypes.addAll(Arrays.asList(dataSetsAssert.getShardingRuleTypes().split(",")));
+        result.putAll(loadDataSetAssert(file, dataSetsAssert.getDqlDataSetAsserts(), dataSetsAssert.getShardingRuleTypes(), dataSetsAssert.getDatabaseTypes()));
+        result.putAll(loadDataSetAssert(file, dataSetsAssert.getDmlDataSetAsserts(), dataSetsAssert.getShardingRuleTypes(), dataSetsAssert.getDatabaseTypes()));
+        result.putAll(loadDataSetAssert(file, dataSetsAssert.getDdlDataSetAsserts(), dataSetsAssert.getShardingRuleTypes(), dataSetsAssert.getDatabaseTypes()));
         return result;
     }
     
-    private Map<String, DataSetAssert> loadDataSetAssert(final String file, final List<? extends DataSetAssert> assertDefinitions, final String defaultShardingRuleType, final String defaultDatabaseTypes) {
-        Map<String, DataSetAssert> result = new HashMap<>(assertDefinitions.size(), 1);
-        for (DataSetAssert each : assertDefinitions) {
+    private Map<String, DataSetAssert> loadDataSetAssert(final String file, final List<? extends DataSetAssert> dataSetAsserts, final String defaultShardingRuleType, final String defaultDatabaseTypes) {
+        Map<String, DataSetAssert> result = new HashMap<>(dataSetAsserts.size(), 1);
+        for (DataSetAssert each : dataSetAsserts) {
             result.put(each.getId(), each);
             each.setPath(file);
-            if (Strings.isNullOrEmpty(each.getShardingRuleTypes())) {
-                each.setShardingRuleTypes(defaultShardingRuleType);
+            
+            
+            if (each instanceof DQLDataSetAssert) {
+                Set<String> set = new HashSet<>();
+                for (AssertSubDefinition assertSubDefinition : ((DQLDataSetAssert) each).getSubAsserts()) {
+                    set.add(assertSubDefinition.getShardingRuleTypes());
+                }
+                shardingRuleTypes.addAll(set);
             } else {
-                shardingRuleTypes.addAll(Arrays.asList(each.getShardingRuleTypes().split(",")));
+                if (Strings.isNullOrEmpty(each.getShardingRuleTypes())) {
+                    each.setShardingRuleTypes(defaultShardingRuleType);
+                } else {
+                    shardingRuleTypes.addAll(Arrays.asList(each.getShardingRuleTypes().split(",")));
+                }
             }
+            
+            
+            
             if (Strings.isNullOrEmpty(each.getDatabaseTypes())) {
                 each.setDatabaseTypes(defaultDatabaseTypes);
             }
