@@ -90,13 +90,13 @@ public abstract class ShardingMetaData {
                 result = columnMetaDataList;
             }
             if (!result.equals(columnMetaDataList)) {
-                throw new ShardingException(getErrorMsgOfTableMetaData(logicTableName, result, columnMetaDataList));
+                throw new ShardingException(getErrorMsgOfTableMetaData(logicTableName, each, columnMetaDataList));
             }
         }
         return new TableMetaData(result);
     }
 
-    /**
+    /**d
      * Get column metadata implementing by concrete handler.
      *
      * @param dataNode DataNode
@@ -107,17 +107,15 @@ public abstract class ShardingMetaData {
      */
     public abstract Collection<ColumnMetaData> getColumnMetaDataList(DataNode dataNode, ShardingDataSourceNames shardingDataSourceNames, Map<String, Connection> connectionMap) throws SQLException;
 
-    private String getErrorMsgOfTableMetaData(final String logicTableName, final Collection<ColumnMetaData> oldColumnMetaDataList, final Collection<ColumnMetaData> newColumnMetaDataList) {
+    private String getErrorMsgOfTableMetaData(final String logicTableName, final DataNode dataNode, final Collection<ColumnMetaData> newColumnMetaDataList) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(" Cannot get uniformed table structure for ").append(logicTableName).append(".");
-        stringBuilder.append(" The different column metadata of actual tables is as follows: ");
-        for (ColumnMetaData each : oldColumnMetaDataList) {
-            stringBuilder.append(each.toString()).append(" ");
-        }
-        stringBuilder.append("\n");
+        stringBuilder.append("The different column metadata of actual table is as follows:");
         for (ColumnMetaData each : newColumnMetaDataList) {
             stringBuilder.append(each.toString()).append(" ");
         }
+        stringBuilder.append(" The problem dataNode is: ");
+        stringBuilder.append(dataNode.toString());
         return stringBuilder.toString();
     }
 }
