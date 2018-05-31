@@ -19,7 +19,9 @@ package io.shardingsphere.dbtest;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.dbtest.asserts.AssertEngine;
+import io.shardingsphere.dbtest.asserts.DQLAssertEngine;
 import io.shardingsphere.dbtest.asserts.DataSetAssertLoader;
+import io.shardingsphere.dbtest.config.bean.DQLDataSetAssert;
 import io.shardingsphere.dbtest.config.bean.DataSetAssert;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.IntegrateTestEnvironment;
@@ -136,6 +138,10 @@ public final class StartTest {
         if (!databaseTypeEnvironment.isEnabled()) {
             return;
         }
-        new AssertEngine(dataSetAssert, shardingRuleType, databaseTypeEnvironment, caseType).run();
+        if (dataSetAssert instanceof DQLDataSetAssert) {
+            new DQLAssertEngine((DQLDataSetAssert) dataSetAssert, shardingRuleType, databaseTypeEnvironment, caseType).assertDQL();
+        } else {
+            new AssertEngine(dataSetAssert, shardingRuleType, databaseTypeEnvironment, caseType).run();
+        }
     }
 }
