@@ -128,31 +128,6 @@ public final class DatabaseUtil {
         throw new UnsupportedOperationException(String.format("Cannot support type: '%s'", sqlValue.getValue().getClass()));
     }
     
-    // TODO remove
-    private static void setParameter(final PreparedStatement preparedStatement, final int index, final String value, final String type) throws SQLException, ParseException {
-        if (null == type || "varchar".equals(type) || "char".equals(type) || "String".equals(type)) {
-            preparedStatement.setString(index, value);
-            return;
-        }
-        if ("int".equals(type)) {
-            preparedStatement.setInt(index, Integer.valueOf(value));
-            return;
-        }
-        if ("numeric".equals(type) && !value.contains("//.")) {
-            preparedStatement.setLong(index, Long.valueOf(value));
-            return;
-        }
-        if ("numeric".equals(type) && value.contains("//.")) {
-            preparedStatement.setDouble(index, Double.valueOf(value));
-            return;
-        }
-        if ("datetime".equals(type)) {
-            preparedStatement.setDate(index, new Date(new SimpleDateFormat("yyyy-MM-dd").parse(value).getTime()));
-            return;
-        }
-        throw new UnsupportedOperationException(String.format("Cannot support type: '%s'", type));
-    }
-    
     /**
      * Use Statement Test data update.
      *
@@ -450,10 +425,9 @@ public final class DatabaseUtil {
         if (null == parameterValueDefinitions) {
             return;
         }
-        int index = 1;
+        int index = 0;
         for (ParameterValueDefinition each : parameterValueDefinitions) {
-            setParameter(preparedStatement, index, each.getValue(), each.getType());
-            index++;
+            setParameter(preparedStatement, new SQLValue(each.getValue(), each.getType(), ++index));
         }
     }
     
