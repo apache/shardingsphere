@@ -17,6 +17,7 @@
 
 package io.shardingsphere.proxy.frontend;
 
+import io.netty.channel.WriteBufferWaterMark;
 import io.shardingsphere.proxy.frontend.netty.ServerHandlerInitializer;
 
 import io.netty.bootstrap.ServerBootstrap;
@@ -85,8 +86,6 @@ public final class ShardingProxy {
         userGroup = new EpollEventLoopGroup(WORKER_MAX_THREADS);
         bootstrap.group(bossGroup, workerGroup)
                 .channel(EpollServerSocketChannel.class)
-                .option(EpollChannelOption.TCP_CORK, true)
-                .option(EpollChannelOption.SO_KEEPALIVE, true)
                 .option(EpollChannelOption.SO_BACKLOG, 128)
                 .option(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .childOption(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
@@ -99,10 +98,9 @@ public final class ShardingProxy {
         userGroup = new NioEventLoopGroup(WORKER_MAX_THREADS);
         bootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
-                .option(ChannelOption.SO_KEEPALIVE, true)
-                .option(ChannelOption.TCP_NODELAY, true)
                 .option(ChannelOption.SO_BACKLOG, 128)
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 100)
+                .option(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(8 * 1024 * 1024, 16 * 1024 * 1024))
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .handler(new LoggingHandler(LogLevel.INFO))

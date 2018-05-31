@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,17 @@
 
 package io.shardingsphere.dbtest.config.bean;
 
+import com.google.common.base.Strings;
+import io.shardingsphere.core.constant.DatabaseType;
 import lombok.Getter;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -42,4 +50,20 @@ public class AssertSubDefinition {
     
     @XmlAttribute(name = "expected-update")
     private Integer expectedUpdate;
+    
+    /**
+     * Get database types.
+     * 
+     * @return database types
+     */
+    public List<DatabaseType> getDatabaseTypes() {
+        List<DatabaseType> result = new LinkedList<>();
+        if (Strings.isNullOrEmpty(databaseTypes)) {
+            return Arrays.asList(DatabaseType.values());
+        }
+        for (String eachType : databaseTypes.split(",")) {
+            result.add(DatabaseType.valueOf(eachType));
+        }
+        return result;
+    }
 }
