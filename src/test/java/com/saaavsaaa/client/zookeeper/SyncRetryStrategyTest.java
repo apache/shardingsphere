@@ -13,6 +13,7 @@ import com.saaavsaaa.client.zookeeper.section.StrategyType;
 import com.saaavsaaa.client.zookeeper.strategy.UsualStrategy;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.Stat;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +38,7 @@ public class SyncRetryStrategyTest extends UsualClientTest{
     protected IClient createClient() throws IOException, InterruptedException {
         ClientFactory creator = new ClientFactory();
         Listener listener = TestSupport.buildListener();
-        IClient client = creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes()).newClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).watch(listener).start();
+        IClient client = creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes(), ZooDefs.Ids.CREATOR_ALL_ACL).newClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).watch(listener).start();
         client.useExecStrategy(StrategyType.SYNC_RETRY);
         return client;
     }

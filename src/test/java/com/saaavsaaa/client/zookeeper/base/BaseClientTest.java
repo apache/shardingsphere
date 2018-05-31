@@ -47,11 +47,15 @@ public abstract class BaseClientTest {
         testClient = null;
     }
     
-    @Ignore
     @Test
     public void deleteRoot() throws KeeperException, InterruptedException {
+        ((BaseClient)testClient).createNamespace();
         deleteRoot(testClient);
         assert getZooKeeper(testClient).exists(Constants.PATH_SEPARATOR + TestSupport.ROOT, false) == null;
+    }
+    
+    protected void createRootOnly(IClient client) throws KeeperException, InterruptedException {
+        ((BaseClient)client).createNamespace();
     }
     
     protected void deleteRoot(IClient client) throws KeeperException, InterruptedException {

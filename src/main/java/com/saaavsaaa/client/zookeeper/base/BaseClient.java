@@ -185,10 +185,10 @@ public abstract class BaseClient implements IClient {
         this.rootNode = rootNode;
     }
     
-    void setAuthorities(final String scheme, final byte[] auth) {
+    void setAuthorities(final String scheme, final byte[] auth, final List<ACL> authorities) {
         context.scheme = scheme;
         context.auth = auth;
-        this.authorities = ZooDefs.Ids.CREATOR_ALL_ACL;
+        this.authorities = authorities;
     }
     
     public BaseContext getContext(){

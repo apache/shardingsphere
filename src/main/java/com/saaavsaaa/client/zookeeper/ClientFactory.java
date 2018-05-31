@@ -6,10 +6,13 @@ import com.saaavsaaa.client.zookeeper.section.ClientContext;
 import com.saaavsaaa.client.zookeeper.section.Listener;
 import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.zookeeper.base.BaseClientFactory;
+import org.apache.zookeeper.ZooDefs;
+import org.apache.zookeeper.data.ACL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by aaa
@@ -69,12 +72,14 @@ public class ClientFactory extends BaseClientFactory {
         return this;
     }
     
-    public ClientFactory authorization(final String scheme, final byte[] auth){
+    public ClientFactory authorization(final String scheme, final byte[] auth, final List<ACL> authorities){
         if (scheme == null || scheme.trim().length() == 0) {
+            this.authorities = ZooDefs.Ids.OPEN_ACL_UNSAFE;
             return this;
         }
         this.scheme = scheme;
         this.auth = auth;
+        this.authorities = authorities;
         return this;
     }
     

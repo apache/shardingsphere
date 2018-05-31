@@ -3,6 +3,7 @@ package com.saaavsaaa.client.zookeeper;
 import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.zookeeper.base.BaseClientTest;
 import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.ZooDefs;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -14,7 +15,7 @@ public class UsualClientTest extends BaseClientTest {
     
     @Override
     protected IClient createClient(final ClientFactory creator) throws IOException, InterruptedException {
-        return creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes()).newClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).start();
+        return creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes(), ZooDefs.Ids.CREATOR_ALL_ACL).newClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).start();
     }
     
     @Test
