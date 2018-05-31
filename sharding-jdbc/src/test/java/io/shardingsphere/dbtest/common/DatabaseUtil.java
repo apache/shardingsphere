@@ -140,9 +140,7 @@ public final class DatabaseUtil {
      */
     public static int updateUseStatementToExecuteUpdate(final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            String newSql = sqlReplaceStatement(sql, parameterDefinition.getValueReplaces());
-            newSql = sqlStatement(newSql, parameterDefinition.getValues());
-            return statement.executeUpdate(newSql);
+            return statement.executeUpdate(sqlStatement(sql, parameterDefinition.getValues()));
         }
     }
     
@@ -174,34 +172,6 @@ public final class DatabaseUtil {
         return result;
     }
     
-    private static String sqlReplaceStatement(final String sql, final List<ParameterValueDefinition> parameter) {
-        if (null == parameter) {
-            return sql;
-        }
-        String result = sql;
-        for (ParameterValueDefinition each : parameter) {
-            String type = each.getType();
-            String dataColumn = each.getValue();
-            switch (type) {
-                case "byte":
-                case "short":
-                case "int":
-                case "long":
-                case "float":
-                case "double":
-                    result = Pattern.compile("#s", Pattern.LITERAL).matcher(result).replaceFirst(Matcher.quoteReplacement(dataColumn));
-                    break;
-                case "boolean":
-                    result = Pattern.compile("#s", Pattern.LITERAL).matcher(result).replaceFirst(Matcher.quoteReplacement(Boolean.valueOf(dataColumn).toString()));
-                    break;
-                default:
-                    result = Pattern.compile("#s", Pattern.LITERAL).matcher(result).replaceFirst(Matcher.quoteReplacement("'" + dataColumn + "'"));
-                    break;
-            }
-        }
-        return result;
-    }
-    
     /**
      * Use Statement Test data update.
      *
@@ -213,9 +183,7 @@ public final class DatabaseUtil {
      */
     public static int updateUseStatementToExecute(final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            String newSQL = sqlReplaceStatement(sql, parameterDefinition.getValueReplaces());
-            newSQL = sqlStatement(newSQL, parameterDefinition.getValues());
-            if (!statement.execute(newSQL)) {
+            if (!statement.execute(sqlStatement(sql, parameterDefinition.getValues()))) {
                 return statement.getUpdateCount();
             }
         }
@@ -233,9 +201,7 @@ public final class DatabaseUtil {
      * @throws ParseException parse exception
      */
     public static int updateUsePreparedStatementToExecuteUpdate(final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
-        String newSQL = sql.replaceAll("%s", "?");
-        newSQL = sqlReplaceStatement(newSQL, parameterDefinition.getValueReplaces());
-        try (PreparedStatement preparedStatement = connection.prepareStatement(newSQL)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
             sqlPreparedStatement(parameterDefinition.getValues(), preparedStatement);
             return preparedStatement.executeUpdate();
         }
@@ -252,9 +218,7 @@ public final class DatabaseUtil {
      * @throws ParseException parse exception
      */
     public static int updateUsePreparedStatementToExecute(final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
-        String newSQL = sql.replaceAll("%s", "?");
-        newSQL = sqlReplaceStatement(newSQL, parameterDefinition.getValueReplaces());
-        try (PreparedStatement preparedStatement = connection.prepareStatement(newSQL)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
             sqlPreparedStatement(parameterDefinition.getValues(), preparedStatement);
             if (!preparedStatement.execute()) {
                 return preparedStatement.getUpdateCount();
@@ -275,9 +239,7 @@ public final class DatabaseUtil {
      */
     public static DatasetDatabase selectUsePreparedStatement(final Connection conn, final String sql, final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
         List<ParameterValueDefinition> parameters = parameterDefinition.getValues();
-        String newSQL = sqlReplaceStatement(sql, parameterDefinition.getValueReplaces());
-        newSQL = newSQL.replaceAll("%s", "?");
-        try (PreparedStatement preparedStatement = conn.prepareStatement(newSQL)) {
+        try (PreparedStatement preparedStatement = conn.prepareStatement(sql.replaceAll("%s", "?"))) {
             sqlPreparedStatement(parameters, preparedStatement);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 return useBackResultSet(resultSet);
@@ -298,9 +260,7 @@ public final class DatabaseUtil {
     public static DatasetDatabase selectUsePreparedStatementToExecuteSelect(
             final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
         List<ParameterValueDefinition> parameter = parameterDefinition.getValues();
-        String newSQL = sqlReplaceStatement(sql, parameterDefinition.getValueReplaces());
-        newSQL = newSQL.replaceAll("%s", "?");
-        try (PreparedStatement preparedStatement = connection.prepareStatement(newSQL)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
             sqlPreparedStatement(parameter, preparedStatement);
             boolean flag = preparedStatement.execute();
             assertTrue("Not a query statement.", flag);
@@ -341,10 +301,8 @@ public final class DatabaseUtil {
      */
     public static DatasetDatabase selectUseStatement(final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException {
         List<ParameterValueDefinition> parameter = parameterDefinition.getValues();
-        String newSQL = sqlReplaceStatement(sql, parameterDefinition.getValueReplaces());
         try (Statement statement = connection.createStatement()) {
-            newSQL = sqlStatement(newSQL, parameter);
-            try (ResultSet resultSet = statement.executeQuery(newSQL)) {
+            try (ResultSet resultSet = statement.executeQuery(sqlStatement(sql, parameter))) {
                 return useBackResultSet(resultSet);
             }
         }
@@ -361,10 +319,8 @@ public final class DatabaseUtil {
      */
     public static DatasetDatabase selectUseStatementToExecuteSelect(final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException {
         List<ParameterValueDefinition> parameter = parameterDefinition.getValues();
-        String newSQL = sqlReplaceStatement(sql, parameterDefinition.getValueReplaces());
         try (Statement statement = connection.createStatement()) {
-            newSQL = sqlStatement(newSQL, parameter);
-            try (ResultSet resultSet = statement.executeQuery(newSQL)) {
+            try (ResultSet resultSet = statement.executeQuery(sqlStatement(sql, parameter))) {
                 return useBackResultSet(resultSet);
             }
         }

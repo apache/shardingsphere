@@ -120,37 +120,42 @@ public final class AssertEngine {
         }
     }
     
-    private void dqlRun(final DQLDataSetAssert dqlDefinition) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
-        String rootSQL = SQLCasesLoader.getInstance().getSupportedSQL(dqlDefinition.getId());
+    private void dqlRun(final DQLDataSetAssert dqlDataSetAssert) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
+        String rootSQL = SQLCasesLoader.getInstance().getSupportedSQL(dqlDataSetAssert.getId());
         try {
             dataSetEnvironmentManager.initialize();
-            String expectedDataFile = rootPath + "asserts/dql/" + shardingRuleType + "/" + dqlDefinition.getExpectedDataFile();
-            if (!new File(expectedDataFile).exists()) {
-                expectedDataFile = rootPath + "asserts/dql/" + dqlDefinition.getExpectedDataFile();
-            }
-            if (dqlDefinition.getParameter().getValues().isEmpty() && dqlDefinition.getParameter().getValueReplaces().isEmpty()) {
-                List<AssertSubDefinition> subAsserts = dqlDefinition.getSubAsserts();
+            String expectedDataFile = getExpectedDataFile(dqlDataSetAssert);
+            if (dqlDataSetAssert.getParameter().getValues().isEmpty()) {
+                List<AssertSubDefinition> subAsserts = dqlDataSetAssert.getSubAsserts();
                 if (subAsserts.isEmpty()) {
-                    doSelectUsePreparedStatement(expectedDataFile, dqlDefinition, rootSQL);
-                    doSelectUsePreparedStatementToExecuteSelect(expectedDataFile, dqlDefinition, rootSQL);
-                    doSelectUseStatement(expectedDataFile, dqlDefinition, rootSQL);
-                    doSelectUseStatementToExecuteSelect(expectedDataFile, dqlDefinition, rootSQL);
+                    doSelectUsePreparedStatement(expectedDataFile, dqlDataSetAssert, rootSQL);
+                    doSelectUsePreparedStatementToExecuteSelect(expectedDataFile, dqlDataSetAssert, rootSQL);
+                    doSelectUseStatement(expectedDataFile, dqlDataSetAssert, rootSQL);
+                    doSelectUseStatementToExecuteSelect(expectedDataFile, dqlDataSetAssert, rootSQL);
                 } else {
-                    dqlSubRun(dqlDefinition, rootSQL, expectedDataFile, subAsserts);
+                    dqlSubRun(dqlDataSetAssert, rootSQL, expectedDataFile, subAsserts);
                 }
             } else {
-                doSelectUsePreparedStatement(expectedDataFile, dqlDefinition, rootSQL);
-                doSelectUsePreparedStatementToExecuteSelect(expectedDataFile, dqlDefinition, rootSQL);
-                doSelectUseStatement(expectedDataFile, dqlDefinition, rootSQL);
-                doSelectUseStatementToExecuteSelect(expectedDataFile, dqlDefinition, rootSQL);
-                List<AssertSubDefinition> subAsserts = dqlDefinition.getSubAsserts();
+                doSelectUsePreparedStatement(expectedDataFile, dqlDataSetAssert, rootSQL);
+                doSelectUsePreparedStatementToExecuteSelect(expectedDataFile, dqlDataSetAssert, rootSQL);
+                doSelectUseStatement(expectedDataFile, dqlDataSetAssert, rootSQL);
+                doSelectUseStatementToExecuteSelect(expectedDataFile, dqlDataSetAssert, rootSQL);
+                List<AssertSubDefinition> subAsserts = dqlDataSetAssert.getSubAsserts();
                 if (!subAsserts.isEmpty()) {
-                    dqlSubRun(dqlDefinition, rootSQL, expectedDataFile, subAsserts);
+                    dqlSubRun(dqlDataSetAssert, rootSQL, expectedDataFile, subAsserts);
                 }
             }
         } finally {
             dataSetEnvironmentManager.clear();
         }
+    }
+    
+    private String getExpectedDataFile(final DQLDataSetAssert dqlDataSetAssert) {
+        String result = rootPath + "asserts/dql/" + shardingRuleType + "/" + dqlDataSetAssert.getExpectedDataFile();
+        if (!new File(result).exists()) {
+            result = rootPath + "asserts/dql/" + dqlDataSetAssert.getExpectedDataFile();
+        }
+        return result;
     }
     
     private void dqlSubRun(final DQLDataSetAssert anAssert, final String rootSQL, final String expectedDataFile, final List<AssertSubDefinition> subAsserts) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
@@ -201,7 +206,7 @@ public final class AssertEngine {
         if (!new File(expectedDataFile).exists()) {
             expectedDataFile = rootPath + "asserts/ddl/" + ddlDefinition.getExpectedDataFile();
         }
-        if (ddlDefinition.getParameter().getValues().isEmpty() && ddlDefinition.getParameter().getValueReplaces().isEmpty()) {
+        if (ddlDefinition.getParameter().getValues().isEmpty()) {
             List<AssertSubDefinition> subAsserts = ddlDefinition.getSubAsserts();
             if (subAsserts.isEmpty()) {
                 doUpdateUseStatementToExecuteUpdateDDL(expectedDataFile, ddlDefinition, rootSQL);
@@ -276,7 +281,7 @@ public final class AssertEngine {
         int resultDoUpdateUseStatementToExecute = 0;
         int resultDoUpdateUsePreparedStatementToExecuteUpdate = 0;
         int resultDoUpdateUsePreparedStatementToExecute = 0;
-        if (dmlDefinition.getParameter().getValues().isEmpty() && dmlDefinition.getParameter().getValueReplaces().isEmpty()) {
+        if (dmlDefinition.getParameter().getValues().isEmpty()) {
             List<AssertSubDefinition> subAsserts = dmlDefinition.getSubAsserts();
             if (subAsserts.isEmpty()) {
                 resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFile, dmlDefinition, rootSQL);
