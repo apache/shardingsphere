@@ -125,25 +125,13 @@ public final class AssertEngine {
         try {
             dataSetEnvironmentManager.initialize();
             String expectedDataFile = getExpectedDataFile(dqlDataSetAssert);
-            if (dqlDataSetAssert.getParameter().getValues().isEmpty()) {
-                List<AssertSubDefinition> subAsserts = dqlDataSetAssert.getSubAsserts();
-                if (subAsserts.isEmpty()) {
-                    doSelectUsePreparedStatement(expectedDataFile, dqlDataSetAssert, rootSQL);
-                    doSelectUsePreparedStatementToExecuteSelect(expectedDataFile, dqlDataSetAssert, rootSQL);
-                    doSelectUseStatement(expectedDataFile, dqlDataSetAssert, rootSQL);
-                    doSelectUseStatementToExecuteSelect(expectedDataFile, dqlDataSetAssert, rootSQL);
-                } else {
-                    dqlSubRun(dqlDataSetAssert, rootSQL, expectedDataFile, subAsserts);
-                }
-            } else {
+            if (dqlDataSetAssert.getSubAsserts().isEmpty()) {
                 doSelectUsePreparedStatement(expectedDataFile, dqlDataSetAssert, rootSQL);
                 doSelectUsePreparedStatementToExecuteSelect(expectedDataFile, dqlDataSetAssert, rootSQL);
                 doSelectUseStatement(expectedDataFile, dqlDataSetAssert, rootSQL);
                 doSelectUseStatementToExecuteSelect(expectedDataFile, dqlDataSetAssert, rootSQL);
-                List<AssertSubDefinition> subAsserts = dqlDataSetAssert.getSubAsserts();
-                if (!subAsserts.isEmpty()) {
-                    dqlSubRun(dqlDataSetAssert, rootSQL, expectedDataFile, subAsserts);
-                }
+            } else {
+                dqlSubRun(dqlDataSetAssert, rootSQL, expectedDataFile, dqlDataSetAssert.getSubAsserts());
             }
         } finally {
             dataSetEnvironmentManager.clear();
@@ -159,11 +147,11 @@ public final class AssertEngine {
     }
     
     private void dqlSubRun(final DQLDataSetAssert anAssert, final String rootSQL, final String expectedDataFile, final List<AssertSubDefinition> subAsserts) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
-        for (AssertSubDefinition subAssert : subAsserts) {
-            if (!subAssert.getDatabaseTypes().contains(databaseTypeEnvironment.getDatabaseType())) {
+        for (AssertSubDefinition each : subAsserts) {
+            if (!each.getDatabaseTypes().contains(databaseTypeEnvironment.getDatabaseType())) {
                 break;
             }
-            String baseSubConfig = subAssert.getShardingRuleTypes();
+            String baseSubConfig = each.getShardingRuleTypes();
             if (StringUtils.isNotBlank(baseSubConfig)) {
                 String[] baseConfigs = StringUtils.split(baseSubConfig, ",");
                 boolean flag = true;
@@ -177,8 +165,8 @@ public final class AssertEngine {
                     continue;
                 }
             }
-            String expectedDataFileSub = subAssert.getExpectedDataFile();
-            ParameterDefinition parameter = subAssert.getParameter();
+            String expectedDataFileSub = each.getExpectedDataFile();
+            ParameterDefinition parameter = each.getParameter();
             String expectedDataFileTmp = expectedDataFile;
             if (StringUtils.isBlank(expectedDataFileSub)) {
                 expectedDataFileSub = anAssert.getExpectedDataFile();
