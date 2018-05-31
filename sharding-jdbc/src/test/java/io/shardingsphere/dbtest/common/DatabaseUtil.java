@@ -86,35 +86,49 @@ public final class DatabaseUtil {
      *
      * @param connection connection
      * @param sql SQL
-     * @param dataList data list
-     * @param dataSetColumnMetadataList data set column meta data list
+     * @param sqlValueGroups SQL value groups
      * @throws SQLException SQL exception
-     * @throws ParseException date format parse exception
      */
-    public static void executeUpdate(
-            final Connection connection, final String sql, final List<Map<String, String>> dataList, final List<DataSetColumnMetadata> dataSetColumnMetadataList) throws SQLException, ParseException {
+    public static void executeUpdate(final Connection connection, final String sql, final List<SQLValueGroup> sqlValueGroups) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            for (Map<String, String> entry : dataList) {
-                setParameters(dataSetColumnMetadataList, preparedStatement, entry);
+            for (SQLValueGroup each : sqlValueGroups) {
+                setParameters(preparedStatement, each);
                 preparedStatement.executeUpdate();
             }
         }
     }
     
-    private static void setParameters(
-            final List<DataSetColumnMetadata> dataSetColumnMetadataList, final PreparedStatement preparedStatement, final Map<String, String> data) throws SQLException, ParseException {
-        int index = 0;
-        for (Entry<String, String> entry : data.entrySet()) {
-            String type = null;
-            for (DataSetColumnMetadata each : dataSetColumnMetadataList) {
-                if (entry.getKey().equals(each.getName())) {
-                    type = each.getType();
-                }
-            }
-            setParameter(preparedStatement, ++index, entry.getValue(), type);
+    private static void setParameters(final PreparedStatement preparedStatement, final SQLValueGroup sqlValueGroup) throws SQLException {
+        for (SQLValue each : sqlValueGroup.getSqlValues()) {
+            setParameter(preparedStatement, each);
         }
     }
     
+    private static void setParameter(final PreparedStatement preparedStatement, final SQLValue sqlValue) throws SQLException {
+        if (sqlValue.getValue() instanceof String) {
+            preparedStatement.setString(sqlValue.getIndex(), (String) sqlValue.getValue());
+            return;
+        }
+        if (sqlValue.getValue() instanceof Integer) {
+            preparedStatement.setInt(sqlValue.getIndex(), (Integer) sqlValue.getValue());
+            return;
+        }
+        if (sqlValue.getValue() instanceof Long) {
+            preparedStatement.setLong(sqlValue.getIndex(), (Long) sqlValue.getValue());
+            return;
+        }
+        if (sqlValue.getValue() instanceof Double) {
+            preparedStatement.setDouble(sqlValue.getIndex(), (Double) sqlValue.getValue());
+            return;
+        }
+        if (sqlValue.getValue() instanceof Date) {
+            preparedStatement.setDate(sqlValue.getIndex(), (Date) sqlValue.getValue());
+            return;
+        }
+        throw new UnsupportedOperationException(String.format("Cannot support type: '%s'", sqlValue.getValue().getClass()));
+    }
+    
+    // TODO remove
     private static void setParameter(final PreparedStatement preparedStatement, final int index, final String value, final String type) throws SQLException, ParseException {
         if (null == type || "varchar".equals(type) || "char".equals(type) || "String".equals(type)) {
             preparedStatement.setString(index, value);

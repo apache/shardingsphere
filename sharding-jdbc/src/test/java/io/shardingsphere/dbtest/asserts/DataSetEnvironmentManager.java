@@ -18,10 +18,10 @@
 package io.shardingsphere.dbtest.asserts;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.util.InlineExpressionParser;
 import io.shardingsphere.dbtest.common.DatabaseUtil;
+import io.shardingsphere.dbtest.common.SQLValueGroup;
 import io.shardingsphere.dbtest.config.dataset.DataSetColumnMetadata;
 import io.shardingsphere.dbtest.config.dataset.DataSetMetadata;
 import io.shardingsphere.dbtest.config.dataset.DataSetRow;
@@ -74,12 +74,12 @@ public final class DataSetEnvironmentManager {
             List<DataSetRow> dataSetRows = entry.getValue();
             DataSetMetadata dataSetMetadata = dataSetsRoot.findDataSetMetadata(dataNode);
             String insertSQL = generateInsertSQL(dataNode.getTableName(), dataSetMetadata.getColumnMetadataList());
-            List<Map<String, String>> valueMaps = new LinkedList<>();
+            List<SQLValueGroup> sqlValueGroups = new LinkedList<>();
             for (DataSetRow row : dataSetRows) {
-                valueMaps.add(getValueMap(row, dataSetMetadata));
+                sqlValueGroups.add(new SQLValueGroup(dataSetMetadata, row.getValues()));
             }
             try (Connection connection = dataSourceMap.get(dataNode.getDataSourceName()).getConnection()) {
-                DatabaseUtil.executeUpdate(connection, insertSQL, valueMaps, dataSetMetadata.getColumnMetadataList());
+                DatabaseUtil.executeUpdate(connection, insertSQL, sqlValueGroups);
             }
         }
     }
@@ -104,17 +104,6 @@ public final class DataSetEnvironmentManager {
             placeholders.add("?");
         }
         return String.format("INSERT INTO %s (%s) VALUES (%s)", tableName, Joiner.on(",").join(columnNames), Joiner.on(",").join(placeholders));
-    }
-    
-    private Map<String, String> getValueMap(final DataSetRow dataSetRow, final DataSetMetadata dataSetMetadata) {
-        List<String> values = Splitter.on(',').trimResults().splitToList(dataSetRow.getValues());
-        int count = 0;
-        Map<String, String> result = new LinkedHashMap<>(values.size(), 1);
-        for (DataSetColumnMetadata each : dataSetMetadata.getColumnMetadataList()) {
-            result.put(each.getName(), values.get(count));
-            count++;
-        }
-        return result;
     }
     
     /**
