@@ -80,7 +80,7 @@ public class UsualStrategy extends BaseStrategy {
                 if (i == nodes.size() - 1){
                     this.createCurrentOnly(nodes.get(i), value, createMode);
                 } else {
-                    this.createCurrentOnly(nodes.get(i), Constants.NOTHING_VALUE, createMode);
+                    this.createCurrentOnly(nodes.get(i), Constants.NOTHING_VALUE, CreateMode.PERSISTENT);
                 }
                 logger.debug("node not exist and create:", nodes.get(i));
             } catch (KeeperException.NodeExistsException ee){

@@ -2,11 +2,10 @@ package com.saaavsaaa.client.zookeeper;
 
 import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.retry.DelayRetryPolicy;
-import com.saaavsaaa.client.zookeeper.section.ClientContext;
-import com.saaavsaaa.client.zookeeper.section.Listener;
 import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.zookeeper.base.BaseClientFactory;
-import org.apache.zookeeper.ZooDefs;
+import com.saaavsaaa.client.zookeeper.section.ClientContext;
+import com.saaavsaaa.client.zookeeper.section.Listener;
 import org.apache.zookeeper.data.ACL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +26,7 @@ public class ClientFactory extends BaseClientFactory {
     public ClientFactory newClient(final String servers, final int sessionTimeoutMilliseconds) {
         int wait = sessionTimeoutMilliseconds;
         if (sessionTimeoutMilliseconds == 0){
-            wait = 60 * 1000;
+            wait = Constants.WAIT;
         }
         this.context = new ClientContext(servers, wait);
         client = new UsualClient(context);
@@ -73,10 +72,6 @@ public class ClientFactory extends BaseClientFactory {
     }
     
     public ClientFactory authorization(final String scheme, final byte[] auth, final List<ACL> authorities){
-        if (scheme == null || scheme.trim().length() == 0) {
-            this.authorities = ZooDefs.Ids.OPEN_ACL_UNSAFE;
-            return this;
-        }
         this.scheme = scheme;
         this.auth = auth;
         this.authorities = authorities;
