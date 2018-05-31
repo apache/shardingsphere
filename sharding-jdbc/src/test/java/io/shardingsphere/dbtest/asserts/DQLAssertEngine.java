@@ -105,7 +105,7 @@ public final class DQLAssertEngine {
      */
     public void assertDQL() throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
         String rootSQL = SQLCasesLoader.getInstance().getSupportedSQL(sqlCaseId);
-        String expectedDataFile = getExpectedDataFile(assertSubDefinition.getExpectedDataFile());
+        String expectedDataFile = rootPath + "asserts/dql/" + assertSubDefinition.getExpectedDataFile();
         try {
             dataSetEnvironmentManager.initialize();
             doSelectUsePreparedStatement(expectedDataFile, assertSubDefinition, rootSQL);
@@ -115,14 +115,6 @@ public final class DQLAssertEngine {
         } finally {
             dataSetEnvironmentManager.clear();
         }
-    }
-    
-    private String getExpectedDataFile(final String expectedDataFile) {
-        String result = rootPath + "asserts/dql/" + shardingRuleType + "/" + expectedDataFile;
-        if (!new File(result).exists()) {
-            result = rootPath + "asserts/dql/" + expectedDataFile;
-        }
-        return result;
     }
     
     private void doSelectUseStatement(final String expectedDataFile, final AssertSubDefinition anAssert, final String rootSQL) throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {

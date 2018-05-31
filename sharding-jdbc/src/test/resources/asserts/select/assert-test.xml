@@ -78,7 +78,7 @@
                 <value value="1201" type="int"/>
             </parameter>
         </subAssert>
-        <subAssert expected-data-file="SelectEqualsWithSingleTable_2.xml" sharding-rule-types="masterslave">
+        <subAssert expected-data-file="masterslave/SelectEqualsWithSingleTable_2.xml" sharding-rule-types="masterslave">
             <parameter>
                 <value value="12" type="int"/>
                 <value value="1201" type="int"/>
