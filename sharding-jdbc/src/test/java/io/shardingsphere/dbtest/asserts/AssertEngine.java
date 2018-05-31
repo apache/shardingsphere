@@ -131,9 +131,6 @@ public final class AssertEngine {
     
     private void subAssertDQL(final DQLDataSetAssert dqlDataSetAssert, final String rootSQL) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         for (AssertSubDefinition each : dqlDataSetAssert.getSubAsserts()) {
-            if (!each.getDatabaseTypes().contains(databaseTypeEnvironment.getDatabaseType())) {
-                break;
-            }
             if (isSkip(each)) {
                 continue;
             }
@@ -185,9 +182,6 @@ public final class AssertEngine {
     
     private void ddlSubRun(final DDLDataSetAssert anAssert, final String rootSQL, final String expectedDataFile, final List<AssertSubDefinition> subAsserts) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
         for (AssertSubDefinition each : subAsserts) {
-            if (!each.getDatabaseTypes().contains(databaseTypeEnvironment.getDatabaseType())) {
-                break;
-            }
             if (isSkip(each)) {
                 continue;
             }
@@ -243,9 +237,6 @@ public final class AssertEngine {
                 resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFile, dmlDefinition, rootSQL);
             } else {
                 for (AssertSubDefinition subAssert : subAsserts) {
-                    if (!subAssert.getDatabaseTypes().contains(databaseTypeEnvironment.getDatabaseType())) {
-                        break;
-                    }
                     String baseConfigSub = subAssert.getShardingRuleTypes();
                     if (StringUtils.isNotBlank(baseConfigSub)) {
                         String[] baseConfigs = StringUtils.split(baseConfigSub, ",");
@@ -295,9 +286,6 @@ public final class AssertEngine {
             List<AssertSubDefinition> subAsserts = dmlDefinition.getSubAsserts();
             if (!subAsserts.isEmpty()) {
                 for (AssertSubDefinition subAssert : subAsserts) {
-                    if (!subAssert.getDatabaseTypes().contains(databaseTypeEnvironment.getDatabaseType())) {
-                        break;
-                    }
                     String baseConfigSub = subAssert.getShardingRuleTypes();
                     if (StringUtils.isNotBlank(baseConfigSub)) {
                         String[] baseConfigs = StringUtils.split(baseConfigSub, ",");

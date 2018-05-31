@@ -17,17 +17,12 @@
 
 package io.shardingsphere.dbtest.config.bean;
 
-import com.google.common.base.Strings;
-import io.shardingsphere.core.constant.DatabaseType;
 import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -39,9 +34,6 @@ public class AssertSubDefinition {
     @XmlAttribute(name = "expected-data-file")
     private String expectedDataFile;
     
-    @XmlAttribute(name = "database-types")
-    private String databaseTypes = "H2,MySQL,Oracle,SQLServer,PostgreSQL";
-    
     @XmlElement(name = "parameter")
     private ParameterDefinition parameter;
     
@@ -50,20 +42,4 @@ public class AssertSubDefinition {
     
     @XmlAttribute(name = "expected-update")
     private Integer expectedUpdate;
-    
-    /**
-     * Get database types.
-     * 
-     * @return database types
-     */
-    public List<DatabaseType> getDatabaseTypes() {
-        List<DatabaseType> result = new LinkedList<>();
-        if (Strings.isNullOrEmpty(databaseTypes)) {
-            return Arrays.asList(DatabaseType.values());
-        }
-        for (String eachType : databaseTypes.split(",")) {
-            result.add(DatabaseType.valueOf(eachType));
-        }
-        return result;
-    }
 }
