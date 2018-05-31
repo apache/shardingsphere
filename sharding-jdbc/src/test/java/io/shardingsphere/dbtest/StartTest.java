@@ -21,6 +21,7 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.dbtest.asserts.AssertEngine;
 import io.shardingsphere.dbtest.asserts.DQLAssertEngine;
 import io.shardingsphere.dbtest.asserts.DataSetAssertLoader;
+import io.shardingsphere.dbtest.config.bean.AssertSubDefinition;
 import io.shardingsphere.dbtest.config.bean.DQLDataSetAssert;
 import io.shardingsphere.dbtest.config.bean.DataSetAssert;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
@@ -60,7 +61,11 @@ public final class StartTest {
     
     private static boolean isCleaned = IntegrateTestEnvironment.getInstance().isInitialized();
     
-    private final DataSetAssert dataSetAssert;
+    private final String sqlCaseId;
+    
+    private final String path;
+    
+    private final Object dataSetAssert;
     
     private final String shardingRuleType;
     
@@ -68,7 +73,7 @@ public final class StartTest {
     
     private final SQLCaseType caseType;
     
-    @Parameters(name = "{0} -> Rule:{1} -> {2}")
+    @Parameters(name = "{0} -> Rule:{3} -> {4}")
     public static Collection<Object[]> getParameters() {
         Collection<Object[]> result = new LinkedList<>();
         for (Object[] each : sqlCasesLoader.getSupportedSQLTestParameters(Arrays.<Enum>asList(DatabaseType.values()), DatabaseType.class)) {
@@ -83,13 +88,28 @@ public final class StartTest {
             if (!getDatabaseTypes(assertDefinition.getDatabaseTypes()).contains(databaseType)) {
                 continue;
             }
-            for (String shardingRuleType : assertDefinition.getShardingRuleTypes().split(",")) {
-                Object[] data = new Object[4];
-                data[0] = assertDefinition;
-                data[1] = shardingRuleType;
-                data[2] = new DatabaseTypeEnvironment(databaseType, IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType));
-                data[3] = caseType;
-                result.add(data);
+            if (assertDefinition instanceof DQLDataSetAssert) {
+                for (AssertSubDefinition assertSubDefinition : ((DQLDataSetAssert) assertDefinition).getSubAsserts()) {
+                    Object[] data = new Object[6];
+                    data[0] = assertDefinition.getId();
+                    data[1] = assertDefinition.getPath();
+                    data[2] = assertSubDefinition;
+                    data[3] = assertSubDefinition.getShardingRuleTypes();
+                    data[4] = new DatabaseTypeEnvironment(databaseType, IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType));
+                    data[5] = caseType;
+                    result.add(data);
+                }
+            } else {
+                for (String shardingRuleType : assertDefinition.getShardingRuleTypes().split(",")) {
+                    Object[] data = new Object[6];
+                    data[0] = assertDefinition.getId();
+                    data[1] = assertDefinition.getPath();
+                    data[2] = assertDefinition;
+                    data[3] = shardingRuleType;
+                    data[4] = new DatabaseTypeEnvironment(databaseType, IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType));
+                    data[5] = caseType;
+                    result.add(data);
+                }
             }
         }
         return result;
@@ -138,10 +158,10 @@ public final class StartTest {
         if (!databaseTypeEnvironment.isEnabled()) {
             return;
         }
-        if (dataSetAssert instanceof DQLDataSetAssert) {
-            new DQLAssertEngine((DQLDataSetAssert) dataSetAssert, shardingRuleType, databaseTypeEnvironment, caseType).assertDQL();
+        if (dataSetAssert instanceof AssertSubDefinition) {
+            new DQLAssertEngine(sqlCaseId, path, (AssertSubDefinition) dataSetAssert, shardingRuleType, databaseTypeEnvironment, caseType).assertDQL();
         } else {
-            new AssertEngine(dataSetAssert, shardingRuleType, databaseTypeEnvironment, caseType).run();
+            new AssertEngine((DataSetAssert) dataSetAssert, shardingRuleType, databaseTypeEnvironment, caseType).run();
         }
     }
 }
