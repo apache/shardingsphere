@@ -1,6 +1,7 @@
 package com.saaavsaaa.client.zookeeper.transaction;
 
 import com.saaavsaaa.client.utility.PathUtil;
+import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.zookeeper.base.Holder;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.ACL;
@@ -23,25 +24,34 @@ public class ZKTransaction {
         logger.debug("ZKTransaction root:{}", rootNode);
     }
     
-    public ZKTransaction create(String path, byte[] data, List<ACL> acl, CreateMode createMode) {
+    public ZKTransaction create(final String path, final byte[] data, final List<ACL> acl, final CreateMode createMode) {
         this.transaction.create(PathUtil.getRealPath(rootNode, path), data, acl, createMode);
         logger.debug("wait create:{},data:{},acl:{},createMode:{}", new Object[]{path, data, acl, createMode});
         return this;
     }
     
-    public ZKTransaction delete(String path, int version) {
+    public ZKTransaction delete(final String path){
+        return delete(path, Constants.VERSION);
+    }
+    public ZKTransaction delete(final String path, final int version) {
         this.transaction.delete(PathUtil.getRealPath(rootNode, path), version);
         logger.debug("wait delete:{}", path);
         return this;
     }
     
-    public ZKTransaction check(String path, int version) {
+    public ZKTransaction check(final String path){
+        return check(path, Constants.VERSION);
+    }
+    public ZKTransaction check(final String path, final int version) {
         this.transaction.check(PathUtil.getRealPath(rootNode, path), version);
         logger.debug("wait check:{}", path);
         return this;
     }
     
-    public ZKTransaction setData(String path, byte[] data, int version) {
+    public ZKTransaction setData(final String path, final byte[] data){
+        return setData(path, data, Constants.VERSION);
+    }
+    public ZKTransaction setData(final String path, final byte[] data, final int version) {
         this.transaction.setData(PathUtil.getRealPath(rootNode, path), data, version);
         logger.debug("wait setData:{},data:{}", path, data);
         return this;
@@ -52,7 +62,7 @@ public class ZKTransaction {
         return this.transaction.commit();
     }
     
-    public void commit(AsyncCallback.MultiCallback cb, Object ctx) {
+    public void commit(final AsyncCallback.MultiCallback cb, final Object ctx) {
         this.transaction.commit(cb, ctx);
         logger.debug("ZKTransaction commit ctx:{}", ctx);
     }

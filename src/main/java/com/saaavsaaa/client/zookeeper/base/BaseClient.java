@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by aaa
@@ -49,6 +50,27 @@ public abstract class BaseClient implements IClient {
     public void start() throws IOException, InterruptedException {
         holder = new Holder(getContext());
         holder.start();
+    }
+    
+    public boolean start(int wait, TimeUnit units) throws IOException, InterruptedException {
+        holder = new Holder(getContext());
+        holder.start();
+        return blockUntilConnected(wait, units);
+    }
+    
+    //copy curator
+    private synchronized boolean blockUntilConnected(int wait, TimeUnit units) throws InterruptedException {
+        long startTime = System.currentTimeMillis();
+        long maxWaitTimeMs = units != null ? TimeUnit.MILLISECONDS.convert(wait, units) : 0;
+    
+        for (;;){
+            long waitTime = maxWaitTimeMs - (System.currentTimeMillis() - startTime);
+            if ( waitTime <= 0 )
+            {
+                return holder.isConnected();
+            }
+            wait(waitTime);
+        }
     }
     
     @Override

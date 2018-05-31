@@ -32,8 +32,6 @@ public class SyncRetryStrategyTest extends UsualClientTest{
     public void start() throws IOException, InterruptedException {
         testClient = createClient();
         provider = ((BaseClient)testClient).getStrategy().getProvider();
-        AsyncRetryCenter.INSTANCE.init(new DelayRetryPolicy(3, 3, 10));
-        AsyncRetryCenter.INSTANCE.start();
     }
     
     protected IClient createClient() throws IOException, InterruptedException {

@@ -5,12 +5,14 @@ import com.saaavsaaa.client.zookeeper.section.StrategyType;
 import com.saaavsaaa.client.zookeeper.transaction.ZKTransaction;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by aaa
  */
 public interface IClient extends IAction, IGroupAction{
     void start() throws IOException, InterruptedException;
+    boolean start(int wait, TimeUnit units) throws IOException, InterruptedException;
     void close();
     void registerWatch(String key, Listener listener);
     void unregisterWatch(String key);

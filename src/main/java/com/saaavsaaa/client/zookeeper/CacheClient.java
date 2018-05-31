@@ -48,7 +48,7 @@ public final class CacheClient extends UsualClient {
         switch (cacheStrategy){
             case WATCH:{
                 pathTree = new PathTree(rootNode, this);
-                pathTree.watch(null);
+                pathTree.watch();
                 return;
             }
             case ALL:{

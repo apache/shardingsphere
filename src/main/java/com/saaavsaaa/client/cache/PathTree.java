@@ -142,40 +142,41 @@ public final class PathTree {
         logger.debug("stopRefresh");
     }
     
-    public void watch(Listener listener){
+    public void watch(){
+        watch(new Listener(rootNode.get().getKey()) {
+            @Override
+            public void process(WatchedEvent event) {
+                String path = event.getPath();
+                logger.debug("PathTree Watch event:{}", event.toString());
+                switch (event.getType()) {
+                    case NodeCreated:
+                    case NodeDataChanged:
+                    case NodeChildrenChanged: {
+                        try {
+                            String value = Constants.NOTHING_VALUE;
+                            if (!path.equals(getRootNode().getKey())){
+                                value = provider.getDataString(path);
+                            }
+                            put(path, value);
+                        } catch (Exception e) {
+                            logger.error("PathTree put error : " + e.getMessage());
+                        }
+                        break;
+                    }
+                    case NodeDeleted: {
+                        delete(path);
+                        break;
+                    }
+                    default:
+                        break;
+                }
+            }
+        });
+    }
+    
+    public void watch(final Listener listener){
         if (closed){
             return;
-        }
-        if (listener == null){
-            listener = new Listener(rootNode.get().getKey()) {
-                @Override
-                public void process(WatchedEvent event) {
-                    String path = event.getPath();
-                    logger.debug("PathTree Watch event:{}", event.toString());
-                    switch (event.getType()) {
-                        case NodeCreated:
-                        case NodeDataChanged:
-                        case NodeChildrenChanged: {
-                            try {
-                                String value = Constants.NOTHING_VALUE;
-                                if (!path.equals(getRootNode().getKey())){
-                                    value = provider.getDataString(path);
-                                }
-                                put(path, value);
-                            } catch (Exception e) {
-                                logger.error("PathTree put error : " + e.getMessage());
-                            }
-                            break;
-                        }
-                        case NodeDeleted: {
-                            delete(path);
-                            break;
-                        }
-                        default:
-                            break;
-                    }
-                }
-            };
         }
         final String key = listener.getKey();
         logger.debug("PathTree Watch:{}", key);
@@ -285,6 +286,7 @@ public final class PathTree {
     }
     
     public void delete(String path) {
+        logger.debug("PathTree begin delete:{}", path);
         final ReentrantLock lock = this.lock;
         lock.lock();
         if (closed){
@@ -292,10 +294,10 @@ public final class PathTree {
         }
         try {
             PathUtils.validatePath(path);
-            String prxpath = path.substring(0, path.lastIndexOf(Constants.PATH_SEPARATOR));
-            PathNode node = get(prxpath);
+//            String prxpath = path.substring(0, path.lastIndexOf(Constants.PATH_SEPARATOR));
+            PathNode node = get(path);
             node.getChildren().remove(path);
-            logger.debug("PathTree delete:{}", path);
+            logger.debug("PathTree end delete:{}", path);
         } finally {
             lock.unlock();
         }

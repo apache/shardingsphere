@@ -17,11 +17,16 @@ import java.io.IOException;
 public class ClientFactory extends BaseClientFactory {
     //    private static final String CLIENT_EXCLUSIVE_NODE = "ZKC";
     private static final Logger logger = LoggerFactory.getLogger(ClientFactory.class);
+    private DelayRetryPolicy delayRetryPolicy;
     
     public ClientFactory(){}
     
     public ClientFactory newClient(final String servers, final int sessionTimeoutMilliseconds) {
-        this.context = new ClientContext(servers, sessionTimeoutMilliseconds);
+        int wait = sessionTimeoutMilliseconds;
+        if (sessionTimeoutMilliseconds == 0){
+            wait = 60 * 1000;
+        }
+        this.context = new ClientContext(servers, wait);
         client = new UsualClient(context);
         logger.debug("new usual client");
         return this;
@@ -74,12 +79,13 @@ public class ClientFactory extends BaseClientFactory {
     }
     
     public ClientFactory setRetryPolicy(final DelayRetryPolicy delayRetryPolicy){
-        ((ClientContext)context).setDelayRetryPolicy(delayRetryPolicy);
+        this.delayRetryPolicy = delayRetryPolicy;
         return this;
     }
     
     @Override
     public IClient start() throws IOException, InterruptedException {
+        ((ClientContext)context).setDelayRetryPolicy(delayRetryPolicy);
         ((ClientContext)context).setClientFactory(this);
         return super.start();
     }

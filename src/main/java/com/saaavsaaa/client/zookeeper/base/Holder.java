@@ -22,6 +22,7 @@ public class Holder {
     
     protected ZooKeeper zooKeeper;
     protected final BaseContext context;
+    private boolean connected = false;
     
     Holder(final BaseContext context){
         this.context = context;
@@ -44,9 +45,11 @@ public class Holder {
                 if(Event.EventType.None == event.getType()){
                     if(Event.KeeperState.SyncConnected == event.getState()){
                         CONNECTED.countDown();
+                        connected = true;
                         logger.debug("BaseClient startWatcher SyncConnected");
                         return;
                     } else if (Event.KeeperState.Expired == event.getState()){
+                        connected = false;
                         try {
                             logger.warn("startWatcher Event.KeeperState.Expired");
                             reset();
@@ -90,5 +93,9 @@ public class Holder {
     
     public ZooKeeper getZooKeeper() {
         return zooKeeper;
+    }
+    
+    public boolean isConnected() {
+        return connected;
     }
 }
