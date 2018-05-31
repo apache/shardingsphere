@@ -65,8 +65,8 @@ public final class DQLAssertEngine {
     
     private final String expectedDataFile;
     
-    public DQLAssertEngine(final String sqlCaseId, final String path, 
-            final AssertSubDefinition assertSubDefinition, final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException {
+    public DQLAssertEngine(final String sqlCaseId, final String path, final AssertSubDefinition assertSubDefinition, 
+                           final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException {
         this.assertSubDefinition = assertSubDefinition;
         this.caseType = caseType;
         Map<String, DataSource> dataSourceMap = createDataSourceMap(SchemaEnvironmentManager.getDataSourceNames(shardingRuleType), databaseTypeEnvironment.getDatabaseType());
