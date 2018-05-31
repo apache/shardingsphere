@@ -82,19 +82,20 @@ public final class DatabaseUtil {
     }
     
     /**
-     * Execute update.
+     * Execute batch.
      *
      * @param connection connection
      * @param sql SQL
      * @param sqlValueGroups SQL value groups
      * @throws SQLException SQL exception
      */
-    public static void executeUpdate(final Connection connection, final String sql, final List<SQLValueGroup> sqlValueGroups) throws SQLException {
+    public static void executeBatch(final Connection connection, final String sql, final List<SQLValueGroup> sqlValueGroups) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             for (SQLValueGroup each : sqlValueGroups) {
                 setParameters(preparedStatement, each);
-                preparedStatement.executeUpdate();
+                preparedStatement.addBatch();
             }
+            preparedStatement.executeBatch();
         }
     }
     

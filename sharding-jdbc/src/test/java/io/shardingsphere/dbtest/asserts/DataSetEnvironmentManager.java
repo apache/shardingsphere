@@ -79,7 +79,7 @@ public final class DataSetEnvironmentManager {
                 sqlValueGroups.add(new SQLValueGroup(dataSetMetadata, row.getValues()));
             }
             try (Connection connection = dataSourceMap.get(dataNode.getDataSourceName()).getConnection()) {
-                DatabaseUtil.executeUpdate(connection, insertSQL, sqlValueGroups);
+                DatabaseUtil.executeBatch(connection, insertSQL, sqlValueGroups);
             }
         }
     }
