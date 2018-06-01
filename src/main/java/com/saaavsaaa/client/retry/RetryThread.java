@@ -39,7 +39,7 @@ public class RetryThread extends Thread {
     public void run(){
         logger.debug("RetryThread start");
         for (;;) {
-            BaseOperation operation;
+            final BaseOperation operation;
             try {
                 operation = queue.take();
                 logger.debug("take operation:{}", operation.toString());

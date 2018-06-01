@@ -44,7 +44,7 @@ public final class PathTree {
         this.provider = ((BaseClient)client).getStrategy().getProvider();
     }
     
-    public void loading() throws KeeperException, InterruptedException {
+    public void load() throws KeeperException, InterruptedException {
         final ReentrantLock lock = this.lock;
         lock.lockInterruptibly();
         if (closed){
@@ -62,6 +62,7 @@ public final class PathTree {
                 rootNode.set(newRoot);
         
                 this.setStatus(PathStatus.RELEASE);
+//                watch();
                 logger.debug("loading release:{}", Status);
             } else {
                 logger.info("loading but cache status not release");
@@ -70,7 +71,7 @@ public final class PathTree {
                 } catch (InterruptedException e) {
                     logger.error("loading sleep error:{}", e.getMessage(), e);
                 }
-                loading();
+                load();
             }
         } finally {
             lock.unlock();
@@ -117,7 +118,7 @@ public final class PathTree {
                     logger.debug("cacheService run:{}", getStatus());
                     if (PathStatus.RELEASE == getStatus()) {
                         try {
-                            loading();
+                            load();
                         } catch (Exception e) {
                             logger.error(e.getMessage(), e);
                         }

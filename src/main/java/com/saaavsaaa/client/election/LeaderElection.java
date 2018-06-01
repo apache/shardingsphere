@@ -43,8 +43,8 @@ public abstract class LeaderElection {
     */
     public void executeContention(final String nodeBeCompete, final IProvider provider) throws KeeperException, InterruptedException {
         boolean canBegin;
-        String realNode = provider.getRealPath(nodeBeCompete);
-        String contendNode = PathUtil.getRealPath(realNode, Constants.CHANGING_KEY);
+        final String realNode = provider.getRealPath(nodeBeCompete);
+        final String contendNode = PathUtil.getRealPath(realNode, Constants.CHANGING_KEY);
         canBegin = this.contend(contendNode, provider, new Listener(contendNode) {
             @Override
             public void process(WatchedEvent event) {

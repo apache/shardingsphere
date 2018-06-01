@@ -52,25 +52,20 @@ public abstract class BaseClient implements IClient {
         holder.start();
     }
     
-    public boolean start(int wait, TimeUnit units) throws IOException, InterruptedException {
-        holder = new Holder(getContext());
-        holder.start();
-        return blockUntilConnected(wait, units);
-    }
-    
     //copy curator
-    private synchronized boolean blockUntilConnected(int wait, TimeUnit units) throws InterruptedException {
+    @Override
+    public synchronized boolean blockUntilConnected(int wait, TimeUnit units) throws InterruptedException {
         long startTime = System.currentTimeMillis();
         long maxWaitTimeMs = units != null ? TimeUnit.MILLISECONDS.convert(wait, units) : 0;
     
-        for (;;){
+        while (!holder.isConnected()){
             long waitTime = maxWaitTimeMs - (System.currentTimeMillis() - startTime);
-            if ( waitTime <= 0 )
-            {
+            if (waitTime <= 0){
                 return holder.isConnected();
             }
             wait(waitTime);
         }
+        return true;
     }
     
     @Override

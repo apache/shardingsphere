@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
  */
 public interface IClient extends IAction, IGroupAction{
     void start() throws IOException, InterruptedException;
-    boolean start(int wait, TimeUnit units) throws IOException, InterruptedException;
+    boolean blockUntilConnected(int wait, TimeUnit units) throws InterruptedException;
     void close();
     void registerWatch(String key, Listener listener);
     void unregisterWatch(String key);

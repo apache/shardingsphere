@@ -69,7 +69,7 @@ public final class CacheClient extends UsualClient {
     public PathTree loadPathTree(final String treeRoot) throws KeeperException, InterruptedException {
         PathTree tree = new PathTree(treeRoot, this);
         logger.debug("load path tree:{}", treeRoot);
-        tree.loading();
+        tree.load();
         return tree;
     }
     
