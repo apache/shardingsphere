@@ -19,8 +19,8 @@ package io.shardingsphere.dbtest.asserts;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import io.shardingsphere.dbtest.config.bean.AssertSubDefinition;
 import io.shardingsphere.dbtest.config.bean.DQLDataSetAssert;
+import io.shardingsphere.dbtest.config.bean.DQLSubAssert;
 import io.shardingsphere.dbtest.config.bean.DataSetAssert;
 import io.shardingsphere.dbtest.config.bean.DataSetsAssert;
 import lombok.Getter;
@@ -111,8 +111,8 @@ public final class DataSetAssertLoader {
             
             if (each instanceof DQLDataSetAssert) {
                 Set<String> set = new HashSet<>();
-                for (AssertSubDefinition assertSubDefinition : ((DQLDataSetAssert) each).getSubAsserts()) {
-                    set.add(assertSubDefinition.getShardingRuleTypes());
+                for (DQLSubAssert dqlSubAssert : ((DQLDataSetAssert) each).getSubAsserts()) {
+                    set.add(dqlSubAssert.getShardingRuleTypes());
                 }
                 shardingRuleTypes.addAll(set);
             } else {
