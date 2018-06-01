@@ -17,6 +17,7 @@
 
 package io.shardingsphere.proxy.backend.common;
 
+import com.sun.rowset.CachedRowSetImpl;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.merger.MergeEngineFactory;
@@ -47,6 +48,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 
 import javax.sql.DataSource;
+import javax.sql.rowset.CachedRowSet;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -127,7 +129,7 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
     
     private CommandResponsePackets executeForSharding() {
         PreparedStatementRoutingEngine routingEngine = new PreparedStatementRoutingEngine(sql,
-                RuleRegistry.getInstance().getShardingRule(), RuleRegistry.getInstance().getShardingMetaData(), databaseType, showSQL);
+            RuleRegistry.getInstance().getShardingRule(), RuleRegistry.getInstance().getShardingMetaData(), databaseType, showSQL);
         // TODO support null value parameter
         SQLRouteResult routeResult = routingEngine.route(getComStmtExecuteParameters());
         if (routeResult.getExecutionUnits().isEmpty()) {
@@ -151,7 +153,7 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
             case DML:
             case DDL:
                 return RuleRegistry.getInstance().isOnlyMasterSlave() ? executeUpdate(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql)
-                        : executeUpdate(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql, sqlStatement);
+                    : executeUpdate(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql, sqlStatement);
             default:
                 return executeCommon(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql);
         }
@@ -179,6 +181,22 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
             preparedStatement.setFetchSize(FETCH_ONE_ROW_A_TIME);
             setJDBCPreparedStatementParameters(preparedStatement);
             resultSets.add(preparedStatement.executeQuery());
+            return getQueryDatabaseProtocolPackets();
+        } catch (final SQLException ex) {
+            return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
+        }
+    }
+    
+    private CommandResponsePackets executeQueryWithNonStreamResultSet(final DataSource dataSource, final String sql) {
+        try (
+            Connection connection = dataSource.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(sql)
+        ) {
+            setJDBCPreparedStatementParameters(preparedStatement);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            CachedRowSet cachedRowSet = new CachedRowSetImpl();
+            cachedRowSet.populate(resultSet);
+            resultSets.add(cachedRowSet);
             return getQueryDatabaseProtocolPackets();
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
@@ -235,8 +253,8 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
     
     private CommandResponsePackets executeCommon(final DataSource dataSource, final String sql) {
         try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            Connection connection = dataSource.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             setJDBCPreparedStatementParameters(preparedStatement);
             boolean hasResultSet = preparedStatement.execute();
             if (hasResultSet) {
