@@ -23,7 +23,6 @@ import io.shardingsphere.dbtest.common.DatabaseUtil;
 import io.shardingsphere.dbtest.config.DataSetsParser;
 import io.shardingsphere.dbtest.config.bean.AssertSubDefinition;
 import io.shardingsphere.dbtest.config.bean.DMLDataSetAssert;
-import io.shardingsphere.dbtest.config.bean.DatasetDefinition;
 import io.shardingsphere.dbtest.config.bean.ParameterDefinition;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.test.sql.SQLCaseType;
@@ -199,13 +198,13 @@ public final class DMLAssertEngine {
             dataSetEnvironmentManager.initialize();
             try (Connection connection = dataSource.getConnection()) {
                 int actual = DatabaseUtil.updateUsePreparedStatementToExecute(connection, rootSQL, anAssert.getParameter());
-                DatasetDefinition checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
+                DataSetDefinitions checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
                 if (null != anAssert.getExpectedUpdate()) {
                     Assert.assertEquals("Update row number error", anAssert.getExpectedUpdate().intValue(), actual);
                 }
                 String checkSQL = anAssert.getExpectedSql();
                 checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
-                DatasetDefinition datasetDefinition = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, anAssert.getExpectedParameter());
+                DataSetDefinitions datasetDefinition = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, anAssert.getExpectedParameter());
                 DatabaseUtil.assertDatas(checkDataset, datasetDefinition);
                 return actual;
             }
@@ -219,13 +218,13 @@ public final class DMLAssertEngine {
             dataSetEnvironmentManager.initialize();
             try (Connection connection = dataSource.getConnection()) {
                 int result = DatabaseUtil.updateUsePreparedStatementToExecuteUpdate(connection, rootSQL, anAssert.getParameter());
-                DatasetDefinition checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
+                DataSetDefinitions checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
                 if (null != anAssert.getExpectedUpdate()) {
                     Assert.assertEquals("Update row number error", anAssert.getExpectedUpdate().intValue(), result);
                 }
                 String checkSQL = anAssert.getExpectedSql();
                 checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
-                DatasetDefinition datasetDefinition = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, anAssert.getExpectedParameter());
+                DataSetDefinitions datasetDefinition = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, anAssert.getExpectedParameter());
                 DatabaseUtil.assertDatas(checkDataset, datasetDefinition);
                 return result;
             }
@@ -239,13 +238,13 @@ public final class DMLAssertEngine {
             dataSetEnvironmentManager.initialize();
             try (Connection connection = dataSource.getConnection()) {
                 int result = DatabaseUtil.updateUseStatementToExecute(connection, rootSQL, anAssert.getParameter());
-                DatasetDefinition checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
+                DataSetDefinitions checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
                 if (anAssert.getExpectedUpdate() != null) {
                     Assert.assertEquals("Update row number error", anAssert.getExpectedUpdate().intValue(), result);
                 }
                 String checkSQL = anAssert.getExpectedSql();
                 checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
-                DatasetDefinition datasetDefinition = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, anAssert.getExpectedParameter());
+                DataSetDefinitions datasetDefinition = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, anAssert.getExpectedParameter());
                 DatabaseUtil.assertDatas(checkDataset, datasetDefinition);
                 return result;
             }
@@ -259,13 +258,13 @@ public final class DMLAssertEngine {
             dataSetEnvironmentManager.initialize();
             try (Connection connection = dataSource.getConnection()) {
                 int actual = DatabaseUtil.updateUseStatementToExecuteUpdate(connection, rootSQL, dmlDataSetAssert.getParameter());
-                DatasetDefinition checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
+                DataSetDefinitions checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
                 if (null != dmlDataSetAssert.getExpectedUpdate()) {
                     Assert.assertEquals("Update row number error", dmlDataSetAssert.getExpectedUpdate().intValue(), actual);
                 }
                 String checkSQL = dmlDataSetAssert.getExpectedSql();
                 checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
-                DatasetDefinition datasetDefinition = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, dmlDataSetAssert.getExpectedParameter());
+                DataSetDefinitions datasetDefinition = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, dmlDataSetAssert.getExpectedParameter());
                 DatabaseUtil.assertDatas(checkDataset, datasetDefinition);
                 return actual;
             }

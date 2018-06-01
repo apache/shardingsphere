@@ -24,7 +24,6 @@ import io.shardingsphere.dbtest.common.DatabaseUtil;
 import io.shardingsphere.dbtest.config.DataSetsParser;
 import io.shardingsphere.dbtest.config.bean.AssertSubDefinition;
 import io.shardingsphere.dbtest.config.bean.DDLDataSetAssert;
-import io.shardingsphere.dbtest.config.bean.DatasetDefinition;
 import io.shardingsphere.dbtest.config.bean.ParameterDefinition;
 import io.shardingsphere.dbtest.config.dataset.DataSetColumnMetadata;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
@@ -157,7 +156,7 @@ public final class DDLAssertEngine {
                     SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), ddlDataSetAssert.getInitSql());
                 }
                 DatabaseUtil.updateUsePreparedStatementToExecute(con, rootSQL, ddlDataSetAssert.getParameter());
-                DatasetDefinition checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
+                DataSetDefinitions checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
                 String table = ddlDataSetAssert.getTable();
                 List<DataSetColumnMetadata> columnDefinitions = DatabaseUtil.getColumnDefinitions(con, table);
                 DatabaseUtil.assertConfigs(checkDataset, columnDefinitions, table);
@@ -184,7 +183,7 @@ public final class DDLAssertEngine {
                 }
                 DatabaseUtil.updateUsePreparedStatementToExecuteUpdate(connection, rootSQL,
                         anAssert.getParameter());
-                DatasetDefinition checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
+                DataSetDefinitions checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
                 String table = anAssert.getTable();
                 List<DataSetColumnMetadata> columnDefinitions = DatabaseUtil.getColumnDefinitions(connection, table);
                 DatabaseUtil.assertConfigs(checkDataset, columnDefinitions, table);
@@ -210,7 +209,7 @@ public final class DDLAssertEngine {
                     SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), anAssert.getInitSql());
                 }
                 DatabaseUtil.updateUseStatementToExecute(connection, rootSQL, anAssert.getParameter());
-                DatasetDefinition checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
+                DataSetDefinitions checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
                 String table = anAssert.getTable();
                 List<DataSetColumnMetadata> columnDefinitions = DatabaseUtil.getColumnDefinitions(connection, table);
                 DatabaseUtil.assertConfigs(checkDataset, columnDefinitions, table);
@@ -236,7 +235,7 @@ public final class DDLAssertEngine {
                     SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), anAssert.getInitSql());
                 }
                 DatabaseUtil.updateUseStatementToExecuteUpdate(connection, rootSQL, anAssert.getParameter());
-                DatasetDefinition checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
+                DataSetDefinitions checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
                 String table = anAssert.getTable();
                 List<DataSetColumnMetadata> columnDefinitions = DatabaseUtil.getColumnDefinitions(connection, table);
                 DatabaseUtil.assertConfigs(checkDataset, columnDefinitions, table);

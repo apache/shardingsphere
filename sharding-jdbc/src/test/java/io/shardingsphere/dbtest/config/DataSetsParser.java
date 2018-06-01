@@ -19,7 +19,7 @@ package io.shardingsphere.dbtest.config;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.dbtest.config.bean.ColumnDefinition;
-import io.shardingsphere.dbtest.config.bean.DatasetDefinition;
+import io.shardingsphere.dbtest.asserts.DataSetDefinitions;
 import io.shardingsphere.dbtest.config.bean.IndexDefinition;
 import io.shardingsphere.dbtest.config.dataset.DataSetColumnMetadata;
 import lombok.AccessLevel;
@@ -64,10 +64,10 @@ public final class DataSetsParser {
      * @throws ParserConfigurationException Parser configuration exception
      * @throws XPathExpressionException XPath expression exception
      */
-    public static DatasetDefinition parse(final File file, final String tableName) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    public static DataSetDefinitions parse(final File file, final String tableName) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         Node rootNode = (Node) XPathFactory.newInstance().newXPath().evaluate(ROOT_TAG, getDocument(file), XPathConstants.NODE);
         Preconditions.checkNotNull(rootNode, String.format("Missing root tag for file `%s`.", file.getPath()));
-        DatasetDefinition result = new DatasetDefinition();
+        DataSetDefinitions result = new DataSetDefinitions();
         NodeList childNodes = rootNode.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
             Node each = childNodes.item(i);
@@ -94,7 +94,7 @@ public final class DataSetsParser {
         return documentBuilderFactory.newDocumentBuilder().parse(file);
     }
     
-    private static void parseMetadata(final DatasetDefinition datasetDefinition, final Node node) {
+    private static void parseMetadata(final DataSetDefinitions datasetDefinition, final Node node) {
         Map<String, List<DataSetColumnMetadata>> metadataMap = datasetDefinition.getMetadatas();
         for (int i = 0; i < node.getChildNodes().getLength(); i++) {
             Node each = node.getChildNodes().item(i);
@@ -173,7 +173,7 @@ public final class DataSetsParser {
         return "";
     }
     
-    private static void parseDataset(final DatasetDefinition datasetDefinition, final String tableName, final Node firstNode) {
+    private static void parseDataset(final DataSetDefinitions datasetDefinition, final String tableName, final Node firstNode) {
         NodeList secondNodeList = firstNode.getChildNodes();
         for (int i = 0; i < secondNodeList.getLength(); i++) {
             Node secondNode = secondNodeList.item(i);

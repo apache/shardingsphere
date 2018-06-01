@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.config.bean;
+package io.shardingsphere.dbtest.asserts;
 
 import io.shardingsphere.dbtest.config.dataset.DataSetColumnMetadata;
 import io.shardingsphere.dbtest.config.dataset.DataSetIndexMetadata;
@@ -28,7 +28,7 @@ import java.util.Map;
 
 @Getter
 @Setter
-public final class DatasetDefinition {
+public final class DataSetDefinitions {
     
     private Map<String, List<DataSetColumnMetadata>> metadatas = new HashMap<>();
     

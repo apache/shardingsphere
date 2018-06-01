@@ -18,7 +18,7 @@
 package io.shardingsphere.dbtest.common;
 
 import io.shardingsphere.dbtest.config.bean.ColumnDefinition;
-import io.shardingsphere.dbtest.config.bean.DatasetDefinition;
+import io.shardingsphere.dbtest.asserts.DataSetDefinitions;
 import io.shardingsphere.dbtest.config.bean.IndexDefinition;
 import io.shardingsphere.dbtest.config.bean.ParameterDefinition;
 import io.shardingsphere.dbtest.config.bean.ParameterValueDefinition;
@@ -114,7 +114,7 @@ public final class DatabaseUtil {
      * @return query result set
      * @throws SQLException SQL exception
      */
-    public static DatasetDefinition executeQueryForPreparedStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
+    public static DataSetDefinitions executeQueryForPreparedStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
             for (SQLValue each : sqlValues) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
@@ -134,7 +134,7 @@ public final class DatabaseUtil {
      * @return query result set
      * @throws SQLException SQL exception
      */
-    public static DatasetDefinition executeDQLForPreparedStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
+    public static DataSetDefinitions executeDQLForPreparedStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
             for (SQLValue each : sqlValues) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
@@ -155,7 +155,7 @@ public final class DatabaseUtil {
      * @return query result set
      * @throws SQLException SQL exception
      */
-    public static DatasetDefinition executeQueryForStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
+    public static DataSetDefinitions executeQueryForStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             try (ResultSet resultSet = statement.executeQuery(sqlStatement(sql, sqlValues))) {
                 return getDatasetDefinition(resultSet);
@@ -172,7 +172,7 @@ public final class DatabaseUtil {
      * @return query result set
      * @throws SQLException SQL exception
      */
-    public static DatasetDefinition executeDQLForStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
+    public static DataSetDefinitions executeDQLForStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             assertTrue("Not a query statement.", statement.execute(sqlStatement(sql, sqlValues)));
             try (ResultSet resultSet = statement.getResultSet()) {
@@ -300,7 +300,7 @@ public final class DatabaseUtil {
      * @throws SQLException   SQL exception
      * @throws ParseException parse exception
      */
-    public static DatasetDefinition selectUsePreparedStatement0(final Connection conn, final String sql, final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
+    public static DataSetDefinitions selectUsePreparedStatement0(final Connection conn, final String sql, final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
         try (PreparedStatement preparedStatement = conn.prepareStatement(sql.replaceAll("%s", "?"))) {
             sqlPreparedStatement0(parameterDefinition.getValues(), preparedStatement);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -329,7 +329,7 @@ public final class DatabaseUtil {
         }
     }
     
-    private static DatasetDefinition getDatasetDefinition(final ResultSet resultSet) throws SQLException {
+    private static DataSetDefinitions getDatasetDefinition(final ResultSet resultSet) throws SQLException {
         ResultSetMetaData metaData = resultSet.getMetaData();
         int columnCount = metaData.getColumnCount();
         List<DataSetColumnMetadata> dataSetColumnMetadataList = new LinkedList<>();
@@ -345,7 +345,7 @@ public final class DatabaseUtil {
         Map<String, List<Map<String, String>>> datas = new HashMap<>();
         datas.put("data", ls);
         handleResultSet(resultSet, dataSetColumnMetadataList, ls);
-        DatasetDefinition result = new DatasetDefinition();
+        DataSetDefinitions result = new DataSetDefinitions();
         result.setMetadatas(configs);
         result.setDatas(datas);
         return result;
@@ -451,7 +451,7 @@ public final class DatabaseUtil {
      * @param actual actual
      * @param table table
      */
-    public static void assertConfigs(final DatasetDefinition expected, final List<DataSetColumnMetadata> actual, final String table) {
+    public static void assertConfigs(final DataSetDefinitions expected, final List<DataSetColumnMetadata> actual, final String table) {
         Map<String, List<DataSetColumnMetadata>> configs = expected.getMetadatas();
         List<DataSetColumnMetadata> columnDefinitions = configs.get(table);
         for (DataSetColumnMetadata each : columnDefinitions) {
@@ -504,7 +504,7 @@ public final class DatabaseUtil {
      * @param expected expected
      * @param actual actual
      */
-    public static void assertDatas(final DatasetDefinition expected, final DatasetDefinition actual) {
+    public static void assertDatas(final DataSetDefinitions expected, final DataSetDefinitions actual) {
         Map<String, List<DataSetColumnMetadata>> actualConfigs = actual.getMetadatas();
         Map<String, List<DataSetColumnMetadata>> expectedConfigs = expected.getMetadatas();
         for (Entry<String, List<DataSetColumnMetadata>> entry : expectedConfigs.entrySet()) {

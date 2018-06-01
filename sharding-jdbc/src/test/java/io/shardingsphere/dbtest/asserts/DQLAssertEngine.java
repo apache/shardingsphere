@@ -24,7 +24,6 @@ import io.shardingsphere.dbtest.common.DatabaseUtil;
 import io.shardingsphere.dbtest.common.SQLValue;
 import io.shardingsphere.dbtest.config.DataSetsParser;
 import io.shardingsphere.dbtest.config.bean.DQLSubAssert;
-import io.shardingsphere.dbtest.config.bean.DatasetDefinition;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
@@ -95,32 +94,32 @@ public final class DQLAssertEngine {
     
     private void assertExecuteQueryForPreparedStatement() throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try (Connection connection = dataSource.getConnection()) {
-            DatasetDefinition datasetDefinition = DatabaseUtil.executeQueryForPreparedStatement(connection, sql, getSQLValues(dqlSubAssert.getParameters()));
-            DatasetDefinition checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
+            DataSetDefinitions datasetDefinition = DatabaseUtil.executeQueryForPreparedStatement(connection, sql, getSQLValues(dqlSubAssert.getParameters()));
+            DataSetDefinitions checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
             DatabaseUtil.assertDatas(checkDataset, datasetDefinition);
         }
     }
     
     private void assertExecuteDQLForPreparedStatement() throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try (Connection connection = dataSource.getConnection()) {
-            DatasetDefinition datasetDefinition = DatabaseUtil.executeDQLForPreparedStatement(connection, sql, getSQLValues(dqlSubAssert.getParameters()));
-            DatasetDefinition checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
+            DataSetDefinitions datasetDefinition = DatabaseUtil.executeDQLForPreparedStatement(connection, sql, getSQLValues(dqlSubAssert.getParameters()));
+            DataSetDefinitions checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
             DatabaseUtil.assertDatas(checkDataset, datasetDefinition);
         }
     }
     
     private void assertExecuteQueryForStatement() throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, ParseException {
         try (Connection connection = dataSource.getConnection()) {
-            DatasetDefinition datasetDefinition = DatabaseUtil.executeQueryForStatement(connection, sql, getSQLValues(dqlSubAssert.getParameters()));
-            DatasetDefinition checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
+            DataSetDefinitions datasetDefinition = DatabaseUtil.executeQueryForStatement(connection, sql, getSQLValues(dqlSubAssert.getParameters()));
+            DataSetDefinitions checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
             DatabaseUtil.assertDatas(checkDataset, datasetDefinition);
         }
     }
     
     private void assertExecuteDQLForStatement() throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, ParseException {
         try (Connection connection = dataSource.getConnection()) {
-            DatasetDefinition datasetDefinition = DatabaseUtil.executeDQLForStatement(connection, sql, getSQLValues(dqlSubAssert.getParameters()));
-            DatasetDefinition checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
+            DataSetDefinitions datasetDefinition = DatabaseUtil.executeDQLForStatement(connection, sql, getSQLValues(dqlSubAssert.getParameters()));
+            DataSetDefinitions checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
             DatabaseUtil.assertDatas(checkDataset, datasetDefinition);
         }
     }
