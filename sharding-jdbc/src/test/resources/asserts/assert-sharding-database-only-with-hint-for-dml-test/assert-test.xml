@@ -100,6 +100,7 @@
             </expected-parameter>
         </subAssert>
     </dml-assert>
+    
     <dml-assert id="assertInsertWithoutPlaceholder" expected-update="9" sharding-rule-types="db" expected-sql="assertSelectEqualsWithSingleTable">
         <subAssert expected-data-file="insert/db_1.xml">
             <parameter>
@@ -418,6 +419,7 @@
             </expected-parameter>
         </subAssert>
     </dml-assert>
+    
     <dml-assert id="assertDeleteWithoutAlias"  expected-update="40" expected-sql="assertSelectEqualsWithSingleTable">
         <subAssert expected-data-file="delete.xml">
             <parameter>
