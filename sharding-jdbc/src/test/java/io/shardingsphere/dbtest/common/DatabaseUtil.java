@@ -188,8 +188,7 @@ public final class DatabaseUtil {
      * @return Number of rows as a result of execution
      * @throws SQLException SQL exception
      */
-    public static int updateUseStatementToExecuteUpdate(
-            final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException {
+    public static int updateUseStatementToExecuteUpdate(final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             return statement.executeUpdate(sqlStatement0(sql, parameterDefinition.getValues()));
         }
@@ -309,33 +308,13 @@ public final class DatabaseUtil {
         }
     }
     
-    private static void handleResultSetMore(final String type, final ResultSet resultSet, final Map<String, String> data, final String name) throws SQLException {
-        switch (type) {
-            case "int":
-                data.put(name, String.valueOf(resultSet.getInt(name)));
-                return;
-            case "long":
-                data.put(name, String.valueOf(resultSet.getLong(name)));
-                break;
-            case "float":
-                data.put(name, String.valueOf(resultSet.getFloat(name)));
-                break;
-            case "double":
-                data.put(name, String.valueOf(resultSet.getDouble(name)));
-                break;
-            default:
-                data.put(name, resultSet.getString(name));
-                break;
-        }
-    }
-    
     private static DataSetDefinitions getDatasetDefinition(final ResultSet resultSet) throws SQLException {
         List<DataSetColumnMetadata> dataSetColumnMetadataList = getDataSetColumnMetadataList(resultSet);
         Map<String, List<DataSetColumnMetadata>> configs = new HashMap<>();
         configs.put("data", dataSetColumnMetadataList);
-        Map<String, List<Map<String, String>>> datas = new HashMap<>();
-        datas.put("data", handleResultSet(resultSet, dataSetColumnMetadataList));
-        return new DataSetDefinitions(configs, datas);
+        Map<String, List<Map<String, String>>> dataMap = new HashMap<>();
+        dataMap.put("data", handleResultSet(resultSet, dataSetColumnMetadataList));
+        return new DataSetDefinitions(configs, dataMap);
     }
     
     private static List<DataSetColumnMetadata> getDataSetColumnMetadataList(final ResultSet resultSet) throws SQLException {
@@ -352,28 +331,15 @@ public final class DatabaseUtil {
     }
     
     private static List<Map<String, String>> handleResultSet(final ResultSet resultSet, final Collection<DataSetColumnMetadata> dataSetColumnMetadataList) throws SQLException {
-        List<Map<String, String>> result = new ArrayList<>();
+        List<Map<String, String>> result = new LinkedList<>();
         while (resultSet.next()) {
             Map<String, String> data = new HashMap<>();
             for (DataSetColumnMetadata each : dataSetColumnMetadataList) {
                 String name = each.getName();
-                String type = each.getType();
-                switch (type) {
-                    case "boolean":
-                        data.put(name, String.valueOf(resultSet.getBoolean(name)));
-                        break;
-                    case "char":
-                        data.put(name, String.valueOf(resultSet.getString(name)));
-                        break;
-                    case "Date":
-                        data.put(name, new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date(resultSet.getDate(name).getTime())));
-                        break;
-                    case "Blob":
-                        data.put(name, String.valueOf(resultSet.getBlob(name)));
-                        break;
-                    default:
-                        handleResultSetMore(type, resultSet, data, name);
-                        break;
+                if ("Date".equals(each.getType())) {
+                    data.put(name, new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date(resultSet.getDate(name).getTime())));
+                } else {
+                    data.put(name, String.valueOf(resultSet.getObject(name)));
                 }
             }
             result.add(data);
