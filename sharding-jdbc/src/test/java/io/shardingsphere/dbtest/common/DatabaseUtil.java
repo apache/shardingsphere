@@ -254,7 +254,7 @@ public final class DatabaseUtil {
     }
     
     /**
-     * Use PreparedStatement test SQL select.
+     * Execute DQL for prepared statement.
      *
      * @param connection connection
      * @param sql SQL
@@ -262,14 +262,12 @@ public final class DatabaseUtil {
      * @return query result set
      * @throws SQLException SQL exception
      */
-    public static DatasetDatabase selectUsePreparedStatementToExecuteSelect(
-            final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
+    public static DatasetDatabase executeDQLForPreparedStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
             for (SQLValue each : sqlValues) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
             }
-            boolean flag = preparedStatement.execute();
-            assertTrue("Not a query statement.", flag);
+            assertTrue("Not a query statement.", preparedStatement.execute());
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 return useBackResultSet(resultSet);
             }
@@ -297,7 +295,7 @@ public final class DatabaseUtil {
     }
     
     /**
-     * Use Statement test SQL select.
+     * Execute DQL for statement.
      *
      * @param connection connection
      * @param sql SQL
@@ -305,7 +303,7 @@ public final class DatabaseUtil {
      * @return query result set
      * @throws SQLException SQL exception
      */
-    public static DatasetDatabase selectUseStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
+    public static DatasetDatabase executeQueryForStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             try (ResultSet resultSet = statement.executeQuery(sqlStatement(sql, sqlValues))) {
                 return useBackResultSet(resultSet);
@@ -322,9 +320,10 @@ public final class DatabaseUtil {
      * @return query result set
      * @throws SQLException SQL exception
      */
-    public static DatasetDatabase selectUseStatementToExecuteSelect(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
+    public static DatasetDatabase executeDQLForStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            try (ResultSet resultSet = statement.executeQuery(sqlStatement(sql, sqlValues))) {
+            assertTrue("Not a query statement.", statement.execute(sqlStatement(sql, sqlValues)));
+            try (ResultSet resultSet = statement.getResultSet()) {
                 return useBackResultSet(resultSet);
             }
         }

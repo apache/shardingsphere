@@ -88,13 +88,13 @@ public final class DQLAssertEngine {
      * @throws ParseException
      */
     public void assertDQL() throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
-        doSelectUsePreparedStatement();
-        doSelectUsePreparedStatementToExecuteSelect();
-        doSelectUseStatement();
-        doSelectUseStatementToExecuteSelect();
+        assertExecuteQueryForPreparedStatement();
+        assertExecuteDQLForPreparedStatement();
+        assertExecuteQueryForStatement();
+        assertExecuteDQLForStatement();
     }
     
-    private void doSelectUsePreparedStatement() throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private void assertExecuteQueryForPreparedStatement() throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try (Connection connection = dataSource.getConnection()) {
             DatasetDatabase ddPreparedStatement = DatabaseUtil.executeQueryForPreparedStatement(connection, sql, getSQLValues(dqlSubAssert.getParameters()));
             DatasetDefinition checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
@@ -102,32 +102,31 @@ public final class DQLAssertEngine {
         }
     }
     
-    private void doSelectUsePreparedStatementToExecuteSelect() throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private void assertExecuteDQLForPreparedStatement() throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try (Connection connection = dataSource.getConnection()) {
-            DatasetDatabase datasetDatabase = DatabaseUtil.selectUsePreparedStatementToExecuteSelect(connection, sql, getSQLValues(dqlSubAssert.getParameters()));
+            DatasetDatabase datasetDatabase = DatabaseUtil.executeDQLForPreparedStatement(connection, sql, getSQLValues(dqlSubAssert.getParameters()));
             DatasetDefinition checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
             DatabaseUtil.assertDatas(checkDataset, datasetDatabase);
         }
     }
     
-    private void doSelectUseStatement() throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, ParseException {
+    private void assertExecuteQueryForStatement() throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, ParseException {
         try (Connection connection = dataSource.getConnection()) {
-            DatasetDatabase datasetDatabase = DatabaseUtil.selectUseStatement(connection, sql, getSQLValues(dqlSubAssert.getParameters()));
+            DatasetDatabase datasetDatabase = DatabaseUtil.executeQueryForStatement(connection, sql, getSQLValues(dqlSubAssert.getParameters()));
             DatasetDefinition checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
             DatabaseUtil.assertDatas(checkDataset, datasetDatabase);
         }
     }
     
-    private void doSelectUseStatementToExecuteSelect() throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, ParseException {
+    private void assertExecuteDQLForStatement() throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, ParseException {
         try (Connection connection = dataSource.getConnection()) {
-            DatasetDatabase datasetDatabase = DatabaseUtil.selectUseStatementToExecuteSelect(connection, sql, getSQLValues(dqlSubAssert.getParameters()));
+            DatasetDatabase datasetDatabase = DatabaseUtil.executeDQLForStatement(connection, sql, getSQLValues(dqlSubAssert.getParameters()));
             DatasetDefinition checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
             DatabaseUtil.assertDatas(checkDataset, datasetDatabase);
         }
     }
     
     private Collection<SQLValue> getSQLValues(final String parameters) throws ParseException {
-        System.out.println(parameters);
         if (null == parameters) {
             return Collections.emptyList();
         }
