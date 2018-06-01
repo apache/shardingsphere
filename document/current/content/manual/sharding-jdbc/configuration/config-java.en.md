@@ -220,7 +220,7 @@ Subclass of ShardingStrategyConfiguration.
 | *Name*              | *DataType*  | *Description*                                                                                                                                    |
 | ------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | shardingColumn      |  String     | Name of sharding column                                                                                                                          |
-| algorithmExpression |  String     | Inline expression for sharding algorithm, more details please reference [Inline expression](/features/sharding/other-features/inline-expression) |
+| algorithmExpression |  String     | Inline expression for sharding algorithm, more details please reference [Inline expression](/en/features/sharding/other-features/inline-expression) |
 
 #### HintShardingStrategyConfiguration
 

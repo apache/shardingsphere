@@ -1,16 +1,12 @@
 +++
-pre = "<b>3.1.3. </b>"
-title = "Other Features"
-weight = 3
-chapter = true
+pre = "<b>3.1.2. </b>"
+toc = true
+title = "Usage standard"
+weight = 2
 +++
 
-## Navigation
+## background
 
-This section introduces other functions of data sharding, includes:
+Sharding-Sphere hopes keep best compatibilities with SQL and single node database's behaviours, but distributed scenario is more complicated than before. Sharding-Sphere will focus on big data for OLAP firstly. For OLAP related, Sharding-Sphere will supported little by little.
 
-* Inline expression
-* Distributed sequence
-* Sharding Hint
-
-Please refer to the relevant pages of each function for details.
+Please read [Supported SQL](/en/features/sharding/usage-standard/sql) and [Pagination](/en/features/sharding/usage-standard/pagination) for more details.

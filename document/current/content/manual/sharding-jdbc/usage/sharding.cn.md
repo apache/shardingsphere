@@ -224,4 +224,4 @@ sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.algorith
 private DataSource dataSource;
 ```
 
-规则配置包括数据源配置、表规则配置、分库策略和分表策略组成。这只是最简单的配置方式，实际使用可更加灵活，如：多分片键，分片策略直接和表规则配置绑定等。更多的详细配置请参考[配置手册](/manual/sharding-jdbc/configuration/)。
+规则配置包括数据源配置、表规则配置、分库策略和分表策略组成。这只是最简单的配置方式，实际使用可更加灵活，如：多分片键，分片策略直接和表规则配置绑定等。更多的详细配置请参考[配置手册](/cn/manual/sharding-jdbc/configuration/)。

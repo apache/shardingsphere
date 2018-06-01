@@ -16,7 +16,7 @@ mvn clean package docker:build
 
 ## Configure Sharing-Proxy
 
-Create /${your_work_dir}/conf/config.yaml file to configure sharding rule. More details please reference [Configuration Manual](/manual/sharding-proxy/configuration/).
+Create /${your_work_dir}/conf/config.yaml file to configure sharding rule. More details please reference [Configuration Manual](/en/manual/sharding-proxy/configuration/).
 
 ## Run docker
 

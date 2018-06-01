@@ -16,7 +16,7 @@ mvn clean package docker:build
 
 ## 配置Sharing-Proxy
 
-创建/${your_work_dir}/conf/config.yaml文件，进行分片规则配置。配置方式请参考[配置手册](/manual/sharding-proxy/configuration/)。
+创建/${your_work_dir}/conf/config.yaml文件，进行分片规则配置。配置方式请参考[配置手册](/cn/manual/sharding-proxy/configuration/)。
 
 ## 运行Docker
 

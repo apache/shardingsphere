@@ -10,11 +10,11 @@ chapter = true
  - 深入理解Sharding核心技术
  - 遵守开发规范
  - 高质量提交
- - 开启Google 2FA([2FA](/contribute/2fa/))
+ - 开启Google 2FA([2FA](/cn/contribute/2fa/))
 
 ## 当前提交者
 
- - 见 [组织](/organization/)
+ - 见 [组织](/cn/organization/)
  
 ## 维护者责任
 

@@ -10,11 +10,11 @@ chapter = true
  - Deep understanding of Sharding core technology
  - Compliance with the development conventions
  - High quality of commits
- - Enable Two-factor authentication([2FA](/contribute/2fa/))
+ - Enable Two-factor authentication([2FA](/en/contribute/2fa/))
 
 ## Current Committers
 
- - See [Committer](/organization/)
+ - See [Committer](/en/organization/)
  
 ## Maintainer responsibility
 

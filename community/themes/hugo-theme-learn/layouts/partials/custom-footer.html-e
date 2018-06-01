@@ -1,0 +1,5 @@
+<!-- Partial intended to be overwritten with tags loaded at the end of the page loading (usually for Javascript) 
+<script>
+    console.log("running some javascript");
+</script>
+-->

@@ -226,4 +226,4 @@ private DataSource dataSource;
 ```
 
 The rule configuration consists of data source configuration, table rule configuration, database Sharding strategy and table Sharding strategy, etc. Here is a simple configuration example, more flexible configurations can be used in product environment, e.g. multi-Sharding columns, table rules configuration directly bound with Sharding strategy.
-More details please reference [configuration manual](/manual/sharding-jdbc/configuration/).
+More details please reference [configuration manual](/en/manual/sharding-jdbc/configuration/).
