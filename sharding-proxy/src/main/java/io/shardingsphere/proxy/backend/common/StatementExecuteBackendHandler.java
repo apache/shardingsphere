@@ -174,9 +174,9 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
     }
     
     private CommandResponsePackets executeQuery(final DataSource dataSource, final String sql) {
-        if (ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode()) == ProxyMode.MEMORY_STRICTLY) {
+        if (ProxyMode.MEMORY_STRICTLY == ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode())) {
             return executeQueryWithStreamResultSet(dataSource, sql);
-        } else if (ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode()) == ProxyMode.CONNECTION_STRICTLY) {
+        } else if (ProxyMode.CONNECTION_STRICTLY == ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode())) {
             return executeQueryWithNonStreamResultSet(dataSource, sql);
         } else {
             return new CommandResponsePackets(new ErrPacket(1, 0, "", "", "Invalid proxy.mode"));
