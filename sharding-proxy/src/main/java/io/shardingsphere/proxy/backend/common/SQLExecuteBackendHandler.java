@@ -150,9 +150,9 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
     }
     
     private CommandResponsePackets executeQuery(final DataSource dataSource, final String sql) {
-        if (RuleRegistry.getInstance().getProxyMode().equals(ProxyMode.MEMORY_STRICTLY.getValue())) {
+        if (ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode()) == ProxyMode.MEMORY_STRICTLY) {
             return executeQueryWithStreamResultSet(dataSource, sql);
-        } else if (RuleRegistry.getInstance().getProxyMode().equals(ProxyMode.CONNECTION_STRICTLY.getValue())) {
+        } else if (ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode()) == ProxyMode.CONNECTION_STRICTLY) {
             return executeQueryWithNonStreamResultSet(dataSource, sql);
         } else {
             return new CommandResponsePackets(new ErrPacket(1, 0, "", "", "Invalid proxy.mode"));

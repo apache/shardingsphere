@@ -57,15 +57,15 @@ public enum ShardingPropertiesConstant {
      * Proxy mode.
      *
      * <p>
-     * MemoryStrictly:
+     * MEMORY_STRICTLY:
      * Proxy holds as many connections as the count of actual tables routed in a database.
      * The benefit of this approach is saving memory for Proxy by Stream ResultSet.
-     * ConnectionStrictly:
+     * CONNECTION_STRICTLY:
      * Proxy will release connections after get the overall rows from the ResultSet.
      * Meanwhile, the cost of the memory will be increased.
      * </p>
      */
-    PROXY_MODE("proxy.mode", "MemoryStrictly", String.class);
+    PROXY_MODE("proxy.mode", "MEMORY_STRICTLY", String.class);
     
     private final String key;
     

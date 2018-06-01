@@ -29,9 +29,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum ProxyMode {
     
-    MEMORY_STRICTLY("MemoryStrictly"),
+    MEMORY_STRICTLY,
     
-    CONNECTION_STRICTLY("ConnectionStrictly");
-    
-    private final String value;
+    CONNECTION_STRICTLY;
 }
