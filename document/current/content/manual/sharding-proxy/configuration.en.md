@@ -49,12 +49,8 @@ shardingRule:
   defaultKeyGeneratorClass: io.shardingsphere.core.keygen.DefaultKeyGenerator
   
   props:
-    # MEMORY_STRICTLY: Proxy holds as many connections as the count of actual tables routed in a database.
-    #                 The benefit of this approach is saving memory for Proxy by Stream ResultSet.
-    # CONNECTION_STRICTLY: Proxy will release connections after get the overall rows from the ResultSet.
-    #                      Meanwhile, the cost of the memory will be increased.
     proxy.mode: CONNECTION_STRICTLY
-    sql.show: true
+    sql.show: false
 ```
 
 ### Read-write splitting
@@ -165,12 +161,8 @@ shardingRule:
           master-slave-key1: master-slave-value1
 
   props:
-    # MEMORY_STRICTLY: Proxy holds as many connections as the count of actual tables routed in a database.
-    #                 The benefit of this approach is saving memory for Proxy by Stream ResultSet.
-    # CONNECTION_STRICTLY: Proxy will release connections after get the overall rows from the ResultSet.
-    #                      Meanwhile, the cost of the memory will be increased.
     proxy.mode: CONNECTION_STRICTLY
-    sql.show: true
+    sql.show: false
 ```
 
 ### Orchestration by Zookeeper
@@ -218,6 +210,17 @@ shardingRule: #Ignore sharding rule configuration, same as Sharding-JDBC
 dataSources: #Ignore data source configuration, same as sharding
 
 masterSlaveRule: #Ignore read-write splitting rule configuration, same as Sharding-JDBC
+```
+
+### Proxy Mode
+
+```yaml
+  props:
+    # MEMORY_STRICTLY: Proxy holds as many connections as the count of actual tables routed in a database.
+    #                  The benefit of this approach is saving memory for Proxy by Stream ResultSet.
+    # CONNECTION_STRICTLY: Proxy will release connections after get the overall rows from the ResultSet.
+    #                      Meanwhile, the cost of the memory will be increased.
+    proxy.mode: 
 ```
 
 ### Orchestration by Zookeeper
