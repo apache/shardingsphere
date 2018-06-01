@@ -18,7 +18,6 @@
 package io.shardingsphere.dbtest.common;
 
 import io.shardingsphere.dbtest.config.bean.ColumnDefinition;
-import io.shardingsphere.dbtest.config.bean.DatasetDatabase;
 import io.shardingsphere.dbtest.config.bean.DatasetDefinition;
 import io.shardingsphere.dbtest.config.bean.IndexDefinition;
 import io.shardingsphere.dbtest.config.bean.ParameterDefinition;
@@ -41,6 +40,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -102,6 +102,82 @@ public final class DatabaseUtil {
     private static void setParameters(final PreparedStatement preparedStatement, final SQLValueGroup sqlValueGroup) throws SQLException {
         for (SQLValue each : sqlValueGroup.getSqlValues()) {
             preparedStatement.setObject(each.getIndex(), each.getValue());
+        }
+    }
+    
+    /**
+     * Execute query for prepared statement.
+     *
+     * @param connection connection
+     * @param sql SQL
+     * @param sqlValues SQL values 
+     * @return query result set
+     * @throws SQLException SQL exception
+     */
+    public static DatasetDefinition executeQueryForPreparedStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
+            for (SQLValue each : sqlValues) {
+                preparedStatement.setObject(each.getIndex(), each.getValue());
+            }
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                return getDatasetDefinition(resultSet);
+            }
+        }
+    }
+    
+    /**
+     * Execute DQL for prepared statement.
+     *
+     * @param connection connection
+     * @param sql SQL
+     * @param sqlValues SQL values
+     * @return query result set
+     * @throws SQLException SQL exception
+     */
+    public static DatasetDefinition executeDQLForPreparedStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
+            for (SQLValue each : sqlValues) {
+                preparedStatement.setObject(each.getIndex(), each.getValue());
+            }
+            assertTrue("Not a query statement.", preparedStatement.execute());
+            try (ResultSet resultSet = preparedStatement.getResultSet()) {
+                return getDatasetDefinition(resultSet);
+            }
+        }
+    }
+    
+    /**
+     * Execute DQL for statement.
+     *
+     * @param connection connection
+     * @param sql SQL
+     * @param sqlValues SQL values
+     * @return query result set
+     * @throws SQLException SQL exception
+     */
+    public static DatasetDefinition executeQueryForStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
+        try (Statement statement = connection.createStatement()) {
+            try (ResultSet resultSet = statement.executeQuery(sqlStatement(sql, sqlValues))) {
+                return getDatasetDefinition(resultSet);
+            }
+        }
+    }
+    
+    /**
+     * Use Statement test SQL select.
+     *
+     * @param connection connection
+     * @param sql SQL
+     * @param sqlValues SQL values
+     * @return query result set
+     * @throws SQLException SQL exception
+     */
+    public static DatasetDefinition executeDQLForStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
+        try (Statement statement = connection.createStatement()) {
+            assertTrue("Not a query statement.", statement.execute(sqlStatement(sql, sqlValues)));
+            try (ResultSet resultSet = statement.getResultSet()) {
+                return getDatasetDefinition(resultSet);
+            }
         }
     }
     
@@ -215,26 +291,6 @@ public final class DatabaseUtil {
     }
     
     /**
-     * Execute query for prepared statement.
-     *
-     * @param connection connection
-     * @param sql SQL
-     * @param sqlValues SQL values 
-     * @return query result set
-     * @throws SQLException   SQL exception
-     */
-    public static DatasetDatabase executeQueryForPreparedStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
-            for (SQLValue each : sqlValues) {
-                preparedStatement.setObject(each.getIndex(), each.getValue());
-            }
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                return useBackResultSet(resultSet);
-            }
-        }
-    }
-    
-    /**
      * Use PreparedStatement test SQL select.
      *
      * @param conn connection
@@ -244,32 +300,11 @@ public final class DatabaseUtil {
      * @throws SQLException   SQL exception
      * @throws ParseException parse exception
      */
-    public static DatasetDatabase selectUsePreparedStatement0(final Connection conn, final String sql, final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
+    public static DatasetDefinition selectUsePreparedStatement0(final Connection conn, final String sql, final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
         try (PreparedStatement preparedStatement = conn.prepareStatement(sql.replaceAll("%s", "?"))) {
             sqlPreparedStatement0(parameterDefinition.getValues(), preparedStatement);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                return useBackResultSet(resultSet);
-            }
-        }
-    }
-    
-    /**
-     * Execute DQL for prepared statement.
-     *
-     * @param connection connection
-     * @param sql SQL
-     * @param sqlValues SQL values
-     * @return query result set
-     * @throws SQLException SQL exception
-     */
-    public static DatasetDatabase executeDQLForPreparedStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
-            for (SQLValue each : sqlValues) {
-                preparedStatement.setObject(each.getIndex(), each.getValue());
-            }
-            assertTrue("Not a query statement.", preparedStatement.execute());
-            try (ResultSet resultSet = preparedStatement.getResultSet()) {
-                return useBackResultSet(resultSet);
+                return getDatasetDefinition(resultSet);
             }
         }
     }
@@ -294,60 +329,23 @@ public final class DatabaseUtil {
         }
     }
     
-    /**
-     * Execute DQL for statement.
-     *
-     * @param connection connection
-     * @param sql SQL
-     * @param sqlValues SQL values
-     * @return query result set
-     * @throws SQLException SQL exception
-     */
-    public static DatasetDatabase executeQueryForStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
-        try (Statement statement = connection.createStatement()) {
-            try (ResultSet resultSet = statement.executeQuery(sqlStatement(sql, sqlValues))) {
-                return useBackResultSet(resultSet);
-            }
-        }
-    }
-    
-    /**
-     * Use Statement test SQL select.
-     *
-     * @param connection connection
-     * @param sql SQL
-     * @param sqlValues SQL values
-     * @return query result set
-     * @throws SQLException SQL exception
-     */
-    public static DatasetDatabase executeDQLForStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
-        try (Statement statement = connection.createStatement()) {
-            assertTrue("Not a query statement.", statement.execute(sqlStatement(sql, sqlValues)));
-            try (ResultSet resultSet = statement.getResultSet()) {
-                return useBackResultSet(resultSet);
-            }
-        }
-    }
-    
-    private static DatasetDatabase useBackResultSet(final ResultSet resultSet) throws SQLException {
+    private static DatasetDefinition getDatasetDefinition(final ResultSet resultSet) throws SQLException {
         ResultSetMetaData metaData = resultSet.getMetaData();
         int columnCount = metaData.getColumnCount();
-        List<DataSetColumnMetadata> cols = new ArrayList<>();
+        List<DataSetColumnMetadata> dataSetColumnMetadataList = new LinkedList<>();
         for (int i = 1; i < columnCount + 1; i++) {
-            String name = metaData.getColumnName(i);
-            String type = getDataType(metaData.getColumnType(i), metaData.getScale(i));
             DataSetColumnMetadata columnDefinition = new DataSetColumnMetadata();
-            columnDefinition.setName(name);
-            columnDefinition.setType(type);
-            cols.add(columnDefinition);
+            columnDefinition.setName(metaData.getColumnName(i));
+            columnDefinition.setType(getDataType(metaData.getColumnType(i), metaData.getScale(i)));
+            dataSetColumnMetadataList.add(columnDefinition);
         }
         Map<String, List<DataSetColumnMetadata>> configs = new HashMap<>();
-        configs.put("data", cols);
+        configs.put("data", dataSetColumnMetadataList);
         List<Map<String, String>> ls = new ArrayList<>();
         Map<String, List<Map<String, String>>> datas = new HashMap<>();
         datas.put("data", ls);
-        handleResultSet(resultSet, cols, ls);
-        DatasetDatabase result = new DatasetDatabase();
+        handleResultSet(resultSet, dataSetColumnMetadataList, ls);
+        DatasetDefinition result = new DatasetDefinition();
         result.setMetadatas(configs);
         result.setDatas(datas);
         return result;
@@ -506,7 +504,7 @@ public final class DatabaseUtil {
      * @param expected expected
      * @param actual actual
      */
-    public static void assertDatas(final DatasetDefinition expected, final DatasetDatabase actual) {
+    public static void assertDatas(final DatasetDefinition expected, final DatasetDefinition actual) {
         Map<String, List<DataSetColumnMetadata>> actualConfigs = actual.getMetadatas();
         Map<String, List<DataSetColumnMetadata>> expectedConfigs = expected.getMetadatas();
         for (Entry<String, List<DataSetColumnMetadata>> entry : expectedConfigs.entrySet()) {

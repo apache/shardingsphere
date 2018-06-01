@@ -19,14 +19,16 @@ package io.shardingsphere.dbtest.config.bean;
 
 import io.shardingsphere.dbtest.config.dataset.DataSetColumnMetadata;
 import io.shardingsphere.dbtest.config.dataset.DataSetIndexMetadata;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Data
-public class DatasetDefinition {
+@Getter
+@Setter
+public final class DatasetDefinition {
     
     private Map<String, List<DataSetColumnMetadata>> metadatas = new HashMap<>();
     

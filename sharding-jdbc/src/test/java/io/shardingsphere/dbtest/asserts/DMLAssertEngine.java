@@ -23,7 +23,6 @@ import io.shardingsphere.dbtest.common.DatabaseUtil;
 import io.shardingsphere.dbtest.config.DataSetsParser;
 import io.shardingsphere.dbtest.config.bean.AssertSubDefinition;
 import io.shardingsphere.dbtest.config.bean.DMLDataSetAssert;
-import io.shardingsphere.dbtest.config.bean.DatasetDatabase;
 import io.shardingsphere.dbtest.config.bean.DatasetDefinition;
 import io.shardingsphere.dbtest.config.bean.ParameterDefinition;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
@@ -206,8 +205,8 @@ public final class DMLAssertEngine {
                 }
                 String checkSQL = anAssert.getExpectedSql();
                 checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
-                DatasetDatabase ddPreparedStatement = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, anAssert.getExpectedParameter());
-                DatabaseUtil.assertDatas(checkDataset, ddPreparedStatement);
+                DatasetDefinition datasetDefinition = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, anAssert.getExpectedParameter());
+                DatabaseUtil.assertDatas(checkDataset, datasetDefinition);
                 return actual;
             }
         } finally {
@@ -226,8 +225,8 @@ public final class DMLAssertEngine {
                 }
                 String checkSQL = anAssert.getExpectedSql();
                 checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
-                DatasetDatabase ddPreparedStatement = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, anAssert.getExpectedParameter());
-                DatabaseUtil.assertDatas(checkDataset, ddPreparedStatement);
+                DatasetDefinition datasetDefinition = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, anAssert.getExpectedParameter());
+                DatabaseUtil.assertDatas(checkDataset, datasetDefinition);
                 return result;
             }
         } finally {
@@ -246,8 +245,8 @@ public final class DMLAssertEngine {
                 }
                 String checkSQL = anAssert.getExpectedSql();
                 checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
-                DatasetDatabase ddPreparedStatement = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, anAssert.getExpectedParameter());
-                DatabaseUtil.assertDatas(checkDataset, ddPreparedStatement);
+                DatasetDefinition datasetDefinition = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, anAssert.getExpectedParameter());
+                DatabaseUtil.assertDatas(checkDataset, datasetDefinition);
                 return result;
             }
         } finally {
@@ -266,8 +265,8 @@ public final class DMLAssertEngine {
                 }
                 String checkSQL = dmlDataSetAssert.getExpectedSql();
                 checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
-                DatasetDatabase ddPreparedStatement = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, dmlDataSetAssert.getExpectedParameter());
-                DatabaseUtil.assertDatas(checkDataset, ddPreparedStatement);
+                DatasetDefinition datasetDefinition = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, dmlDataSetAssert.getExpectedParameter());
+                DatabaseUtil.assertDatas(checkDataset, datasetDefinition);
                 return actual;
             }
         } finally {
