@@ -18,6 +18,7 @@
 package io.shardingsphere.proxy.metadata;
 
 import io.shardingsphere.core.metadata.ColumnMetaData;
+import io.shardingsphere.core.metadata.TableMetaData;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -26,6 +27,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -48,16 +50,16 @@ public final class ShardingMetaDataHandler {
      * @return column meta data list
      * @throws SQLException SQL exception
      */
-    public List<ColumnMetaData> getColumnMetaDataList() throws SQLException {
-        List<ColumnMetaData> result = new LinkedList<>();
+    public TableMetaData getTableMetaData() throws SQLException {
         try (Connection connection = getDataSource().getConnection();
              Statement statement = connection.createStatement()) {
             if (isTableExist(statement)) {
-                result = getExistColumnMeta(statement);
+                return new TableMetaData(getExistColumnMeta(statement));
             }
-            return result;
+            return new TableMetaData(new ArrayList<ColumnMetaData>());
         }
     }
+    
 
     private boolean isTableExist(final Statement statement) throws SQLException {
         statement.executeQuery(String.format("show tables like '%s'", getActualTableName()));
