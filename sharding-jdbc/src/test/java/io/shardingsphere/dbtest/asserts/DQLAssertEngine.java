@@ -96,7 +96,7 @@ public final class DQLAssertEngine {
     
     private void doSelectUsePreparedStatement() throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try (Connection connection = dataSource.getConnection()) {
-            DatasetDatabase ddPreparedStatement = DatabaseUtil.selectUsePreparedStatement(connection, sql, getSQLValues(dqlSubAssert.getParameters()));
+            DatasetDatabase ddPreparedStatement = DatabaseUtil.executeQueryForPreparedStatement(connection, sql, getSQLValues(dqlSubAssert.getParameters()));
             DatasetDefinition checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
             DatabaseUtil.assertDatas(checkDataset, ddPreparedStatement);
         }

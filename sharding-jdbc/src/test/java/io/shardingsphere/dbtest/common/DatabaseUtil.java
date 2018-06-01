@@ -30,7 +30,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -102,32 +101,8 @@ public final class DatabaseUtil {
     
     private static void setParameters(final PreparedStatement preparedStatement, final SQLValueGroup sqlValueGroup) throws SQLException {
         for (SQLValue each : sqlValueGroup.getSqlValues()) {
-            setParameter(preparedStatement, each);
+            preparedStatement.setObject(each.getIndex(), each.getValue());
         }
-    }
-    
-    private static void setParameter(final PreparedStatement preparedStatement, final SQLValue sqlValue) throws SQLException {
-        if (sqlValue.getValue() instanceof String) {
-            preparedStatement.setString(sqlValue.getIndex(), (String) sqlValue.getValue());
-            return;
-        }
-        if (sqlValue.getValue() instanceof Integer) {
-            preparedStatement.setInt(sqlValue.getIndex(), (Integer) sqlValue.getValue());
-            return;
-        }
-        if (sqlValue.getValue() instanceof Long) {
-            preparedStatement.setLong(sqlValue.getIndex(), (Long) sqlValue.getValue());
-            return;
-        }
-        if (sqlValue.getValue() instanceof Double) {
-            preparedStatement.setDouble(sqlValue.getIndex(), (Double) sqlValue.getValue());
-            return;
-        }
-        if (sqlValue.getValue() instanceof Date) {
-            preparedStatement.setDate(sqlValue.getIndex(), (Date) sqlValue.getValue());
-            return;
-        }
-        throw new UnsupportedOperationException(String.format("Cannot support type: '%s'", sqlValue.getValue().getClass()));
     }
     
     /**
@@ -240,18 +215,19 @@ public final class DatabaseUtil {
     }
     
     /**
-     * Use PreparedStatement test SQL select.
+     * Execute query for prepared statement.
      *
-     * @param conn connection
+     * @param connection connection
      * @param sql SQL
      * @param sqlValues SQL values 
      * @return query result set
      * @throws SQLException   SQL exception
-     * @throws ParseException parse exception
      */
-    public static DatasetDatabase selectUsePreparedStatement(final Connection conn, final String sql, final Collection<SQLValue> sqlValues) throws SQLException, ParseException {
-        try (PreparedStatement preparedStatement = conn.prepareStatement(sql.replaceAll("%s", "?"))) {
-            sqlPreparedStatement(sqlValues, preparedStatement);
+    public static DatasetDatabase executeQueryForPreparedStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
+            for (SQLValue each : sqlValues) {
+                preparedStatement.setObject(each.getIndex(), each.getValue());
+            }
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 return useBackResultSet(resultSet);
             }
@@ -282,38 +258,16 @@ public final class DatabaseUtil {
      *
      * @param connection connection
      * @param sql SQL
-     * @param parameterDefinition parameter definition
-     * @return query result set
-     * @throws SQLException   SQL exception
-     * @throws ParseException parse exception
-     */
-    public static DatasetDatabase selectUsePreparedStatementToExecuteSelect0(
-            final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
-        List<ParameterValueDefinition> parameter = parameterDefinition.getValues();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
-            sqlPreparedStatement0(parameter, preparedStatement);
-            boolean flag = preparedStatement.execute();
-            assertTrue("Not a query statement.", flag);
-            try (ResultSet resultSet = preparedStatement.getResultSet()) {
-                return useBackResultSet(resultSet);
-            }
-        }
-    }
-    
-    /**
-     * Use PreparedStatement test SQL select.
-     *
-     * @param connection connection
-     * @param sql SQL
      * @param sqlValues SQL values
      * @return query result set
-     * @throws SQLException   SQL exception
-     * @throws ParseException parse exception
+     * @throws SQLException SQL exception
      */
     public static DatasetDatabase selectUsePreparedStatementToExecuteSelect(
             final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
-            sqlPreparedStatement(sqlValues, preparedStatement);
+            for (SQLValue each : sqlValues) {
+                preparedStatement.setObject(each.getIndex(), each.getValue());
+            }
             boolean flag = preparedStatement.execute();
             assertTrue("Not a query statement.", flag);
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
@@ -428,19 +382,14 @@ public final class DatabaseUtil {
         }
     }
     
-    private static void sqlPreparedStatement(final Collection<SQLValue> sqlValues, final PreparedStatement preparedStatement) throws SQLException {
-        for (SQLValue each : sqlValues) {
-            setParameter(preparedStatement, each);
-        }
-    }
-    
     private static void sqlPreparedStatement0(final List<ParameterValueDefinition> parameterValueDefinitions, final PreparedStatement preparedStatement) throws SQLException, ParseException {
         if (null == parameterValueDefinitions) {
             return;
         }
         int index = 0;
         for (ParameterValueDefinition each : parameterValueDefinitions) {
-            setParameter(preparedStatement, new SQLValue(each.getValue(), each.getType(), ++index));
+            SQLValue sqlValue = new SQLValue(each.getValue(), each.getType(), ++index);
+            preparedStatement.setObject(sqlValue.getIndex(), sqlValue.getValue());
         }
     }
     
