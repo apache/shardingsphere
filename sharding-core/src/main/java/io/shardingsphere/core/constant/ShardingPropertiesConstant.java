@@ -54,14 +54,18 @@ public enum ShardingPropertiesConstant {
     EXECUTOR_SIZE("executor.size", String.valueOf(Runtime.getRuntime().availableProcessors()), int.class),
     
     /**
-     * Use stream result set in Proxy.
+     * Proxy mode.
      *
      * <p>
-     * Stream result set saves memory while costs more database connections.
-     * Non stream result set costs memory while saves database connections.
+     * MemoryStrictly:
+     * Proxy holds as many connections as the count of actual tables routed in a database.
+     * The benefit of this approach is saving memory for Proxy by Stream ResultSet.
+     * ConnectionStrictly:
+     * Proxy will release connections after get the overall rows from the ResultSet.
+     * Meanwhile, the cost of the memory will be increased.
      * </p>
      */
-    USE_STREAM_RESULT_SET("use.stream.result.set", Boolean.FALSE.toString(), boolean.class);
+    PROXY_MODE("proxy.mode", "MemoryStrictly", String.class);
     
     private final String key;
     

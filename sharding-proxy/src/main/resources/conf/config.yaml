@@ -57,7 +57,11 @@
 #  defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
 #
 #  props:
-#    use.stream.result.set: true
+#    # MemoryStrictly: Proxy holds as many connections as the count of actual tables routed in a database.
+#    #                 The benefit of this approach is saving memory for Proxy by Stream ResultSet.
+#    # ConnectionStrictly: Proxy will release connections after get the overall rows from the ResultSet.
+#    #                     Meanwhile, the cost of the memory will be increased.
+#    proxy.mode: MemoryStrictly
 #    sql.show: false
 
 
