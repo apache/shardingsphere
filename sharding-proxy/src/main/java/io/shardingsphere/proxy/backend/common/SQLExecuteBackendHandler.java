@@ -150,6 +150,14 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
     }
     
     private CommandResponsePackets executeQuery(final DataSource dataSource, final String sql) {
+        if (RuleRegistry.getInstance().isUseStreamResultSet()) {
+            return executeQueryWithStreamResultSet(dataSource, sql);
+        } else {
+            return executeQueryWithNonStreamResultSet(dataSource, sql);
+        }
+    }
+    
+    private CommandResponsePackets executeQueryWithStreamResultSet(final DataSource dataSource, final String sql) {
         try {
             Connection connection = dataSource.getConnection();
             connections.add(connection);

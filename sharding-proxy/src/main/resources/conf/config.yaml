@@ -57,7 +57,8 @@
 #  defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
 #
 #  props:
-#    sql.show: true
+#    use.stream.result.set: true
+#    sql.show: false
 
 
 

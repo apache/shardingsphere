@@ -51,7 +51,17 @@ public enum ShardingPropertiesConstant {
      * Default: same with CPU cores.
      * </p>
      */
-    EXECUTOR_SIZE("executor.size", String.valueOf(Runtime.getRuntime().availableProcessors()), int.class);
+    EXECUTOR_SIZE("executor.size", String.valueOf(Runtime.getRuntime().availableProcessors()), int.class),
+    
+    /**
+     * Use stream result set in Proxy.
+     *
+     * <p>
+     * Stream result set saves memory while costs more database connections.
+     * Non stream result set costs memory while saves database connections.
+     * </p>
+     */
+    USE_STREAM_RESULT_SET("use.stream.result.set", Boolean.FALSE.toString(), boolean.class);
     
     private final String key;
     
