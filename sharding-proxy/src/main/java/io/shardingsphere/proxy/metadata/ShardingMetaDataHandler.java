@@ -45,9 +45,9 @@ public final class ShardingMetaDataHandler {
     private final String actualTableName;
     
     /**
-     * Get column meta data list.
+     * Get table meta data.
      *
-     * @return column meta data list
+     * @return table meta data
      * @throws SQLException SQL exception
      */
     public TableMetaData getTableMetaData() throws SQLException {
