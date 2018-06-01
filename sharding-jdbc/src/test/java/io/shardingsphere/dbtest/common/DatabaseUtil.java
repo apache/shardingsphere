@@ -17,9 +17,7 @@
 
 package io.shardingsphere.dbtest.common;
 
-import io.shardingsphere.dbtest.config.bean.ColumnDefinition;
 import io.shardingsphere.dbtest.asserts.DataSetDefinitions;
-import io.shardingsphere.dbtest.config.bean.IndexDefinition;
 import io.shardingsphere.dbtest.config.bean.ParameterDefinition;
 import io.shardingsphere.dbtest.config.bean.ParameterValueDefinition;
 import io.shardingsphere.dbtest.config.dataset.DataSetColumnMetadata;
@@ -190,7 +188,8 @@ public final class DatabaseUtil {
      * @return Number of rows as a result of execution
      * @throws SQLException SQL exception
      */
-    public static int updateUseStatementToExecuteUpdate(final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException {
+    public static int updateUseStatementToExecuteUpdate(
+            final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             return statement.executeUpdate(sqlStatement0(sql, parameterDefinition.getValues()));
         }
@@ -202,7 +201,8 @@ public final class DatabaseUtil {
         }
         String result = sql;
         for (SQLValue each : sqlValues) {
-            result = Pattern.compile("%s", Pattern.LITERAL).matcher(result).replaceFirst(Matcher.quoteReplacement(each.getValue() instanceof String ? "'" + each.getValue() + "'" : each.getValue().toString()));
+            result = Pattern.compile("%s", Pattern.LITERAL).matcher(result)
+                    .replaceFirst(Matcher.quoteReplacement(each.getValue() instanceof String ? "'" + each.getValue() + "'" : each.getValue().toString()));
         }
         return result;
     }
@@ -345,10 +345,7 @@ public final class DatabaseUtil {
         Map<String, List<Map<String, String>>> datas = new HashMap<>();
         datas.put("data", ls);
         handleResultSet(resultSet, dataSetColumnMetadataList, ls);
-        DataSetDefinitions result = new DataSetDefinitions();
-        result.setMetadatas(configs);
-        result.setDatas(datas);
-        return result;
+        return new DataSetDefinitions(configs, datas);
     }
     
     private static void handleResultSet(final ResultSet resultSet, final List<DataSetColumnMetadata> columnMetadata, final List<Map<String, String>> ls) throws SQLException {
@@ -469,13 +466,6 @@ public final class DatabaseUtil {
                 checkDatabaseColumn(expect.getNullable(), each.getNullable());
                 checkDatabaseColumn(expect.getNumPrecRadix(), each.getNumPrecRadix());
                 checkDatabaseColumn(expect.getSize(), each.getSize());
-                // TODO check AutoIncrement
-                // assertThat(expect.isAutoIncrement(), is(each.isAutoIncrement()));
-                // TODO check index
-//                List<IndexDefinition> indexs = expect.getIndexs();
-//                if (indexs != null && !indexs.isEmpty()) {
-//                    checkIndex(each, indexs);
-//                }
             }
         }
     }
@@ -483,18 +473,6 @@ public final class DatabaseUtil {
     private static void checkDatabaseColumn(final Integer expectData, final Integer actualData) {
         if (expectData != null && !expectData.equals(actualData)) {
             fail();
-        }
-    }
-    
-    private static void checkIndex(final ColumnDefinition columnDefinition, final List<IndexDefinition> indexs) {
-        for (IndexDefinition each : indexs) {
-            for (IndexDefinition actualIndex : columnDefinition.getIndexs()) {
-                if (each.getName().equals(actualIndex.getName())) {
-                    if (each.isUnique() != actualIndex.isUnique()) {
-                        fail();
-                    }
-                }
-            }
         }
     }
     
@@ -581,34 +559,7 @@ public final class DatabaseUtil {
                 }
                 result.add(columnDefinition);
             }
-            geIndexDefinitions(metaData, result, table);
             return result;
-        }
-    }
-    
-    private static List<DataSetColumnMetadata> geIndexDefinitions(
-            final DatabaseMetaData databaseMetaData, final List<DataSetColumnMetadata> columnDefinitions, final String table) throws SQLException {
-        try (ResultSet resultSet = databaseMetaData.getIndexInfo(null, null, table, false, false)) {
-            while (resultSet.next()) {
-                IndexDefinition index = new IndexDefinition();
-                String name = resultSet.getString("COLUMN_NAME");
-                String nameIndex = resultSet.getString("INDEX_NAME");
-                if (StringUtils.isNotEmpty(nameIndex)) {
-                    index.setName(nameIndex);
-                }
-                String uniqueIndex = resultSet.getString("NON_UNIQUE");
-                if (StringUtils.isNotEmpty(uniqueIndex)) {
-                    index.setUnique(!"TRUE".equalsIgnoreCase(uniqueIndex));
-                }
-                // TODO assert index
-//                for (DataSetColumnMetadata col : columnDefinitions) {
-//                    if (name.equals(col.getName())) {
-//                        col.getIndexs().add(index);
-//                        break;
-//                    }
-//                }
-            }
-            return columnDefinitions;
         }
     }
 }

@@ -67,7 +67,7 @@ public final class DataSetsParser {
     public static DataSetDefinitions parse(final File file, final String tableName) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         Node rootNode = (Node) XPathFactory.newInstance().newXPath().evaluate(ROOT_TAG, getDocument(file), XPathConstants.NODE);
         Preconditions.checkNotNull(rootNode, String.format("Missing root tag for file `%s`.", file.getPath()));
-        DataSetDefinitions result = new DataSetDefinitions();
+        DataSetDefinitions result = new DataSetDefinitions(new HashMap<String, List<DataSetColumnMetadata>>(), new HashMap<String, List<Map<String, String>>>());
         NodeList childNodes = rootNode.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
             Node each = childNodes.item(i);

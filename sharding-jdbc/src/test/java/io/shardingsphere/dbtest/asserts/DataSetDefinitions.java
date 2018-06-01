@@ -18,21 +18,18 @@
 package io.shardingsphere.dbtest.asserts;
 
 import io.shardingsphere.dbtest.config.dataset.DataSetColumnMetadata;
-import io.shardingsphere.dbtest.config.dataset.DataSetIndexMetadata;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@RequiredArgsConstructor
 @Getter
-@Setter
 public final class DataSetDefinitions {
     
-    private Map<String, List<DataSetColumnMetadata>> metadatas = new HashMap<>();
+    private final Map<String, List<DataSetColumnMetadata>> metadatas;
     
-    private Map<String, List<DataSetIndexMetadata>> indexMetadataList = new HashMap<>();
+    private final Map<String, List<Map<String, String>>> datas;
     
-    private Map<String, List<Map<String, String>>> datas = new HashMap<>();
 }
