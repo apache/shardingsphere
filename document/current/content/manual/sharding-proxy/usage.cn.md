@@ -6,7 +6,7 @@ weight = 1
 +++
 
 1. 下载Sharding-Proxy的最新发行版，地址:https://github.com/shardingjdbc/sharding-jdbc-doc/raw/master/dist/sharding-proxy-3.0.0.M1.tar.gz
-1. 解压缩后修改conf/sharding-config.yaml文件，进行分片规则配置. 配置方式请参考[配置手册](/cn/manual/sharding-proxy/configuration/)。
+1. 解压缩后修改conf/config.yaml文件，进行分片规则配置. 配置方式请参考[配置手册](/cn/manual/sharding-proxy/configuration/)。
 1. Linux操作系统请运行`bin/start.sh`，Windows操作系统请运行`bin/start.bat`启动Sharding-Proxy。
 1. 使用任何MySQL的客户端连接。如: `mysql -u root -h 127.0.0.1 -P3307`
 

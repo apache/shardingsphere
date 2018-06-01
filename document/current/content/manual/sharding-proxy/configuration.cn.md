@@ -49,7 +49,8 @@ shardingRule:
   defaultKeyGeneratorClassName: io.shardingjdbc.core.keygen.DefaultKeyGenerator
   
   props:
-    sql.show: true
+    proxy.mode: CONNECTION_STRICTLY
+    sql.show: false
 ```
 
 ### 读写分离
@@ -159,7 +160,8 @@ shardingRule:
           master-slave-key1: master-slave-value1
 
   props:
-    sql.show: true
+    proxy.mode: CONNECTION_STRICTLY
+    sql.show: false
 ```
 
 ### 使用Zookeeper的数据治理
@@ -207,6 +209,17 @@ shardingRule: #省略数据分片配置，与Sharding-JDBC配置一致
 dataSources: #省略数据源配置，与数据分片一致
 
 masterSlaveRule: #省略读写分离配置，与Sharding-JDBC配置一致
+```
+
+### 代理模式
+
+```yaml
+  props:
+    # MEMORY_STRICTLY: Proxy会保持一个数据库中所有被路由到的表的连接.
+    #                  这种方式的好处是利用流式ResultSet来节省内存.
+    # CONNECTION_STRICTLY: 代理在取出ResultSet中的所有数据后会释放连接.
+    #                      同时，内存的消耗将会增加.
+    proxy.mode: 
 ```
 
 ### 使用Zookeeper的数据治理
