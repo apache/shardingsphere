@@ -61,9 +61,7 @@ public final class DDLAssertEngine {
     
     private final String rootPath;
     
-    private final DataSetEnvironmentManager dataSetEnvironmentManager;
-    
-    public DDLAssertEngine(final DataSetEnvironmentManager dataSetEnvironmentManager, final DDLDataSetAssert ddlDataSetAssert, final Map<String, DataSource> dataSourceMap,
+    public DDLAssertEngine(final DDLDataSetAssert ddlDataSetAssert, final Map<String, DataSource> dataSourceMap,
                            final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, SQLException {
         this.ddlDataSetAssert = ddlDataSetAssert;
         this.shardingRuleType = shardingRuleType;
@@ -71,7 +69,6 @@ public final class DDLAssertEngine {
         this.caseType = caseType;
         dataSource = createDataSource(dataSourceMap);
         rootPath = ddlDataSetAssert.getPath().substring(0, ddlDataSetAssert.getPath().lastIndexOf(File.separator) + 1);
-        this.dataSetEnvironmentManager = dataSetEnvironmentManager;
     }
     
     private DataSource createDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException, IOException {
@@ -92,26 +89,26 @@ public final class DDLAssertEngine {
         if (ddlDataSetAssert.getParameter().getValues().isEmpty()) {
             List<AssertSubDefinition> subAsserts = ddlDataSetAssert.getSubAsserts();
             if (subAsserts.isEmpty()) {
-                doUpdateUseStatementToExecuteUpdateDDL(expectedDataFile, ddlDataSetAssert, rootSQL);
-                doUpdateUseStatementToExecuteDDL(expectedDataFile, ddlDataSetAssert, rootSQL);
-                doUpdateUsePreparedStatementToExecuteUpdateDDL(expectedDataFile, ddlDataSetAssert, rootSQL);
-                doUpdateUsePreparedStatementToExecuteDDL(expectedDataFile, ddlDataSetAssert, rootSQL);
+                doUpdateUseStatementToExecuteUpdate(expectedDataFile, ddlDataSetAssert, rootSQL);
+                doUpdateUseStatementToExecute(expectedDataFile, ddlDataSetAssert, rootSQL);
+                doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFile, ddlDataSetAssert, rootSQL);
+                doUpdateUsePreparedStatementToExecute(expectedDataFile, ddlDataSetAssert, rootSQL);
             } else {
-                ddlSubRun(ddlDataSetAssert, rootSQL, expectedDataFile, subAsserts);
+                ddlSubRun(rootSQL, expectedDataFile, subAsserts);
             }
         } else {
-            doUpdateUseStatementToExecuteUpdateDDL(expectedDataFile, ddlDataSetAssert, rootSQL);
-            doUpdateUseStatementToExecuteDDL(expectedDataFile, ddlDataSetAssert, rootSQL);
-            doUpdateUsePreparedStatementToExecuteUpdateDDL(expectedDataFile, ddlDataSetAssert, rootSQL);
-            doUpdateUsePreparedStatementToExecuteDDL(expectedDataFile, ddlDataSetAssert, rootSQL);
+            doUpdateUseStatementToExecuteUpdate(expectedDataFile, ddlDataSetAssert, rootSQL);
+            doUpdateUseStatementToExecute(expectedDataFile, ddlDataSetAssert, rootSQL);
+            doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFile, ddlDataSetAssert, rootSQL);
+            doUpdateUsePreparedStatementToExecute(expectedDataFile, ddlDataSetAssert, rootSQL);
             List<AssertSubDefinition> subAsserts = ddlDataSetAssert.getSubAsserts();
             if (!subAsserts.isEmpty()) {
-                ddlSubRun(ddlDataSetAssert, rootSQL, expectedDataFile, subAsserts);
+                ddlSubRun(rootSQL, expectedDataFile, subAsserts);
             }
         }
     }
     
-    private void ddlSubRun(final DDLDataSetAssert anAssert, final String rootSQL, final String expectedDataFile, final List<AssertSubDefinition> subAsserts) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
+    private void ddlSubRun(final String rootSQL, final String expectedDataFile, final List<AssertSubDefinition> subAsserts) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
         for (AssertSubDefinition each : subAsserts) {
             if (isSkip(each)) {
                 continue;
@@ -120,7 +117,7 @@ public final class DDLAssertEngine {
             ParameterDefinition parameter = each.getParameter();
             String expectedDataFileTmp = expectedDataFile;
             if (StringUtils.isBlank(expectedDataFileSub)) {
-                expectedDataFileSub = anAssert.getExpectedDataFile();
+                expectedDataFileSub = ddlDataSetAssert.getExpectedDataFile();
             } else {
                 expectedDataFileTmp = rootPath + "asserts/ddl/" + shardingRuleType + "/" + expectedDataFileSub;
                 if (!new File(expectedDataFileTmp).exists()) {
@@ -128,15 +125,15 @@ public final class DDLAssertEngine {
                 }
             }
             if (null == parameter) {
-                parameter = anAssert.getParameter();
+                parameter = ddlDataSetAssert.getParameter();
             }
             DDLDataSetAssert anAssertSub = new DDLDataSetAssert(
-                    anAssert.getId(), anAssert.getInitSql(), anAssert.getShardingRuleTypes(), anAssert.getDatabaseTypes(), anAssert.getCleanSql(), expectedDataFileSub, anAssert.getTable(), 
-                    parameter, anAssert.getSubAsserts(), "");
-            doUpdateUseStatementToExecuteUpdateDDL(expectedDataFileTmp, anAssertSub, rootSQL);
-            doUpdateUseStatementToExecuteDDL(expectedDataFileTmp, anAssertSub, rootSQL);
-            doUpdateUsePreparedStatementToExecuteUpdateDDL(expectedDataFileTmp, anAssertSub, rootSQL);
-            doUpdateUsePreparedStatementToExecuteDDL(expectedDataFileTmp, anAssertSub, rootSQL);
+                    ddlDataSetAssert.getId(), ddlDataSetAssert.getInitSql(), ddlDataSetAssert.getShardingRuleTypes(), ddlDataSetAssert.getDatabaseTypes(), ddlDataSetAssert.getCleanSql(), expectedDataFileSub, ddlDataSetAssert.getTable(), 
+                    parameter, ddlDataSetAssert.getSubAsserts(), "");
+            doUpdateUseStatementToExecuteUpdate(expectedDataFileTmp, anAssertSub, rootSQL);
+            doUpdateUseStatementToExecute(expectedDataFileTmp, anAssertSub, rootSQL);
+            doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFileTmp, anAssertSub, rootSQL);
+            doUpdateUsePreparedStatementToExecute(expectedDataFileTmp, anAssertSub, rootSQL);
         }
     }
     
@@ -149,21 +146,47 @@ public final class DDLAssertEngine {
         return true;
     }
     
-    private void doUpdateUsePreparedStatementToExecuteDDL(final String expectedDataFile, final DDLDataSetAssert anAssert, final String rootsql) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
+    private void doUpdateUsePreparedStatementToExecute(final String expectedDataFile, final DDLDataSetAssert ddlDataSetAssert, final String rootSQL) 
+            throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
         try {
             try (Connection con = dataSource.getConnection()) {
+                if (StringUtils.isNotBlank(ddlDataSetAssert.getCleanSql())) {
+                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), ddlDataSetAssert.getCleanSql());
+                }
+                if (StringUtils.isNotBlank(ddlDataSetAssert.getInitSql())) {
+                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), ddlDataSetAssert.getInitSql());
+                }
+                DatabaseUtil.updateUsePreparedStatementToExecute(con, rootSQL, ddlDataSetAssert.getParameter());
+                DatasetDefinition checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
+                String table = ddlDataSetAssert.getTable();
+                List<DataSetColumnMetadata> columnDefinitions = DatabaseUtil.getColumnDefinitions(con, table);
+                DatabaseUtil.assertConfigs(checkDataset, columnDefinitions, table);
+            }
+        } finally {
+            if (StringUtils.isNotBlank(ddlDataSetAssert.getCleanSql())) {
+                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), ddlDataSetAssert.getCleanSql());
+            }
+            if (StringUtils.isNotBlank(ddlDataSetAssert.getInitSql())) {
+                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), ddlDataSetAssert.getInitSql());
+            }
+        }
+    }
+    
+    private void doUpdateUsePreparedStatementToExecuteUpdate(final String expectedDataFile, final DDLDataSetAssert anAssert, final String rootSQL) 
+            throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
+        try {
+            try (Connection connection = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
                     SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), anAssert.getCleanSql());
                 }
                 if (StringUtils.isNotBlank(anAssert.getInitSql())) {
                     SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), anAssert.getInitSql());
                 }
-                DatabaseUtil.updateUsePreparedStatementToExecute(con, rootsql,
+                DatabaseUtil.updateUsePreparedStatementToExecuteUpdate(connection, rootSQL,
                         anAssert.getParameter());
                 DatasetDefinition checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
-                
                 String table = anAssert.getTable();
-                List<DataSetColumnMetadata> columnDefinitions = DatabaseUtil.getColumnDefinitions(con, table);
+                List<DataSetColumnMetadata> columnDefinitions = DatabaseUtil.getColumnDefinitions(connection, table);
                 DatabaseUtil.assertConfigs(checkDataset, columnDefinitions, table);
             }
         } finally {
@@ -176,45 +199,20 @@ public final class DDLAssertEngine {
         }
     }
     
-    private void doUpdateUsePreparedStatementToExecuteUpdateDDL(final String expectedDataFile, final DDLDataSetAssert anAssert, final String rootSQL) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
+    private void doUpdateUseStatementToExecute(final String expectedDataFile, final DDLDataSetAssert anAssert, final String rootSQL) 
+            throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
         try {
-            try (Connection con = dataSource.getConnection()) {
+            try (Connection connection = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
                     SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), anAssert.getCleanSql());
                 }
                 if (StringUtils.isNotBlank(anAssert.getInitSql())) {
                     SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), anAssert.getInitSql());
                 }
-                DatabaseUtil.updateUsePreparedStatementToExecuteUpdate(con, rootSQL,
-                        anAssert.getParameter());
+                DatabaseUtil.updateUseStatementToExecute(connection, rootSQL, anAssert.getParameter());
                 DatasetDefinition checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
                 String table = anAssert.getTable();
-                List<DataSetColumnMetadata> columnDefinitions = DatabaseUtil.getColumnDefinitions(con, table);
-                DatabaseUtil.assertConfigs(checkDataset, columnDefinitions, table);
-            }
-        } finally {
-            if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
-                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), anAssert.getCleanSql());
-            }
-            if (StringUtils.isNotBlank(anAssert.getInitSql())) {
-                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), anAssert.getInitSql());
-            }
-        }
-    }
-    
-    private void doUpdateUseStatementToExecuteDDL(final String expectedDataFile, final DDLDataSetAssert anAssert, final String rootSQL) throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
-        try {
-            try (Connection con = dataSource.getConnection()) {
-                if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
-                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), anAssert.getCleanSql());
-                }
-                if (StringUtils.isNotBlank(anAssert.getInitSql())) {
-                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), anAssert.getInitSql());
-                }
-                DatabaseUtil.updateUseStatementToExecute(con, rootSQL, anAssert.getParameter());
-                DatasetDefinition checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
-                String table = anAssert.getTable();
-                List<DataSetColumnMetadata> columnDefinitions = DatabaseUtil.getColumnDefinitions(con, table);
+                List<DataSetColumnMetadata> columnDefinitions = DatabaseUtil.getColumnDefinitions(connection, table);
                 DatabaseUtil.assertConfigs(checkDataset, columnDefinitions, table);
             }
         } finally {
@@ -227,19 +225,20 @@ public final class DDLAssertEngine {
         }
     }
     
-    private void doUpdateUseStatementToExecuteUpdateDDL(final String expectedDataFile, final DDLDataSetAssert anAssert, final String rootSQL) throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
+    private void doUpdateUseStatementToExecuteUpdate(final String expectedDataFile, final DDLDataSetAssert anAssert, final String rootSQL) 
+            throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
         try {
-            try (Connection con = dataSource.getConnection()) {
+            try (Connection connection = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
                     SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), anAssert.getCleanSql());
                 }
                 if (StringUtils.isNotBlank(anAssert.getInitSql())) {
                     SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), anAssert.getInitSql());
                 }
-                DatabaseUtil.updateUseStatementToExecuteUpdate(con, rootSQL, anAssert.getParameter());
+                DatabaseUtil.updateUseStatementToExecuteUpdate(connection, rootSQL, anAssert.getParameter());
                 DatasetDefinition checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
                 String table = anAssert.getTable();
-                List<DataSetColumnMetadata> columnDefinitions = DatabaseUtil.getColumnDefinitions(con, table);
+                List<DataSetColumnMetadata> columnDefinitions = DatabaseUtil.getColumnDefinitions(connection, table);
                 DatabaseUtil.assertConfigs(checkDataset, columnDefinitions, table);
             }
         } finally {

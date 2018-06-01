@@ -214,9 +214,9 @@ public final class StartTest {
         if (dataSetAssert instanceof AssertSubDefinition) {
             new DQLAssertEngine(sqlCaseId, path, (AssertSubDefinition) dataSetAssert, dataSourceMap, shardingRuleType, caseType).assertDQL();
         } else if (dataSetAssert instanceof DMLDataSetAssert) {
-            new DMLAssertEngine(dataSetEnvironmentManager, (DMLDataSetAssert) dataSetAssert, dataSourceMap, shardingRuleType, databaseTypeEnvironment, caseType).assertDML();
+            new DMLAssertEngine(dataSetEnvironmentManager, (DMLDataSetAssert) dataSetAssert, dataSourceMap, shardingRuleType, caseType).assertDML();
         } else {
-            new DDLAssertEngine(dataSetEnvironmentManager, (DDLDataSetAssert) dataSetAssert, dataSourceMap, shardingRuleType, databaseTypeEnvironment, caseType).assertDDL();
+            new DDLAssertEngine((DDLDataSetAssert) dataSetAssert, dataSourceMap, shardingRuleType, databaseTypeEnvironment, caseType).assertDDL();
         }
     }
 }
