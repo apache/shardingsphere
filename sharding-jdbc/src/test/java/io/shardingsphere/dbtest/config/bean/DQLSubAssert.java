@@ -22,7 +22,6 @@ import lombok.Getter;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -33,9 +32,6 @@ public final class DQLSubAssert {
     
     @XmlAttribute(name = "expected-data-file")
     private String expectedDataFile;
-    
-    @XmlElement(name = "parameter")
-    private ParameterDefinition parameter;
     
     @XmlAttribute(name = "parameters")
     private String parameters;
