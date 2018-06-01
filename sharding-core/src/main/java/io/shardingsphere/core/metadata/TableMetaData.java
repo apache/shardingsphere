@@ -20,6 +20,7 @@ package io.shardingsphere.core.metadata;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,6 +34,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
+@ToString
 public final class TableMetaData {
     
     private final Collection<ColumnMetaData> columnMetaData;
