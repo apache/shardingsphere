@@ -176,8 +176,8 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
         try (
             Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement();
-        ) {
             ResultSet resultSet = statement.executeQuery(sql);
+        ) {
             CachedRowSet cachedRowSet = new CachedRowSetImpl();
             cachedRowSet.populate(resultSet);
             resultSets.add(cachedRowSet);
