@@ -449,7 +449,7 @@ public final class DatabaseUtil {
      * @param table table
      */
     public static void assertConfigs(final DataSetDefinitions expected, final List<DataSetColumnMetadata> actual, final String table) {
-        Map<String, List<DataSetColumnMetadata>> configs = expected.getMetadatas();
+        Map<String, List<DataSetColumnMetadata>> configs = expected.getMetadataList();
         List<DataSetColumnMetadata> columnDefinitions = configs.get(table);
         for (DataSetColumnMetadata each : columnDefinitions) {
             checkActual(actual, each);
@@ -477,25 +477,29 @@ public final class DatabaseUtil {
     }
     
     /**
-     * Comparative data set.
-     *
-     * @param expected expected
+     * Assert data set.
+     * 
      * @param actual actual
+     * @param expected expected
      */
-    public static void assertDatas(final DataSetDefinitions expected, final DataSetDefinitions actual) {
-        Map<String, List<DataSetColumnMetadata>> actualConfigs = actual.getMetadatas();
-        Map<String, List<DataSetColumnMetadata>> expectedConfigs = expected.getMetadatas();
-        for (Entry<String, List<DataSetColumnMetadata>> entry : expectedConfigs.entrySet()) {
+    public static void assertDataSet(final DataSetDefinitions actual, final DataSetDefinitions expected) {
+        assertMetadata(actual.getMetadataList(), expected.getMetadataList());
+        assertData(actual.getDataList(), expected.getDataList());
+    }
+    
+    private static void assertMetadata(final Map<String, List<DataSetColumnMetadata>> actual, final Map<String, List<DataSetColumnMetadata>> expected) {
+        for (Entry<String, List<DataSetColumnMetadata>> entry : expected.entrySet()) {
             List<DataSetColumnMetadata> expectedConfig = entry.getValue();
-            List<DataSetColumnMetadata> actualConfig = actualConfigs.get(entry.getKey());
+            List<DataSetColumnMetadata> actualConfig = actual.get(entry.getKey());
             assertNotNull(actualConfig);
             checkConfig(expectedConfig, actualConfig);
         }
-        Map<String, List<Map<String, String>>> actualDatass = actual.getDatas();
-        Map<String, List<Map<String, String>>> expectDedatas = expected.getDatas();
-        for (Entry<String, List<Map<String, String>>> entry : expectDedatas.entrySet()) {
+    }
+    
+    private static void assertData(final Map<String, List<Map<String, String>>> actualDataList, final Map<String, List<Map<String, String>>> expectedDataList) {
+        for (Entry<String, List<Map<String, String>>> entry : expectedDataList.entrySet()) {
             List<Map<String, String>> data = entry.getValue();
-            List<Map<String, String>> actualDatas = actualDatass.get(entry.getKey());
+            List<Map<String, String>> actualDatas = actualDataList.get(entry.getKey());
             assertEquals(actualDatas.size(), data.size());
             checkData(data, actualDatas);
         }

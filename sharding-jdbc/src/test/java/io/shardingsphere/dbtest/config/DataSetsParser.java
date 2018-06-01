@@ -95,7 +95,7 @@ public final class DataSetsParser {
     }
     
     private static void parseMetadata(final DataSetDefinitions datasetDefinition, final Node node) {
-        Map<String, List<DataSetColumnMetadata>> metadataMap = datasetDefinition.getMetadatas();
+        Map<String, List<DataSetColumnMetadata>> metadataMap = datasetDefinition.getMetadataList();
         for (int i = 0; i < node.getChildNodes().getLength(); i++) {
             Node each = node.getChildNodes().item(i);
             if (Node.ELEMENT_NODE == each.getNodeType()) {
@@ -178,7 +178,7 @@ public final class DataSetsParser {
         for (int i = 0; i < secondNodeList.getLength(); i++) {
             Node secondNode = secondNodeList.item(i);
             if (Node.ELEMENT_NODE == secondNode.getNodeType()) {
-                Map<String, List<Map<String, String>>> datas = datasetDefinition.getDatas();
+                Map<String, List<Map<String, String>>> datas = datasetDefinition.getDataList();
                 String tableNameTmp = tableName;
                 if (StringUtils.isBlank(tableNameTmp)) {
                     tableNameTmp = secondNode.getNodeName();

@@ -28,8 +28,8 @@ import java.util.Map;
 @Getter
 public final class DataSetDefinitions {
     
-    private final Map<String, List<DataSetColumnMetadata>> metadatas;
+    private final Map<String, List<DataSetColumnMetadata>> metadataList;
     
-    private final Map<String, List<Map<String, String>>> datas;
+    private final Map<String, List<Map<String, String>>> dataList;
     
 }
