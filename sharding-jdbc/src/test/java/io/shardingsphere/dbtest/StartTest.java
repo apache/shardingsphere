@@ -18,12 +18,13 @@
 package io.shardingsphere.dbtest;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.dbtest.asserts.AssertEngine;
+import io.shardingsphere.dbtest.asserts.DDLAssertEngine;
 import io.shardingsphere.dbtest.asserts.DMLAssertEngine;
 import io.shardingsphere.dbtest.asserts.DQLAssertEngine;
 import io.shardingsphere.dbtest.asserts.DataSetAssertLoader;
 import io.shardingsphere.dbtest.asserts.DataSetEnvironmentManager;
 import io.shardingsphere.dbtest.config.bean.AssertSubDefinition;
+import io.shardingsphere.dbtest.config.bean.DDLDataSetAssert;
 import io.shardingsphere.dbtest.config.bean.DMLDataSetAssert;
 import io.shardingsphere.dbtest.config.bean.DQLDataSetAssert;
 import io.shardingsphere.dbtest.config.bean.DataSetAssert;
@@ -215,7 +216,7 @@ public final class StartTest {
         } else if (dataSetAssert instanceof DMLDataSetAssert) {
             new DMLAssertEngine(dataSetEnvironmentManager, (DMLDataSetAssert) dataSetAssert, dataSourceMap, shardingRuleType, databaseTypeEnvironment, caseType).assertDML();
         } else {
-            new AssertEngine(dataSetEnvironmentManager, (DataSetAssert) dataSetAssert, dataSourceMap, shardingRuleType, databaseTypeEnvironment, caseType).run();
+            new DDLAssertEngine(dataSetEnvironmentManager, (DDLDataSetAssert) dataSetAssert, dataSourceMap, shardingRuleType, databaseTypeEnvironment, caseType).assertDDL();
         }
     }
 }
