@@ -17,6 +17,7 @@
 
 package io.shardingsphere.proxy.backend.common;
 
+import com.sun.rowset.CachedRowSetImpl;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.merger.MergeEngineFactory;
@@ -45,6 +46,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 
 import javax.sql.DataSource;
+import javax.sql.rowset.CachedRowSet;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -66,7 +68,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
     private static final Integer FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
     
     private final String sql;
-   
+    
     private List<Connection> connections;
     
     private List<ResultSet> resultSets;
@@ -141,19 +143,44 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
             case DML:
             case DDL:
                 return RuleRegistry.getInstance().isOnlyMasterSlave() ? executeUpdate(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql)
-                        : executeUpdate(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql, sqlStatement);
+                    : executeUpdate(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql, sqlStatement);
             default:
                 return executeCommon(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql);
         }
     }
     
     private CommandResponsePackets executeQuery(final DataSource dataSource, final String sql) {
+        if (ProxyMode.MEMORY_STRICTLY == ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode())) {
+            return executeQueryWithStreamResultSet(dataSource, sql);
+        } else if (ProxyMode.CONNECTION_STRICTLY == ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode())) {
+            return executeQueryWithNonStreamResultSet(dataSource, sql);
+        } else {
+            return new CommandResponsePackets(new ErrPacket(1, 0, "", "", "Invalid proxy.mode"));
+        }
+    }
+    
+    private CommandResponsePackets executeQueryWithStreamResultSet(final DataSource dataSource, final String sql) {
         try {
             Connection connection = dataSource.getConnection();
             connections.add(connection);
             Statement statement = connection.createStatement();
             statement.setFetchSize(FETCH_ONE_ROW_A_TIME);
             resultSets.add(statement.executeQuery(sql));
+            return getQueryDatabaseProtocolPackets();
+        } catch (final SQLException ex) {
+            return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
+        }
+    }
+    
+    private CommandResponsePackets executeQueryWithNonStreamResultSet(final DataSource dataSource, final String sql) {
+        try (
+            Connection connection = dataSource.getConnection();
+            Statement statement = connection.createStatement();
+        ) {
+            ResultSet resultSet = statement.executeQuery(sql);
+            CachedRowSet cachedRowSet = new CachedRowSetImpl();
+            cachedRowSet.populate(resultSet);
+            resultSets.add(cachedRowSet);
             return getQueryDatabaseProtocolPackets();
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
@@ -226,8 +253,8 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
         result.addPacket(new FieldCountPacket(++currentSequenceId, columnCount));
         for (int i = 1; i <= columnCount; i++) {
             result.addPacket(new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData.getSchemaName(i), resultSetMetaData.getTableName(i),
-                    resultSetMetaData.getTableName(i), resultSetMetaData.getColumnLabel(i), resultSetMetaData.getColumnName(i),
-                    resultSetMetaData.getColumnDisplaySize(i), ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(i)), 0));
+                resultSetMetaData.getTableName(i), resultSetMetaData.getColumnLabel(i), resultSetMetaData.getColumnName(i),
+                resultSetMetaData.getColumnDisplaySize(i), ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(i)), 0));
         }
         result.addPacket(new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
         return result;

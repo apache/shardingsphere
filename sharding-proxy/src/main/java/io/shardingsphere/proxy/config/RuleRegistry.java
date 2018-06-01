@@ -61,6 +61,8 @@ public final class RuleRegistry {
     
     private final boolean isOnlyMasterSlave;
     
+    private final String proxyMode;
+    
     private final boolean showSQL;
     
     private RuleRegistry() {
@@ -80,6 +82,7 @@ public final class RuleRegistry {
         isOnlyMasterSlave = shardingRule.getTableRules().isEmpty() && !masterSlaveRule.getMasterDataSourceName().isEmpty();
         Properties properties = yamlProxyConfiguration.getShardingRule().getProps();
         ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
+        proxyMode = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_MODE);
         showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         try {
             shardingMetaData = new ProxyShardingMetaData(dataSourceMap);
