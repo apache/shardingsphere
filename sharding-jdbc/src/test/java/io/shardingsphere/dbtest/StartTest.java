@@ -23,7 +23,6 @@ import io.shardingsphere.dbtest.asserts.DMLAssertEngine;
 import io.shardingsphere.dbtest.asserts.DQLAssertEngine;
 import io.shardingsphere.dbtest.asserts.DataSetAssertLoader;
 import io.shardingsphere.dbtest.asserts.DataSetEnvironmentManager;
-import io.shardingsphere.dbtest.config.bean.AssertSubDefinition;
 import io.shardingsphere.dbtest.config.bean.DDLDataSetAssert;
 import io.shardingsphere.dbtest.config.bean.DMLDataSetAssert;
 import io.shardingsphere.dbtest.config.bean.DQLDataSetAssert;
@@ -134,7 +133,7 @@ public final class StartTest {
                     data[0] = assertDefinition.getId();
                     data[1] = assertDefinition.getPath();
                     data[2] = dqlSubAssert;
-                    data[3] = dqlSubAssert.getShardingRuleTypes();
+                    data[3] = dqlSubAssert.getShardingRuleType();
                     data[4] = new DatabaseTypeEnvironment(databaseType, IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType));
                     data[5] = caseType;
                     result.add(data);

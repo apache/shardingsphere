@@ -112,7 +112,7 @@ public final class DataSetAssertLoader {
             if (each instanceof DQLDataSetAssert) {
                 Set<String> set = new HashSet<>();
                 for (DQLSubAssert dqlSubAssert : ((DQLDataSetAssert) each).getSubAsserts()) {
-                    set.add(dqlSubAssert.getShardingRuleTypes());
+                    set.add(dqlSubAssert.getShardingRuleType());
                 }
                 shardingRuleTypes.addAll(set);
             } else {
