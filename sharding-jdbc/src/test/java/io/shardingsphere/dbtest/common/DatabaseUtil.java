@@ -330,28 +330,32 @@ public final class DatabaseUtil {
     }
     
     private static DataSetDefinitions getDatasetDefinition(final ResultSet resultSet) throws SQLException {
-        ResultSetMetaData metaData = resultSet.getMetaData();
-        int columnCount = metaData.getColumnCount();
-        List<DataSetColumnMetadata> dataSetColumnMetadataList = new LinkedList<>();
-        for (int i = 1; i < columnCount + 1; i++) {
-            DataSetColumnMetadata columnDefinition = new DataSetColumnMetadata();
-            columnDefinition.setName(metaData.getColumnName(i));
-            columnDefinition.setType(getDataType(metaData.getColumnType(i), metaData.getScale(i)));
-            dataSetColumnMetadataList.add(columnDefinition);
-        }
+        List<DataSetColumnMetadata> dataSetColumnMetadataList = getDataSetColumnMetadataList(resultSet);
         Map<String, List<DataSetColumnMetadata>> configs = new HashMap<>();
         configs.put("data", dataSetColumnMetadataList);
-        List<Map<String, String>> ls = new ArrayList<>();
         Map<String, List<Map<String, String>>> datas = new HashMap<>();
-        datas.put("data", ls);
-        handleResultSet(resultSet, dataSetColumnMetadataList, ls);
+        datas.put("data", handleResultSet(resultSet, dataSetColumnMetadataList));
         return new DataSetDefinitions(configs, datas);
     }
     
-    private static void handleResultSet(final ResultSet resultSet, final List<DataSetColumnMetadata> columnMetadata, final List<Map<String, String>> ls) throws SQLException {
+    private static List<DataSetColumnMetadata> getDataSetColumnMetadataList(final ResultSet resultSet) throws SQLException {
+        List<DataSetColumnMetadata> result = new LinkedList<>();
+        ResultSetMetaData metaData = resultSet.getMetaData();
+        int columnCount = metaData.getColumnCount();
+        for (int i = 1; i < columnCount + 1; i++) {
+            DataSetColumnMetadata each = new DataSetColumnMetadata();
+            each.setName(metaData.getColumnName(i));
+            each.setType(getDataType(metaData.getColumnType(i), metaData.getScale(i)));
+            result.add(each);
+        }
+        return result;
+    }
+    
+    private static List<Map<String, String>> handleResultSet(final ResultSet resultSet, final Collection<DataSetColumnMetadata> dataSetColumnMetadataList) throws SQLException {
+        List<Map<String, String>> result = new ArrayList<>();
         while (resultSet.next()) {
             Map<String, String> data = new HashMap<>();
-            for (DataSetColumnMetadata each : columnMetadata) {
+            for (DataSetColumnMetadata each : dataSetColumnMetadataList) {
                 String name = each.getName();
                 String type = each.getType();
                 switch (type) {
@@ -372,8 +376,9 @@ public final class DatabaseUtil {
                         break;
                 }
             }
-            ls.add(data);
+            result.add(data);
         }
+        return result;
     }
     
     private static void sqlPreparedStatement0(final List<ParameterValueDefinition> parameterValueDefinitions, final PreparedStatement preparedStatement) throws SQLException, ParseException {
