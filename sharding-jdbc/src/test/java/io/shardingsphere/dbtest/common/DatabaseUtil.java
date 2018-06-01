@@ -40,6 +40,7 @@ import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -140,11 +141,22 @@ public final class DatabaseUtil {
      */
     public static int updateUseStatementToExecuteUpdate(final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            return statement.executeUpdate(sqlStatement(sql, parameterDefinition.getValues()));
+            return statement.executeUpdate(sqlStatement0(sql, parameterDefinition.getValues()));
         }
     }
     
-    private static String sqlStatement(final String sql, final List<ParameterValueDefinition> parameter) {
+    private static String sqlStatement(final String sql, final Collection<SQLValue> sqlValues) {
+        if (null == sqlValues) {
+            return sql;
+        }
+        String result = sql;
+        for (SQLValue each : sqlValues) {
+            result = Pattern.compile("%s", Pattern.LITERAL).matcher(result).replaceFirst(Matcher.quoteReplacement(each.getValue() instanceof String ? "'" + each.getValue() + "'" : each.getValue().toString()));
+        }
+        return result;
+    }
+    
+    private static String sqlStatement0(final String sql, final List<ParameterValueDefinition> parameter) {
         if (null == parameter) {
             return sql;
         }
@@ -183,7 +195,7 @@ public final class DatabaseUtil {
      */
     public static int updateUseStatementToExecute(final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            if (!statement.execute(sqlStatement(sql, parameterDefinition.getValues()))) {
+            if (!statement.execute(sqlStatement0(sql, parameterDefinition.getValues()))) {
                 return statement.getUpdateCount();
             }
         }
@@ -202,7 +214,7 @@ public final class DatabaseUtil {
      */
     public static int updateUsePreparedStatementToExecuteUpdate(final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
-            sqlPreparedStatement(parameterDefinition.getValues(), preparedStatement);
+            sqlPreparedStatement0(parameterDefinition.getValues(), preparedStatement);
             return preparedStatement.executeUpdate();
         }
     }
@@ -219,7 +231,7 @@ public final class DatabaseUtil {
      */
     public static int updateUsePreparedStatementToExecute(final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
-            sqlPreparedStatement(parameterDefinition.getValues(), preparedStatement);
+            sqlPreparedStatement0(parameterDefinition.getValues(), preparedStatement);
             if (!preparedStatement.execute()) {
                 return preparedStatement.getUpdateCount();
             }
@@ -232,15 +244,33 @@ public final class DatabaseUtil {
      *
      * @param conn connection
      * @param sql SQL
+     * @param sqlValues SQL values 
+     * @return query result set
+     * @throws SQLException   SQL exception
+     * @throws ParseException parse exception
+     */
+    public static DatasetDatabase selectUsePreparedStatement(final Connection conn, final String sql, final Collection<SQLValue> sqlValues) throws SQLException, ParseException {
+        try (PreparedStatement preparedStatement = conn.prepareStatement(sql.replaceAll("%s", "?"))) {
+            sqlPreparedStatement(sqlValues, preparedStatement);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                return useBackResultSet(resultSet);
+            }
+        }
+    }
+    
+    /**
+     * Use PreparedStatement test SQL select.
+     *
+     * @param conn connection
+     * @param sql SQL
      * @param parameterDefinition parameter definition 
      * @return query result set
      * @throws SQLException   SQL exception
      * @throws ParseException parse exception
      */
-    public static DatasetDatabase selectUsePreparedStatement(final Connection conn, final String sql, final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
-        List<ParameterValueDefinition> parameters = parameterDefinition.getValues();
+    public static DatasetDatabase selectUsePreparedStatement0(final Connection conn, final String sql, final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
         try (PreparedStatement preparedStatement = conn.prepareStatement(sql.replaceAll("%s", "?"))) {
-            sqlPreparedStatement(parameters, preparedStatement);
+            sqlPreparedStatement0(parameterDefinition.getValues(), preparedStatement);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 return useBackResultSet(resultSet);
             }
@@ -257,11 +287,33 @@ public final class DatabaseUtil {
      * @throws SQLException   SQL exception
      * @throws ParseException parse exception
      */
-    public static DatasetDatabase selectUsePreparedStatementToExecuteSelect(
+    public static DatasetDatabase selectUsePreparedStatementToExecuteSelect0(
             final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
         List<ParameterValueDefinition> parameter = parameterDefinition.getValues();
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
-            sqlPreparedStatement(parameter, preparedStatement);
+            sqlPreparedStatement0(parameter, preparedStatement);
+            boolean flag = preparedStatement.execute();
+            assertTrue("Not a query statement.", flag);
+            try (ResultSet resultSet = preparedStatement.getResultSet()) {
+                return useBackResultSet(resultSet);
+            }
+        }
+    }
+    
+    /**
+     * Use PreparedStatement test SQL select.
+     *
+     * @param connection connection
+     * @param sql SQL
+     * @param sqlValues SQL values
+     * @return query result set
+     * @throws SQLException   SQL exception
+     * @throws ParseException parse exception
+     */
+    public static DatasetDatabase selectUsePreparedStatementToExecuteSelect(
+            final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
+            sqlPreparedStatement(sqlValues, preparedStatement);
             boolean flag = preparedStatement.execute();
             assertTrue("Not a query statement.", flag);
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
@@ -295,14 +347,13 @@ public final class DatabaseUtil {
      *
      * @param connection connection
      * @param sql SQL
-     * @param parameterDefinition parameter definition
+     * @param sqlValues SQL values
      * @return query result set
      * @throws SQLException SQL exception
      */
-    public static DatasetDatabase selectUseStatement(final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException {
-        List<ParameterValueDefinition> parameter = parameterDefinition.getValues();
+    public static DatasetDatabase selectUseStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            try (ResultSet resultSet = statement.executeQuery(sqlStatement(sql, parameter))) {
+            try (ResultSet resultSet = statement.executeQuery(sqlStatement(sql, sqlValues))) {
                 return useBackResultSet(resultSet);
             }
         }
@@ -313,14 +364,13 @@ public final class DatabaseUtil {
      *
      * @param connection connection
      * @param sql SQL
-     * @param parameterDefinition parameter definition
+     * @param sqlValues SQL values
      * @return query result set
      * @throws SQLException SQL exception
      */
-    public static DatasetDatabase selectUseStatementToExecuteSelect(final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException {
-        List<ParameterValueDefinition> parameter = parameterDefinition.getValues();
+    public static DatasetDatabase selectUseStatementToExecuteSelect(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            try (ResultSet resultSet = statement.executeQuery(sqlStatement(sql, parameter))) {
+            try (ResultSet resultSet = statement.executeQuery(sqlStatement(sql, sqlValues))) {
                 return useBackResultSet(resultSet);
             }
         }
@@ -378,7 +428,13 @@ public final class DatabaseUtil {
         }
     }
     
-    private static void sqlPreparedStatement(final List<ParameterValueDefinition> parameterValueDefinitions, final PreparedStatement preparedStatement) throws SQLException, ParseException {
+    private static void sqlPreparedStatement(final Collection<SQLValue> sqlValues, final PreparedStatement preparedStatement) throws SQLException {
+        for (SQLValue each : sqlValues) {
+            setParameter(preparedStatement, each);
+        }
+    }
+    
+    private static void sqlPreparedStatement0(final List<ParameterValueDefinition> parameterValueDefinitions, final PreparedStatement preparedStatement) throws SQLException, ParseException {
         if (null == parameterValueDefinitions) {
             return;
         }

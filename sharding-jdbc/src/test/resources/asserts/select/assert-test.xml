@@ -6,21 +6,21 @@
         <dql-sub-assert sharding-rule-types="masterslave" expected-data-file="SelectOne.xml" />
     </dql-assert>
     <dql-assert id="assertSelectNotEqualsWithSingleTable">
-        <dql-sub-assert sharding-rule-types="tbl" expected-data-file="SelectNotEqualsWithSingleTable.xml">
+        <dql-sub-assert sharding-rule-types="tbl" parameters="100000:int" expected-data-file="SelectNotEqualsWithSingleTable.xml">
             <parameter>
                 <value value="100000" type="int"/>
             </parameter>
         </dql-sub-assert>
     </dql-assert>
     <dql-assert id="assertSelectNotEqualsWithSingleTableForExclamationEqual">
-        <dql-sub-assert sharding-rule-types="tbl" expected-data-file="SelectNotEqualsWithSingleTable.xml">
+        <dql-sub-assert sharding-rule-types="tbl" parameters="100000:int" expected-data-file="SelectNotEqualsWithSingleTable.xml">
             <parameter>
                 <value value="100000" type="int"/>
             </parameter>
         </dql-sub-assert>
     </dql-assert>
     <dql-assert id="assertSelectNotEqualsWithSingleTableForNotIn">
-        <dql-sub-assert sharding-rule-types="tbl" expected-data-file="SelectNotWithSingleTable.xml">
+        <dql-sub-assert sharding-rule-types="tbl" parameters="100000:int, 100001:int" expected-data-file="SelectNotWithSingleTable.xml">
             <parameter>
                 <value value="100000" type="int"/>
                 <value value="100001" type="int"/>
@@ -28,7 +28,7 @@
         </dql-sub-assert>
     </dql-assert>
     <dql-assert id="assertSelectNotEqualsWithSingleTableForNotBetween">
-        <dql-sub-assert sharding-rule-types="tbl" expected-data-file="SelectNotWithSingleTable.xml">
+        <dql-sub-assert sharding-rule-types="tbl" parameters="100000:int, 100001:int" expected-data-file="SelectNotWithSingleTable.xml">
             <parameter>
                 <value value="100000" type="int"/>
                 <value value="100001" type="int"/>
@@ -36,7 +36,7 @@
         </dql-sub-assert>
     </dql-assert>
     <dql-assert id="assertSelectEqualsWithSameShardingColumns">
-        <dql-sub-assert sharding-rule-types="tbl" expected-data-file="SelectEqualsWithSameShardingColumns.xml">
+        <dql-sub-assert sharding-rule-types="tbl" parameters="1000:int, 1001:int" expected-data-file="SelectEqualsWithSameShardingColumns.xml">
             <parameter>
                 <value value="1000" type="int"/>
                 <value value="1001" type="int"/>
@@ -44,7 +44,7 @@
         </dql-sub-assert>
     </dql-assert>
     <dql-assert id="assertSelectInWithSameShardingColumns">
-        <dql-sub-assert sharding-rule-types="tbl" expected-data-file="SelectInWithSameShardingColumns.xml">
+        <dql-sub-assert sharding-rule-types="tbl" parameters="1000:int, 1001:int, 1001:int, 1100:int" expected-data-file="SelectInWithSameShardingColumns.xml">
             <parameter>
                 <value value="1000" type="int"/>
                 <value value="1001" type="int"/>
@@ -54,55 +54,55 @@
         </dql-sub-assert>
     </dql-assert>
     <dql-assert id="assertSelectEqualsWithSingleTable">
-        <dql-sub-assert sharding-rule-types="tbl" expected-data-file="SelectEqualsWithSingleTable_0.xml">
+        <dql-sub-assert sharding-rule-types="tbl" parameters="10:int, 1000:int" expected-data-file="SelectEqualsWithSingleTable_0.xml">
             <parameter>
                 <value value="10" type="int"/>
                 <value value="1000" type="int"/>
             </parameter>
         </dql-sub-assert>
-        <dql-sub-assert sharding-rule-types="tbl" expected-data-file="SelectEqualsWithSingleTable_1.xml">
+        <dql-sub-assert sharding-rule-types="tbl" parameters="11:int, 1109:int" expected-data-file="SelectEqualsWithSingleTable_1.xml">
             <parameter>
                 <value value="11" type="int"/>
                 <value value="1109" type="int"/>
             </parameter>
         </dql-sub-assert>
-        <dql-sub-assert sharding-rule-types="db" expected-data-file="SelectEqualsWithSingleTable_2.xml">
+        <dql-sub-assert sharding-rule-types="db" parameters="12:int, 1201:int" expected-data-file="SelectEqualsWithSingleTable_2.xml">
             <parameter>
                 <value value="12" type="int"/>
                 <value value="1201" type="int"/>
             </parameter>
         </dql-sub-assert>
-        <dql-sub-assert sharding-rule-types="dbtbl" expected-data-file="SelectEqualsWithSingleTable_2.xml">
+        <dql-sub-assert sharding-rule-types="dbtbl" parameters="12:int, 1201:int" expected-data-file="SelectEqualsWithSingleTable_2.xml">
             <parameter>
                 <value value="12" type="int"/>
                 <value value="1201" type="int"/>
             </parameter>
         </dql-sub-assert>
-        <dql-sub-assert sharding-rule-types="masterslave" expected-data-file="masterslave/SelectEqualsWithSingleTable_2.xml">
+        <dql-sub-assert sharding-rule-types="masterslave" parameters="12:int, 1201:int" expected-data-file="masterslave/SelectEqualsWithSingleTable_2.xml">
             <parameter>
                 <value value="12" type="int"/>
                 <value value="1201" type="int"/>
             </parameter>
         </dql-sub-assert>
-        <dql-sub-assert sharding-rule-types="tbl" expected-data-file="Empty.xml">
+        <dql-sub-assert sharding-rule-types="tbl" parameters="12:int, 1000:int" expected-data-file="Empty.xml">
             <parameter>
                 <value value="12" type="int" />
                 <value value="1000" type="int" />
             </parameter>
         </dql-sub-assert>
-        <dql-sub-assert sharding-rule-types="db" expected-data-file="Empty.xml">
+        <dql-sub-assert sharding-rule-types="db" parameters="12:int, 1000:int" expected-data-file="Empty.xml">
             <parameter>
                 <value value="12" type="int" />
                 <value value="1000" type="int" />
             </parameter>
         </dql-sub-assert>
-        <dql-sub-assert sharding-rule-types="dbtbl" expected-data-file="Empty.xml">
+        <dql-sub-assert sharding-rule-types="dbtbl" parameters="12:int, 1000:int" expected-data-file="Empty.xml">
             <parameter>
                 <value value="12" type="int" />
                 <value value="1000" type="int" />
             </parameter>
         </dql-sub-assert>
-        <dql-sub-assert sharding-rule-types="masterslave" expected-data-file="Empty.xml">
+        <dql-sub-assert sharding-rule-types="masterslave" parameters="12:int, 1000:int" expected-data-file="Empty.xml">
             <parameter>
                 <value value="12" type="int" />
                 <value value="1000" type="int" />
@@ -111,7 +111,7 @@
     </dql-assert>
     
     <!--<dql-assert id="assertSelectBetweenWithSingleTable">
-        <dql-sub-assert sharding-rule-types="tbl,dbtbl" expected-data-file="SelectBetweenWithSingleTable.xml">
+        <dql-sub-assert sharding-rule-types="tbl,dbtbl" parameters="10:int, 12:int, 1009:int, 1108:int" expected-data-file="SelectBetweenWithSingleTable.xml">
             <parameter>
                 <value value="10" type="int"/>
                 <value value="12" type="int"/>
@@ -119,7 +119,7 @@
                 <value value="1108" type="int"/>
             </parameter>
         </dql-sub-assert>
-        <dql-sub-assert sharding-rule-types="db" expected-data-file="SelectBetweenWithSingleTable.xml">
+        <dql-sub-assert sharding-rule-types="db" parameters="10:int, 12:int, 1001:int, 1200:int" expected-data-file="SelectBetweenWithSingleTable.xml">
             <parameter>
                 <value value="10" type="int"/>
                 <value value="12" type="int"/>
@@ -127,7 +127,7 @@
                 <value value="1200" type="int"/>
             </parameter>
         </dql-sub-assert>
-        <dql-sub-assert sharding-rule-types="tbl,db,dbtbl" expected-data-file="Empty.xml">
+        <dql-sub-assert sharding-rule-types="tbl,db,dbtbl" parameters="10:int, 12:int, 1309:int, 1408:int" expected-data-file="Empty.xml">
             <parameter>
                 <value value="10" type="int"/>
                 <value value="12" type="int"/>

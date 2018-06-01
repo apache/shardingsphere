@@ -206,7 +206,7 @@ public final class DMLAssertEngine {
                 }
                 String checkSQL = anAssert.getExpectedSql();
                 checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
-                DatasetDatabase ddPreparedStatement = DatabaseUtil.selectUsePreparedStatement(connection, checkSQL, anAssert.getExpectedParameter());
+                DatasetDatabase ddPreparedStatement = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, anAssert.getExpectedParameter());
                 DatabaseUtil.assertDatas(checkDataset, ddPreparedStatement);
                 return actual;
             }
@@ -226,7 +226,7 @@ public final class DMLAssertEngine {
                 }
                 String checkSQL = anAssert.getExpectedSql();
                 checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
-                DatasetDatabase ddPreparedStatement = DatabaseUtil.selectUsePreparedStatement(connection, checkSQL, anAssert.getExpectedParameter());
+                DatasetDatabase ddPreparedStatement = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, anAssert.getExpectedParameter());
                 DatabaseUtil.assertDatas(checkDataset, ddPreparedStatement);
                 return result;
             }
@@ -246,7 +246,7 @@ public final class DMLAssertEngine {
                 }
                 String checkSQL = anAssert.getExpectedSql();
                 checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
-                DatasetDatabase ddPreparedStatement = DatabaseUtil.selectUsePreparedStatement(connection, checkSQL, anAssert.getExpectedParameter());
+                DatasetDatabase ddPreparedStatement = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, anAssert.getExpectedParameter());
                 DatabaseUtil.assertDatas(checkDataset, ddPreparedStatement);
                 return result;
             }
@@ -266,7 +266,7 @@ public final class DMLAssertEngine {
                 }
                 String checkSQL = dmlDataSetAssert.getExpectedSql();
                 checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
-                DatasetDatabase ddPreparedStatement = DatabaseUtil.selectUsePreparedStatement(connection, checkSQL, dmlDataSetAssert.getExpectedParameter());
+                DatasetDatabase ddPreparedStatement = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, dmlDataSetAssert.getExpectedParameter());
                 DatabaseUtil.assertDatas(checkDataset, ddPreparedStatement);
                 return actual;
             }

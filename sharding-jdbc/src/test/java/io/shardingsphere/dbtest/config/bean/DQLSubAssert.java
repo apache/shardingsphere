@@ -36,4 +36,7 @@ public final class DQLSubAssert {
     
     @XmlElement(name = "parameter")
     private ParameterDefinition parameter;
+    
+    @XmlAttribute(name = "parameters")
+    private String parameters;
 }
