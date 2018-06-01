@@ -15,32 +15,35 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.zookeeper;
+package io.shardingsphere.jdbc.orchestration.reg.new_zk;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
-import com.saaavsaaa.client.action.IClient;
-import com.saaavsaaa.client.cache.PathTree;
-import com.saaavsaaa.client.retry.DelayRetryPolicy;
-import com.saaavsaaa.client.utility.StringUtil;
-import com.saaavsaaa.client.zookeeper.ClientFactory;
-import com.saaavsaaa.client.zookeeper.section.Listener;
-import com.saaavsaaa.client.zookeeper.section.StrategyType;
 import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.jdbc.orchestration.reg.exception.RegExceptionHandler;
 import io.shardingsphere.jdbc.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.jdbc.orchestration.reg.listener.EventListener;
+import io.shardingsphere.jdbc.orchestration.reg.new_zk.client.action.IClient;
+import io.shardingsphere.jdbc.orchestration.reg.new_zk.client.cache.PathTree;
+import io.shardingsphere.jdbc.orchestration.reg.new_zk.client.retry.DelayRetryPolicy;
+import io.shardingsphere.jdbc.orchestration.reg.new_zk.client.utility.StringUtil;
+import io.shardingsphere.jdbc.orchestration.reg.new_zk.client.zookeeper.ClientFactory;
+import io.shardingsphere.jdbc.orchestration.reg.new_zk.client.zookeeper.section.Listener;
+import io.shardingsphere.jdbc.orchestration.reg.new_zk.client.zookeeper.section.StrategyType;
+import io.shardingsphere.jdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.ZooDefs;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Zookeeper native based registry center.
  * 
- * @author saaav
+ * @author lidongbo
  */
 public final class NewZookeeperRegistryCenter implements RegistryCenter {
     
@@ -50,7 +53,7 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
     
     public NewZookeeperRegistryCenter(final ZookeeperConfiguration zkConfig) {
         ClientFactory creator = buildCreator(zkConfig);
-        client = initClient(creator);
+        client = initClient(creator, zkConfig);
     }
     
     private ClientFactory buildCreator(final ZookeeperConfiguration zkConfig) {
@@ -64,28 +67,20 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
         return creator;
     }
     
-    private IClient initClient(final ClientFactory creator) {
+    private IClient initClient(final ClientFactory creator, final ZookeeperConfiguration zkConfig) {
         IClient newClient = null;
         try {
             newClient = creator.start();
+            // block, slowly
+            if (!newClient.blockUntilConnected(zkConfig.getMaxSleepTimeMilliseconds() * zkConfig.getMaxRetries(), TimeUnit.MILLISECONDS)) {
+                newClient.close();
+                throw new KeeperException.OperationTimeoutException();
+            }
             newClient.useExecStrategy(StrategyType.SYNC_RETRY);
         } catch (Exception e) {
             RegExceptionHandler.handleException(e);
-            if (newClient != null){
-                newClient.close();
-            }
         }
         return newClient;
-    
-        /* todo
-        try {
-            if (!client.blockUntilConnected(zkConfig.getMaxSleepTimeMilliseconds() * zkConfig.getMaxRetries(), TimeUnit.MILLISECONDS)) {
-                client.close();
-                throw new OperationTimeoutException();
-            }
-        } catch (final InterruptedException | OperationTimeoutException ex) {
-            RegExceptionHandler.handleException(ex);
-        }*/
     }
     
     @Override
@@ -201,7 +196,6 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
             addCacheData(key);
         }
         PathTree cache = caches.get(path);
-        
         cache.watch(new Listener() {
             
             @Override
@@ -243,7 +237,8 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
     private void addCacheData(final String cachePath) {
         PathTree cache = new PathTree(cachePath, client);
         try {
-            cache.loading();
+            cache.load();
+            cache.watch();
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
