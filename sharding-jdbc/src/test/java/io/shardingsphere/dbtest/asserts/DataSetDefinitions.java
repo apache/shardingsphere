@@ -17,7 +17,7 @@
 
 package io.shardingsphere.dbtest.asserts;
 
-import io.shardingsphere.dbtest.config.dataset.DataSetColumnMetadata;
+import io.shardingsphere.dbtest.config.dataset.init.DataSetColumnMetadata;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

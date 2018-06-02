@@ -15,21 +15,22 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.config.dataset;
+package io.shardingsphere.dbtest.config.dataset.expected;
 
 import lombok.Getter;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class DataSetRow {
+@XmlRootElement(name = "datasets")
+public final class ExpectedDataSetsRoot {
     
-    @XmlAttribute(name = "data-node")
-    private String dataNode;
+    @XmlElement
+    private ExpectedColumns columns;
     
-    @XmlAttribute(name = "values")
-    private String values;
+    @XmlElement(name = "dataset")
+    private List<ExpectedDataSetRow> dataSetRows = new ArrayList<>();
 }

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.config.dataset;
+package io.shardingsphere.dbtest.config.dataset.init;
 
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.util.InlineExpressionParser;
@@ -27,7 +27,7 @@ import java.util.List;
 
 @Getter
 @XmlRootElement(name = "datasets")
-public class DataSetsRoot {
+public final class DataSetsRoot {
     
     @XmlElement(name = "metadata")
     private List<DataSetMetadata> metadataList;

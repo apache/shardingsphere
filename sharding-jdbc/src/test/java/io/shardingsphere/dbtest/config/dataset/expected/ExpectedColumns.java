@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.config.dataset;
+package io.shardingsphere.dbtest.config.dataset.expected;
 
 import lombok.Getter;
 
@@ -25,14 +25,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class DataSetIndexMetadata {
+public final class ExpectedColumns {
     
     @XmlAttribute
-    private String name;
-    
-    @XmlAttribute
-    private String columns;
-    
-    @XmlAttribute
-    private boolean unique;
+    private String values;
 }

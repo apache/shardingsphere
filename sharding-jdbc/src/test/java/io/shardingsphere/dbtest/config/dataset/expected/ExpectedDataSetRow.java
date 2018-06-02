@@ -15,38 +15,18 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.config.dataset;
+package io.shardingsphere.dbtest.config.dataset.expected;
 
 import lombok.Getter;
-import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 
 @Getter
-@Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class DataSetColumnMetadata {
+public final class ExpectedDataSetRow {
     
     @XmlAttribute
-    private String name;
-    
-    @XmlAttribute
-    private String type;
-    
-    @XmlAttribute
-    private Integer size;
-    
-    @XmlAttribute(name = "decimal-digits")
-    private Integer decimalDigits;
-    
-    @XmlAttribute(name = "num-rrec-radix")
-    private Integer numPrecRadix;
-    
-    @XmlAttribute
-    private Integer nullable;
-    
-    @XmlAttribute(name = "auto-increment")
-    private boolean autoIncrement;
+    private String values;
 }

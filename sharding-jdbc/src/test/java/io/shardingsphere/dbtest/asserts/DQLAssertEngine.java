@@ -22,17 +22,17 @@ import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
 import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
 import io.shardingsphere.dbtest.common.DatabaseUtil;
 import io.shardingsphere.dbtest.common.SQLValue;
-import io.shardingsphere.dbtest.config.DataSetsParser;
 import io.shardingsphere.dbtest.config.bean.DQLSubAssert;
+import io.shardingsphere.dbtest.config.dataset.expected.ExpectedDataSetsRoot;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
-import org.xml.sax.SAXException;
 
 import javax.sql.DataSource;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathExpressionException;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -78,48 +78,58 @@ public final class DQLAssertEngine {
     /**
      * Assert DQL.
      * 
-     * @throws IOException
-     * @throws SAXException
-     * @throws ParserConfigurationException
-     * @throws XPathExpressionException
-     * @throws SQLException
-     * @throws ParseException
+     * @throws IOException IO exception
+     * @throws SQLException SQL exception
+     * @throws ParseException parse exception
+     * @throws JAXBException JAXB exception
      */
-    public void assertDQL() throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
+    public void assertDQL() throws IOException, SQLException, ParseException, JAXBException {
         assertExecuteQueryForPreparedStatement();
         assertExecuteDQLForPreparedStatement();
         assertExecuteQueryForStatement();
         assertExecuteDQLForStatement();
     }
     
-    private void assertExecuteQueryForPreparedStatement() throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private void assertExecuteQueryForPreparedStatement() throws SQLException, ParseException, IOException, JAXBException {
         try (Connection connection = dataSource.getConnection()) {
             DataSetDefinitions actual = DatabaseUtil.executeQueryForPreparedStatement(connection, sql, getSQLValues(dqlSubAssert.getParameters()));
-            DataSetDefinitions expected = DataSetsParser.parse(new File(expectedDataFile), "data");
+            ExpectedDataSetsRoot expected;
+            try (FileReader reader = new FileReader(expectedDataFile)) {
+                expected = (ExpectedDataSetsRoot) JAXBContext.newInstance(ExpectedDataSetsRoot.class).createUnmarshaller().unmarshal(reader);
+            }
             DatabaseUtil.assertDataSet(actual, expected);
         }
     }
     
-    private void assertExecuteDQLForPreparedStatement() throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private void assertExecuteDQLForPreparedStatement() throws SQLException, ParseException, IOException, JAXBException {
         try (Connection connection = dataSource.getConnection()) {
             DataSetDefinitions actual = DatabaseUtil.executeDQLForPreparedStatement(connection, sql, getSQLValues(dqlSubAssert.getParameters()));
-            DataSetDefinitions expected = DataSetsParser.parse(new File(expectedDataFile), "data");
+            ExpectedDataSetsRoot expected;
+            try (FileReader reader = new FileReader(expectedDataFile)) {
+                expected = (ExpectedDataSetsRoot) JAXBContext.newInstance(ExpectedDataSetsRoot.class).createUnmarshaller().unmarshal(reader);
+            }
             DatabaseUtil.assertDataSet(actual, expected);
         }
     }
     
-    private void assertExecuteQueryForStatement() throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, ParseException {
+    private void assertExecuteQueryForStatement() throws SQLException, IOException, ParseException, JAXBException {
         try (Connection connection = dataSource.getConnection()) {
             DataSetDefinitions actual = DatabaseUtil.executeQueryForStatement(connection, sql, getSQLValues(dqlSubAssert.getParameters()));
-            DataSetDefinitions expected = DataSetsParser.parse(new File(expectedDataFile), "data");
+            ExpectedDataSetsRoot expected;
+            try (FileReader reader = new FileReader(expectedDataFile)) {
+                expected = (ExpectedDataSetsRoot) JAXBContext.newInstance(ExpectedDataSetsRoot.class).createUnmarshaller().unmarshal(reader);
+            }
             DatabaseUtil.assertDataSet(actual, expected);
         }
     }
     
-    private void assertExecuteDQLForStatement() throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, ParseException {
+    private void assertExecuteDQLForStatement() throws SQLException, IOException, ParseException, JAXBException {
         try (Connection connection = dataSource.getConnection()) {
             DataSetDefinitions actual = DatabaseUtil.executeDQLForStatement(connection, sql, getSQLValues(dqlSubAssert.getParameters()));
-            DataSetDefinitions expected = DataSetsParser.parse(new File(expectedDataFile), "data");
+            ExpectedDataSetsRoot expected;
+            try (FileReader reader = new FileReader(expectedDataFile)) {
+                expected = (ExpectedDataSetsRoot) JAXBContext.newInstance(ExpectedDataSetsRoot.class).createUnmarshaller().unmarshal(reader);
+            }
             DatabaseUtil.assertDataSet(actual, expected);
         }
     }

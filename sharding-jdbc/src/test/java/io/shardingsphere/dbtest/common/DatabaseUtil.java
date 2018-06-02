@@ -17,10 +17,13 @@
 
 package io.shardingsphere.dbtest.common;
 
+import com.google.common.base.Splitter;
 import io.shardingsphere.dbtest.asserts.DataSetDefinitions;
 import io.shardingsphere.dbtest.config.bean.ParameterDefinition;
 import io.shardingsphere.dbtest.config.bean.ParameterValueDefinition;
-import io.shardingsphere.dbtest.config.dataset.DataSetColumnMetadata;
+import io.shardingsphere.dbtest.config.dataset.expected.ExpectedDataSetRow;
+import io.shardingsphere.dbtest.config.dataset.expected.ExpectedDataSetsRoot;
+import io.shardingsphere.dbtest.config.dataset.init.DataSetColumnMetadata;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -45,8 +48,10 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -449,6 +454,33 @@ public final class DatabaseUtil {
     
     /**
      * Assert data set.
+     *
+     * @param actual actual
+     * @param expected expected
+     */
+    public static void assertDataSet(final DataSetDefinitions actual, final ExpectedDataSetsRoot expected) {
+        assertData(actual.getDataList().get("data"), expected);
+    }
+    
+    private static void assertData(final List<Map<String, String>> actual, final ExpectedDataSetsRoot expected) {
+        assertThat(actual.size(), is(expected.getDataSetRows().size()));
+        List<String> expectedColumns = Splitter.on(",").trimResults().splitToList(expected.getColumns().getValues());
+        int count = 0;
+        for (Map<String, String> eachActual : actual) {
+            ExpectedDataSetRow eachExpected = expected.getDataSetRows().get(count);
+            List<String> expectedValues = Splitter.on(",").trimResults().splitToList(eachExpected.getValues());
+            assertThat(eachActual.size(), is(expectedValues.size()));
+            int i = 0;
+            for (String eachExpectedValue : expectedValues) {
+                assertThat(eachActual.get(expectedColumns.get(i)), is(eachExpectedValue));
+                i++;
+            }
+            count++;
+        }
+    }
+    
+    /**
+     * Assert data set.
      * 
      * @param actual actual
      * @param expected expected
@@ -468,6 +500,7 @@ public final class DatabaseUtil {
     }
     
     private static void assertData(final Map<String, List<Map<String, String>>> actualDataList, final Map<String, List<Map<String, String>>> expectedDataList) {
+        assertThat(actualDataList.size(), is(expectedDataList.size()));
         for (Entry<String, List<Map<String, String>>> entry : expectedDataList.entrySet()) {
             List<Map<String, String>> data = entry.getValue();
             List<Map<String, String>> actualDatas = actualDataList.get(entry.getKey());

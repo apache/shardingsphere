@@ -25,7 +25,7 @@ import io.shardingsphere.dbtest.config.DataSetsParser;
 import io.shardingsphere.dbtest.config.bean.AssertSubDefinition;
 import io.shardingsphere.dbtest.config.bean.DDLDataSetAssert;
 import io.shardingsphere.dbtest.config.bean.ParameterDefinition;
-import io.shardingsphere.dbtest.config.dataset.DataSetColumnMetadata;
+import io.shardingsphere.dbtest.config.dataset.init.DataSetColumnMetadata;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.dbtest.env.schema.SchemaEnvironmentManager;

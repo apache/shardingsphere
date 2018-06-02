@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import io.shardingsphere.dbtest.config.bean.ColumnDefinition;
 import io.shardingsphere.dbtest.asserts.DataSetDefinitions;
 import io.shardingsphere.dbtest.config.bean.IndexDefinition;
-import io.shardingsphere.dbtest.config.dataset.DataSetColumnMetadata;
+import io.shardingsphere.dbtest.config.dataset.init.DataSetColumnMetadata;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
