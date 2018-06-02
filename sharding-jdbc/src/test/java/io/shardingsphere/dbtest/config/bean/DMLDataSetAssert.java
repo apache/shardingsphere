@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 @AllArgsConstructor
@@ -60,8 +60,8 @@ public class DMLDataSetAssert implements DataSetAssert {
     @XmlElement(name = "expected-parameter")
     private ParameterDefinition expectedParameter = new ParameterDefinition();
     
-    @XmlElement(name = "subAssert")
-    private List<AssertSubDefinition> subAsserts = new ArrayList<>();
+    @XmlElement(name = "dml-sub-assert")
+    private List<DMLSubAssert> subAsserts = new LinkedList<>();
     
     private String path;
     

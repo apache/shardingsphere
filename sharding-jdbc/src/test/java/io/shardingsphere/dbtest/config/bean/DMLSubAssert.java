@@ -22,17 +22,27 @@ import lombok.Getter;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class DQLSubAssert {
+public final class DMLSubAssert {
     
-    @XmlAttribute(name = "sharding-rule-type")
-    private String shardingRuleType;
+    @XmlAttribute(name = "sharding-rule-types")
+    private String shardingRuleTypes;
     
     @XmlAttribute(name = "expected-data-file")
     private String expectedDataFile;
     
+    @XmlElement(name = "expected-parameter")
+    private ParameterDefinition expectedParameter;
+    
+    @XmlAttribute(name = "expected-update")
+    private Integer expectedUpdate;
+    
     @XmlAttribute
     private String parameters;
+    
+    @XmlAttribute(name = "expected-sql")
+    private String expectedSql;
 }

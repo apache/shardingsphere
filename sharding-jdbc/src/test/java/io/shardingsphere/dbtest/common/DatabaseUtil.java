@@ -182,11 +182,26 @@ public final class DatabaseUtil {
      *
      * @param connection connection
      * @param sql SQL
+     * @param sqlValues SQL values
+     * @return Number of rows as a result of execution
+     * @throws SQLException SQL exception
+     */
+    public static int updateUseStatementToExecuteUpdate(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
+        try (Statement statement = connection.createStatement()) {
+            return statement.executeUpdate(sqlStatement(sql, sqlValues));
+        }
+    }
+    
+    /**
+     * Use Statement Test data update.
+     *
+     * @param connection connection
+     * @param sql SQL
      * @param parameterDefinition parameter
      * @return Number of rows as a result of execution
      * @throws SQLException SQL exception
      */
-    public static int updateUseStatementToExecuteUpdate(final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException {
+    public static int updateUseStatementToExecuteUpdate0(final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             return statement.executeUpdate(sqlStatement0(sql, parameterDefinition.getValues()));
         }
@@ -237,11 +252,29 @@ public final class DatabaseUtil {
      *
      * @param connection connection
      * @param sql SQL
+     * @param sqlValues SQL values
+     * @return implementation results
+     * @throws SQLException SQL exception
+     */
+    public static int updateUseStatementToExecute(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
+        try (Statement statement = connection.createStatement()) {
+            if (!statement.execute(sqlStatement(sql, sqlValues))) {
+                return statement.getUpdateCount();
+            }
+        }
+        return 0;
+    }
+    
+    /**
+     * Use Statement Test data update.
+     *
+     * @param connection connection
+     * @param sql SQL
      * @param parameterDefinition parameter definition
      * @return implementation results
      * @throws SQLException SQL exception
      */
-    public static int updateUseStatementToExecute(final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException {
+    public static int updateUseStatementToExecute0(final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             if (!statement.execute(sqlStatement0(sql, parameterDefinition.getValues()))) {
                 return statement.getUpdateCount();
@@ -255,16 +288,55 @@ public final class DatabaseUtil {
      *
      * @param connection connection
      * @param sql SQL
+     * @param sqlValues SQL values
+     * @return Number of rows as a result of execution
+     * @throws SQLException SQL exception
+     */
+    public static int updateUsePreparedStatementToExecuteUpdate(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
+            for (SQLValue each : sqlValues) {
+                preparedStatement.setObject(each.getIndex(), each.getValue());
+            }
+            return preparedStatement.executeUpdate();
+        }
+    }
+    
+    /**
+     * Use PreparedStatement test data update.
+     *
+     * @param connection connection
+     * @param sql SQL
      * @param parameterDefinition parameter
      * @return Number of rows as a result of execution
      * @throws SQLException SQL exception
      * @throws ParseException parse exception
      */
-    public static int updateUsePreparedStatementToExecuteUpdate(final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
+    public static int updateUsePreparedStatementToExecuteUpdate0(final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
             sqlPreparedStatement0(parameterDefinition.getValues(), preparedStatement);
             return preparedStatement.executeUpdate();
         }
+    }
+    
+    /**
+     * Use PreparedStatement test data update.
+     *
+     * @param connection connection
+     * @param sql SQL
+     * @param sqlValues SQL values
+     * @return implementation results
+     * @throws SQLException   SQL exception
+     */
+    public static int updateUsePreparedStatementToExecute(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
+            for (SQLValue each : sqlValues) {
+                preparedStatement.setObject(each.getIndex(), each.getValue());
+            }
+            if (!preparedStatement.execute()) {
+                return preparedStatement.getUpdateCount();
+            }
+        }
+        return 0;
     }
     
     /**
@@ -277,7 +349,7 @@ public final class DatabaseUtil {
      * @throws SQLException   SQL exception
      * @throws ParseException parse exception
      */
-    public static int updateUsePreparedStatementToExecute(final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
+    public static int updateUsePreparedStatementToExecute0(final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
             sqlPreparedStatement0(parameterDefinition.getValues(), preparedStatement);
             if (!preparedStatement.execute()) {

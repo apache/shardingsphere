@@ -17,12 +17,14 @@
 
 package io.shardingsphere.dbtest.asserts;
 
+import com.google.common.base.Splitter;
 import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
 import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
 import io.shardingsphere.dbtest.common.DatabaseUtil;
+import io.shardingsphere.dbtest.common.SQLValue;
 import io.shardingsphere.dbtest.config.DataSetsParser;
-import io.shardingsphere.dbtest.config.bean.AssertSubDefinition;
 import io.shardingsphere.dbtest.config.bean.DMLDataSetAssert;
+import io.shardingsphere.dbtest.config.bean.DMLSubAssert;
 import io.shardingsphere.dbtest.config.bean.ParameterDefinition;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.test.sql.SQLCaseType;
@@ -38,6 +40,9 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -88,105 +93,39 @@ public final class DMLAssertEngine {
         int resultDoUpdateUseStatementToExecute = 0;
         int resultDoUpdateUsePreparedStatementToExecuteUpdate = 0;
         int resultDoUpdateUsePreparedStatementToExecute = 0;
-        if (dmlDataSetAssert.getParameter().getValues().isEmpty()) {
-            List<AssertSubDefinition> subAsserts = dmlDataSetAssert.getSubAsserts();
-            if (subAsserts.isEmpty()) {
-                resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFile, dmlDataSetAssert);
-                resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFile, dmlDataSetAssert);
-                resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFile, dmlDataSetAssert);
-                resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFile, dmlDataSetAssert);
+        for (DMLSubAssert subAssert : dmlDataSetAssert.getSubAsserts()) {
+            String baseConfigSub = subAssert.getShardingRuleTypes();
+            if (StringUtils.isNotBlank(baseConfigSub)) {
+                String[] baseConfigs = StringUtils.split(baseConfigSub, ",");
+                boolean flag = true;
+                for (String config : baseConfigs) {
+                    if (shardingRuleType.equals(config)) {
+                        flag = false;
+                    }
+                }
+                //Skip use cases that do not need to run
+                if (flag) {
+                    continue;
+                }
+            }
+            String expectedDataFileSub = subAssert.getExpectedDataFile();
+            ParameterDefinition expectedParameter = subAssert.getExpectedParameter();
+            String expectedDataFileTmp = expectedDataFile;
+            if (StringUtils.isBlank(expectedDataFileSub)) {
+                expectedDataFileSub = dmlDataSetAssert.getExpectedDataFile();
             } else {
-                for (AssertSubDefinition subAssert : subAsserts) {
-                    String baseConfigSub = subAssert.getShardingRuleTypes();
-                    if (StringUtils.isNotBlank(baseConfigSub)) {
-                        String[] baseConfigs = StringUtils.split(baseConfigSub, ",");
-                        boolean flag = true;
-                        for (String config : baseConfigs) {
-                            if (shardingRuleType.equals(config)) {
-                                flag = false;
-                            }
-                        }
-                        //Skip use cases that do not need to run
-                        if (flag) {
-                            continue;
-                        }
-                    }
-                    String expectedDataFileSub = subAssert.getExpectedDataFile();
-                    ParameterDefinition parameter = subAssert.getParameter();
-                    ParameterDefinition expectedParameter = subAssert.getExpectedParameter();
-                    String expectedDataFileTmp = expectedDataFile;
-                    if (StringUtils.isBlank(expectedDataFileSub)) {
-                        expectedDataFileSub = dmlDataSetAssert.getExpectedDataFile();
-                    } else {
-                        expectedDataFileTmp = rootPath + "asserts/dml/" + shardingRuleType + "/" + expectedDataFileSub;
-                        if (!new File(expectedDataFileTmp).exists()) {
-                            expectedDataFileTmp = rootPath + "asserts/dml/" + expectedDataFileSub;
-                        }
-                    }
-                    if (null == parameter) {
-                        parameter = dmlDataSetAssert.getParameter();
-                    }
-                    if (null == expectedParameter) {
-                        expectedParameter = dmlDataSetAssert.getParameter();
-                    }
-                    DMLDataSetAssert anAssertSub = new DMLDataSetAssert(
-                            dmlDataSetAssert.getId(), expectedDataFileSub, dmlDataSetAssert.getShardingRuleTypes(), dmlDataSetAssert.getDatabaseTypes(), subAssert.getExpectedUpdate(),
-                            dmlDataSetAssert.getExpectedSql(), parameter, expectedParameter, dmlDataSetAssert.getSubAsserts(), "");
-                    resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFileTmp, anAssertSub);
-                    resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFileTmp, anAssertSub);
-                    resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFileTmp, anAssertSub);
-                    resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFileTmp, anAssertSub);
+                expectedDataFileTmp = rootPath + "asserts/dml/" + shardingRuleType + "/" + expectedDataFileSub;
+                if (!new File(expectedDataFileTmp).exists()) {
+                    expectedDataFileTmp = rootPath + "asserts/dml/" + expectedDataFileSub;
                 }
             }
-        } else {
-            resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFile, dmlDataSetAssert);
-            resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFile, dmlDataSetAssert);
-            resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFile, dmlDataSetAssert);
-            resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFile, dmlDataSetAssert);
-            List<AssertSubDefinition> subAsserts = dmlDataSetAssert.getSubAsserts();
-            if (!subAsserts.isEmpty()) {
-                for (AssertSubDefinition subAssert : subAsserts) {
-                    String baseConfigSub = subAssert.getShardingRuleTypes();
-                    if (StringUtils.isNotBlank(baseConfigSub)) {
-                        String[] baseConfigs = StringUtils.split(baseConfigSub, ",");
-                        boolean flag = true;
-                        for (String config : baseConfigs) {
-                            if (shardingRuleType.equals(config)) {
-                                flag = false;
-                            }
-                        }
-                        //Skip use cases that do not need to run
-                        if (flag) {
-                            continue;
-                        }
-                    }
-                    String expectedDataFileSub = subAssert.getExpectedDataFile();
-                    ParameterDefinition parameter = subAssert.getParameter();
-                    ParameterDefinition expectedParameter = subAssert.getExpectedParameter();
-                    String expectedDataFileTmp = expectedDataFile;
-                    if (StringUtils.isBlank(expectedDataFileSub)) {
-                        expectedDataFileSub = dmlDataSetAssert.getExpectedDataFile();
-                    } else {
-                        expectedDataFileTmp = rootPath + "asserts/dml/" + shardingRuleType + "/" + expectedDataFileSub;
-                        if (!new File(expectedDataFileTmp).exists()) {
-                            expectedDataFileTmp = rootPath + "asserts/dml/" + expectedDataFileSub;
-                        }
-                    }
-                    if (null == parameter) {
-                        parameter = dmlDataSetAssert.getParameter();
-                    }
-                    if (null == expectedParameter) {
-                        expectedParameter = dmlDataSetAssert.getParameter();
-                    }
-                    DMLDataSetAssert anAssertSub = new DMLDataSetAssert(
-                            dmlDataSetAssert.getId(), expectedDataFileSub, dmlDataSetAssert.getShardingRuleTypes(), dmlDataSetAssert.getDatabaseTypes(), subAssert.getExpectedUpdate(), 
-                            dmlDataSetAssert.getExpectedSql(), parameter, expectedParameter, dmlDataSetAssert.getSubAsserts(), "");
-                    resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFileTmp, anAssertSub);
-                    resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFileTmp, anAssertSub);
-                    resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFileTmp, anAssertSub);
-                    resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFileTmp, anAssertSub);
-                }
+            if (null == expectedParameter) {
+                expectedParameter = dmlDataSetAssert.getParameter();
             }
+            resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFileTmp, subAssert);
+            resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFileTmp, subAssert);
+            resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFileTmp, subAssert);
+            resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFileTmp, subAssert);
         }
         if (null != dmlDataSetAssert.getExpectedUpdate()) {
             assertEquals("Update row number error UpdateUseStatementToExecuteUpdate", dmlDataSetAssert.getExpectedUpdate().intValue(), resultDoUpdateUseStatementToExecuteUpdate);
@@ -196,18 +135,18 @@ public final class DMLAssertEngine {
         }
     }
     
-    private int doUpdateUsePreparedStatementToExecute(final String expectedDataFile, final DMLDataSetAssert anAssert) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private int doUpdateUsePreparedStatementToExecute(final String expectedDataFile, final DMLSubAssert dmlSubAssert) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             dataSetEnvironmentManager.initialize();
             try (Connection connection = dataSource.getConnection()) {
-                int result = DatabaseUtil.updateUsePreparedStatementToExecute(connection, sql, anAssert.getParameter());
+                int result = DatabaseUtil.updateUsePreparedStatementToExecute(connection, sql, getSQLValues(dmlSubAssert.getParameters()));
                 DataSetDefinitions expected = DataSetsParser.parse(new File(expectedDataFile), "data");
-                if (null != anAssert.getExpectedUpdate()) {
-                    assertEquals("Update row number error", anAssert.getExpectedUpdate().intValue(), result);
+                if (null != dmlSubAssert.getExpectedUpdate()) {
+                    assertEquals("Update row number error", dmlSubAssert.getExpectedUpdate().intValue(), result);
                 }
-                String checkSQL = anAssert.getExpectedSql();
+                String checkSQL = dmlSubAssert.getExpectedSql();
                 checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
-                DataSetDefinitions actual = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, anAssert.getExpectedParameter());
+                DataSetDefinitions actual = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, dmlSubAssert.getExpectedParameter());
                 DataSetAssert.assertDataSet(actual, expected);
                 return result;
             }
@@ -216,18 +155,18 @@ public final class DMLAssertEngine {
         }
     }
     
-    private int doUpdateUsePreparedStatementToExecuteUpdate(final String expectedDataFile, final DMLDataSetAssert anAssert) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private int doUpdateUsePreparedStatementToExecuteUpdate(final String expectedDataFile, final DMLSubAssert dmlSubAssert) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             dataSetEnvironmentManager.initialize();
             try (Connection connection = dataSource.getConnection()) {
-                int result = DatabaseUtil.updateUsePreparedStatementToExecuteUpdate(connection, sql, anAssert.getParameter());
+                int result = DatabaseUtil.updateUsePreparedStatementToExecuteUpdate(connection, sql, getSQLValues(dmlSubAssert.getParameters()));
                 DataSetDefinitions expected = DataSetsParser.parse(new File(expectedDataFile), "data");
-                if (null != anAssert.getExpectedUpdate()) {
-                    assertEquals("Update row number error", anAssert.getExpectedUpdate().intValue(), result);
+                if (null != dmlSubAssert.getExpectedUpdate()) {
+                    assertEquals("Update row number error", dmlSubAssert.getExpectedUpdate().intValue(), result);
                 }
-                String checkSQL = anAssert.getExpectedSql();
+                String checkSQL = dmlSubAssert.getExpectedSql();
                 checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
-                DataSetDefinitions actual = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, anAssert.getExpectedParameter());
+                DataSetDefinitions actual = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, dmlSubAssert.getExpectedParameter());
                 DataSetAssert.assertDataSet(actual, expected);
                 return result;
             }
@@ -236,18 +175,18 @@ public final class DMLAssertEngine {
         }
     }
     
-    private int doUpdateUseStatementToExecute(final String expectedDataFile, final DMLDataSetAssert anAssert) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private int doUpdateUseStatementToExecute(final String expectedDataFile, final DMLSubAssert dmlSubAssert) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             dataSetEnvironmentManager.initialize();
             try (Connection connection = dataSource.getConnection()) {
-                int result = DatabaseUtil.updateUseStatementToExecute(connection, sql, anAssert.getParameter());
+                int result = DatabaseUtil.updateUseStatementToExecute(connection, sql, getSQLValues(dmlSubAssert.getParameters()));
                 DataSetDefinitions expected = DataSetsParser.parse(new File(expectedDataFile), "data");
-                if (null != anAssert.getExpectedUpdate()) {
-                    assertEquals("Update row number error", anAssert.getExpectedUpdate().intValue(), result);
+                if (null != dmlSubAssert.getExpectedUpdate()) {
+                    assertEquals("Update row number error", dmlSubAssert.getExpectedUpdate().intValue(), result);
                 }
-                String checkSQL = anAssert.getExpectedSql();
+                String checkSQL = dmlSubAssert.getExpectedSql();
                 checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
-                DataSetDefinitions actual = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, anAssert.getExpectedParameter());
+                DataSetDefinitions actual = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, dmlSubAssert.getExpectedParameter());
                 DataSetAssert.assertDataSet(actual, expected);
                 return result;
             }
@@ -256,23 +195,36 @@ public final class DMLAssertEngine {
         }
     }
     
-    private int doUpdateUseStatementToExecuteUpdate(final String expectedDataFile, final DMLDataSetAssert dmlDataSetAssert) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private int doUpdateUseStatementToExecuteUpdate(final String expectedDataFile, final DMLSubAssert dmlSubAssert) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             dataSetEnvironmentManager.initialize();
             try (Connection connection = dataSource.getConnection()) {
-                int result = DatabaseUtil.updateUseStatementToExecuteUpdate(connection, sql, dmlDataSetAssert.getParameter());
+                int result = DatabaseUtil.updateUseStatementToExecuteUpdate(connection, sql, getSQLValues(dmlSubAssert.getParameters()));
                 DataSetDefinitions expected = DataSetsParser.parse(new File(expectedDataFile), "data");
-                if (null != dmlDataSetAssert.getExpectedUpdate()) {
-                    assertEquals("Update row number error", dmlDataSetAssert.getExpectedUpdate().intValue(), result);
+                if (null != dmlSubAssert.getExpectedUpdate()) {
+                    assertEquals("Update row number error", dmlSubAssert.getExpectedUpdate().intValue(), result);
                 }
-                String checkSQL = dmlDataSetAssert.getExpectedSql();
+                String checkSQL = dmlSubAssert.getExpectedSql();
                 checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
-                DataSetDefinitions actual = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, dmlDataSetAssert.getExpectedParameter());
+                DataSetDefinitions actual = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, dmlSubAssert.getExpectedParameter());
                 DataSetAssert.assertDataSet(actual, expected);
                 return result;
             }
         } finally {
             dataSetEnvironmentManager.clear();
         }
+    }
+    
+    private Collection<SQLValue> getSQLValues(final String parameters) throws ParseException {
+        if (null == parameters) {
+            return Collections.emptyList();
+        }
+        Collection<SQLValue> result = new LinkedList<>();
+        int count = 0;
+        for (String each : Splitter.on(",").trimResults().splitToList(parameters)) {
+            List<String> parameterPair = Splitter.on(":").trimResults().splitToList(each);
+            result.add(new SQLValue(parameterPair.get(0), parameterPair.get(1), ++count));
+        }
+        return result;
     }
 }
