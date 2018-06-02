@@ -170,11 +170,11 @@ public final class DataSetAssertLoader {
     }
     
     /**
-     * Count all data set assert count.
+     * Count all data set test cases.
      * 
-     * @return count of all data set assert
+     * @return count of all data set test cases
      */
-    public int countAllDataSetAssert() {
+    public int countAllDataSetTestCases() {
         return dataSetAssertMap.size();
     }
 }

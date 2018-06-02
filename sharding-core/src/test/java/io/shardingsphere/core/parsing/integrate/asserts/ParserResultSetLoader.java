@@ -88,11 +88,11 @@ public final class ParserResultSetLoader {
     }
     
     /**
-     * Count all parser cases.
+     * Count all parser test cases.
      *
-     * @return count of all parser cases
+     * @return count of all parser test cases
      */
-    public int countAllParserCases() {
+    public int countAllParserTestCases() {
         return parserResultMap.size();
     }
 }
