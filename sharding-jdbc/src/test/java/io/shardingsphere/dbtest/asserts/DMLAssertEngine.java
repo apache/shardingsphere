@@ -45,7 +45,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 public final class DMLAssertEngine {
     
@@ -84,10 +86,6 @@ public final class DMLAssertEngine {
      * Assert DML.
      */
     public void assertDML() throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
-        int resultDoUpdateUseStatementToExecuteUpdate = 0;
-        int resultDoUpdateUseStatementToExecute = 0;
-        int resultDoUpdateUsePreparedStatementToExecuteUpdate = 0;
-        int resultDoUpdateUsePreparedStatementToExecute = 0;
         for (DMLSubAssert subAssert : dmlDataSetAssert.getSubAsserts()) {
             String baseConfigSub = subAssert.getShardingRuleTypes();
             if (StringUtils.isNotBlank(baseConfigSub)) {
@@ -104,16 +102,10 @@ public final class DMLAssertEngine {
                 }
             }
             String expectedDataFile = rootPath + "asserts/dml/" + subAssert.getExpectedDataFile();
-            resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFile, subAssert);
-            resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFile, subAssert);
-            resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFile, subAssert);
-            resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFile, subAssert);
-        }
-        if (null != dmlDataSetAssert.getExpectedUpdate()) {
-            assertEquals("Update row number error UpdateUseStatementToExecuteUpdate", dmlDataSetAssert.getExpectedUpdate().intValue(), resultDoUpdateUseStatementToExecuteUpdate);
-            assertEquals("Update row number error UpdateUseStatementToExecute", dmlDataSetAssert.getExpectedUpdate().intValue(), resultDoUpdateUseStatementToExecute);
-            assertEquals("Update row number error UpdateUsePreparedStatementToExecuteUpdate", dmlDataSetAssert.getExpectedUpdate().intValue(), resultDoUpdateUsePreparedStatementToExecuteUpdate);
-            assertEquals("Update row number error UpdateUsePreparedStatementToExecute", dmlDataSetAssert.getExpectedUpdate().intValue(), resultDoUpdateUsePreparedStatementToExecute);
+            assertThat(doUpdateUseStatementToExecuteUpdate(expectedDataFile, subAssert), is(subAssert.getExpectedUpdate()));
+            assertThat(doUpdateUseStatementToExecute(expectedDataFile, subAssert), is(subAssert.getExpectedUpdate()));
+            assertThat(doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFile, subAssert), is(subAssert.getExpectedUpdate()));
+            assertThat(doUpdateUsePreparedStatementToExecute(expectedDataFile, subAssert), is(subAssert.getExpectedUpdate()));
         }
     }
     
