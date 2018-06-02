@@ -197,13 +197,12 @@ public final class DatabaseUtil {
      *
      * @param connection connection
      * @param sql SQL
-     * @param parameterDefinition parameter
      * @return Number of rows as a result of execution
      * @throws SQLException SQL exception
      */
-    public static int updateUseStatementToExecuteUpdate0(final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException {
+    public static int updateUseStatementToExecuteUpdate0(final Connection connection, final String sql) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            return statement.executeUpdate(sqlStatement0(sql, parameterDefinition.getValues()));
+            return statement.executeUpdate(sql);
         }
     }
     
@@ -270,13 +269,12 @@ public final class DatabaseUtil {
      *
      * @param connection connection
      * @param sql SQL
-     * @param parameterDefinition parameter definition
      * @return implementation results
      * @throws SQLException SQL exception
      */
-    public static int updateUseStatementToExecute0(final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException {
+    public static int updateUseStatementToExecute0(final Connection connection, final String sql) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            if (!statement.execute(sqlStatement0(sql, parameterDefinition.getValues()))) {
+            if (!statement.execute(sql)) {
                 return statement.getUpdateCount();
             }
         }
@@ -306,14 +304,11 @@ public final class DatabaseUtil {
      *
      * @param connection connection
      * @param sql SQL
-     * @param parameterDefinition parameter
      * @return Number of rows as a result of execution
      * @throws SQLException SQL exception
-     * @throws ParseException parse exception
      */
-    public static int updateUsePreparedStatementToExecuteUpdate0(final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
+    public static int updateUsePreparedStatementToExecuteUpdate0(final Connection connection, final String sql) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
-            sqlPreparedStatement0(parameterDefinition.getValues(), preparedStatement);
             return preparedStatement.executeUpdate();
         }
     }
@@ -344,14 +339,12 @@ public final class DatabaseUtil {
      *
      * @param connection connection
      * @param sql SQL
-     * @param parameterDefinition parameter definition
      * @return implementation results
      * @throws SQLException   SQL exception
      * @throws ParseException parse exception
      */
-    public static int updateUsePreparedStatementToExecute0(final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
+    public static int updateUsePreparedStatementToExecute0(final Connection connection, final String sql) throws SQLException, ParseException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
-            sqlPreparedStatement0(parameterDefinition.getValues(), preparedStatement);
             if (!preparedStatement.execute()) {
                 return preparedStatement.getUpdateCount();
             }

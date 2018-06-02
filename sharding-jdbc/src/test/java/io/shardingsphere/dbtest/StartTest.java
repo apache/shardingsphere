@@ -23,6 +23,7 @@ import io.shardingsphere.dbtest.asserts.DMLAssertEngine;
 import io.shardingsphere.dbtest.asserts.DQLAssertEngine;
 import io.shardingsphere.dbtest.asserts.DataSetAssertLoader;
 import io.shardingsphere.dbtest.asserts.DataSetEnvironmentManager;
+import io.shardingsphere.dbtest.config.bean.DDLSubAssert;
 import io.shardingsphere.dbtest.config.bean.DDLDataSetAssert;
 import io.shardingsphere.dbtest.config.bean.DMLDataSetAssert;
 import io.shardingsphere.dbtest.config.bean.DMLSubAssert;
@@ -152,13 +153,13 @@ public final class StartTest {
                     data[5] = caseType;
                     result.add(data);
                 }
-            } else {
-                for (String shardingRuleType : assertDefinition.getShardingRuleTypes().split(",")) {
+            } else if (assertDefinition instanceof DDLDataSetAssert) {
+                for (DDLSubAssert ddlSubAssert : ((DDLDataSetAssert) assertDefinition).getSubAsserts()) {
                     Object[] data = new Object[6];
                     data[0] = assertDefinition.getId();
                     data[1] = assertDefinition.getPath();
-                    data[2] = assertDefinition;
-                    data[3] = shardingRuleType;
+                    data[2] = ddlSubAssert;
+                    data[3] = ddlSubAssert.getShardingRuleTypes();
                     data[4] = new DatabaseTypeEnvironment(databaseType, IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType));
                     data[5] = caseType;
                     result.add(data);
@@ -230,7 +231,7 @@ public final class StartTest {
         } else if (dataSetAssert instanceof DMLSubAssert) {
             new DMLAssertEngine(sqlCaseId, path, dataSetEnvironmentManager, (DMLSubAssert) dataSetAssert, dataSourceMap, shardingRuleType, caseType).assertDML();
         } else {
-            new DDLAssertEngine(sqlCaseId, path, (DDLDataSetAssert) dataSetAssert, dataSourceMap, shardingRuleType, databaseTypeEnvironment, caseType).assertDDL();
+            new DDLAssertEngine(sqlCaseId, path, (DDLSubAssert) dataSetAssert, dataSourceMap, shardingRuleType, databaseTypeEnvironment, caseType).assertDDL();
         }
     }
 }

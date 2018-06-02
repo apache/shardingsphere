@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
-public class AssertSubDefinition {
+public class DDLSubAssert {
     
     @XmlAttribute(name = "sharding-rule-types")
     private String shardingRuleTypes;
@@ -34,12 +34,18 @@ public class AssertSubDefinition {
     @XmlAttribute(name = "expected-data-file")
     private String expectedDataFile;
     
-    @XmlElement(name = "parameter")
-    private ParameterDefinition parameter;
-    
     @XmlElement(name = "expected-parameter")
     private ParameterDefinition expectedParameter;
     
     @XmlAttribute(name = "expected-update")
     private Integer expectedUpdate;
+    
+    @XmlAttribute(name = "init-sql")
+    private String initSql;
+    
+    @XmlAttribute(name = "clean-sql")
+    private String cleanSql;
+    
+    @XmlAttribute(name = "table")
+    private String table;
 }
