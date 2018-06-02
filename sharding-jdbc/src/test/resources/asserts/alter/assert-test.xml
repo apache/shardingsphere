@@ -1,13 +1,13 @@
 <asserts>
     <ddl-assert id="assertAlterTable">
-        <ddl-sub-assert sharding-rule-types="db" init-sql="CREATE TABLE t_log(id int, status varchar(10))" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="t_order_update.xml" />
-        <ddl-sub-assert sharding-rule-types="tbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="t_order_update.xml" />
-        <ddl-sub-assert sharding-rule-types="dbtbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="t_order_update.xml" />
+        <ddl-sub-assert sharding-rule-type="db" init-sql="CREATE TABLE t_log(id int, status varchar(10))" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="t_order_update.xml" />
+        <ddl-sub-assert sharding-rule-type="tbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="t_order_update.xml" />
+        <ddl-sub-assert sharding-rule-type="dbtbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="t_order_update.xml" />
     </ddl-assert>
     
     <ddl-assert id="assertAlterTableIfExistAndOnly">
-        <ddl-sub-assert sharding-rule-types="db" init-sql="CREATE TABLE t_log(id int, status varchar(10))" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="t_order_update.xml" />
-        <ddl-sub-assert sharding-rule-types="tbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="t_order_update.xml" />
-        <ddl-sub-assert sharding-rule-types="dbtbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="t_order_update.xml" />
+        <ddl-sub-assert sharding-rule-type="db" init-sql="CREATE TABLE t_log(id int, status varchar(10))" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="t_order_update.xml" />
+        <ddl-sub-assert sharding-rule-type="tbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="t_order_update.xml" />
+        <ddl-sub-assert sharding-rule-type="dbtbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="t_order_update.xml" />
     </ddl-assert>
 </asserts>

@@ -27,8 +27,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class DDLSubAssert {
     
-    @XmlAttribute(name = "sharding-rule-types")
-    private String shardingRuleTypes;
+    @XmlAttribute(name = "sharding-rule-type")
+    private String shardingRuleType;
     
     @XmlAttribute(name = "expected-data-file")
     private String expectedDataFile;

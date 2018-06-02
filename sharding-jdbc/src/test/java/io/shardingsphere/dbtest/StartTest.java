@@ -159,7 +159,7 @@ public final class StartTest {
                     data[0] = assertDefinition.getId();
                     data[1] = assertDefinition.getPath();
                     data[2] = ddlSubAssert;
-                    data[3] = ddlSubAssert.getShardingRuleTypes();
+                    data[3] = ddlSubAssert.getShardingRuleType();
                     data[4] = new DatabaseTypeEnvironment(databaseType, IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType));
                     data[5] = caseType;
                     result.add(data);
