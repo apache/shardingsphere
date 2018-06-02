@@ -63,19 +63,6 @@ import static org.junit.Assert.fail;
 public final class DatabaseUtil {
     
     /**
-     * Execute update.
-     *
-     * @param connection connection
-     * @param sql SQL
-     * @throws SQLException SQL exception
-     */
-    public static void executeUpdate(final Connection connection, final String sql) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.executeUpdate();
-        }
-    }
-    
-    /**
      * Execute batch.
      *
      * @param connection connection

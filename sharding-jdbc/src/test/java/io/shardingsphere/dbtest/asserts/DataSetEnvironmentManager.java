@@ -33,6 +33,7 @@ import javax.xml.bind.JAXBException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Collection;
@@ -120,13 +121,11 @@ public final class DataSetEnvironmentManager {
     private void clear(final String dataSourceName, final Collection<String> tableNames) throws SQLException {
         try (Connection connection = dataSourceMap.get(dataSourceName).getConnection()) {
             for (String each : tableNames) {
-                DatabaseUtil.executeUpdate(connection, generateDeleteSQL(each));
+                try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("TRUNCATE TABLE %s", each))) {
+                    preparedStatement.executeUpdate();
+                }
             }
         }
-    }
-    
-    private String generateDeleteSQL(final String tableName) {
-        return String.format("TRUNCATE TABLE %s", tableName);
     }
     
     private Map<String, Collection<String>> getDataNodeMap() {
