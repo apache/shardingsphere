@@ -59,14 +59,14 @@ public final class DMLAssertEngine {
     
     private final DataSetEnvironmentManager dataSetEnvironmentManager;
     
-    public DMLAssertEngine(final DataSetEnvironmentManager dataSetEnvironmentManager, final DMLDataSetAssert dmlDataSetAssert, final Map<String, DataSource> dataSourceMap,
+    public DMLAssertEngine(final String sqlCaseId, final String path, final DataSetEnvironmentManager dataSetEnvironmentManager, final DMLDataSetAssert dmlDataSetAssert, final Map<String, DataSource> dataSourceMap,
                            final String shardingRuleType, final SQLCaseType caseType) throws IOException, SQLException {
         this.dmlDataSetAssert = dmlDataSetAssert;
         this.shardingRuleType = shardingRuleType;
         this.caseType = caseType;
         dataSource = createDataSource(dataSourceMap);
-        sql = SQLCasesLoader.getInstance().getSupportedSQL(dmlDataSetAssert.getId());
-        rootPath = dmlDataSetAssert.getPath().substring(0, dmlDataSetAssert.getPath().lastIndexOf(File.separator) + 1);
+        sql = SQLCasesLoader.getInstance().getSupportedSQL(sqlCaseId);
+        rootPath = path.substring(0, path.lastIndexOf(File.separator) + 1);
         this.dataSetEnvironmentManager = dataSetEnvironmentManager;
     }
     

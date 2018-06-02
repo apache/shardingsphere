@@ -62,15 +62,15 @@ public final class DDLAssertEngine {
     
     private final String rootPath;
     
-    public DDLAssertEngine(final DDLDataSetAssert ddlDataSetAssert, final Map<String, DataSource> dataSourceMap,
+    public DDLAssertEngine(final String sqlCaseId, final String path, final DDLDataSetAssert ddlDataSetAssert, final Map<String, DataSource> dataSourceMap,
                            final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, SQLException {
         this.ddlDataSetAssert = ddlDataSetAssert;
         this.shardingRuleType = shardingRuleType;
         this.databaseTypeEnvironment = databaseTypeEnvironment;
         this.caseType = caseType;
         dataSource = createDataSource(dataSourceMap);
-        sql = SQLCasesLoader.getInstance().getSupportedSQL(ddlDataSetAssert.getId());
-        rootPath = ddlDataSetAssert.getPath().substring(0, ddlDataSetAssert.getPath().lastIndexOf(File.separator) + 1);
+        sql = SQLCasesLoader.getInstance().getSupportedSQL(sqlCaseId);
+        rootPath = path.substring(0, path.lastIndexOf(File.separator) + 1);
     }
     
     private DataSource createDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException, IOException {
