@@ -38,7 +38,7 @@ public final class DMLSubAssert {
     private ParameterDefinition expectedParameter;
     
     @XmlAttribute(name = "expected-update")
-    private Integer expectedUpdate;
+    private int expectedUpdate;
     
     @XmlAttribute
     private String parameters;

@@ -85,7 +85,7 @@ public final class DQLAssertEngine {
      */
     public void assertDQL() throws IOException, SQLException, ParseException, JAXBException {
         assertExecuteQueryForPreparedStatement();
-        assertExecuteDQLForPreparedStatement();
+        assertExecuteForPreparedStatement();
         assertExecuteQueryForStatement();
         assertExecuteDQLForStatement();
     }
@@ -96,7 +96,7 @@ public final class DQLAssertEngine {
         }
     }
     
-    private void assertExecuteDQLForPreparedStatement() throws SQLException, ParseException, IOException, JAXBException {
+    private void assertExecuteForPreparedStatement() throws SQLException, ParseException, IOException, JAXBException {
         try (Connection connection = dataSource.getConnection()) {
             assertDataSet(DatabaseUtil.executeDQLForPreparedStatement(connection, sql, getSQLValues(dqlSubAssert.getParameters())));
         }

@@ -44,7 +44,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public final class DMLAssertEngine {
@@ -84,86 +83,70 @@ public final class DMLAssertEngine {
      * Assert DML.
      */
     public void assertDML() throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
-        assertThat(doUpdateUseStatementToExecuteUpdate(), is(dmlSubAssert.getExpectedUpdate()));
-        assertThat(doUpdateUseStatementToExecute(), is(dmlSubAssert.getExpectedUpdate()));
-        assertThat(doUpdateUsePreparedStatementToExecuteUpdate(), is(dmlSubAssert.getExpectedUpdate()));
-        assertThat(doUpdateUsePreparedStatementToExecute(), is(dmlSubAssert.getExpectedUpdate()));
+        assertExecuteUpdateForPreparedStatement();
+        assertExecuteForPreparedStatement();
+        assertExecuteUpdateForStatement();
+        assertExecuteForStatement();
     }
     
-    private int doUpdateUsePreparedStatementToExecute() throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private void assertExecuteUpdateForPreparedStatement() throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             dataSetEnvironmentManager.initialize();
             try (Connection connection = dataSource.getConnection()) {
-                int result = DatabaseUtil.updateUsePreparedStatementToExecute(connection, sql, getSQLValues(dmlSubAssert.getParameters()));
+                assertThat(DatabaseUtil.updateUsePreparedStatementToExecuteUpdate(connection, sql, getSQLValues(dmlSubAssert.getParameters())), is(dmlSubAssert.getExpectedUpdate()));
                 DataSetDefinitions expected = DataSetsParser.parse(new File(expectedDataFile), "data");
-                if (null != dmlSubAssert.getExpectedUpdate()) {
-                    assertEquals("Update row number error", dmlSubAssert.getExpectedUpdate().intValue(), result);
-                }
                 String checkSQL = dmlSubAssert.getExpectedSql();
                 checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
                 DataSetDefinitions actual = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, dmlSubAssert.getExpectedParameter());
                 DataSetAssert.assertDataSet(actual, expected);
-                return result;
             }
         } finally {
             dataSetEnvironmentManager.clear();
         }
     }
     
-    private int doUpdateUsePreparedStatementToExecuteUpdate() throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private void assertExecuteForPreparedStatement() throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             dataSetEnvironmentManager.initialize();
             try (Connection connection = dataSource.getConnection()) {
-                int result = DatabaseUtil.updateUsePreparedStatementToExecuteUpdate(connection, sql, getSQLValues(dmlSubAssert.getParameters()));
+                assertThat(DatabaseUtil.updateUsePreparedStatementToExecute(connection, sql, getSQLValues(dmlSubAssert.getParameters())), is(dmlSubAssert.getExpectedUpdate()));
                 DataSetDefinitions expected = DataSetsParser.parse(new File(expectedDataFile), "data");
-                if (null != dmlSubAssert.getExpectedUpdate()) {
-                    assertEquals("Update row number error", dmlSubAssert.getExpectedUpdate().intValue(), result);
-                }
                 String checkSQL = dmlSubAssert.getExpectedSql();
                 checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
                 DataSetDefinitions actual = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, dmlSubAssert.getExpectedParameter());
                 DataSetAssert.assertDataSet(actual, expected);
-                return result;
             }
         } finally {
             dataSetEnvironmentManager.clear();
         }
     }
     
-    private int doUpdateUseStatementToExecute() throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private void assertExecuteUpdateForStatement() throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             dataSetEnvironmentManager.initialize();
             try (Connection connection = dataSource.getConnection()) {
-                int result = DatabaseUtil.updateUseStatementToExecute(connection, sql, getSQLValues(dmlSubAssert.getParameters()));
+                assertThat(DatabaseUtil.updateUseStatementToExecuteUpdate(connection, sql, getSQLValues(dmlSubAssert.getParameters())), is(dmlSubAssert.getExpectedUpdate()));
                 DataSetDefinitions expected = DataSetsParser.parse(new File(expectedDataFile), "data");
-                if (null != dmlSubAssert.getExpectedUpdate()) {
-                    assertEquals("Update row number error", dmlSubAssert.getExpectedUpdate().intValue(), result);
-                }
                 String checkSQL = dmlSubAssert.getExpectedSql();
                 checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
                 DataSetDefinitions actual = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, dmlSubAssert.getExpectedParameter());
                 DataSetAssert.assertDataSet(actual, expected);
-                return result;
             }
         } finally {
             dataSetEnvironmentManager.clear();
         }
     }
     
-    private int doUpdateUseStatementToExecuteUpdate() throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private void assertExecuteForStatement() throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             dataSetEnvironmentManager.initialize();
             try (Connection connection = dataSource.getConnection()) {
-                int result = DatabaseUtil.updateUseStatementToExecuteUpdate(connection, sql, getSQLValues(dmlSubAssert.getParameters()));
+                assertThat(DatabaseUtil.updateUseStatementToExecute(connection, sql, getSQLValues(dmlSubAssert.getParameters())), is(dmlSubAssert.getExpectedUpdate()));
                 DataSetDefinitions expected = DataSetsParser.parse(new File(expectedDataFile), "data");
-                if (null != dmlSubAssert.getExpectedUpdate()) {
-                    assertEquals("Update row number error", dmlSubAssert.getExpectedUpdate().intValue(), result);
-                }
                 String checkSQL = dmlSubAssert.getExpectedSql();
                 checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
                 DataSetDefinitions actual = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, dmlSubAssert.getExpectedParameter());
                 DataSetAssert.assertDataSet(actual, expected);
-                return result;
             }
         } finally {
             dataSetEnvironmentManager.clear();
