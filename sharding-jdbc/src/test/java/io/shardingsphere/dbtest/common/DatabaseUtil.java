@@ -18,8 +18,6 @@
 package io.shardingsphere.dbtest.common;
 
 import io.shardingsphere.dbtest.asserts.DataSetDefinitions;
-import io.shardingsphere.dbtest.config.bean.ParameterDefinition;
-import io.shardingsphere.dbtest.config.bean.ParameterValueDefinition;
 import io.shardingsphere.dbtest.config.dataset.init.DataSetColumnMetadata;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -218,34 +216,6 @@ public final class DatabaseUtil {
         return result;
     }
     
-    private static String sqlStatement0(final String sql, final List<ParameterValueDefinition> parameter) {
-        if (null == parameter) {
-            return sql;
-        }
-        String result = sql;
-        for (ParameterValueDefinition each : parameter) {
-            String type = each.getType();
-            String dataColumn = each.getValue();
-            switch (type) {
-                case "byte":
-                case "short":
-                case "int":
-                case "long":
-                case "float":
-                case "double":
-                    result = Pattern.compile("%s", Pattern.LITERAL).matcher(result).replaceFirst(Matcher.quoteReplacement(dataColumn));
-                    break;
-                case "boolean":
-                    result = Pattern.compile("%s", Pattern.LITERAL).matcher(result).replaceFirst(Matcher.quoteReplacement(Boolean.valueOf(dataColumn).toString()));
-                    break;
-                default:
-                    result = Pattern.compile("%s", Pattern.LITERAL).matcher(result).replaceFirst(Matcher.quoteReplacement("'" + dataColumn + "'"));
-                    break;
-            }
-        }
-        return result;
-    }
-    
     /**
      * Execute DML for statement.
      *
@@ -352,25 +322,6 @@ public final class DatabaseUtil {
         return 0;
     }
     
-    /**
-     * Use PreparedStatement test SQL select.
-     *
-     * @param conn connection
-     * @param sql SQL
-     * @param parameterDefinition parameter definition 
-     * @return query result set
-     * @throws SQLException   SQL exception
-     * @throws ParseException parse exception
-     */
-    public static DataSetDefinitions selectUsePreparedStatement0(final Connection conn, final String sql, final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
-        try (PreparedStatement preparedStatement = conn.prepareStatement(sql.replaceAll("%s", "?"))) {
-            sqlPreparedStatement0(parameterDefinition.getValues(), preparedStatement);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                return getDatasetDefinition(resultSet);
-            }
-        }
-    }
-    
     private static DataSetDefinitions getDatasetDefinition(final ResultSet resultSet) throws SQLException {
         List<DataSetColumnMetadata> dataSetColumnMetadataList = getDataSetColumnMetadataList(resultSet);
         Map<String, List<DataSetColumnMetadata>> configs = new HashMap<>();
@@ -408,17 +359,6 @@ public final class DatabaseUtil {
             result.add(data);
         }
         return result;
-    }
-    
-    private static void sqlPreparedStatement0(final List<ParameterValueDefinition> parameterValueDefinitions, final PreparedStatement preparedStatement) throws SQLException, ParseException {
-        if (null == parameterValueDefinitions) {
-            return;
-        }
-        int index = 0;
-        for (ParameterValueDefinition each : parameterValueDefinitions) {
-            SQLValue sqlValue = new SQLValue(each.getValue(), each.getType(), ++index);
-            preparedStatement.setObject(sqlValue.getIndex(), sqlValue.getValue());
-        }
     }
     
     private static String getDataType(final int type, final int scale) {
