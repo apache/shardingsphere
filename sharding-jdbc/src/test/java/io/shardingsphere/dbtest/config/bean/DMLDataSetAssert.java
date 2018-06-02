@@ -45,12 +45,6 @@ public class DMLDataSetAssert implements DataSetAssert {
     @XmlAttribute(name = "database-types")
     private String databaseTypes;
     
-    @XmlAttribute(name = "expected-sql")
-    private String expectedSql;
-    
-    @XmlElement(name = "parameter")
-    private ParameterDefinition parameter = new ParameterDefinition();
-    
     @XmlElement(name = "dml-sub-assert")
     private List<DMLSubAssert> subAsserts = new LinkedList<>();
     

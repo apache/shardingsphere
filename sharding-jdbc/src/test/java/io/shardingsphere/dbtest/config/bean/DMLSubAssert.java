@@ -24,7 +24,6 @@ import lombok.Getter;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Collections;
@@ -41,17 +40,11 @@ public final class DMLSubAssert {
     @XmlAttribute(name = "expected-data-file")
     private String expectedDataFile;
     
-    @XmlElement(name = "expected-parameter")
-    private ParameterDefinition expectedParameter;
-    
     @XmlAttribute(name = "expected-update")
     private int expectedUpdate;
     
     @XmlAttribute
     private String parameters;
-    
-    @XmlAttribute(name = "expected-sql")
-    private String expectedSQL;
     
     public Collection<SQLValue> getSQLValues() throws ParseException {
         if (null == parameters) {
