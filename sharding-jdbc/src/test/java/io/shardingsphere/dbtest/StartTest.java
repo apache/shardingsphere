@@ -115,6 +115,8 @@ public final class StartTest {
     
     @Parameters(name = "{0} -> Rule:{3} -> {4}")
     public static Collection<Object[]> getParameters() {
+        // TODO sqlCasesLoader size should eq dataSetAssertLoader size
+        // assertThat(sqlCasesLoader.countAllSupportedSQLCases(), is(dataSetAssertLoader.countAllDataSetAssert()));
         Collection<Object[]> result = new LinkedList<>();
         for (Object[] each : sqlCasesLoader.getSupportedSQLTestParameters(Arrays.<Enum>asList(DatabaseType.values()), DatabaseType.class)) {
             String sqlCaseId = each[0].toString();

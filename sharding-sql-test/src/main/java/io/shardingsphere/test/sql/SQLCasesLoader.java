@@ -289,4 +289,13 @@ public final class SQLCasesLoader {
         Preconditions.checkState(supportedSQLCaseMap.containsKey(sqlCaseId), "Can't find SQL of id: " + sqlCaseId);
         return supportedSQLCaseMap.get(sqlCaseId).getDatabaseTypes();
     }
+    
+    /**
+     * Count all supported SQL cases.
+     *
+     * @return count of all supported SQL cases
+     */
+    public int countAllSupportedSQLCases() {
+        return supportedSQLCaseMap.size();
+    }
 }

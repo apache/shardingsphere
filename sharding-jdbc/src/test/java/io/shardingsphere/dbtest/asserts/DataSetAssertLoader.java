@@ -168,4 +168,13 @@ public final class DataSetAssertLoader {
         }
         return dataSetAssertMap.get(sqlCaseId);
     }
+    
+    /**
+     * Count all data set assert count.
+     * 
+     * @return count of all data set assert
+     */
+    public int countAllDataSetAssert() {
+        return dataSetAssertMap.size();
+    }
 }
