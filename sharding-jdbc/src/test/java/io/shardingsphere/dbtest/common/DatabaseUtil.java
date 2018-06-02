@@ -21,7 +21,6 @@ import com.google.common.base.Splitter;
 import io.shardingsphere.dbtest.asserts.DataSetDefinitions;
 import io.shardingsphere.dbtest.config.bean.ParameterDefinition;
 import io.shardingsphere.dbtest.config.bean.ParameterValueDefinition;
-import io.shardingsphere.dbtest.config.dataset.expected.ExpectedDataSetRow;
 import io.shardingsphere.dbtest.config.dataset.expected.ExpectedDataSetsRoot;
 import io.shardingsphere.dbtest.config.dataset.init.DataSetColumnMetadata;
 import lombok.AccessLevel;
@@ -464,18 +463,20 @@ public final class DatabaseUtil {
     
     private static void assertData(final List<Map<String, String>> actual, final ExpectedDataSetsRoot expected) {
         assertThat(actual.size(), is(expected.getDataSetRows().size()));
-        List<String> expectedColumns = Splitter.on(",").trimResults().splitToList(expected.getColumns().getValues());
+        List<String> expectedColumnNames = Splitter.on(",").trimResults().splitToList(expected.getColumns().getValues());
         int count = 0;
-        for (Map<String, String> eachActual : actual) {
-            ExpectedDataSetRow eachExpected = expected.getDataSetRows().get(count);
-            List<String> expectedValues = Splitter.on(",").trimResults().splitToList(eachExpected.getValues());
-            assertThat(eachActual.size(), is(expectedValues.size()));
-            int i = 0;
-            for (String eachExpectedValue : expectedValues) {
-                assertThat(eachActual.get(expectedColumns.get(i)), is(eachExpectedValue));
-                i++;
-            }
-            count++;
+        for (Map<String, String> each : actual) {
+            List<String> expectedValues = Splitter.on(",").trimResults().splitToList(expected.getDataSetRows().get(count++).getValues());
+            assertData(each, expectedValues, expectedColumnNames);
+        }
+    }
+    
+    private static void assertData(final Map<String, String> actual, final List<String> expectedValues, final List<String> expectedColumnNames) {
+        assertThat(actual.size(), is(expectedValues.size()));
+        assertThat(actual.size(), is(expectedColumnNames.size()));
+        int count = 0;
+        for (String each : expectedValues) {
+            assertThat(actual.get(expectedColumnNames.get(count++)), is(each));
         }
     }
     
