@@ -87,26 +87,7 @@ public final class DDLAssertEngine {
         if (!new File(expectedDataFile).exists()) {
             expectedDataFile = rootPath + "asserts/ddl/" + ddlDataSetAssert.getExpectedDataFile();
         }
-        if (ddlDataSetAssert.getParameter().getValues().isEmpty()) {
-            List<AssertSubDefinition> subAsserts = ddlDataSetAssert.getSubAsserts();
-            if (subAsserts.isEmpty()) {
-                doUpdateUseStatementToExecuteUpdate(expectedDataFile, ddlDataSetAssert);
-                doUpdateUseStatementToExecute(expectedDataFile, ddlDataSetAssert);
-                doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFile, ddlDataSetAssert);
-                doUpdateUsePreparedStatementToExecute(expectedDataFile, ddlDataSetAssert);
-            } else {
-                ddlSubRun(expectedDataFile, subAsserts);
-            }
-        } else {
-            doUpdateUseStatementToExecuteUpdate(expectedDataFile, ddlDataSetAssert);
-            doUpdateUseStatementToExecute(expectedDataFile, ddlDataSetAssert);
-            doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFile, ddlDataSetAssert);
-            doUpdateUsePreparedStatementToExecute(expectedDataFile, ddlDataSetAssert);
-            List<AssertSubDefinition> subAsserts = ddlDataSetAssert.getSubAsserts();
-            if (!subAsserts.isEmpty()) {
-                ddlSubRun(expectedDataFile, subAsserts);
-            }
-        }
+        ddlSubRun(expectedDataFile, ddlDataSetAssert.getSubAsserts());
     }
     
     private void ddlSubRun(final String expectedDataFile, final List<AssertSubDefinition> subAsserts) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
