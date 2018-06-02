@@ -1,6 +1,6 @@
 <asserts sharding-rule-type="db">
    <dml-assert id="assertInsertWithAllPlaceholders">
-        <dml-sub-assert sharding-rule-type="db" parameters="1:int, 1:int, insert:String" expected-update="1" expected-data-file="insert/db_1.xml" expected-sql="assertSelectEqualsWithSingleTable">
+        <dml-sub-assert sharding-rule-type="db" parameters="1:int, 1:int, insert:String" expected-update="1" expected-data-file="insert.xml" expected-sql="assertSelectEqualsWithSingleTable">
             <expected-parameter>
                 <value value="1" type="int"/>
                 <value value="1" type="int"/>
@@ -9,7 +9,7 @@
     </dml-assert>
     
     <dml-assert id="assertInsertWithoutPlaceholder">
-        <dml-sub-assert sharding-rule-type="db" parameters="1:int, 1:int" expected-update="1" expected-data-file="insert/db_1.xml" expected-sql="assertSelectEqualsWithSingleTable">
+        <dml-sub-assert sharding-rule-type="db" parameters="1:int, 1:int" expected-update="1" expected-data-file="insert.xml" expected-sql="assertSelectEqualsWithSingleTable">
             <expected-parameter>
                 <value value="1" type="int"/>
                 <value value="1" type="int"/>
@@ -18,7 +18,7 @@
     </dml-assert>
     
     <dml-assert id="assertUpdateWithoutAlias">
-        <dml-sub-assert sharding-rule-type="db" parameters="update:String, 1000:int, 10:int" expected-update="1" expected-data-file="update/db_0.xml" expected-sql="assertSelectEqualsWithSingleTable">
+        <dml-sub-assert sharding-rule-type="db" parameters="update:String, 1000:int, 10:int" expected-update="1" expected-data-file="update.xml" expected-sql="assertSelectEqualsWithSingleTable">
             <expected-parameter>
                 <value value="10" type="int"/>
                 <value value="1000" type="int"/>
@@ -27,7 +27,7 @@
     </dml-assert>
     
     <dml-assert id="assertUpdateWithAlias" databaseConfig="MySQL,H2">
-        <dml-sub-assert sharding-rule-type="db" parameters="update:String, 1000:int, 10:int" expected-update="1" expected-data-file="update/db_0.xml" expected-sql="assertSelectEqualsWithSingleTable">
+        <dml-sub-assert sharding-rule-type="db" parameters="update:String, 1000:int, 10:int" expected-update="1" expected-data-file="update.xml" expected-sql="assertSelectEqualsWithSingleTable">
             <expected-parameter>
                 <value value="10" type="int"/>
                 <value value="1000" type="int"/>
