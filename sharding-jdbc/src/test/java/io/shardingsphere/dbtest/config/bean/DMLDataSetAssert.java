@@ -54,9 +54,6 @@ public class DMLDataSetAssert implements DataSetAssert {
     @XmlElement(name = "parameter")
     private ParameterDefinition parameter = new ParameterDefinition();
     
-    @XmlElement(name = "expected-parameter")
-    private ParameterDefinition expectedParameter = new ParameterDefinition();
-    
     @XmlElement(name = "dml-sub-assert")
     private List<DMLSubAssert> subAsserts = new LinkedList<>();
     

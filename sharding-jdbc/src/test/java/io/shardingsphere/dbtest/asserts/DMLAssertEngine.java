@@ -25,7 +25,6 @@ import io.shardingsphere.dbtest.common.SQLValue;
 import io.shardingsphere.dbtest.config.DataSetsParser;
 import io.shardingsphere.dbtest.config.bean.DMLDataSetAssert;
 import io.shardingsphere.dbtest.config.bean.DMLSubAssert;
-import io.shardingsphere.dbtest.config.bean.ParameterDefinition;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
@@ -105,10 +104,6 @@ public final class DMLAssertEngine {
                 }
             }
             String expectedDataFile = rootPath + "asserts/dml/" + subAssert.getExpectedDataFile();
-            ParameterDefinition expectedParameter = subAssert.getExpectedParameter();
-            if (null == expectedParameter) {
-                expectedParameter = dmlDataSetAssert.getParameter();
-            }
             resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFile, subAssert);
             resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFile, subAssert);
             resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFile, subAssert);
