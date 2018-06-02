@@ -53,6 +53,8 @@ public final class DMLAssertEngine {
     
     private final DataSource dataSource;
     
+    private final String sql;
+    
     private final String rootPath;
     
     private final DataSetEnvironmentManager dataSetEnvironmentManager;
@@ -63,6 +65,7 @@ public final class DMLAssertEngine {
         this.shardingRuleType = shardingRuleType;
         this.caseType = caseType;
         dataSource = createDataSource(dataSourceMap);
+        sql = SQLCasesLoader.getInstance().getSupportedSQL(dmlDataSetAssert.getId());
         rootPath = dmlDataSetAssert.getPath().substring(0, dmlDataSetAssert.getPath().lastIndexOf(File.separator) + 1);
         this.dataSetEnvironmentManager = dataSetEnvironmentManager;
     }
@@ -77,7 +80,6 @@ public final class DMLAssertEngine {
      * Assert DML.
      */
     public void assertDML() throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
-        String rootSQL = SQLCasesLoader.getInstance().getSupportedSQL(dmlDataSetAssert.getId());
         String expectedDataFile = rootPath + "asserts/dml/" + shardingRuleType + "/" + dmlDataSetAssert.getExpectedDataFile();
         if (!new File(expectedDataFile).exists()) {
             expectedDataFile = rootPath + "asserts/dml/" + dmlDataSetAssert.getExpectedDataFile();
@@ -89,10 +91,10 @@ public final class DMLAssertEngine {
         if (dmlDataSetAssert.getParameter().getValues().isEmpty()) {
             List<AssertSubDefinition> subAsserts = dmlDataSetAssert.getSubAsserts();
             if (subAsserts.isEmpty()) {
-                resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFile, dmlDataSetAssert, rootSQL);
-                resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFile, dmlDataSetAssert, rootSQL);
-                resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFile, dmlDataSetAssert, rootSQL);
-                resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFile, dmlDataSetAssert, rootSQL);
+                resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFile, dmlDataSetAssert);
+                resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFile, dmlDataSetAssert);
+                resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFile, dmlDataSetAssert);
+                resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFile, dmlDataSetAssert);
             } else {
                 for (AssertSubDefinition subAssert : subAsserts) {
                     String baseConfigSub = subAssert.getShardingRuleTypes();
@@ -130,17 +132,17 @@ public final class DMLAssertEngine {
                     DMLDataSetAssert anAssertSub = new DMLDataSetAssert(
                             dmlDataSetAssert.getId(), expectedDataFileSub, dmlDataSetAssert.getShardingRuleTypes(), dmlDataSetAssert.getDatabaseTypes(), subAssert.getExpectedUpdate(),
                             dmlDataSetAssert.getExpectedSql(), parameter, expectedParameter, dmlDataSetAssert.getSubAsserts(), "");
-                    resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFileTmp, anAssertSub, rootSQL);
-                    resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFileTmp, anAssertSub, rootSQL);
-                    resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFileTmp, anAssertSub, rootSQL);
-                    resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFileTmp, anAssertSub, rootSQL);
+                    resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFileTmp, anAssertSub);
+                    resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFileTmp, anAssertSub);
+                    resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFileTmp, anAssertSub);
+                    resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFileTmp, anAssertSub);
                 }
             }
         } else {
-            resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFile, dmlDataSetAssert, rootSQL);
-            resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFile, dmlDataSetAssert, rootSQL);
-            resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFile, dmlDataSetAssert, rootSQL);
-            resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFile, dmlDataSetAssert, rootSQL);
+            resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFile, dmlDataSetAssert);
+            resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFile, dmlDataSetAssert);
+            resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFile, dmlDataSetAssert);
+            resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFile, dmlDataSetAssert);
             List<AssertSubDefinition> subAsserts = dmlDataSetAssert.getSubAsserts();
             if (!subAsserts.isEmpty()) {
                 for (AssertSubDefinition subAssert : subAsserts) {
@@ -179,10 +181,10 @@ public final class DMLAssertEngine {
                     DMLDataSetAssert anAssertSub = new DMLDataSetAssert(
                             dmlDataSetAssert.getId(), expectedDataFileSub, dmlDataSetAssert.getShardingRuleTypes(), dmlDataSetAssert.getDatabaseTypes(), subAssert.getExpectedUpdate(), 
                             dmlDataSetAssert.getExpectedSql(), parameter, expectedParameter, dmlDataSetAssert.getSubAsserts(), "");
-                    resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFileTmp, anAssertSub, rootSQL);
-                    resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFileTmp, anAssertSub, rootSQL);
-                    resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFileTmp, anAssertSub, rootSQL);
-                    resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFileTmp, anAssertSub, rootSQL);
+                    resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFileTmp, anAssertSub);
+                    resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFileTmp, anAssertSub);
+                    resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFileTmp, anAssertSub);
+                    resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFileTmp, anAssertSub);
                 }
             }
         }
@@ -194,11 +196,11 @@ public final class DMLAssertEngine {
         }
     }
     
-    private int doUpdateUsePreparedStatementToExecute(final String expectedDataFile, final DMLDataSetAssert anAssert, final String rootSQL) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private int doUpdateUsePreparedStatementToExecute(final String expectedDataFile, final DMLDataSetAssert anAssert) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             dataSetEnvironmentManager.initialize();
             try (Connection connection = dataSource.getConnection()) {
-                int result = DatabaseUtil.updateUsePreparedStatementToExecute(connection, rootSQL, anAssert.getParameter());
+                int result = DatabaseUtil.updateUsePreparedStatementToExecute(connection, sql, anAssert.getParameter());
                 DataSetDefinitions expected = DataSetsParser.parse(new File(expectedDataFile), "data");
                 if (null != anAssert.getExpectedUpdate()) {
                     assertEquals("Update row number error", anAssert.getExpectedUpdate().intValue(), result);
@@ -214,11 +216,11 @@ public final class DMLAssertEngine {
         }
     }
     
-    private int doUpdateUsePreparedStatementToExecuteUpdate(final String expectedDataFile, final DMLDataSetAssert anAssert, final String rootSQL) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private int doUpdateUsePreparedStatementToExecuteUpdate(final String expectedDataFile, final DMLDataSetAssert anAssert) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             dataSetEnvironmentManager.initialize();
             try (Connection connection = dataSource.getConnection()) {
-                int result = DatabaseUtil.updateUsePreparedStatementToExecuteUpdate(connection, rootSQL, anAssert.getParameter());
+                int result = DatabaseUtil.updateUsePreparedStatementToExecuteUpdate(connection, sql, anAssert.getParameter());
                 DataSetDefinitions expected = DataSetsParser.parse(new File(expectedDataFile), "data");
                 if (null != anAssert.getExpectedUpdate()) {
                     assertEquals("Update row number error", anAssert.getExpectedUpdate().intValue(), result);
@@ -234,11 +236,11 @@ public final class DMLAssertEngine {
         }
     }
     
-    private int doUpdateUseStatementToExecute(final String expectedDataFile, final DMLDataSetAssert anAssert, final String rootSQL) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private int doUpdateUseStatementToExecute(final String expectedDataFile, final DMLDataSetAssert anAssert) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             dataSetEnvironmentManager.initialize();
             try (Connection connection = dataSource.getConnection()) {
-                int result = DatabaseUtil.updateUseStatementToExecute(connection, rootSQL, anAssert.getParameter());
+                int result = DatabaseUtil.updateUseStatementToExecute(connection, sql, anAssert.getParameter());
                 DataSetDefinitions expected = DataSetsParser.parse(new File(expectedDataFile), "data");
                 if (null != anAssert.getExpectedUpdate()) {
                     assertEquals("Update row number error", anAssert.getExpectedUpdate().intValue(), result);
@@ -254,11 +256,11 @@ public final class DMLAssertEngine {
         }
     }
     
-    private int doUpdateUseStatementToExecuteUpdate(final String expectedDataFile, final DMLDataSetAssert dmlDataSetAssert, final String rootSQL) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private int doUpdateUseStatementToExecuteUpdate(final String expectedDataFile, final DMLDataSetAssert dmlDataSetAssert) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             dataSetEnvironmentManager.initialize();
             try (Connection connection = dataSource.getConnection()) {
-                int result = DatabaseUtil.updateUseStatementToExecuteUpdate(connection, rootSQL, dmlDataSetAssert.getParameter());
+                int result = DatabaseUtil.updateUseStatementToExecuteUpdate(connection, sql, dmlDataSetAssert.getParameter());
                 DataSetDefinitions expected = DataSetsParser.parse(new File(expectedDataFile), "data");
                 if (null != dmlDataSetAssert.getExpectedUpdate()) {
                     assertEquals("Update row number error", dmlDataSetAssert.getExpectedUpdate().intValue(), result);
