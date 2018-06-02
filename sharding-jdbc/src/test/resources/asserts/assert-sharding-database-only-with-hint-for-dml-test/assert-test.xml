@@ -1,5 +1,5 @@
 <asserts sharding-rule-types="db">
-   <dml-assert id="assertInsertWithAllPlaceholders" sharding-rule-types="db" expected-sql="assertSelectEqualsWithSingleTable">
+   <dml-assert id="assertInsertWithAllPlaceholders" sharding-rule-types="db">
         <dml-sub-assert parameters="1:int, 1:int, insert:String" expected-update="1" expected-data-file="insert/db_1.xml" expected-sql="assertSelectEqualsWithSingleTable">
             <expected-parameter>
                 <value value="1" type="int"/>
@@ -56,7 +56,7 @@
         </dml-sub-assert>
     </dml-assert>
     
-    <dml-assert id="assertInsertWithoutPlaceholder" sharding-rule-types="db" expected-sql="assertSelectEqualsWithSingleTable">
+    <dml-assert id="assertInsertWithoutPlaceholder" sharding-rule-types="db">
         <dml-sub-assert parameters="1:int, 1:int" expected-update="1" expected-data-file="insert/db_1.xml" expected-sql="assertSelectEqualsWithSingleTable">
             <expected-parameter>
                 <value value="1" type="int"/>
@@ -113,7 +113,7 @@
         </dml-sub-assert>
     </dml-assert>
     
-    <dml-assert id="assertUpdateWithoutAlias" expected-sql="assertSelectEqualsWithSingleTable">
+    <dml-assert id="assertUpdateWithoutAlias">
         <dml-sub-assert parameters="update:String, 1000:int, 10:int" expected-update="1" expected-data-file="update/db_0.xml" expected-sql="assertSelectEqualsWithSingleTable">
             <expected-parameter>
                 <value value="10" type="int"/>
@@ -176,7 +176,7 @@
         </dml-sub-assert>
     </dml-assert>
     
-    <dml-assert id="assertUpdateWithAlias" databaseConfig="MySQL,H2" expected-sql="assertSelectEqualsWithSingleTable">
+    <dml-assert id="assertUpdateWithAlias" databaseConfig="MySQL,H2">
         <dml-sub-assert parameters="update:String, 1000:int, 10:int" expected-update="1" expected-data-file="update/db_0.xml" expected-sql="assertSelectEqualsWithSingleTable">
             <expected-parameter>
                 <value value="10" type="int"/>
@@ -239,7 +239,7 @@
         </dml-sub-assert>
     </dml-assert>
     
-    <dml-assert id="assertDeleteWithoutAlias" expected-sql="assertSelectEqualsWithSingleTable">
+    <dml-assert id="assertDeleteWithoutAlias">
         <dml-sub-assert parameters="1000:int, 10:int, init:String" expected-update="1" expected-data-file="delete.xml" expected-sql="assertSelectEqualsWithSingleTable">
             <expected-parameter>
                 <value value="10" type="int"/>
