@@ -92,45 +92,25 @@ public final class DQLAssertEngine {
     
     private void assertExecuteQueryForPreparedStatement() throws SQLException, ParseException, IOException, JAXBException {
         try (Connection connection = dataSource.getConnection()) {
-            DataSetDefinitions actual = DatabaseUtil.executeQueryForPreparedStatement(connection, sql, getSQLValues(dqlSubAssert.getParameters()));
-            ExpectedDataSetsRoot expected;
-            try (FileReader reader = new FileReader(expectedDataFile)) {
-                expected = (ExpectedDataSetsRoot) JAXBContext.newInstance(ExpectedDataSetsRoot.class).createUnmarshaller().unmarshal(reader);
-            }
-            DataSetAssert.assertDataSet(actual, expected);
+            assertDataSet(DatabaseUtil.executeQueryForPreparedStatement(connection, sql, getSQLValues(dqlSubAssert.getParameters())));
         }
     }
     
     private void assertExecuteDQLForPreparedStatement() throws SQLException, ParseException, IOException, JAXBException {
         try (Connection connection = dataSource.getConnection()) {
-            DataSetDefinitions actual = DatabaseUtil.executeDQLForPreparedStatement(connection, sql, getSQLValues(dqlSubAssert.getParameters()));
-            ExpectedDataSetsRoot expected;
-            try (FileReader reader = new FileReader(expectedDataFile)) {
-                expected = (ExpectedDataSetsRoot) JAXBContext.newInstance(ExpectedDataSetsRoot.class).createUnmarshaller().unmarshal(reader);
-            }
-            DataSetAssert.assertDataSet(actual, expected);
+            assertDataSet(DatabaseUtil.executeDQLForPreparedStatement(connection, sql, getSQLValues(dqlSubAssert.getParameters())));
         }
     }
     
     private void assertExecuteQueryForStatement() throws SQLException, IOException, ParseException, JAXBException {
         try (Connection connection = dataSource.getConnection()) {
-            DataSetDefinitions actual = DatabaseUtil.executeQueryForStatement(connection, sql, getSQLValues(dqlSubAssert.getParameters()));
-            ExpectedDataSetsRoot expected;
-            try (FileReader reader = new FileReader(expectedDataFile)) {
-                expected = (ExpectedDataSetsRoot) JAXBContext.newInstance(ExpectedDataSetsRoot.class).createUnmarshaller().unmarshal(reader);
-            }
-            DataSetAssert.assertDataSet(actual, expected);
+            assertDataSet(DatabaseUtil.executeQueryForStatement(connection, sql, getSQLValues(dqlSubAssert.getParameters())));
         }
     }
     
     private void assertExecuteDQLForStatement() throws SQLException, IOException, ParseException, JAXBException {
         try (Connection connection = dataSource.getConnection()) {
-            DataSetDefinitions actual = DatabaseUtil.executeDQLForStatement(connection, sql, getSQLValues(dqlSubAssert.getParameters()));
-            ExpectedDataSetsRoot expected;
-            try (FileReader reader = new FileReader(expectedDataFile)) {
-                expected = (ExpectedDataSetsRoot) JAXBContext.newInstance(ExpectedDataSetsRoot.class).createUnmarshaller().unmarshal(reader);
-            }
-            DataSetAssert.assertDataSet(actual, expected);
+            assertDataSet(DatabaseUtil.executeDQLForStatement(connection, sql, getSQLValues(dqlSubAssert.getParameters())));
         }
     }
     
@@ -145,5 +125,13 @@ public final class DQLAssertEngine {
             result.add(new SQLValue(parameterPair.get(0), parameterPair.get(1), ++count));
         }
         return result;
+    }
+    
+    private void assertDataSet(final DataSetDefinitions actual) throws IOException, JAXBException {
+        ExpectedDataSetsRoot expected;
+        try (FileReader reader = new FileReader(expectedDataFile)) {
+            expected = (ExpectedDataSetsRoot) JAXBContext.newInstance(ExpectedDataSetsRoot.class).createUnmarshaller().unmarshal(reader);
+        }
+        DataSetAssert.assertDataSet(actual, expected);
     }
 }
