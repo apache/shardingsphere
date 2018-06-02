@@ -153,7 +153,7 @@ public final class DatabaseUtil {
      */
     public static DataSetDefinitions executeQueryForStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            try (ResultSet resultSet = statement.executeQuery(sqlStatement(sql, sqlValues))) {
+            try (ResultSet resultSet = statement.executeQuery(generateSQL(sql, sqlValues))) {
                 return getDatasetDefinition(resultSet);
             }
         }
@@ -170,7 +170,7 @@ public final class DatabaseUtil {
      */
     public static DataSetDefinitions executeDQLForStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            assertTrue("Not a query statement.", statement.execute(sqlStatement(sql, sqlValues)));
+            assertTrue("Not a query statement.", statement.execute(generateSQL(sql, sqlValues)));
             try (ResultSet resultSet = statement.getResultSet()) {
                 return getDatasetDefinition(resultSet);
             }
@@ -178,7 +178,7 @@ public final class DatabaseUtil {
     }
     
     /**
-     * Use Statement Test data update.
+     * Execute update for statement.
      *
      * @param connection connection
      * @param sql SQL
@@ -186,9 +186,9 @@ public final class DatabaseUtil {
      * @return Number of rows as a result of execution
      * @throws SQLException SQL exception
      */
-    public static int updateUseStatementToExecuteUpdate(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
+    public static int executeUpdateForStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            return statement.executeUpdate(sqlStatement(sql, sqlValues));
+            return statement.executeUpdate(generateSQL(sql, sqlValues));
         }
     }
     
@@ -207,7 +207,7 @@ public final class DatabaseUtil {
         }
     }
     
-    private static String sqlStatement(final String sql, final Collection<SQLValue> sqlValues) {
+    private static String generateSQL(final String sql, final Collection<SQLValue> sqlValues) {
         if (null == sqlValues) {
             return sql;
         }
@@ -248,7 +248,7 @@ public final class DatabaseUtil {
     }
     
     /**
-     * Use Statement Test data update.
+     * Execute DML for statement.
      *
      * @param connection connection
      * @param sql SQL
@@ -256,9 +256,9 @@ public final class DatabaseUtil {
      * @return implementation results
      * @throws SQLException SQL exception
      */
-    public static int updateUseStatementToExecute(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
+    public static int executeDMLForStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            if (!statement.execute(sqlStatement(sql, sqlValues))) {
+            if (!statement.execute(generateSQL(sql, sqlValues))) {
                 return statement.getUpdateCount();
             }
         }
@@ -284,7 +284,7 @@ public final class DatabaseUtil {
     }
     
     /**
-     * Use PreparedStatement test data update.
+     * execute update for prepared statement.
      *
      * @param connection connection
      * @param sql SQL
@@ -292,7 +292,7 @@ public final class DatabaseUtil {
      * @return Number of rows as a result of execution
      * @throws SQLException SQL exception
      */
-    public static int updateUsePreparedStatementToExecuteUpdate(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
+    public static int executeUpdateForPreparedStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
             for (SQLValue each : sqlValues) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
@@ -319,7 +319,7 @@ public final class DatabaseUtil {
     }
     
     /**
-     * Use PreparedStatement test data update.
+     * Execute DML for prepared statement.
      *
      * @param connection connection
      * @param sql SQL
@@ -327,7 +327,7 @@ public final class DatabaseUtil {
      * @return implementation results
      * @throws SQLException   SQL exception
      */
-    public static int updateUsePreparedStatementToExecute(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
+    public static int executeDMLForPreparedStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
             for (SQLValue each : sqlValues) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());

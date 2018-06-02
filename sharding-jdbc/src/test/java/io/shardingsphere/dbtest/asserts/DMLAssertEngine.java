@@ -93,7 +93,7 @@ public final class DMLAssertEngine {
         try {
             dataSetEnvironmentManager.initialize();
             try (Connection connection = dataSource.getConnection()) {
-                assertThat(DatabaseUtil.updateUsePreparedStatementToExecuteUpdate(connection, sql, getSQLValues(dmlSubAssert.getParameters())), is(dmlSubAssert.getExpectedUpdate()));
+                assertThat(DatabaseUtil.executeUpdateForPreparedStatement(connection, sql, getSQLValues(dmlSubAssert.getParameters())), is(dmlSubAssert.getExpectedUpdate()));
                 DataSetDefinitions expected = DataSetsParser.parse(new File(expectedDataFile), "data");
                 String checkSQL = dmlSubAssert.getExpectedSql();
                 checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
@@ -109,7 +109,7 @@ public final class DMLAssertEngine {
         try {
             dataSetEnvironmentManager.initialize();
             try (Connection connection = dataSource.getConnection()) {
-                assertThat(DatabaseUtil.updateUsePreparedStatementToExecute(connection, sql, getSQLValues(dmlSubAssert.getParameters())), is(dmlSubAssert.getExpectedUpdate()));
+                assertThat(DatabaseUtil.executeDMLForPreparedStatement(connection, sql, getSQLValues(dmlSubAssert.getParameters())), is(dmlSubAssert.getExpectedUpdate()));
                 DataSetDefinitions expected = DataSetsParser.parse(new File(expectedDataFile), "data");
                 String checkSQL = dmlSubAssert.getExpectedSql();
                 checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
@@ -125,7 +125,7 @@ public final class DMLAssertEngine {
         try {
             dataSetEnvironmentManager.initialize();
             try (Connection connection = dataSource.getConnection()) {
-                assertThat(DatabaseUtil.updateUseStatementToExecuteUpdate(connection, sql, getSQLValues(dmlSubAssert.getParameters())), is(dmlSubAssert.getExpectedUpdate()));
+                assertThat(DatabaseUtil.executeUpdateForStatement(connection, sql, getSQLValues(dmlSubAssert.getParameters())), is(dmlSubAssert.getExpectedUpdate()));
                 DataSetDefinitions expected = DataSetsParser.parse(new File(expectedDataFile), "data");
                 String checkSQL = dmlSubAssert.getExpectedSql();
                 checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
@@ -141,7 +141,7 @@ public final class DMLAssertEngine {
         try {
             dataSetEnvironmentManager.initialize();
             try (Connection connection = dataSource.getConnection()) {
-                assertThat(DatabaseUtil.updateUseStatementToExecute(connection, sql, getSQLValues(dmlSubAssert.getParameters())), is(dmlSubAssert.getExpectedUpdate()));
+                assertThat(DatabaseUtil.executeDMLForStatement(connection, sql, getSQLValues(dmlSubAssert.getParameters())), is(dmlSubAssert.getExpectedUpdate()));
                 DataSetDefinitions expected = DataSetsParser.parse(new File(expectedDataFile), "data");
                 String checkSQL = dmlSubAssert.getExpectedSql();
                 checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
