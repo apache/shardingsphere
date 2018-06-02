@@ -4,6 +4,7 @@
         <ddl-sub-assert sharding-rule-types="tbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" clean-sql="DROP TABLE t_log" expected-update="1" table="t_log" expected-data-file="t_order_update.xml" />
         <ddl-sub-assert sharding-rule-types="dbtbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" clean-sql="DROP TABLE t_log" expected-update="1" table="t_log" expected-data-file="t_order_update.xml" />
     </ddl-assert>
+    
     <ddl-assert id="assertAlterTableIfExistAndOnly" init-sql="CREATE TABLE t_log(id int, status varchar(10))" clean-sql="DROP TABLE t_log" expected-update="1" table="t_log" expected-data-file="t_order_update.xml">
         <ddl-sub-assert sharding-rule-types="db" init-sql="CREATE TABLE t_log(id int, status varchar(10))" clean-sql="DROP TABLE t_log" expected-update="1" table="t_log" expected-data-file="t_order_update.xml" />
         <ddl-sub-assert sharding-rule-types="tbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" clean-sql="DROP TABLE t_log" expected-update="1" table="t_log" expected-data-file="t_order_update.xml" />
