@@ -24,7 +24,6 @@ import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.util.InlineExpressionParser;
 import io.shardingsphere.dbtest.common.DatabaseUtil;
 import io.shardingsphere.dbtest.common.SQLValue;
-import io.shardingsphere.dbtest.config.DataSetsParser;
 import io.shardingsphere.dbtest.config.bean.DMLSubAssert;
 import io.shardingsphere.dbtest.config.dataset.init.DataSetColumnMetadata;
 import io.shardingsphere.dbtest.config.dataset.init.DataSetMetadata;
@@ -33,13 +32,10 @@ import io.shardingsphere.dbtest.config.dataset.init.DataSetsRoot;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
-import org.xml.sax.SAXException;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -99,12 +95,17 @@ public final class DMLAssertEngine {
     
     /**
      * Assert DML.
+     * 
+     * @throws IOException IO exception
+     * @throws SQLException SQL exception
+     * @throws ParseException parse exception
+     * @throws JAXBException JAXB exception
      */
-    public void assertDML() throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException, JAXBException {
+    public void assertDML() throws IOException, SQLException, ParseException, JAXBException {
         assertExecuteUpdateForPreparedStatement();
-//        assertExecuteForPreparedStatement();
-//        assertExecuteUpdateForStatement();
-//        assertExecuteForStatement();
+        assertExecuteForPreparedStatement();
+        assertExecuteUpdateForStatement();
+        assertExecuteForStatement();
     }
     
     private void assertExecuteUpdateForPreparedStatement() throws SQLException, ParseException, IOException, JAXBException {
@@ -113,25 +114,66 @@ public final class DMLAssertEngine {
             try (Connection connection = dataSource.getConnection()) {
                 assertThat(DatabaseUtil.executeUpdateForPreparedStatement(connection, sql, getSQLValues(dmlSubAssert.getParameters())), is(dmlSubAssert.getExpectedUpdate()));
             }
-            DataSetsRoot expected;
-            try (FileReader reader = new FileReader(expectedDataFile)) {
-                expected = (DataSetsRoot) JAXBContext.newInstance(DataSetsRoot.class).createUnmarshaller().unmarshal(reader);
+            assertDataSet();
+        } finally {
+            dataSetEnvironmentManager.clear();
+        }
+    }
+    
+    private void assertExecuteForPreparedStatement() throws SQLException, ParseException, IOException, JAXBException {
+        try {
+            dataSetEnvironmentManager.initialize();
+            try (Connection connection = dataSource.getConnection()) {
+                assertThat(DatabaseUtil.executeDMLForPreparedStatement(connection, sql, getSQLValues(dmlSubAssert.getParameters())), is(dmlSubAssert.getExpectedUpdate()));
             }
-            assertThat("Only support single table for DML.", expected.getMetadataList().size(), is(1));
-            DataSetMetadata dataSetMetadata = expected.getMetadataList().get(0);
-            for (String each : new InlineExpressionParser(dataSetMetadata.getDataNodes()).evaluate()) {
-                DataNode dataNode = new DataNode(each);
-                try (Connection connection = dataSourceMap.get(dataNode.getDataSourceName()).getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(String.format("SELECT * FROM %s", dataNode.getTableName()))) {
-                    try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                        while (resultSet.next()) {
-                            List<String> actualResultSetData = getResultSetData(dataSetMetadata, resultSet);
-                            assertTrue(String.format("Cannot find actual record '%s' from data node '%s'", actualResultSetData, each), isMatch(each, actualResultSetData, expected.getDataSetRows()));
-                        }
+            assertDataSet();
+        } finally {
+            dataSetEnvironmentManager.clear();
+        }
+    }
+    
+    private void assertExecuteUpdateForStatement() throws SQLException, ParseException, IOException, JAXBException {
+        try {
+            dataSetEnvironmentManager.initialize();
+            try (Connection connection = dataSource.getConnection()) {
+                assertThat(DatabaseUtil.executeUpdateForStatement(connection, sql, getSQLValues(dmlSubAssert.getParameters())), is(dmlSubAssert.getExpectedUpdate()));
+            }
+            assertDataSet();
+        } finally {
+            dataSetEnvironmentManager.clear();
+        }
+    }
+    
+    private void assertExecuteForStatement() throws SQLException, ParseException, IOException, JAXBException {
+        try {
+            dataSetEnvironmentManager.initialize();
+            try (Connection connection = dataSource.getConnection()) {
+                assertThat(DatabaseUtil.executeDMLForStatement(connection, sql, getSQLValues(dmlSubAssert.getParameters())), is(dmlSubAssert.getExpectedUpdate()));
+            }
+            assertDataSet();
+        } finally {
+            dataSetEnvironmentManager.clear();
+        }
+    }
+    
+    private void assertDataSet() throws IOException, JAXBException, SQLException {
+        DataSetsRoot expected;
+        try (FileReader reader = new FileReader(expectedDataFile)) {
+            expected = (DataSetsRoot) JAXBContext.newInstance(DataSetsRoot.class).createUnmarshaller().unmarshal(reader);
+        }
+        assertThat("Only support single table for DML.", expected.getMetadataList().size(), is(1));
+        DataSetMetadata dataSetMetadata = expected.getMetadataList().get(0);
+        for (String each : new InlineExpressionParser(dataSetMetadata.getDataNodes()).evaluate()) {
+            DataNode dataNode = new DataNode(each);
+            try (Connection connection = dataSourceMap.get(dataNode.getDataSourceName()).getConnection();
+                 PreparedStatement preparedStatement = connection.prepareStatement(String.format("SELECT * FROM %s", dataNode.getTableName()))) {
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    while (resultSet.next()) {
+                        List<String> actualResultSetData = getResultSetData(dataSetMetadata, resultSet);
+                        assertTrue(String.format("Cannot find actual record '%s' from data node '%s'", actualResultSetData, each), isMatch(each, actualResultSetData, expected.getDataSetRows()));
                     }
                 }
             }
-        } finally {
-            dataSetEnvironmentManager.clear();
         }
     }
     
@@ -162,54 +204,6 @@ public final class DMLAssertEngine {
             count++;
         }
         return true;
-    }
-    
-    private void assertExecuteForPreparedStatement() throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
-        try {
-            dataSetEnvironmentManager.initialize();
-            try (Connection connection = dataSource.getConnection()) {
-                assertThat(DatabaseUtil.executeDMLForPreparedStatement(connection, sql, getSQLValues(dmlSubAssert.getParameters())), is(dmlSubAssert.getExpectedUpdate()));
-                DataSetDefinitions expected = DataSetsParser.parse(new File(expectedDataFile), "data");
-                String checkSQL = dmlSubAssert.getExpectedSQL();
-                checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
-                DataSetDefinitions actual = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, dmlSubAssert.getExpectedParameter());
-                DataSetAssert.assertDataSet(actual, expected);
-            }
-        } finally {
-            dataSetEnvironmentManager.clear();
-        }
-    }
-    
-    private void assertExecuteUpdateForStatement() throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
-        try {
-            dataSetEnvironmentManager.initialize();
-            try (Connection connection = dataSource.getConnection()) {
-                assertThat(DatabaseUtil.executeUpdateForStatement(connection, sql, getSQLValues(dmlSubAssert.getParameters())), is(dmlSubAssert.getExpectedUpdate()));
-                DataSetDefinitions expected = DataSetsParser.parse(new File(expectedDataFile), "data");
-                String checkSQL = dmlSubAssert.getExpectedSQL();
-                checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
-                DataSetDefinitions actual = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, dmlSubAssert.getExpectedParameter());
-                DataSetAssert.assertDataSet(actual, expected);
-            }
-        } finally {
-            dataSetEnvironmentManager.clear();
-        }
-    }
-    
-    private void assertExecuteForStatement() throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
-        try {
-            dataSetEnvironmentManager.initialize();
-            try (Connection connection = dataSource.getConnection()) {
-                assertThat(DatabaseUtil.executeDMLForStatement(connection, sql, getSQLValues(dmlSubAssert.getParameters())), is(dmlSubAssert.getExpectedUpdate()));
-                DataSetDefinitions expected = DataSetsParser.parse(new File(expectedDataFile), "data");
-                String checkSQL = dmlSubAssert.getExpectedSQL();
-                checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
-                DataSetDefinitions actual = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, dmlSubAssert.getExpectedParameter());
-                DataSetAssert.assertDataSet(actual, expected);
-            }
-        } finally {
-            dataSetEnvironmentManager.clear();
-        }
     }
     
     private Collection<SQLValue> getSQLValues(final String parameters) throws ParseException {
