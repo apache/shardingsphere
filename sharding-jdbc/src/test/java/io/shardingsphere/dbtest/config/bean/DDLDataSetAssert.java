@@ -39,23 +39,11 @@ public class DDLDataSetAssert implements DataSetAssert {
     @XmlAttribute(name = "id")
     private String id;
     
-    @XmlAttribute(name = "init-sql")
-    private String initSql;
-    
     @XmlAttribute(name = "sharding-rule-types")
     private String shardingRuleTypes;
     
     @XmlAttribute(name = "database-types")
     private String databaseTypes;
-    
-    @XmlAttribute(name = "clean-sql")
-    private String cleanSql;
-    
-    @XmlAttribute(name = "expected-data-file")
-    private String expectedDataFile;
-    
-    @XmlAttribute(name = "table")
-    private String table;
     
     @XmlElement(name = "ddl-sub-assert")
     private List<DDLSubAssert> subAsserts = new LinkedList<>();
