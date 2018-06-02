@@ -168,10 +168,13 @@ public final class DMLAssertEngine {
             try (Connection connection = dataSourceMap.get(dataNode.getDataSourceName()).getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(String.format("SELECT * FROM %s", dataNode.getTableName()))) {
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    int count = 0;
                     while (resultSet.next()) {
                         List<String> actualResultSetData = getResultSetData(dataSetMetadata, resultSet);
                         assertTrue(String.format("Cannot find actual record '%s' from data node '%s'", actualResultSetData, each), isMatch(each, actualResultSetData, expected.getDataSetRows()));
+                        count++;
                     }
+                    assertThat(String.format("Count of records are different for data node '%s'", each), count, is(countExpectedDataSetRows(each, expected.getDataSetRows())));
                 }
             }
         }
@@ -204,6 +207,17 @@ public final class DMLAssertEngine {
             count++;
         }
         return true;
+    }
+    
+    private int countExpectedDataSetRows(final String actualDataNode, final List<DataSetRow> expectedDataSetRows) {
+        int result = 0;
+        for (DataSetRow each : expectedDataSetRows) {
+            if (each.getDataNode().equals(actualDataNode)) {
+                result++;
+            }
+            
+        }
+        return result;
     }
     
     private Collection<SQLValue> getSQLValues(final String parameters) throws ParseException {
