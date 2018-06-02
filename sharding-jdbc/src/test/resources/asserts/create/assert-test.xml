@@ -11,28 +11,28 @@
         <ddl-sub-assert sharding-rule-types="dbtbl" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="assertCreateTable.xml" />
     </ddl-assert>
     
-    <ddl-assert id="assertCreateTemporaryTable">
-        <ddl-sub-assert sharding-rule-types="db" clean-sql="DROP TABLE t_temp_log" table="t_temp_log" database-types="MySQL,PostgreSQL" expected-data-file="assertCreateTableTempLog.xml" />
-        <ddl-sub-assert sharding-rule-types="tbl" clean-sql="DROP TABLE t_temp_log" table="t_temp_log" database-types="MySQL,PostgreSQL" expected-data-file="assertCreateTableTempLog.xml" />
-        <ddl-sub-assert sharding-rule-types="dbtbl" clean-sql="DROP TABLE t_temp_log" table="t_temp_log" database-types="MySQL,PostgreSQL" expected-data-file="assertCreateTableTempLog.xml" />
+    <ddl-assert id="assertCreateTemporaryTable" database-types="MySQL,PostgreSQL">
+        <ddl-sub-assert sharding-rule-types="db" clean-sql="DROP TABLE t_temp_log" table="t_temp_log" expected-data-file="assertCreateTableTempLog.xml" />
+        <ddl-sub-assert sharding-rule-types="tbl" clean-sql="DROP TABLE t_temp_log" table="t_temp_log" expected-data-file="assertCreateTableTempLog.xml" />
+        <ddl-sub-assert sharding-rule-types="dbtbl" clean-sql="DROP TABLE t_temp_log" table="t_temp_log" expected-data-file="assertCreateTableTempLog.xml" />
     </ddl-assert>
     
-    <ddl-assert id="assertCreateGlobalTemporaryTable">
-        <ddl-sub-assert sharding-rule-types="db" clean-sql="DROP TABLE t_temp_log" table="t_temp_log" database-types="Oracle,PostgreSQL" expected-data-file="assertCreateTableTempLog.xml" />
-        <ddl-sub-assert sharding-rule-types="tbl" clean-sql="DROP TABLE t_temp_log" table="t_temp_log" database-types="Oracle,PostgreSQL" expected-data-file="assertCreateTableTempLog.xml" />
-        <ddl-sub-assert sharding-rule-types="dbtbl" clean-sql="DROP TABLE t_temp_log" table="t_temp_log" database-types="Oracle,PostgreSQL" expected-data-file="assertCreateTableTempLog.xml" />
+    <ddl-assert id="assertCreateGlobalTemporaryTable" database-types="Oracle,PostgreSQL" >
+        <ddl-sub-assert sharding-rule-types="db" clean-sql="DROP TABLE t_temp_log" table="t_temp_log" expected-data-file="assertCreateTableTempLog.xml" />
+        <ddl-sub-assert sharding-rule-types="tbl" clean-sql="DROP TABLE t_temp_log" table="t_temp_log" expected-data-file="assertCreateTableTempLog.xml" />
+        <ddl-sub-assert sharding-rule-types="dbtbl" clean-sql="DROP TABLE t_temp_log" table="t_temp_log" expected-data-file="assertCreateTableTempLog.xml" />
     </ddl-assert>
     
-    <ddl-assert id="assertCreateLocalTempTable">
-        <ddl-sub-assert sharding-rule-types="db" clean-sql="DROP TABLE t_log" table="t_log" database-types="PostgreSQL" expected-data-file="assertCreateTable.xml" />
-        <ddl-sub-assert sharding-rule-types="tbl" clean-sql="DROP TABLE t_log" table="t_log" database-types="PostgreSQL" expected-data-file="assertCreateTable.xml" />
-        <ddl-sub-assert sharding-rule-types="dbtbl" clean-sql="DROP TABLE t_log" table="t_log" database-types="PostgreSQL" expected-data-file="assertCreateTable.xml" />
+    <ddl-assert id="assertCreateLocalTempTable" database-types="PostgreSQL">
+        <ddl-sub-assert sharding-rule-types="db" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="assertCreateTable.xml" />
+        <ddl-sub-assert sharding-rule-types="tbl" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="assertCreateTable.xml" />
+        <ddl-sub-assert sharding-rule-types="dbtbl" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="assertCreateTable.xml" />
     </ddl-assert>
     
-    <ddl-assert id="assertCreateUnloggedTable">
-        <ddl-sub-assert sharding-rule-types="db" clean-sql="DROP TABLE t_log" table="t_log" database-types="PostgreSQL" expected-data-file="assertCreateTable.xml" />
-        <ddl-sub-assert sharding-rule-types="tbl" clean-sql="DROP TABLE t_log" table="t_log" database-types="PostgreSQL" expected-data-file="assertCreateTable.xml" />
-        <ddl-sub-assert sharding-rule-types="dbtbl" clean-sql="DROP TABLE t_log" table="t_log" database-types="PostgreSQL" expected-data-file="assertCreateTable.xml" />
+    <ddl-assert id="assertCreateUnloggedTable" database-types="PostgreSQL">
+        <ddl-sub-assert sharding-rule-types="db" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="assertCreateTable.xml" />
+        <ddl-sub-assert sharding-rule-types="tbl" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="assertCreateTable.xml" />
+        <ddl-sub-assert sharding-rule-types="dbtbl" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="assertCreateTable.xml" />
     </ddl-assert>
     
     <ddl-assert id="assertCreateIndex">
