@@ -22,7 +22,6 @@ import lombok.Getter;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -33,12 +32,6 @@ public class DDLSubAssert {
     
     @XmlAttribute(name = "expected-data-file")
     private String expectedDataFile;
-    
-    @XmlElement(name = "expected-parameter")
-    private ParameterDefinition expectedParameter;
-    
-    @XmlAttribute(name = "expected-update")
-    private Integer expectedUpdate;
     
     @XmlAttribute(name = "init-sql")
     private String initSql;
