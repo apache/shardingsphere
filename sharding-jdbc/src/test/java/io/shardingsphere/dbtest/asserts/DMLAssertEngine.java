@@ -59,18 +59,18 @@ public final class DMLAssertEngine {
     
     private final String sql;
     
-    private final String rootPath;
+    private final String expectedDataFile;
     
     private final DataSetEnvironmentManager dataSetEnvironmentManager;
     
-    public DMLAssertEngine(final String sqlCaseId, final String path, final DataSetEnvironmentManager dataSetEnvironmentManager, final DMLSubAssert dmlSubAssert, final Map<String, DataSource> dataSourceMap,
-                           final String shardingRuleType, final SQLCaseType caseType) throws IOException, SQLException {
+    public DMLAssertEngine(final String sqlCaseId, final String path, final DataSetEnvironmentManager dataSetEnvironmentManager, 
+                           final DMLSubAssert dmlSubAssert, final Map<String, DataSource> dataSourceMap, final String shardingRuleType, final SQLCaseType caseType) throws IOException, SQLException {
         this.dmlSubAssert = dmlSubAssert;
         this.shardingRuleType = shardingRuleType;
         this.caseType = caseType;
         dataSource = createDataSource(dataSourceMap);
         sql = SQLCasesLoader.getInstance().getSupportedSQL(sqlCaseId);
-        rootPath = path.substring(0, path.lastIndexOf(File.separator) + 1);
+        expectedDataFile = path.substring(0, path.lastIndexOf(File.separator) + 1) + "asserts/dml/" + dmlSubAssert.getExpectedDataFile();
         this.dataSetEnvironmentManager = dataSetEnvironmentManager;
     }
     
@@ -84,14 +84,13 @@ public final class DMLAssertEngine {
      * Assert DML.
      */
     public void assertDML() throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
-        String expectedDataFile = rootPath + "asserts/dml/" + dmlSubAssert.getExpectedDataFile();
-        assertThat(doUpdateUseStatementToExecuteUpdate(expectedDataFile, dmlSubAssert), is(dmlSubAssert.getExpectedUpdate()));
-        assertThat(doUpdateUseStatementToExecute(expectedDataFile, dmlSubAssert), is(dmlSubAssert.getExpectedUpdate()));
-        assertThat(doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFile, dmlSubAssert), is(dmlSubAssert.getExpectedUpdate()));
-        assertThat(doUpdateUsePreparedStatementToExecute(expectedDataFile, dmlSubAssert), is(dmlSubAssert.getExpectedUpdate()));
+        assertThat(doUpdateUseStatementToExecuteUpdate(), is(dmlSubAssert.getExpectedUpdate()));
+        assertThat(doUpdateUseStatementToExecute(), is(dmlSubAssert.getExpectedUpdate()));
+        assertThat(doUpdateUsePreparedStatementToExecuteUpdate(), is(dmlSubAssert.getExpectedUpdate()));
+        assertThat(doUpdateUsePreparedStatementToExecute(), is(dmlSubAssert.getExpectedUpdate()));
     }
     
-    private int doUpdateUsePreparedStatementToExecute(final String expectedDataFile, final DMLSubAssert dmlSubAssert) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private int doUpdateUsePreparedStatementToExecute() throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             dataSetEnvironmentManager.initialize();
             try (Connection connection = dataSource.getConnection()) {
@@ -111,7 +110,7 @@ public final class DMLAssertEngine {
         }
     }
     
-    private int doUpdateUsePreparedStatementToExecuteUpdate(final String expectedDataFile, final DMLSubAssert dmlSubAssert) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private int doUpdateUsePreparedStatementToExecuteUpdate() throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             dataSetEnvironmentManager.initialize();
             try (Connection connection = dataSource.getConnection()) {
@@ -131,7 +130,7 @@ public final class DMLAssertEngine {
         }
     }
     
-    private int doUpdateUseStatementToExecute(final String expectedDataFile, final DMLSubAssert dmlSubAssert) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private int doUpdateUseStatementToExecute() throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             dataSetEnvironmentManager.initialize();
             try (Connection connection = dataSource.getConnection()) {
@@ -151,7 +150,7 @@ public final class DMLAssertEngine {
         }
     }
     
-    private int doUpdateUseStatementToExecuteUpdate(final String expectedDataFile, final DMLSubAssert dmlSubAssert) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private int doUpdateUseStatementToExecuteUpdate() throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         try {
             dataSetEnvironmentManager.initialize();
             try (Connection connection = dataSource.getConnection()) {
