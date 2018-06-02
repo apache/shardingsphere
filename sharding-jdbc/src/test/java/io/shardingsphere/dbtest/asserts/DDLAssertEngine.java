@@ -39,7 +39,9 @@ import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
@@ -103,17 +105,19 @@ public final class DDLAssertEngine {
     
     private void doUpdateUsePreparedStatementToExecute(final String expectedDataFile) throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException, ParseException {
         try {
-            try (Connection con = dataSource.getConnection()) {
+            try (Connection connection = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(ddlSubAssert.getCleanSql())) {
                     SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), ddlSubAssert.getCleanSql());
                 }
                 if (StringUtils.isNotBlank(ddlSubAssert.getInitSql())) {
                     SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), ddlSubAssert.getInitSql());
                 }
-                DatabaseUtil.updateUsePreparedStatementToExecute0(con, sql);
+                try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
+                    preparedStatement.execute();
+                }
                 DataSetDefinitions checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
                 String table = ddlSubAssert.getTable();
-                List<DataSetColumnMetadata> columnDefinitions = DatabaseUtil.getColumnDefinitions(con, table);
+                List<DataSetColumnMetadata> columnDefinitions = DatabaseUtil.getColumnDefinitions(connection, table);
                 DatabaseUtil.assertConfigs(checkDataset, columnDefinitions, table);
             }
         } finally {
@@ -136,7 +140,9 @@ public final class DDLAssertEngine {
                 if (StringUtils.isNotBlank(ddlSubAssert.getInitSql())) {
                     SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), ddlSubAssert.getInitSql());
                 }
-                DatabaseUtil.updateUsePreparedStatementToExecuteUpdate0(connection, sql);
+                try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
+                    preparedStatement.executeUpdate();
+                }
                 DataSetDefinitions checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
                 String table = ddlSubAssert.getTable();
                 List<DataSetColumnMetadata> columnDefinitions = DatabaseUtil.getColumnDefinitions(connection, table);
@@ -162,7 +168,9 @@ public final class DDLAssertEngine {
                 if (StringUtils.isNotBlank(ddlSubAssert.getInitSql())) {
                     SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), ddlSubAssert.getInitSql());
                 }
-                DatabaseUtil.updateUseStatementToExecute0(connection, sql);
+                try (Statement statement = connection.createStatement()) {
+                    statement.execute(sql);
+                }
                 DataSetDefinitions checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
                 String table = ddlSubAssert.getTable();
                 List<DataSetColumnMetadata> columnDefinitions = DatabaseUtil.getColumnDefinitions(connection, table);
@@ -188,7 +196,9 @@ public final class DDLAssertEngine {
                 if (StringUtils.isNotBlank(ddlSubAssert.getInitSql())) {
                     SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), ddlSubAssert.getInitSql());
                 }
-                DatabaseUtil.updateUseStatementToExecuteUpdate0(connection, sql);
+                try (Statement statement = connection.createStatement()) {
+                    statement.executeUpdate(sql);
+                }
                 DataSetDefinitions checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
                 String table = ddlSubAssert.getTable();
                 List<DataSetColumnMetadata> columnDefinitions = DatabaseUtil.getColumnDefinitions(connection, table);

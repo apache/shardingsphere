@@ -31,7 +31,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -178,32 +177,6 @@ public final class DatabaseUtil {
     }
     
     /**
-     * Use Statement Test data update.
-     *
-     * @param connection connection
-     * @param sql SQL
-     * @return Number of rows as a result of execution
-     * @throws SQLException SQL exception
-     */
-    public static int updateUseStatementToExecuteUpdate0(final Connection connection, final String sql) throws SQLException {
-        try (Statement statement = connection.createStatement()) {
-            return statement.executeUpdate(sql);
-        }
-    }
-    
-    private static String generateSQL(final String sql, final Collection<SQLValue> sqlValues) {
-        if (null == sqlValues) {
-            return sql;
-        }
-        String result = sql;
-        for (SQLValue each : sqlValues) {
-            result = Pattern.compile("%s", Pattern.LITERAL).matcher(result)
-                    .replaceFirst(Matcher.quoteReplacement(each.getValue() instanceof String ? "'" + each.getValue() + "'" : each.getValue().toString()));
-        }
-        return result;
-    }
-    
-    /**
      * Execute DML for statement.
      *
      * @param connection connection
@@ -221,21 +194,16 @@ public final class DatabaseUtil {
         return 0;
     }
     
-    /**
-     * Use Statement Test data update.
-     *
-     * @param connection connection
-     * @param sql SQL
-     * @return implementation results
-     * @throws SQLException SQL exception
-     */
-    public static int updateUseStatementToExecute0(final Connection connection, final String sql) throws SQLException {
-        try (Statement statement = connection.createStatement()) {
-            if (!statement.execute(sql)) {
-                return statement.getUpdateCount();
-            }
+    private static String generateSQL(final String sql, final Collection<SQLValue> sqlValues) {
+        if (null == sqlValues) {
+            return sql;
         }
-        return 0;
+        String result = sql;
+        for (SQLValue each : sqlValues) {
+            result = Pattern.compile("%s", Pattern.LITERAL).matcher(result)
+                    .replaceFirst(Matcher.quoteReplacement(each.getValue() instanceof String ? "'" + each.getValue() + "'" : each.getValue().toString()));
+        }
+        return result;
     }
     
     /**
@@ -257,20 +225,6 @@ public final class DatabaseUtil {
     }
     
     /**
-     * Use PreparedStatement test data update.
-     *
-     * @param connection connection
-     * @param sql SQL
-     * @return Number of rows as a result of execution
-     * @throws SQLException SQL exception
-     */
-    public static int updateUsePreparedStatementToExecuteUpdate0(final Connection connection, final String sql) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
-            return preparedStatement.executeUpdate();
-        }
-    }
-    
-    /**
      * Execute DML for prepared statement.
      *
      * @param connection connection
@@ -284,24 +238,6 @@ public final class DatabaseUtil {
             for (SQLValue each : sqlValues) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
             }
-            if (!preparedStatement.execute()) {
-                return preparedStatement.getUpdateCount();
-            }
-        }
-        return 0;
-    }
-    
-    /**
-     * Use PreparedStatement test data update.
-     *
-     * @param connection connection
-     * @param sql SQL
-     * @return implementation results
-     * @throws SQLException   SQL exception
-     * @throws ParseException parse exception
-     */
-    public static int updateUsePreparedStatementToExecute0(final Connection connection, final String sql) throws SQLException, ParseException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
             if (!preparedStatement.execute()) {
                 return preparedStatement.getUpdateCount();
             }
