@@ -39,9 +39,6 @@ public class DMLDataSetAssert implements DataSetAssert {
     @XmlAttribute(name = "id")
     private String id;
     
-    @XmlAttribute(name = "expected-data-file")
-    private String expectedDataFile;
-    
     @XmlAttribute(name = "sharding-rule-types")
     private String shardingRuleTypes;
     

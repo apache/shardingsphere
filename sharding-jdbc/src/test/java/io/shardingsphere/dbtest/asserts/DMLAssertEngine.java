@@ -85,10 +85,6 @@ public final class DMLAssertEngine {
      * Assert DML.
      */
     public void assertDML() throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
-        String expectedDataFile = rootPath + "asserts/dml/" + shardingRuleType + "/" + dmlDataSetAssert.getExpectedDataFile();
-        if (!new File(expectedDataFile).exists()) {
-            expectedDataFile = rootPath + "asserts/dml/" + dmlDataSetAssert.getExpectedDataFile();
-        }
         int resultDoUpdateUseStatementToExecuteUpdate = 0;
         int resultDoUpdateUseStatementToExecute = 0;
         int resultDoUpdateUsePreparedStatementToExecuteUpdate = 0;
@@ -108,24 +104,15 @@ public final class DMLAssertEngine {
                     continue;
                 }
             }
-            String expectedDataFileSub = subAssert.getExpectedDataFile();
+            String expectedDataFile = rootPath + "asserts/dml/" + subAssert.getExpectedDataFile();
             ParameterDefinition expectedParameter = subAssert.getExpectedParameter();
-            String expectedDataFileTmp = expectedDataFile;
-            if (StringUtils.isBlank(expectedDataFileSub)) {
-                expectedDataFileSub = dmlDataSetAssert.getExpectedDataFile();
-            } else {
-                expectedDataFileTmp = rootPath + "asserts/dml/" + shardingRuleType + "/" + expectedDataFileSub;
-                if (!new File(expectedDataFileTmp).exists()) {
-                    expectedDataFileTmp = rootPath + "asserts/dml/" + expectedDataFileSub;
-                }
-            }
             if (null == expectedParameter) {
                 expectedParameter = dmlDataSetAssert.getParameter();
             }
-            resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFileTmp, subAssert);
-            resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFileTmp, subAssert);
-            resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFileTmp, subAssert);
-            resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFileTmp, subAssert);
+            resultDoUpdateUseStatementToExecuteUpdate = resultDoUpdateUseStatementToExecuteUpdate + doUpdateUseStatementToExecuteUpdate(expectedDataFile, subAssert);
+            resultDoUpdateUseStatementToExecute = resultDoUpdateUseStatementToExecute + doUpdateUseStatementToExecute(expectedDataFile, subAssert);
+            resultDoUpdateUsePreparedStatementToExecuteUpdate = resultDoUpdateUsePreparedStatementToExecuteUpdate + doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFile, subAssert);
+            resultDoUpdateUsePreparedStatementToExecute = resultDoUpdateUsePreparedStatementToExecute + doUpdateUsePreparedStatementToExecute(expectedDataFile, subAssert);
         }
         if (null != dmlDataSetAssert.getExpectedUpdate()) {
             assertEquals("Update row number error UpdateUseStatementToExecuteUpdate", dmlDataSetAssert.getExpectedUpdate().intValue(), resultDoUpdateUseStatementToExecuteUpdate);
