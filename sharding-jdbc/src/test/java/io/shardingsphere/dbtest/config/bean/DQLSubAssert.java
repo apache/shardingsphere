@@ -17,11 +17,18 @@
 
 package io.shardingsphere.dbtest.config.bean;
 
+import com.google.common.base.Splitter;
+import io.shardingsphere.dbtest.common.SQLValue;
 import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import java.text.ParseException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -35,4 +42,17 @@ public final class DQLSubAssert {
     
     @XmlAttribute
     private String parameters;
+    
+    public Collection<SQLValue> getSQLValues() throws ParseException {
+        if (null == parameters) {
+            return Collections.emptyList();
+        }
+        Collection<SQLValue> result = new LinkedList<>();
+        int count = 0;
+        for (String each : Splitter.on(",").trimResults().splitToList(parameters)) {
+            List<String> parameterPair = Splitter.on(":").trimResults().splitToList(each);
+            result.add(new SQLValue(parameterPair.get(0), parameterPair.get(1), ++count));
+        }
+        return result;
+    }
 }

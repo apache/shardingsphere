@@ -17,11 +17,9 @@
 
 package io.shardingsphere.dbtest.asserts;
 
-import com.google.common.base.Splitter;
 import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
 import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
 import io.shardingsphere.dbtest.common.DatabaseUtil;
-import io.shardingsphere.dbtest.common.SQLValue;
 import io.shardingsphere.dbtest.config.bean.DQLSubAssert;
 import io.shardingsphere.dbtest.config.dataset.expected.ExpectedDataSetsRoot;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
@@ -37,10 +35,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -92,39 +86,26 @@ public final class DQLAssertEngine {
     
     private void assertExecuteQueryForPreparedStatement() throws SQLException, ParseException, IOException, JAXBException {
         try (Connection connection = dataSource.getConnection()) {
-            assertDataSet(DatabaseUtil.executeQueryForPreparedStatement(connection, sql, getSQLValues(dqlSubAssert.getParameters())));
+            assertDataSet(DatabaseUtil.executeQueryForPreparedStatement(connection, sql, dqlSubAssert.getSQLValues()));
         }
     }
     
     private void assertExecuteForPreparedStatement() throws SQLException, ParseException, IOException, JAXBException {
         try (Connection connection = dataSource.getConnection()) {
-            assertDataSet(DatabaseUtil.executeDQLForPreparedStatement(connection, sql, getSQLValues(dqlSubAssert.getParameters())));
+            assertDataSet(DatabaseUtil.executeDQLForPreparedStatement(connection, sql, dqlSubAssert.getSQLValues()));
         }
     }
     
     private void assertExecuteQueryForStatement() throws SQLException, IOException, ParseException, JAXBException {
         try (Connection connection = dataSource.getConnection()) {
-            assertDataSet(DatabaseUtil.executeQueryForStatement(connection, sql, getSQLValues(dqlSubAssert.getParameters())));
+            assertDataSet(DatabaseUtil.executeQueryForStatement(connection, sql, dqlSubAssert.getSQLValues()));
         }
     }
     
     private void assertExecuteDQLForStatement() throws SQLException, IOException, ParseException, JAXBException {
         try (Connection connection = dataSource.getConnection()) {
-            assertDataSet(DatabaseUtil.executeDQLForStatement(connection, sql, getSQLValues(dqlSubAssert.getParameters())));
+            assertDataSet(DatabaseUtil.executeDQLForStatement(connection, sql, dqlSubAssert.getSQLValues()));
         }
-    }
-    
-    private Collection<SQLValue> getSQLValues(final String parameters) throws ParseException {
-        if (null == parameters) {
-            return Collections.emptyList();
-        }
-        Collection<SQLValue> result = new LinkedList<>();
-        int count = 0;
-        for (String each : Splitter.on(",").trimResults().splitToList(parameters)) {
-            List<String> parameterPair = Splitter.on(":").trimResults().splitToList(each);
-            result.add(new SQLValue(parameterPair.get(0), parameterPair.get(1), ++count));
-        }
-        return result;
     }
     
     private void assertDataSet(final DataSetDefinitions actual) throws IOException, JAXBException {

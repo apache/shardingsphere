@@ -23,7 +23,6 @@ import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.util.InlineExpressionParser;
 import io.shardingsphere.dbtest.common.DatabaseUtil;
-import io.shardingsphere.dbtest.common.SQLValue;
 import io.shardingsphere.dbtest.config.bean.DMLSubAssert;
 import io.shardingsphere.dbtest.config.dataset.init.DataSetColumnMetadata;
 import io.shardingsphere.dbtest.config.dataset.init.DataSetMetadata;
@@ -47,9 +46,6 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -112,7 +108,7 @@ public final class DMLAssertEngine {
         try {
             dataSetEnvironmentManager.initialize();
             try (Connection connection = dataSource.getConnection()) {
-                assertThat(DatabaseUtil.executeUpdateForPreparedStatement(connection, sql, getSQLValues(dmlSubAssert.getParameters())), is(dmlSubAssert.getExpectedUpdate()));
+                assertThat(DatabaseUtil.executeUpdateForPreparedStatement(connection, sql, dmlSubAssert.getSQLValues()), is(dmlSubAssert.getExpectedUpdate()));
             }
             assertDataSet();
         } finally {
@@ -124,7 +120,7 @@ public final class DMLAssertEngine {
         try {
             dataSetEnvironmentManager.initialize();
             try (Connection connection = dataSource.getConnection()) {
-                assertThat(DatabaseUtil.executeDMLForPreparedStatement(connection, sql, getSQLValues(dmlSubAssert.getParameters())), is(dmlSubAssert.getExpectedUpdate()));
+                assertThat(DatabaseUtil.executeDMLForPreparedStatement(connection, sql, dmlSubAssert.getSQLValues()), is(dmlSubAssert.getExpectedUpdate()));
             }
             assertDataSet();
         } finally {
@@ -136,7 +132,7 @@ public final class DMLAssertEngine {
         try {
             dataSetEnvironmentManager.initialize();
             try (Connection connection = dataSource.getConnection()) {
-                assertThat(DatabaseUtil.executeUpdateForStatement(connection, sql, getSQLValues(dmlSubAssert.getParameters())), is(dmlSubAssert.getExpectedUpdate()));
+                assertThat(DatabaseUtil.executeUpdateForStatement(connection, sql, dmlSubAssert.getSQLValues()), is(dmlSubAssert.getExpectedUpdate()));
             }
             assertDataSet();
         } finally {
@@ -148,7 +144,7 @@ public final class DMLAssertEngine {
         try {
             dataSetEnvironmentManager.initialize();
             try (Connection connection = dataSource.getConnection()) {
-                assertThat(DatabaseUtil.executeDMLForStatement(connection, sql, getSQLValues(dmlSubAssert.getParameters())), is(dmlSubAssert.getExpectedUpdate()));
+                assertThat(DatabaseUtil.executeDMLForStatement(connection, sql, dmlSubAssert.getSQLValues()), is(dmlSubAssert.getExpectedUpdate()));
             }
             assertDataSet();
         } finally {
@@ -216,19 +212,6 @@ public final class DMLAssertEngine {
                 result++;
             }
             
-        }
-        return result;
-    }
-    
-    private Collection<SQLValue> getSQLValues(final String parameters) throws ParseException {
-        if (null == parameters) {
-            return Collections.emptyList();
-        }
-        Collection<SQLValue> result = new LinkedList<>();
-        int count = 0;
-        for (String each : Splitter.on(",").trimResults().splitToList(parameters)) {
-            List<String> parameterPair = Splitter.on(":").trimResults().splitToList(each);
-            result.add(new SQLValue(parameterPair.get(0), parameterPair.get(1), ++count));
         }
         return result;
     }
