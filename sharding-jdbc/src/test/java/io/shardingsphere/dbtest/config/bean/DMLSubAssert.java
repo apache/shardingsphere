@@ -44,5 +44,5 @@ public final class DMLSubAssert {
     private String parameters;
     
     @XmlAttribute(name = "expected-sql")
-    private String expectedSql;
+    private String expectedSQL;
 }

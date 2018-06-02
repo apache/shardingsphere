@@ -20,23 +20,37 @@ package io.shardingsphere.dbtest.asserts;
 import com.google.common.base.Splitter;
 import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
 import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
+import io.shardingsphere.core.rule.DataNode;
+import io.shardingsphere.core.util.InlineExpressionParser;
 import io.shardingsphere.dbtest.common.DatabaseUtil;
 import io.shardingsphere.dbtest.common.SQLValue;
 import io.shardingsphere.dbtest.config.DataSetsParser;
 import io.shardingsphere.dbtest.config.bean.DMLSubAssert;
+import io.shardingsphere.dbtest.config.dataset.init.DataSetColumnMetadata;
+import io.shardingsphere.dbtest.config.dataset.init.DataSetMetadata;
+import io.shardingsphere.dbtest.config.dataset.init.DataSetRow;
+import io.shardingsphere.dbtest.config.dataset.init.DataSetsRoot;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
 import org.xml.sax.SAXException;
 
 import javax.sql.DataSource;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -45,6 +59,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class DMLAssertEngine {
     
@@ -53,6 +68,8 @@ public final class DMLAssertEngine {
     private final String shardingRuleType;
     
     private final SQLCaseType caseType;
+    
+    private Map<String, DataSource> dataSourceMap;
     
     private final DataSource dataSource;
     
@@ -67,6 +84,7 @@ public final class DMLAssertEngine {
         this.dmlSubAssert = dmlSubAssert;
         this.shardingRuleType = shardingRuleType;
         this.caseType = caseType;
+        this.dataSourceMap = dataSourceMap;
         dataSource = createDataSource(dataSourceMap);
         sql = SQLCasesLoader.getInstance().getSupportedSQL(sqlCaseId);
         expectedDataFile = path.substring(0, path.lastIndexOf(File.separator) + 1) + "asserts/dml/" + dmlSubAssert.getExpectedDataFile();
@@ -82,27 +100,68 @@ public final class DMLAssertEngine {
     /**
      * Assert DML.
      */
-    public void assertDML() throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
+    public void assertDML() throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException, JAXBException {
         assertExecuteUpdateForPreparedStatement();
-        assertExecuteForPreparedStatement();
-        assertExecuteUpdateForStatement();
-        assertExecuteForStatement();
+//        assertExecuteForPreparedStatement();
+//        assertExecuteUpdateForStatement();
+//        assertExecuteForStatement();
     }
     
-    private void assertExecuteUpdateForPreparedStatement() throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+    private void assertExecuteUpdateForPreparedStatement() throws SQLException, ParseException, IOException, JAXBException {
         try {
             dataSetEnvironmentManager.initialize();
             try (Connection connection = dataSource.getConnection()) {
                 assertThat(DatabaseUtil.executeUpdateForPreparedStatement(connection, sql, getSQLValues(dmlSubAssert.getParameters())), is(dmlSubAssert.getExpectedUpdate()));
-                DataSetDefinitions expected = DataSetsParser.parse(new File(expectedDataFile), "data");
-                String checkSQL = dmlSubAssert.getExpectedSql();
-                checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
-                DataSetDefinitions actual = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, dmlSubAssert.getExpectedParameter());
-                DataSetAssert.assertDataSet(actual, expected);
+            }
+            DataSetsRoot expected;
+            try (FileReader reader = new FileReader(expectedDataFile)) {
+                expected = (DataSetsRoot) JAXBContext.newInstance(DataSetsRoot.class).createUnmarshaller().unmarshal(reader);
+            }
+            assertThat("Only support single table for DML.", expected.getMetadataList().size(), is(1));
+            DataSetMetadata dataSetMetadata = expected.getMetadataList().get(0);
+            for (String each : new InlineExpressionParser(dataSetMetadata.getDataNodes()).evaluate()) {
+                DataNode dataNode = new DataNode(each);
+                try (Connection connection = dataSourceMap.get(dataNode.getDataSourceName()).getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(String.format("SELECT * FROM %s", dataNode.getTableName()))) {
+                    try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                        while (resultSet.next()) {
+                            List<String> actualResultSetData = getResultSetData(dataSetMetadata, resultSet);
+                            assertTrue(String.format("Cannot find actual record '%s' from data node '%s'", actualResultSetData, each), isMatch(each, actualResultSetData, expected.getDataSetRows()));
+                        }
+                    }
+                }
             }
         } finally {
             dataSetEnvironmentManager.clear();
         }
+    }
+    
+    private List<String> getResultSetData(final DataSetMetadata dataSetMetadata, final ResultSet resultSet) throws SQLException {
+        List<String> result = new ArrayList<>(dataSetMetadata.getColumnMetadataList().size());
+        for (DataSetColumnMetadata each : dataSetMetadata.getColumnMetadataList()) {
+            Object resultSetValue = resultSet.getObject(each.getName());
+            result.add(resultSetValue instanceof Date ? new SimpleDateFormat("yyyy-MM-dd").format(resultSetValue) : resultSetValue.toString());
+        }
+        return result;
+    }
+    
+    private boolean isMatch(final String actualDataNode, final List<String> actualResultSetData, final List<DataSetRow> expectedDataSetRows) {
+        for (DataSetRow each : expectedDataSetRows) {
+            if (each.getDataNode().equals(actualDataNode) && isMatch(actualResultSetData, each)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean isMatch(final List<String> actualResultSetData, final DataSetRow expectedDataSetRow) {
+        int count = 0;
+        for (String each : Splitter.on(",").trimResults().splitToList(expectedDataSetRow.getValues())) {
+            if (!each.equals(actualResultSetData.get(count))) {
+                return false;
+            }
+            count++;
+        }
+        return true;
     }
     
     private void assertExecuteForPreparedStatement() throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
@@ -111,7 +170,7 @@ public final class DMLAssertEngine {
             try (Connection connection = dataSource.getConnection()) {
                 assertThat(DatabaseUtil.executeDMLForPreparedStatement(connection, sql, getSQLValues(dmlSubAssert.getParameters())), is(dmlSubAssert.getExpectedUpdate()));
                 DataSetDefinitions expected = DataSetsParser.parse(new File(expectedDataFile), "data");
-                String checkSQL = dmlSubAssert.getExpectedSql();
+                String checkSQL = dmlSubAssert.getExpectedSQL();
                 checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
                 DataSetDefinitions actual = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, dmlSubAssert.getExpectedParameter());
                 DataSetAssert.assertDataSet(actual, expected);
@@ -127,7 +186,7 @@ public final class DMLAssertEngine {
             try (Connection connection = dataSource.getConnection()) {
                 assertThat(DatabaseUtil.executeUpdateForStatement(connection, sql, getSQLValues(dmlSubAssert.getParameters())), is(dmlSubAssert.getExpectedUpdate()));
                 DataSetDefinitions expected = DataSetsParser.parse(new File(expectedDataFile), "data");
-                String checkSQL = dmlSubAssert.getExpectedSql();
+                String checkSQL = dmlSubAssert.getExpectedSQL();
                 checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
                 DataSetDefinitions actual = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, dmlSubAssert.getExpectedParameter());
                 DataSetAssert.assertDataSet(actual, expected);
@@ -143,7 +202,7 @@ public final class DMLAssertEngine {
             try (Connection connection = dataSource.getConnection()) {
                 assertThat(DatabaseUtil.executeDMLForStatement(connection, sql, getSQLValues(dmlSubAssert.getParameters())), is(dmlSubAssert.getExpectedUpdate()));
                 DataSetDefinitions expected = DataSetsParser.parse(new File(expectedDataFile), "data");
-                String checkSQL = dmlSubAssert.getExpectedSql();
+                String checkSQL = dmlSubAssert.getExpectedSQL();
                 checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
                 DataSetDefinitions actual = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, dmlSubAssert.getExpectedParameter());
                 DataSetAssert.assertDataSet(actual, expected);
