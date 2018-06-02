@@ -30,6 +30,9 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.Arrays;
 import java.util.Collection;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 @RequiredArgsConstructor
 public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrateSQLParsingTest {
     
@@ -45,6 +48,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
+        assertThat(sqlCasesLoader.countAllSupportedSQLCases(), is(parserResultSetLoader.countAllParserCases()));
         return sqlCasesLoader.getSupportedSQLTestParameters(Arrays.<Enum>asList(DatabaseType.values()), DatabaseType.class);
     }
     
