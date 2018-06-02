@@ -26,7 +26,7 @@
         </dml-sub-assert>
     </dml-assert>
     
-    <dml-assert id="assertUpdateWithAlias" databaseConfig="MySQL,H2">
+    <dml-assert id="assertUpdateWithAlias" database-types="MySQL,H2">
         <dml-sub-assert sharding-rule-type="db" parameters="update:String, 1000:int, 10:int" expected-update="1" expected-data-file="update.xml" expected-sql="assertSelectEqualsWithSingleTable">
             <expected-parameter>
                 <value value="10" type="int"/>
