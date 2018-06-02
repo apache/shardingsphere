@@ -97,7 +97,7 @@ public final class DQLAssertEngine {
             try (FileReader reader = new FileReader(expectedDataFile)) {
                 expected = (ExpectedDataSetsRoot) JAXBContext.newInstance(ExpectedDataSetsRoot.class).createUnmarshaller().unmarshal(reader);
             }
-            DatabaseUtil.assertDataSet(actual, expected);
+            DataSetAssert.assertDataSet(actual, expected);
         }
     }
     
@@ -108,7 +108,7 @@ public final class DQLAssertEngine {
             try (FileReader reader = new FileReader(expectedDataFile)) {
                 expected = (ExpectedDataSetsRoot) JAXBContext.newInstance(ExpectedDataSetsRoot.class).createUnmarshaller().unmarshal(reader);
             }
-            DatabaseUtil.assertDataSet(actual, expected);
+            DataSetAssert.assertDataSet(actual, expected);
         }
     }
     
@@ -119,7 +119,7 @@ public final class DQLAssertEngine {
             try (FileReader reader = new FileReader(expectedDataFile)) {
                 expected = (ExpectedDataSetsRoot) JAXBContext.newInstance(ExpectedDataSetsRoot.class).createUnmarshaller().unmarshal(reader);
             }
-            DatabaseUtil.assertDataSet(actual, expected);
+            DataSetAssert.assertDataSet(actual, expected);
         }
     }
     
@@ -130,7 +130,7 @@ public final class DQLAssertEngine {
             try (FileReader reader = new FileReader(expectedDataFile)) {
                 expected = (ExpectedDataSetsRoot) JAXBContext.newInstance(ExpectedDataSetsRoot.class).createUnmarshaller().unmarshal(reader);
             }
-            DatabaseUtil.assertDataSet(actual, expected);
+            DataSetAssert.assertDataSet(actual, expected);
         }
     }
     

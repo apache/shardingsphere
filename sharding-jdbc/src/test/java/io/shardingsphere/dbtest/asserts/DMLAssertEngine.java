@@ -206,7 +206,7 @@ public final class DMLAssertEngine {
                 String checkSQL = anAssert.getExpectedSql();
                 checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
                 DataSetDefinitions actual = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, anAssert.getExpectedParameter());
-                DatabaseUtil.assertDataSet(actual, expected);
+                DataSetAssert.assertDataSet(actual, expected);
                 return result;
             }
         } finally {
@@ -226,7 +226,7 @@ public final class DMLAssertEngine {
                 String checkSQL = anAssert.getExpectedSql();
                 checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
                 DataSetDefinitions actual = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, anAssert.getExpectedParameter());
-                DatabaseUtil.assertDataSet(actual, expected);
+                DataSetAssert.assertDataSet(actual, expected);
                 return result;
             }
         } finally {
@@ -246,7 +246,7 @@ public final class DMLAssertEngine {
                 String checkSQL = anAssert.getExpectedSql();
                 checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
                 DataSetDefinitions actual = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, anAssert.getExpectedParameter());
-                DatabaseUtil.assertDataSet(actual, expected);
+                DataSetAssert.assertDataSet(actual, expected);
                 return result;
             }
         } finally {
@@ -266,7 +266,7 @@ public final class DMLAssertEngine {
                 String checkSQL = dmlDataSetAssert.getExpectedSql();
                 checkSQL = SQLCasesLoader.getInstance().getSupportedSQL(checkSQL);
                 DataSetDefinitions actual = DatabaseUtil.selectUsePreparedStatement0(connection, checkSQL, dmlDataSetAssert.getExpectedParameter());
-                DatabaseUtil.assertDataSet(actual, expected);
+                DataSetAssert.assertDataSet(actual, expected);
                 return result;
             }
         } finally {
