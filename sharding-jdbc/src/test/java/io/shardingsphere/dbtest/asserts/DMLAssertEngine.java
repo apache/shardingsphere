@@ -23,12 +23,10 @@ import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
 import io.shardingsphere.dbtest.common.DatabaseUtil;
 import io.shardingsphere.dbtest.common.SQLValue;
 import io.shardingsphere.dbtest.config.DataSetsParser;
-import io.shardingsphere.dbtest.config.bean.DMLDataSetAssert;
 import io.shardingsphere.dbtest.config.bean.DMLSubAssert;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
-import org.apache.commons.lang3.StringUtils;
 import org.xml.sax.SAXException;
 
 import javax.sql.DataSource;
@@ -51,7 +49,7 @@ import static org.junit.Assert.assertThat;
 
 public final class DMLAssertEngine {
     
-    private final DMLDataSetAssert dmlDataSetAssert;
+    private final DMLSubAssert dmlSubAssert;
     
     private final String shardingRuleType;
     
@@ -65,9 +63,9 @@ public final class DMLAssertEngine {
     
     private final DataSetEnvironmentManager dataSetEnvironmentManager;
     
-    public DMLAssertEngine(final String sqlCaseId, final String path, final DataSetEnvironmentManager dataSetEnvironmentManager, final DMLDataSetAssert dmlDataSetAssert, final Map<String, DataSource> dataSourceMap,
+    public DMLAssertEngine(final String sqlCaseId, final String path, final DataSetEnvironmentManager dataSetEnvironmentManager, final DMLSubAssert dmlSubAssert, final Map<String, DataSource> dataSourceMap,
                            final String shardingRuleType, final SQLCaseType caseType) throws IOException, SQLException {
-        this.dmlDataSetAssert = dmlDataSetAssert;
+        this.dmlSubAssert = dmlSubAssert;
         this.shardingRuleType = shardingRuleType;
         this.caseType = caseType;
         dataSource = createDataSource(dataSourceMap);
@@ -86,27 +84,11 @@ public final class DMLAssertEngine {
      * Assert DML.
      */
     public void assertDML() throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, SQLException, ParseException {
-        for (DMLSubAssert subAssert : dmlDataSetAssert.getSubAsserts()) {
-            String baseConfigSub = subAssert.getShardingRuleTypes();
-            if (StringUtils.isNotBlank(baseConfigSub)) {
-                String[] baseConfigs = StringUtils.split(baseConfigSub, ",");
-                boolean flag = true;
-                for (String config : baseConfigs) {
-                    if (shardingRuleType.equals(config)) {
-                        flag = false;
-                    }
-                }
-                //Skip use cases that do not need to run
-                if (flag) {
-                    continue;
-                }
-            }
-            String expectedDataFile = rootPath + "asserts/dml/" + subAssert.getExpectedDataFile();
-            assertThat(doUpdateUseStatementToExecuteUpdate(expectedDataFile, subAssert), is(subAssert.getExpectedUpdate()));
-            assertThat(doUpdateUseStatementToExecute(expectedDataFile, subAssert), is(subAssert.getExpectedUpdate()));
-            assertThat(doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFile, subAssert), is(subAssert.getExpectedUpdate()));
-            assertThat(doUpdateUsePreparedStatementToExecute(expectedDataFile, subAssert), is(subAssert.getExpectedUpdate()));
-        }
+        String expectedDataFile = rootPath + "asserts/dml/" + dmlSubAssert.getExpectedDataFile();
+        assertThat(doUpdateUseStatementToExecuteUpdate(expectedDataFile, dmlSubAssert), is(dmlSubAssert.getExpectedUpdate()));
+        assertThat(doUpdateUseStatementToExecute(expectedDataFile, dmlSubAssert), is(dmlSubAssert.getExpectedUpdate()));
+        assertThat(doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFile, dmlSubAssert), is(dmlSubAssert.getExpectedUpdate()));
+        assertThat(doUpdateUsePreparedStatementToExecute(expectedDataFile, dmlSubAssert), is(dmlSubAssert.getExpectedUpdate()));
     }
     
     private int doUpdateUsePreparedStatementToExecute(final String expectedDataFile, final DMLSubAssert dmlSubAssert) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
