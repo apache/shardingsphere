@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.jaxb.assertion;
+package io.shardingsphere.dbtest.jaxb.assertion.root;
 
 import io.shardingsphere.dbtest.jaxb.assertion.ddl.DDLIntegrateTestCase;
 import io.shardingsphere.dbtest.jaxb.assertion.dml.DMLIntegrateTestCase;

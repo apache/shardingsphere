@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.jaxb.assertion;
+package io.shardingsphere.dbtest.jaxb.assertion.root;
 
 import com.google.common.base.Splitter;
 import io.shardingsphere.dbtest.common.SQLValue;

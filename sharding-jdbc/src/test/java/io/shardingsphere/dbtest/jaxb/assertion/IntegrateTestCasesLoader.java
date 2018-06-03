@@ -15,11 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.asserts;
+package io.shardingsphere.dbtest.jaxb.assertion;
 
 import com.google.common.base.Preconditions;
-import io.shardingsphere.dbtest.jaxb.assertion.IntegrateTestCase;
-import io.shardingsphere.dbtest.jaxb.assertion.IntegrateTestCases;
+import io.shardingsphere.dbtest.jaxb.assertion.root.IntegrateTestCase;
+import io.shardingsphere.dbtest.jaxb.assertion.root.IntegrateTestCases;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 

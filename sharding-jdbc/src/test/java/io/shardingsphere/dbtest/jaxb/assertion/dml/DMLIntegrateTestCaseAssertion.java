@@ -17,7 +17,7 @@
 
 package io.shardingsphere.dbtest.jaxb.assertion.dml;
 
-import io.shardingsphere.dbtest.jaxb.assertion.IntegrateTestCaseAssertion;
+import io.shardingsphere.dbtest.jaxb.assertion.root.IntegrateTestCaseAssertion;
 import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlAttribute;

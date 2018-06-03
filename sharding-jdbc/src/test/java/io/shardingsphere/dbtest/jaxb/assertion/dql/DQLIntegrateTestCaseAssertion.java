@@ -17,7 +17,7 @@
 
 package io.shardingsphere.dbtest.jaxb.assertion.dql;
 
-import io.shardingsphere.dbtest.jaxb.assertion.IntegrateTestCaseAssertion;
+import io.shardingsphere.dbtest.jaxb.assertion.root.IntegrateTestCaseAssertion;
 
 /**
  * JAXB definition of DQL integrate test case assertion.
