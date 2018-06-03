@@ -17,6 +17,7 @@
 
 package io.shardingsphere.dbtest;
 
+import com.google.common.base.Splitter;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.dbtest.asserts.DDLAssertEngine;
 import io.shardingsphere.dbtest.asserts.DMLAssertEngine;
@@ -120,41 +121,41 @@ public final class StartTest {
             String sqlCaseId = each[0].toString();
             DatabaseType databaseType = (DatabaseType) each[1];
             SQLCaseType caseType = (SQLCaseType) each[2];
-            DataSetAssert assertDefinition = dataSetAssertLoader.getDataSetAssert(sqlCaseId);
+            DataSetAssert dataSetAssert = dataSetAssertLoader.getDataSetAssert(sqlCaseId);
             // TODO remove when transfer finished
-            if (null == assertDefinition) {
+            if (null == dataSetAssert) {
                 continue;
             }
-            if (!getDatabaseTypes(assertDefinition.getDatabaseTypes()).contains(databaseType)) {
+            if (!getDatabaseTypes(dataSetAssert.getDatabaseTypes()).contains(databaseType)) {
                 continue;
             }
-            if (assertDefinition instanceof DQLDataSetAssert) {
-                for (DQLSubAssert dqlSubAssert : ((DQLDataSetAssert) assertDefinition).getSubAsserts()) {
+            if (dataSetAssert instanceof DQLDataSetAssert) {
+                for (DQLSubAssert dqlSubAssert : ((DQLDataSetAssert) dataSetAssert).getSubAsserts()) {
                     Object[] data = new Object[6];
-                    data[0] = assertDefinition.getSqlCaseId();
-                    data[1] = assertDefinition.getPath();
+                    data[0] = dataSetAssert.getSqlCaseId();
+                    data[1] = dataSetAssert.getPath();
                     data[2] = dqlSubAssert;
                     data[3] = dqlSubAssert.getShardingRuleType();
                     data[4] = new DatabaseTypeEnvironment(databaseType, IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType));
                     data[5] = caseType;
                     result.add(data);
                 }
-            } else if (assertDefinition instanceof DMLDataSetAssert) {
-                for (DMLSubAssert dmlSubAssert : ((DMLDataSetAssert) assertDefinition).getSubAsserts()) {
+            } else if (dataSetAssert instanceof DMLDataSetAssert) {
+                for (DMLSubAssert dmlSubAssert : ((DMLDataSetAssert) dataSetAssert).getSubAsserts()) {
                     Object[] data = new Object[6];
-                    data[0] = assertDefinition.getSqlCaseId();
-                    data[1] = assertDefinition.getPath();
+                    data[0] = dataSetAssert.getSqlCaseId();
+                    data[1] = dataSetAssert.getPath();
                     data[2] = dmlSubAssert;
                     data[3] = dmlSubAssert.getShardingRuleType();
                     data[4] = new DatabaseTypeEnvironment(databaseType, IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType));
                     data[5] = caseType;
                     result.add(data);
                 }
-            } else if (assertDefinition instanceof DDLDataSetAssert) {
-                for (DDLSubAssert ddlSubAssert : ((DDLDataSetAssert) assertDefinition).getSubAsserts()) {
+            } else if (dataSetAssert instanceof DDLDataSetAssert) {
+                for (DDLSubAssert ddlSubAssert : ((DDLDataSetAssert) dataSetAssert).getSubAsserts()) {
                     Object[] data = new Object[6];
-                    data[0] = assertDefinition.getSqlCaseId();
-                    data[1] = assertDefinition.getPath();
+                    data[0] = dataSetAssert.getSqlCaseId();
+                    data[1] = dataSetAssert.getPath();
                     data[2] = ddlSubAssert;
                     data[3] = ddlSubAssert.getShardingRuleType();
                     data[4] = new DatabaseTypeEnvironment(databaseType, IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType));
@@ -168,8 +169,8 @@ public final class StartTest {
     
     private static List<DatabaseType> getDatabaseTypes(final String databaseTypes) {
         List<DatabaseType> result = new LinkedList<>();
-        for (String eachType : databaseTypes.split(",")) {
-            result.add(DatabaseType.valueOf(eachType));
+        for (String each : Splitter.on(",").trimResults().splitToList(databaseTypes)) {
+            result.add(DatabaseType.valueOf(each));
         }
         return result;
     }

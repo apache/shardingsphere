@@ -249,7 +249,7 @@ public final class SQLCasesLoader {
     
     private Collection<Object[]> getTestParameters(final Collection<? extends Enum> allDatabaseTypes, final Class<? extends Enum> enumType, final SQLCase sqlCase) {
         Collection<Object[]> result = new LinkedList<>();
-        for (final SQLCaseType each : SQLCaseType.values()) {
+        for (SQLCaseType each : SQLCaseType.values()) {
             result.addAll(getTestParameters(sqlCase, allDatabaseTypes, enumType, each));
         }
         return result;
