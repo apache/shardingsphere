@@ -62,12 +62,12 @@ public final class IntegrateTestCasesLoader {
     @Getter
     private final Collection<String> shardingRuleTypes;
     
-    private final Map<String, IntegrateTestCase> dataSetAssertMap;
+    private final Map<String, IntegrateTestCase> integrateTestCaseMap;
     
     private IntegrateTestCasesLoader() {
         shardingRuleTypes = new HashSet<>();
         try {
-            dataSetAssertMap = loadIntegrateTestCases();
+            integrateTestCaseMap = loadIntegrateTestCases();
         } catch (final IOException | URISyntaxException | JAXBException ex) {
             throw new RuntimeException(ex);
         }
@@ -104,9 +104,9 @@ public final class IntegrateTestCasesLoader {
         return result;
     }
     
-    private Map<String, IntegrateTestCase> loadIntegrateTestCases(final String file, final List<? extends IntegrateTestCase> dataSetAsserts) {
-        Map<String, IntegrateTestCase> result = new HashMap<>(dataSetAsserts.size(), 1);
-        for (IntegrateTestCase each : dataSetAsserts) {
+    private Map<String, IntegrateTestCase> loadIntegrateTestCases(final String file, final List<? extends IntegrateTestCase> integrateTestCases) {
+        Map<String, IntegrateTestCase> result = new HashMap<>(integrateTestCases.size(), 1);
+        for (IntegrateTestCase each : integrateTestCases) {
             result.put(each.getSqlCaseId(), each);
             each.setPath(file);
             if (each instanceof DQLIntegrateTestCase) {
@@ -161,12 +161,12 @@ public final class IntegrateTestCasesLoader {
      */
     public IntegrateTestCase getIntegrateTestCase(final String sqlCaseId) {
         // TODO resume when transfer finished
-//        Preconditions.checkState(dataSetAssertMap.containsKey(sqlCaseId), "Can't find SQL of id: " + sqlCaseId);
+//        Preconditions.checkState(integrateTestCaseMap.containsKey(sqlCaseId), "Can't find SQL of id: " + sqlCaseId);
         // TODO remove when transfer finished
-        if (!dataSetAssertMap.containsKey(sqlCaseId)) {
+        if (!integrateTestCaseMap.containsKey(sqlCaseId)) {
             log.warn("Have not finish case `{}`", sqlCaseId);
         }
-        return dataSetAssertMap.get(sqlCaseId);
+        return integrateTestCaseMap.get(sqlCaseId);
     }
     
     /**
@@ -175,6 +175,6 @@ public final class IntegrateTestCasesLoader {
      * @return count of all data set test cases
      */
     public int countAllDataSetTestCases() {
-        return dataSetAssertMap.size();
+        return integrateTestCaseMap.size();
     }
 }
