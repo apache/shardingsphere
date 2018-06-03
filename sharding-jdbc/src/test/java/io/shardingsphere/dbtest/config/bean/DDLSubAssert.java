@@ -19,19 +19,10 @@ package io.shardingsphere.dbtest.config.bean;
 
 import lombok.Getter;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 
 @Getter
-@XmlAccessorType(XmlAccessType.FIELD)
-public class DDLSubAssert {
-    
-    @XmlAttribute(name = "sharding-rule-type")
-    private String shardingRuleType;
-    
-    @XmlAttribute(name = "expected-data-file")
-    private String expectedDataFile;
+public class DDLSubAssert extends SubAssert {
     
     @XmlAttribute(name = "init-sql")
     private String initSql;

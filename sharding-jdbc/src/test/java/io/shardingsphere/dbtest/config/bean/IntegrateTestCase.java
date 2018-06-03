@@ -25,6 +25,7 @@ import lombok.Setter;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import java.util.List;
 
 /**
  * Integrate test case.
@@ -43,4 +44,11 @@ public abstract class IntegrateTestCase {
     
     @Setter
     private String path;
+    
+    /**
+     * Get sub asserts.
+     * 
+     * @return sub asserts
+     */
+    public abstract List<? extends SubAssert> getSubAsserts();
 }
