@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
 import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
 import io.shardingsphere.dbtest.common.DatabaseUtil;
-import io.shardingsphere.dbtest.config.bean.DDLIntegrateTestCaseAssertion;
+import io.shardingsphere.dbtest.config.bean.ddl.DDLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.config.dataset.expected.metadata.ExpectedColumn;
 import io.shardingsphere.dbtest.config.dataset.expected.metadata.ExpectedMetadataRoot;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;

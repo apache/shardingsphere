@@ -17,6 +17,9 @@
 
 package io.shardingsphere.dbtest.config.bean;
 
+import io.shardingsphere.dbtest.config.bean.ddl.DDLIntegrateTestCase;
+import io.shardingsphere.dbtest.config.bean.dml.DMLIntegrateTestCase;
+import io.shardingsphere.dbtest.config.bean.dql.DQLIntegrateTestCase;
 import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlElement;
