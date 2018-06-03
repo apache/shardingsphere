@@ -1,49 +1,49 @@
-<asserts>
-    <ddl-assert sql-case-id="assertCreateTable">
+<test-cases>
+    <ddl-test-case sql-case-id="assertCreateTable">
         <ddl-sub-assert sharding-rule-type="db" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="assertCreateTable.xml" />
         <ddl-sub-assert sharding-rule-type="tbl" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="assertCreateTable.xml" />
         <ddl-sub-assert sharding-rule-type="dbtbl" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="assertCreateTable.xml" />
-    </ddl-assert>
+    </ddl-test-case>
     
-    <ddl-assert sql-case-id="assertCreateTableIfNotExist">
+    <ddl-test-case sql-case-id="assertCreateTableIfNotExist">
         <ddl-sub-assert sharding-rule-type="db" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="assertCreateTable.xml" />
         <ddl-sub-assert sharding-rule-type="tbl" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="assertCreateTable.xml" />
         <ddl-sub-assert sharding-rule-type="dbtbl" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="assertCreateTable.xml" />
-    </ddl-assert>
+    </ddl-test-case>
     
-    <ddl-assert sql-case-id="assertCreateTemporaryTable" database-types="MySQL,PostgreSQL">
+    <ddl-test-case sql-case-id="assertCreateTemporaryTable" database-types="MySQL,PostgreSQL">
         <ddl-sub-assert sharding-rule-type="db" clean-sql="DROP TABLE t_temp_log" table="t_temp_log" expected-data-file="assertCreateTableTempLog.xml" />
         <ddl-sub-assert sharding-rule-type="tbl" clean-sql="DROP TABLE t_temp_log" table="t_temp_log" expected-data-file="assertCreateTableTempLog.xml" />
         <ddl-sub-assert sharding-rule-type="dbtbl" clean-sql="DROP TABLE t_temp_log" table="t_temp_log" expected-data-file="assertCreateTableTempLog.xml" />
-    </ddl-assert>
+    </ddl-test-case>
     
-    <ddl-assert sql-case-id="assertCreateGlobalTemporaryTable" database-types="Oracle,PostgreSQL" >
+    <ddl-test-case sql-case-id="assertCreateGlobalTemporaryTable" database-types="Oracle,PostgreSQL" >
         <ddl-sub-assert sharding-rule-type="db" clean-sql="DROP TABLE t_temp_log" table="t_temp_log" expected-data-file="assertCreateTableTempLog.xml" />
         <ddl-sub-assert sharding-rule-type="tbl" clean-sql="DROP TABLE t_temp_log" table="t_temp_log" expected-data-file="assertCreateTableTempLog.xml" />
         <ddl-sub-assert sharding-rule-type="dbtbl" clean-sql="DROP TABLE t_temp_log" table="t_temp_log" expected-data-file="assertCreateTableTempLog.xml" />
-    </ddl-assert>
+    </ddl-test-case>
     
-    <ddl-assert sql-case-id="assertCreateLocalTempTable" database-types="PostgreSQL">
+    <ddl-test-case sql-case-id="assertCreateLocalTempTable" database-types="PostgreSQL">
         <ddl-sub-assert sharding-rule-type="db" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="assertCreateTable.xml" />
         <ddl-sub-assert sharding-rule-type="tbl" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="assertCreateTable.xml" />
         <ddl-sub-assert sharding-rule-type="dbtbl" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="assertCreateTable.xml" />
-    </ddl-assert>
+    </ddl-test-case>
     
-    <ddl-assert sql-case-id="assertCreateUnloggedTable" database-types="PostgreSQL">
+    <ddl-test-case sql-case-id="assertCreateUnloggedTable" database-types="PostgreSQL">
         <ddl-sub-assert sharding-rule-type="db" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="assertCreateTable.xml" />
         <ddl-sub-assert sharding-rule-type="tbl" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="assertCreateTable.xml" />
         <ddl-sub-assert sharding-rule-type="dbtbl" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="assertCreateTable.xml" />
-    </ddl-assert>
+    </ddl-test-case>
     
-    <ddl-assert sql-case-id="assertCreateIndex">
+    <ddl-test-case sql-case-id="assertCreateIndex">
         <ddl-sub-assert sharding-rule-type="db" init-sql="CREATE TABLE t_log(id int, status varchar(10))" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="assertCreateIndex.xml" />
         <ddl-sub-assert sharding-rule-type="tbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="assertCreateIndex.xml" />
         <ddl-sub-assert sharding-rule-type="dbtbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="assertCreateIndex.xml" />
-    </ddl-assert>
+    </ddl-test-case>
     
-    <ddl-assert sql-case-id="assertCreateUniqueIndex" init-sql="CREATE TABLE t_log(id int, status varchar(10))" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="assertCreateUniqueIndex.xml">
+    <ddl-test-case sql-case-id="assertCreateUniqueIndex" init-sql="CREATE TABLE t_log(id int, status varchar(10))" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="assertCreateUniqueIndex.xml">
         <ddl-sub-assert sharding-rule-type="db" init-sql="CREATE TABLE t_log(id int, status varchar(10))" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="assertCreateUniqueIndex.xml" />
         <ddl-sub-assert sharding-rule-type="tbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="assertCreateUniqueIndex.xml" />
         <ddl-sub-assert sharding-rule-type="dbtbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="assertCreateUniqueIndex.xml" />
-    </ddl-assert>
-</asserts>
+    </ddl-test-case>
+</test-cases>

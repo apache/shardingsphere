@@ -25,15 +25,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Getter
-@XmlRootElement(name = "asserts")
+@XmlRootElement(name = "test-cases")
 public class DataSetsAssert {
     
-    @XmlElement(name = "dql-assert")
+    @XmlElement(name = "dql-test-case")
     private List<DQLDataSetAssert> dqlDataSetAsserts = new LinkedList<>();
     
-    @XmlElement(name = "dml-assert")
+    @XmlElement(name = "dml-test-case")
     private List<DMLDataSetAssert> dmlDataSetAsserts = new LinkedList<>();
     
-    @XmlElement(name = "ddl-assert")
+    @XmlElement(name = "ddl-test-case")
     private List<DDLDataSetAssert> ddlDataSetAsserts = new LinkedList<>();
 }
