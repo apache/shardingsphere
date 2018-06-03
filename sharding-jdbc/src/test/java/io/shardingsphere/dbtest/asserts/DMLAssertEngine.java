@@ -20,7 +20,7 @@ package io.shardingsphere.dbtest.asserts;
 import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
 import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
 import io.shardingsphere.dbtest.common.DatabaseUtil;
-import io.shardingsphere.dbtest.config.bean.dml.DMLIntegrateTestCaseAssertion;
+import io.shardingsphere.dbtest.config.assertion.dml.DMLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.config.dataset.init.DataSetsRoot;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.test.sql.SQLCaseType;

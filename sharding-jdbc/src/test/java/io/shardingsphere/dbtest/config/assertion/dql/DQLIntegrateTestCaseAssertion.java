@@ -15,21 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.config.bean.dml;
+package io.shardingsphere.dbtest.config.assertion.dql;
 
-import io.shardingsphere.dbtest.config.bean.IntegrateTestCaseAssertion;
-import lombok.Getter;
-
-import javax.xml.bind.annotation.XmlAttribute;
+import io.shardingsphere.dbtest.config.assertion.IntegrateTestCaseAssertion;
 
 /**
- * JAXB definition of DML integrate test case assertion.
+ * JAXB definition of DQL integrate test case assertion.
  *
  * @author zhangliang
  */
-@Getter
-public final class DMLIntegrateTestCaseAssertion extends IntegrateTestCaseAssertion {
-    
-    @XmlAttribute(name = "expected-update")
-    private int expectedUpdate;
+public final class DQLIntegrateTestCaseAssertion extends IntegrateTestCaseAssertion {
 }

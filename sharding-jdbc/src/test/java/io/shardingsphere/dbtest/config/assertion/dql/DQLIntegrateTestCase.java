@@ -15,9 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.config.bean.dql;
+package io.shardingsphere.dbtest.config.assertion.dql;
 
-import io.shardingsphere.dbtest.config.bean.IntegrateTestCase;
+import io.shardingsphere.dbtest.config.assertion.IntegrateTestCase;
 import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlElement;

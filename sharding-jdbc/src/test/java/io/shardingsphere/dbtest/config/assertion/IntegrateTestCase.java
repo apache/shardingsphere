@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.config.bean;
+package io.shardingsphere.dbtest.config.assertion;
 
 import com.google.common.base.Joiner;
 import io.shardingsphere.core.constant.DatabaseType;

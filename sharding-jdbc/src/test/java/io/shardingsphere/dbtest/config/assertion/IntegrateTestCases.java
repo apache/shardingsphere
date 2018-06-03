@@ -15,11 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.config.bean;
+package io.shardingsphere.dbtest.config.assertion;
 
-import io.shardingsphere.dbtest.config.bean.ddl.DDLIntegrateTestCase;
-import io.shardingsphere.dbtest.config.bean.dml.DMLIntegrateTestCase;
-import io.shardingsphere.dbtest.config.bean.dql.DQLIntegrateTestCase;
+import io.shardingsphere.dbtest.config.assertion.ddl.DDLIntegrateTestCase;
+import io.shardingsphere.dbtest.config.assertion.dml.DMLIntegrateTestCase;
+import io.shardingsphere.dbtest.config.assertion.dql.DQLIntegrateTestCase;
 import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlElement;
