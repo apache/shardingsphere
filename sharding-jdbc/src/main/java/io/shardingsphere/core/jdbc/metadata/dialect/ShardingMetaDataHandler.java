@@ -26,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -50,12 +49,13 @@ public abstract class ShardingMetaDataHandler {
      * @throws SQLException SQL exception
      */
     public TableMetaData getTableMetaData() throws SQLException {
+        TableMetaData result = new TableMetaData();
         try (Connection connection = dataSource.getConnection()) {
             if (isTableExist(connection)) {
-                return new TableMetaData(getExistColumnMeta(connection));
+                result.getColumnMetaData().addAll(getExistColumnMeta(connection));
             }
         }
-        return new TableMetaData(new ArrayList<ColumnMetaData>());
+        return result;
     }
 
     /**
@@ -66,10 +66,11 @@ public abstract class ShardingMetaDataHandler {
      * @throws SQLException SQL exception
      */
     public TableMetaData getTableMetaData(final Connection connection) throws SQLException {
+        TableMetaData result = new TableMetaData();
         if (isTableExist(connection)) {
-            return new TableMetaData(getExistColumnMeta(connection));
+            result.getColumnMetaData().addAll(getExistColumnMeta(connection));
         }
-        return new TableMetaData(new ArrayList<ColumnMetaData>());
+        return result;
     }
 
     /**
