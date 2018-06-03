@@ -40,7 +40,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -207,7 +207,7 @@ public abstract class AbstractSelectParser implements SQLParser {
             }
             Optional<TableMetaData> tableMetaDataOptional = tableOptionalOfStarSelectItem.isPresent()
                     ? Optional.fromNullable(shardingMetaData.getTableMetaDataMap().get(tableOptionalOfStarSelectItem.get().getName())) : Optional.<TableMetaData>absent();
-            List<String> columnNames = tableMetaDataOptional.isPresent() ? tableMetaDataOptional.get().getAllColumnNames() : new ArrayList<String>();
+            Collection<String> columnNames = tableMetaDataOptional.isPresent() ? tableMetaDataOptional.get().getAllColumnNames() : new LinkedList<String>();
             if (columnNames.contains(orderItem.getName().get().toUpperCase()) || columnNames.contains(orderItem.getName().get().toLowerCase())) {
                 return true;
             }
