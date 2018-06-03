@@ -50,6 +50,8 @@ import java.util.Map;
 @Slf4j
 public final class IntegrateTestCasesLoader {
     
+    private static final String INTEGRATE_TEST_CASES_FILE_PREFIX = "integrate-test-cases";
+    
     private static final IntegrateTestCasesLoader INSTANCE = new IntegrateTestCasesLoader();
     
     @Getter
@@ -113,7 +115,7 @@ public final class IntegrateTestCasesLoader {
             
             @Override
             public FileVisitResult visitFile(final Path file, final BasicFileAttributes basicFileAttributes) {
-                if (file.getFileName().toString().startsWith("assert-") && file.getFileName().toString().endsWith(".xml")) {
+                if (file.getFileName().toString().startsWith(INTEGRATE_TEST_CASES_FILE_PREFIX) && file.getFileName().toString().endsWith(".xml")) {
                     result.add(file.toFile().getPath());
                 }
                 return FileVisitResult.CONTINUE;
