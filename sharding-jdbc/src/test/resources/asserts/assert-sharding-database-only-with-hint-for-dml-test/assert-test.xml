@@ -1,21 +1,21 @@
 <integrate-test-cases>
    <dml-test-case sql-case-id="assertInsertWithAllPlaceholders">
-        <dml-sub-assert sharding-rule-type="db" parameters="1:int, 1:int, insert:String" expected-update="1" expected-data-file="insert.xml" />
+        <assertion sharding-rule-type="db" parameters="1:int, 1:int, insert:String" expected-update="1" expected-data-file="insert.xml" />
     </dml-test-case>
     
     <dml-test-case sql-case-id="assertInsertWithoutPlaceholder">
-        <dml-sub-assert sharding-rule-type="db" parameters="1:int, 1:int" expected-update="1" expected-data-file="insert.xml" />
+        <assertion sharding-rule-type="db" parameters="1:int, 1:int" expected-update="1" expected-data-file="insert.xml" />
     </dml-test-case>
     
     <dml-test-case sql-case-id="assertUpdateWithoutAlias">
-        <dml-sub-assert sharding-rule-type="db" parameters="update:String, 1000:int, 10:int" expected-update="1" expected-data-file="update.xml" />
+        <assertion sharding-rule-type="db" parameters="update:String, 1000:int, 10:int" expected-update="1" expected-data-file="update.xml" />
     </dml-test-case>
     
     <dml-test-case sql-case-id="assertUpdateWithAlias" database-types="MySQL,H2">
-        <dml-sub-assert sharding-rule-type="db" parameters="update:String, 1000:int, 10:int" expected-update="1" expected-data-file="update.xml" />
+        <assertion sharding-rule-type="db" parameters="update:String, 1000:int, 10:int" expected-update="1" expected-data-file="update.xml" />
     </dml-test-case>
     
     <dml-test-case sql-case-id="assertDeleteWithShardingValue">
-        <dml-sub-assert sharding-rule-type="db" parameters="1000:int, 10:int, init:String" expected-update="1" expected-data-file="delete.xml" />
+        <assertion sharding-rule-type="db" parameters="1000:int, 10:int, init:String" expected-update="1" expected-data-file="delete.xml" />
     </dml-test-case>
 </integrate-test-cases>

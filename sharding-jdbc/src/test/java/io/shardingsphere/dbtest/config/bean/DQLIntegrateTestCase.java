@@ -31,6 +31,6 @@ import java.util.List;
 @Getter
 public class DQLIntegrateTestCase extends IntegrateTestCase {
     
-    @XmlElement(name = "dql-sub-assert")
+    @XmlElement(name = "assertion")
     private List<DQLIntegrateTestCaseAssertion> integrateTestCaseAssertions = new LinkedList<>();
 }

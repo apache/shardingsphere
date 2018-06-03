@@ -31,6 +31,6 @@ import java.util.List;
 @Getter
 public class DMLIntegrateTestCase extends IntegrateTestCase {
     
-    @XmlElement(name = "dml-sub-assert")
+    @XmlElement(name = "assertion")
     private List<DMLIntegrateTestCaseAssertion> integrateTestCaseAssertions = new LinkedList<>();
 }
