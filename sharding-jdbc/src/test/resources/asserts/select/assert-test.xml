@@ -1,4 +1,4 @@
-<test-cases>
+<integrate-test-cases>
     <dql-test-case sql-case-id="assertSelectOne">
         <dql-sub-assert sharding-rule-type="db" expected-data-file="SelectOne.xml" />
         <dql-sub-assert sharding-rule-type="tbl" expected-data-file="SelectOne.xml" />
@@ -50,4 +50,4 @@
         <dql-sub-assert sharding-rule-type="db" parameters="10:int, 12:int, 1309:int, 1408:int" expected-data-file="Empty.xml" />
         <dql-sub-assert sharding-rule-type="dbtbl" parameters="10:int, 12:int, 1309:int, 1408:int" expected-data-file="Empty.xml" />
     </dql-test-case>-->
-</test-cases>
+</integrate-test-cases>

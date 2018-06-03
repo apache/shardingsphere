@@ -1,4 +1,4 @@
-<test-cases>
+<integrate-test-cases>
    <dml-test-case sql-case-id="assertInsertWithAllPlaceholders">
         <dml-sub-assert sharding-rule-type="db" parameters="1:int, 1:int, insert:String" expected-update="1" expected-data-file="insert.xml" />
     </dml-test-case>
@@ -18,4 +18,4 @@
     <dml-test-case sql-case-id="assertDeleteWithShardingValue">
         <dml-sub-assert sharding-rule-type="db" parameters="1000:int, 10:int, init:String" expected-update="1" expected-data-file="delete.xml" />
     </dml-test-case>
-</test-cases>
+</integrate-test-cases>

@@ -25,8 +25,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Getter
-@XmlRootElement(name = "test-cases")
-public class DataSetsAssert {
+@XmlRootElement(name = "integrate-test-cases")
+public class IntegrateTestCases {
     
     @XmlElement(name = "dql-test-case")
     private List<DQLDataSetAssert> dqlDataSetAsserts = new LinkedList<>();

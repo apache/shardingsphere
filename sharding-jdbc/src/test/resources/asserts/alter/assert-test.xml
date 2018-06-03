@@ -1,4 +1,4 @@
-<test-cases>
+<integrate-test-cases>
     <ddl-test-case sql-case-id="assertAlterTable">
         <ddl-sub-assert sharding-rule-type="db" init-sql="CREATE TABLE t_log(id int, status varchar(10))" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="t_order_update.xml" />
         <ddl-sub-assert sharding-rule-type="tbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="t_order_update.xml" />
@@ -10,4 +10,4 @@
         <ddl-sub-assert sharding-rule-type="tbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="t_order_update.xml" />
         <ddl-sub-assert sharding-rule-type="dbtbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" clean-sql="DROP TABLE t_log" table="t_log" expected-data-file="t_order_update.xml" />
     </ddl-test-case>
-</test-cases>
+</integrate-test-cases>

@@ -25,7 +25,7 @@ import io.shardingsphere.dbtest.config.bean.DMLSubAssert;
 import io.shardingsphere.dbtest.config.bean.DQLDataSetAssert;
 import io.shardingsphere.dbtest.config.bean.DQLSubAssert;
 import io.shardingsphere.dbtest.config.bean.DataSetAssert;
-import io.shardingsphere.dbtest.config.bean.DataSetsAssert;
+import io.shardingsphere.dbtest.config.bean.IntegrateTestCases;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -95,12 +95,12 @@ public final class DataSetAssertLoader {
     }
     
     private Map<String, DataSetAssert> loadDataSetAssert(final String file) throws IOException, JAXBException {
-        DataSetsAssert dataSetsAssert = unmarshal(file);
+        IntegrateTestCases integrateTestCases = unmarshal(file);
         Map<String, DataSetAssert> result = new HashMap<>(
-                dataSetsAssert.getDqlDataSetAsserts().size() + dataSetsAssert.getDmlDataSetAsserts().size() + dataSetsAssert.getDdlDataSetAsserts().size(), 1);
-        result.putAll(loadDataSetAssert(file, dataSetsAssert.getDqlDataSetAsserts()));
-        result.putAll(loadDataSetAssert(file, dataSetsAssert.getDmlDataSetAsserts()));
-        result.putAll(loadDataSetAssert(file, dataSetsAssert.getDdlDataSetAsserts()));
+                integrateTestCases.getDqlDataSetAsserts().size() + integrateTestCases.getDmlDataSetAsserts().size() + integrateTestCases.getDdlDataSetAsserts().size(), 1);
+        result.putAll(loadDataSetAssert(file, integrateTestCases.getDqlDataSetAsserts()));
+        result.putAll(loadDataSetAssert(file, integrateTestCases.getDmlDataSetAsserts()));
+        result.putAll(loadDataSetAssert(file, integrateTestCases.getDdlDataSetAsserts()));
         return result;
     }
     
@@ -147,9 +147,9 @@ public final class DataSetAssertLoader {
         return result;
     }
     
-    private static DataSetsAssert unmarshal(final String assertFilePath) throws IOException, JAXBException {
+    private static IntegrateTestCases unmarshal(final String assertFilePath) throws IOException, JAXBException {
         try (FileReader reader = new FileReader(assertFilePath)) {
-            return (DataSetsAssert) JAXBContext.newInstance(DataSetsAssert.class).createUnmarshaller().unmarshal(reader);
+            return (IntegrateTestCases) JAXBContext.newInstance(IntegrateTestCases.class).createUnmarshaller().unmarshal(reader);
         }
     }
     
