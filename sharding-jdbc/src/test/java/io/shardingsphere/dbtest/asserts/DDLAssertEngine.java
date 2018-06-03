@@ -42,7 +42,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -60,7 +59,7 @@ public final class DDLAssertEngine {
     
     private final String sql;
     
-    private final String rootPath;
+    private final String expectedDataFile;
     
     public DDLAssertEngine(final String sqlCaseId, final String path, final DDLSubAssert ddlSubAssert, final Map<String, DataSource> dataSourceMap,
                            final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, SQLException {
@@ -70,7 +69,7 @@ public final class DDLAssertEngine {
         this.caseType = caseType;
         dataSource = createDataSource(dataSourceMap);
         sql = SQLCasesLoader.getInstance().getSupportedSQL(sqlCaseId);
-        rootPath = path.substring(0, path.lastIndexOf(File.separator) + 1);
+        expectedDataFile = path.substring(0, path.lastIndexOf(File.separator) + 1) + "asserts/ddl/" + ddlSubAssert.getExpectedDataFile();
     }
     
     private DataSource createDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException, IOException {
@@ -82,28 +81,14 @@ public final class DDLAssertEngine {
     /**
      * Assert DDL.
      */
-    public void assertDDL() throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
-        String expectedDataFile = rootPath + "asserts/ddl/" + shardingRuleType + "/" + ddlSubAssert.getExpectedDataFile();
-        if (!new File(expectedDataFile).exists()) {
-            expectedDataFile = rootPath + "asserts/ddl/" + ddlSubAssert.getExpectedDataFile();
-        }
-        String expectedDataFileSub = ddlSubAssert.getExpectedDataFile();
-        String expectedDataFileTmp = expectedDataFile;
-        if (StringUtils.isBlank(expectedDataFileSub)) {
-            expectedDataFileSub = ddlSubAssert.getExpectedDataFile();
-        } else {
-            expectedDataFileTmp = rootPath + "asserts/ddl/" + shardingRuleType + "/" + expectedDataFileSub;
-            if (!new File(expectedDataFileTmp).exists()) {
-                expectedDataFileTmp = rootPath + "asserts/ddl/" + expectedDataFileSub;
-            }
-        }
-        doUpdateUseStatementToExecuteUpdate(expectedDataFileTmp);
-        doUpdateUseStatementToExecute(expectedDataFileTmp);
-        doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFileTmp);
-        doUpdateUsePreparedStatementToExecute(expectedDataFileTmp);
+    public void assertDDL() throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
+        doUpdateUseStatementToExecuteUpdate();
+        doUpdateUseStatementToExecute();
+        doUpdateUsePreparedStatementToExecuteUpdate();
+        doUpdateUsePreparedStatementToExecute();
     }
     
-    private void doUpdateUsePreparedStatementToExecute(final String expectedDataFile) throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException, ParseException {
+    private void doUpdateUsePreparedStatementToExecute() throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
         try {
             try (Connection connection = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(ddlSubAssert.getCleanSql())) {
@@ -130,8 +115,7 @@ public final class DDLAssertEngine {
         }
     }
     
-    private void doUpdateUsePreparedStatementToExecuteUpdate(final String expectedDataFile) 
-            throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
+    private void doUpdateUsePreparedStatementToExecuteUpdate() throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
         try {
             try (Connection connection = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(ddlSubAssert.getCleanSql())) {
@@ -158,8 +142,7 @@ public final class DDLAssertEngine {
         }
     }
     
-    private void doUpdateUseStatementToExecute(final String expectedDataFile) 
-            throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
+    private void doUpdateUseStatementToExecute() throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
         try {
             try (Connection connection = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(ddlSubAssert.getCleanSql())) {
@@ -186,8 +169,7 @@ public final class DDLAssertEngine {
         }
     }
     
-    private void doUpdateUseStatementToExecuteUpdate(final String expectedDataFile) 
-            throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
+    private void doUpdateUseStatementToExecuteUpdate() throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
         try {
             try (Connection connection = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(ddlSubAssert.getCleanSql())) {
