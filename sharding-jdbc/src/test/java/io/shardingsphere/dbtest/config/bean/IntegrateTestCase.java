@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Integrate test case.
+ * JAXB definition of integrate test case.
  * 
  * @author zhangliang 
  */
@@ -48,11 +48,11 @@ public abstract class IntegrateTestCase {
     private String path;
     
     /**
-     * Get sub asserts.
+     * Get integrate test case assertions.
      * 
-     * @return sub asserts
+     * @return integrate test case assertions
      */
-    public abstract List<? extends SubAssert> getSubAsserts();
+    public abstract List<? extends IntegrateTestCaseAssertion> getIntegrateTestCaseAssertions();
     
     /**
      * Get sharding rule types.
@@ -61,7 +61,7 @@ public abstract class IntegrateTestCase {
      */
     public final Set<String> getShardingRuleTypes() {
         Set<String> result = new HashSet<>();
-        for (SubAssert each : getSubAsserts()) {
+        for (IntegrateTestCaseAssertion each : getIntegrateTestCaseAssertions()) {
             result.add(each.getShardingRuleType());
         }
         return result;

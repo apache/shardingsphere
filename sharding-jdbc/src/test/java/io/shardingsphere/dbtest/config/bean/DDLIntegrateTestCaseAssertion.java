@@ -21,8 +21,13 @@ import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
+/**
+ * JAXB definition of DDL integrate test case assertion.
+ * 
+ * @author zhangliang 
+ */
 @Getter
-public class DDLSubAssert extends SubAssert {
+public class DDLIntegrateTestCaseAssertion extends IntegrateTestCaseAssertion {
     
     @XmlAttribute(name = "init-sql")
     private String initSql;

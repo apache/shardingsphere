@@ -25,11 +25,11 @@ import io.shardingsphere.dbtest.asserts.DQLAssertEngine;
 import io.shardingsphere.dbtest.asserts.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.asserts.DataSetEnvironmentManager;
 import io.shardingsphere.dbtest.config.bean.DDLIntegrateTestCase;
-import io.shardingsphere.dbtest.config.bean.DDLSubAssert;
+import io.shardingsphere.dbtest.config.bean.DDLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.config.bean.DMLIntegrateTestCase;
-import io.shardingsphere.dbtest.config.bean.DMLSubAssert;
+import io.shardingsphere.dbtest.config.bean.DMLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.config.bean.DQLIntegrateTestCase;
-import io.shardingsphere.dbtest.config.bean.DQLSubAssert;
+import io.shardingsphere.dbtest.config.bean.DQLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.config.bean.IntegrateTestCase;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
@@ -130,7 +130,7 @@ public final class StartTest {
                 continue;
             }
             if (integrateTestCase instanceof DQLIntegrateTestCase) {
-                for (DQLSubAssert dqlSubAssert : ((DQLIntegrateTestCase) integrateTestCase).getSubAsserts()) {
+                for (DQLIntegrateTestCaseAssertion dqlSubAssert : ((DQLIntegrateTestCase) integrateTestCase).getIntegrateTestCaseAssertions()) {
                     Object[] data = new Object[6];
                     data[0] = integrateTestCase.getSqlCaseId();
                     data[1] = integrateTestCase.getPath();
@@ -141,7 +141,7 @@ public final class StartTest {
                     result.add(data);
                 }
             } else if (integrateTestCase instanceof DMLIntegrateTestCase) {
-                for (DMLSubAssert dmlSubAssert : ((DMLIntegrateTestCase) integrateTestCase).getSubAsserts()) {
+                for (DMLIntegrateTestCaseAssertion dmlSubAssert : ((DMLIntegrateTestCase) integrateTestCase).getIntegrateTestCaseAssertions()) {
                     Object[] data = new Object[6];
                     data[0] = integrateTestCase.getSqlCaseId();
                     data[1] = integrateTestCase.getPath();
@@ -152,7 +152,7 @@ public final class StartTest {
                     result.add(data);
                 }
             } else if (integrateTestCase instanceof DDLIntegrateTestCase) {
-                for (DDLSubAssert ddlSubAssert : ((DDLIntegrateTestCase) integrateTestCase).getSubAsserts()) {
+                for (DDLIntegrateTestCaseAssertion ddlSubAssert : ((DDLIntegrateTestCase) integrateTestCase).getIntegrateTestCaseAssertions()) {
                     Object[] data = new Object[6];
                     data[0] = integrateTestCase.getSqlCaseId();
                     data[1] = integrateTestCase.getPath();
@@ -221,12 +221,12 @@ public final class StartTest {
         if (!databaseTypeEnvironment.isEnabled()) {
             return;
         }
-        if (dataSetAssert instanceof DQLSubAssert) {
-            new DQLAssertEngine(sqlCaseId, path, (DQLSubAssert) dataSetAssert, dataSourceMap, shardingRuleType, caseType).assertDQL();
-        } else if (dataSetAssert instanceof DMLSubAssert) {
-            new DMLAssertEngine(sqlCaseId, path, dataSetEnvironmentManager, (DMLSubAssert) dataSetAssert, dataSourceMap, shardingRuleType, caseType).assertDML();
+        if (dataSetAssert instanceof DQLIntegrateTestCaseAssertion) {
+            new DQLAssertEngine(sqlCaseId, path, (DQLIntegrateTestCaseAssertion) dataSetAssert, dataSourceMap, shardingRuleType, caseType).assertDQL();
+        } else if (dataSetAssert instanceof DMLIntegrateTestCaseAssertion) {
+            new DMLAssertEngine(sqlCaseId, path, dataSetEnvironmentManager, (DMLIntegrateTestCaseAssertion) dataSetAssert, dataSourceMap, shardingRuleType, caseType).assertDML();
         } else {
-            new DDLAssertEngine(sqlCaseId, path, (DDLSubAssert) dataSetAssert, dataSourceMap, shardingRuleType, databaseTypeEnvironment, caseType).assertDDL();
+            new DDLAssertEngine(sqlCaseId, path, (DDLIntegrateTestCaseAssertion) dataSetAssert, dataSourceMap, shardingRuleType, databaseTypeEnvironment, caseType).assertDDL();
         }
     }
 }

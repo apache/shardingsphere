@@ -30,9 +30,14 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * JAXB definition of integrate test case assertion.
+ * 
+ * @author zhangliang 
+ */
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
-public abstract class SubAssert {
+public abstract class IntegrateTestCaseAssertion {
     
     @XmlAttribute(name = "sharding-rule-type")
     private String shardingRuleType;

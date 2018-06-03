@@ -23,9 +23,14 @@ import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * JAXB definition of DQL integrate test case.
+ *
+ * @author zhangliang
+ */
 @Getter
 public class DQLIntegrateTestCase extends IntegrateTestCase {
     
     @XmlElement(name = "dql-sub-assert")
-    private List<DQLSubAssert> subAsserts = new LinkedList<>();
+    private List<DQLIntegrateTestCaseAssertion> integrateTestCaseAssertions = new LinkedList<>();
 }

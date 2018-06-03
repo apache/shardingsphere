@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
 import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
 import io.shardingsphere.dbtest.common.DatabaseUtil;
-import io.shardingsphere.dbtest.config.bean.DDLSubAssert;
+import io.shardingsphere.dbtest.config.bean.DDLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.config.dataset.expected.metadata.ExpectedColumn;
 import io.shardingsphere.dbtest.config.dataset.expected.metadata.ExpectedMetadataRoot;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
@@ -46,7 +46,7 @@ import java.util.Map;
 
 public final class DDLAssertEngine {
     
-    private final DDLSubAssert ddlSubAssert;
+    private final DDLIntegrateTestCaseAssertion integrateTestCaseAssertion;
     
     private final String shardingRuleType;
     
@@ -60,15 +60,15 @@ public final class DDLAssertEngine {
     
     private final String expectedDataFile;
     
-    public DDLAssertEngine(final String sqlCaseId, final String path, final DDLSubAssert ddlSubAssert, final Map<String, DataSource> dataSourceMap,
+    public DDLAssertEngine(final String sqlCaseId, final String path, final DDLIntegrateTestCaseAssertion integrateTestCaseAssertion, final Map<String, DataSource> dataSourceMap,
                            final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, SQLException {
-        this.ddlSubAssert = ddlSubAssert;
+        this.integrateTestCaseAssertion = integrateTestCaseAssertion;
         this.shardingRuleType = shardingRuleType;
         this.databaseTypeEnvironment = databaseTypeEnvironment;
         this.caseType = caseType;
         dataSource = createDataSource(dataSourceMap);
         sql = SQLCasesLoader.getInstance().getSupportedSQL(sqlCaseId);
-        expectedDataFile = path.substring(0, path.lastIndexOf(File.separator) + 1) + "asserts/ddl/" + ddlSubAssert.getExpectedDataFile();
+        expectedDataFile = path.substring(0, path.lastIndexOf(File.separator) + 1) + "asserts/ddl/" + integrateTestCaseAssertion.getExpectedDataFile();
     }
     
     private DataSource createDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException, IOException {
@@ -94,11 +94,11 @@ public final class DDLAssertEngine {
     private void assertExecuteUpdateForPreparedStatement() throws SQLException, IOException, JAXBException {
         try {
             try (Connection connection = dataSource.getConnection()) {
-                if (StringUtils.isNotBlank(ddlSubAssert.getCleanSql())) {
-                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), ddlSubAssert.getCleanSql());
+                if (StringUtils.isNotBlank(integrateTestCaseAssertion.getCleanSql())) {
+                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getCleanSql());
                 }
-                if (StringUtils.isNotBlank(ddlSubAssert.getInitSql())) {
-                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), ddlSubAssert.getInitSql());
+                if (StringUtils.isNotBlank(integrateTestCaseAssertion.getInitSql())) {
+                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getInitSql());
                 }
                 try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
                     preparedStatement.executeUpdate();
@@ -106,11 +106,11 @@ public final class DDLAssertEngine {
                 assertMetadata(connection);
             }
         } finally {
-            if (StringUtils.isNotBlank(ddlSubAssert.getCleanSql())) {
-                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), ddlSubAssert.getCleanSql());
+            if (StringUtils.isNotBlank(integrateTestCaseAssertion.getCleanSql())) {
+                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getCleanSql());
             }
-            if (StringUtils.isNotBlank(ddlSubAssert.getInitSql())) {
-                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), ddlSubAssert.getInitSql());
+            if (StringUtils.isNotBlank(integrateTestCaseAssertion.getInitSql())) {
+                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getInitSql());
             }
         }
     }
@@ -118,11 +118,11 @@ public final class DDLAssertEngine {
     private void assertExecuteForPreparedStatement() throws SQLException, IOException, JAXBException {
         try {
             try (Connection connection = dataSource.getConnection()) {
-                if (StringUtils.isNotBlank(ddlSubAssert.getCleanSql())) {
-                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), ddlSubAssert.getCleanSql());
+                if (StringUtils.isNotBlank(integrateTestCaseAssertion.getCleanSql())) {
+                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getCleanSql());
                 }
-                if (StringUtils.isNotBlank(ddlSubAssert.getInitSql())) {
-                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), ddlSubAssert.getInitSql());
+                if (StringUtils.isNotBlank(integrateTestCaseAssertion.getInitSql())) {
+                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getInitSql());
                 }
                 try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
                     preparedStatement.execute();
@@ -130,11 +130,11 @@ public final class DDLAssertEngine {
                 assertMetadata(connection);
             }
         } finally {
-            if (StringUtils.isNotBlank(ddlSubAssert.getCleanSql())) {
-                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), ddlSubAssert.getCleanSql());
+            if (StringUtils.isNotBlank(integrateTestCaseAssertion.getCleanSql())) {
+                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getCleanSql());
             }
-            if (StringUtils.isNotBlank(ddlSubAssert.getInitSql())) {
-                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), ddlSubAssert.getInitSql());
+            if (StringUtils.isNotBlank(integrateTestCaseAssertion.getInitSql())) {
+                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getInitSql());
             }
         }
     }
@@ -142,11 +142,11 @@ public final class DDLAssertEngine {
     private void assertExecuteUpdateForStatement() throws SQLException, IOException, JAXBException {
         try {
             try (Connection connection = dataSource.getConnection()) {
-                if (StringUtils.isNotBlank(ddlSubAssert.getCleanSql())) {
-                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), ddlSubAssert.getCleanSql());
+                if (StringUtils.isNotBlank(integrateTestCaseAssertion.getCleanSql())) {
+                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getCleanSql());
                 }
-                if (StringUtils.isNotBlank(ddlSubAssert.getInitSql())) {
-                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), ddlSubAssert.getInitSql());
+                if (StringUtils.isNotBlank(integrateTestCaseAssertion.getInitSql())) {
+                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getInitSql());
                 }
                 try (Statement statement = connection.createStatement()) {
                     statement.executeUpdate(sql);
@@ -154,11 +154,11 @@ public final class DDLAssertEngine {
                 assertMetadata(connection);
             }
         } finally {
-            if (!Strings.isNullOrEmpty(ddlSubAssert.getCleanSql())) {
-                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), ddlSubAssert.getCleanSql());
+            if (!Strings.isNullOrEmpty(integrateTestCaseAssertion.getCleanSql())) {
+                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getCleanSql());
             }
-            if (!Strings.isNullOrEmpty(ddlSubAssert.getInitSql())) {
-                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), ddlSubAssert.getInitSql());
+            if (!Strings.isNullOrEmpty(integrateTestCaseAssertion.getInitSql())) {
+                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getInitSql());
             }
         }
     }
@@ -166,11 +166,11 @@ public final class DDLAssertEngine {
     private void assertExecuteForStatement() throws SQLException, IOException, JAXBException {
         try {
             try (Connection connection = dataSource.getConnection()) {
-                if (StringUtils.isNotBlank(ddlSubAssert.getCleanSql())) {
-                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), ddlSubAssert.getCleanSql());
+                if (StringUtils.isNotBlank(integrateTestCaseAssertion.getCleanSql())) {
+                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getCleanSql());
                 }
-                if (StringUtils.isNotBlank(ddlSubAssert.getInitSql())) {
-                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), ddlSubAssert.getInitSql());
+                if (StringUtils.isNotBlank(integrateTestCaseAssertion.getInitSql())) {
+                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getInitSql());
                 }
                 try (Statement statement = connection.createStatement()) {
                     statement.execute(sql);
@@ -178,11 +178,11 @@ public final class DDLAssertEngine {
                 assertMetadata(connection);
             }
         } finally {
-            if (!Strings.isNullOrEmpty(ddlSubAssert.getCleanSql())) {
-                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), ddlSubAssert.getCleanSql());
+            if (!Strings.isNullOrEmpty(integrateTestCaseAssertion.getCleanSql())) {
+                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getCleanSql());
             }
-            if (!Strings.isNullOrEmpty(ddlSubAssert.getInitSql())) {
-                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), ddlSubAssert.getInitSql());
+            if (!Strings.isNullOrEmpty(integrateTestCaseAssertion.getInitSql())) {
+                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getInitSql());
             }
         }
     }
@@ -192,7 +192,7 @@ public final class DDLAssertEngine {
         try (FileReader reader = new FileReader(expectedDataFile)) {
             expected = (ExpectedMetadataRoot) JAXBContext.newInstance(ExpectedMetadataRoot.class).createUnmarshaller().unmarshal(reader);
         }
-        String tableName = ddlSubAssert.getTable();
+        String tableName = integrateTestCaseAssertion.getTable();
         List<ExpectedColumn> actualColumns = DatabaseUtil.getExpectedColumns(connection, tableName);
         DatabaseUtil.assertConfigs(expected.find(tableName), actualColumns);
     }

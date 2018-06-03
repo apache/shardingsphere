@@ -17,5 +17,18 @@
 
 package io.shardingsphere.dbtest.config.bean;
 
-public final class DQLSubAssert extends SubAssert {
+import lombok.Getter;
+
+import javax.xml.bind.annotation.XmlAttribute;
+
+/**
+ * JAXB definition of DML integrate test case assertion.
+ *
+ * @author zhangliang
+ */
+@Getter
+public final class DMLIntegrateTestCaseAssertion extends IntegrateTestCaseAssertion {
+    
+    @XmlAttribute(name = "expected-update")
+    private int expectedUpdate;
 }
