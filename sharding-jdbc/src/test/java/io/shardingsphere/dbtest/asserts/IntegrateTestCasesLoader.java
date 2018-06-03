@@ -18,13 +18,13 @@
 package io.shardingsphere.dbtest.asserts;
 
 import com.google.common.base.Preconditions;
-import io.shardingsphere.dbtest.config.bean.DDLDataSetAssert;
+import io.shardingsphere.dbtest.config.bean.DDLIntegrateTestCase;
 import io.shardingsphere.dbtest.config.bean.DDLSubAssert;
-import io.shardingsphere.dbtest.config.bean.DMLDataSetAssert;
+import io.shardingsphere.dbtest.config.bean.DMLIntegrateTestCase;
 import io.shardingsphere.dbtest.config.bean.DMLSubAssert;
-import io.shardingsphere.dbtest.config.bean.DQLDataSetAssert;
+import io.shardingsphere.dbtest.config.bean.DQLIntegrateTestCase;
 import io.shardingsphere.dbtest.config.bean.DQLSubAssert;
-import io.shardingsphere.dbtest.config.bean.DataSetAssert;
+import io.shardingsphere.dbtest.config.bean.IntegrateTestCase;
 import io.shardingsphere.dbtest.config.bean.IntegrateTestCases;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -50,24 +50,24 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Data set assert loader.
+ * Integrate test cases loader.
  *
  * @author zhangliang
  */
 @Slf4j
-public final class DataSetAssertLoader {
+public final class IntegrateTestCasesLoader {
     
-    private static final DataSetAssertLoader INSTANCE = new DataSetAssertLoader();
+    private static final IntegrateTestCasesLoader INSTANCE = new IntegrateTestCasesLoader();
     
     @Getter
     private final Collection<String> shardingRuleTypes;
     
-    private final Map<String, DataSetAssert> dataSetAssertMap;
+    private final Map<String, IntegrateTestCase> dataSetAssertMap;
     
-    private DataSetAssertLoader() {
+    private IntegrateTestCasesLoader() {
         shardingRuleTypes = new HashSet<>();
         try {
-            dataSetAssertMap = loadDataSetAssert();
+            dataSetAssertMap = loadIntegrateTestCases();
         } catch (final IOException | URISyntaxException | JAXBException ex) {
             throw new RuntimeException(ex);
         }
@@ -78,52 +78,52 @@ public final class DataSetAssertLoader {
      *
      * @return singleton instance
      */
-    public static DataSetAssertLoader getInstance() {
+    public static IntegrateTestCasesLoader getInstance() {
         return INSTANCE;
     }
     
-    private Map<String, DataSetAssert> loadDataSetAssert() throws IOException, URISyntaxException, JAXBException {
-        URL url = DataSetAssertLoader.class.getClassLoader().getResource("asserts/");
+    private Map<String, IntegrateTestCase> loadIntegrateTestCases() throws IOException, URISyntaxException, JAXBException {
+        URL url = IntegrateTestCasesLoader.class.getClassLoader().getResource("asserts/");
         Preconditions.checkNotNull(url, "Cannot found integrate test cases.");
         List<String> files = getFiles(url);
         Preconditions.checkNotNull(files, "Cannot found integrate test cases.");
-        Map<String, DataSetAssert> result = new HashMap<>(Short.MAX_VALUE, 1);
+        Map<String, IntegrateTestCase> result = new HashMap<>(Short.MAX_VALUE, 1);
         for (String each : files) {
-            result.putAll(loadDataSetAssert(each));
+            result.putAll(loadIntegrateTestCases(each));
         }
         return result;
     }
     
-    private Map<String, DataSetAssert> loadDataSetAssert(final String file) throws IOException, JAXBException {
+    private Map<String, IntegrateTestCase> loadIntegrateTestCases(final String file) throws IOException, JAXBException {
         IntegrateTestCases integrateTestCases = unmarshal(file);
-        Map<String, DataSetAssert> result = new HashMap<>(
-                integrateTestCases.getDqlDataSetAsserts().size() + integrateTestCases.getDmlDataSetAsserts().size() + integrateTestCases.getDdlDataSetAsserts().size(), 1);
-        result.putAll(loadDataSetAssert(file, integrateTestCases.getDqlDataSetAsserts()));
-        result.putAll(loadDataSetAssert(file, integrateTestCases.getDmlDataSetAsserts()));
-        result.putAll(loadDataSetAssert(file, integrateTestCases.getDdlDataSetAsserts()));
+        Map<String, IntegrateTestCase> result = new HashMap<>(
+                integrateTestCases.getDqlIntegrateTestCases().size() + integrateTestCases.getDmlIntegrateTestCases().size() + integrateTestCases.getDdlIntegrateTestCases().size(), 1);
+        result.putAll(loadIntegrateTestCases(file, integrateTestCases.getDqlIntegrateTestCases()));
+        result.putAll(loadIntegrateTestCases(file, integrateTestCases.getDmlIntegrateTestCases()));
+        result.putAll(loadIntegrateTestCases(file, integrateTestCases.getDdlIntegrateTestCases()));
         return result;
     }
     
-    private Map<String, DataSetAssert> loadDataSetAssert(final String file, final List<? extends DataSetAssert> dataSetAsserts) {
-        Map<String, DataSetAssert> result = new HashMap<>(dataSetAsserts.size(), 1);
-        for (DataSetAssert each : dataSetAsserts) {
+    private Map<String, IntegrateTestCase> loadIntegrateTestCases(final String file, final List<? extends IntegrateTestCase> dataSetAsserts) {
+        Map<String, IntegrateTestCase> result = new HashMap<>(dataSetAsserts.size(), 1);
+        for (IntegrateTestCase each : dataSetAsserts) {
             result.put(each.getSqlCaseId(), each);
             each.setPath(file);
-            if (each instanceof DQLDataSetAssert) {
+            if (each instanceof DQLIntegrateTestCase) {
                 Set<String> set = new HashSet<>();
-                for (DQLSubAssert dqlSubAssert : ((DQLDataSetAssert) each).getSubAsserts()) {
+                for (DQLSubAssert dqlSubAssert : ((DQLIntegrateTestCase) each).getSubAsserts()) {
                     set.add(dqlSubAssert.getShardingRuleType());
                 }
                 shardingRuleTypes.addAll(set);
-            } else if (each instanceof DMLDataSetAssert) {
+            } else if (each instanceof DMLIntegrateTestCase) {
                 Set<String> set = new HashSet<>();
-                for (DMLSubAssert dmlSubAssert : ((DMLDataSetAssert) each).getSubAsserts()) {
+                for (DMLSubAssert dmlSubAssert : ((DMLIntegrateTestCase) each).getSubAsserts()) {
                     set.add(dmlSubAssert.getShardingRuleType());
                 }
                 shardingRuleTypes.addAll(set);
-            } else if (each instanceof DDLDataSetAssert) {
+            } else if (each instanceof DDLIntegrateTestCase) {
                 Set<String> set = new HashSet<>();
-                for (DDLSubAssert ddlSubAssert : ((DDLDataSetAssert) each).getSubAsserts()) {
+                for (DDLSubAssert ddlSubAssert : ((DDLIntegrateTestCase) each).getSubAsserts()) {
                     set.add(ddlSubAssert.getShardingRuleType());
                 }
                 shardingRuleTypes.addAll(set);
@@ -159,7 +159,7 @@ public final class DataSetAssertLoader {
      * @param sqlCaseId SQL case ID
      * @return data set assert
      */
-    public DataSetAssert getDataSetAssert(final String sqlCaseId) {
+    public IntegrateTestCase getIntegrateTestCase(final String sqlCaseId) {
         // TODO resume when transfer finished
 //        Preconditions.checkState(dataSetAssertMap.containsKey(sqlCaseId), "Can't find SQL of id: " + sqlCaseId);
         // TODO remove when transfer finished

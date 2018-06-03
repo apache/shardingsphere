@@ -24,16 +24,21 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * JAXB definition of integrate test cases.
+ * 
+ * @author zhangliang 
+ */
 @Getter
 @XmlRootElement(name = "integrate-test-cases")
 public class IntegrateTestCases {
     
     @XmlElement(name = "dql-test-case")
-    private List<DQLDataSetAssert> dqlDataSetAsserts = new LinkedList<>();
+    private List<DQLIntegrateTestCase> dqlIntegrateTestCases = new LinkedList<>();
     
     @XmlElement(name = "dml-test-case")
-    private List<DMLDataSetAssert> dmlDataSetAsserts = new LinkedList<>();
+    private List<DMLIntegrateTestCase> dmlIntegrateTestCases = new LinkedList<>();
     
     @XmlElement(name = "ddl-test-case")
-    private List<DDLDataSetAssert> ddlDataSetAsserts = new LinkedList<>();
+    private List<DDLIntegrateTestCase> ddlIntegrateTestCases = new LinkedList<>();
 }

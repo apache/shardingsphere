@@ -24,7 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Getter
-public class DMLDataSetAssert extends DataSetAssert {
+public class DMLIntegrateTestCase extends IntegrateTestCase {
     
     @XmlElement(name = "dml-sub-assert")
     private List<DMLSubAssert> subAsserts = new LinkedList<>();

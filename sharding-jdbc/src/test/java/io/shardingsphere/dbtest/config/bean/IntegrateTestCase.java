@@ -17,15 +17,30 @@
 
 package io.shardingsphere.dbtest.config.bean;
 
+import com.google.common.base.Joiner;
+import io.shardingsphere.core.constant.DatabaseType;
 import lombok.Getter;
+import lombok.Setter;
 
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
+/**
+ * Integrate test case.
+ * 
+ * @author zhangliang 
+ */
 @Getter
-public class DDLDataSetAssert extends DataSetAssert {
+@XmlAccessorType(XmlAccessType.FIELD)
+public abstract class IntegrateTestCase {
     
-    @XmlElement(name = "ddl-sub-assert")
-    private List<DDLSubAssert> subAsserts = new LinkedList<>();
+    @XmlAttribute(name = "sql-case-id")
+    private String sqlCaseId;
+    
+    @XmlAttribute(name = "database-types")
+    private String databaseTypes = Joiner.on(",").join(DatabaseType.values());
+    
+    @Setter
+    private String path;
 }
