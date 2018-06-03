@@ -24,11 +24,8 @@ import io.shardingsphere.dbtest.asserts.DMLAssertEngine;
 import io.shardingsphere.dbtest.asserts.DQLAssertEngine;
 import io.shardingsphere.dbtest.asserts.DataSetEnvironmentManager;
 import io.shardingsphere.dbtest.asserts.IntegrateTestCasesLoader;
-import io.shardingsphere.dbtest.config.bean.DDLIntegrateTestCase;
 import io.shardingsphere.dbtest.config.bean.DDLIntegrateTestCaseAssertion;
-import io.shardingsphere.dbtest.config.bean.DMLIntegrateTestCase;
 import io.shardingsphere.dbtest.config.bean.DMLIntegrateTestCaseAssertion;
-import io.shardingsphere.dbtest.config.bean.DQLIntegrateTestCase;
 import io.shardingsphere.dbtest.config.bean.DQLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.config.bean.IntegrateTestCase;
 import io.shardingsphere.dbtest.config.bean.IntegrateTestCaseAssertion;
@@ -130,39 +127,15 @@ public final class StartTest {
             if (!getDatabaseTypes(integrateTestCase.getDatabaseTypes()).contains(databaseType)) {
                 continue;
             }
-            if (integrateTestCase instanceof DQLIntegrateTestCase) {
-                for (DQLIntegrateTestCaseAssertion dqlSubAssert : ((DQLIntegrateTestCase) integrateTestCase).getIntegrateTestCaseAssertions()) {
-                    Object[] data = new Object[6];
-                    data[0] = integrateTestCase.getSqlCaseId();
-                    data[1] = integrateTestCase.getPath();
-                    data[2] = dqlSubAssert;
-                    data[3] = dqlSubAssert.getShardingRuleType();
-                    data[4] = new DatabaseTypeEnvironment(databaseType, IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType));
-                    data[5] = caseType;
-                    result.add(data);
-                }
-            } else if (integrateTestCase instanceof DMLIntegrateTestCase) {
-                for (DMLIntegrateTestCaseAssertion dmlSubAssert : ((DMLIntegrateTestCase) integrateTestCase).getIntegrateTestCaseAssertions()) {
-                    Object[] data = new Object[6];
-                    data[0] = integrateTestCase.getSqlCaseId();
-                    data[1] = integrateTestCase.getPath();
-                    data[2] = dmlSubAssert;
-                    data[3] = dmlSubAssert.getShardingRuleType();
-                    data[4] = new DatabaseTypeEnvironment(databaseType, IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType));
-                    data[5] = caseType;
-                    result.add(data);
-                }
-            } else if (integrateTestCase instanceof DDLIntegrateTestCase) {
-                for (DDLIntegrateTestCaseAssertion ddlSubAssert : ((DDLIntegrateTestCase) integrateTestCase).getIntegrateTestCaseAssertions()) {
-                    Object[] data = new Object[6];
-                    data[0] = integrateTestCase.getSqlCaseId();
-                    data[1] = integrateTestCase.getPath();
-                    data[2] = ddlSubAssert;
-                    data[3] = ddlSubAssert.getShardingRuleType();
-                    data[4] = new DatabaseTypeEnvironment(databaseType, IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType));
-                    data[5] = caseType;
-                    result.add(data);
-                }
+            for (IntegrateTestCaseAssertion assertion : integrateTestCase.getIntegrateTestCaseAssertions()) {
+                Object[] data = new Object[6];
+                data[0] = integrateTestCase.getSqlCaseId();
+                data[1] = integrateTestCase.getPath();
+                data[2] = assertion;
+                data[3] = assertion.getShardingRuleType();
+                data[4] = new DatabaseTypeEnvironment(databaseType, IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType));
+                data[5] = caseType;
+                result.add(data);
             }
         }
         return result;
