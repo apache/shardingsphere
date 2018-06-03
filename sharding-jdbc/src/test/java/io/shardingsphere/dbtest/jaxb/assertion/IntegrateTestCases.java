@@ -15,8 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.config.dataset.expected.metadata;
+package io.shardingsphere.dbtest.jaxb.assertion;
 
+import io.shardingsphere.dbtest.jaxb.assertion.ddl.DDLIntegrateTestCase;
+import io.shardingsphere.dbtest.jaxb.assertion.dml.DMLIntegrateTestCase;
+import io.shardingsphere.dbtest.jaxb.assertion.dql.DQLIntegrateTestCase;
 import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -24,25 +27,21 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * JAXB definition of integrate test cases.
+ * 
+ * @author zhangliang 
+ */
 @Getter
-@XmlRootElement(name = "datasets")
-public final class ExpectedMetadataRoot {
+@XmlRootElement(name = "integrate-test-cases")
+public class IntegrateTestCases {
     
-    @XmlElement(name = "metadata")
-    private List<ExpectedMetadata> metadataList = new LinkedList<>();
+    @XmlElement(name = "dql-test-case")
+    private List<DQLIntegrateTestCase> dqlIntegrateTestCases = new LinkedList<>();
     
-    /**
-     * Find expected metadata via table name.
-     * 
-     * @param tableName table name
-     * @return expected metadata
-     */
-    public ExpectedMetadata find(final String tableName) {
-        for (ExpectedMetadata each : metadataList) {
-            if (each.getTableName().equals(tableName)) {
-                return each;
-            }
-        }
-        throw new IllegalArgumentException(String.format("Cannot find expected metadata via table name: '%s'", tableName));
-    }
+    @XmlElement(name = "dml-test-case")
+    private List<DMLIntegrateTestCase> dmlIntegrateTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "ddl-test-case")
+    private List<DDLIntegrateTestCase> ddlIntegrateTestCases = new LinkedList<>();
 }

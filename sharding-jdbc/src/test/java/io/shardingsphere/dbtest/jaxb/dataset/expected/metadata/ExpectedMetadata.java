@@ -15,21 +15,26 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.config.assertion.dml;
+package io.shardingsphere.dbtest.jaxb.dataset.expected.metadata;
 
-import io.shardingsphere.dbtest.config.assertion.IntegrateTestCaseAssertion;
 import lombok.Getter;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.List;
 
-/**
- * JAXB definition of DML integrate test case assertion.
- *
- * @author zhangliang
- */
 @Getter
-public final class DMLIntegrateTestCaseAssertion extends IntegrateTestCaseAssertion {
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedMetadata {
     
-    @XmlAttribute(name = "expected-update")
-    private int expectedUpdate;
+    @XmlAttribute(name = "table")
+    private String tableName;
+    
+    @XmlElement(name = "column")
+    private List<ExpectedColumn> columns;
+    
+    @XmlElement(name = "index")
+    private List<ExpectedIndex> indexes;
 }

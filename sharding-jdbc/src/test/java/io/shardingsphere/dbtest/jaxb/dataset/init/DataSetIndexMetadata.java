@@ -15,23 +15,24 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.config.assertion.dml;
+package io.shardingsphere.dbtest.jaxb.dataset.init;
 
-import io.shardingsphere.dbtest.config.assertion.IntegrateTestCase;
 import lombok.Getter;
 
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
-/**
- * JAXB definition of DML integrate test case.
- *
- * @author zhangliang
- */
 @Getter
-public class DMLIntegrateTestCase extends IntegrateTestCase {
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class DataSetIndexMetadata {
     
-    @XmlElement(name = "assertion")
-    private List<DMLIntegrateTestCaseAssertion> integrateTestCaseAssertions = new LinkedList<>();
+    @XmlAttribute
+    private String name;
+    
+    @XmlAttribute
+    private String columns;
+    
+    @XmlAttribute
+    private boolean unique;
 }

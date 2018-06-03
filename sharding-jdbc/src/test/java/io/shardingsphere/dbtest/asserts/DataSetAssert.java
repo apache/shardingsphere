@@ -20,11 +20,11 @@ package io.shardingsphere.dbtest.asserts;
 import com.google.common.base.Splitter;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.util.InlineExpressionParser;
-import io.shardingsphere.dbtest.config.dataset.expected.dataset.ExpectedDataSetsRoot;
-import io.shardingsphere.dbtest.config.dataset.init.DataSetColumnMetadata;
-import io.shardingsphere.dbtest.config.dataset.init.DataSetMetadata;
-import io.shardingsphere.dbtest.config.dataset.init.DataSetRow;
-import io.shardingsphere.dbtest.config.dataset.init.DataSetsRoot;
+import io.shardingsphere.dbtest.jaxb.dataset.expected.dataset.ExpectedDataSetsRoot;
+import io.shardingsphere.dbtest.jaxb.dataset.init.DataSetColumnMetadata;
+import io.shardingsphere.dbtest.jaxb.dataset.init.DataSetMetadata;
+import io.shardingsphere.dbtest.jaxb.dataset.init.DataSetRow;
+import io.shardingsphere.dbtest.jaxb.dataset.init.DataSetsRoot;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;

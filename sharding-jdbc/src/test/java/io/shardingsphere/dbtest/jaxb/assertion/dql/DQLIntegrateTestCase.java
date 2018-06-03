@@ -15,18 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.config.dataset.expected.dataset;
+package io.shardingsphere.dbtest.jaxb.assertion.dql;
 
+import io.shardingsphere.dbtest.jaxb.assertion.IntegrateTestCase;
 import lombok.Getter;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
+/**
+ * JAXB definition of DQL integrate test case.
+ *
+ * @author zhangliang
+ */
 @Getter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedDataSetRow {
+public class DQLIntegrateTestCase extends IntegrateTestCase {
     
-    @XmlAttribute
-    private String values;
+    @XmlElement(name = "assertion")
+    private List<DQLIntegrateTestCaseAssertion> integrateTestCaseAssertions = new LinkedList<>();
 }

@@ -18,8 +18,8 @@
 package io.shardingsphere.dbtest.asserts;
 
 import com.google.common.base.Preconditions;
-import io.shardingsphere.dbtest.config.assertion.IntegrateTestCase;
-import io.shardingsphere.dbtest.config.assertion.IntegrateTestCases;
+import io.shardingsphere.dbtest.jaxb.assertion.IntegrateTestCase;
+import io.shardingsphere.dbtest.jaxb.assertion.IntegrateTestCases;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 

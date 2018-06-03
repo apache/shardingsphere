@@ -15,22 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.config.dataset.expected.dataset;
+package io.shardingsphere.dbtest.jaxb.assertion.dql;
 
-import lombok.Getter;
+import io.shardingsphere.dbtest.jaxb.assertion.IntegrateTestCaseAssertion;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.List;
-
-@Getter
-@XmlRootElement(name = "datasets")
-public final class ExpectedDataSetsRoot {
-    
-    @XmlElement
-    private ExpectedColumns columns;
-    
-    @XmlElement(name = "dataset")
-    private List<ExpectedDataSetRow> dataSetRows = new ArrayList<>();
+/**
+ * JAXB definition of DQL integrate test case assertion.
+ *
+ * @author zhangliang
+ */
+public final class DQLIntegrateTestCaseAssertion extends IntegrateTestCaseAssertion {
 }

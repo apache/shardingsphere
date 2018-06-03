@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.config.dataset.init;
+package io.shardingsphere.dbtest.jaxb.dataset.init;
 
 import lombok.Getter;
 

@@ -15,14 +15,27 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.config.assertion.dql;
+package io.shardingsphere.dbtest.jaxb.assertion.ddl;
 
-import io.shardingsphere.dbtest.config.assertion.IntegrateTestCaseAssertion;
+import io.shardingsphere.dbtest.jaxb.assertion.IntegrateTestCaseAssertion;
+import lombok.Getter;
+
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * JAXB definition of DQL integrate test case assertion.
- *
- * @author zhangliang
+ * JAXB definition of DDL integrate test case assertion.
+ * 
+ * @author zhangliang 
  */
-public final class DQLIntegrateTestCaseAssertion extends IntegrateTestCaseAssertion {
+@Getter
+public class DDLIntegrateTestCaseAssertion extends IntegrateTestCaseAssertion {
+    
+    @XmlAttribute(name = "init-sql")
+    private String initSql;
+    
+    @XmlAttribute(name = "clean-sql")
+    private String cleanSql;
+    
+    @XmlAttribute(name = "table")
+    private String table;
 }
