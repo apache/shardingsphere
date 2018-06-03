@@ -107,7 +107,7 @@ public final class DataSetAssertLoader {
     private Map<String, DataSetAssert> loadDataSetAssert(final String file, final List<? extends DataSetAssert> dataSetAsserts) {
         Map<String, DataSetAssert> result = new HashMap<>(dataSetAsserts.size(), 1);
         for (DataSetAssert each : dataSetAsserts) {
-            result.put(each.getId(), each);
+            result.put(each.getSqlCaseId(), each);
             each.setPath(file);
             if (each instanceof DQLDataSetAssert) {
                 Set<String> set = new HashSet<>();

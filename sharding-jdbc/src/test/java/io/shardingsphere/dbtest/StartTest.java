@@ -131,7 +131,7 @@ public final class StartTest {
             if (assertDefinition instanceof DQLDataSetAssert) {
                 for (DQLSubAssert dqlSubAssert : ((DQLDataSetAssert) assertDefinition).getSubAsserts()) {
                     Object[] data = new Object[6];
-                    data[0] = assertDefinition.getId();
+                    data[0] = assertDefinition.getSqlCaseId();
                     data[1] = assertDefinition.getPath();
                     data[2] = dqlSubAssert;
                     data[3] = dqlSubAssert.getShardingRuleType();
@@ -142,7 +142,7 @@ public final class StartTest {
             } else if (assertDefinition instanceof DMLDataSetAssert) {
                 for (DMLSubAssert dmlSubAssert : ((DMLDataSetAssert) assertDefinition).getSubAsserts()) {
                     Object[] data = new Object[6];
-                    data[0] = assertDefinition.getId();
+                    data[0] = assertDefinition.getSqlCaseId();
                     data[1] = assertDefinition.getPath();
                     data[2] = dmlSubAssert;
                     data[3] = dmlSubAssert.getShardingRuleType();
@@ -153,7 +153,7 @@ public final class StartTest {
             } else if (assertDefinition instanceof DDLDataSetAssert) {
                 for (DDLSubAssert ddlSubAssert : ((DDLDataSetAssert) assertDefinition).getSubAsserts()) {
                     Object[] data = new Object[6];
-                    data[0] = assertDefinition.getId();
+                    data[0] = assertDefinition.getSqlCaseId();
                     data[1] = assertDefinition.getPath();
                     data[2] = ddlSubAssert;
                     data[3] = ddlSubAssert.getShardingRuleType();

@@ -17,6 +17,8 @@
 
 package io.shardingsphere.dbtest.config.bean;
 
+import com.google.common.base.Joiner;
+import io.shardingsphere.core.constant.DatabaseType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -33,11 +35,11 @@ import javax.xml.bind.annotation.XmlAttribute;
 @XmlAccessorType(XmlAccessType.FIELD)
 public abstract class DataSetAssert {
     
-    @XmlAttribute(name = "id")
-    private String id;
+    @XmlAttribute(name = "sql-case-id")
+    private String sqlCaseId;
     
     @XmlAttribute(name = "database-types")
-    private String databaseTypes = "H2,MySQL,Oracle,SQLServer,PostgreSQL";
+    private String databaseTypes = Joiner.on(",").join(DatabaseType.values());
     
     @Setter
     private String path;
