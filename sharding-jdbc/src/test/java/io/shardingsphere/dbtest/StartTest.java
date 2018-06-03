@@ -23,8 +23,8 @@ import io.shardingsphere.dbtest.asserts.DMLAssertEngine;
 import io.shardingsphere.dbtest.asserts.DQLAssertEngine;
 import io.shardingsphere.dbtest.asserts.DataSetAssertLoader;
 import io.shardingsphere.dbtest.asserts.DataSetEnvironmentManager;
-import io.shardingsphere.dbtest.config.bean.DDLSubAssert;
 import io.shardingsphere.dbtest.config.bean.DDLDataSetAssert;
+import io.shardingsphere.dbtest.config.bean.DDLSubAssert;
 import io.shardingsphere.dbtest.config.bean.DMLDataSetAssert;
 import io.shardingsphere.dbtest.config.bean.DMLSubAssert;
 import io.shardingsphere.dbtest.config.bean.DQLDataSetAssert;
@@ -45,12 +45,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.xml.sax.SAXException;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -178,7 +175,6 @@ public final class StartTest {
     }
     
     @BeforeClass
-    // TODO ignore new test engine, because it is not completed yet, will continue to do it in 3.0.0.m2
     public static void createDatabasesAndTables() throws JAXBException, IOException {
         if (isInitialized) {
             isInitialized = false;
@@ -203,7 +199,6 @@ public final class StartTest {
     }
     
     @AfterClass
-    // TODO add tearDown for temporary, will remove when original integrate test removed.
     public static void dropDatabases() throws JAXBException, IOException {
         if (isCleaned) {
             for (String each : dataSetAssertLoader.getShardingRuleTypes()) {
@@ -221,8 +216,7 @@ public final class StartTest {
     }
     
     @Test
-    // TODO ignore new test engine, because it is not completed yet, will continue to do it in 3.0.0.m2
-    public void test() throws JAXBException, SAXException, ParseException, IOException, XPathExpressionException, SQLException, ParserConfigurationException {
+    public void test() throws JAXBException, ParseException, IOException, SQLException {
         if (!databaseTypeEnvironment.isEnabled()) {
             return;
         }
