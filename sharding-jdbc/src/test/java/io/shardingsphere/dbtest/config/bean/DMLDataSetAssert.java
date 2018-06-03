@@ -17,38 +17,15 @@
 
 package io.shardingsphere.dbtest.config.bean;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
-@Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public class DMLDataSetAssert implements DataSetAssert {
-    
-    @XmlAttribute(name = "id")
-    private String id;
-    
-    @XmlAttribute(name = "database-types")
-    private String databaseTypes = "H2,MySQL,Oracle,SQLServer,PostgreSQL";
+public class DMLDataSetAssert extends DataSetAssert {
     
     @XmlElement(name = "dml-sub-assert")
     private List<DMLSubAssert> subAsserts = new LinkedList<>();
-    
-    private String path;
-    
-    @Override
-    public String toString() {
-        return id;
-    }
 }

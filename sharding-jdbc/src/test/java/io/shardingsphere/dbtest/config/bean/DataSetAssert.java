@@ -17,45 +17,28 @@
 
 package io.shardingsphere.dbtest.config.bean;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+
 /**
  * Data set assert.
  * 
  * @author zhangliang 
  */
-public interface DataSetAssert {
+@Getter
+@XmlAccessorType(XmlAccessType.FIELD)
+public abstract class DataSetAssert {
     
-    /**
-     * Get ID.
-     * 
-     * @return ID
-     */
-    String getId();
+    @XmlAttribute(name = "id")
+    private String id;
     
-    /**
-     * Get database types.
-     * 
-     * @return database types
-     */
-    String getDatabaseTypes();
+    @XmlAttribute(name = "database-types")
+    private String databaseTypes = "H2,MySQL,Oracle,SQLServer,PostgreSQL";
     
-    /**
-     * Set database types.
-     * 
-     * @param databaseTypes database types
-     */
-    void setDatabaseTypes(String databaseTypes);
-    
-    /**
-     * Get path.
-     * 
-     * @return path
-     */
-    String getPath();
-    
-    /**
-     * Set path.
-     * 
-     * @param path path
-     */
-    void setPath(String path);
+    @Setter
+    private String path;
 }
