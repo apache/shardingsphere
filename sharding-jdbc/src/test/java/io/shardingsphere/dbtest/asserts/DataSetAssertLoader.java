@@ -18,7 +18,6 @@
 package io.shardingsphere.dbtest.asserts;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import io.shardingsphere.dbtest.config.bean.DDLDataSetAssert;
 import io.shardingsphere.dbtest.config.bean.DDLSubAssert;
 import io.shardingsphere.dbtest.config.bean.DMLDataSetAssert;
@@ -99,13 +98,13 @@ public final class DataSetAssertLoader {
         DataSetsAssert dataSetsAssert = unmarshal(file);
         Map<String, DataSetAssert> result = new HashMap<>(
                 dataSetsAssert.getDqlDataSetAsserts().size() + dataSetsAssert.getDmlDataSetAsserts().size() + dataSetsAssert.getDdlDataSetAsserts().size(), 1);
-        result.putAll(loadDataSetAssert(file, dataSetsAssert.getDqlDataSetAsserts(), dataSetsAssert.getDatabaseTypes()));
-        result.putAll(loadDataSetAssert(file, dataSetsAssert.getDmlDataSetAsserts(), dataSetsAssert.getDatabaseTypes()));
-        result.putAll(loadDataSetAssert(file, dataSetsAssert.getDdlDataSetAsserts(), dataSetsAssert.getDatabaseTypes()));
+        result.putAll(loadDataSetAssert(file, dataSetsAssert.getDqlDataSetAsserts()));
+        result.putAll(loadDataSetAssert(file, dataSetsAssert.getDmlDataSetAsserts()));
+        result.putAll(loadDataSetAssert(file, dataSetsAssert.getDdlDataSetAsserts()));
         return result;
     }
     
-    private Map<String, DataSetAssert> loadDataSetAssert(final String file, final List<? extends DataSetAssert> dataSetAsserts, final String defaultDatabaseTypes) {
+    private Map<String, DataSetAssert> loadDataSetAssert(final String file, final List<? extends DataSetAssert> dataSetAsserts) {
         Map<String, DataSetAssert> result = new HashMap<>(dataSetAsserts.size(), 1);
         for (DataSetAssert each : dataSetAsserts) {
             result.put(each.getId(), each);
@@ -128,9 +127,6 @@ public final class DataSetAssertLoader {
                     set.add(ddlSubAssert.getShardingRuleType());
                 }
                 shardingRuleTypes.addAll(set);
-            }
-            if (Strings.isNullOrEmpty(each.getDatabaseTypes())) {
-                each.setDatabaseTypes(defaultDatabaseTypes);
             }
         }
         return result;

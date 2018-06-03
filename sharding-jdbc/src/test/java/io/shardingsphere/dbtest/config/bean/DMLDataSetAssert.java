@@ -40,7 +40,7 @@ public class DMLDataSetAssert implements DataSetAssert {
     private String id;
     
     @XmlAttribute(name = "database-types")
-    private String databaseTypes;
+    private String databaseTypes = "H2,MySQL,Oracle,SQLServer,PostgreSQL";
     
     @XmlElement(name = "dml-sub-assert")
     private List<DMLSubAssert> subAsserts = new LinkedList<>();

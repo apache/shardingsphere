@@ -19,7 +19,6 @@ package io.shardingsphere.dbtest.config.bean;
 
 import lombok.Getter;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.LinkedList;
@@ -28,9 +27,6 @@ import java.util.List;
 @Getter
 @XmlRootElement(name = "asserts")
 public class DataSetsAssert {
-    
-    @XmlAttribute(name = "database-types")
-    private String databaseTypes = "H2,MySQL,Oracle,SQLServer,PostgreSQL";
     
     @XmlElement(name = "dql-assert")
     private List<DQLDataSetAssert> dqlDataSetAsserts = new LinkedList<>();
