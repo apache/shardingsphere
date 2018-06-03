@@ -25,7 +25,9 @@ import lombok.Setter;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Integrate test case.
@@ -51,4 +53,17 @@ public abstract class IntegrateTestCase {
      * @return sub asserts
      */
     public abstract List<? extends SubAssert> getSubAsserts();
+    
+    /**
+     * Get sharding rule types.
+     * 
+     * @return sharding rule types
+     */
+    public final Set<String> getShardingRuleTypes() {
+        Set<String> result = new HashSet<>();
+        for (SubAssert each : getSubAsserts()) {
+            result.add(each.getShardingRuleType());
+        }
+        return result;
+    }
 }

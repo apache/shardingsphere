@@ -18,12 +18,6 @@
 package io.shardingsphere.dbtest.asserts;
 
 import com.google.common.base.Preconditions;
-import io.shardingsphere.dbtest.config.bean.DDLIntegrateTestCase;
-import io.shardingsphere.dbtest.config.bean.DDLSubAssert;
-import io.shardingsphere.dbtest.config.bean.DMLIntegrateTestCase;
-import io.shardingsphere.dbtest.config.bean.DMLSubAssert;
-import io.shardingsphere.dbtest.config.bean.DQLIntegrateTestCase;
-import io.shardingsphere.dbtest.config.bean.DQLSubAssert;
 import io.shardingsphere.dbtest.config.bean.IntegrateTestCase;
 import io.shardingsphere.dbtest.config.bean.IntegrateTestCases;
 import lombok.Getter;
@@ -47,7 +41,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Integrate test cases loader.
@@ -109,25 +102,7 @@ public final class IntegrateTestCasesLoader {
         for (IntegrateTestCase each : integrateTestCases) {
             result.put(each.getSqlCaseId(), each);
             each.setPath(file);
-            if (each instanceof DQLIntegrateTestCase) {
-                Set<String> set = new HashSet<>();
-                for (DQLSubAssert dqlSubAssert : ((DQLIntegrateTestCase) each).getSubAsserts()) {
-                    set.add(dqlSubAssert.getShardingRuleType());
-                }
-                shardingRuleTypes.addAll(set);
-            } else if (each instanceof DMLIntegrateTestCase) {
-                Set<String> set = new HashSet<>();
-                for (DMLSubAssert dmlSubAssert : ((DMLIntegrateTestCase) each).getSubAsserts()) {
-                    set.add(dmlSubAssert.getShardingRuleType());
-                }
-                shardingRuleTypes.addAll(set);
-            } else if (each instanceof DDLIntegrateTestCase) {
-                Set<String> set = new HashSet<>();
-                for (DDLSubAssert ddlSubAssert : ((DDLIntegrateTestCase) each).getSubAsserts()) {
-                    set.add(ddlSubAssert.getShardingRuleType());
-                }
-                shardingRuleTypes.addAll(set);
-            }
+            shardingRuleTypes.addAll(each.getShardingRuleTypes());
         }
         return result;
     }
