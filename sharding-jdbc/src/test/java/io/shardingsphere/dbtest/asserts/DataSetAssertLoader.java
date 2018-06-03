@@ -42,7 +42,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -100,14 +99,13 @@ public final class DataSetAssertLoader {
         DataSetsAssert dataSetsAssert = unmarshal(file);
         Map<String, DataSetAssert> result = new HashMap<>(
                 dataSetsAssert.getDqlDataSetAsserts().size() + dataSetsAssert.getDmlDataSetAsserts().size() + dataSetsAssert.getDdlDataSetAsserts().size(), 1);
-        shardingRuleTypes.addAll(Arrays.asList(dataSetsAssert.getShardingRuleTypes().split(",")));
-        result.putAll(loadDataSetAssert(file, dataSetsAssert.getDqlDataSetAsserts(), dataSetsAssert.getShardingRuleTypes(), dataSetsAssert.getDatabaseTypes()));
-        result.putAll(loadDataSetAssert(file, dataSetsAssert.getDmlDataSetAsserts(), dataSetsAssert.getShardingRuleTypes(), dataSetsAssert.getDatabaseTypes()));
-        result.putAll(loadDataSetAssert(file, dataSetsAssert.getDdlDataSetAsserts(), dataSetsAssert.getShardingRuleTypes(), dataSetsAssert.getDatabaseTypes()));
+        result.putAll(loadDataSetAssert(file, dataSetsAssert.getDqlDataSetAsserts(), dataSetsAssert.getDatabaseTypes()));
+        result.putAll(loadDataSetAssert(file, dataSetsAssert.getDmlDataSetAsserts(), dataSetsAssert.getDatabaseTypes()));
+        result.putAll(loadDataSetAssert(file, dataSetsAssert.getDdlDataSetAsserts(), dataSetsAssert.getDatabaseTypes()));
         return result;
     }
     
-    private Map<String, DataSetAssert> loadDataSetAssert(final String file, final List<? extends DataSetAssert> dataSetAsserts, final String defaultShardingRuleType, final String defaultDatabaseTypes) {
+    private Map<String, DataSetAssert> loadDataSetAssert(final String file, final List<? extends DataSetAssert> dataSetAsserts, final String defaultDatabaseTypes) {
         Map<String, DataSetAssert> result = new HashMap<>(dataSetAsserts.size(), 1);
         for (DataSetAssert each : dataSetAsserts) {
             result.put(each.getId(), each);
