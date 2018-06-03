@@ -20,7 +20,7 @@ package io.shardingsphere.dbtest.asserts;
 import com.google.common.base.Splitter;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.util.InlineExpressionParser;
-import io.shardingsphere.dbtest.config.dataset.expected.ExpectedDataSetsRoot;
+import io.shardingsphere.dbtest.config.dataset.expected.dataset.ExpectedDataSetsRoot;
 import io.shardingsphere.dbtest.config.dataset.init.DataSetColumnMetadata;
 import io.shardingsphere.dbtest.config.dataset.init.DataSetMetadata;
 import io.shardingsphere.dbtest.config.dataset.init.DataSetRow;

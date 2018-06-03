@@ -15,23 +15,26 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.config.dataset.init;
+package io.shardingsphere.dbtest.config.dataset.expected.metadata;
 
 import lombok.Getter;
-import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.List;
 
 @Getter
-@Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class DataSetColumnMetadata {
+public final class ExpectedMetadata {
     
-    @XmlAttribute
-    private String name;
+    @XmlAttribute(name = "table")
+    private String tableName;
     
-    @XmlAttribute
-    private String type;
+    @XmlElement(name = "column")
+    private List<ExpectedColumn> columns;
+    
+    @XmlElement(name = "index")
+    private List<ExpectedIndex> indexes;
 }

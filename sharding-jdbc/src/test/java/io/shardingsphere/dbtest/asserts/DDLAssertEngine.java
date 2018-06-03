@@ -21,22 +21,21 @@ import com.google.common.base.Strings;
 import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
 import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
 import io.shardingsphere.dbtest.common.DatabaseUtil;
-import io.shardingsphere.dbtest.config.DataSetsParser;
 import io.shardingsphere.dbtest.config.bean.DDLSubAssert;
-import io.shardingsphere.dbtest.config.dataset.init.DataSetColumnMetadata;
+import io.shardingsphere.dbtest.config.dataset.expected.metadata.ExpectedColumn;
+import io.shardingsphere.dbtest.config.dataset.expected.metadata.ExpectedMetadataRoot;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.dbtest.env.schema.SchemaEnvironmentManager;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
 import org.apache.commons.lang3.StringUtils;
-import org.xml.sax.SAXException;
 
 import javax.sql.DataSource;
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -80,15 +79,19 @@ public final class DDLAssertEngine {
     
     /**
      * Assert DDL.
+     * 
+     * @throws IOException IO exception
+     * @throws SQLException SQL exception
+     * @throws JAXBException JAXB exception
      */
-    public void assertDDL() throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
+    public void assertDDL() throws IOException, SQLException, JAXBException {
         assertExecuteUpdateForPreparedStatement();
         assertExecuteForPreparedStatement();
         assertExecuteUpdateForStatement();
         assertExecuteForStatement();
     }
     
-    private void assertExecuteUpdateForPreparedStatement() throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
+    private void assertExecuteUpdateForPreparedStatement() throws SQLException, IOException, JAXBException {
         try {
             try (Connection connection = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(ddlSubAssert.getCleanSql())) {
@@ -100,10 +103,7 @@ public final class DDLAssertEngine {
                 try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
                     preparedStatement.executeUpdate();
                 }
-                DataSetDefinitions checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
-                String table = ddlSubAssert.getTable();
-                List<DataSetColumnMetadata> columnDefinitions = DatabaseUtil.getColumnDefinitions(connection, table);
-                DatabaseUtil.assertConfigs(checkDataset, columnDefinitions, table);
+                assertMetadata(connection);
             }
         } finally {
             if (StringUtils.isNotBlank(ddlSubAssert.getCleanSql())) {
@@ -115,7 +115,7 @@ public final class DDLAssertEngine {
         }
     }
     
-    private void assertExecuteForPreparedStatement() throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
+    private void assertExecuteForPreparedStatement() throws SQLException, IOException, JAXBException {
         try {
             try (Connection connection = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(ddlSubAssert.getCleanSql())) {
@@ -127,10 +127,7 @@ public final class DDLAssertEngine {
                 try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
                     preparedStatement.execute();
                 }
-                DataSetDefinitions checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
-                String table = ddlSubAssert.getTable();
-                List<DataSetColumnMetadata> columnDefinitions = DatabaseUtil.getColumnDefinitions(connection, table);
-                DatabaseUtil.assertConfigs(checkDataset, columnDefinitions, table);
+                assertMetadata(connection);
             }
         } finally {
             if (StringUtils.isNotBlank(ddlSubAssert.getCleanSql())) {
@@ -142,7 +139,7 @@ public final class DDLAssertEngine {
         }
     }
     
-    private void assertExecuteUpdateForStatement() throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
+    private void assertExecuteUpdateForStatement() throws SQLException, IOException, JAXBException {
         try {
             try (Connection connection = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(ddlSubAssert.getCleanSql())) {
@@ -154,10 +151,7 @@ public final class DDLAssertEngine {
                 try (Statement statement = connection.createStatement()) {
                     statement.executeUpdate(sql);
                 }
-                DataSetDefinitions checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
-                String table = ddlSubAssert.getTable();
-                List<DataSetColumnMetadata> columnDefinitions = DatabaseUtil.getColumnDefinitions(connection, table);
-                DatabaseUtil.assertConfigs(checkDataset, columnDefinitions, table);
+                assertMetadata(connection);
             }
         } finally {
             if (!Strings.isNullOrEmpty(ddlSubAssert.getCleanSql())) {
@@ -169,7 +163,7 @@ public final class DDLAssertEngine {
         }
     }
     
-    private void assertExecuteForStatement() throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
+    private void assertExecuteForStatement() throws SQLException, IOException, JAXBException {
         try {
             try (Connection connection = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(ddlSubAssert.getCleanSql())) {
@@ -181,10 +175,7 @@ public final class DDLAssertEngine {
                 try (Statement statement = connection.createStatement()) {
                     statement.execute(sql);
                 }
-                DataSetDefinitions checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
-                String table = ddlSubAssert.getTable();
-                List<DataSetColumnMetadata> columnDefinitions = DatabaseUtil.getColumnDefinitions(connection, table);
-                DatabaseUtil.assertConfigs(checkDataset, columnDefinitions, table);
+                assertMetadata(connection);
             }
         } finally {
             if (!Strings.isNullOrEmpty(ddlSubAssert.getCleanSql())) {
@@ -194,5 +185,15 @@ public final class DDLAssertEngine {
                 SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), ddlSubAssert.getInitSql());
             }
         }
+    }
+    
+    private void assertMetadata(final Connection connection) throws IOException, JAXBException, SQLException {
+        ExpectedMetadataRoot expected;
+        try (FileReader reader = new FileReader(expectedDataFile)) {
+            expected = (ExpectedMetadataRoot) JAXBContext.newInstance(ExpectedMetadataRoot.class).createUnmarshaller().unmarshal(reader);
+        }
+        String tableName = ddlSubAssert.getTable();
+        List<ExpectedColumn> actualColumns = DatabaseUtil.getExpectedColumns(connection, tableName);
+        DatabaseUtil.assertConfigs(expected.find(tableName), actualColumns);
     }
 }

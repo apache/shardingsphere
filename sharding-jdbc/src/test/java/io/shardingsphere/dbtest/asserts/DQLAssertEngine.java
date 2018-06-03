@@ -21,7 +21,7 @@ import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
 import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
 import io.shardingsphere.dbtest.common.DatabaseUtil;
 import io.shardingsphere.dbtest.config.bean.DQLSubAssert;
-import io.shardingsphere.dbtest.config.dataset.expected.ExpectedDataSetsRoot;
+import io.shardingsphere.dbtest.config.dataset.expected.dataset.ExpectedDataSetsRoot;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;

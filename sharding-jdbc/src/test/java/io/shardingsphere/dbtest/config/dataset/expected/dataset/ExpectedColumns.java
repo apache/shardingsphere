@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.config.dataset.expected;
+package io.shardingsphere.dbtest.config.dataset.expected.dataset;
 
 import lombok.Getter;
 

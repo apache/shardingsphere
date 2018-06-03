@@ -15,22 +15,34 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.config.dataset.expected;
+package io.shardingsphere.dbtest.config.dataset.expected.metadata;
 
 import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 @Getter
 @XmlRootElement(name = "datasets")
-public final class ExpectedDataSetsRoot {
+public final class ExpectedMetadataRoot {
     
-    @XmlElement
-    private ExpectedColumns columns;
+    @XmlElement(name = "metadata")
+    private List<ExpectedMetadata> metadataList = new LinkedList<>();
     
-    @XmlElement(name = "dataset")
-    private List<ExpectedDataSetRow> dataSetRows = new ArrayList<>();
+    /**
+     * Find expected metadata via table name.
+     * 
+     * @param tableName table name
+     * @return expected metadata
+     */
+    public ExpectedMetadata find(final String tableName) {
+        for (ExpectedMetadata each : metadataList) {
+            if (each.getTableName().equals(tableName)) {
+                return each;
+            }
+        }
+        throw new IllegalArgumentException(String.format("Cannot find expected metadata via table name: '%s'", tableName));
+    }
 }

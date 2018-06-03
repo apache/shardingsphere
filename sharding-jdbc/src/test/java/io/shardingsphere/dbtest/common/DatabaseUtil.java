@@ -18,10 +18,11 @@
 package io.shardingsphere.dbtest.common;
 
 import io.shardingsphere.dbtest.asserts.DataSetDefinitions;
+import io.shardingsphere.dbtest.config.dataset.expected.metadata.ExpectedColumn;
+import io.shardingsphere.dbtest.config.dataset.expected.metadata.ExpectedMetadata;
 import io.shardingsphere.dbtest.config.dataset.init.DataSetColumnMetadata;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -32,7 +33,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -41,9 +41,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 /**
  * Database utility.
@@ -343,67 +343,38 @@ public final class DatabaseUtil {
      *
      * @param expected expected
      * @param actual actual
-     * @param table table
      */
-    public static void assertConfigs(final DataSetDefinitions expected, final List<DataSetColumnMetadata> actual, final String table) {
-        Map<String, List<DataSetColumnMetadata>> configs = expected.getMetadataList();
-        List<DataSetColumnMetadata> columnDefinitions = configs.get(table);
-        for (DataSetColumnMetadata each : columnDefinitions) {
+    public static void assertConfigs(final ExpectedMetadata expected, final List<ExpectedColumn> actual) {
+        for (ExpectedColumn each : expected.getColumns()) {
             checkActual(actual, each);
         }
     }
     
-    private static void checkActual(final List<DataSetColumnMetadata> actual, final DataSetColumnMetadata expect) {
-        for (DataSetColumnMetadata each : actual) {
+    private static void checkActual(final List<ExpectedColumn> actual, final ExpectedColumn expect) {
+        for (ExpectedColumn each : actual) {
             if (expect.getName().equals(each.getName())) {
-                if (StringUtils.isNotEmpty(expect.getType())) {
-                    assertEquals(expect.getType(), each.getType());
-                }
-                checkDatabaseColumn(expect.getDecimalDigits(), each.getDecimalDigits());
-                checkDatabaseColumn(expect.getNullable(), each.getNullable());
-                checkDatabaseColumn(expect.getNumPrecRadix(), each.getNumPrecRadix());
-                checkDatabaseColumn(expect.getSize(), each.getSize());
+                assertThat(each.getType(), is(expect.getType()));
             }
         }
     }
     
-    private static void checkDatabaseColumn(final Integer expectData, final Integer actualData) {
-        if (expectData != null && !expectData.equals(actualData)) {
-            fail();
-        }
-    }
-    
     /**
-     * Use PreparedStatement test SQL select.
+     * Get expected columns.
      *
      * @param connection connection
      * @param table table
      * @return query result set
      * @throws SQLException SQL exception
      */
-    public static List<DataSetColumnMetadata> getColumnDefinitions(final Connection connection, final String table) throws SQLException {
+    public static List<ExpectedColumn> getExpectedColumns(final Connection connection, final String table) throws SQLException {
         DatabaseMetaData metaData = connection.getMetaData();
         try (ResultSet resultSet = metaData.getColumns(null, null, table, null)) {
-            List<DataSetColumnMetadata> result = new ArrayList<>();
+            List<ExpectedColumn> result = new LinkedList<>();
             while (resultSet.next()) {
-                DataSetColumnMetadata columnDefinition = new DataSetColumnMetadata();
-                String column = resultSet.getString("COLUMN_NAME");
-                columnDefinition.setName(column);
-                int size = resultSet.getInt("COLUMN_SIZE");
-                columnDefinition.setSize(size);
-                String columnType = resultSet.getString("TYPE_NAME").toLowerCase();
-                columnDefinition.setType(columnType);
-                int decimalDigits = resultSet.getInt("DECIMAL_DIGITS");
-                columnDefinition.setDecimalDigits(decimalDigits);
-                int numPrecRadix = resultSet.getInt("NUM_PREC_RADIX");
-                columnDefinition.setNumPrecRadix(numPrecRadix);
-                int nullAble = resultSet.getInt("NULLABLE");
-                columnDefinition.setNullable(nullAble);
-                String isAutoincrement = resultSet.getString("IS_AUTOINCREMENT");
-                if (StringUtils.isNotEmpty(isAutoincrement)) {
-                    columnDefinition.setAutoIncrement(true);
-                }
-                result.add(columnDefinition);
+                ExpectedColumn each = new ExpectedColumn();
+                each.setName(resultSet.getString("COLUMN_NAME"));
+                each.setType(resultSet.getString("TYPE_NAME").toLowerCase());
+                result.add(each);
             }
             return result;
         }
