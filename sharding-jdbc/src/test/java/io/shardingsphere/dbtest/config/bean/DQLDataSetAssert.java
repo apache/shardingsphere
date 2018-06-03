@@ -51,15 +51,4 @@ public class DQLDataSetAssert implements DataSetAssert {
     public String toString() {
         return id;
     }
-    
-    // TODO remove
-    @Override
-    public String getShardingRuleTypes() {
-        return null;
-    }
-    
-    @Override
-    public void setShardingRuleTypes(final String shardingRuleTypes) {
-        
-    }
 }

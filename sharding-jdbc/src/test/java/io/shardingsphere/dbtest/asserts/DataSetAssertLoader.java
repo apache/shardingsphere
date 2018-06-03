@@ -19,6 +19,10 @@ package io.shardingsphere.dbtest.asserts;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import io.shardingsphere.dbtest.config.bean.DDLDataSetAssert;
+import io.shardingsphere.dbtest.config.bean.DDLSubAssert;
+import io.shardingsphere.dbtest.config.bean.DMLDataSetAssert;
+import io.shardingsphere.dbtest.config.bean.DMLSubAssert;
 import io.shardingsphere.dbtest.config.bean.DQLDataSetAssert;
 import io.shardingsphere.dbtest.config.bean.DQLSubAssert;
 import io.shardingsphere.dbtest.config.bean.DataSetAssert;
@@ -94,7 +98,8 @@ public final class DataSetAssertLoader {
     
     private Map<String, DataSetAssert> loadDataSetAssert(final String file) throws IOException, JAXBException {
         DataSetsAssert dataSetsAssert = unmarshal(file);
-        Map<String, DataSetAssert> result = new HashMap<>(dataSetsAssert.getDqlDataSetAsserts().size() + dataSetsAssert.getDmlDataSetAsserts().size() + dataSetsAssert.getDdlDataSetAsserts().size(), 1);
+        Map<String, DataSetAssert> result = new HashMap<>(
+                dataSetsAssert.getDqlDataSetAsserts().size() + dataSetsAssert.getDmlDataSetAsserts().size() + dataSetsAssert.getDdlDataSetAsserts().size(), 1);
         shardingRuleTypes.addAll(Arrays.asList(dataSetsAssert.getShardingRuleTypes().split(",")));
         result.putAll(loadDataSetAssert(file, dataSetsAssert.getDqlDataSetAsserts(), dataSetsAssert.getShardingRuleTypes(), dataSetsAssert.getDatabaseTypes()));
         result.putAll(loadDataSetAssert(file, dataSetsAssert.getDmlDataSetAsserts(), dataSetsAssert.getShardingRuleTypes(), dataSetsAssert.getDatabaseTypes()));
@@ -107,24 +112,25 @@ public final class DataSetAssertLoader {
         for (DataSetAssert each : dataSetAsserts) {
             result.put(each.getId(), each);
             each.setPath(file);
-            
-            
             if (each instanceof DQLDataSetAssert) {
                 Set<String> set = new HashSet<>();
                 for (DQLSubAssert dqlSubAssert : ((DQLDataSetAssert) each).getSubAsserts()) {
                     set.add(dqlSubAssert.getShardingRuleType());
                 }
                 shardingRuleTypes.addAll(set);
-            } else {
-                if (Strings.isNullOrEmpty(each.getShardingRuleTypes())) {
-                    each.setShardingRuleTypes(defaultShardingRuleType);
-                } else {
-                    shardingRuleTypes.addAll(Arrays.asList(each.getShardingRuleTypes().split(",")));
+            } else if (each instanceof DMLDataSetAssert) {
+                Set<String> set = new HashSet<>();
+                for (DMLSubAssert dmlSubAssert : ((DMLDataSetAssert) each).getSubAsserts()) {
+                    set.add(dmlSubAssert.getShardingRuleType());
                 }
+                shardingRuleTypes.addAll(set);
+            } else if (each instanceof DDLDataSetAssert) {
+                Set<String> set = new HashSet<>();
+                for (DDLSubAssert ddlSubAssert : ((DDLDataSetAssert) each).getSubAsserts()) {
+                    set.add(ddlSubAssert.getShardingRuleType());
+                }
+                shardingRuleTypes.addAll(set);
             }
-            
-            
-            
             if (Strings.isNullOrEmpty(each.getDatabaseTypes())) {
                 each.setDatabaseTypes(defaultDatabaseTypes);
             }

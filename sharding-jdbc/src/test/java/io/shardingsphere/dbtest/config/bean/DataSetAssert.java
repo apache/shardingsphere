@@ -32,20 +32,6 @@ public interface DataSetAssert {
     String getId();
     
     /**
-     * Get sharding rule types.
-     * 
-     * @return sharding rule types
-     */
-    String getShardingRuleTypes();
-    
-    /**
-     * Set sharding rule types.
-     * 
-     * @param shardingRuleTypes sharding rule types
-     */
-    void setShardingRuleTypes(String shardingRuleTypes);
-    
-    /**
      * Get database types.
      * 
      * @return database types
