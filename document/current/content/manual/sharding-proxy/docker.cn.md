@@ -5,7 +5,13 @@ title = "Docker镜像"
 weight = 3
 +++
 
-## 构建Docker镜像
+## 拉取官方Docker镜像
+
+``` 
+docker pull shardingsphere/sharding-proxy
+```
+
+## 手动构建Docker镜像（可选）
 
 ``` 
 git clone https://github.com/sharding-sphere/sharding-sphere
