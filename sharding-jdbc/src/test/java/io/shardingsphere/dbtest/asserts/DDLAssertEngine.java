@@ -20,7 +20,6 @@ package io.shardingsphere.dbtest.asserts;
 import com.google.common.base.Strings;
 import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
 import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.dbtest.common.DatabaseUtil;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.dbtest.jaxb.assertion.ddl.DDLIntegrateTestCaseAssertion;
@@ -42,9 +41,7 @@ import java.util.Map;
 
 public final class DDLAssertEngine {
     
-    private final DDLIntegrateTestCaseAssertion integrateTestCaseAssertion;
-    
-    private final DatabaseType databaseType;
+    private final DDLIntegrateTestCaseAssertion assertion;
     
     private final DataSource dataSource;
     
@@ -52,26 +49,24 @@ public final class DDLAssertEngine {
     
     private final String expectedDataFile;
     
-    public DDLAssertEngine(final String sqlCaseId, final String path, final DDLIntegrateTestCaseAssertion integrateTestCaseAssertion, final Map<String, DataSource> dataSourceMap,
-                           final DatabaseType databaseType) throws IOException, SQLException {
-        this.integrateTestCaseAssertion = integrateTestCaseAssertion;
-        this.databaseType = databaseType;
+    public DDLAssertEngine(final String sqlCaseId, final String path, final DDLIntegrateTestCaseAssertion assertion, final Map<String, DataSource> dataSourceMap) throws IOException, SQLException {
+        this.assertion = assertion;
         dataSource = createDataSource(dataSourceMap);
         sql = SQLCasesLoader.getInstance().getSupportedSQL(sqlCaseId);
-        expectedDataFile = path.substring(0, path.lastIndexOf(File.separator) + 1) + "asserts/ddl/" + integrateTestCaseAssertion.getExpectedDataFile();
+        expectedDataFile = path.substring(0, path.lastIndexOf(File.separator) + 1) + "asserts/ddl/" + assertion.getExpectedDataFile();
     }
     
     private DataSource createDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException, IOException {
-        return "masterslaveonly".equals(integrateTestCaseAssertion.getShardingRuleType())
-                ? YamlMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(integrateTestCaseAssertion.getShardingRuleType())))
-                : YamlShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(integrateTestCaseAssertion.getShardingRuleType())));
+        return "masterslaveonly".equals(assertion.getShardingRuleType())
+                ? YamlMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(assertion.getShardingRuleType())))
+                : YamlShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(assertion.getShardingRuleType())));
     }
     
     public void assertExecuteUpdateForPreparedStatement() throws SQLException, IOException, JAXBException {
         try (Connection connection = dataSource.getConnection()) {
             dropTableIfExisted(connection);
-            if (!Strings.isNullOrEmpty(integrateTestCaseAssertion.getInitSql())) {
-                connection.prepareStatement(integrateTestCaseAssertion.getInitSql()).executeUpdate();
+            if (!Strings.isNullOrEmpty(assertion.getInitSql())) {
+                connection.prepareStatement(assertion.getInitSql()).executeUpdate();
             }
             connection.prepareStatement(sql.replaceAll("%s", "?")).executeUpdate();
             assertMetadata(connection);
@@ -82,8 +77,8 @@ public final class DDLAssertEngine {
     public void assertExecuteForPreparedStatement() throws SQLException, IOException, JAXBException {
         try (Connection connection = dataSource.getConnection()) {
             dropTableIfExisted(connection);
-            if (!Strings.isNullOrEmpty(integrateTestCaseAssertion.getInitSql())) {
-                connection.prepareStatement(integrateTestCaseAssertion.getInitSql()).executeUpdate();
+            if (!Strings.isNullOrEmpty(assertion.getInitSql())) {
+                connection.prepareStatement(assertion.getInitSql()).executeUpdate();
             }
             connection.prepareStatement(sql.replaceAll("%s", "?")).execute();
             assertMetadata(connection);
@@ -94,8 +89,8 @@ public final class DDLAssertEngine {
     public void assertExecuteUpdateForStatement() throws SQLException, IOException, JAXBException {
         try (Connection connection = dataSource.getConnection()) {
             dropTableIfExisted(connection);
-            if (!Strings.isNullOrEmpty(integrateTestCaseAssertion.getInitSql())) {
-                connection.prepareStatement(integrateTestCaseAssertion.getInitSql()).executeUpdate();
+            if (!Strings.isNullOrEmpty(assertion.getInitSql())) {
+                connection.prepareStatement(assertion.getInitSql()).executeUpdate();
             }
             connection.createStatement().executeUpdate(sql);
             assertMetadata(connection);
@@ -106,8 +101,8 @@ public final class DDLAssertEngine {
     public void assertExecuteForStatement() throws SQLException, IOException, JAXBException {
         try (Connection connection = dataSource.getConnection()) {
             dropTableIfExisted(connection);
-            if (!Strings.isNullOrEmpty(integrateTestCaseAssertion.getInitSql())) {
-                connection.prepareStatement(integrateTestCaseAssertion.getInitSql()).executeUpdate();
+            if (!Strings.isNullOrEmpty(assertion.getInitSql())) {
+                connection.prepareStatement(assertion.getInitSql()).executeUpdate();
             }
             connection.createStatement().execute(sql);
             assertMetadata(connection);
@@ -116,7 +111,7 @@ public final class DDLAssertEngine {
     }
     
     private void dropTableIfExisted(final Connection connection) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DROP TABLE %s", integrateTestCaseAssertion.getTable()))) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DROP TABLE %s", assertion.getTable()))) {
             preparedStatement.executeUpdate();
         } catch (final SQLException ex) {
         }
@@ -127,7 +122,7 @@ public final class DDLAssertEngine {
         try (FileReader reader = new FileReader(expectedDataFile)) {
             expected = (ExpectedMetadataRoot) JAXBContext.newInstance(ExpectedMetadataRoot.class).createUnmarshaller().unmarshal(reader);
         }
-        String tableName = integrateTestCaseAssertion.getTable();
+        String tableName = assertion.getTable();
         List<ExpectedColumn> actualColumns = DatabaseUtil.getExpectedColumns(connection, tableName);
         DatabaseUtil.assertConfigs(expected.find(tableName), actualColumns);
     }

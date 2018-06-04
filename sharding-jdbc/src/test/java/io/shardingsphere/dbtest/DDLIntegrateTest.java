@@ -68,7 +68,7 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
         if (databaseTypeEnvironment.isEnabled()) {
             Map<String, DataSource> dataSourceMap = createDataSourceMap(integrateTestCaseAssertion);
             dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(integrateTestCaseAssertion.getShardingRuleType()), dataSourceMap);
-            ddlAssertEngine = new DDLAssertEngine(sqlCaseId, path, integrateTestCaseAssertion, dataSourceMap, databaseTypeEnvironment.getDatabaseType());
+            ddlAssertEngine = new DDLAssertEngine(sqlCaseId, path, integrateTestCaseAssertion, dataSourceMap);
         } else {
             dataSetEnvironmentManager = null;
             ddlAssertEngine = null;

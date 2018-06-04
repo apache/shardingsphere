@@ -43,7 +43,7 @@ import java.util.Map;
  */
 public final class DQLAssertEngine {
     
-    private final DQLIntegrateTestCaseAssertion integrateTestCaseAssertion;
+    private final DQLIntegrateTestCaseAssertion assertion;
     
     private final DataSource dataSource;
     
@@ -51,41 +51,40 @@ public final class DQLAssertEngine {
     
     private final String expectedDataFile;
     
-    public DQLAssertEngine(final String sqlCaseId, final String path, final DQLIntegrateTestCaseAssertion integrateTestCaseAssertion, 
-                           final Map<String, DataSource> dataSourceMap) throws IOException, SQLException {
-        this.integrateTestCaseAssertion = integrateTestCaseAssertion;
+    public DQLAssertEngine(final String sqlCaseId, final String path, final DQLIntegrateTestCaseAssertion assertion, final Map<String, DataSource> dataSourceMap) throws IOException, SQLException {
+        this.assertion = assertion;
         dataSource = createDataSource(dataSourceMap);
         sql = SQLCasesLoader.getInstance().getSupportedSQL(sqlCaseId);
-        expectedDataFile = path.substring(0, path.lastIndexOf(File.separator) + 1) + "asserts/dql/" + integrateTestCaseAssertion.getExpectedDataFile();
+        expectedDataFile = path.substring(0, path.lastIndexOf(File.separator) + 1) + "asserts/dql/" + assertion.getExpectedDataFile();
     }
     
     private DataSource createDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException, IOException {
-        return "masterslaveonly".equals(integrateTestCaseAssertion.getShardingRuleType())
-                ? YamlMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(integrateTestCaseAssertion.getShardingRuleType())))
-                : YamlShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(integrateTestCaseAssertion.getShardingRuleType())));
+        return "masterslaveonly".equals(assertion.getShardingRuleType())
+                ? YamlMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(assertion.getShardingRuleType())))
+                : YamlShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(assertion.getShardingRuleType())));
     }
     
     public void assertExecuteQueryForPreparedStatement() throws SQLException, ParseException, IOException, JAXBException {
         try (Connection connection = dataSource.getConnection()) {
-            assertDataSet(DatabaseUtil.executeQueryForPreparedStatement(connection, sql, integrateTestCaseAssertion.getSQLValues()));
+            assertDataSet(DatabaseUtil.executeQueryForPreparedStatement(connection, sql, assertion.getSQLValues()));
         }
     }
     
     public void assertExecuteForPreparedStatement() throws SQLException, ParseException, IOException, JAXBException {
         try (Connection connection = dataSource.getConnection()) {
-            assertDataSet(DatabaseUtil.executeDQLForPreparedStatement(connection, sql, integrateTestCaseAssertion.getSQLValues()));
+            assertDataSet(DatabaseUtil.executeDQLForPreparedStatement(connection, sql, assertion.getSQLValues()));
         }
     }
     
     public void assertExecuteQueryForStatement() throws SQLException, IOException, ParseException, JAXBException {
         try (Connection connection = dataSource.getConnection()) {
-            assertDataSet(DatabaseUtil.executeQueryForStatement(connection, sql, integrateTestCaseAssertion.getSQLValues()));
+            assertDataSet(DatabaseUtil.executeQueryForStatement(connection, sql, assertion.getSQLValues()));
         }
     }
     
     public void assertExecuteForStatement() throws SQLException, IOException, ParseException, JAXBException {
         try (Connection connection = dataSource.getConnection()) {
-            assertDataSet(DatabaseUtil.executeDQLForStatement(connection, sql, integrateTestCaseAssertion.getSQLValues()));
+            assertDataSet(DatabaseUtil.executeDQLForStatement(connection, sql, assertion.getSQLValues()));
         }
     }
     
