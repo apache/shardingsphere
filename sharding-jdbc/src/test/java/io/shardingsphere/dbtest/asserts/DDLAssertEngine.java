@@ -23,12 +23,10 @@ import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.dbtest.common.DatabaseUtil;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
-import io.shardingsphere.dbtest.env.schema.SchemaEnvironmentManager;
 import io.shardingsphere.dbtest.jaxb.assertion.ddl.DDLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.jaxb.dataset.expected.metadata.ExpectedColumn;
 import io.shardingsphere.dbtest.jaxb.dataset.expected.metadata.ExpectedMetadataRoot;
 import io.shardingsphere.test.sql.SQLCasesLoader;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
@@ -39,7 +37,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 
@@ -71,98 +68,57 @@ public final class DDLAssertEngine {
     }
     
     public void assertExecuteUpdateForPreparedStatement() throws SQLException, IOException, JAXBException {
-        try {
-            try (Connection connection = dataSource.getConnection()) {
-                if (StringUtils.isNotBlank(integrateTestCaseAssertion.getCleanSql())) {
-                    SchemaEnvironmentManager.executeSQL(integrateTestCaseAssertion.getShardingRuleType(), databaseType, integrateTestCaseAssertion.getCleanSql());
-                }
-                if (StringUtils.isNotBlank(integrateTestCaseAssertion.getInitSql())) {
-                    SchemaEnvironmentManager.executeSQL(integrateTestCaseAssertion.getShardingRuleType(), databaseType, integrateTestCaseAssertion.getInitSql());
-                }
-                try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
-                    preparedStatement.executeUpdate();
-                }
-                assertMetadata(connection);
+        try (Connection connection = dataSource.getConnection()) {
+            dropTableIfExisted(connection);
+            if (!Strings.isNullOrEmpty(integrateTestCaseAssertion.getInitSql())) {
+                connection.prepareStatement(integrateTestCaseAssertion.getInitSql()).executeUpdate();
             }
-        } finally {
-            if (StringUtils.isNotBlank(integrateTestCaseAssertion.getCleanSql())) {
-                SchemaEnvironmentManager.executeSQL(integrateTestCaseAssertion.getShardingRuleType(), databaseType, integrateTestCaseAssertion.getCleanSql());
-            }
-            if (StringUtils.isNotBlank(integrateTestCaseAssertion.getInitSql())) {
-                SchemaEnvironmentManager.executeSQL(integrateTestCaseAssertion.getShardingRuleType(), databaseType, integrateTestCaseAssertion.getInitSql());
-            }
+            connection.prepareStatement(sql.replaceAll("%s", "?")).executeUpdate();
+            assertMetadata(connection);
+            dropTableIfExisted(connection);
         }
     }
     
     public void assertExecuteForPreparedStatement() throws SQLException, IOException, JAXBException {
-        try {
-            try (Connection connection = dataSource.getConnection()) {
-                if (StringUtils.isNotBlank(integrateTestCaseAssertion.getCleanSql())) {
-                    SchemaEnvironmentManager.executeSQL(integrateTestCaseAssertion.getShardingRuleType(), databaseType, integrateTestCaseAssertion.getCleanSql());
-                }
-                if (StringUtils.isNotBlank(integrateTestCaseAssertion.getInitSql())) {
-                    SchemaEnvironmentManager.executeSQL(integrateTestCaseAssertion.getShardingRuleType(), databaseType, integrateTestCaseAssertion.getInitSql());
-                }
-                try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
-                    preparedStatement.execute();
-                }
-                assertMetadata(connection);
+        try (Connection connection = dataSource.getConnection()) {
+            dropTableIfExisted(connection);
+            if (!Strings.isNullOrEmpty(integrateTestCaseAssertion.getInitSql())) {
+                connection.prepareStatement(integrateTestCaseAssertion.getInitSql()).executeUpdate();
             }
-        } finally {
-            if (StringUtils.isNotBlank(integrateTestCaseAssertion.getCleanSql())) {
-                SchemaEnvironmentManager.executeSQL(integrateTestCaseAssertion.getShardingRuleType(), databaseType, integrateTestCaseAssertion.getCleanSql());
-            }
-            if (StringUtils.isNotBlank(integrateTestCaseAssertion.getInitSql())) {
-                SchemaEnvironmentManager.executeSQL(integrateTestCaseAssertion.getShardingRuleType(), databaseType, integrateTestCaseAssertion.getInitSql());
-            }
+            connection.prepareStatement(sql.replaceAll("%s", "?")).execute();
+            assertMetadata(connection);
+            dropTableIfExisted(connection);
         }
     }
     
     public void assertExecuteUpdateForStatement() throws SQLException, IOException, JAXBException {
-        try {
-            try (Connection connection = dataSource.getConnection()) {
-                if (StringUtils.isNotBlank(integrateTestCaseAssertion.getCleanSql())) {
-                    SchemaEnvironmentManager.executeSQL(integrateTestCaseAssertion.getShardingRuleType(), databaseType, integrateTestCaseAssertion.getCleanSql());
-                }
-                if (StringUtils.isNotBlank(integrateTestCaseAssertion.getInitSql())) {
-                    SchemaEnvironmentManager.executeSQL(integrateTestCaseAssertion.getShardingRuleType(), databaseType, integrateTestCaseAssertion.getInitSql());
-                }
-                try (Statement statement = connection.createStatement()) {
-                    statement.executeUpdate(sql);
-                }
-                assertMetadata(connection);
-            }
-        } finally {
-            if (!Strings.isNullOrEmpty(integrateTestCaseAssertion.getCleanSql())) {
-                SchemaEnvironmentManager.executeSQL(integrateTestCaseAssertion.getShardingRuleType(), databaseType, integrateTestCaseAssertion.getCleanSql());
-            }
+        try (Connection connection = dataSource.getConnection()) {
+            dropTableIfExisted(connection);
             if (!Strings.isNullOrEmpty(integrateTestCaseAssertion.getInitSql())) {
-                SchemaEnvironmentManager.executeSQL(integrateTestCaseAssertion.getShardingRuleType(), databaseType, integrateTestCaseAssertion.getInitSql());
+                connection.prepareStatement(integrateTestCaseAssertion.getInitSql()).executeUpdate();
             }
+            connection.createStatement().executeUpdate(sql);
+            assertMetadata(connection);
+            dropTableIfExisted(connection);
         }
     }
     
     public void assertExecuteForStatement() throws SQLException, IOException, JAXBException {
-        try {
-            try (Connection connection = dataSource.getConnection()) {
-                if (StringUtils.isNotBlank(integrateTestCaseAssertion.getCleanSql())) {
-                    SchemaEnvironmentManager.executeSQL(integrateTestCaseAssertion.getShardingRuleType(), databaseType, integrateTestCaseAssertion.getCleanSql());
-                }
-                if (StringUtils.isNotBlank(integrateTestCaseAssertion.getInitSql())) {
-                    SchemaEnvironmentManager.executeSQL(integrateTestCaseAssertion.getShardingRuleType(), databaseType, integrateTestCaseAssertion.getInitSql());
-                }
-                try (Statement statement = connection.createStatement()) {
-                    statement.execute(sql);
-                }
-                assertMetadata(connection);
-            }
-        } finally {
-            if (!Strings.isNullOrEmpty(integrateTestCaseAssertion.getCleanSql())) {
-                SchemaEnvironmentManager.executeSQL(integrateTestCaseAssertion.getShardingRuleType(), databaseType, integrateTestCaseAssertion.getCleanSql());
-            }
+        try (Connection connection = dataSource.getConnection()) {
+            dropTableIfExisted(connection);
             if (!Strings.isNullOrEmpty(integrateTestCaseAssertion.getInitSql())) {
-                SchemaEnvironmentManager.executeSQL(integrateTestCaseAssertion.getShardingRuleType(), databaseType, integrateTestCaseAssertion.getInitSql());
+                connection.prepareStatement(integrateTestCaseAssertion.getInitSql()).executeUpdate();
             }
+            connection.createStatement().execute(sql);
+            assertMetadata(connection);
+            dropTableIfExisted(connection);
+        }
+    }
+    
+    private void dropTableIfExisted(final Connection connection) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DROP TABLE %s", integrateTestCaseAssertion.getTable()))) {
+            preparedStatement.executeUpdate();
+        } catch (final SQLException ex) {
         }
     }
     

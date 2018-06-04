@@ -33,9 +33,6 @@ public class DDLIntegrateTestCaseAssertion extends IntegrateTestCaseAssertion {
     @XmlAttribute(name = "init-sql")
     private String initSql;
     
-    @XmlAttribute(name = "clean-sql")
-    private String cleanSql;
-    
     @XmlAttribute(name = "table")
     private String table;
 }
