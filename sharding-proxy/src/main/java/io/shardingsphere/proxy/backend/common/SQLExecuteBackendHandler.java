@@ -113,7 +113,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
         String dataSourceName = masterSlaveRouter.route(sqlStatement.getType()).iterator().next();
         List<CommandResponsePackets> packets = new CopyOnWriteArrayList<>();
         ExecutorService executorService = RuleRegistry.getInstance().getExecutorService();
-        List<Future<CommandResponsePackets>> resultList = new ArrayList<>();
+        List<Future<CommandResponsePackets>> resultList = new ArrayList<>(1024);
         resultList.add(executorService.submit(new SQLExecuteWorker(this, sqlStatement, dataSourceName, sql)));
         for (Future<CommandResponsePackets> each : resultList) {
             try {
@@ -137,7 +137,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
         }
         List<CommandResponsePackets> packets = new CopyOnWriteArrayList<>();
         ExecutorService executorService = RuleRegistry.getInstance().getExecutorService();
-        List<Future<CommandResponsePackets>> resultList = new ArrayList<>();
+        List<Future<CommandResponsePackets>> resultList = new ArrayList<>(1024);
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             resultList.add(executorService.submit(new SQLExecuteWorker(this, routeResult.getSqlStatement(), each.getDataSource(), each.getSqlUnit().getSql())));
         }
