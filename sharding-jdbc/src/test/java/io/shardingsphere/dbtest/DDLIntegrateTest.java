@@ -64,37 +64,29 @@ public final class DDLIntegrateTest {
     
     private static boolean isCleaned = IntegrateTestEnvironment.getInstance().isInitialized();
     
-    private final String sqlCaseId;
-    
-    private final String path;
-    
-    private final DDLIntegrateTestCaseAssertion integrateTestCaseAssertion;
-    
     private final DatabaseTypeEnvironment databaseTypeEnvironment;
     
     private final SQLCaseType caseType;
     
-    private final Map<String, DataSource> dataSourceMap;
-    
     private final DataSetEnvironmentManager dataSetEnvironmentManager;
     
+    private final DDLAssertEngine ddlAssertEngine;
+    
     public DDLIntegrateTest(final String sqlCaseId, final String path, final DDLIntegrateTestCaseAssertion integrateTestCaseAssertion,
-                            final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException {
-        this.sqlCaseId = sqlCaseId;
-        this.path = path;
-        this.integrateTestCaseAssertion = integrateTestCaseAssertion;
+                            final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException {
         this.databaseTypeEnvironment = databaseTypeEnvironment;
         this.caseType = caseType;
         if (databaseTypeEnvironment.isEnabled()) {
-            dataSourceMap = createDataSourceMap();
+            Map<String, DataSource> dataSourceMap = createDataSourceMap(integrateTestCaseAssertion);
             dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(integrateTestCaseAssertion.getShardingRuleType()), dataSourceMap);
+            ddlAssertEngine = new DDLAssertEngine(sqlCaseId, path, integrateTestCaseAssertion, dataSourceMap, databaseTypeEnvironment, caseType);
         } else {
-            dataSourceMap = null;
             dataSetEnvironmentManager = null;
+            ddlAssertEngine = null;
         }
     }
     
-    private Map<String, DataSource> createDataSourceMap() throws IOException, JAXBException {
+    private Map<String, DataSource> createDataSourceMap(final DDLIntegrateTestCaseAssertion integrateTestCaseAssertion) throws IOException, JAXBException {
         Collection<String> dataSourceNames = SchemaEnvironmentManager.getDataSourceNames(integrateTestCaseAssertion.getShardingRuleType());
         Map<String, DataSource> result = new HashMap<>(dataSourceNames.size(), 1);
         for (String each : dataSourceNames) {
@@ -103,7 +95,7 @@ public final class DDLIntegrateTest {
         return result;
     }
     
-    @Parameters(name = "{0} -> {2} -> {3}")
+    @Parameters(name = "{0} -> {2} -> {3} -> {4}")
     public static Collection<Object[]> getParameters() {
         // TODO sqlCasesLoader size should eq integrateTestCasesLoader size
         // assertThat(sqlCasesLoader.countAllSupportedSQLCases(), is(integrateTestCasesLoader.countAllDataSetTestCases()));
@@ -183,30 +175,26 @@ public final class DDLIntegrateTest {
     }
     
     @Test
-    public void assertExecuteUpdateForPreparedStatement() throws JAXBException, IOException, SQLException {
-        if (databaseTypeEnvironment.isEnabled()) {
-            new DDLAssertEngine(sqlCaseId, path, integrateTestCaseAssertion, dataSourceMap, databaseTypeEnvironment, caseType).assertExecuteUpdateForPreparedStatement();
+    public void assertExecuteUpdate() throws JAXBException, IOException, SQLException {
+        if (!databaseTypeEnvironment.isEnabled()) {
+            return;
+        }
+        if (SQLCaseType.Literal == caseType) {
+            ddlAssertEngine.assertExecuteUpdateForStatement();
+        } else {
+            ddlAssertEngine.assertExecuteUpdateForPreparedStatement();
         }
     }
     
     @Test
-    public void assertExecuteForPreparedStatement() throws JAXBException, IOException, SQLException {
-        if (databaseTypeEnvironment.isEnabled()) {
-            new DDLAssertEngine(sqlCaseId, path, integrateTestCaseAssertion, dataSourceMap, databaseTypeEnvironment, caseType).assertExecuteForPreparedStatement();
+    public void assertExecute() throws JAXBException, IOException, SQLException {
+        if (!databaseTypeEnvironment.isEnabled()) {
+            return;
         }
-    }
-    
-    @Test
-    public void assertExecuteUpdateForStatement() throws JAXBException, IOException, SQLException {
-        if (databaseTypeEnvironment.isEnabled()) {
-            new DDLAssertEngine(sqlCaseId, path, integrateTestCaseAssertion, dataSourceMap, databaseTypeEnvironment, caseType).assertExecuteUpdateForStatement();
-        }
-    }
-    
-    @Test
-    public void assertExecuteForStatement() throws JAXBException, IOException, SQLException {
-        if (databaseTypeEnvironment.isEnabled()) {
-            new DDLAssertEngine(sqlCaseId, path, integrateTestCaseAssertion, dataSourceMap, databaseTypeEnvironment, caseType).assertExecuteForStatement();
+        if (SQLCaseType.Literal == caseType) {
+            ddlAssertEngine.assertExecuteForStatement();
+        } else {
+            ddlAssertEngine.assertExecuteForPreparedStatement();
         }
     }
 }
