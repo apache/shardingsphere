@@ -38,6 +38,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Sharding rule registry.
@@ -48,6 +50,8 @@ import java.util.Properties;
  */
 @Getter
 public final class RuleRegistry {
+    
+    private static final int MAX_EXECUTOR_THREADS = Runtime.getRuntime().availableProcessors() * 50;
     
     private static final RuleRegistry INSTANCE = new RuleRegistry();
     
@@ -60,6 +64,8 @@ public final class RuleRegistry {
     private final ShardingMetaData shardingMetaData;
     
     private final boolean isOnlyMasterSlave;
+    
+    private final ExecutorService executorService = Executors.newFixedThreadPool(MAX_EXECUTOR_THREADS);
     
     private final String proxyMode;
     
