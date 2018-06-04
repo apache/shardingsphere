@@ -19,9 +19,7 @@ package io.shardingsphere.dbtest;
 
 import com.google.common.base.Splitter;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.dbtest.asserts.DDLAssertEngine;
 import io.shardingsphere.dbtest.asserts.DMLAssertEngine;
-import io.shardingsphere.dbtest.asserts.DQLAssertEngine;
 import io.shardingsphere.dbtest.asserts.DataSetEnvironmentManager;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
@@ -29,11 +27,8 @@ import io.shardingsphere.dbtest.env.IntegrateTestEnvironment;
 import io.shardingsphere.dbtest.env.datasource.DataSourceUtil;
 import io.shardingsphere.dbtest.env.schema.SchemaEnvironmentManager;
 import io.shardingsphere.dbtest.jaxb.assertion.IntegrateTestCasesLoader;
-import io.shardingsphere.dbtest.jaxb.assertion.ddl.DDLIntegrateTestCaseAssertion;
+import io.shardingsphere.dbtest.jaxb.assertion.dml.DMLIntegrateTestCase;
 import io.shardingsphere.dbtest.jaxb.assertion.dml.DMLIntegrateTestCaseAssertion;
-import io.shardingsphere.dbtest.jaxb.assertion.dql.DQLIntegrateTestCaseAssertion;
-import io.shardingsphere.dbtest.jaxb.assertion.root.IntegrateTestCase;
-import io.shardingsphere.dbtest.jaxb.assertion.root.IntegrateTestCaseAssertion;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
 import org.junit.After;
@@ -58,7 +53,7 @@ import java.util.List;
 import java.util.Map;
 
 @RunWith(Parameterized.class)
-public final class StartTest {
+public final class DMLIntegrateTest {
     
     private static SQLCasesLoader sqlCasesLoader = SQLCasesLoader.getInstance();
     
@@ -72,9 +67,7 @@ public final class StartTest {
     
     private final String path;
     
-    private final IntegrateTestCaseAssertion integrateTestCaseAssertion;
-    
-    private final String shardingRuleType;
+    private final DMLIntegrateTestCaseAssertion integrateTestCaseAssertion;
     
     private final DatabaseTypeEnvironment databaseTypeEnvironment;
     
@@ -84,17 +77,16 @@ public final class StartTest {
     
     private final DataSetEnvironmentManager dataSetEnvironmentManager;
     
-    public StartTest(final String sqlCaseId, final String path, final IntegrateTestCaseAssertion integrateTestCaseAssertion, 
-                     final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException {
+    public DMLIntegrateTest(final String sqlCaseId, final String path, final DMLIntegrateTestCaseAssertion integrateTestCaseAssertion,
+                            final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException {
         this.sqlCaseId = sqlCaseId;
         this.path = path;
         this.integrateTestCaseAssertion = integrateTestCaseAssertion;
-        this.shardingRuleType = shardingRuleType;
         this.databaseTypeEnvironment = databaseTypeEnvironment;
         this.caseType = caseType;
         if (databaseTypeEnvironment.isEnabled()) {
             dataSourceMap = createDataSourceMap();
-            dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(shardingRuleType), dataSourceMap);
+            dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(integrateTestCaseAssertion.getShardingRuleType()), dataSourceMap);
         } else {
             dataSourceMap = null;
             dataSetEnvironmentManager = null;
@@ -102,7 +94,7 @@ public final class StartTest {
     }
     
     private Map<String, DataSource> createDataSourceMap() throws IOException, JAXBException {
-        Collection<String> dataSourceNames = SchemaEnvironmentManager.getDataSourceNames(shardingRuleType);
+        Collection<String> dataSourceNames = SchemaEnvironmentManager.getDataSourceNames(integrateTestCaseAssertion.getShardingRuleType());
         Map<String, DataSource> result = new HashMap<>(dataSourceNames.size(), 1);
         for (String each : dataSourceNames) {
             result.put(each, DataSourceUtil.createDataSource(databaseTypeEnvironment.getDatabaseType(), each));
@@ -110,7 +102,7 @@ public final class StartTest {
         return result;
     }
     
-    @Parameters(name = "{0} -> Rule:{3} -> {4}")
+    @Parameters(name = "{0} -> {2} -> {3}")
     public static Collection<Object[]> getParameters() {
         // TODO sqlCasesLoader size should eq integrateTestCasesLoader size
         // assertThat(sqlCasesLoader.countAllSupportedSQLCases(), is(integrateTestCasesLoader.countAllDataSetTestCases()));
@@ -119,7 +111,7 @@ public final class StartTest {
             String sqlCaseId = each[0].toString();
             DatabaseType databaseType = (DatabaseType) each[1];
             SQLCaseType caseType = (SQLCaseType) each[2];
-            IntegrateTestCase integrateTestCase = integrateTestCasesLoader.getIntegrateTestCase(sqlCaseId);
+            DMLIntegrateTestCase integrateTestCase = integrateTestCasesLoader.getDMLIntegrateTestCase(sqlCaseId);
             // TODO remove when transfer finished
             if (null == integrateTestCase) {
                 continue;
@@ -127,14 +119,13 @@ public final class StartTest {
             if (!getDatabaseTypes(integrateTestCase.getDatabaseTypes()).contains(databaseType)) {
                 continue;
             }
-            for (IntegrateTestCaseAssertion assertion : integrateTestCase.getIntegrateTestCaseAssertions()) {
-                Object[] data = new Object[6];
+            for (DMLIntegrateTestCaseAssertion assertion : integrateTestCase.getIntegrateTestCaseAssertions()) {
+                Object[] data = new Object[5];
                 data[0] = integrateTestCase.getSqlCaseId();
                 data[1] = integrateTestCase.getPath();
                 data[2] = assertion;
-                data[3] = assertion.getShardingRuleType();
-                data[4] = new DatabaseTypeEnvironment(databaseType, IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType));
-                data[5] = caseType;
+                data[3] = new DatabaseTypeEnvironment(databaseType, IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType));
+                data[4] = caseType;
                 result.add(data);
             }
         }
@@ -191,66 +182,30 @@ public final class StartTest {
     }
     
     @Test
-    public void assertExecuteQueryOrUpdateForPreparedStatement() throws JAXBException, ParseException, IOException, SQLException {
-        if (!databaseTypeEnvironment.isEnabled()) {
-            return;
-        }
-        if (integrateTestCaseAssertion instanceof DQLIntegrateTestCaseAssertion) {
-            new DQLAssertEngine(sqlCaseId, path, (DQLIntegrateTestCaseAssertion) integrateTestCaseAssertion, dataSourceMap, shardingRuleType, caseType).assertExecuteQueryForPreparedStatement();
-        } else if (integrateTestCaseAssertion instanceof DMLIntegrateTestCaseAssertion) {
-            new DMLAssertEngine(sqlCaseId, path, dataSetEnvironmentManager, (DMLIntegrateTestCaseAssertion) integrateTestCaseAssertion, dataSourceMap, shardingRuleType, caseType).assertExecuteUpdateForPreparedStatement();
-        } else if (integrateTestCaseAssertion instanceof DDLIntegrateTestCaseAssertion) {
-            new DDLAssertEngine(sqlCaseId, path, (DDLIntegrateTestCaseAssertion) integrateTestCaseAssertion, dataSourceMap, shardingRuleType, databaseTypeEnvironment, caseType).assertExecuteUpdateForPreparedStatement();
-        } else {
-            throw new UnsupportedOperationException(integrateTestCaseAssertion.getClass().getName());
+    public void assertExecuteUpdateForPreparedStatement() throws JAXBException, ParseException, IOException, SQLException {
+        if (databaseTypeEnvironment.isEnabled()) {
+            new DMLAssertEngine(sqlCaseId, path, integrateTestCaseAssertion, dataSourceMap, caseType).assertExecuteUpdateForPreparedStatement();
         }
     }
     
     @Test
     public void assertExecuteForPreparedStatement() throws JAXBException, ParseException, IOException, SQLException {
-        if (!databaseTypeEnvironment.isEnabled()) {
-            return;
-        }
-        if (integrateTestCaseAssertion instanceof DQLIntegrateTestCaseAssertion) {
-            new DQLAssertEngine(sqlCaseId, path, (DQLIntegrateTestCaseAssertion) integrateTestCaseAssertion, dataSourceMap, shardingRuleType, caseType).assertExecuteForPreparedStatement();
-        } else if (integrateTestCaseAssertion instanceof DMLIntegrateTestCaseAssertion) {
-            new DMLAssertEngine(sqlCaseId, path, dataSetEnvironmentManager, (DMLIntegrateTestCaseAssertion) integrateTestCaseAssertion, dataSourceMap, shardingRuleType, caseType).assertExecuteForPreparedStatement();
-        } else if (integrateTestCaseAssertion instanceof DDLIntegrateTestCaseAssertion) {
-            new DDLAssertEngine(sqlCaseId, path, (DDLIntegrateTestCaseAssertion) integrateTestCaseAssertion, dataSourceMap, shardingRuleType, databaseTypeEnvironment, caseType).assertExecuteForPreparedStatement();
-        } else {
-            throw new UnsupportedOperationException(integrateTestCaseAssertion.getClass().getName());
+        if (databaseTypeEnvironment.isEnabled()) {
+            new DMLAssertEngine(sqlCaseId, path, integrateTestCaseAssertion, dataSourceMap, caseType).assertExecuteForPreparedStatement();
         }
     }
     
     @Test
-    public void assertExecuteQueryOrUpdateForStatement() throws JAXBException, ParseException, IOException, SQLException {
-        if (!databaseTypeEnvironment.isEnabled()) {
-            return;
-        }
-        if (integrateTestCaseAssertion instanceof DQLIntegrateTestCaseAssertion) {
-            new DQLAssertEngine(sqlCaseId, path, (DQLIntegrateTestCaseAssertion) integrateTestCaseAssertion, dataSourceMap, shardingRuleType, caseType).assertExecuteQueryForStatement();
-        } else if (integrateTestCaseAssertion instanceof DMLIntegrateTestCaseAssertion) {
-            new DMLAssertEngine(sqlCaseId, path, dataSetEnvironmentManager, (DMLIntegrateTestCaseAssertion) integrateTestCaseAssertion, dataSourceMap, shardingRuleType, caseType).assertExecuteUpdateForStatement();
-        } else if (integrateTestCaseAssertion instanceof DDLIntegrateTestCaseAssertion) {
-            new DDLAssertEngine(sqlCaseId, path, (DDLIntegrateTestCaseAssertion) integrateTestCaseAssertion, dataSourceMap, shardingRuleType, databaseTypeEnvironment, caseType).assertExecuteUpdateForStatement();
-        } else {
-            throw new UnsupportedOperationException(integrateTestCaseAssertion.getClass().getName());
+    public void assertExecuteUpdateForStatement() throws JAXBException, ParseException, IOException, SQLException {
+        if (databaseTypeEnvironment.isEnabled()) {
+            new DMLAssertEngine(sqlCaseId, path, integrateTestCaseAssertion, dataSourceMap, caseType).assertExecuteUpdateForStatement();
         }
     }
     
     @Test
     public void assertExecuteForStatement() throws JAXBException, ParseException, IOException, SQLException {
-        if (!databaseTypeEnvironment.isEnabled()) {
-            return;
-        }
-        if (integrateTestCaseAssertion instanceof DQLIntegrateTestCaseAssertion) {
-            new DQLAssertEngine(sqlCaseId, path, (DQLIntegrateTestCaseAssertion) integrateTestCaseAssertion, dataSourceMap, shardingRuleType, caseType).assertExecuteForStatement();
-        } else if (integrateTestCaseAssertion instanceof DMLIntegrateTestCaseAssertion) {
-            new DMLAssertEngine(sqlCaseId, path, dataSetEnvironmentManager, (DMLIntegrateTestCaseAssertion) integrateTestCaseAssertion, dataSourceMap, shardingRuleType, caseType).assertExecuteForStatement();
-        } else if (integrateTestCaseAssertion instanceof DDLIntegrateTestCaseAssertion) {
-            new DDLAssertEngine(sqlCaseId, path, (DDLIntegrateTestCaseAssertion) integrateTestCaseAssertion, dataSourceMap, shardingRuleType, databaseTypeEnvironment, caseType).assertExecuteForStatement();
-        } else {
-            throw new UnsupportedOperationException(integrateTestCaseAssertion.getClass().getName());
+        if (databaseTypeEnvironment.isEnabled()) {
+            new DMLAssertEngine(sqlCaseId, path, integrateTestCaseAssertion, dataSourceMap, caseType).assertExecuteForStatement();
         }
     }
 }

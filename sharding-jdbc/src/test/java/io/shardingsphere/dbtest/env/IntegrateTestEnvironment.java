@@ -18,7 +18,7 @@
 package io.shardingsphere.dbtest.env;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.dbtest.StartTest;
+import io.shardingsphere.dbtest.DQLIntegrateTest;
 import io.shardingsphere.dbtest.env.datasource.DatabaseEnvironment;
 import lombok.Getter;
 
@@ -48,7 +48,7 @@ public final class IntegrateTestEnvironment {
     private IntegrateTestEnvironment() {
         Properties prop = new Properties();
         try {
-            prop.load(StartTest.class.getClassLoader().getResourceAsStream("integrate/env.properties"));
+            prop.load(DQLIntegrateTest.class.getClassLoader().getResourceAsStream("integrate/env.properties"));
         } catch (final IOException ex) {
             ex.printStackTrace();
         }

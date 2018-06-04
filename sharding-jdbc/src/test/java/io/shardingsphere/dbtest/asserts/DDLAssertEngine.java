@@ -48,8 +48,6 @@ public final class DDLAssertEngine {
     
     private final DDLIntegrateTestCaseAssertion integrateTestCaseAssertion;
     
-    private final String shardingRuleType;
-    
     private final DatabaseTypeEnvironment databaseTypeEnvironment;
     
     private final SQLCaseType caseType;
@@ -61,9 +59,8 @@ public final class DDLAssertEngine {
     private final String expectedDataFile;
     
     public DDLAssertEngine(final String sqlCaseId, final String path, final DDLIntegrateTestCaseAssertion integrateTestCaseAssertion, final Map<String, DataSource> dataSourceMap,
-                           final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, SQLException {
+                           final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, SQLException {
         this.integrateTestCaseAssertion = integrateTestCaseAssertion;
-        this.shardingRuleType = shardingRuleType;
         this.databaseTypeEnvironment = databaseTypeEnvironment;
         this.caseType = caseType;
         dataSource = createDataSource(dataSourceMap);
@@ -72,19 +69,19 @@ public final class DDLAssertEngine {
     }
     
     private DataSource createDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException, IOException {
-        return "masterslaveonly".equals(shardingRuleType)
-                ? YamlMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)))
-                : YamlShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)));
+        return "masterslaveonly".equals(integrateTestCaseAssertion.getShardingRuleType())
+                ? YamlMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(integrateTestCaseAssertion.getShardingRuleType())))
+                : YamlShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(integrateTestCaseAssertion.getShardingRuleType())));
     }
     
     public void assertExecuteUpdateForPreparedStatement() throws SQLException, IOException, JAXBException {
         try {
             try (Connection connection = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(integrateTestCaseAssertion.getCleanSql())) {
-                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getCleanSql());
+                    SchemaEnvironmentManager.executeSQL(integrateTestCaseAssertion.getShardingRuleType(), databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getCleanSql());
                 }
                 if (StringUtils.isNotBlank(integrateTestCaseAssertion.getInitSql())) {
-                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getInitSql());
+                    SchemaEnvironmentManager.executeSQL(integrateTestCaseAssertion.getShardingRuleType(), databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getInitSql());
                 }
                 try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
                     preparedStatement.executeUpdate();
@@ -93,10 +90,10 @@ public final class DDLAssertEngine {
             }
         } finally {
             if (StringUtils.isNotBlank(integrateTestCaseAssertion.getCleanSql())) {
-                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getCleanSql());
+                SchemaEnvironmentManager.executeSQL(integrateTestCaseAssertion.getShardingRuleType(), databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getCleanSql());
             }
             if (StringUtils.isNotBlank(integrateTestCaseAssertion.getInitSql())) {
-                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getInitSql());
+                SchemaEnvironmentManager.executeSQL(integrateTestCaseAssertion.getShardingRuleType(), databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getInitSql());
             }
         }
     }
@@ -105,10 +102,10 @@ public final class DDLAssertEngine {
         try {
             try (Connection connection = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(integrateTestCaseAssertion.getCleanSql())) {
-                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getCleanSql());
+                    SchemaEnvironmentManager.executeSQL(integrateTestCaseAssertion.getShardingRuleType(), databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getCleanSql());
                 }
                 if (StringUtils.isNotBlank(integrateTestCaseAssertion.getInitSql())) {
-                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getInitSql());
+                    SchemaEnvironmentManager.executeSQL(integrateTestCaseAssertion.getShardingRuleType(), databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getInitSql());
                 }
                 try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
                     preparedStatement.execute();
@@ -117,10 +114,10 @@ public final class DDLAssertEngine {
             }
         } finally {
             if (StringUtils.isNotBlank(integrateTestCaseAssertion.getCleanSql())) {
-                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getCleanSql());
+                SchemaEnvironmentManager.executeSQL(integrateTestCaseAssertion.getShardingRuleType(), databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getCleanSql());
             }
             if (StringUtils.isNotBlank(integrateTestCaseAssertion.getInitSql())) {
-                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getInitSql());
+                SchemaEnvironmentManager.executeSQL(integrateTestCaseAssertion.getShardingRuleType(), databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getInitSql());
             }
         }
     }
@@ -129,10 +126,10 @@ public final class DDLAssertEngine {
         try {
             try (Connection connection = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(integrateTestCaseAssertion.getCleanSql())) {
-                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getCleanSql());
+                    SchemaEnvironmentManager.executeSQL(integrateTestCaseAssertion.getShardingRuleType(), databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getCleanSql());
                 }
                 if (StringUtils.isNotBlank(integrateTestCaseAssertion.getInitSql())) {
-                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getInitSql());
+                    SchemaEnvironmentManager.executeSQL(integrateTestCaseAssertion.getShardingRuleType(), databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getInitSql());
                 }
                 try (Statement statement = connection.createStatement()) {
                     statement.executeUpdate(sql);
@@ -141,10 +138,10 @@ public final class DDLAssertEngine {
             }
         } finally {
             if (!Strings.isNullOrEmpty(integrateTestCaseAssertion.getCleanSql())) {
-                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getCleanSql());
+                SchemaEnvironmentManager.executeSQL(integrateTestCaseAssertion.getShardingRuleType(), databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getCleanSql());
             }
             if (!Strings.isNullOrEmpty(integrateTestCaseAssertion.getInitSql())) {
-                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getInitSql());
+                SchemaEnvironmentManager.executeSQL(integrateTestCaseAssertion.getShardingRuleType(), databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getInitSql());
             }
         }
     }
@@ -153,10 +150,10 @@ public final class DDLAssertEngine {
         try {
             try (Connection connection = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(integrateTestCaseAssertion.getCleanSql())) {
-                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getCleanSql());
+                    SchemaEnvironmentManager.executeSQL(integrateTestCaseAssertion.getShardingRuleType(), databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getCleanSql());
                 }
                 if (StringUtils.isNotBlank(integrateTestCaseAssertion.getInitSql())) {
-                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getInitSql());
+                    SchemaEnvironmentManager.executeSQL(integrateTestCaseAssertion.getShardingRuleType(), databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getInitSql());
                 }
                 try (Statement statement = connection.createStatement()) {
                     statement.execute(sql);
@@ -165,10 +162,10 @@ public final class DDLAssertEngine {
             }
         } finally {
             if (!Strings.isNullOrEmpty(integrateTestCaseAssertion.getCleanSql())) {
-                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getCleanSql());
+                SchemaEnvironmentManager.executeSQL(integrateTestCaseAssertion.getShardingRuleType(), databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getCleanSql());
             }
             if (!Strings.isNullOrEmpty(integrateTestCaseAssertion.getInitSql())) {
-                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getInitSql());
+                SchemaEnvironmentManager.executeSQL(integrateTestCaseAssertion.getShardingRuleType(), databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getInitSql());
             }
         }
     }

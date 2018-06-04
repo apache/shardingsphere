@@ -44,8 +44,6 @@ public final class DMLAssertEngine {
     
     private final DMLIntegrateTestCaseAssertion integrateTestCaseAssertion;
     
-    private final String shardingRuleType;
-    
     private final SQLCaseType caseType;
     
     private final Map<String, DataSource> dataSourceMap;
@@ -56,72 +54,48 @@ public final class DMLAssertEngine {
     
     private final String expectedDataFile;
     
-    private final DataSetEnvironmentManager dataSetEnvironmentManager;
-    
-    public DMLAssertEngine(final String sqlCaseId, final String path, final DataSetEnvironmentManager dataSetEnvironmentManager, final DMLIntegrateTestCaseAssertion integrateTestCaseAssertion, 
-                           final Map<String, DataSource> dataSourceMap, final String shardingRuleType, final SQLCaseType caseType) throws IOException, SQLException {
+    public DMLAssertEngine(final String sqlCaseId, final String path, final DMLIntegrateTestCaseAssertion integrateTestCaseAssertion, 
+                           final Map<String, DataSource> dataSourceMap, final SQLCaseType caseType) throws IOException, SQLException {
         this.integrateTestCaseAssertion = integrateTestCaseAssertion;
-        this.shardingRuleType = shardingRuleType;
         this.caseType = caseType;
         this.dataSourceMap = dataSourceMap;
         dataSource = createDataSource(dataSourceMap);
         sql = SQLCasesLoader.getInstance().getSupportedSQL(sqlCaseId);
         expectedDataFile = path.substring(0, path.lastIndexOf(File.separator) + 1) + "asserts/dml/" + integrateTestCaseAssertion.getExpectedDataFile();
-        this.dataSetEnvironmentManager = dataSetEnvironmentManager;
     }
     
     private DataSource createDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException, IOException {
-        return "masterslaveonly".equals(shardingRuleType)
-                ? YamlMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)))
-                : YamlShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)));
+        return "masterslaveonly".equals(integrateTestCaseAssertion.getShardingRuleType())
+                ? YamlMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(integrateTestCaseAssertion.getShardingRuleType())))
+                : YamlShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(integrateTestCaseAssertion.getShardingRuleType())));
     }
     
     public void assertExecuteUpdateForPreparedStatement() throws SQLException, ParseException, IOException, JAXBException {
-        try {
-            dataSetEnvironmentManager.initialize();
-            try (Connection connection = dataSource.getConnection()) {
-                assertThat(DatabaseUtil.executeUpdateForPreparedStatement(connection, sql, integrateTestCaseAssertion.getSQLValues()), is(integrateTestCaseAssertion.getExpectedUpdate()));
-            }
-            assertDataSet();
-        } finally {
-            dataSetEnvironmentManager.clear();
+        try (Connection connection = dataSource.getConnection()) {
+            assertThat(DatabaseUtil.executeUpdateForPreparedStatement(connection, sql, integrateTestCaseAssertion.getSQLValues()), is(integrateTestCaseAssertion.getExpectedUpdate()));
         }
+        assertDataSet();
     }
     
     public void assertExecuteForPreparedStatement() throws SQLException, ParseException, IOException, JAXBException {
-        try {
-            dataSetEnvironmentManager.initialize();
-            try (Connection connection = dataSource.getConnection()) {
-                assertThat(DatabaseUtil.executeDMLForPreparedStatement(connection, sql, integrateTestCaseAssertion.getSQLValues()), is(integrateTestCaseAssertion.getExpectedUpdate()));
-            }
-            assertDataSet();
-        } finally {
-            dataSetEnvironmentManager.clear();
+        try (Connection connection = dataSource.getConnection()) {
+            assertThat(DatabaseUtil.executeDMLForPreparedStatement(connection, sql, integrateTestCaseAssertion.getSQLValues()), is(integrateTestCaseAssertion.getExpectedUpdate()));
         }
+        assertDataSet();
     }
     
     public void assertExecuteUpdateForStatement() throws SQLException, ParseException, IOException, JAXBException {
-        try {
-            dataSetEnvironmentManager.initialize();
-            try (Connection connection = dataSource.getConnection()) {
-                assertThat(DatabaseUtil.executeUpdateForStatement(connection, sql, integrateTestCaseAssertion.getSQLValues()), is(integrateTestCaseAssertion.getExpectedUpdate()));
-            }
-            assertDataSet();
-        } finally {
-            dataSetEnvironmentManager.clear();
+        try (Connection connection = dataSource.getConnection()) {
+            assertThat(DatabaseUtil.executeUpdateForStatement(connection, sql, integrateTestCaseAssertion.getSQLValues()), is(integrateTestCaseAssertion.getExpectedUpdate()));
         }
+        assertDataSet();
     }
     
     public void assertExecuteForStatement() throws SQLException, ParseException, IOException, JAXBException {
-        try {
-            dataSetEnvironmentManager.initialize();
-            try (Connection connection = dataSource.getConnection()) {
-                assertThat(DatabaseUtil.executeDMLForStatement(connection, sql, integrateTestCaseAssertion.getSQLValues()), is(integrateTestCaseAssertion.getExpectedUpdate()));
-            }
-            assertDataSet();
-        } finally {
-            dataSetEnvironmentManager.clear();
+        try (Connection connection = dataSource.getConnection()) {
+            assertThat(DatabaseUtil.executeDMLForStatement(connection, sql, integrateTestCaseAssertion.getSQLValues()), is(integrateTestCaseAssertion.getExpectedUpdate()));
         }
+        assertDataSet();
     }
     
     private void assertDataSet() throws IOException, JAXBException, SQLException {
