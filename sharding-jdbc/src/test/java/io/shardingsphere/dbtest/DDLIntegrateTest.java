@@ -17,24 +17,19 @@
 
 package io.shardingsphere.dbtest;
 
-import com.google.common.base.Splitter;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.dbtest.asserts.DDLAssertEngine;
 import io.shardingsphere.dbtest.asserts.DataSetEnvironmentManager;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
-import io.shardingsphere.dbtest.env.IntegrateTestEnvironment;
 import io.shardingsphere.dbtest.env.datasource.DataSourceUtil;
 import io.shardingsphere.dbtest.env.schema.SchemaEnvironmentManager;
 import io.shardingsphere.dbtest.jaxb.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.jaxb.assertion.ddl.DDLIntegrateTestCase;
 import io.shardingsphere.dbtest.jaxb.assertion.ddl.DDLIntegrateTestCaseAssertion;
-import io.shardingsphere.dbtest.jaxb.assertion.root.IntegrateTestCaseAssertion;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -49,19 +44,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 @RunWith(Parameterized.class)
-public final class DDLIntegrateTest {
+public final class DDLIntegrateTest extends BaseIntegrateTest {
     
     private static SQLCasesLoader sqlCasesLoader = SQLCasesLoader.getInstance();
     
     private static IntegrateTestCasesLoader integrateTestCasesLoader = IntegrateTestCasesLoader.getInstance();
-    
-    private static boolean isInitialized = IntegrateTestEnvironment.getInstance().isInitialized();
-    
-    private static boolean isCleaned = IntegrateTestEnvironment.getInstance().isInitialized();
     
     private final DatabaseTypeEnvironment databaseTypeEnvironment;
     
@@ -108,61 +98,18 @@ public final class DDLIntegrateTest {
             if (null == integrateTestCase) {
                 continue;
             }
-            if (!getDatabaseTypes(integrateTestCase.getDatabaseTypes()).contains(databaseType)) {
-                continue;
+            if (getDatabaseTypes(integrateTestCase.getDatabaseTypes()).contains(databaseType)) {
+                result.addAll(getParameters(databaseType, caseType, integrateTestCase));
             }
-            for (IntegrateTestCaseAssertion assertion : integrateTestCase.getIntegrateTestCaseAssertions()) {
-                Object[] data = new Object[5];
-                data[0] = integrateTestCase.getSqlCaseId();
-                data[1] = integrateTestCase.getPath();
-                data[2] = assertion;
-                data[3] = new DatabaseTypeEnvironment(databaseType, IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType));
-                data[4] = caseType;
-                result.add(data);
-            }
+            
         }
         return result;
-    }
-    
-    private static List<DatabaseType> getDatabaseTypes(final String databaseTypes) {
-        List<DatabaseType> result = new LinkedList<>();
-        for (String each : Splitter.on(",").trimResults().splitToList(databaseTypes)) {
-            result.add(DatabaseType.valueOf(each));
-        }
-        return result;
-    }
-    
-    @BeforeClass
-    public static void createDatabasesAndTables() throws JAXBException, IOException {
-        if (isInitialized) {
-            isInitialized = false;
-        } else {
-            for (String each : integrateTestCasesLoader.getShardingRuleTypes()) {
-                SchemaEnvironmentManager.dropDatabase(each);
-            }
-        }
-        for (String each : integrateTestCasesLoader.getShardingRuleTypes()) {
-            SchemaEnvironmentManager.createDatabase(each);
-        }
-        for (String each : integrateTestCasesLoader.getShardingRuleTypes()) {
-            SchemaEnvironmentManager.createTable(each);
-        }
     }
     
     @Before
     public void insertData() throws SQLException, ParseException {
         if (databaseTypeEnvironment.isEnabled()) {
             dataSetEnvironmentManager.initialize(false);
-        }
-    }
-    
-    @AfterClass
-    public static void dropDatabases() throws JAXBException, IOException {
-        if (isCleaned) {
-            for (String each : integrateTestCasesLoader.getShardingRuleTypes()) {
-                SchemaEnvironmentManager.dropDatabase(each);
-            }
-            isCleaned = false;
         }
     }
     
