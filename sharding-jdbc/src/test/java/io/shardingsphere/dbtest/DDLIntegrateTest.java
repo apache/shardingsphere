@@ -79,7 +79,7 @@ public final class DDLIntegrateTest {
         if (databaseTypeEnvironment.isEnabled()) {
             Map<String, DataSource> dataSourceMap = createDataSourceMap(integrateTestCaseAssertion);
             dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(integrateTestCaseAssertion.getShardingRuleType()), dataSourceMap);
-            ddlAssertEngine = new DDLAssertEngine(sqlCaseId, path, integrateTestCaseAssertion, dataSourceMap, databaseTypeEnvironment);
+            ddlAssertEngine = new DDLAssertEngine(sqlCaseId, path, integrateTestCaseAssertion, dataSourceMap, databaseTypeEnvironment.getDatabaseType());
         } else {
             dataSetEnvironmentManager = null;
             ddlAssertEngine = null;
