@@ -18,6 +18,9 @@
 package io.shardingsphere.dbtest.jaxb.assertion;
 
 import com.google.common.base.Preconditions;
+import io.shardingsphere.dbtest.jaxb.assertion.ddl.DDLIntegrateTestCases;
+import io.shardingsphere.dbtest.jaxb.assertion.dml.DMLIntegrateTestCases;
+import io.shardingsphere.dbtest.jaxb.assertion.dql.DQLIntegrateTestCases;
 import io.shardingsphere.dbtest.jaxb.assertion.root.IntegrateTestCase;
 import io.shardingsphere.dbtest.jaxb.assertion.root.IntegrateTestCases;
 import lombok.Getter;
@@ -50,7 +53,11 @@ import java.util.Map;
 @Slf4j
 public final class IntegrateTestCasesLoader {
     
-    private static final String INTEGRATE_TEST_CASES_FILE_PREFIX = "integrate-test-cases";
+    private static final String DQL_INTEGRATE_TEST_CASES_FILE_PREFIX = "dql-integrate-test-cases";
+    
+    private static final String DML_INTEGRATE_TEST_CASES_FILE_PREFIX = "dml-integrate-test-cases";
+    
+    private static final String DDL_INTEGRATE_TEST_CASES_FILE_PREFIX = "ddl-integrate-test-cases";
     
     private static final IntegrateTestCasesLoader INSTANCE = new IntegrateTestCasesLoader();
     
@@ -80,22 +87,20 @@ public final class IntegrateTestCasesLoader {
     private Map<String, IntegrateTestCase> loadIntegrateTestCases() throws IOException, URISyntaxException, JAXBException {
         URL url = IntegrateTestCasesLoader.class.getClassLoader().getResource("asserts/");
         Preconditions.checkNotNull(url, "Cannot found integrate test cases.");
-        List<String> files = getFiles(url);
-        Preconditions.checkNotNull(files, "Cannot found integrate test cases.");
-        Map<String, IntegrateTestCase> result = new HashMap<>(Short.MAX_VALUE, 1);
-        for (String each : files) {
-            result.putAll(loadIntegrateTestCases(each));
-        }
+        Map<String, IntegrateTestCase> result = new HashMap<>();
+        result.putAll(loadIntegrateTestCases(url, DQL_INTEGRATE_TEST_CASES_FILE_PREFIX));
+        result.putAll(loadIntegrateTestCases(url, DML_INTEGRATE_TEST_CASES_FILE_PREFIX));
+        result.putAll(loadIntegrateTestCases(url, DDL_INTEGRATE_TEST_CASES_FILE_PREFIX));
         return result;
     }
     
-    private Map<String, IntegrateTestCase> loadIntegrateTestCases(final String file) throws IOException, JAXBException {
-        IntegrateTestCases integrateTestCases = unmarshal(file);
-        Map<String, IntegrateTestCase> result = new HashMap<>(
-                integrateTestCases.getDqlIntegrateTestCases().size() + integrateTestCases.getDmlIntegrateTestCases().size() + integrateTestCases.getDdlIntegrateTestCases().size(), 1);
-        result.putAll(loadIntegrateTestCases(file, integrateTestCases.getDqlIntegrateTestCases()));
-        result.putAll(loadIntegrateTestCases(file, integrateTestCases.getDmlIntegrateTestCases()));
-        result.putAll(loadIntegrateTestCases(file, integrateTestCases.getDdlIntegrateTestCases()));
+    private Map<String, IntegrateTestCase> loadIntegrateTestCases(final URL url, final String filePrefix) throws IOException, URISyntaxException, JAXBException {
+        List<String> files = getFiles(url, filePrefix);
+        Preconditions.checkNotNull(files, "Cannot found integrate test cases.");
+        Map<String, IntegrateTestCase> result = new HashMap<>(Short.MAX_VALUE, 1);
+        for (String each : files) {
+            result.putAll(new HashMap<>(loadIntegrateTestCases(each, unmarshal(each, filePrefix).getIntegrateTestCases())));
+        }
         return result;
     }
     
@@ -109,13 +114,13 @@ public final class IntegrateTestCasesLoader {
         return result;
     }
     
-    private static List<String> getFiles(final URL url) throws IOException, URISyntaxException {
+    private static List<String> getFiles(final URL url, final String filePrefix) throws IOException, URISyntaxException {
         final List<String> result = new LinkedList<>();
         Files.walkFileTree(Paths.get(url.toURI()), new SimpleFileVisitor<Path>() {
             
             @Override
             public FileVisitResult visitFile(final Path file, final BasicFileAttributes basicFileAttributes) {
-                if (file.getFileName().toString().startsWith(INTEGRATE_TEST_CASES_FILE_PREFIX) && file.getFileName().toString().endsWith(".xml")) {
+                if (file.getFileName().toString().startsWith(filePrefix) && file.getFileName().toString().endsWith(".xml")) {
                     result.add(file.toFile().getPath());
                 }
                 return FileVisitResult.CONTINUE;
@@ -124,9 +129,18 @@ public final class IntegrateTestCasesLoader {
         return result;
     }
     
-    private static IntegrateTestCases unmarshal(final String assertFilePath) throws IOException, JAXBException {
+    private static IntegrateTestCases unmarshal(final String assertFilePath, final String filePrefix) throws IOException, JAXBException {
         try (FileReader reader = new FileReader(assertFilePath)) {
-            return (IntegrateTestCases) JAXBContext.newInstance(IntegrateTestCases.class).createUnmarshaller().unmarshal(reader);
+            if (DQL_INTEGRATE_TEST_CASES_FILE_PREFIX.equals(filePrefix)) {
+                return (DQLIntegrateTestCases) JAXBContext.newInstance(DQLIntegrateTestCases.class).createUnmarshaller().unmarshal(reader);
+            }
+            if (DML_INTEGRATE_TEST_CASES_FILE_PREFIX.equals(filePrefix)) {
+                return (DMLIntegrateTestCases) JAXBContext.newInstance(DMLIntegrateTestCases.class).createUnmarshaller().unmarshal(reader);
+            }
+            if (DDL_INTEGRATE_TEST_CASES_FILE_PREFIX.equals(filePrefix)) {
+                return (DDLIntegrateTestCases) JAXBContext.newInstance(DDLIntegrateTestCases.class).createUnmarshaller().unmarshal(reader);
+            }
+            throw new UnsupportedOperationException(filePrefix);
         }
     }
     
