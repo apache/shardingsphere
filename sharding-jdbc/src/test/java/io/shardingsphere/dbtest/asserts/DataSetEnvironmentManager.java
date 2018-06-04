@@ -34,6 +34,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Collection;
@@ -64,11 +65,14 @@ public final class DataSetEnvironmentManager {
     /**
      * Initialize data.
      * 
+     * @param forceInsert force insert
      * @throws SQLException SQL exception
      * @throws ParseException parse exception
      */
-    public void initialize() throws SQLException, ParseException {
-        clear();
+    public void initialize(final boolean forceInsert) throws SQLException, ParseException {
+        if (forceInsert) {
+            clear();
+        }
         Map<DataNode, List<DataSetRow>> dataNodeListMap = getDataSetRowMap();
         for (Entry<DataNode, List<DataSetRow>> entry : dataNodeListMap.entrySet()) {
             DataNode dataNode = entry.getKey();
@@ -80,7 +84,9 @@ public final class DataSetEnvironmentManager {
                 sqlValueGroups.add(new SQLValueGroup(dataSetMetadata, row.getValues()));
             }
             try (Connection connection = dataSourceMap.get(dataNode.getDataSourceName()).getConnection()) {
-                DatabaseUtil.executeBatch(connection, insertSQL, sqlValueGroups);
+                if (forceInsert || !isExisted(dataNode, connection)) {
+                    DatabaseUtil.executeBatch(connection, insertSQL, sqlValueGroups);
+                }
             }
         }
     }
@@ -105,6 +111,19 @@ public final class DataSetEnvironmentManager {
             placeholders.add("?");
         }
         return String.format("INSERT INTO %s (%s) VALUES (%s)", tableName, Joiner.on(",").join(columnNames), Joiner.on(",").join(placeholders));
+    }
+    
+    private boolean isExisted(final DataNode dataNode, final Connection connection) throws SQLException {
+        int count = 0;
+        try (
+                PreparedStatement preparedStatement = connection.prepareStatement(String.format("SELECT COUNT(*) FROM %s", dataNode.getTableName()));
+                ResultSet resultSet = preparedStatement.executeQuery()) {
+            
+            if (resultSet.next()) {
+                count = resultSet.getInt(1);
+            }
+        }
+        return 0 != count;
     }
     
     /**

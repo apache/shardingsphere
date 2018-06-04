@@ -20,10 +20,9 @@ package io.shardingsphere.dbtest.asserts;
 import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
 import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
 import io.shardingsphere.dbtest.common.DatabaseUtil;
+import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.dbtest.jaxb.assertion.dml.DMLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.jaxb.dataset.init.DataSetsRoot;
-import io.shardingsphere.dbtest.env.EnvironmentPath;
-import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
 
 import javax.sql.DataSource;
@@ -42,9 +41,7 @@ import static org.junit.Assert.assertThat;
 
 public final class DMLAssertEngine {
     
-    private final DMLIntegrateTestCaseAssertion integrateTestCaseAssertion;
-    
-    private final SQLCaseType caseType;
+    private final DMLIntegrateTestCaseAssertion assertion;
     
     private final Map<String, DataSource> dataSourceMap;
     
@@ -54,46 +51,44 @@ public final class DMLAssertEngine {
     
     private final String expectedDataFile;
     
-    public DMLAssertEngine(final String sqlCaseId, final String path, final DMLIntegrateTestCaseAssertion integrateTestCaseAssertion, 
-                           final Map<String, DataSource> dataSourceMap, final SQLCaseType caseType) throws IOException, SQLException {
-        this.integrateTestCaseAssertion = integrateTestCaseAssertion;
-        this.caseType = caseType;
+    public DMLAssertEngine(final String sqlCaseId, final String path, final DMLIntegrateTestCaseAssertion assertion, final Map<String, DataSource> dataSourceMap) throws IOException, SQLException {
+        this.assertion = assertion;
         this.dataSourceMap = dataSourceMap;
         dataSource = createDataSource(dataSourceMap);
         sql = SQLCasesLoader.getInstance().getSupportedSQL(sqlCaseId);
-        expectedDataFile = path.substring(0, path.lastIndexOf(File.separator) + 1) + "asserts/dml/" + integrateTestCaseAssertion.getExpectedDataFile();
+        expectedDataFile = path.substring(0, path.lastIndexOf(File.separator) + 1) + "asserts/dml/" + assertion.getExpectedDataFile();
     }
     
     private DataSource createDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException, IOException {
-        return "masterslaveonly".equals(integrateTestCaseAssertion.getShardingRuleType())
-                ? YamlMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(integrateTestCaseAssertion.getShardingRuleType())))
-                : YamlShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(integrateTestCaseAssertion.getShardingRuleType())));
+        return "masterslaveonly".equals(assertion.getShardingRuleType())
+                ? YamlMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(assertion.getShardingRuleType())))
+                : YamlShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(assertion.getShardingRuleType())));
     }
     
     public void assertExecuteUpdateForPreparedStatement() throws SQLException, ParseException, IOException, JAXBException {
         try (Connection connection = dataSource.getConnection()) {
-            assertThat(DatabaseUtil.executeUpdateForPreparedStatement(connection, sql, integrateTestCaseAssertion.getSQLValues()), is(integrateTestCaseAssertion.getExpectedUpdate()));
+            assertThat(DatabaseUtil.executeUpdateForPreparedStatement(connection, sql, assertion.getSQLValues()), is(assertion.getExpectedUpdate()));
         }
         assertDataSet();
     }
     
     public void assertExecuteForPreparedStatement() throws SQLException, ParseException, IOException, JAXBException {
         try (Connection connection = dataSource.getConnection()) {
-            assertThat(DatabaseUtil.executeDMLForPreparedStatement(connection, sql, integrateTestCaseAssertion.getSQLValues()), is(integrateTestCaseAssertion.getExpectedUpdate()));
+            assertThat(DatabaseUtil.executeDMLForPreparedStatement(connection, sql, assertion.getSQLValues()), is(assertion.getExpectedUpdate()));
         }
         assertDataSet();
     }
     
     public void assertExecuteUpdateForStatement() throws SQLException, ParseException, IOException, JAXBException {
         try (Connection connection = dataSource.getConnection()) {
-            assertThat(DatabaseUtil.executeUpdateForStatement(connection, sql, integrateTestCaseAssertion.getSQLValues()), is(integrateTestCaseAssertion.getExpectedUpdate()));
+            assertThat(DatabaseUtil.executeUpdateForStatement(connection, sql, assertion.getSQLValues()), is(assertion.getExpectedUpdate()));
         }
         assertDataSet();
     }
     
     public void assertExecuteForStatement() throws SQLException, ParseException, IOException, JAXBException {
         try (Connection connection = dataSource.getConnection()) {
-            assertThat(DatabaseUtil.executeDMLForStatement(connection, sql, integrateTestCaseAssertion.getSQLValues()), is(integrateTestCaseAssertion.getExpectedUpdate()));
+            assertThat(DatabaseUtil.executeDMLForStatement(connection, sql, assertion.getSQLValues()), is(assertion.getExpectedUpdate()));
         }
         assertDataSet();
     }
