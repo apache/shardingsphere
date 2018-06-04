@@ -48,6 +48,10 @@ mysql -u${your_user_name} -p${your_password} -h${your_host} -P13308
 
 ## FAQ
 
-问题：I/O exception (java.io.IOException) caught when processing request to {}->unix://localhost:80: Connection refused？
+问题1：I/O exception (java.io.IOException) caught when processing request to {}->unix://localhost:80: Connection refused？
 
 回答：在构建镜像前，请确保docker daemon进程已经运行。
+
+问题2：启动时报无法连接到数据库错误？
+
+回答：请确保/${your_work_dir}/conf/sharding-config.yaml配置文件中指定的mysql数据库的IP可以被Docker容器内部访问到。
