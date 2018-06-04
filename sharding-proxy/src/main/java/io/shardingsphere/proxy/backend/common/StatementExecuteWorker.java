@@ -81,7 +81,7 @@ public final class StatementExecuteWorker implements Callable<CommandResponsePac
                 return executeCommon(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql);
         }
     }
-
+    
     private CommandResponsePackets executeQuery(final DataSource dataSource, final String sql) {
         if (ProxyMode.MEMORY_STRICTLY == ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode())) {
             return executeQueryWithStreamResultSet(dataSource, sql);
@@ -92,13 +92,19 @@ public final class StatementExecuteWorker implements Callable<CommandResponsePac
         }
     }
     
+    private void setJDBCPreparedStatementParameters(final PreparedStatement preparedStatement) throws SQLException {
+        for (int i = 0; i < statementExecuteBackendHandler.getComStmtExecuteParameters().size(); i++) {
+            preparedStatement.setObject(i + 1, statementExecuteBackendHandler.getComStmtExecuteParameters().get(i));
+        }
+    }
+    
     private CommandResponsePackets executeQueryWithStreamResultSet(final DataSource dataSource, final String sql) {
         try {
             Connection connection = dataSource.getConnection();
             statementExecuteBackendHandler.getConnections().add(connection);
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setFetchSize(FETCH_ONE_ROW_A_TIME);
-            statementExecuteBackendHandler.setJDBCPreparedStatementParameters(preparedStatement);
+            setJDBCPreparedStatementParameters(preparedStatement);
             statementExecuteBackendHandler.getResultSets().add(preparedStatement.executeQuery());
             return getQueryDatabaseProtocolPackets();
         } catch (final SQLException ex) {
@@ -111,7 +117,7 @@ public final class StatementExecuteWorker implements Callable<CommandResponsePac
             Connection connection = dataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql)
         ) {
-            statementExecuteBackendHandler.setJDBCPreparedStatementParameters(preparedStatement);
+            setJDBCPreparedStatementParameters(preparedStatement);
             ResultSet resultSet = preparedStatement.executeQuery();
             CachedRowSet cachedRowSet = new CachedRowSetImpl();
             cachedRowSet.populate(resultSet);
@@ -130,12 +136,12 @@ public final class StatementExecuteWorker implements Callable<CommandResponsePac
             long lastInsertId = 0;
             if (sqlStatement instanceof InsertStatement) {
                 preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                statementExecuteBackendHandler.setJDBCPreparedStatementParameters(preparedStatement);
+                setJDBCPreparedStatementParameters(preparedStatement);
                 affectedRows = preparedStatement.executeUpdate();
                 lastInsertId = getGeneratedKey(preparedStatement);
             } else {
                 preparedStatement = connection.prepareStatement(sql);
-                statementExecuteBackendHandler.setJDBCPreparedStatementParameters(preparedStatement);
+                setJDBCPreparedStatementParameters(preparedStatement);
                 affectedRows = preparedStatement.executeUpdate();
             }
             return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
@@ -155,7 +161,7 @@ public final class StatementExecuteWorker implements Callable<CommandResponsePac
     private CommandResponsePackets executeUpdate(final DataSource dataSource, final String sql) {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            statementExecuteBackendHandler.setJDBCPreparedStatementParameters(preparedStatement);
+            setJDBCPreparedStatementParameters(preparedStatement);
             int affectedRows = preparedStatement.executeUpdate();
             ResultSet resultSet = preparedStatement.getGeneratedKeys();
             long lastInsertId = 0;
@@ -174,7 +180,7 @@ public final class StatementExecuteWorker implements Callable<CommandResponsePac
         try (
             Connection connection = dataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            statementExecuteBackendHandler.setJDBCPreparedStatementParameters(preparedStatement);
+            setJDBCPreparedStatementParameters(preparedStatement);
             boolean hasResultSet = preparedStatement.execute();
             if (hasResultSet) {
                 return getCommonDatabaseProtocolPackets(preparedStatement.getResultSet());

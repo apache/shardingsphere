@@ -51,7 +51,7 @@ import java.util.concurrent.Executors;
 @Getter
 public final class RuleRegistry {
     
-    private static final int MAX_EXECUTOR_THREADS = Runtime.getRuntime().availableProcessors() * 50;
+    private static final int MAX_EXECUTOR_THREADS = Runtime.getRuntime().availableProcessors() * 2;
     
     private static final RuleRegistry INSTANCE = new RuleRegistry();
     

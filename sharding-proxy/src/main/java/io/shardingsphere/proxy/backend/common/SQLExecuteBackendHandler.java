@@ -145,7 +145,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
                     continue;
                 }
                 packets.add(each.get());
-            } catch (InterruptedException | ExecutionException ex) {
+            } catch (final InterruptedException | ExecutionException ex) {
                 throw new ShardingException(ex.getMessage(), ex);
             }
         }

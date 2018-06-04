@@ -48,7 +48,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -158,24 +157,18 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
                     continue;
                 }
                 packets.add(each.get());
-            } catch (InterruptedException | ExecutionException ex) {
+            } catch (final InterruptedException | ExecutionException ex) {
                 throw new ShardingException(ex.getMessage(), ex);
             }
         }
     }
     
-    private List<Object> getComStmtExecuteParameters() {
+    List<Object> getComStmtExecuteParameters() {
         List<Object> result = new ArrayList<>(32);
         for (PreparedStatementParameter each : preparedStatementParameters) {
             result.add(each.getValue());
         }
         return result;
-    }
-    
-    public void setJDBCPreparedStatementParameters(final PreparedStatement preparedStatement) throws SQLException {
-        for (int i = 0; i < getComStmtExecuteParameters().size(); i++) {
-            preparedStatement.setObject(i + 1, getComStmtExecuteParameters().get(i));
-        }
     }
     
     private CommandResponsePackets merge(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets) {

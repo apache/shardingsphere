@@ -64,7 +64,7 @@ public final class SQLExecuteWorker implements Callable<CommandResponsePackets> 
     
     @Override
     public CommandResponsePackets call() {
-         return execute(sqlStatement, dataSourceName, realSQL);
+        return execute(sqlStatement, dataSourceName, realSQL);
     }
     
     private CommandResponsePackets execute(final SQLStatement sqlStatement, final String dataSourceName, final String sql) {
@@ -108,7 +108,7 @@ public final class SQLExecuteWorker implements Callable<CommandResponsePackets> 
         try (
             Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(sql);
+            ResultSet resultSet = statement.executeQuery(sql)
         ) {
             CachedRowSet cachedRowSet = new CachedRowSetImpl();
             cachedRowSet.populate(resultSet);
