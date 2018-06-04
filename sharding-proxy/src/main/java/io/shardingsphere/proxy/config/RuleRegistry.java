@@ -49,8 +49,6 @@ import java.util.Properties;
 @Getter
 public final class RuleRegistry {
     
-    private static final int MAXIMUM_POOL_SIZE = Runtime.getRuntime().availableProcessors() * 2 + 1;
-    
     private static final RuleRegistry INSTANCE = new RuleRegistry();
     
     private final Map<String, DataSource> dataSourceMap;
@@ -62,6 +60,8 @@ public final class RuleRegistry {
     private final ShardingMetaData shardingMetaData;
     
     private final boolean isOnlyMasterSlave;
+    
+    private final String proxyMode;
     
     private final boolean showSQL;
     
@@ -82,6 +82,7 @@ public final class RuleRegistry {
         isOnlyMasterSlave = shardingRule.getTableRules().isEmpty() && !masterSlaveRule.getMasterDataSourceName().isEmpty();
         Properties properties = yamlProxyConfiguration.getShardingRule().getProps();
         ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
+        proxyMode = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_MODE);
         showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         try {
             shardingMetaData = new ProxyShardingMetaData(dataSourceMap);
@@ -99,11 +100,11 @@ public final class RuleRegistry {
         config.setJdbcUrl(dataSourceParameter.getUrl());
         config.setUsername(dataSourceParameter.getUsername());
         config.setPassword(dataSourceParameter.getPassword());
-        config.setAutoCommit(true);
-        config.setConnectionTimeout(30000);
-        config.setIdleTimeout(60000);
-        config.setMaxLifetime(1800000);
-        config.setMaximumPoolSize(MAXIMUM_POOL_SIZE);
+        config.setAutoCommit(dataSourceParameter.getAutoCommit());
+        config.setConnectionTimeout(dataSourceParameter.getConnectionTimeout());
+        config.setIdleTimeout(dataSourceParameter.getIdleTimeout());
+        config.setMaxLifetime(dataSourceParameter.getMaxLifetime());
+        config.setMaximumPoolSize(dataSourceParameter.getMaximumPoolSize());
         config.addDataSourceProperty("useServerPrepStmts", "true");
         config.addDataSourceProperty("cachePrepStmts", "true");
         return new HikariDataSource(config);
