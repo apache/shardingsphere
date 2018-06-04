@@ -188,28 +188,28 @@ public final class DMLIntegrateTest {
     @Test
     public void assertExecuteUpdateForPreparedStatement() throws JAXBException, ParseException, IOException, SQLException {
         if (databaseTypeEnvironment.isEnabled()) {
-            new DMLAssertEngine(sqlCaseId, path, dataSetEnvironmentManager, integrateTestCaseAssertion, dataSourceMap, shardingRuleType, caseType).assertExecuteUpdateForPreparedStatement();
+            new DMLAssertEngine(sqlCaseId, path, integrateTestCaseAssertion, dataSourceMap, shardingRuleType, caseType).assertExecuteUpdateForPreparedStatement();
         }
     }
     
     @Test
     public void assertExecuteForPreparedStatement() throws JAXBException, ParseException, IOException, SQLException {
         if (databaseTypeEnvironment.isEnabled()) {
-            new DMLAssertEngine(sqlCaseId, path, dataSetEnvironmentManager, integrateTestCaseAssertion, dataSourceMap, shardingRuleType, caseType).assertExecuteForPreparedStatement();
+            new DMLAssertEngine(sqlCaseId, path, integrateTestCaseAssertion, dataSourceMap, shardingRuleType, caseType).assertExecuteForPreparedStatement();
         }
     }
     
     @Test
     public void assertExecuteUpdateForStatement() throws JAXBException, ParseException, IOException, SQLException {
         if (databaseTypeEnvironment.isEnabled()) {
-            new DMLAssertEngine(sqlCaseId, path, dataSetEnvironmentManager, integrateTestCaseAssertion, dataSourceMap, shardingRuleType, caseType).assertExecuteUpdateForStatement();
+            new DMLAssertEngine(sqlCaseId, path, integrateTestCaseAssertion, dataSourceMap, shardingRuleType, caseType).assertExecuteUpdateForStatement();
         }
     }
     
     @Test
     public void assertExecuteForStatement() throws JAXBException, ParseException, IOException, SQLException {
         if (databaseTypeEnvironment.isEnabled()) {
-            new DMLAssertEngine(sqlCaseId, path, dataSetEnvironmentManager, integrateTestCaseAssertion, dataSourceMap, shardingRuleType, caseType).assertExecuteForStatement();
+            new DMLAssertEngine(sqlCaseId, path, integrateTestCaseAssertion, dataSourceMap, shardingRuleType, caseType).assertExecuteForStatement();
         }
     }
 }

@@ -56,9 +56,7 @@ public final class DMLAssertEngine {
     
     private final String expectedDataFile;
     
-    private final DataSetEnvironmentManager dataSetEnvironmentManager;
-    
-    public DMLAssertEngine(final String sqlCaseId, final String path, final DataSetEnvironmentManager dataSetEnvironmentManager, final DMLIntegrateTestCaseAssertion integrateTestCaseAssertion, 
+    public DMLAssertEngine(final String sqlCaseId, final String path, final DMLIntegrateTestCaseAssertion integrateTestCaseAssertion, 
                            final Map<String, DataSource> dataSourceMap, final String shardingRuleType, final SQLCaseType caseType) throws IOException, SQLException {
         this.integrateTestCaseAssertion = integrateTestCaseAssertion;
         this.shardingRuleType = shardingRuleType;
@@ -67,7 +65,6 @@ public final class DMLAssertEngine {
         dataSource = createDataSource(dataSourceMap);
         sql = SQLCasesLoader.getInstance().getSupportedSQL(sqlCaseId);
         expectedDataFile = path.substring(0, path.lastIndexOf(File.separator) + 1) + "asserts/dml/" + integrateTestCaseAssertion.getExpectedDataFile();
-        this.dataSetEnvironmentManager = dataSetEnvironmentManager;
     }
     
     private DataSource createDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException, IOException {
@@ -77,51 +74,31 @@ public final class DMLAssertEngine {
     }
     
     public void assertExecuteUpdateForPreparedStatement() throws SQLException, ParseException, IOException, JAXBException {
-        try {
-            dataSetEnvironmentManager.initialize();
-            try (Connection connection = dataSource.getConnection()) {
-                assertThat(DatabaseUtil.executeUpdateForPreparedStatement(connection, sql, integrateTestCaseAssertion.getSQLValues()), is(integrateTestCaseAssertion.getExpectedUpdate()));
-            }
-            assertDataSet();
-        } finally {
-            dataSetEnvironmentManager.clear();
+        try (Connection connection = dataSource.getConnection()) {
+            assertThat(DatabaseUtil.executeUpdateForPreparedStatement(connection, sql, integrateTestCaseAssertion.getSQLValues()), is(integrateTestCaseAssertion.getExpectedUpdate()));
         }
+        assertDataSet();
     }
     
     public void assertExecuteForPreparedStatement() throws SQLException, ParseException, IOException, JAXBException {
-        try {
-            dataSetEnvironmentManager.initialize();
-            try (Connection connection = dataSource.getConnection()) {
-                assertThat(DatabaseUtil.executeDMLForPreparedStatement(connection, sql, integrateTestCaseAssertion.getSQLValues()), is(integrateTestCaseAssertion.getExpectedUpdate()));
-            }
-            assertDataSet();
-        } finally {
-            dataSetEnvironmentManager.clear();
+        try (Connection connection = dataSource.getConnection()) {
+            assertThat(DatabaseUtil.executeDMLForPreparedStatement(connection, sql, integrateTestCaseAssertion.getSQLValues()), is(integrateTestCaseAssertion.getExpectedUpdate()));
         }
+        assertDataSet();
     }
     
     public void assertExecuteUpdateForStatement() throws SQLException, ParseException, IOException, JAXBException {
-        try {
-            dataSetEnvironmentManager.initialize();
-            try (Connection connection = dataSource.getConnection()) {
-                assertThat(DatabaseUtil.executeUpdateForStatement(connection, sql, integrateTestCaseAssertion.getSQLValues()), is(integrateTestCaseAssertion.getExpectedUpdate()));
-            }
-            assertDataSet();
-        } finally {
-            dataSetEnvironmentManager.clear();
+        try (Connection connection = dataSource.getConnection()) {
+            assertThat(DatabaseUtil.executeUpdateForStatement(connection, sql, integrateTestCaseAssertion.getSQLValues()), is(integrateTestCaseAssertion.getExpectedUpdate()));
         }
+        assertDataSet();
     }
     
     public void assertExecuteForStatement() throws SQLException, ParseException, IOException, JAXBException {
-        try {
-            dataSetEnvironmentManager.initialize();
-            try (Connection connection = dataSource.getConnection()) {
-                assertThat(DatabaseUtil.executeDMLForStatement(connection, sql, integrateTestCaseAssertion.getSQLValues()), is(integrateTestCaseAssertion.getExpectedUpdate()));
-            }
-            assertDataSet();
-        } finally {
-            dataSetEnvironmentManager.clear();
+        try (Connection connection = dataSource.getConnection()) {
+            assertThat(DatabaseUtil.executeDMLForStatement(connection, sql, integrateTestCaseAssertion.getSQLValues()), is(integrateTestCaseAssertion.getExpectedUpdate()));
         }
+        assertDataSet();
     }
     
     private void assertDataSet() throws IOException, JAXBException, SQLException {
