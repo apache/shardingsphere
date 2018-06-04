@@ -152,7 +152,7 @@ public final class DMLIntegrateTest {
     @Before
     public void insertData() throws SQLException, ParseException {
         if (databaseTypeEnvironment.isEnabled()) {
-            dataSetEnvironmentManager.initialize();
+            dataSetEnvironmentManager.initialize(true);
         }
     }
     
