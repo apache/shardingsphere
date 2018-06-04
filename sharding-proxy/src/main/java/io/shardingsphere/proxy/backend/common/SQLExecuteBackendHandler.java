@@ -17,15 +17,14 @@
 
 package io.shardingsphere.proxy.backend.common;
 
-import com.sun.rowset.CachedRowSetImpl;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.parsing.SQLJudgeEngine;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.StatementRoutingEngine;
@@ -35,27 +34,26 @@ import io.shardingsphere.proxy.backend.mysql.MySQLPacketQueryResult;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
-import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
-import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextResultSetRowPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
+import lombok.Getter;
+import lombok.Setter;
 
-import javax.sql.DataSource;
-import javax.sql.rowset.CachedRowSet;
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 /**
  * SQL execute backend handler.
@@ -63,9 +61,9 @@ import java.util.List;
  * @author zhangliang
  * @author panjuan
  */
+@Getter
+@Setter
 public final class SQLExecuteBackendHandler implements BackendHandler {
-    
-    private static final Integer FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
     
     private final String sql;
     
@@ -89,8 +87,8 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
     
     public SQLExecuteBackendHandler(final String sql, final DatabaseType databaseType, final boolean showSQL) {
         this.sql = sql;
-        connections = new ArrayList<>(1024);
-        resultSets = new ArrayList<>(1024);
+        connections = new CopyOnWriteArrayList<>();
+        resultSets = new CopyOnWriteArrayList<>();
         isMerged = false;
         hasMoreResultValueFlag = true;
         this.databaseType = databaseType;
@@ -114,9 +112,12 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
         MasterSlaveRouter masterSlaveRouter = new MasterSlaveRouter(RuleRegistry.getInstance().getMasterSlaveRule());
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
         String dataSourceName = masterSlaveRouter.route(sqlStatement.getType()).iterator().next();
-        List<CommandResponsePackets> result = new LinkedList<>();
-        result.add(execute(sqlStatement, dataSourceName, sql));
-        return merge(sqlStatement, result);
+        List<CommandResponsePackets> packets = new CopyOnWriteArrayList<>();
+        ExecutorService executorService = RuleRegistry.getInstance().getExecutorService();
+        List<Future<CommandResponsePackets>> resultList = new ArrayList<>(1024);
+        resultList.add(executorService.submit(new SQLExecuteWorker(this, sqlStatement, dataSourceName, sql)));
+        getCommandResponsePackets(resultList, packets);
+        return merge(sqlStatement, packets);
     }
     
     private CommandResponsePackets executeForSharding() {
@@ -125,175 +126,29 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
         if (routeResult.getExecutionUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
         }
-        List<CommandResponsePackets> packets = new LinkedList<>();
+        List<CommandResponsePackets> packets = new CopyOnWriteArrayList<>();
+        ExecutorService executorService = RuleRegistry.getInstance().getExecutorService();
+        List<Future<CommandResponsePackets>> resultList = new ArrayList<>(1024);
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
-            // TODO multiple threads
-            packets.add(execute(routeResult.getSqlStatement(), each.getDataSource(), each.getSqlUnit().getSql()));
+            resultList.add(executorService.submit(new SQLExecuteWorker(this, routeResult.getSqlStatement(), each.getDataSource(), each.getSqlUnit().getSql())));
         }
+        getCommandResponsePackets(resultList, packets);
         CommandResponsePackets result = merge(routeResult.getSqlStatement(), packets);
         ProxyShardingRefreshHandler.build(routeResult).execute();
         return result;
     }
     
-    private CommandResponsePackets execute(final SQLStatement sqlStatement, final String dataSourceName, final String sql) {
-        switch (sqlStatement.getType()) {
-            case DQL:
-            case DAL:
-                return executeQuery(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql);
-            case DML:
-            case DDL:
-                return RuleRegistry.getInstance().isOnlyMasterSlave() ? executeUpdate(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql)
-                    : executeUpdate(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql, sqlStatement);
-            default:
-                return executeCommon(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql);
-        }
-    }
-    
-    private CommandResponsePackets executeQuery(final DataSource dataSource, final String sql) {
-        if (ProxyMode.MEMORY_STRICTLY == ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode())) {
-            return executeQueryWithStreamResultSet(dataSource, sql);
-        } else if (ProxyMode.CONNECTION_STRICTLY == ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode())) {
-            return executeQueryWithNonStreamResultSet(dataSource, sql);
-        } else {
-            return new CommandResponsePackets(new ErrPacket(1, 0, "", "", "Invalid proxy.mode"));
-        }
-    }
-    
-    private CommandResponsePackets executeQueryWithStreamResultSet(final DataSource dataSource, final String sql) {
-        try {
-            Connection connection = dataSource.getConnection();
-            connections.add(connection);
-            Statement statement = connection.createStatement();
-            statement.setFetchSize(FETCH_ONE_ROW_A_TIME);
-            resultSets.add(statement.executeQuery(sql));
-            return getQueryDatabaseProtocolPackets();
-        } catch (final SQLException ex) {
-            return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
-        }
-    }
-    
-    private CommandResponsePackets executeQueryWithNonStreamResultSet(final DataSource dataSource, final String sql) {
-        try (
-            Connection connection = dataSource.getConnection();
-            Statement statement = connection.createStatement();
-        ) {
-            ResultSet resultSet = statement.executeQuery(sql);
-            CachedRowSet cachedRowSet = new CachedRowSetImpl();
-            cachedRowSet.populate(resultSet);
-            resultSets.add(cachedRowSet);
-            return getQueryDatabaseProtocolPackets();
-        } catch (final SQLException ex) {
-            return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
-        }
-    }
-    
-    private CommandResponsePackets executeUpdate(final DataSource dataSource, final String sql, final SQLStatement sqlStatement) {
-        try (
-            Connection connection = dataSource.getConnection();
-            Statement statement = connection.createStatement()) {
-            int affectedRows;
-            long lastInsertId = 0;
-            if (sqlStatement instanceof InsertStatement) {
-                affectedRows = statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
-                lastInsertId = getGeneratedKey(statement);
-            } else {
-                affectedRows = statement.executeUpdate(sql);
+    private void getCommandResponsePackets(final List<Future<CommandResponsePackets>> resultList, final List<CommandResponsePackets> packets) {
+        for (Future<CommandResponsePackets> each : resultList) {
+            try {
+                while (!each.isDone()) {
+                    continue;
+                }
+                packets.add(each.get());
+            } catch (final InterruptedException | ExecutionException ex) {
+                throw new ShardingException(ex.getMessage(), ex);
             }
-            return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
-        } catch (final SQLException ex) {
-            return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
-        } finally {
-            MasterVisitedManager.clear();
         }
-    }
-    
-    private CommandResponsePackets executeUpdate(final DataSource dataSource, final String sql) {
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
-            int affectedRows = statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
-            ResultSet resultSet = statement.getGeneratedKeys();
-            long lastInsertId = 0;
-            while (resultSet.next()) {
-                lastInsertId = resultSet.getLong(1);
-            }
-            return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
-        } catch (final SQLException ex) {
-            return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
-        } finally {
-            MasterVisitedManager.clear();
-        }
-    }
-    
-    private CommandResponsePackets executeCommon(final DataSource dataSource, final String sql) {
-        try (
-            Connection connection = dataSource.getConnection();
-            Statement statement = connection.createStatement()) {
-            boolean hasResultSet = statement.execute(sql);
-            if (hasResultSet) {
-                return getCommonDatabaseProtocolPackets(statement.getResultSet());
-            } else {
-                return new CommandResponsePackets(new OKPacket(1, statement.getUpdateCount(), 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
-            }
-        } catch (final SQLException ex) {
-            return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
-        } finally {
-            MasterVisitedManager.clear();
-        }
-    }
-    
-    private CommandResponsePackets getQueryDatabaseProtocolPackets() throws SQLException {
-        CommandResponsePackets result = new CommandResponsePackets();
-        int currentSequenceId = 0;
-        ResultSetMetaData resultSetMetaData = resultSets.get(resultSets.size() - 1).getMetaData();
-        columnCount = resultSetMetaData.getColumnCount();
-        if (0 == columnCount) {
-            result.addPacket(new OKPacket(++currentSequenceId, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
-            return result;
-        }
-        result.addPacket(new FieldCountPacket(++currentSequenceId, columnCount));
-        for (int i = 1; i <= columnCount; i++) {
-            result.addPacket(new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData.getSchemaName(i), resultSetMetaData.getTableName(i),
-                resultSetMetaData.getTableName(i), resultSetMetaData.getColumnLabel(i), resultSetMetaData.getColumnName(i),
-                resultSetMetaData.getColumnDisplaySize(i), ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(i)), 0));
-        }
-        result.addPacket(new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
-        return result;
-    }
-    
-    private CommandResponsePackets getCommonDatabaseProtocolPackets(final ResultSet resultSet) throws SQLException {
-        CommandResponsePackets result = new CommandResponsePackets();
-        int currentSequenceId = 0;
-        ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-        columnCount = resultSetMetaData.getColumnCount();
-        if (0 == columnCount) {
-            result.addPacket(new OKPacket(++currentSequenceId, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
-            return result;
-        }
-        result.addPacket(new FieldCountPacket(++currentSequenceId, columnCount));
-        for (int i = 1; i <= columnCount; i++) {
-            result.addPacket(new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData.getSchemaName(i), resultSetMetaData.getTableName(i),
-                resultSetMetaData.getTableName(i), resultSetMetaData.getColumnLabel(i), resultSetMetaData.getColumnName(i),
-                resultSetMetaData.getColumnDisplaySize(i), ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(i)), 0));
-        }
-        result.addPacket(new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
-        while (resultSet.next()) {
-            List<Object> data = new ArrayList<>(columnCount);
-            for (int i = 1; i <= columnCount; i++) {
-                data.add(resultSet.getObject(i));
-            }
-            result.addPacket(new TextResultSetRowPacket(++currentSequenceId, data));
-        }
-        result.addPacket(new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
-        return result;
-    }
-    
-    private long getGeneratedKey(final Statement statement) throws SQLException {
-        long result = 0;
-        ResultSet resultSet = statement.getGeneratedKeys();
-        if (resultSet.next()) {
-            result = resultSet.getLong(1);
-        }
-        return result;
     }
     
     private CommandResponsePackets merge(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets) {
