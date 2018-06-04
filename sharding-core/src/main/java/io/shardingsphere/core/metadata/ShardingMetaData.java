@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.metadata;
 
+import com.google.common.base.Strings;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -32,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -65,11 +67,37 @@ public abstract class ShardingMetaData {
      */
     public void init(final ShardingRule shardingRule) {
         tableMetaDataMap = new HashMap<>(shardingRule.getTableRules().size(), 1);
-        for (TableRule each : shardingRule.getTableRules()) {
-            refresh(each, shardingRule);
+        try {
+            Collection<TableRule> tableRules = getTableRules(shardingRule);
+            for (TableRule each : tableRules) {
+                refresh(each, shardingRule);
+            }
+        } catch (SQLException ex) {
+            throw new ShardingException(ex);
         }
     }
-
+    
+    private Collection<TableRule> getTableRules(final ShardingRule shardingRule) throws SQLException {
+        Collection<TableRule> tableRules = shardingRule.getTableRules();
+        String defaultDataSourceName = shardingRule.getShardingDataSourceNames().getDefaultDataSourceName();
+        if (!Strings.isNullOrEmpty(defaultDataSourceName)) {
+            Collection<String> defaultTableNames = getTableNamesFromDefaultDataSource(defaultDataSourceName);
+            for (String each : defaultTableNames) {
+                tableRules.add(shardingRule.getTableRule(each));
+            }
+        }
+        return tableRules;
+    }
+    
+    /**
+     * Get table names from default data source.
+     *
+     * @param defaultDataSourceName Default data source name.
+     * @return Table names from default data source
+     * @throws SQLException SQL exception.
+     */
+    public abstract Collection<String> getTableNamesFromDefaultDataSource(String defaultDataSourceName) throws SQLException;
+    
     /**
      * refresh each tableMetaData by TableRule.
      *

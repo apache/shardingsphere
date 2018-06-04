@@ -22,6 +22,7 @@ import io.shardingsphere.core.metadata.ColumnMetaData;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -44,6 +45,11 @@ public final class DefaultShardingMetaDataHandler extends ShardingMetaDataHandle
 
     @Override
     public List<ColumnMetaData> getExistColumnMeta(final Connection connection) throws SQLException {
+        return new LinkedList<>();
+    }
+    
+    @Override
+    public Collection<String> getTableNamesFromDefaultDataSource() throws SQLException {
         return new LinkedList<>();
     }
 }
