@@ -173,6 +173,7 @@ shardingRule:
 
 orchestration:
   name: orchestration_ds
+  type: SHARDING
   overwrite: true
   zookeeper:
     namespace: orchestration
@@ -186,6 +187,7 @@ orchestration:
 
 orchestration:
   name: orchestration_ds
+  type: SHARDING
   overwrite: true
   etcd:
     serverLists: http://localhost:2379
@@ -291,7 +293,7 @@ masterSlaveRule: #省略读写分离规则配置
 orchestration:
   name: #数据治理实例名称
   overwrite: #本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准
-  type: #数据源类型，可选值：sharding，masterslave
+  type: #数据源类型，可选值：SHARDING，MASTER_SLAVE
   zookeeper: #Zookeeper注册中心配置
     serverLists: #连接Zookeeper服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181
     namespace: #Zookeeper的命名空间

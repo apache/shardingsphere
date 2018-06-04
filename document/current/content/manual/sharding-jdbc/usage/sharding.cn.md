@@ -101,16 +101,16 @@ tables:
 ```
 
 ```java
-    DataSource dataSource = ShardingDataSourceFactory.createDataSource(yamlFile);
+    DataSource dataSource = YamlShardingDataSourceFactory.createDataSource(yamlFile);
 ```
 
 ### 使用原生JDBC
 
-通过ShardingDataSourceFactory工厂和规则配置对象获取ShardingDataSource，ShardingDataSource实现自JDBC的标准接口DataSource。然后可通过DataSource选择使用原生JDBC开发，或者使用JPA, MyBatis等ORM工具。
+通过ShardingDataSourceFactory或者YamlShardingDataSourceFactory工厂和规则配置对象获取ShardingDataSource，ShardingDataSource实现自JDBC的标准接口DataSource。然后可通过DataSource选择使用原生JDBC开发，或者使用JPA, MyBatis等ORM工具。
 以JDBC原生实现为例：
 
 ```java
-DataSource dataSource = ShardingDataSourceFactory.createDataSource(yamlFile);
+DataSource dataSource = YamlShardingDataSourceFactory.createDataSource(yamlFile);
 String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
 try (
         Connection conn = dataSource.getConnection();
