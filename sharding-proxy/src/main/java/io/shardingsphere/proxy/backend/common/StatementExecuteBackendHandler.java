@@ -19,6 +19,7 @@ package io.shardingsphere.proxy.backend.common;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.QueryResult;
@@ -126,17 +127,7 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
         ExecutorService executorService = RuleRegistry.getInstance().getExecutorService();
         List<Future<CommandResponsePackets>> resultList = new ArrayList<>(1024);
         resultList.add(executorService.submit(new StatementExecuteWorker(this, sqlStatement, dataSourceName, sql)));
-        for (Future<CommandResponsePackets> each : resultList) {
-            try {
-                while (!each.isDone()) {
-                    continue;
-                }
-                packets.add(each.get());
-            } catch (InterruptedException | ExecutionException ex) {
-                return new CommandResponsePackets(new ErrPacket(1, 0, "", "", "" + ex.getMessage()));
-            
-            }
-        }
+        getCommandResponsePackets(resultList, packets);
         return merge(sqlStatement, packets);
     }
     
@@ -154,6 +145,13 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             resultList.add(executorService.submit(new StatementExecuteWorker(this, routeResult.getSqlStatement(), each.getDataSource(), each.getSqlUnit().getSql())));
         }
+        getCommandResponsePackets(resultList, packets);
+        CommandResponsePackets result = merge(routeResult.getSqlStatement(), packets);
+        ProxyShardingRefreshHandler.build(routeResult).execute();
+        return result;
+    }
+    
+    private void getCommandResponsePackets(final List<Future<CommandResponsePackets>> resultList, final List<CommandResponsePackets> packets) {
         for (Future<CommandResponsePackets> each : resultList) {
             try {
                 while (!each.isDone()) {
@@ -161,13 +159,9 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
                 }
                 packets.add(each.get());
             } catch (InterruptedException | ExecutionException ex) {
-                return new CommandResponsePackets(new ErrPacket(1, 0, "", "", "" + ex.getMessage()));
-            
+                throw new ShardingException(ex.getMessage(), ex);
             }
         }
-        CommandResponsePackets result = merge(routeResult.getSqlStatement(), packets);
-        ProxyShardingRefreshHandler.build(routeResult).execute();
-        return result;
     }
     
     private List<Object> getComStmtExecuteParameters() {
