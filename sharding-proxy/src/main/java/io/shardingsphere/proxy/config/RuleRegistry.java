@@ -17,6 +17,8 @@
 
 package io.shardingsphere.proxy.config;
 
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import io.shardingsphere.core.constant.ShardingProperties;
@@ -33,12 +35,10 @@ import lombok.Getter;
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
@@ -65,7 +65,7 @@ public final class RuleRegistry {
     
     private final boolean isOnlyMasterSlave;
     
-    private final ExecutorService executorService = Executors.newFixedThreadPool(MAX_EXECUTOR_THREADS);
+    private final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(MAX_EXECUTOR_THREADS));
     
     private final String proxyMode;
     
@@ -90,14 +90,11 @@ public final class RuleRegistry {
         ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
         proxyMode = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_MODE);
         showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
-        try {
-            shardingMetaData = new ProxyShardingMetaData(dataSourceMap);
-            if (!isOnlyMasterSlave) {
-                shardingMetaData.init(shardingRule);
-            }
-        } catch (final SQLException ex) {
-            throw new ShardingException(ex);
+        shardingMetaData = new ProxyShardingMetaData(executorService, dataSourceMap);
+        if (!isOnlyMasterSlave) {
+            shardingMetaData.init(shardingRule);
         }
+        
     }
     
     private DataSource getDataSource(final DataSourceParameter dataSourceParameter) {
