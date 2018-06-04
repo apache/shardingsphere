@@ -153,14 +153,16 @@ public abstract class BaseClient implements IClient {
             return;
         }
         try {
-            holder.zooKeeper.create(rootNode, date, authorities, CreateMode.PERSISTENT);
+            if (null == holder.getZooKeeper().exists(rootNode, false)){
+                holder.zooKeeper.create(rootNode, date, authorities, CreateMode.PERSISTENT);
+            }
+            rootExist = true;
             logger.debug("creating root:{}", rootNode);
         } catch (KeeperException.NodeExistsException ee){
             logger.warn("root create:{}", ee.getMessage());
             rootExist = true;
             return;
         }
-        rootExist = true;
         holder.zooKeeper.exists(rootNode, WatcherCreator.deleteWatcher(new Listener(rootNode) {
             @Override
             public void process(WatchedEvent event) {
