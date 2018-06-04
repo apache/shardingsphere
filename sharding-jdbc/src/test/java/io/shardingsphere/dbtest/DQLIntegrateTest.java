@@ -79,7 +79,7 @@ public final class DQLIntegrateTest {
         if (databaseTypeEnvironment.isEnabled()) {
             Map<String, DataSource> dataSourceMap = createDataSourceMap(integrateTestCaseAssertion);
             dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(integrateTestCaseAssertion.getShardingRuleType()), dataSourceMap);
-            dqlAssertEngine = new DQLAssertEngine(sqlCaseId, path, integrateTestCaseAssertion, dataSourceMap, caseType);
+            dqlAssertEngine = new DQLAssertEngine(sqlCaseId, path, integrateTestCaseAssertion, dataSourceMap);
         } else {
             dataSetEnvironmentManager = null;
             dqlAssertEngine = null;

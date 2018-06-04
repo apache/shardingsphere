@@ -78,7 +78,7 @@ public final class DMLIntegrateTest {
         if (databaseTypeEnvironment.isEnabled()) {
             Map<String, DataSource> dataSourceMap = createDataSourceMap(integrateTestCaseAssertion);
             dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(integrateTestCaseAssertion.getShardingRuleType()), dataSourceMap);
-            dmlAssertEngine = new DMLAssertEngine(sqlCaseId, path, integrateTestCaseAssertion, dataSourceMap, caseType);
+            dmlAssertEngine = new DMLAssertEngine(sqlCaseId, path, integrateTestCaseAssertion, dataSourceMap);
         } else {
             dataSetEnvironmentManager = null;
             dmlAssertEngine = null;

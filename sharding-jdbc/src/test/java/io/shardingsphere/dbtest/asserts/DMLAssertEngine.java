@@ -20,10 +20,9 @@ package io.shardingsphere.dbtest.asserts;
 import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
 import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
 import io.shardingsphere.dbtest.common.DatabaseUtil;
+import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.dbtest.jaxb.assertion.dml.DMLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.jaxb.dataset.init.DataSetsRoot;
-import io.shardingsphere.dbtest.env.EnvironmentPath;
-import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
 
 import javax.sql.DataSource;
@@ -44,8 +43,6 @@ public final class DMLAssertEngine {
     
     private final DMLIntegrateTestCaseAssertion integrateTestCaseAssertion;
     
-    private final SQLCaseType caseType;
-    
     private final Map<String, DataSource> dataSourceMap;
     
     private final DataSource dataSource;
@@ -55,9 +52,8 @@ public final class DMLAssertEngine {
     private final String expectedDataFile;
     
     public DMLAssertEngine(final String sqlCaseId, final String path, final DMLIntegrateTestCaseAssertion integrateTestCaseAssertion, 
-                           final Map<String, DataSource> dataSourceMap, final SQLCaseType caseType) throws IOException, SQLException {
+                           final Map<String, DataSource> dataSourceMap) throws IOException, SQLException {
         this.integrateTestCaseAssertion = integrateTestCaseAssertion;
-        this.caseType = caseType;
         this.dataSourceMap = dataSourceMap;
         dataSource = createDataSource(dataSourceMap);
         sql = SQLCasesLoader.getInstance().getSupportedSQL(sqlCaseId);

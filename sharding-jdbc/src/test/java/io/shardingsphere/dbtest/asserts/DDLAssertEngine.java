@@ -21,13 +21,12 @@ import com.google.common.base.Strings;
 import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
 import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
 import io.shardingsphere.dbtest.common.DatabaseUtil;
-import io.shardingsphere.dbtest.jaxb.assertion.ddl.DDLIntegrateTestCaseAssertion;
-import io.shardingsphere.dbtest.jaxb.dataset.expected.metadata.ExpectedColumn;
-import io.shardingsphere.dbtest.jaxb.dataset.expected.metadata.ExpectedMetadataRoot;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.dbtest.env.schema.SchemaEnvironmentManager;
-import io.shardingsphere.test.sql.SQLCaseType;
+import io.shardingsphere.dbtest.jaxb.assertion.ddl.DDLIntegrateTestCaseAssertion;
+import io.shardingsphere.dbtest.jaxb.dataset.expected.metadata.ExpectedColumn;
+import io.shardingsphere.dbtest.jaxb.dataset.expected.metadata.ExpectedMetadataRoot;
 import io.shardingsphere.test.sql.SQLCasesLoader;
 import org.apache.commons.lang3.StringUtils;
 
@@ -50,8 +49,6 @@ public final class DDLAssertEngine {
     
     private final DatabaseTypeEnvironment databaseTypeEnvironment;
     
-    private final SQLCaseType caseType;
-    
     private final DataSource dataSource;
     
     private final String sql;
@@ -59,10 +56,9 @@ public final class DDLAssertEngine {
     private final String expectedDataFile;
     
     public DDLAssertEngine(final String sqlCaseId, final String path, final DDLIntegrateTestCaseAssertion integrateTestCaseAssertion, final Map<String, DataSource> dataSourceMap,
-                           final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, SQLException {
+                           final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, SQLException {
         this.integrateTestCaseAssertion = integrateTestCaseAssertion;
         this.databaseTypeEnvironment = databaseTypeEnvironment;
-        this.caseType = caseType;
         dataSource = createDataSource(dataSourceMap);
         sql = SQLCasesLoader.getInstance().getSupportedSQL(sqlCaseId);
         expectedDataFile = path.substring(0, path.lastIndexOf(File.separator) + 1) + "asserts/ddl/" + integrateTestCaseAssertion.getExpectedDataFile();
