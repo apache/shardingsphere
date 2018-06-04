@@ -52,18 +52,16 @@ public abstract class BaseClient implements IClient {
         holder.start();
     }
     
-    //copy curator
     @Override
     public synchronized boolean blockUntilConnected(int wait, TimeUnit units) throws InterruptedException {
-        long startTime = System.currentTimeMillis();
-        long maxWaitTimeMs = units != null ? TimeUnit.MILLISECONDS.convert(wait, units) : 0;
+        long maxWait = units != null ? TimeUnit.MILLISECONDS.convert(wait, units) : 0;
     
         while (!holder.isConnected()){
-            long waitTime = maxWaitTimeMs - (System.currentTimeMillis() - startTime);
+            long waitTime = maxWait - 30;
             if (waitTime <= 0){
                 return holder.isConnected();
             }
-            wait(waitTime);
+            wait(30);
         }
         return true;
     }
