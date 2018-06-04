@@ -18,14 +18,14 @@
 package io.shardingsphere.dbtest.asserts;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.util.InlineExpressionParser;
 import io.shardingsphere.dbtest.common.DatabaseUtil;
-import io.shardingsphere.dbtest.config.dataset.DataSetColumnMetadata;
-import io.shardingsphere.dbtest.config.dataset.DataSetMetadata;
-import io.shardingsphere.dbtest.config.dataset.DataSetRow;
-import io.shardingsphere.dbtest.config.dataset.DataSetsRoot;
+import io.shardingsphere.dbtest.common.SQLValueGroup;
+import io.shardingsphere.dbtest.jaxb.dataset.init.DataSetColumnMetadata;
+import io.shardingsphere.dbtest.jaxb.dataset.init.DataSetMetadata;
+import io.shardingsphere.dbtest.jaxb.dataset.init.DataSetRow;
+import io.shardingsphere.dbtest.jaxb.dataset.init.DataSetsRoot;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
@@ -33,6 +33,7 @@ import javax.xml.bind.JAXBException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Collection;
@@ -74,12 +75,12 @@ public final class DataSetEnvironmentManager {
             List<DataSetRow> dataSetRows = entry.getValue();
             DataSetMetadata dataSetMetadata = dataSetsRoot.findDataSetMetadata(dataNode);
             String insertSQL = generateInsertSQL(dataNode.getTableName(), dataSetMetadata.getColumnMetadataList());
-            List<Map<String, String>> valueMaps = new LinkedList<>();
+            List<SQLValueGroup> sqlValueGroups = new LinkedList<>();
             for (DataSetRow row : dataSetRows) {
-                valueMaps.add(getValueMap(row, dataSetMetadata));
+                sqlValueGroups.add(new SQLValueGroup(dataSetMetadata, row.getValues()));
             }
             try (Connection connection = dataSourceMap.get(dataNode.getDataSourceName()).getConnection()) {
-                DatabaseUtil.executeUpdate(connection, insertSQL, valueMaps, dataSetMetadata.getColumnMetadataList());
+                DatabaseUtil.executeBatch(connection, insertSQL, sqlValueGroups);
             }
         }
     }
@@ -106,17 +107,6 @@ public final class DataSetEnvironmentManager {
         return String.format("INSERT INTO %s (%s) VALUES (%s)", tableName, Joiner.on(",").join(columnNames), Joiner.on(",").join(placeholders));
     }
     
-    private Map<String, String> getValueMap(final DataSetRow dataSetRow, final DataSetMetadata dataSetMetadata) {
-        List<String> values = Splitter.on(',').trimResults().splitToList(dataSetRow.getValues());
-        int count = 0;
-        Map<String, String> result = new LinkedHashMap<>(values.size(), 1);
-        for (DataSetColumnMetadata each : dataSetMetadata.getColumnMetadataList()) {
-            result.put(each.getName(), values.get(count));
-            count++;
-        }
-        return result;
-    }
-    
     /**
      * Clear data.
      * 
@@ -131,13 +121,11 @@ public final class DataSetEnvironmentManager {
     private void clear(final String dataSourceName, final Collection<String> tableNames) throws SQLException {
         try (Connection connection = dataSourceMap.get(dataSourceName).getConnection()) {
             for (String each : tableNames) {
-                DatabaseUtil.executeUpdate(connection, generateDeleteSQL(each));
+                try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("TRUNCATE TABLE %s", each))) {
+                    preparedStatement.executeUpdate();
+                }
             }
         }
-    }
-    
-    private String generateDeleteSQL(final String tableName) {
-        return String.format("DELETE FROM %s", tableName);
     }
     
     private Map<String, Collection<String>> getDataNodeMap() {

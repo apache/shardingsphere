@@ -1,4 +1,0 @@
-<asserts>
-    <ddl-assert id="assertAlterTable" init-sql="CREATE TABLE t_log(id int, status varchar(10))" clean-sql="DROP TABLE t_log" expected-update="1" sql="assertAlterTable" table="t_log" expected-data-file="t_order_update.xml" />
-    <ddl-assert id="assertAlterTableIfExistAndOnly" init-sql="CREATE TABLE t_log(id int, status varchar(10))" clean-sql="DROP TABLE t_log" expected-update="1" sql="assertAlterTable" table="t_log" expected-data-file="t_order_update.xml" />
-</asserts>
