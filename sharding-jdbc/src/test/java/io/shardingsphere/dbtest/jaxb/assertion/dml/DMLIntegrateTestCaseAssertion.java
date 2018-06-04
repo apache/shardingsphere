@@ -15,21 +15,21 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.asserts;
+package io.shardingsphere.dbtest.jaxb.assertion.dml;
 
-import io.shardingsphere.dbtest.jaxb.dataset.init.DataSetColumnMetadata;
+import io.shardingsphere.dbtest.jaxb.assertion.root.IntegrateTestCaseAssertion;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-import java.util.Map;
+import javax.xml.bind.annotation.XmlAttribute;
 
-@RequiredArgsConstructor
+/**
+ * JAXB definition of DML integrate test case assertion.
+ *
+ * @author zhangliang
+ */
 @Getter
-public final class DataSetDefinitions {
+public final class DMLIntegrateTestCaseAssertion extends IntegrateTestCaseAssertion {
     
-    private final Map<String, List<DataSetColumnMetadata>> metadataList;
-    
-    private final Map<String, List<Map<String, String>>> dataList;
-    
+    @XmlAttribute(name = "expected-update")
+    private int expectedUpdate;
 }

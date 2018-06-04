@@ -15,21 +15,24 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.asserts;
+package io.shardingsphere.dbtest.jaxb.dataset.init;
 
-import io.shardingsphere.dbtest.jaxb.dataset.init.DataSetColumnMetadata;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-import java.util.Map;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
-@RequiredArgsConstructor
 @Getter
-public final class DataSetDefinitions {
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class DataSetIndexMetadata {
     
-    private final Map<String, List<DataSetColumnMetadata>> metadataList;
+    @XmlAttribute
+    private String name;
     
-    private final Map<String, List<Map<String, String>>> dataList;
+    @XmlAttribute
+    private String columns;
     
+    @XmlAttribute
+    private boolean unique;
 }

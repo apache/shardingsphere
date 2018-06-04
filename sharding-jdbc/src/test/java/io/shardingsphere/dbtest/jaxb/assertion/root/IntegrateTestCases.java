@@ -15,21 +15,16 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.asserts;
-
-import io.shardingsphere.dbtest.jaxb.dataset.init.DataSetColumnMetadata;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+package io.shardingsphere.dbtest.jaxb.assertion.root;
 
 import java.util.List;
-import java.util.Map;
 
-@RequiredArgsConstructor
-@Getter
-public final class DataSetDefinitions {
+public interface IntegrateTestCases {
     
-    private final Map<String, List<DataSetColumnMetadata>> metadataList;
-    
-    private final Map<String, List<Map<String, String>>> dataList;
-    
+    /**
+     * Get integrate test cases.
+     * 
+     * @return integrate test cases
+     */
+    List<? extends IntegrateTestCase> getIntegrateTestCases();
 }

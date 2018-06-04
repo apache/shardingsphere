@@ -21,34 +21,32 @@ import com.google.common.base.Strings;
 import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
 import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
 import io.shardingsphere.dbtest.common.DatabaseUtil;
-import io.shardingsphere.dbtest.config.DataSetsParser;
-import io.shardingsphere.dbtest.config.bean.AssertSubDefinition;
-import io.shardingsphere.dbtest.config.bean.DDLDataSetAssert;
-import io.shardingsphere.dbtest.config.bean.ParameterDefinition;
-import io.shardingsphere.dbtest.config.dataset.init.DataSetColumnMetadata;
+import io.shardingsphere.dbtest.jaxb.assertion.ddl.DDLIntegrateTestCaseAssertion;
+import io.shardingsphere.dbtest.jaxb.dataset.expected.metadata.ExpectedColumn;
+import io.shardingsphere.dbtest.jaxb.dataset.expected.metadata.ExpectedMetadataRoot;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.dbtest.env.schema.SchemaEnvironmentManager;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
 import org.apache.commons.lang3.StringUtils;
-import org.xml.sax.SAXException;
 
 import javax.sql.DataSource;
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.text.ParseException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 
 public final class DDLAssertEngine {
     
-    private final DDLDataSetAssert ddlDataSetAssert;
+    private final DDLIntegrateTestCaseAssertion integrateTestCaseAssertion;
     
     private final String shardingRuleType;
     
@@ -58,16 +56,19 @@ public final class DDLAssertEngine {
     
     private final DataSource dataSource;
     
-    private final String rootPath;
+    private final String sql;
     
-    public DDLAssertEngine(final DDLDataSetAssert ddlDataSetAssert, final Map<String, DataSource> dataSourceMap,
+    private final String expectedDataFile;
+    
+    public DDLAssertEngine(final String sqlCaseId, final String path, final DDLIntegrateTestCaseAssertion integrateTestCaseAssertion, final Map<String, DataSource> dataSourceMap,
                            final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, SQLException {
-        this.ddlDataSetAssert = ddlDataSetAssert;
+        this.integrateTestCaseAssertion = integrateTestCaseAssertion;
         this.shardingRuleType = shardingRuleType;
         this.databaseTypeEnvironment = databaseTypeEnvironment;
         this.caseType = caseType;
         dataSource = createDataSource(dataSourceMap);
-        rootPath = ddlDataSetAssert.getPath().substring(0, ddlDataSetAssert.getPath().lastIndexOf(File.separator) + 1);
+        sql = SQLCasesLoader.getInstance().getSupportedSQL(sqlCaseId);
+        expectedDataFile = path.substring(0, path.lastIndexOf(File.separator) + 1) + "asserts/ddl/" + integrateTestCaseAssertion.getExpectedDataFile();
     }
     
     private DataSource createDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException, IOException {
@@ -76,177 +77,109 @@ public final class DDLAssertEngine {
                 : YamlShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)));
     }
     
-    /**
-     * Assert DDL.
-     */
-    public void assertDDL() throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
-        String rootSQL = SQLCasesLoader.getInstance().getSupportedSQL(ddlDataSetAssert.getId());
-        String expectedDataFile = rootPath + "asserts/ddl/" + shardingRuleType + "/" + ddlDataSetAssert.getExpectedDataFile();
-        if (!new File(expectedDataFile).exists()) {
-            expectedDataFile = rootPath + "asserts/ddl/" + ddlDataSetAssert.getExpectedDataFile();
-        }
-        if (ddlDataSetAssert.getParameter().getValues().isEmpty()) {
-            List<AssertSubDefinition> subAsserts = ddlDataSetAssert.getSubAsserts();
-            if (subAsserts.isEmpty()) {
-                doUpdateUseStatementToExecuteUpdate(expectedDataFile, ddlDataSetAssert, rootSQL);
-                doUpdateUseStatementToExecute(expectedDataFile, ddlDataSetAssert, rootSQL);
-                doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFile, ddlDataSetAssert, rootSQL);
-                doUpdateUsePreparedStatementToExecute(expectedDataFile, ddlDataSetAssert, rootSQL);
-            } else {
-                ddlSubRun(rootSQL, expectedDataFile, subAsserts);
-            }
-        } else {
-            doUpdateUseStatementToExecuteUpdate(expectedDataFile, ddlDataSetAssert, rootSQL);
-            doUpdateUseStatementToExecute(expectedDataFile, ddlDataSetAssert, rootSQL);
-            doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFile, ddlDataSetAssert, rootSQL);
-            doUpdateUsePreparedStatementToExecute(expectedDataFile, ddlDataSetAssert, rootSQL);
-            List<AssertSubDefinition> subAsserts = ddlDataSetAssert.getSubAsserts();
-            if (!subAsserts.isEmpty()) {
-                ddlSubRun(rootSQL, expectedDataFile, subAsserts);
-            }
-        }
-    }
-    
-    private void ddlSubRun(final String rootSQL, final String expectedDataFile, final List<AssertSubDefinition> subAsserts) throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
-        for (AssertSubDefinition each : subAsserts) {
-            if (isSkip(each)) {
-                continue;
-            }
-            String expectedDataFileSub = each.getExpectedDataFile();
-            ParameterDefinition parameter = each.getParameter();
-            String expectedDataFileTmp = expectedDataFile;
-            if (StringUtils.isBlank(expectedDataFileSub)) {
-                expectedDataFileSub = ddlDataSetAssert.getExpectedDataFile();
-            } else {
-                expectedDataFileTmp = rootPath + "asserts/ddl/" + shardingRuleType + "/" + expectedDataFileSub;
-                if (!new File(expectedDataFileTmp).exists()) {
-                    expectedDataFileTmp = rootPath + "asserts/ddl/" + expectedDataFileSub;
-                }
-            }
-            if (null == parameter) {
-                parameter = ddlDataSetAssert.getParameter();
-            }
-            DDLDataSetAssert anAssertSub = new DDLDataSetAssert(
-                    ddlDataSetAssert.getId(), ddlDataSetAssert.getInitSql(), ddlDataSetAssert.getShardingRuleTypes(), ddlDataSetAssert.getDatabaseTypes(), ddlDataSetAssert.getCleanSql(), expectedDataFileSub, ddlDataSetAssert.getTable(), 
-                    parameter, ddlDataSetAssert.getSubAsserts(), "");
-            doUpdateUseStatementToExecuteUpdate(expectedDataFileTmp, anAssertSub, rootSQL);
-            doUpdateUseStatementToExecute(expectedDataFileTmp, anAssertSub, rootSQL);
-            doUpdateUsePreparedStatementToExecuteUpdate(expectedDataFileTmp, anAssertSub, rootSQL);
-            doUpdateUsePreparedStatementToExecute(expectedDataFileTmp, anAssertSub, rootSQL);
-        }
-    }
-    
-    private boolean isSkip(final AssertSubDefinition assertSubDefinition) {
-        for (String each : StringUtils.split(assertSubDefinition.getShardingRuleTypes(), ",")) {
-            if (shardingRuleType.equals(each)) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    private void doUpdateUsePreparedStatementToExecute(final String expectedDataFile, final DDLDataSetAssert ddlDataSetAssert, final String rootSQL) 
-            throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
-        try {
-            try (Connection con = dataSource.getConnection()) {
-                if (StringUtils.isNotBlank(ddlDataSetAssert.getCleanSql())) {
-                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), ddlDataSetAssert.getCleanSql());
-                }
-                if (StringUtils.isNotBlank(ddlDataSetAssert.getInitSql())) {
-                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), ddlDataSetAssert.getInitSql());
-                }
-                DatabaseUtil.updateUsePreparedStatementToExecute(con, rootSQL, ddlDataSetAssert.getParameter());
-                DataSetDefinitions checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
-                String table = ddlDataSetAssert.getTable();
-                List<DataSetColumnMetadata> columnDefinitions = DatabaseUtil.getColumnDefinitions(con, table);
-                DatabaseUtil.assertConfigs(checkDataset, columnDefinitions, table);
-            }
-        } finally {
-            if (StringUtils.isNotBlank(ddlDataSetAssert.getCleanSql())) {
-                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), ddlDataSetAssert.getCleanSql());
-            }
-            if (StringUtils.isNotBlank(ddlDataSetAssert.getInitSql())) {
-                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), ddlDataSetAssert.getInitSql());
-            }
-        }
-    }
-    
-    private void doUpdateUsePreparedStatementToExecuteUpdate(final String expectedDataFile, final DDLDataSetAssert anAssert, final String rootSQL) 
-            throws SQLException, ParseException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
+    public void assertExecuteUpdateForPreparedStatement() throws SQLException, IOException, JAXBException {
         try {
             try (Connection connection = dataSource.getConnection()) {
-                if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
-                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), anAssert.getCleanSql());
+                if (StringUtils.isNotBlank(integrateTestCaseAssertion.getCleanSql())) {
+                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getCleanSql());
                 }
-                if (StringUtils.isNotBlank(anAssert.getInitSql())) {
-                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), anAssert.getInitSql());
+                if (StringUtils.isNotBlank(integrateTestCaseAssertion.getInitSql())) {
+                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getInitSql());
                 }
-                DatabaseUtil.updateUsePreparedStatementToExecuteUpdate(connection, rootSQL,
-                        anAssert.getParameter());
-                DataSetDefinitions checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
-                String table = anAssert.getTable();
-                List<DataSetColumnMetadata> columnDefinitions = DatabaseUtil.getColumnDefinitions(connection, table);
-                DatabaseUtil.assertConfigs(checkDataset, columnDefinitions, table);
+                try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
+                    preparedStatement.executeUpdate();
+                }
+                assertMetadata(connection);
             }
         } finally {
-            if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
-                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), anAssert.getCleanSql());
+            if (StringUtils.isNotBlank(integrateTestCaseAssertion.getCleanSql())) {
+                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getCleanSql());
             }
-            if (StringUtils.isNotBlank(anAssert.getInitSql())) {
-                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), anAssert.getInitSql());
+            if (StringUtils.isNotBlank(integrateTestCaseAssertion.getInitSql())) {
+                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getInitSql());
             }
         }
     }
     
-    private void doUpdateUseStatementToExecute(final String expectedDataFile, final DDLDataSetAssert anAssert, final String rootSQL) 
-            throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
+    public void assertExecuteForPreparedStatement() throws SQLException, IOException, JAXBException {
         try {
             try (Connection connection = dataSource.getConnection()) {
-                if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
-                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), anAssert.getCleanSql());
+                if (StringUtils.isNotBlank(integrateTestCaseAssertion.getCleanSql())) {
+                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getCleanSql());
                 }
-                if (StringUtils.isNotBlank(anAssert.getInitSql())) {
-                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), anAssert.getInitSql());
+                if (StringUtils.isNotBlank(integrateTestCaseAssertion.getInitSql())) {
+                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getInitSql());
                 }
-                DatabaseUtil.updateUseStatementToExecute(connection, rootSQL, anAssert.getParameter());
-                DataSetDefinitions checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
-                String table = anAssert.getTable();
-                List<DataSetColumnMetadata> columnDefinitions = DatabaseUtil.getColumnDefinitions(connection, table);
-                DatabaseUtil.assertConfigs(checkDataset, columnDefinitions, table);
+                try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
+                    preparedStatement.execute();
+                }
+                assertMetadata(connection);
             }
         } finally {
-            if (!Strings.isNullOrEmpty(anAssert.getCleanSql())) {
-                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), anAssert.getCleanSql());
+            if (StringUtils.isNotBlank(integrateTestCaseAssertion.getCleanSql())) {
+                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getCleanSql());
             }
-            if (!Strings.isNullOrEmpty(anAssert.getInitSql())) {
-                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), anAssert.getInitSql());
+            if (StringUtils.isNotBlank(integrateTestCaseAssertion.getInitSql())) {
+                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getInitSql());
             }
         }
     }
     
-    private void doUpdateUseStatementToExecuteUpdate(final String expectedDataFile, final DDLDataSetAssert anAssert, final String rootSQL) 
-            throws SQLException, IOException, SAXException, ParserConfigurationException, XPathExpressionException, JAXBException {
+    public void assertExecuteUpdateForStatement() throws SQLException, IOException, JAXBException {
         try {
             try (Connection connection = dataSource.getConnection()) {
-                if (StringUtils.isNotBlank(anAssert.getCleanSql())) {
-                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), anAssert.getCleanSql());
+                if (StringUtils.isNotBlank(integrateTestCaseAssertion.getCleanSql())) {
+                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getCleanSql());
                 }
-                if (StringUtils.isNotBlank(anAssert.getInitSql())) {
-                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), anAssert.getInitSql());
+                if (StringUtils.isNotBlank(integrateTestCaseAssertion.getInitSql())) {
+                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getInitSql());
                 }
-                DatabaseUtil.updateUseStatementToExecuteUpdate(connection, rootSQL, anAssert.getParameter());
-                DataSetDefinitions checkDataset = DataSetsParser.parse(new File(expectedDataFile), "data");
-                String table = anAssert.getTable();
-                List<DataSetColumnMetadata> columnDefinitions = DatabaseUtil.getColumnDefinitions(connection, table);
-                DatabaseUtil.assertConfigs(checkDataset, columnDefinitions, table);
+                try (Statement statement = connection.createStatement()) {
+                    statement.executeUpdate(sql);
+                }
+                assertMetadata(connection);
             }
         } finally {
-            if (!Strings.isNullOrEmpty(anAssert.getCleanSql())) {
-                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), anAssert.getCleanSql());
+            if (!Strings.isNullOrEmpty(integrateTestCaseAssertion.getCleanSql())) {
+                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getCleanSql());
             }
-            if (!Strings.isNullOrEmpty(anAssert.getInitSql())) {
-                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), anAssert.getInitSql());
+            if (!Strings.isNullOrEmpty(integrateTestCaseAssertion.getInitSql())) {
+                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getInitSql());
             }
         }
+    }
+    
+    public void assertExecuteForStatement() throws SQLException, IOException, JAXBException {
+        try {
+            try (Connection connection = dataSource.getConnection()) {
+                if (StringUtils.isNotBlank(integrateTestCaseAssertion.getCleanSql())) {
+                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getCleanSql());
+                }
+                if (StringUtils.isNotBlank(integrateTestCaseAssertion.getInitSql())) {
+                    SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getInitSql());
+                }
+                try (Statement statement = connection.createStatement()) {
+                    statement.execute(sql);
+                }
+                assertMetadata(connection);
+            }
+        } finally {
+            if (!Strings.isNullOrEmpty(integrateTestCaseAssertion.getCleanSql())) {
+                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getCleanSql());
+            }
+            if (!Strings.isNullOrEmpty(integrateTestCaseAssertion.getInitSql())) {
+                SchemaEnvironmentManager.executeSQL(shardingRuleType, databaseTypeEnvironment.getDatabaseType(), integrateTestCaseAssertion.getInitSql());
+            }
+        }
+    }
+    
+    private void assertMetadata(final Connection connection) throws IOException, JAXBException, SQLException {
+        ExpectedMetadataRoot expected;
+        try (FileReader reader = new FileReader(expectedDataFile)) {
+            expected = (ExpectedMetadataRoot) JAXBContext.newInstance(ExpectedMetadataRoot.class).createUnmarshaller().unmarshal(reader);
+        }
+        String tableName = integrateTestCaseAssertion.getTable();
+        List<ExpectedColumn> actualColumns = DatabaseUtil.getExpectedColumns(connection, tableName);
+        DatabaseUtil.assertConfigs(expected.find(tableName), actualColumns);
     }
 }

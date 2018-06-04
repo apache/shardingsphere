@@ -18,12 +18,11 @@
 package io.shardingsphere.dbtest.common;
 
 import io.shardingsphere.dbtest.asserts.DataSetDefinitions;
-import io.shardingsphere.dbtest.config.bean.ParameterDefinition;
-import io.shardingsphere.dbtest.config.bean.ParameterValueDefinition;
-import io.shardingsphere.dbtest.config.dataset.init.DataSetColumnMetadata;
+import io.shardingsphere.dbtest.jaxb.dataset.expected.metadata.ExpectedColumn;
+import io.shardingsphere.dbtest.jaxb.dataset.expected.metadata.ExpectedMetadata;
+import io.shardingsphere.dbtest.jaxb.dataset.init.DataSetColumnMetadata;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -33,9 +32,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -44,9 +41,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 /**
  * Database utility.
@@ -63,19 +60,6 @@ import static org.junit.Assert.fail;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseUtil {
-    
-    /**
-     * Execute update.
-     *
-     * @param connection connection
-     * @param sql SQL
-     * @throws SQLException SQL exception
-     */
-    public static void executeUpdate(final Connection connection, final String sql) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.executeUpdate();
-        }
-    }
     
     /**
      * Execute batch.
@@ -153,7 +137,7 @@ public final class DatabaseUtil {
      */
     public static DataSetDefinitions executeQueryForStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            try (ResultSet resultSet = statement.executeQuery(sqlStatement(sql, sqlValues))) {
+            try (ResultSet resultSet = statement.executeQuery(generateSQL(sql, sqlValues))) {
                 return getDatasetDefinition(resultSet);
             }
         }
@@ -170,7 +154,7 @@ public final class DatabaseUtil {
      */
     public static DataSetDefinitions executeDQLForStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            assertTrue("Not a query statement.", statement.execute(sqlStatement(sql, sqlValues)));
+            assertTrue("Not a query statement.", statement.execute(generateSQL(sql, sqlValues)));
             try (ResultSet resultSet = statement.getResultSet()) {
                 return getDatasetDefinition(resultSet);
             }
@@ -178,21 +162,39 @@ public final class DatabaseUtil {
     }
     
     /**
-     * Use Statement Test data update.
+     * Execute update for statement.
      *
      * @param connection connection
      * @param sql SQL
-     * @param parameterDefinition parameter
+     * @param sqlValues SQL values
      * @return Number of rows as a result of execution
      * @throws SQLException SQL exception
      */
-    public static int updateUseStatementToExecuteUpdate(final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException {
+    public static int executeUpdateForStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            return statement.executeUpdate(sqlStatement0(sql, parameterDefinition.getValues()));
+            return statement.executeUpdate(generateSQL(sql, sqlValues));
         }
     }
     
-    private static String sqlStatement(final String sql, final Collection<SQLValue> sqlValues) {
+    /**
+     * Execute DML for statement.
+     *
+     * @param connection connection
+     * @param sql SQL
+     * @param sqlValues SQL values
+     * @return implementation results
+     * @throws SQLException SQL exception
+     */
+    public static int executeDMLForStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
+        try (Statement statement = connection.createStatement()) {
+            if (!statement.execute(generateSQL(sql, sqlValues))) {
+                return statement.getUpdateCount();
+            }
+        }
+        return 0;
+    }
+    
+    private static String generateSQL(final String sql, final Collection<SQLValue> sqlValues) {
         if (null == sqlValues) {
             return sql;
         }
@@ -204,106 +206,43 @@ public final class DatabaseUtil {
         return result;
     }
     
-    private static String sqlStatement0(final String sql, final List<ParameterValueDefinition> parameter) {
-        if (null == parameter) {
-            return sql;
-        }
-        String result = sql;
-        for (ParameterValueDefinition each : parameter) {
-            String type = each.getType();
-            String dataColumn = each.getValue();
-            switch (type) {
-                case "byte":
-                case "short":
-                case "int":
-                case "long":
-                case "float":
-                case "double":
-                    result = Pattern.compile("%s", Pattern.LITERAL).matcher(result).replaceFirst(Matcher.quoteReplacement(dataColumn));
-                    break;
-                case "boolean":
-                    result = Pattern.compile("%s", Pattern.LITERAL).matcher(result).replaceFirst(Matcher.quoteReplacement(Boolean.valueOf(dataColumn).toString()));
-                    break;
-                default:
-                    result = Pattern.compile("%s", Pattern.LITERAL).matcher(result).replaceFirst(Matcher.quoteReplacement("'" + dataColumn + "'"));
-                    break;
-            }
-        }
-        return result;
-    }
-    
     /**
-     * Use Statement Test data update.
+     * execute update for prepared statement.
      *
      * @param connection connection
      * @param sql SQL
-     * @param parameterDefinition parameter definition
-     * @return implementation results
-     * @throws SQLException SQL exception
-     */
-    public static int updateUseStatementToExecute(final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException {
-        try (Statement statement = connection.createStatement()) {
-            if (!statement.execute(sqlStatement0(sql, parameterDefinition.getValues()))) {
-                return statement.getUpdateCount();
-            }
-        }
-        return 0;
-    }
-    
-    /**
-     * Use PreparedStatement test data update.
-     *
-     * @param connection connection
-     * @param sql SQL
-     * @param parameterDefinition parameter
+     * @param sqlValues SQL values
      * @return Number of rows as a result of execution
      * @throws SQLException SQL exception
-     * @throws ParseException parse exception
      */
-    public static int updateUsePreparedStatementToExecuteUpdate(final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
+    public static int executeUpdateForPreparedStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
-            sqlPreparedStatement0(parameterDefinition.getValues(), preparedStatement);
+            for (SQLValue each : sqlValues) {
+                preparedStatement.setObject(each.getIndex(), each.getValue());
+            }
             return preparedStatement.executeUpdate();
         }
     }
     
     /**
-     * Use PreparedStatement test data update.
+     * Execute DML for prepared statement.
      *
      * @param connection connection
      * @param sql SQL
-     * @param parameterDefinition parameter definition
+     * @param sqlValues SQL values
      * @return implementation results
      * @throws SQLException   SQL exception
-     * @throws ParseException parse exception
      */
-    public static int updateUsePreparedStatementToExecute(final Connection connection, final String sql, final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
+    public static int executeDMLForPreparedStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
-            sqlPreparedStatement0(parameterDefinition.getValues(), preparedStatement);
+            for (SQLValue each : sqlValues) {
+                preparedStatement.setObject(each.getIndex(), each.getValue());
+            }
             if (!preparedStatement.execute()) {
                 return preparedStatement.getUpdateCount();
             }
         }
         return 0;
-    }
-    
-    /**
-     * Use PreparedStatement test SQL select.
-     *
-     * @param conn connection
-     * @param sql SQL
-     * @param parameterDefinition parameter definition 
-     * @return query result set
-     * @throws SQLException   SQL exception
-     * @throws ParseException parse exception
-     */
-    public static DataSetDefinitions selectUsePreparedStatement0(final Connection conn, final String sql, final ParameterDefinition parameterDefinition) throws SQLException, ParseException {
-        try (PreparedStatement preparedStatement = conn.prepareStatement(sql.replaceAll("%s", "?"))) {
-            sqlPreparedStatement0(parameterDefinition.getValues(), preparedStatement);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                return getDatasetDefinition(resultSet);
-            }
-        }
     }
     
     private static DataSetDefinitions getDatasetDefinition(final ResultSet resultSet) throws SQLException {
@@ -343,17 +282,6 @@ public final class DatabaseUtil {
             result.add(data);
         }
         return result;
-    }
-    
-    private static void sqlPreparedStatement0(final List<ParameterValueDefinition> parameterValueDefinitions, final PreparedStatement preparedStatement) throws SQLException, ParseException {
-        if (null == parameterValueDefinitions) {
-            return;
-        }
-        int index = 0;
-        for (ParameterValueDefinition each : parameterValueDefinitions) {
-            SQLValue sqlValue = new SQLValue(each.getValue(), each.getType(), ++index);
-            preparedStatement.setObject(sqlValue.getIndex(), sqlValue.getValue());
-        }
     }
     
     private static String getDataType(final int type, final int scale) {
@@ -415,67 +343,38 @@ public final class DatabaseUtil {
      *
      * @param expected expected
      * @param actual actual
-     * @param table table
      */
-    public static void assertConfigs(final DataSetDefinitions expected, final List<DataSetColumnMetadata> actual, final String table) {
-        Map<String, List<DataSetColumnMetadata>> configs = expected.getMetadataList();
-        List<DataSetColumnMetadata> columnDefinitions = configs.get(table);
-        for (DataSetColumnMetadata each : columnDefinitions) {
+    public static void assertConfigs(final ExpectedMetadata expected, final List<ExpectedColumn> actual) {
+        for (ExpectedColumn each : expected.getColumns()) {
             checkActual(actual, each);
         }
     }
     
-    private static void checkActual(final List<DataSetColumnMetadata> actual, final DataSetColumnMetadata expect) {
-        for (DataSetColumnMetadata each : actual) {
+    private static void checkActual(final List<ExpectedColumn> actual, final ExpectedColumn expect) {
+        for (ExpectedColumn each : actual) {
             if (expect.getName().equals(each.getName())) {
-                if (StringUtils.isNotEmpty(expect.getType())) {
-                    assertEquals(expect.getType(), each.getType());
-                }
-                checkDatabaseColumn(expect.getDecimalDigits(), each.getDecimalDigits());
-                checkDatabaseColumn(expect.getNullable(), each.getNullable());
-                checkDatabaseColumn(expect.getNumPrecRadix(), each.getNumPrecRadix());
-                checkDatabaseColumn(expect.getSize(), each.getSize());
+                assertThat(each.getType(), is(expect.getType()));
             }
         }
     }
     
-    private static void checkDatabaseColumn(final Integer expectData, final Integer actualData) {
-        if (expectData != null && !expectData.equals(actualData)) {
-            fail();
-        }
-    }
-    
     /**
-     * Use PreparedStatement test SQL select.
+     * Get expected columns.
      *
      * @param connection connection
      * @param table table
      * @return query result set
      * @throws SQLException SQL exception
      */
-    public static List<DataSetColumnMetadata> getColumnDefinitions(final Connection connection, final String table) throws SQLException {
+    public static List<ExpectedColumn> getExpectedColumns(final Connection connection, final String table) throws SQLException {
         DatabaseMetaData metaData = connection.getMetaData();
         try (ResultSet resultSet = metaData.getColumns(null, null, table, null)) {
-            List<DataSetColumnMetadata> result = new ArrayList<>();
+            List<ExpectedColumn> result = new LinkedList<>();
             while (resultSet.next()) {
-                DataSetColumnMetadata columnDefinition = new DataSetColumnMetadata();
-                String column = resultSet.getString("COLUMN_NAME");
-                columnDefinition.setName(column);
-                int size = resultSet.getInt("COLUMN_SIZE");
-                columnDefinition.setSize(size);
-                String columnType = resultSet.getString("TYPE_NAME").toLowerCase();
-                columnDefinition.setType(columnType);
-                int decimalDigits = resultSet.getInt("DECIMAL_DIGITS");
-                columnDefinition.setDecimalDigits(decimalDigits);
-                int numPrecRadix = resultSet.getInt("NUM_PREC_RADIX");
-                columnDefinition.setNumPrecRadix(numPrecRadix);
-                int nullAble = resultSet.getInt("NULLABLE");
-                columnDefinition.setNullable(nullAble);
-                String isAutoincrement = resultSet.getString("IS_AUTOINCREMENT");
-                if (StringUtils.isNotEmpty(isAutoincrement)) {
-                    columnDefinition.setAutoIncrement(true);
-                }
-                result.add(columnDefinition);
+                ExpectedColumn each = new ExpectedColumn();
+                each.setName(resultSet.getString("COLUMN_NAME"));
+                each.setType(resultSet.getString("TYPE_NAME").toLowerCase());
+                result.add(each);
             }
             return result;
         }

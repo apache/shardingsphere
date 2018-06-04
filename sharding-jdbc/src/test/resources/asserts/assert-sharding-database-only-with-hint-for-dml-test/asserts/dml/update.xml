@@ -4,6 +4,7 @@
         <column name="user_id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
+    <dataset data-node="db_0.t_order" values="1000, 10, update" />
     <dataset data-node="db_0.t_order" values="1001, 10, init" />
     <dataset data-node="db_0.t_order" values="2000, 20, init" />
     <dataset data-node="db_0.t_order" values="2001, 20, init" />
