@@ -133,7 +133,7 @@ weight = 1
 ```java
     DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
                  createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
-                 new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false));
+                 new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING));
     
     private RegistryCenterConfiguration getRegistryCenterConfiguration() {
         ZookeeperConfiguration result = new ZookeeperConfiguration();
@@ -148,7 +148,7 @@ weight = 1
 ```java
     DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
                  createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
-                 new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false));
+                 new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING));
     
     private RegistryCenterConfiguration getRegistryCenterConfiguration() {
         EtcdConfiguration result = new EtcdConfiguration();
@@ -297,7 +297,7 @@ User-defined arguments.
 | --------------- | --------------------------- | ------------------------------------------------------------------- |
 | name            | String                      | Name of orchestration instance                                      |
 | overwrite       | boolean                     | Use local configuration to overwrite registry center or not         |
-| type            | String                      | Data source type, values should be: `sharding` or `masterslave`     |
+| type            | OrchestrationType           | Data source type, values should be: `SHARDING` or `MASTER_SLAVE`    |
 | regCenterConfig | RegistryCenterConfiguration | Registry center configuration                                       |
 
 #### ZookeeperConfiguration
