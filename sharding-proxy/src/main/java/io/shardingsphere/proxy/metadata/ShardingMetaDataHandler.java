@@ -87,7 +87,8 @@ public final class ShardingMetaDataHandler {
      */
     public Collection<String> getTableNamesFromDefaultDataSource() throws SQLException {
         Collection<String> result = new LinkedList<>();
-        try (Statement statement = getDataSource().getConnection().createStatement()) {
+        try (Connection connection = getDataSource().getConnection();
+             Statement statement = connection.createStatement()) {
             statement.executeQuery("show tables;");
             try (ResultSet resultSet = statement.getResultSet()) {
                 while (resultSet.next()) {
