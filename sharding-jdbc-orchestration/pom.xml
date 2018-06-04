@@ -99,14 +99,5 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>com.saaavsaaa</groupId>
-            <artifactId>zookeeper-client</artifactId>
-            <version>1.6</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/libs/zookeeper-client-1.6.jar</systemPath>
-        </dependency>
-
     </dependencies>
 </project>

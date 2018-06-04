@@ -49,6 +49,7 @@ import java.util.concurrent.TimeUnit;
 public abstract class BaseClient implements IClient {
     private static final Logger logger = LoggerFactory.getLogger(BaseClient.class);
     
+    private final int CIRCLE_WAIT = 30;
     protected final boolean watched = true; //false
     protected final Map<StrategyType, IExecStrategy> strategies = new ConcurrentHashMap<>();
     
@@ -74,29 +75,30 @@ public abstract class BaseClient implements IClient {
         holder.start();
     }
     
-    //copy curator
     @Override
     public synchronized boolean blockUntilConnected(int wait, TimeUnit units) throws InterruptedException {
-        long startTime = System.currentTimeMillis();
-        long maxWaitTimeMs = units != null ? TimeUnit.MILLISECONDS.convert(wait, units) : 0;
-    
-        for (;;){
-            long waitTime = maxWaitTimeMs - (System.currentTimeMillis() - startTime);
-            if (holder.isConnected()){
-                return true;
-            }
+        long maxWait = units != null ? TimeUnit.MILLISECONDS.convert(wait, units) : 0;
+
+        while (!holder.isConnected()){
+            long waitTime = maxWait - CIRCLE_WAIT;
             if (waitTime <= 0){
                 return holder.isConnected();
             }
-            wait(waitTime);
+            wait(CIRCLE_WAIT);
         }
+        return true;
     }
     
     @Override
     public void close() {
-        holder.close();
-        context.close();
         this.strategies.clear();
+        context.close();
+        try {
+            this.deleteNamespace();
+        } catch (Exception e) {
+            logger.error("zk client close delete root error:{}", e.getMessage(), e);
+        }
+        holder.close();
     }
     
     @Override
@@ -173,14 +175,16 @@ public abstract class BaseClient implements IClient {
             return;
         }
         try {
-            holder.zooKeeper.create(rootNode, date, authorities, CreateMode.PERSISTENT);
+            if (null == holder.getZooKeeper().exists(rootNode, false)){
+                holder.zooKeeper.create(rootNode, date, authorities, CreateMode.PERSISTENT);
+            }
+            rootExist = true;
             logger.debug("creating root:{}", rootNode);
         } catch (KeeperException.NodeExistsException ee){
             logger.warn("root create:{}", ee.getMessage());
             rootExist = true;
             return;
         }
-        rootExist = true;
         holder.zooKeeper.exists(rootNode, WatcherCreator.deleteWatcher(new Listener(rootNode) {
             @Override
             public void process(WatchedEvent event) {
@@ -191,7 +195,11 @@ public abstract class BaseClient implements IClient {
     }
     
     protected void deleteNamespace() throws KeeperException, InterruptedException {
-        holder.zooKeeper.delete(rootNode, Constants.VERSION);
+        try {
+            holder.zooKeeper.delete(rootNode, Constants.VERSION);
+        } catch (KeeperException.NodeExistsException | KeeperException.NotEmptyException ee){
+            logger.info("delete root :{}", ee.getMessage());
+        }
         rootExist = false;
         logger.debug("delete root:{},rootExist:{}", rootNode, rootExist);
     }
