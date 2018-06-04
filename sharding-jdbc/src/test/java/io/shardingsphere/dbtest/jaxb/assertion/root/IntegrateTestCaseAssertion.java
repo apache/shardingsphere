@@ -66,4 +66,9 @@ public abstract class IntegrateTestCaseAssertion {
         }
         return result;
     }
+    
+    @Override
+    public String toString() {
+        return String.format("Rule:%s", shardingRuleType);
+    }
 }

@@ -55,18 +55,18 @@ public final class DQLAssertEngine {
     private final String expectedDataFile;
     
     public DQLAssertEngine(final String sqlCaseId, final String path, final DQLIntegrateTestCaseAssertion integrateTestCaseAssertion, 
-                           final Map<String, DataSource> dataSourceMap, final String shardingRuleType, final SQLCaseType caseType) throws IOException, SQLException {
+                           final Map<String, DataSource> dataSourceMap, final SQLCaseType caseType) throws IOException, SQLException {
         this.integrateTestCaseAssertion = integrateTestCaseAssertion;
         this.caseType = caseType;
-        dataSource = createDataSource(shardingRuleType, dataSourceMap);
+        dataSource = createDataSource(dataSourceMap);
         sql = SQLCasesLoader.getInstance().getSupportedSQL(sqlCaseId);
         expectedDataFile = path.substring(0, path.lastIndexOf(File.separator) + 1) + "asserts/dql/" + integrateTestCaseAssertion.getExpectedDataFile();
     }
     
-    private DataSource createDataSource(final String shardingRuleType, final Map<String, DataSource> dataSourceMap) throws SQLException, IOException {
-        return "masterslaveonly".equals(shardingRuleType)
-                ? YamlMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)))
-                : YamlShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)));
+    private DataSource createDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException, IOException {
+        return "masterslaveonly".equals(integrateTestCaseAssertion.getShardingRuleType())
+                ? YamlMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(integrateTestCaseAssertion.getShardingRuleType())))
+                : YamlShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(integrateTestCaseAssertion.getShardingRuleType())));
     }
     
     public void assertExecuteQueryForPreparedStatement() throws SQLException, ParseException, IOException, JAXBException {
