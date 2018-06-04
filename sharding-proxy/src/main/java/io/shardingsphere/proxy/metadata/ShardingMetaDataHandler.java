@@ -27,7 +27,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -53,14 +53,14 @@ public final class ShardingMetaDataHandler {
     public TableMetaData getTableMetaData() throws SQLException {
         try (Connection connection = getDataSource().getConnection();
              Statement statement = connection.createStatement()) {
+            TableMetaData result = new TableMetaData();
             if (isTableExist(statement)) {
-                return new TableMetaData(getExistColumnMeta(statement));
+                result.getColumnMetaData().addAll(getExistColumnMeta(statement));
             }
-            return new TableMetaData(new ArrayList<ColumnMetaData>());
+            return result;
         }
     }
     
-
     private boolean isTableExist(final Statement statement) throws SQLException {
         statement.executeQuery(String.format("show tables like '%s'", getActualTableName()));
         try (ResultSet resultSet = statement.getResultSet()) {
@@ -77,5 +77,24 @@ public final class ShardingMetaDataHandler {
             }
         }
         return result;
+    }
+    
+    /**
+     * Get table names from default data source.
+     *
+     * @return Table names from default data source
+     * @throws SQLException SQL exception.
+     */
+    public Collection<String> getTableNamesFromDefaultDataSource() throws SQLException {
+        Collection<String> result = new LinkedList<>();
+        try (Statement statement = getDataSource().getConnection().createStatement()) {
+            statement.executeQuery("show tables;");
+            try (ResultSet resultSet = statement.getResultSet()) {
+                while (resultSet.next()) {
+                    result.add(resultSet.getString(1));
+                }
+            }
+            return result;
+        }
     }
 }
