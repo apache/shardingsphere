@@ -77,21 +77,7 @@ public final class DDLAssertEngine {
                 : YamlShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)));
     }
     
-    /**
-     * Assert DDL.
-     * 
-     * @throws IOException IO exception
-     * @throws SQLException SQL exception
-     * @throws JAXBException JAXB exception
-     */
-    public void assertDDL() throws IOException, SQLException, JAXBException {
-        assertExecuteUpdateForPreparedStatement();
-        assertExecuteForPreparedStatement();
-        assertExecuteUpdateForStatement();
-        assertExecuteForStatement();
-    }
-    
-    private void assertExecuteUpdateForPreparedStatement() throws SQLException, IOException, JAXBException {
+    public void assertExecuteUpdateForPreparedStatement() throws SQLException, IOException, JAXBException {
         try {
             try (Connection connection = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(integrateTestCaseAssertion.getCleanSql())) {
@@ -115,7 +101,7 @@ public final class DDLAssertEngine {
         }
     }
     
-    private void assertExecuteForPreparedStatement() throws SQLException, IOException, JAXBException {
+    public void assertExecuteForPreparedStatement() throws SQLException, IOException, JAXBException {
         try {
             try (Connection connection = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(integrateTestCaseAssertion.getCleanSql())) {
@@ -139,7 +125,7 @@ public final class DDLAssertEngine {
         }
     }
     
-    private void assertExecuteUpdateForStatement() throws SQLException, IOException, JAXBException {
+    public void assertExecuteUpdateForStatement() throws SQLException, IOException, JAXBException {
         try {
             try (Connection connection = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(integrateTestCaseAssertion.getCleanSql())) {
@@ -163,7 +149,7 @@ public final class DDLAssertEngine {
         }
     }
     
-    private void assertExecuteForStatement() throws SQLException, IOException, JAXBException {
+    public void assertExecuteForStatement() throws SQLException, IOException, JAXBException {
         try {
             try (Connection connection = dataSource.getConnection()) {
                 if (StringUtils.isNotBlank(integrateTestCaseAssertion.getCleanSql())) {

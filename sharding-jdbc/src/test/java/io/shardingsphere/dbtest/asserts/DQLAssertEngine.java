@@ -69,40 +69,25 @@ public final class DQLAssertEngine {
                 : YamlShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)));
     }
     
-    /**
-     * Assert DQL.
-     * 
-     * @throws IOException IO exception
-     * @throws SQLException SQL exception
-     * @throws ParseException parse exception
-     * @throws JAXBException JAXB exception
-     */
-    public void assertDQL() throws IOException, SQLException, ParseException, JAXBException {
-        assertExecuteQueryForPreparedStatement();
-        assertExecuteForPreparedStatement();
-        assertExecuteQueryForStatement();
-        assertExecuteDQLForStatement();
-    }
-    
-    private void assertExecuteQueryForPreparedStatement() throws SQLException, ParseException, IOException, JAXBException {
+    public void assertExecuteQueryForPreparedStatement() throws SQLException, ParseException, IOException, JAXBException {
         try (Connection connection = dataSource.getConnection()) {
             assertDataSet(DatabaseUtil.executeQueryForPreparedStatement(connection, sql, integrateTestCaseAssertion.getSQLValues()));
         }
     }
     
-    private void assertExecuteForPreparedStatement() throws SQLException, ParseException, IOException, JAXBException {
+    public void assertExecuteForPreparedStatement() throws SQLException, ParseException, IOException, JAXBException {
         try (Connection connection = dataSource.getConnection()) {
             assertDataSet(DatabaseUtil.executeDQLForPreparedStatement(connection, sql, integrateTestCaseAssertion.getSQLValues()));
         }
     }
     
-    private void assertExecuteQueryForStatement() throws SQLException, IOException, ParseException, JAXBException {
+    public void assertExecuteQueryForStatement() throws SQLException, IOException, ParseException, JAXBException {
         try (Connection connection = dataSource.getConnection()) {
             assertDataSet(DatabaseUtil.executeQueryForStatement(connection, sql, integrateTestCaseAssertion.getSQLValues()));
         }
     }
     
-    private void assertExecuteDQLForStatement() throws SQLException, IOException, ParseException, JAXBException {
+    public void assertExecuteForStatement() throws SQLException, IOException, ParseException, JAXBException {
         try (Connection connection = dataSource.getConnection()) {
             assertDataSet(DatabaseUtil.executeDQLForStatement(connection, sql, integrateTestCaseAssertion.getSQLValues()));
         }

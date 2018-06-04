@@ -23,17 +23,17 @@ import io.shardingsphere.dbtest.asserts.DDLAssertEngine;
 import io.shardingsphere.dbtest.asserts.DMLAssertEngine;
 import io.shardingsphere.dbtest.asserts.DQLAssertEngine;
 import io.shardingsphere.dbtest.asserts.DataSetEnvironmentManager;
+import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
+import io.shardingsphere.dbtest.env.EnvironmentPath;
+import io.shardingsphere.dbtest.env.IntegrateTestEnvironment;
+import io.shardingsphere.dbtest.env.datasource.DataSourceUtil;
+import io.shardingsphere.dbtest.env.schema.SchemaEnvironmentManager;
 import io.shardingsphere.dbtest.jaxb.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.jaxb.assertion.ddl.DDLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.jaxb.assertion.dml.DMLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.jaxb.assertion.dql.DQLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.jaxb.assertion.root.IntegrateTestCase;
 import io.shardingsphere.dbtest.jaxb.assertion.root.IntegrateTestCaseAssertion;
-import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
-import io.shardingsphere.dbtest.env.EnvironmentPath;
-import io.shardingsphere.dbtest.env.IntegrateTestEnvironment;
-import io.shardingsphere.dbtest.env.datasource.DataSourceUtil;
-import io.shardingsphere.dbtest.env.schema.SchemaEnvironmentManager;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
 import org.junit.After;
@@ -191,16 +191,64 @@ public final class StartTest {
     }
     
     @Test
-    public void test() throws JAXBException, ParseException, IOException, SQLException {
+    public void assertExecuteQueryOrUpdateForPreparedStatement() throws JAXBException, ParseException, IOException, SQLException {
         if (!databaseTypeEnvironment.isEnabled()) {
             return;
         }
         if (integrateTestCaseAssertion instanceof DQLIntegrateTestCaseAssertion) {
-            new DQLAssertEngine(sqlCaseId, path, (DQLIntegrateTestCaseAssertion) integrateTestCaseAssertion, dataSourceMap, shardingRuleType, caseType).assertDQL();
+            new DQLAssertEngine(sqlCaseId, path, (DQLIntegrateTestCaseAssertion) integrateTestCaseAssertion, dataSourceMap, shardingRuleType, caseType).assertExecuteQueryForPreparedStatement();
         } else if (integrateTestCaseAssertion instanceof DMLIntegrateTestCaseAssertion) {
-            new DMLAssertEngine(sqlCaseId, path, dataSetEnvironmentManager, (DMLIntegrateTestCaseAssertion) integrateTestCaseAssertion, dataSourceMap, shardingRuleType, caseType).assertDML();
+            new DMLAssertEngine(sqlCaseId, path, dataSetEnvironmentManager, (DMLIntegrateTestCaseAssertion) integrateTestCaseAssertion, dataSourceMap, shardingRuleType, caseType).assertExecuteUpdateForPreparedStatement();
         } else if (integrateTestCaseAssertion instanceof DDLIntegrateTestCaseAssertion) {
-            new DDLAssertEngine(sqlCaseId, path, (DDLIntegrateTestCaseAssertion) integrateTestCaseAssertion, dataSourceMap, shardingRuleType, databaseTypeEnvironment, caseType).assertDDL();
+            new DDLAssertEngine(sqlCaseId, path, (DDLIntegrateTestCaseAssertion) integrateTestCaseAssertion, dataSourceMap, shardingRuleType, databaseTypeEnvironment, caseType).assertExecuteUpdateForPreparedStatement();
+        } else {
+            throw new UnsupportedOperationException(integrateTestCaseAssertion.getClass().getName());
+        }
+    }
+    
+    @Test
+    public void assertExecuteForPreparedStatement() throws JAXBException, ParseException, IOException, SQLException {
+        if (!databaseTypeEnvironment.isEnabled()) {
+            return;
+        }
+        if (integrateTestCaseAssertion instanceof DQLIntegrateTestCaseAssertion) {
+            new DQLAssertEngine(sqlCaseId, path, (DQLIntegrateTestCaseAssertion) integrateTestCaseAssertion, dataSourceMap, shardingRuleType, caseType).assertExecuteForPreparedStatement();
+        } else if (integrateTestCaseAssertion instanceof DMLIntegrateTestCaseAssertion) {
+            new DMLAssertEngine(sqlCaseId, path, dataSetEnvironmentManager, (DMLIntegrateTestCaseAssertion) integrateTestCaseAssertion, dataSourceMap, shardingRuleType, caseType).assertExecuteForPreparedStatement();
+        } else if (integrateTestCaseAssertion instanceof DDLIntegrateTestCaseAssertion) {
+            new DDLAssertEngine(sqlCaseId, path, (DDLIntegrateTestCaseAssertion) integrateTestCaseAssertion, dataSourceMap, shardingRuleType, databaseTypeEnvironment, caseType).assertExecuteForPreparedStatement();
+        } else {
+            throw new UnsupportedOperationException(integrateTestCaseAssertion.getClass().getName());
+        }
+    }
+    
+    @Test
+    public void assertExecuteQueryOrUpdateForStatement() throws JAXBException, ParseException, IOException, SQLException {
+        if (!databaseTypeEnvironment.isEnabled()) {
+            return;
+        }
+        if (integrateTestCaseAssertion instanceof DQLIntegrateTestCaseAssertion) {
+            new DQLAssertEngine(sqlCaseId, path, (DQLIntegrateTestCaseAssertion) integrateTestCaseAssertion, dataSourceMap, shardingRuleType, caseType).assertExecuteQueryForStatement();
+        } else if (integrateTestCaseAssertion instanceof DMLIntegrateTestCaseAssertion) {
+            new DMLAssertEngine(sqlCaseId, path, dataSetEnvironmentManager, (DMLIntegrateTestCaseAssertion) integrateTestCaseAssertion, dataSourceMap, shardingRuleType, caseType).assertExecuteUpdateForStatement();
+        } else if (integrateTestCaseAssertion instanceof DDLIntegrateTestCaseAssertion) {
+            new DDLAssertEngine(sqlCaseId, path, (DDLIntegrateTestCaseAssertion) integrateTestCaseAssertion, dataSourceMap, shardingRuleType, databaseTypeEnvironment, caseType).assertExecuteUpdateForStatement();
+        } else {
+            throw new UnsupportedOperationException(integrateTestCaseAssertion.getClass().getName());
+        }
+    }
+    
+    @Test
+    public void assertExecuteForStatement() throws JAXBException, ParseException, IOException, SQLException {
+        if (!databaseTypeEnvironment.isEnabled()) {
+            return;
+        }
+        if (integrateTestCaseAssertion instanceof DQLIntegrateTestCaseAssertion) {
+            new DQLAssertEngine(sqlCaseId, path, (DQLIntegrateTestCaseAssertion) integrateTestCaseAssertion, dataSourceMap, shardingRuleType, caseType).assertExecuteForStatement();
+        } else if (integrateTestCaseAssertion instanceof DMLIntegrateTestCaseAssertion) {
+            new DMLAssertEngine(sqlCaseId, path, dataSetEnvironmentManager, (DMLIntegrateTestCaseAssertion) integrateTestCaseAssertion, dataSourceMap, shardingRuleType, caseType).assertExecuteForStatement();
+        } else if (integrateTestCaseAssertion instanceof DDLIntegrateTestCaseAssertion) {
+            new DDLAssertEngine(sqlCaseId, path, (DDLIntegrateTestCaseAssertion) integrateTestCaseAssertion, dataSourceMap, shardingRuleType, databaseTypeEnvironment, caseType).assertExecuteForStatement();
         } else {
             throw new UnsupportedOperationException(integrateTestCaseAssertion.getClass().getName());
         }

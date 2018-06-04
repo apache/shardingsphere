@@ -76,22 +76,7 @@ public final class DMLAssertEngine {
                 : YamlShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)));
     }
     
-    /**
-     * Assert DML.
-     * 
-     * @throws IOException IO exception
-     * @throws SQLException SQL exception
-     * @throws ParseException parse exception
-     * @throws JAXBException JAXB exception
-     */
-    public void assertDML() throws IOException, SQLException, ParseException, JAXBException {
-        assertExecuteUpdateForPreparedStatement();
-        assertExecuteForPreparedStatement();
-        assertExecuteUpdateForStatement();
-        assertExecuteForStatement();
-    }
-    
-    private void assertExecuteUpdateForPreparedStatement() throws SQLException, ParseException, IOException, JAXBException {
+    public void assertExecuteUpdateForPreparedStatement() throws SQLException, ParseException, IOException, JAXBException {
         try {
             dataSetEnvironmentManager.initialize();
             try (Connection connection = dataSource.getConnection()) {
@@ -103,7 +88,7 @@ public final class DMLAssertEngine {
         }
     }
     
-    private void assertExecuteForPreparedStatement() throws SQLException, ParseException, IOException, JAXBException {
+    public void assertExecuteForPreparedStatement() throws SQLException, ParseException, IOException, JAXBException {
         try {
             dataSetEnvironmentManager.initialize();
             try (Connection connection = dataSource.getConnection()) {
@@ -115,7 +100,7 @@ public final class DMLAssertEngine {
         }
     }
     
-    private void assertExecuteUpdateForStatement() throws SQLException, ParseException, IOException, JAXBException {
+    public void assertExecuteUpdateForStatement() throws SQLException, ParseException, IOException, JAXBException {
         try {
             dataSetEnvironmentManager.initialize();
             try (Connection connection = dataSource.getConnection()) {
@@ -127,7 +112,7 @@ public final class DMLAssertEngine {
         }
     }
     
-    private void assertExecuteForStatement() throws SQLException, ParseException, IOException, JAXBException {
+    public void assertExecuteForStatement() throws SQLException, ParseException, IOException, JAXBException {
         try {
             dataSetEnvironmentManager.initialize();
             try (Connection connection = dataSource.getConnection()) {
