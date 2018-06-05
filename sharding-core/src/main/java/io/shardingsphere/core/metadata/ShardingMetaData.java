@@ -66,7 +66,7 @@ public abstract class ShardingMetaData {
      * @param shardingRule sharding rule
      */
     public void init(final ShardingRule shardingRule) {
-        tableMetaDataMap = new HashMap<>(shardingRule.getTableRules().size(), 1);
+        tableMetaDataMap = new HashMap<>();
         try {
             Collection<TableRule> tableRules = getTableRules(shardingRule);
             for (TableRule each : tableRules) {
@@ -81,7 +81,7 @@ public abstract class ShardingMetaData {
         Collection<TableRule> tableRules = shardingRule.getTableRules();
         String defaultDataSourceName = shardingRule.getShardingDataSourceNames().getDefaultDataSourceName();
         if (!Strings.isNullOrEmpty(defaultDataSourceName)) {
-            Collection<String> defaultTableNames = getTableNamesFromDefaultDataSource(defaultDataSourceName);
+            Collection<String> defaultTableNames = getTableNamesFromDefaultDataSource(shardingRule.getMasterDataSourceName(defaultDataSourceName));
             for (String each : defaultTableNames) {
                 tableRules.add(shardingRule.getTableRule(each));
             }
@@ -143,6 +143,7 @@ public abstract class ShardingMetaData {
                 }
             }));
         }
+
         try {
             return Futures.allAsList(result).get();
         } catch (final InterruptedException | ExecutionException ex) {

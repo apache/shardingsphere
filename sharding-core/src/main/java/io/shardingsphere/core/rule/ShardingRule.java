@@ -342,4 +342,19 @@ public final class ShardingRule {
     public boolean isLogicIndex(final String logicIndexName, final String logicTableName) {
         return logicIndexName.equals(getTableRule(logicTableName).getLogicIndex());
     }
+    
+    /**
+     * Get master data source name.
+     *
+     * @param masterSlaveRuleName Master-slave rule name.
+     * @return Master DataSource Name or master-slave rule name
+     */
+    public String getMasterDataSourceName(final String masterSlaveRuleName) {
+        for (MasterSlaveRule each : masterSlaveRules) {
+            if (each.getName().equals(masterSlaveRuleName)) {
+                return each.getMasterDataSourceName();
+            }
+        }
+        return masterSlaveRuleName;
+    }
 }
