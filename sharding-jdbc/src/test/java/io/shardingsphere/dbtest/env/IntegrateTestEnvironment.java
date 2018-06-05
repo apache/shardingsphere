@@ -18,7 +18,7 @@
 package io.shardingsphere.dbtest.env;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.dbtest.DQLIntegrateTest;
+import io.shardingsphere.dbtest.engine.DQLIntegrateTest;
 import io.shardingsphere.dbtest.env.datasource.DatabaseEnvironment;
 import lombok.Getter;
 

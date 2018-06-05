@@ -15,18 +15,17 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest;
+package io.shardingsphere.dbtest.engine;
 
-import com.google.common.base.Strings;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.dbtest.asserts.DataSetAssert;
+import io.shardingsphere.dbtest.asserts.DataSetDefinitions;
 import io.shardingsphere.dbtest.common.DatabaseUtil;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.cases.IntegrateTestCasesLoader;
-import io.shardingsphere.dbtest.cases.ddl.DDLIntegrateTestCase;
-import io.shardingsphere.dbtest.cases.ddl.DDLIntegrateTestCaseAssertion;
-import io.shardingsphere.dbtest.jaxb.dataset.expected.metadata.ExpectedColumn;
-import io.shardingsphere.dbtest.jaxb.dataset.expected.metadata.ExpectedMetadataRoot;
+import io.shardingsphere.dbtest.cases.dql.DQLIntegrateTestCase;
+import io.shardingsphere.dbtest.cases.dql.DQLIntegrateTestCaseAssertion;
+import io.shardingsphere.dbtest.jaxb.dataset.expected.dataset.ExpectedDataSetsRoot;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
 import org.junit.Before;
@@ -40,24 +39,22 @@ import javax.xml.bind.JAXBException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 @RunWith(Parameterized.class)
-public final class DDLIntegrateTest extends BaseIntegrateTest {
+public final class DQLIntegrateTest extends BaseIntegrateTest {
     
     private static SQLCasesLoader sqlCasesLoader = SQLCasesLoader.getInstance();
     
     private static IntegrateTestCasesLoader integrateTestCasesLoader = IntegrateTestCasesLoader.getInstance();
     
-    private final DDLIntegrateTestCaseAssertion assertion;
+    private final DQLIntegrateTestCaseAssertion assertion;
     
-    public DDLIntegrateTest(final String sqlCaseId, final String path, final DDLIntegrateTestCaseAssertion assertion,
+    public DQLIntegrateTest(final String sqlCaseId, final String path, final DQLIntegrateTestCaseAssertion assertion,
                             final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException {
         super(sqlCaseId, path, assertion, databaseTypeEnvironment, caseType);
         this.assertion = assertion;
@@ -72,7 +69,7 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
             String sqlCaseId = each[0].toString();
             DatabaseType databaseType = (DatabaseType) each[1];
             SQLCaseType caseType = (SQLCaseType) each[2];
-            DDLIntegrateTestCase integrateTestCase = integrateTestCasesLoader.getDDLIntegrateTestCase(sqlCaseId);
+            DQLIntegrateTestCase integrateTestCase = integrateTestCasesLoader.getDQLIntegrateTestCase(sqlCaseId);
             // TODO remove when transfer finished
             if (null == integrateTestCase) {
                 continue;
@@ -80,7 +77,6 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
             if (getDatabaseTypes(integrateTestCase.getDatabaseTypes()).contains(databaseType)) {
                 result.addAll(getParameters(databaseType, caseType, integrateTestCase));
             }
-            
         }
         return result;
     }
@@ -93,61 +89,38 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
     }
     
     @Test
-    public void assertExecuteUpdate() throws JAXBException, IOException, SQLException {
+    public void assertExecuteQuery() throws JAXBException, IOException, SQLException, ParseException {
         if (!getDatabaseTypeEnvironment().isEnabled()) {
             return;
         }
         try (Connection connection = getDataSource().getConnection()) {
-            dropTableIfExisted(connection);
-            if (!Strings.isNullOrEmpty(assertion.getInitSql())) {
-                connection.prepareStatement(assertion.getInitSql()).executeUpdate();
-            }
             if (SQLCaseType.Literal == getCaseType()) {
-                connection.createStatement().executeUpdate(getSql());
+                assertDataSet(DatabaseUtil.executeQueryForStatement(connection, getSql(), assertion.getSQLValues()));
             } else {
-                connection.prepareStatement(getSql()).executeUpdate();
+                assertDataSet(DatabaseUtil.executeQueryForPreparedStatement(connection, getSql(), assertion.getSQLValues()));
             }
-            assertMetadata(connection);
-            dropTableIfExisted(connection);
         }
     }
     
     @Test
-    public void assertExecute() throws JAXBException, IOException, SQLException {
+    public void assertExecute() throws JAXBException, IOException, SQLException, ParseException {
         if (!getDatabaseTypeEnvironment().isEnabled()) {
             return;
         }
         try (Connection connection = getDataSource().getConnection()) {
-            dropTableIfExisted(connection);
-            if (!Strings.isNullOrEmpty(assertion.getInitSql())) {
-                connection.prepareStatement(assertion.getInitSql()).executeUpdate();
-            }
             if (SQLCaseType.Literal == getCaseType()) {
-                connection.createStatement().execute(getSql());
+                assertDataSet(DatabaseUtil.executeDQLForStatement(connection, getSql(), assertion.getSQLValues()));
             } else {
-                connection.prepareStatement(getSql()).execute();
+                assertDataSet(DatabaseUtil.executeDQLForPreparedStatement(connection, getSql(), assertion.getSQLValues()));
             }
-            assertMetadata(connection);
-            dropTableIfExisted(connection);
         }
     }
     
-    private void dropTableIfExisted(final Connection connection) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DROP TABLE %s", assertion.getTable()))) {
-            preparedStatement.executeUpdate();
-            // CHECKSTYLE: OFF
-        } catch (final SQLException ex) {
-            // CHECKSTYLE: ON
-        }
-    }
-    
-    private void assertMetadata(final Connection connection) throws IOException, JAXBException, SQLException {
-        ExpectedMetadataRoot expected;
+    private void assertDataSet(final DataSetDefinitions actual) throws IOException, JAXBException {
+        ExpectedDataSetsRoot expected;
         try (FileReader reader = new FileReader(getExpectedDataFile())) {
-            expected = (ExpectedMetadataRoot) JAXBContext.newInstance(ExpectedMetadataRoot.class).createUnmarshaller().unmarshal(reader);
+            expected = (ExpectedDataSetsRoot) JAXBContext.newInstance(ExpectedDataSetsRoot.class).createUnmarshaller().unmarshal(reader);
         }
-        String tableName = assertion.getTable();
-        List<ExpectedColumn> actualColumns = DatabaseUtil.getExpectedColumns(connection, tableName);
-        DataSetAssert.assertMetadata(actualColumns, expected.find(tableName));
+        DataSetAssert.assertDataSet(actual, expected);
     }
 }

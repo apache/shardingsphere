@@ -15,19 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest;
+package io.shardingsphere.dbtest.engine;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.dbtest.asserts.DataSetAssert;
-import io.shardingsphere.dbtest.asserts.DataSetDefinitions;
 import io.shardingsphere.dbtest.common.DatabaseUtil;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.cases.IntegrateTestCasesLoader;
-import io.shardingsphere.dbtest.cases.dql.DQLIntegrateTestCase;
-import io.shardingsphere.dbtest.cases.dql.DQLIntegrateTestCaseAssertion;
-import io.shardingsphere.dbtest.jaxb.dataset.expected.dataset.ExpectedDataSetsRoot;
+import io.shardingsphere.dbtest.cases.dml.DMLIntegrateTestCase;
+import io.shardingsphere.dbtest.cases.dml.DMLIntegrateTestCaseAssertion;
+import io.shardingsphere.dbtest.jaxb.dataset.init.DataSetsRoot;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,16 +45,19 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 @RunWith(Parameterized.class)
-public final class DQLIntegrateTest extends BaseIntegrateTest {
+public final class DMLIntegrateTest extends BaseIntegrateTest {
     
     private static SQLCasesLoader sqlCasesLoader = SQLCasesLoader.getInstance();
     
     private static IntegrateTestCasesLoader integrateTestCasesLoader = IntegrateTestCasesLoader.getInstance();
     
-    private final DQLIntegrateTestCaseAssertion assertion;
+    private final DMLIntegrateTestCaseAssertion assertion;
     
-    public DQLIntegrateTest(final String sqlCaseId, final String path, final DQLIntegrateTestCaseAssertion assertion,
+    public DMLIntegrateTest(final String sqlCaseId, final String path, final DMLIntegrateTestCaseAssertion assertion, 
                             final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException {
         super(sqlCaseId, path, assertion, databaseTypeEnvironment, caseType);
         this.assertion = assertion;
@@ -69,7 +72,7 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
             String sqlCaseId = each[0].toString();
             DatabaseType databaseType = (DatabaseType) each[1];
             SQLCaseType caseType = (SQLCaseType) each[2];
-            DQLIntegrateTestCase integrateTestCase = integrateTestCasesLoader.getDQLIntegrateTestCase(sqlCaseId);
+            DMLIntegrateTestCase integrateTestCase = integrateTestCasesLoader.getDMLIntegrateTestCase(sqlCaseId);
             // TODO remove when transfer finished
             if (null == integrateTestCase) {
                 continue;
@@ -77,6 +80,7 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
             if (getDatabaseTypes(integrateTestCase.getDatabaseTypes()).contains(databaseType)) {
                 result.addAll(getParameters(databaseType, caseType, integrateTestCase));
             }
+            
         }
         return result;
     }
@@ -84,22 +88,30 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
     @Before
     public void insertData() throws SQLException, ParseException {
         if (getDatabaseTypeEnvironment().isEnabled()) {
-            getDataSetEnvironmentManager().initialize(false);
+            getDataSetEnvironmentManager().initialize(true);
+        }
+    }
+    
+    @After
+    public void clearData() throws SQLException {
+        if (getDatabaseTypeEnvironment().isEnabled()) {
+            getDataSetEnvironmentManager().clear();
         }
     }
     
     @Test
-    public void assertExecuteQuery() throws JAXBException, IOException, SQLException, ParseException {
+    public void assertExecuteUpdate() throws JAXBException, IOException, SQLException, ParseException {
         if (!getDatabaseTypeEnvironment().isEnabled()) {
             return;
         }
         try (Connection connection = getDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
-                assertDataSet(DatabaseUtil.executeQueryForStatement(connection, getSql(), assertion.getSQLValues()));
+                assertThat(DatabaseUtil.executeUpdateForStatement(connection, getSql(), assertion.getSQLValues()), is(assertion.getExpectedUpdate()));
             } else {
-                assertDataSet(DatabaseUtil.executeQueryForPreparedStatement(connection, getSql(), assertion.getSQLValues()));
-            }
+                assertThat(DatabaseUtil.executeUpdateForPreparedStatement(connection, getSql(), assertion.getSQLValues()), is(assertion.getExpectedUpdate()));
+            } 
         }
+        assertDataSet();
     }
     
     @Test
@@ -109,18 +121,19 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
         }
         try (Connection connection = getDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
-                assertDataSet(DatabaseUtil.executeDQLForStatement(connection, getSql(), assertion.getSQLValues()));
+                assertThat(DatabaseUtil.executeDMLForStatement(connection, getSql(), assertion.getSQLValues()), is(assertion.getExpectedUpdate()));
             } else {
-                assertDataSet(DatabaseUtil.executeDQLForPreparedStatement(connection, getSql(), assertion.getSQLValues()));
+                assertThat(DatabaseUtil.executeDMLForPreparedStatement(connection, getSql(), assertion.getSQLValues()), is(assertion.getExpectedUpdate()));
             }
         }
+        assertDataSet();
     }
     
-    private void assertDataSet(final DataSetDefinitions actual) throws IOException, JAXBException {
-        ExpectedDataSetsRoot expected;
+    private void assertDataSet() throws IOException, JAXBException, SQLException {
+        DataSetsRoot expected;
         try (FileReader reader = new FileReader(getExpectedDataFile())) {
-            expected = (ExpectedDataSetsRoot) JAXBContext.newInstance(ExpectedDataSetsRoot.class).createUnmarshaller().unmarshal(reader);
+            expected = (DataSetsRoot) JAXBContext.newInstance(DataSetsRoot.class).createUnmarshaller().unmarshal(reader);
         }
-        DataSetAssert.assertDataSet(actual, expected);
+        DataSetAssert.assertDataSet(getDataSourceMap(), expected);
     }
 }

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest;
+package io.shardingsphere.dbtest.engine;
 
 import com.google.common.base.Splitter;
 import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
