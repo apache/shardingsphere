@@ -32,7 +32,7 @@ import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.jdbc.orchestration.reg.etcd.EtcdConfiguration;
 import io.shardingsphere.jdbc.orchestration.reg.etcd.EtcdRegistryCenter;
 import io.shardingsphere.jdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
-import io.shardingsphere.jdbc.orchestration.reg.new_zk.NewZookeeperRegistryCenter;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.NewZookeeperRegistryCenter;
 import io.shardingsphere.jdbc.orchestration.reg.zookeeper.ZookeeperRegistryCenter;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
