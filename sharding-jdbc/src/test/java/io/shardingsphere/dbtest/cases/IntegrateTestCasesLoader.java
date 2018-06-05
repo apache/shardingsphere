@@ -15,17 +15,17 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.jaxb.assertion;
+package io.shardingsphere.dbtest.cases;
 
 import com.google.common.base.Preconditions;
-import io.shardingsphere.dbtest.jaxb.assertion.ddl.DDLIntegrateTestCase;
-import io.shardingsphere.dbtest.jaxb.assertion.ddl.DDLIntegrateTestCases;
-import io.shardingsphere.dbtest.jaxb.assertion.dml.DMLIntegrateTestCase;
-import io.shardingsphere.dbtest.jaxb.assertion.dml.DMLIntegrateTestCases;
-import io.shardingsphere.dbtest.jaxb.assertion.dql.DQLIntegrateTestCase;
-import io.shardingsphere.dbtest.jaxb.assertion.dql.DQLIntegrateTestCases;
-import io.shardingsphere.dbtest.jaxb.assertion.root.IntegrateTestCase;
-import io.shardingsphere.dbtest.jaxb.assertion.root.IntegrateTestCases;
+import io.shardingsphere.dbtest.cases.ddl.DDLIntegrateTestCase;
+import io.shardingsphere.dbtest.cases.dml.DMLIntegrateTestCase;
+import io.shardingsphere.dbtest.cases.ddl.DDLIntegrateTestCases;
+import io.shardingsphere.dbtest.cases.dml.DMLIntegrateTestCases;
+import io.shardingsphere.dbtest.cases.dql.DQLIntegrateTestCase;
+import io.shardingsphere.dbtest.cases.dql.DQLIntegrateTestCases;
+import io.shardingsphere.dbtest.cases.root.IntegrateTestCase;
+import io.shardingsphere.dbtest.cases.root.IntegrateTestCases;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -203,6 +203,6 @@ public final class IntegrateTestCasesLoader {
      * @return count of all data set test cases
      */
     public int countAllDataSetTestCases() {
-        return dqlIntegrateTestCaseMap.size();
+        return dqlIntegrateTestCaseMap.size() + dmlIntegrateTestCaseMap.size() + ddlIntegrateTestCaseMap.size();
     }
 }

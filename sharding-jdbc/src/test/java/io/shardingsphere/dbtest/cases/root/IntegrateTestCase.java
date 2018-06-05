@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.jaxb.assertion.root;
+package io.shardingsphere.dbtest.cases.root;
 
 import com.google.common.base.Joiner;
 import io.shardingsphere.core.constant.DatabaseType;

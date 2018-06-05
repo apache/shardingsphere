@@ -15,23 +15,25 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.jaxb.assertion.ddl;
+package io.shardingsphere.dbtest.cases.ddl;
 
-import io.shardingsphere.dbtest.jaxb.assertion.root.IntegrateTestCase;
+import io.shardingsphere.dbtest.cases.root.IntegrateTestCases;
 import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * JAXB definition of DDL integrate test case.
- *
+ * JAXB definition of DDL integrate test cases.
+ * 
  * @author zhangliang
  */
 @Getter
-public class DDLIntegrateTestCase extends IntegrateTestCase {
+@XmlRootElement(name = "integrate-test-cases")
+public class DDLIntegrateTestCases implements IntegrateTestCases {
     
-    @XmlElement(name = "assertion")
-    private List<DDLIntegrateTestCaseAssertion> integrateTestCaseAssertions = new LinkedList<>();
+    @XmlElement(name = "ddl-test-case")
+    private List<DDLIntegrateTestCase> integrateTestCases = new LinkedList<>();
 }

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.jaxb.assertion.root;
+package io.shardingsphere.dbtest.cases.root;
 
 import java.util.List;
 
