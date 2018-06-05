@@ -28,7 +28,7 @@ import io.shardingsphere.dbtest.jaxb.assertion.dql.DQLIntegrateTestCaseAssertion
 import io.shardingsphere.dbtest.jaxb.dataset.expected.dataset.ExpectedDataSetsRoot;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
-import org.junit.Ignore;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -81,7 +81,7 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
         return result;
     }
     
-//    @Before
+    @Before
     public void insertData() throws SQLException, ParseException {
         if (getDatabaseTypeEnvironment().isEnabled()) {
             getDataSetEnvironmentManager().initialize(false);
@@ -89,7 +89,6 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
     }
     
     @Test
-    @Ignore
     public void assertExecuteQuery() throws JAXBException, IOException, SQLException, ParseException {
         if (!getDatabaseTypeEnvironment().isEnabled()) {
             return;
@@ -104,7 +103,6 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
     }
     
     @Test
-    @Ignore
     public void assertExecute() throws JAXBException, IOException, SQLException, ParseException {
         if (!getDatabaseTypeEnvironment().isEnabled()) {
             return;

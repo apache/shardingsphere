@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.asserts;
+package io.shardingsphere.dbtest.env.dataset;
 
 import com.google.common.base.Joiner;
 import io.shardingsphere.core.rule.DataNode;

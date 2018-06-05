@@ -21,7 +21,7 @@ import com.google.common.base.Splitter;
 import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
 import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.dbtest.asserts.DataSetEnvironmentManager;
+import io.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.dbtest.env.IntegrateTestEnvironment;
@@ -37,6 +37,8 @@ import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -145,7 +147,7 @@ public abstract class BaseIntegrateTest {
         return result;
     }
     
-//    @BeforeClass
+    @BeforeClass
     public static void createDatabasesAndTables() throws JAXBException, IOException {
         if (isInitialized) {
             isInitialized = false;
@@ -162,7 +164,7 @@ public abstract class BaseIntegrateTest {
         }
     }
     
-//    @AfterClass
+    @AfterClass
     public static void dropDatabases() throws JAXBException, IOException {
         if (isCleaned) {
             for (String each : integrateTestCasesLoader.getShardingRuleTypes()) {
