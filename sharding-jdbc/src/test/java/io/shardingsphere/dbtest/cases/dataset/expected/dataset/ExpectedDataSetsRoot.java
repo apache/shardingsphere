@@ -15,21 +15,22 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.asserts;
+package io.shardingsphere.dbtest.cases.dataset.expected.dataset;
 
-import io.shardingsphere.dbtest.cases.dataset.init.DataSetColumnMetadata;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-@RequiredArgsConstructor
 @Getter
-public final class DataSetDefinitions {
+@XmlRootElement(name = "datasets")
+public final class ExpectedDataSetsRoot {
     
-    private final Map<String, List<DataSetColumnMetadata>> metadataList;
+    @XmlElement
+    private ExpectedColumns columns;
     
-    private final Map<String, List<Map<String, String>>> dataList;
-    
+    @XmlElement(name = "dataset")
+    private List<ExpectedDataSetRow> dataSetRows = new ArrayList<>();
 }

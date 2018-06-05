@@ -18,8 +18,8 @@
 package io.shardingsphere.dbtest.common;
 
 import io.shardingsphere.dbtest.asserts.DataSetDefinitions;
-import io.shardingsphere.dbtest.jaxb.dataset.expected.metadata.ExpectedColumn;
-import io.shardingsphere.dbtest.jaxb.dataset.init.DataSetColumnMetadata;
+import io.shardingsphere.dbtest.cases.dataset.expected.metadata.ExpectedColumn;
+import io.shardingsphere.dbtest.cases.dataset.init.DataSetColumnMetadata;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

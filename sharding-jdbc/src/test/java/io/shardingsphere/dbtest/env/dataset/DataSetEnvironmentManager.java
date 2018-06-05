@@ -22,10 +22,10 @@ import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.util.InlineExpressionParser;
 import io.shardingsphere.dbtest.common.DatabaseUtil;
 import io.shardingsphere.dbtest.common.SQLValueGroup;
-import io.shardingsphere.dbtest.jaxb.dataset.init.DataSetColumnMetadata;
-import io.shardingsphere.dbtest.jaxb.dataset.init.DataSetMetadata;
-import io.shardingsphere.dbtest.jaxb.dataset.init.DataSetRow;
-import io.shardingsphere.dbtest.jaxb.dataset.init.DataSetsRoot;
+import io.shardingsphere.dbtest.cases.dataset.init.DataSetColumnMetadata;
+import io.shardingsphere.dbtest.cases.dataset.init.DataSetMetadata;
+import io.shardingsphere.dbtest.cases.dataset.init.DataSetRow;
+import io.shardingsphere.dbtest.cases.dataset.init.DataSetsRoot;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;

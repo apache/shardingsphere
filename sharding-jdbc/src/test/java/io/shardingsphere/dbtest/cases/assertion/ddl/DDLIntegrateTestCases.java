@@ -15,21 +15,25 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.asserts;
+package io.shardingsphere.dbtest.cases.assertion.ddl;
 
-import io.shardingsphere.dbtest.cases.dataset.init.DataSetColumnMetadata;
+import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCases;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
-@RequiredArgsConstructor
+/**
+ * JAXB definition of DDL integrate test cases.
+ * 
+ * @author zhangliang
+ */
 @Getter
-public final class DataSetDefinitions {
+@XmlRootElement(name = "integrate-test-cases")
+public class DDLIntegrateTestCases implements IntegrateTestCases {
     
-    private final Map<String, List<DataSetColumnMetadata>> metadataList;
-    
-    private final Map<String, List<Map<String, String>>> dataList;
-    
+    @XmlElement(name = "ddl-test-case")
+    private List<DDLIntegrateTestCase> integrateTestCases = new LinkedList<>();
 }

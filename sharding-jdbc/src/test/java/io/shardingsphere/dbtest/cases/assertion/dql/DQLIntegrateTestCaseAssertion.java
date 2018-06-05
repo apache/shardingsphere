@@ -15,21 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.asserts;
+package io.shardingsphere.dbtest.cases.assertion.dql;
 
-import io.shardingsphere.dbtest.cases.dataset.init.DataSetColumnMetadata;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
 
-import java.util.List;
-import java.util.Map;
-
-@RequiredArgsConstructor
-@Getter
-public final class DataSetDefinitions {
-    
-    private final Map<String, List<DataSetColumnMetadata>> metadataList;
-    
-    private final Map<String, List<Map<String, String>>> dataList;
-    
+/**
+ * JAXB definition of DQL integrate test case assertion.
+ *
+ * @author zhangliang
+ */
+public final class DQLIntegrateTestCaseAssertion extends IntegrateTestCaseAssertion {
 }
