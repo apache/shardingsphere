@@ -37,8 +37,6 @@ import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -147,7 +145,7 @@ public abstract class BaseIntegrateTest {
         return result;
     }
     
-    @BeforeClass
+//    @BeforeClass
     public static void createDatabasesAndTables() throws JAXBException, IOException {
         if (isInitialized) {
             isInitialized = false;
@@ -164,7 +162,7 @@ public abstract class BaseIntegrateTest {
         }
     }
     
-    @AfterClass
+//    @AfterClass
     public static void dropDatabases() throws JAXBException, IOException {
         if (isCleaned) {
             for (String each : integrateTestCasesLoader.getShardingRuleTypes()) {
