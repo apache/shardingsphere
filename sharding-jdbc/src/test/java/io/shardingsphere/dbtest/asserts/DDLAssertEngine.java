@@ -113,7 +113,9 @@ public final class DDLAssertEngine {
     private void dropTableIfExisted(final Connection connection) {
         try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DROP TABLE %s", assertion.getTable()))) {
             preparedStatement.executeUpdate();
+            // CHECKSTYLE: OFF
         } catch (final SQLException ex) {
+            // CHECKSTYLE: ON
         }
     }
     
@@ -124,6 +126,6 @@ public final class DDLAssertEngine {
         }
         String tableName = assertion.getTable();
         List<ExpectedColumn> actualColumns = DatabaseUtil.getExpectedColumns(connection, tableName);
-        DatabaseUtil.assertConfigs(expected.find(tableName), actualColumns);
+        DataSetAssert.assertMetadata(actualColumns, expected.find(tableName));
     }
 }
