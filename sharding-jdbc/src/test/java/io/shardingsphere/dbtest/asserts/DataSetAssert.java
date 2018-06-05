@@ -21,6 +21,8 @@ import com.google.common.base.Splitter;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.util.InlineExpressionParser;
 import io.shardingsphere.dbtest.jaxb.dataset.expected.dataset.ExpectedDataSetsRoot;
+import io.shardingsphere.dbtest.jaxb.dataset.expected.metadata.ExpectedColumn;
+import io.shardingsphere.dbtest.jaxb.dataset.expected.metadata.ExpectedMetadata;
 import io.shardingsphere.dbtest.jaxb.dataset.init.DataSetColumnMetadata;
 import io.shardingsphere.dbtest.jaxb.dataset.init.DataSetMetadata;
 import io.shardingsphere.dbtest.jaxb.dataset.init.DataSetRow;
@@ -144,5 +146,25 @@ public final class DataSetAssert {
             
         }
         return result;
+    }
+    
+    /**
+     * Comparative data set.
+     *
+     * @param expected expected
+     * @param actual actual
+     */
+    public static void assertMetadata(final List<ExpectedColumn> actual, final ExpectedMetadata expected) {
+        for (ExpectedColumn each : expected.getColumns()) {
+            assertMetadata(actual, each);
+        }
+    }
+    
+    private static void assertMetadata(final List<ExpectedColumn> actual, final ExpectedColumn expect) {
+        for (ExpectedColumn each : actual) {
+            if (expect.getName().equals(each.getName())) {
+                assertThat(each.getType(), is(expect.getType()));
+            }
+        }
     }
 }

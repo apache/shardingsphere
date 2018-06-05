@@ -18,34 +18,34 @@
 package io.shardingsphere.dbtest;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.dbtest.asserts.DMLAssertEngine;
-import io.shardingsphere.dbtest.asserts.DataSetEnvironmentManager;
+import io.shardingsphere.dbtest.asserts.DataSetAssert;
+import io.shardingsphere.dbtest.common.DatabaseUtil;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
-import io.shardingsphere.dbtest.env.EnvironmentPath;
-import io.shardingsphere.dbtest.env.datasource.DataSourceUtil;
-import io.shardingsphere.dbtest.env.schema.SchemaEnvironmentManager;
 import io.shardingsphere.dbtest.jaxb.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.jaxb.assertion.dml.DMLIntegrateTestCase;
 import io.shardingsphere.dbtest.jaxb.assertion.dml.DMLIntegrateTestCaseAssertion;
+import io.shardingsphere.dbtest.jaxb.dataset.init.DataSetsRoot;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import javax.sql.DataSource;
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 @RunWith(Parameterized.class)
 public final class DMLIntegrateTest extends BaseIntegrateTest {
@@ -54,35 +54,12 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
     
     private static IntegrateTestCasesLoader integrateTestCasesLoader = IntegrateTestCasesLoader.getInstance();
     
-    private final DatabaseTypeEnvironment databaseTypeEnvironment;
+    private final DMLIntegrateTestCaseAssertion assertion;
     
-    private final SQLCaseType caseType;
-    
-    private final DataSetEnvironmentManager dataSetEnvironmentManager;
-    
-    private final DMLAssertEngine dmlAssertEngine;
-    
-    public DMLIntegrateTest(final String sqlCaseId, final String path, final DMLIntegrateTestCaseAssertion integrateTestCaseAssertion, 
+    public DMLIntegrateTest(final String sqlCaseId, final String path, final DMLIntegrateTestCaseAssertion assertion, 
                             final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException {
-        this.databaseTypeEnvironment = databaseTypeEnvironment;
-        this.caseType = caseType;
-        if (databaseTypeEnvironment.isEnabled()) {
-            Map<String, DataSource> dataSourceMap = createDataSourceMap(integrateTestCaseAssertion);
-            dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(integrateTestCaseAssertion.getShardingRuleType()), dataSourceMap);
-            dmlAssertEngine = new DMLAssertEngine(sqlCaseId, path, integrateTestCaseAssertion, dataSourceMap);
-        } else {
-            dataSetEnvironmentManager = null;
-            dmlAssertEngine = null;
-        }
-    }
-    
-    private Map<String, DataSource> createDataSourceMap(final DMLIntegrateTestCaseAssertion integrateTestCaseAssertion) throws IOException, JAXBException {
-        Collection<String> dataSourceNames = SchemaEnvironmentManager.getDataSourceNames(integrateTestCaseAssertion.getShardingRuleType());
-        Map<String, DataSource> result = new HashMap<>(dataSourceNames.size(), 1);
-        for (String each : dataSourceNames) {
-            result.put(each, DataSourceUtil.createDataSource(databaseTypeEnvironment.getDatabaseType(), each));
-        }
-        return result;
+        super(sqlCaseId, path, assertion, databaseTypeEnvironment, caseType);
+        this.assertion = assertion;
     }
     
     @Parameters(name = "{0} -> {2} -> {3} -> {4}")
@@ -107,41 +84,57 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
         return result;
     }
     
-    @Before
+//    @Before
     public void insertData() throws SQLException, ParseException {
-        if (databaseTypeEnvironment.isEnabled()) {
-            dataSetEnvironmentManager.initialize(true);
+        if (getDatabaseTypeEnvironment().isEnabled()) {
+            getDataSetEnvironmentManager().initialize(true);
         }
     }
     
-    @After
+//    @After
     public void clearData() throws SQLException {
-        if (databaseTypeEnvironment.isEnabled()) {
-            dataSetEnvironmentManager.clear();
+        if (getDatabaseTypeEnvironment().isEnabled()) {
+            getDataSetEnvironmentManager().clear();
         }
     }
     
     @Test
+    @Ignore
     public void assertExecuteUpdate() throws JAXBException, IOException, SQLException, ParseException {
-        if (!databaseTypeEnvironment.isEnabled()) {
+        if (!getDatabaseTypeEnvironment().isEnabled()) {
             return;
         }
-        if (SQLCaseType.Literal == caseType) {
-            dmlAssertEngine.assertExecuteUpdateForStatement();
-        } else {
-            dmlAssertEngine.assertExecuteUpdateForPreparedStatement();
+        try (Connection connection = getDataSource().getConnection()) {
+            if (SQLCaseType.Literal == getCaseType()) {
+                assertThat(DatabaseUtil.executeUpdateForStatement(connection, getSql(), assertion.getSQLValues()), is(assertion.getExpectedUpdate()));
+            } else {
+                assertThat(DatabaseUtil.executeUpdateForPreparedStatement(connection, getSql(), assertion.getSQLValues()), is(assertion.getExpectedUpdate()));
+            } 
         }
+        assertDataSet();
     }
     
     @Test
+    @Ignore
     public void assertExecute() throws JAXBException, IOException, SQLException, ParseException {
-        if (!databaseTypeEnvironment.isEnabled()) {
+        if (!getDatabaseTypeEnvironment().isEnabled()) {
             return;
         }
-        if (SQLCaseType.Literal == caseType) {
-            dmlAssertEngine.assertExecuteForStatement();
-        } else {
-            dmlAssertEngine.assertExecuteForPreparedStatement();
+        try (Connection connection = getDataSource().getConnection()) {
+            if (SQLCaseType.Literal == getCaseType()) {
+                assertThat(DatabaseUtil.executeDMLForStatement(connection, getSql(), assertion.getSQLValues()), is(assertion.getExpectedUpdate()));
+            } else {
+                assertThat(DatabaseUtil.executeDMLForPreparedStatement(connection, getSql(), assertion.getSQLValues()), is(assertion.getExpectedUpdate()));
+            }
         }
+        assertDataSet();
+    }
+    
+    private void assertDataSet() throws IOException, JAXBException, SQLException {
+        DataSetsRoot expected;
+        try (FileReader reader = new FileReader(getExpectedDataFile())) {
+            expected = (DataSetsRoot) JAXBContext.newInstance(DataSetsRoot.class).createUnmarshaller().unmarshal(reader);
+        }
+        DataSetAssert.assertDataSet(getDataSourceMap(), expected);
     }
 }

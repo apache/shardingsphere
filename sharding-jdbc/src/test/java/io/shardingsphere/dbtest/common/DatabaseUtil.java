@@ -19,7 +19,6 @@ package io.shardingsphere.dbtest.common;
 
 import io.shardingsphere.dbtest.asserts.DataSetDefinitions;
 import io.shardingsphere.dbtest.jaxb.dataset.expected.metadata.ExpectedColumn;
-import io.shardingsphere.dbtest.jaxb.dataset.expected.metadata.ExpectedMetadata;
 import io.shardingsphere.dbtest.jaxb.dataset.init.DataSetColumnMetadata;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -41,8 +40,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -339,36 +336,16 @@ public final class DatabaseUtil {
     }
     
     /**
-     * Comparative data set.
-     *
-     * @param expected expected
-     * @param actual actual
-     */
-    public static void assertConfigs(final ExpectedMetadata expected, final List<ExpectedColumn> actual) {
-        for (ExpectedColumn each : expected.getColumns()) {
-            checkActual(actual, each);
-        }
-    }
-    
-    private static void checkActual(final List<ExpectedColumn> actual, final ExpectedColumn expect) {
-        for (ExpectedColumn each : actual) {
-            if (expect.getName().equals(each.getName())) {
-                assertThat(each.getType(), is(expect.getType()));
-            }
-        }
-    }
-    
-    /**
      * Get expected columns.
      *
      * @param connection connection
-     * @param table table
+     * @param tableName table
      * @return query result set
      * @throws SQLException SQL exception
      */
-    public static List<ExpectedColumn> getExpectedColumns(final Connection connection, final String table) throws SQLException {
+    public static List<ExpectedColumn> getExpectedColumns(final Connection connection, final String tableName) throws SQLException {
         DatabaseMetaData metaData = connection.getMetaData();
-        try (ResultSet resultSet = metaData.getColumns(null, null, table, null)) {
+        try (ResultSet resultSet = metaData.getColumns(null, null, tableName, null)) {
             List<ExpectedColumn> result = new LinkedList<>();
             while (resultSet.next()) {
                 ExpectedColumn each = new ExpectedColumn();
