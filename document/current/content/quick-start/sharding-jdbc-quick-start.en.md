@@ -15,6 +15,8 @@ weight = 1
 </dependency>
 ```
 
+Note: Please change the ${latest.release.version} to the actual version.
+
 ## 2. Configure sharding rule configuration
 
 Sharding-JDBC support 4 types for sharding rule configuration, they are `Java`, `YAML`, `Spring namespace` and `Spring boot starter`. Developers can choose any one for best suitable situation. More details please reference [Configuration Manual](/en/manual/sharding-jdbc/configuration/).

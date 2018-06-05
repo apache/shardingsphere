@@ -15,6 +15,8 @@ weight = 1
 </dependency>
 ```
 
+注意: 请将${latest.release.version}更改为实际的版本号。
+
 ## 2. 规则配置
 
 Sharding-JDBC可以通过`Java`，`YAML`，`Spring命名空间`和`Spring Boot Starter`四种方式配置，开发者可根据场景选择适合的配置方式。详情请参见[配置手册](/cn/manual/sharding-jdbc/configuration/)。
