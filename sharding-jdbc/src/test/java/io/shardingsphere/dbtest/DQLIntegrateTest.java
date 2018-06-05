@@ -17,9 +17,13 @@
 
 package io.shardingsphere.dbtest;
 
+import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
+import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.dbtest.asserts.DQLAssertEngine;
+import io.shardingsphere.dbtest.asserts.DataSetAssert;
+import io.shardingsphere.dbtest.asserts.DataSetDefinitions;
 import io.shardingsphere.dbtest.asserts.DataSetEnvironmentManager;
+import io.shardingsphere.dbtest.common.DatabaseUtil;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.dbtest.env.datasource.DataSourceUtil;
@@ -27,6 +31,7 @@ import io.shardingsphere.dbtest.env.schema.SchemaEnvironmentManager;
 import io.shardingsphere.dbtest.jaxb.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.jaxb.assertion.dql.DQLIntegrateTestCase;
 import io.shardingsphere.dbtest.jaxb.assertion.dql.DQLIntegrateTestCaseAssertion;
+import io.shardingsphere.dbtest.jaxb.dataset.expected.dataset.ExpectedDataSetsRoot;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
 import org.junit.Before;
@@ -36,8 +41,12 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import javax.sql.DataSource;
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Arrays;
@@ -55,23 +64,32 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
     
     private final DatabaseTypeEnvironment databaseTypeEnvironment;
     
+    private final DQLIntegrateTestCaseAssertion assertion;
+    
     private final SQLCaseType caseType;
+    
+    private final String sql;
+    
+    private final String expectedDataFile;
     
     private final DataSetEnvironmentManager dataSetEnvironmentManager;
     
-    private final DQLAssertEngine dqlAssertEngine;
+    private final DataSource dataSource;
     
-    public DQLIntegrateTest(final String sqlCaseId, final String path, final DQLIntegrateTestCaseAssertion integrateTestCaseAssertion,
+    public DQLIntegrateTest(final String sqlCaseId, final String path, final DQLIntegrateTestCaseAssertion assertion,
                             final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException {
         this.databaseTypeEnvironment = databaseTypeEnvironment;
+        this.assertion = assertion;
         this.caseType = caseType;
+        sql = SQLCasesLoader.getInstance().getSupportedSQL(sqlCaseId);
+        expectedDataFile = path.substring(0, path.lastIndexOf(File.separator) + 1) + "asserts/dql/" + assertion.getExpectedDataFile();
         if (databaseTypeEnvironment.isEnabled()) {
-            Map<String, DataSource> dataSourceMap = createDataSourceMap(integrateTestCaseAssertion);
-            dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(integrateTestCaseAssertion.getShardingRuleType()), dataSourceMap);
-            dqlAssertEngine = new DQLAssertEngine(sqlCaseId, path, integrateTestCaseAssertion, dataSourceMap);
+            Map<String, DataSource> dataSourceMap = createDataSourceMap(assertion);
+            dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(assertion.getShardingRuleType()), dataSourceMap);
+            dataSource = createDataSource(dataSourceMap);
         } else {
             dataSetEnvironmentManager = null;
-            dqlAssertEngine = null;
+            dataSource = null;
         }
     }
     
@@ -82,6 +100,12 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
             result.put(each, DataSourceUtil.createDataSource(databaseTypeEnvironment.getDatabaseType(), each));
         }
         return result;
+    }
+    
+    private DataSource createDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException, IOException {
+        return "masterslaveonly".equals(assertion.getShardingRuleType())
+                ? YamlMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(assertion.getShardingRuleType())))
+                : YamlShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(assertion.getShardingRuleType())));
     }
     
     @Parameters(name = "{0} -> {2} -> {3} -> {4}")
@@ -113,14 +137,16 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
     }
     
     @Test
-    public void assertExecuteUpdate() throws JAXBException, IOException, SQLException, ParseException {
+    public void assertExecuteQuery() throws JAXBException, IOException, SQLException, ParseException {
         if (!databaseTypeEnvironment.isEnabled()) {
             return;
         }
-        if (SQLCaseType.Literal == caseType) {
-            dqlAssertEngine.assertExecuteQueryForStatement();
-        } else {
-            dqlAssertEngine.assertExecuteQueryForPreparedStatement();
+        try (Connection connection = dataSource.getConnection()) {
+            if (SQLCaseType.Literal == caseType) {
+                assertDataSet(DatabaseUtil.executeQueryForStatement(connection, sql, assertion.getSQLValues()));
+            } else {
+                assertDataSet(DatabaseUtil.executeQueryForPreparedStatement(connection, sql, assertion.getSQLValues()));
+            }
         }
     }
     
@@ -129,10 +155,20 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
         if (!databaseTypeEnvironment.isEnabled()) {
             return;
         }
-        if (SQLCaseType.Literal == caseType) {
-            dqlAssertEngine.assertExecuteForStatement();
-        } else {
-            dqlAssertEngine.assertExecuteForPreparedStatement();
+        try (Connection connection = dataSource.getConnection()) {
+            if (SQLCaseType.Literal == caseType) {
+                assertDataSet(DatabaseUtil.executeDQLForStatement(connection, sql, assertion.getSQLValues()));
+            } else {
+                assertDataSet(DatabaseUtil.executeDQLForPreparedStatement(connection, sql, assertion.getSQLValues()));
+            }
         }
+    }
+    
+    private void assertDataSet(final DataSetDefinitions actual) throws IOException, JAXBException {
+        ExpectedDataSetsRoot expected;
+        try (FileReader reader = new FileReader(expectedDataFile)) {
+            expected = (ExpectedDataSetsRoot) JAXBContext.newInstance(ExpectedDataSetsRoot.class).createUnmarshaller().unmarshal(reader);
+        }
+        DataSetAssert.assertDataSet(actual, expected);
     }
 }
