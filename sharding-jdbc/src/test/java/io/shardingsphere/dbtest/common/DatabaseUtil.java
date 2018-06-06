@@ -18,7 +18,6 @@
 package io.shardingsphere.dbtest.common;
 
 import io.shardingsphere.dbtest.cases.dataset.expected.metadata.ExpectedColumn;
-import io.shardingsphere.dbtest.cases.dataset.init.DataSetColumnMetadata;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -93,7 +92,7 @@ public final class DatabaseUtil {
     public static List<Map<String, String>> executeQueryForStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             try (ResultSet resultSet = statement.executeQuery(generateSQL(sql, sqlValues))) {
-                return handleResultSet(resultSet, getDataSetColumnMetadataList(resultSet));
+                return handleResultSet(resultSet);
             }
         }
     }
@@ -113,7 +112,7 @@ public final class DatabaseUtil {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
             }
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                return handleResultSet(resultSet, getDataSetColumnMetadataList(resultSet));
+                return handleResultSet(resultSet);
             }
         }
     }
@@ -131,7 +130,7 @@ public final class DatabaseUtil {
         try (Statement statement = connection.createStatement()) {
             assertTrue("Not a query statement.", statement.execute(generateSQL(sql, sqlValues)));
             try (ResultSet resultSet = statement.getResultSet()) {
-                return handleResultSet(resultSet, getDataSetColumnMetadataList(resultSet));
+                return handleResultSet(resultSet);
             }
         }
     }
@@ -152,7 +151,7 @@ public final class DatabaseUtil {
             }
             assertTrue("Not a query statement.", preparedStatement.execute());
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
-                return handleResultSet(resultSet, getDataSetColumnMetadataList(resultSet));
+                return handleResultSet(resultSet);
             }
         }
     }
@@ -241,26 +240,15 @@ public final class DatabaseUtil {
         return 0;
     }
     
-    private static List<DataSetColumnMetadata> getDataSetColumnMetadataList(final ResultSet resultSet) throws SQLException {
-        List<DataSetColumnMetadata> result = new LinkedList<>();
+    private static List<Map<String, String>> handleResultSet(final ResultSet resultSet) throws SQLException {
+        List<Map<String, String>> result = new LinkedList<>();
         ResultSetMetaData metaData = resultSet.getMetaData();
         int columnCount = metaData.getColumnCount();
-        for (int i = 1; i < columnCount + 1; i++) {
-            DataSetColumnMetadata each = new DataSetColumnMetadata();
-            each.setName(metaData.getColumnName(i));
-            each.setType(Types.DATE == metaData.getColumnType(i) || Types.TIMESTAMP == metaData.getColumnType(i) ? "Date" : "Object");
-            result.add(each);
-        }
-        return result;
-    }
-    
-    private static List<Map<String, String>> handleResultSet(final ResultSet resultSet, final Collection<DataSetColumnMetadata> dataSetColumnMetadataList) throws SQLException {
-        List<Map<String, String>> result = new LinkedList<>();
         while (resultSet.next()) {
             Map<String, String> data = new HashMap<>();
-            for (DataSetColumnMetadata each : dataSetColumnMetadataList) {
-                String name = each.getName();
-                if ("Date".equals(each.getType())) {
+            for (int i = 1; i < columnCount + 1; i++) {
+                String name = metaData.getColumnName(i);
+                if (Types.DATE == metaData.getColumnType(i)) {
                     data.put(name, new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date(resultSet.getDate(name).getTime())));
                 } else {
                     data.put(name, String.valueOf(resultSet.getObject(name)));
