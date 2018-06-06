@@ -346,8 +346,8 @@ public final class ShardingRule {
     /**
      * Get master data source name.
      *
-     * @param masterSlaveRuleName Master-slave rule name.
-     * @return Master DataSource Name or master-slave rule name
+     * @param masterSlaveRuleName master-slave rule name.
+     * @return master dataSource name or master-slave rule name
      */
     public String getMasterDataSourceName(final String masterSlaveRuleName) {
         for (MasterSlaveRule each : masterSlaveRules) {

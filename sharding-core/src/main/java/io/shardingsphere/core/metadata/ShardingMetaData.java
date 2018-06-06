@@ -79,29 +79,29 @@ public abstract class ShardingMetaData {
     }
     
     private Collection<TableRule> getTableRules(final ShardingRule shardingRule) throws SQLException {
-        Collection<TableRule> tableRules = new LinkedList<>();
-        tableRules.addAll(shardingRule.getTableRules());
+        Collection<TableRule> result = new LinkedList<>();
+        result.addAll(shardingRule.getTableRules());
         String defaultDataSourceName = shardingRule.getShardingDataSourceNames().getDefaultDataSourceName();
         if (!Strings.isNullOrEmpty(defaultDataSourceName)) {
             Collection<String> defaultTableNames = getTableNamesFromDefaultDataSource(shardingRule.getMasterDataSourceName(defaultDataSourceName));
             for (String each : defaultTableNames) {
-                tableRules.add(shardingRule.getTableRule(each));
+                result.add(shardingRule.getTableRule(each));
             }
         }
-        return tableRules;
+        return result;
     }
     
     /**
      * Get table names from default data source.
      *
-     * @param defaultDataSourceName Default data source name.
-     * @return Table names from default data source
+     * @param defaultDataSourceName default data source name.
+     * @return table names from default data source
      * @throws SQLException SQL exception.
      */
     public abstract Collection<String> getTableNamesFromDefaultDataSource(String defaultDataSourceName) throws SQLException;
     
     /**
-     * refresh each tableMetaData by TableRule.
+     * Refresh each tableMetaData by TableRule.
      *
      * @param each table rule
      * @param shardingRule sharding rule
@@ -111,7 +111,7 @@ public abstract class ShardingMetaData {
     }
 
     /**
-     * refresh each tableMetaData by TableRule.
+     * Refresh each tableMetaData by TableRule.
      *
      * @param each table rule
      * @param shardingRule sharding rule
