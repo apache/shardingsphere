@@ -17,11 +17,11 @@
 
 package io.shardingsphere.dbtest.engine;
 
-import com.google.common.base.Splitter;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCaseAssertion;
+import io.shardingsphere.dbtest.cases.dataset.expected.dataset.ExpectedDataSetRow;
 import io.shardingsphere.dbtest.cases.dataset.expected.dataset.ExpectedDataSetsRoot;
 import io.shardingsphere.dbtest.common.SQLValue;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
@@ -167,34 +167,40 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
     }
     
     private void assertResultSet(final ResultSet resultSet) throws SQLException, JAXBException, IOException {
+        ResultSetMetaData actualMetaData = resultSet.getMetaData();
         ExpectedDataSetsRoot expected;
         try (FileReader reader = new FileReader(getExpectedDataFile())) {
             expected = (ExpectedDataSetsRoot) JAXBContext.newInstance(ExpectedDataSetsRoot.class).createUnmarshaller().unmarshal(reader);
         }
         List<String> expectedColumnNames = expected.getColumns().getValues();
-        ResultSetMetaData metaData = resultSet.getMetaData();
-        int columnCount = metaData.getColumnCount();
-        assertThat(columnCount, is(expectedColumnNames.size()));
+        assertMetaData(actualMetaData, expectedColumnNames);
+        assertDataSets(resultSet, expected.getDataSetRows(), expectedColumnNames);
+    }
+    
+    private void assertMetaData(final ResultSetMetaData actualMetaData, final List<String> expectedColumnNames) throws SQLException {
+        assertThat(actualMetaData.getColumnCount(), is(expectedColumnNames.size()));
         int index = 1;
         for (String each : expectedColumnNames) {
-            assertThat(metaData.getColumnLabel(index++), is(each));
+            assertThat(actualMetaData.getColumnLabel(index++), is(each));
         }
+    }
+    
+    private void assertDataSets(final ResultSet actualResultSet, final List<ExpectedDataSetRow> expectedDatSetRows, final List<String> expectedColumnNames) throws SQLException {
         int count = 0;
-        while (resultSet.next()) {
-            List<String> values = Splitter.on(",").trimResults().splitToList(expected.getDataSetRows().get(count).getValues());
-            int valueIndex = 0;
-            for (String each : values) {
-                if (Types.DATE == metaData.getColumnType(valueIndex + 1)) {
-                    assertThat(new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date(resultSet.getDate(valueIndex + 1).getTime())), is(each));
-                    assertThat(new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date(resultSet.getDate(expectedColumnNames.get(valueIndex)).getTime())), is(each));
+        while (actualResultSet.next()) {
+            int index = 0;
+            for (String each : expectedDatSetRows.get(count).getValues()) {
+                if (Types.DATE == actualResultSet.getMetaData().getColumnType(index + 1)) {
+                    assertThat(new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date(actualResultSet.getDate(index + 1).getTime())), is(each));
+                    assertThat(new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date(actualResultSet.getDate(expectedColumnNames.get(index)).getTime())), is(each));
                 } else {
-                    assertThat(String.valueOf(resultSet.getObject(valueIndex + 1)), is(each));
-                    assertThat(String.valueOf(resultSet.getObject(expectedColumnNames.get(valueIndex))), is(each));
+                    assertThat(String.valueOf(actualResultSet.getObject(index + 1)), is(each));
+                    assertThat(String.valueOf(actualResultSet.getObject(expectedColumnNames.get(index))), is(each));
                 }
-                valueIndex++;
+                index++;
             }
             count++;
         }
-        assertThat(count, is(expected.getDataSetRows().size()));
+        assertThat(count, is(expectedDatSetRows.size()));
     }
 }
