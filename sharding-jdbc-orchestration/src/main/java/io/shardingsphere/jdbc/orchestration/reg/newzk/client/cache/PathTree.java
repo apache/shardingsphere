@@ -19,9 +19,9 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseClient;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.UsualClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
 import lombok.Getter;
 import lombok.Setter;
@@ -71,7 +71,7 @@ public final class PathTree {
         this.status = PathStatus.RELEASE;
         this.client = client;
         // todo It looks unpleasant
-        this.provider = ((BaseClient) client).getStrategy().getProvider();
+        this.provider = ((UsualClient) client).getStrategy().getProvider();
     }
     
     /**
@@ -201,24 +201,12 @@ public final class PathTree {
                 switch (event.getType()) {
                     case NodeCreated:
                     case NodeDataChanged:
-                    case NodeChildrenChanged: {
-                        try {
-                            String value = Constants.NOTHING_VALUE;
-                            if (!path.equals(getRootNode().getKey())) {
-                                value = provider.getDataString(path);
-                            }
-                            put(path, value);
-                            // CHECKSTYLE:OFF
-                        } catch (Exception e) {
-                            // CHECKSTYLE:ON
-                            LOGGER.error("PathTree put error : " + e.getMessage());
-                        }
+                    case NodeChildrenChanged:
+                        processNodeChange(path);
                         break;
-                    }
-                    case NodeDeleted: {
+                    case NodeDeleted:
                         delete(path);
                         break;
-                    }
                     default:
                         break;
                 }
@@ -245,6 +233,20 @@ public final class PathTree {
                 client.unregisterWatch(key);
             }
         }));
+    }
+    
+    private void processNodeChange(final String path) {
+        try {
+            String value = Constants.NOTHING_VALUE;
+            if (!path.equals(getRootNode().getKey())) {
+                value = provider.getDataString(path);
+            }
+            put(path, value);
+            // CHECKSTYLE:OFF
+        } catch (Exception e) {
+            // CHECKSTYLE:ON
+            LOGGER.error("PathTree put error : " + e.getMessage());
+        }
     }
     
     /**

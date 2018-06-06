@@ -41,7 +41,7 @@ public class AsyncRetryStrategy extends SyncRetryStrategy {
     
     public AsyncRetryStrategy(final IProvider provider, final DelayRetryPolicy delayRetryPolicy) {
         super(provider, delayRetryPolicy);
-        AsyncRetryCenter.INSTANCE.init(this.delayRetryPolicy);
+        AsyncRetryCenter.INSTANCE.init(getDelayRetryPolicy());
         AsyncRetryCenter.INSTANCE.start();
     }
     

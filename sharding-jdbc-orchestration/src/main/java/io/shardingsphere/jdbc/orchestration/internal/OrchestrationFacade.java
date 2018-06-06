@@ -87,8 +87,10 @@ public final class OrchestrationFacade implements AutoCloseable {
     
     private RegistryCenter getZookeeperRegistryCenter(final ZookeeperConfiguration regCenterConfig){
         if (regCenterConfig.isUseNative()){
+            System.out.println("NewZookeeperRegistryCenter");
             return new NewZookeeperRegistryCenter(regCenterConfig);
         } else {
+            System.out.println("ZookeeperRegistryCenter");
             return new ZookeeperRegistryCenter(regCenterConfig);
         }
     }

@@ -29,7 +29,6 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.SyncRetryStrategy;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.UsualStrategy;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.ZKTransaction;
-import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
@@ -53,7 +52,7 @@ public class UsualClient extends BaseClient {
     
     private final boolean watched = true;
     
-    @Getter(value = AccessLevel.PROTECTED)
+    @Getter
     private IExecStrategy strategy;
     
     UsualClient(final BaseContext context) {
