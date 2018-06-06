@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -78,7 +79,8 @@ public abstract class ShardingMetaData {
     }
     
     private Collection<TableRule> getTableRules(final ShardingRule shardingRule) throws SQLException {
-        Collection<TableRule> tableRules = shardingRule.getTableRules();
+        Collection<TableRule> tableRules = new LinkedList<>();
+        tableRules.addAll(shardingRule.getTableRules());
         String defaultDataSourceName = shardingRule.getShardingDataSourceNames().getDefaultDataSourceName();
         if (!Strings.isNullOrEmpty(defaultDataSourceName)) {
             Collection<String> defaultTableNames = getTableNamesFromDefaultDataSource(shardingRule.getMasterDataSourceName(defaultDataSourceName));
