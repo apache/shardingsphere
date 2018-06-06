@@ -19,7 +19,6 @@ package io.shardingsphere.dbtest.engine;
 
 import com.google.common.base.Splitter;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.dbtest.asserts.DataSetDefinitions;
 import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCaseAssertion;
@@ -121,15 +120,11 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
         }
     }
     
-    private void assertDataSet(final DataSetDefinitions actual) throws IOException, JAXBException {
+    private void assertDataSet(final List<Map<String, String>> actual) throws IOException, JAXBException {
         ExpectedDataSetsRoot expected;
         try (FileReader reader = new FileReader(getExpectedDataFile())) {
             expected = (ExpectedDataSetsRoot) JAXBContext.newInstance(ExpectedDataSetsRoot.class).createUnmarshaller().unmarshal(reader);
         }
-        assertData(actual.getDataList().get("data"), expected);
-    }
-    
-    private void assertData(final List<Map<String, String>> actual, final ExpectedDataSetsRoot expected) {
         assertThat(actual.size(), is(expected.getDataSetRows().size()));
         List<String> expectedColumnNames = Splitter.on(",").trimResults().splitToList(expected.getColumns().getValues());
         int count = 0;
