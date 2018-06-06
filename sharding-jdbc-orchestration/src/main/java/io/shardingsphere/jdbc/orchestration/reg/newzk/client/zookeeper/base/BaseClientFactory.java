@@ -19,31 +19,42 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.ACL;
 
 import java.io.IOException;
 import java.util.List;
 
-import static org.apache.zookeeper.ZooDefs.Ids.OPEN_ACL_UNSAFE;
-
 /*
  * @author lidongbo
  */
+
+@Setter(value = AccessLevel.PROTECTED)
+@Getter(value = AccessLevel.PROTECTED)
 public abstract class BaseClientFactory {
-    protected BaseClient client;
-    protected Listener globalListener;
-    protected String namespace;
-    protected String scheme;
-    protected byte[] auth;
-    protected List<ACL> authorities;
-    protected BaseContext context;
+    private BaseClient client;
+    
+    private Listener globalListener;
+    
+    private String namespace;
+    
+    private String scheme;
+    
+    private byte[] auth;
+    
+    private List<ACL> authorities;
+    
+    private BaseContext context;
     
     public IClient start() throws IOException, InterruptedException {
         client.setRootNode(namespace);
-        if(scheme == null) {
-            authorities = OPEN_ACL_UNSAFE;
+        if (scheme == null) {
+            authorities = ZooDefs.Ids.OPEN_ACL_UNSAFE;
         }
-        client.setAuthorities(scheme , auth, authorities);
+        client.setAuthorities(scheme, auth, authorities);
         client.start();
         if (globalListener != null) {
             client.registerWatch(globalListener);

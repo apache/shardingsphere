@@ -56,7 +56,6 @@ public final class CacheClient extends UsualClient {
     @Override
     public void close(){
         super.close();
-        this.strategies.clear();
         this.pathTree.close();
     }
     
@@ -65,7 +64,7 @@ public final class CacheClient extends UsualClient {
         logger.debug("use cache strategy:{}", cacheStrategy);
         switch (cacheStrategy){
             case WATCH:{
-                pathTree = new PathTree(rootNode, this);
+                pathTree = new PathTree(getRootNode(), this);
                 pathTree.watch();
                 return;
             }
@@ -82,7 +81,7 @@ public final class CacheClient extends UsualClient {
     }
     
     public PathTree loadPathTree() throws KeeperException, InterruptedException {
-        return loadPathTree(rootNode);
+        return loadPathTree(getRootNode());
     }
     
     public PathTree loadPathTree(final String treeRoot) throws KeeperException, InterruptedException {
@@ -96,43 +95,43 @@ public final class CacheClient extends UsualClient {
     @Override
     public void createCurrentOnly(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
         super.createCurrentOnly(key, value, createMode);
-        pathTree.put(PathUtil.getRealPath(rootNode, key), value);
+        pathTree.put(PathUtil.getRealPath(getRootNode(), key), value);
     }
     
     
     @Override
     public void deleteOnlyCurrent(final String key) throws KeeperException, InterruptedException {
         super.deleteOnlyCurrent(key);
-        pathTree.delete(PathUtil.getRealPath(rootNode, key));
+        pathTree.delete(PathUtil.getRealPath(getRootNode(), key));
     }
     
     @Override
     public void deleteOnlyCurrent(final String key, final AsyncCallback.VoidCallback callback, final Object ctx) throws KeeperException, InterruptedException {
         super.deleteOnlyCurrent(key, callback, ctx);
-        pathTree.delete(PathUtil.getRealPath(rootNode, key));
+        pathTree.delete(PathUtil.getRealPath(getRootNode(), key));
     }
     
     @Override
     public byte[] getData(final String key) throws KeeperException, InterruptedException {
-        String path = PathUtil.getRealPath(rootNode, key);
+        String path = PathUtil.getRealPath(getRootNode(), key);
         byte[] data = pathTree.getValue(path);
         if (data != null){
             logger.debug("getData cache hit:{}", data);
             return data;
         }
         logger.debug("getData cache not hit:{}", data);
-        return strategy.getData(key);
+        return getStrategy().getData(key);
     }
     
     @Override
     public List<String> getChildren(final String key) throws KeeperException, InterruptedException {
-        String path = PathUtil.getRealPath(rootNode, key);
+        String path = PathUtil.getRealPath(getRootNode(), key);
         List<String> keys = pathTree.getChildren(path);
         if (!keys.isEmpty()){
             logger.debug("getChildren cache hit:{}", keys);
             return keys;
         }
         logger.debug("getChildren cache not hit:{}", keys);
-        return strategy.getChildren(PathUtil.getRealPath(rootNode, key));
+        return getStrategy().getChildren(PathUtil.getRealPath(getRootNode(), key));
     }
 }
