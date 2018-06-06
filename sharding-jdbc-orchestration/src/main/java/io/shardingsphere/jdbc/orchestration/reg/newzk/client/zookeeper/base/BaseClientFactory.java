@@ -31,7 +31,6 @@ import java.util.List;
 /*
  * @author lidongbo
  */
-
 @Setter(value = AccessLevel.PROTECTED)
 @Getter(value = AccessLevel.PROTECTED)
 public abstract class BaseClientFactory {
@@ -49,6 +48,13 @@ public abstract class BaseClientFactory {
     
     private BaseContext context;
     
+    /**
+     * start.
+     *
+     * @return client
+     * @throws IOException IO Exception
+     * @throws InterruptedException InterruptedException
+     */
     public IClient start() throws IOException, InterruptedException {
         client.setRootNode(namespace);
         if (scheme == null) {

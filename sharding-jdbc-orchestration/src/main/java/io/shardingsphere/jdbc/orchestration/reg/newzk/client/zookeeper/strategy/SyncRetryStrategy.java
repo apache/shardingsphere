@@ -20,6 +20,8 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayRetryPolicy;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Callable;
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.Watcher;
@@ -34,13 +36,15 @@ import java.util.List;
  * @author lidongbo
  */
 public class SyncRetryStrategy extends UsualStrategy {
-    private static final Logger logger = LoggerFactory.getLogger(SyncRetryStrategy.class);
-    protected final DelayRetryPolicy delayRetryPolicy;
+    private static final Logger LOGGER = LoggerFactory.getLogger(SyncRetryStrategy.class);
+    
+    @Getter(value = AccessLevel.PROTECTED)
+    private final DelayRetryPolicy delayRetryPolicy;
     
     public SyncRetryStrategy(final IProvider provider, final DelayRetryPolicy delayRetryPolicy) {
         super(provider);
-        if (delayRetryPolicy == null){
-            logger.warn("Callable constructor context's delayRetryPolicy is null");
+        if (delayRetryPolicy == null) {
+            LOGGER.warn("Callable constructor context's delayRetryPolicy is null");
             this.delayRetryPolicy = DelayRetryPolicy.newNoInitDelayPolicy();
         } else {
             this.delayRetryPolicy = delayRetryPolicy;
@@ -49,10 +53,10 @@ public class SyncRetryStrategy extends UsualStrategy {
 
     @Override
     public byte[] getData(final String key) throws KeeperException, InterruptedException {
-        Callable<byte[]> callable = new Callable(provider, delayRetryPolicy) {
+        Callable<byte[]> callable = new Callable(getProvider(), delayRetryPolicy) {
             @Override
             public void call() throws KeeperException, InterruptedException {
-                setResult(provider.getData(provider.getRealPath(key)));
+                setResult(getProvider().getData(getProvider().getRealPath(key)));
             }
         };
         return callable.getResult();
@@ -60,10 +64,10 @@ public class SyncRetryStrategy extends UsualStrategy {
     
     @Override
     public boolean checkExists(final String key) throws KeeperException, InterruptedException {
-        Callable<Boolean> callable = new Callable(provider, delayRetryPolicy) {
+        Callable<Boolean> callable = new Callable(getProvider(), delayRetryPolicy) {
             @Override
             public void call() throws KeeperException, InterruptedException {
-                setResult(provider.exists(provider.getRealPath(key)));
+                setResult(getProvider().exists(getProvider().getRealPath(key)));
             }
         };
         return callable.getResult();
@@ -71,10 +75,10 @@ public class SyncRetryStrategy extends UsualStrategy {
     
     @Override
     public boolean checkExists(final String key, final Watcher watcher) throws KeeperException, InterruptedException {
-        Callable<Boolean> callable = new Callable(provider, delayRetryPolicy) {
+        Callable<Boolean> callable = new Callable(getProvider(), delayRetryPolicy) {
             @Override
             public void call() throws KeeperException, InterruptedException {
-                setResult(provider.exists(provider.getRealPath(key), watcher));
+                setResult(getProvider().exists(getProvider().getRealPath(key), watcher));
             }
         };
         return callable.getResult();
@@ -82,10 +86,10 @@ public class SyncRetryStrategy extends UsualStrategy {
     
     @Override
     public List<String> getChildren(final String key) throws KeeperException, InterruptedException {
-        Callable<List<String>> callable = new Callable(provider, delayRetryPolicy) {
+        Callable<List<String>> callable = new Callable(getProvider(), delayRetryPolicy) {
             @Override
             public void call() throws KeeperException, InterruptedException {
-                setResult(provider.getChildren(provider.getRealPath(key)));
+                setResult(getProvider().getChildren(getProvider().getRealPath(key)));
             }
         };
         return callable.getResult();
@@ -93,10 +97,10 @@ public class SyncRetryStrategy extends UsualStrategy {
     
     @Override
     public void createCurrentOnly(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
-        Callable callable = new Callable(provider, delayRetryPolicy) {
+        Callable callable = new Callable(getProvider(), delayRetryPolicy) {
             @Override
             public void call() throws KeeperException, InterruptedException {
-                provider.create(provider.getRealPath(key), value, createMode);
+                getProvider().create(getProvider().getRealPath(key), value, createMode);
             }
         };
         callable.exec();
@@ -104,10 +108,10 @@ public class SyncRetryStrategy extends UsualStrategy {
     
     @Override
     public void update(final String key, final String value) throws KeeperException, InterruptedException {
-        Callable callable = new Callable(provider, delayRetryPolicy) {
+        Callable callable = new Callable(getProvider(), delayRetryPolicy) {
             @Override
             public void call() throws KeeperException, InterruptedException {
-                provider.update(provider.getRealPath(key), value);
+                getProvider().update(getProvider().getRealPath(key), value);
             }
         };
         callable.exec();
@@ -115,10 +119,10 @@ public class SyncRetryStrategy extends UsualStrategy {
     
     @Override
     public void deleteOnlyCurrent(final String key) throws KeeperException, InterruptedException {
-        Callable callable = new Callable(provider, delayRetryPolicy) {
+        Callable callable = new Callable(getProvider(), delayRetryPolicy) {
             @Override
             public void call() throws KeeperException, InterruptedException {
-                provider.delete(provider.getRealPath(key));
+                getProvider().delete(getProvider().getRealPath(key));
             }
         };
         callable.exec();
@@ -126,10 +130,10 @@ public class SyncRetryStrategy extends UsualStrategy {
     
     @Override
     public void createAllNeedPath(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
-        Callable callable = new Callable(provider, delayRetryPolicy) {
+        Callable callable = new Callable(getProvider(), delayRetryPolicy) {
             @Override
             public void call() throws KeeperException, InterruptedException {
-                new UsualStrategy(provider).createAllNeedPath(key, value, createMode);
+                new UsualStrategy(getProvider()).createAllNeedPath(key, value, createMode);
             }
         };
         callable.exec();
@@ -137,10 +141,10 @@ public class SyncRetryStrategy extends UsualStrategy {
     
     @Override
     public void deleteAllChildren(final String key) throws KeeperException, InterruptedException {
-        Callable callable = new Callable(provider, delayRetryPolicy) {
+        Callable callable = new Callable(getProvider(), delayRetryPolicy) {
             @Override
             public void call() throws KeeperException, InterruptedException {
-                new UsualStrategy(provider).deleteAllChildren(key);
+                new UsualStrategy(getProvider()).deleteAllChildren(key);
             }
         };
         callable.exec();
@@ -148,10 +152,10 @@ public class SyncRetryStrategy extends UsualStrategy {
     
     @Override
     public void deleteCurrentBranch(final String key) throws KeeperException, InterruptedException {
-        Callable callable = new Callable(provider, delayRetryPolicy) {
+        Callable callable = new Callable(getProvider(), delayRetryPolicy) {
             @Override
             public void call() throws KeeperException, InterruptedException {
-                new UsualStrategy(provider).deleteCurrentBranch(key);
+                new UsualStrategy(getProvider()).deleteCurrentBranch(key);
             }
         };
         callable.exec();

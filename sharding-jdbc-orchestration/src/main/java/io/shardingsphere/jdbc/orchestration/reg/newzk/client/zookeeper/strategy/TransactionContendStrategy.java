@@ -17,7 +17,6 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy;
 
-
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.Callback;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.election.LeaderElection;
@@ -38,30 +37,32 @@ import java.util.Stack;
  * @since zookeeper 3.4.0
  */
 public class TransactionContendStrategy extends ContentionStrategy {
-    private static final Logger logger = LoggerFactory.getLogger(TransactionContendStrategy.class);
-    public TransactionContendStrategy(IProvider provider) {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TransactionContendStrategy.class);
+    
+    public TransactionContendStrategy(final IProvider provider) {
         super(provider);
     }
     
     @Override
     public void createAllNeedPath(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
         LeaderElection election = buildCreateAllNeedElection(key, value, createMode, null);
-        provider.executeContention(election);
-        logger.debug("ContentionStrategy createAllNeedPath executeContention");
+        getProvider().executeContention(election);
+        LOGGER.debug("ContentionStrategy createAllNeedPath executeContention");
         election.waitDone();
     }
     
-    private LeaderElection buildCreateAllNeedElection(final String key, final String value, final CreateMode createMode, final Callback callback){
+    private LeaderElection buildCreateAllNeedElection(final String key, final String value, final CreateMode createMode, final Callback callback) {
         return new LeaderElection() {
             @Override
             public void action() throws KeeperException, InterruptedException {
-                logger.debug("ContentionStrategy createAllNeedPath action:{}", key);
-                ZKTransaction transaction = new ZKTransaction(((BaseProvider)provider).getRootNode(), ((BaseProvider)provider).getHolder());
+                LOGGER.debug("ContentionStrategy createAllNeedPath action:{}", key);
+                ZKTransaction transaction = new ZKTransaction(((BaseProvider) getProvider()).getRootNode(), ((BaseProvider) getProvider()).getHolder());
                 createBegin(key, value, createMode, transaction);
                 transaction.commit();
             }
+            
             @Override
-            public void callback(){
+            public void callback() {
                 if (callback != null) {
                     callback.processResult();
                 }
@@ -70,83 +71,83 @@ public class TransactionContendStrategy extends ContentionStrategy {
     }
 
     private void createBegin(final String key, final String value, final CreateMode createMode, final ZKTransaction transaction) throws KeeperException, InterruptedException {
-        if (key.indexOf(Constants.PATH_SEPARATOR) < -1){
-            provider.createInTransaction(key, value, createMode, transaction);
+        if (key.indexOf(Constants.PATH_SEPARATOR) < -1) {
+            getProvider().createInTransaction(key, value, createMode, transaction);
             return;
         }
-        List<String> nodes = provider.getNecessaryPaths(key);
+        List<String> nodes = getProvider().getNecessaryPaths(key);
         for (int i = 0; i < nodes.size(); i++) {
-            if (provider.exists(nodes.get(i))){
-                logger.info("create node exist:{}", nodes.get(i));
+            if (getProvider().exists(nodes.get(i))) {
+                LOGGER.info("create node exist:{}", nodes.get(i));
                 continue;
             }
-            logger.debug("node not exist and create:", nodes.get(i));
-            if (i == nodes.size() - 1){
-                provider.createInTransaction(nodes.get(i), value, createMode, transaction);
+            LOGGER.debug("node not exist and create:", nodes.get(i));
+            if (i == nodes.size() - 1) {
+                getProvider().createInTransaction(nodes.get(i), value, createMode, transaction);
             } else {
-                provider.createInTransaction(nodes.get(i), Constants.NOTHING_VALUE, createMode, transaction);
+                getProvider().createInTransaction(nodes.get(i), Constants.NOTHING_VALUE, createMode, transaction);
             }
         }
     }
 
     @Override
     public void deleteAllChildren(final String key) throws KeeperException, InterruptedException {
-        provider.executeContention(new LeaderElection() {
+        getProvider().executeContention(new LeaderElection() {
             @Override
             public void action() throws KeeperException, InterruptedException {
-                ZKTransaction transaction = new ZKTransaction(((BaseProvider)provider).getRootNode(), ((BaseProvider)provider).getHolder());
-                deleteChildren(provider.getRealPath(key), true, transaction);
+                ZKTransaction transaction = new ZKTransaction(((BaseProvider) getProvider()).getRootNode(), ((BaseProvider) getProvider()).getHolder());
+                deleteChildren(getProvider().getRealPath(key), true, transaction);
                 transaction.commit();
             }
         });
-        logger.debug("ContentionStrategy deleteAllChildren executeContention");
+        LOGGER.debug("ContentionStrategy deleteAllChildren executeContention");
     }
     
     private void deleteChildren(final String key, final boolean deleteCurrentNode, final ZKTransaction transaction) throws KeeperException, InterruptedException {
-        List<String> children = provider.getChildren(key);
+        List<String> children = getProvider().getChildren(key);
         for (int i = 0; i < children.size(); i++) {
             String child = PathUtil.getRealPath(key, children.get(i));
-            if (!provider.exists(child)){
-                logger.info("delete not exist:{}", child);
+            if (!getProvider().exists(child)) {
+                LOGGER.info("delete not exist:{}", child);
                 continue;
             }
-            logger.debug("deleteChildren:{}", child);
+            LOGGER.debug("deleteChildren:{}", child);
             deleteChildren(child, true, transaction);
         }
-        if (deleteCurrentNode){
+        if (deleteCurrentNode) {
             transaction.delete(key, Constants.VERSION);
         }
     }
     
     @Override
     public void deleteCurrentBranch(final String key) throws KeeperException, InterruptedException {
-        provider.executeContention(new LeaderElection() {
+        getProvider().executeContention(new LeaderElection() {
             @Override
             public void action() throws KeeperException, InterruptedException {
-                ZKTransaction transaction = new ZKTransaction(((BaseProvider)provider).getRootNode(), ((BaseProvider)provider).getHolder());
-                deleteBranch(provider.getRealPath(key), transaction);
+                ZKTransaction transaction = new ZKTransaction(((BaseProvider) getProvider()).getRootNode(), ((BaseProvider) getProvider()).getHolder());
+                deleteBranch(getProvider().getRealPath(key), transaction);
                 transaction.commit();
             }
         });
-        logger.debug("ContentionStrategy deleteCurrentBranch executeContention");
+        LOGGER.debug("ContentionStrategy deleteCurrentBranch executeContention");
     }
 
-    private void deleteBranch(String key, final ZKTransaction transaction) throws KeeperException, InterruptedException {
+    private void deleteBranch(final String key, final ZKTransaction transaction) throws KeeperException, InterruptedException {
         deleteChildren(key, false, transaction);
-        Stack<String> pathStack = provider.getDeletingPaths(key);
+        Stack<String> pathStack = getProvider().getDeletingPaths(key);
         String prePath = key;
-        while (!pathStack.empty()){
+        while (!pathStack.empty()) {
             String node = pathStack.pop();
             // contrast cache
             // Performance needs testing
-            List<String> children = provider.getChildren(node);
+            List<String> children = getProvider().getChildren(node);
             boolean canDelete = children.size() == 0 || children.size() == 1;
-            if (children.size() == 1){
-                if (!PathUtil.getRealPath(node, children.get(0)).equals(prePath)){
+            if (children.size() == 1) {
+                if (!PathUtil.getRealPath(node, children.get(0)).equals(prePath)) {
                     canDelete = false;
                 }
             }
-            if (provider.exists(node) && canDelete){
+            if (getProvider().exists(node) && canDelete) {
                 transaction.delete(node, Constants.VERSION);
             }
             prePath = node;

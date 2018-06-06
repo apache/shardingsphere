@@ -36,8 +36,9 @@ import java.util.List;
  * @author lidongbo
  */
 public final class CacheClient extends UsualClient {
-    private static final Logger logger = LoggerFactory.getLogger(CacheClient.class);
-    protected PathTree pathTree = null;
+    private static final Logger LOGGER = LoggerFactory.getLogger(CacheClient.class);
+    
+    private PathTree pathTree;
     
     CacheClient(final BaseContext context) {
         super(context);
@@ -49,44 +50,44 @@ public final class CacheClient extends UsualClient {
         try {
             useCacheStrategy(CacheStrategy.WATCH);
         } catch (KeeperException e) {
-            logger.error("CacheClient useCacheStrategy : " + e.getMessage());
+            LOGGER.error("CacheClient useCacheStrategy : " + e.getMessage());
         }
     }
     
     @Override
-    public void close(){
+    public void close() {
         super.close();
         this.pathTree.close();
     }
     
     //todo put it here?
-    void useCacheStrategy(CacheStrategy cacheStrategy) throws KeeperException, InterruptedException {
-        logger.debug("use cache strategy:{}", cacheStrategy);
-        switch (cacheStrategy){
-            case WATCH:{
+    void useCacheStrategy(final CacheStrategy cacheStrategy) throws KeeperException, InterruptedException {
+        LOGGER.debug("use cache strategy:{}", cacheStrategy);
+        switch (cacheStrategy) {
+            case WATCH: {
                 pathTree = new PathTree(getRootNode(), this);
                 pathTree.watch();
                 return;
             }
-            case ALL:{
+            case ALL: {
                 pathTree = loadPathTree();
                 pathTree.refreshPeriodic(Constants.THREAD_PERIOD);
                 return;
             }
             case NONE:
-            default:{
+            default: {
                 return;
             }
         }
     }
     
-    public PathTree loadPathTree() throws KeeperException, InterruptedException {
+    private PathTree loadPathTree() throws KeeperException, InterruptedException {
         return loadPathTree(getRootNode());
     }
     
-    public PathTree loadPathTree(final String treeRoot) throws KeeperException, InterruptedException {
+    private PathTree loadPathTree(final String treeRoot) throws KeeperException, InterruptedException {
         PathTree tree = new PathTree(treeRoot, this);
-        logger.debug("load path tree:{}", treeRoot);
+        LOGGER.debug("load path tree:{}", treeRoot);
         tree.load();
         tree.watch();
         return tree;
@@ -97,7 +98,6 @@ public final class CacheClient extends UsualClient {
         super.createCurrentOnly(key, value, createMode);
         pathTree.put(PathUtil.getRealPath(getRootNode(), key), value);
     }
-    
     
     @Override
     public void deleteOnlyCurrent(final String key) throws KeeperException, InterruptedException {
@@ -115,11 +115,11 @@ public final class CacheClient extends UsualClient {
     public byte[] getData(final String key) throws KeeperException, InterruptedException {
         String path = PathUtil.getRealPath(getRootNode(), key);
         byte[] data = pathTree.getValue(path);
-        if (data != null){
-            logger.debug("getData cache hit:{}", data);
+        if (data != null) {
+            LOGGER.debug("getData cache hit:{}", data);
             return data;
         }
-        logger.debug("getData cache not hit:{}", data);
+        LOGGER.debug("getData cache not hit:{}", data);
         return getStrategy().getData(key);
     }
     
@@ -127,11 +127,11 @@ public final class CacheClient extends UsualClient {
     public List<String> getChildren(final String key) throws KeeperException, InterruptedException {
         String path = PathUtil.getRealPath(getRootNode(), key);
         List<String> keys = pathTree.getChildren(path);
-        if (!keys.isEmpty()){
-            logger.debug("getChildren cache hit:{}", keys);
+        if (!keys.isEmpty()) {
+            LOGGER.debug("getChildren cache hit:{}", keys);
             return keys;
         }
-        logger.debug("getChildren cache not hit:{}", keys);
+        LOGGER.debug("getChildren cache not hit:{}", keys);
         return getStrategy().getChildren(PathUtil.getRealPath(getRootNode(), key));
     }
 }

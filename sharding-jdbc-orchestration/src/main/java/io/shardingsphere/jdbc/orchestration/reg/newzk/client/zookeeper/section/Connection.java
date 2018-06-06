@@ -27,20 +27,28 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class Connection {
     //is need reset
-    private static final Map<Integer, Boolean> exceptionResets = new ConcurrentHashMap<>();
+    private static final Map<Integer, Boolean> EXCEPTION_RESETS = new ConcurrentHashMap<>();
 
     static {
-        exceptionResets.put(KeeperException.Code.SESSIONEXPIRED.intValue(), true);
-        exceptionResets.put(KeeperException.Code.SESSIONMOVED.intValue(), true);
-        exceptionResets.put(KeeperException.Code.CONNECTIONLOSS.intValue(), false);
-        exceptionResets.put(KeeperException.Code.OPERATIONTIMEOUT.intValue(), false);
+        EXCEPTION_RESETS.put(KeeperException.Code.SESSIONEXPIRED.intValue(), true);
+        EXCEPTION_RESETS.put(KeeperException.Code.SESSIONMOVED.intValue(), true);
+        EXCEPTION_RESETS.put(KeeperException.Code.CONNECTIONLOSS.intValue(), false);
+        EXCEPTION_RESETS.put(KeeperException.Code.OPERATIONTIMEOUT.intValue(), false);
     }
-
-    public static boolean needReset(KeeperException e) throws KeeperException {
+    
+    /**
+     * need reset.
+     *
+     * @param e e
+     * @return need reset
+     * @throws KeeperException Zookeeper Exception
+     * @throws InterruptedException InterruptedException
+     */
+    public static boolean needReset(final KeeperException e) throws KeeperException {
         int code = e.code().intValue();
-        if (!exceptionResets.containsKey(code)){
+        if (!EXCEPTION_RESETS.containsKey(code)) {
             throw e;
         }
-        return exceptionResets.get(code);
+        return EXCEPTION_RESETS.get(code);
     }
 }

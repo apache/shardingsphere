@@ -77,7 +77,7 @@ public enum AsyncRetryCenter {
             LOGGER.warn("delayRetryPolicy no init and auto init with DelayRetryPolicy.newNoInitDelayPolicy");
             delayRetryPolicy = DelayRetryPolicy.newNoInitDelayPolicy();
         }
-        operation.setRetrial(new DelayPolicyExecutor(delayRetryPolicy));
+        operation.setDelayPolicyExecutor(new DelayPolicyExecutor(delayRetryPolicy));
         queue.offer(operation);
         LOGGER.debug("enqueue operation:{}", operation.toString());
     }

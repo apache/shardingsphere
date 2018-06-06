@@ -20,7 +20,12 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.AsyncRetryCenter;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayRetryPolicy;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.operation.*;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.operation.CreateAllNeedOperation;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.operation.CreateCurrentOperation;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.operation.DeleteAllChildrenOperation;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.operation.DeleteCurrentBranchOperation;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.operation.DeleteCurrentOperation;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.operation.UpdateOperation;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
@@ -32,9 +37,9 @@ import org.slf4j.LoggerFactory;
  * @author lidongbo
  */
 public class AsyncRetryStrategy extends SyncRetryStrategy {
-    private static final Logger logger = LoggerFactory.getLogger(AsyncRetryStrategy.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AsyncRetryStrategy.class);
     
-    public AsyncRetryStrategy(final IProvider provider, final DelayRetryPolicy delayRetryPolicy){
+    public AsyncRetryStrategy(final IProvider provider, final DelayRetryPolicy delayRetryPolicy) {
         super(provider, delayRetryPolicy);
         AsyncRetryCenter.INSTANCE.init(this.delayRetryPolicy);
         AsyncRetryCenter.INSTANCE.start();
@@ -42,34 +47,34 @@ public class AsyncRetryStrategy extends SyncRetryStrategy {
     
     @Override
     public void createCurrentOnly(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
-        String path = provider.getRealPath(key);
+        String path = getProvider().getRealPath(key);
         try {
-            provider.create(path, value, createMode);
-        } catch (KeeperException.SessionExpiredException ee){
-            logger.warn("AsyncRetryStrategy SessionExpiredException createCurrentOnly:{}", path);
-            AsyncRetryCenter.INSTANCE.add(new CreateCurrentOperation(provider, path, value, createMode));
+            getProvider().create(path, value, createMode);
+        } catch (KeeperException.SessionExpiredException e) {
+            LOGGER.warn("AsyncRetryStrategy SessionExpiredException createCurrentOnly:{}", path);
+            AsyncRetryCenter.INSTANCE.add(new CreateCurrentOperation(getProvider(), path, value, createMode));
         }
     }
     
     @Override
     public void update(final String key, final String value) throws KeeperException, InterruptedException {
-        String path = provider.getRealPath(key);
+        String path = getProvider().getRealPath(key);
         try {
-            provider.update(path, value);
-        } catch (KeeperException.SessionExpiredException ee){
-            logger.warn("AsyncRetryStrategy SessionExpiredException update:{}", path);
-            AsyncRetryCenter.INSTANCE.add(new UpdateOperation(provider, path, value));
+            getProvider().update(path, value);
+        } catch (KeeperException.SessionExpiredException e) {
+            LOGGER.warn("AsyncRetryStrategy SessionExpiredException update:{}", path);
+            AsyncRetryCenter.INSTANCE.add(new UpdateOperation(getProvider(), path, value));
         }
     }
     
     @Override
     public void deleteOnlyCurrent(final String key) throws KeeperException, InterruptedException {
-        String path = provider.getRealPath(key);
+        String path = getProvider().getRealPath(key);
         try {
-            provider.delete(path);
-        } catch (KeeperException.SessionExpiredException ee){
-            logger.warn("AsyncRetryStrategy SessionExpiredException deleteOnlyCurrent:{}", path);
-            AsyncRetryCenter.INSTANCE.add(new DeleteCurrentOperation(provider, path));
+            getProvider().delete(path);
+        } catch (KeeperException.SessionExpiredException e) {
+            LOGGER.warn("AsyncRetryStrategy SessionExpiredException deleteOnlyCurrent:{}", path);
+            AsyncRetryCenter.INSTANCE.add(new DeleteCurrentOperation(getProvider(), path));
         }
     }
     
@@ -77,9 +82,9 @@ public class AsyncRetryStrategy extends SyncRetryStrategy {
     public void createAllNeedPath(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
         try {
             super.createAllNeedPath(key, value, createMode);
-        } catch (KeeperException.SessionExpiredException ee){
-            logger.warn("AllAsyncRetryStrategy SessionExpiredException CreateAllNeedOperation:{}", key);
-            AsyncRetryCenter.INSTANCE.add(new CreateAllNeedOperation(provider, key, value, createMode));
+        } catch (KeeperException.SessionExpiredException e) {
+            LOGGER.warn("AllAsyncRetryStrategy SessionExpiredException CreateAllNeedOperation:{}", key);
+            AsyncRetryCenter.INSTANCE.add(new CreateAllNeedOperation(getProvider(), key, value, createMode));
         }
     }
     
@@ -87,9 +92,9 @@ public class AsyncRetryStrategy extends SyncRetryStrategy {
     public void deleteAllChildren(final String key) throws KeeperException, InterruptedException {
         try {
             super.deleteAllChildren(key);
-        } catch (KeeperException.SessionExpiredException ee){
-            logger.warn("AllAsyncRetryStrategy SessionExpiredException deleteAllChildren:{}", key);
-            AsyncRetryCenter.INSTANCE.add(new DeleteAllChildrenOperation(provider, key));
+        } catch (KeeperException.SessionExpiredException e) {
+            LOGGER.warn("AllAsyncRetryStrategy SessionExpiredException deleteAllChildren:{}", key);
+            AsyncRetryCenter.INSTANCE.add(new DeleteAllChildrenOperation(getProvider(), key));
         }
     }
     
@@ -97,9 +102,9 @@ public class AsyncRetryStrategy extends SyncRetryStrategy {
     public void deleteCurrentBranch(final String key) throws KeeperException, InterruptedException {
         try {
             super.deleteCurrentBranch(key);
-        } catch (KeeperException.SessionExpiredException ee){
-            logger.warn("AllAsyncRetryStrategy SessionExpiredException deleteCurrentBranch:{}", key);
-            AsyncRetryCenter.INSTANCE.add(new DeleteCurrentBranchOperation(provider, key));
+        } catch (KeeperException.SessionExpiredException e) {
+            LOGGER.warn("AllAsyncRetryStrategy SessionExpiredException deleteCurrentBranch:{}", key);
+            AsyncRetryCenter.INSTANCE.add(new DeleteCurrentBranchOperation(getProvider(), key));
         }
     }
 }

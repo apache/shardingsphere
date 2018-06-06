@@ -20,6 +20,7 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayRetryPolicy;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseClientFactory;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ClientContext;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
@@ -35,19 +36,25 @@ import java.util.List;
  */
 public class ClientFactory extends BaseClientFactory {
     //    private static final String CLIENT_EXCLUSIVE_NODE = "ZKC";
-    private static final Logger logger = LoggerFactory.getLogger(ClientFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClientFactory.class);
+    
     private DelayRetryPolicy delayRetryPolicy;
     
-    public ClientFactory(){}
-    
+    /**
+     * create a new client.
+     *
+     * @param servers servers
+     * @param sessionTimeoutMilliseconds sessionTimeoutMilliseconds
+     * @return ClientFactory this
+     */
     public ClientFactory newClient(final String servers, final int sessionTimeoutMilliseconds) {
         int wait = sessionTimeoutMilliseconds;
-        if (sessionTimeoutMilliseconds == 0){
+        if (sessionTimeoutMilliseconds == 0) {
             wait = Constants.WAIT;
         }
-        this.context = new ClientContext(servers, wait);
-        client = new UsualClient(context);
-        logger.debug("new usual client");
+        setContext(new ClientContext(servers, wait));
+        setClient(new UsualClient(getContext()));
+        LOGGER.debug("new usual client");
         return this;
     }
     
@@ -55,52 +62,75 @@ public class ClientFactory extends BaseClientFactory {
     * used for create new clients through a existing client
     * this client is not perhaps the client
     */
-    public synchronized BaseClientFactory newClientByOriginal(boolean closeOriginal) {
-        IClient oldClient = this.client;
-        client = new UsualClient(context);
-        if (closeOriginal){
+    synchronized BaseClientFactory newClientByOriginal(final boolean closeOriginal) {
+        IClient oldClient = getClient();
+        setClient(new UsualClient(getContext()));
+        if (closeOriginal) {
             oldClient.close();
         }
-        logger.debug("new usual client by a existing client");
+        LOGGER.debug("new usual client by a existing client");
         return this;
     }
     
-    public ClientFactory newCacheClient(final String servers, final int sessionTimeoutMilliseconds) {
-        this.context = new ClientContext(servers, sessionTimeoutMilliseconds);
-        client = new CacheClient(context);
-        logger.debug("new cache client");
+    ClientFactory newCacheClient(final String servers, final int sessionTimeoutMilliseconds) {
+        setContext(new ClientContext(servers, sessionTimeoutMilliseconds));
+        setClient(new CacheClient(getContext()));
+        LOGGER.debug("new cache client");
         return this;
     }
     
-    public ClientFactory watch(final Listener listener){
-        globalListener = listener;
+    /**
+     * wait to register global listener.
+     *
+     * @param globalListener globalListener
+     * @return ClientFactory this
+     */
+    public ClientFactory watch(final Listener globalListener) {
+        setGlobalListener(globalListener);
         return this;
     }
     
-    public ClientFactory setNamespace(String namespace) {
-        if (!namespace.startsWith(Constants.PATH_SEPARATOR)){
-            namespace = Constants.PATH_SEPARATOR + namespace;
-        }
-        this.namespace = namespace;
+    /**
+     * set client namespace.
+     *
+     * @param namespace namespace
+     * @return ClientFactory this
+     */
+    public ClientFactory setClientNamespace(final String namespace) {
+        setNamespace(PathUtil.checkPath(namespace));
         return this;
     }
     
-    public ClientFactory authorization(final String scheme, final byte[] auth, final List<ACL> authorities){
-        this.scheme = scheme;
-        this.auth = auth;
-        this.authorities = authorities;
+    /**
+     * authorization.
+     *
+     * @param scheme scheme
+     * @param auth auth
+     * @param authorities authorities
+     * @return ClientFactory this
+     */
+    public ClientFactory authorization(final String scheme, final byte[] auth, final List<ACL> authorities) {
+        setScheme(scheme);
+        setAuth(auth);
+        setAuthorities(authorities);
         return this;
     }
     
-    public ClientFactory setRetryPolicy(final DelayRetryPolicy delayRetryPolicy){
+    /**
+     * set delay retry policy.
+     *
+     * @param delayRetryPolicy delayRetryPolicy
+     * @return ClientFactory this
+     */
+    public ClientFactory setRetryPolicy(final DelayRetryPolicy delayRetryPolicy) {
         this.delayRetryPolicy = delayRetryPolicy;
         return this;
     }
     
     @Override
     public IClient start() throws IOException, InterruptedException {
-        ((ClientContext)context).setDelayRetryPolicy(delayRetryPolicy);
-        ((ClientContext)context).setClientFactory(this);
+        ((ClientContext) getContext()).setDelayRetryPolicy(delayRetryPolicy);
+        ((ClientContext) getContext()).setClientFactory(this);
         return super.start();
     }
 }

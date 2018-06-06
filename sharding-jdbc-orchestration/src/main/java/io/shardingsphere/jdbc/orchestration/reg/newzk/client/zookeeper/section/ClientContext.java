@@ -17,52 +17,47 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section;
 
-
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayRetryPolicy;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseClientFactory;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseContext;
+import lombok.Getter;
+import lombok.Setter;
 
 /*
  * @author lidongbo
  */
+@Setter
+@Getter
 public final class ClientContext extends BaseContext {
     
     private DelayRetryPolicy delayRetryPolicy;
-    private BaseClientFactory clientFactory;
     
+    private BaseClientFactory clientFactory;
     
     public ClientContext(final String servers, final int sessionTimeoutMilliseconds) {
         super();
-        super.servers = servers;
-        super.sessionTimeOut = sessionTimeoutMilliseconds;
+        setServers(servers);
+        setSessionTimeOut(sessionTimeoutMilliseconds);
     }
     
-    public void setDelayRetryPolicy(DelayRetryPolicy delayRetryPolicy) {
-        this.delayRetryPolicy = delayRetryPolicy;
-    }
-    
-    public void setClientFactory(BaseClientFactory clientFactory) {
-        this.clientFactory = clientFactory;
-    }
-    
-    public DelayRetryPolicy getDelayRetryPolicy() {
-        return delayRetryPolicy;
-    }
-    
-    public BaseClientFactory getClientFactory() {
-        return clientFactory;
-    }
-    
+    /**
+     * call.
+     */
     public void close() {
         super.close();
         this.delayRetryPolicy = null;
         this.clientFactory = null;
     }
     
-    public void updateContext(final ClientContext context){
+    /**
+     * update context.
+     *
+     * @param context context
+     */
+    public void updateContext(final ClientContext context) {
         this.delayRetryPolicy = context.getDelayRetryPolicy();
         this.clientFactory = context.clientFactory;
-        this.watchers.clear();
-        this.watchers.putAll(context.getWatchers());
+        getWatchers().clear();
+        getWatchers().putAll(context.getWatchers());
     }
 }

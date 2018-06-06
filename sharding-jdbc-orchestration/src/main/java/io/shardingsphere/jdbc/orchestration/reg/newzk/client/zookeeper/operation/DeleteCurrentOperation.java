@@ -28,6 +28,7 @@ import org.apache.zookeeper.KeeperException;
  */
 public class DeleteCurrentOperation extends BaseOperation {
     private final String key;
+    
     public DeleteCurrentOperation(final IProvider provider, final String key) {
         super(provider);
         this.key = key;
@@ -35,11 +36,11 @@ public class DeleteCurrentOperation extends BaseOperation {
     
     @Override
     protected void execute() throws KeeperException, InterruptedException {
-        provider.delete(provider.getRealPath(key));
+        getProvider().delete(getProvider().getRealPath(key));
     }
     
     @Override
-    public String toString(){
+    public String toString() {
         return String.format("DeleteCurrentOperation key:%s", key);
     }
 }

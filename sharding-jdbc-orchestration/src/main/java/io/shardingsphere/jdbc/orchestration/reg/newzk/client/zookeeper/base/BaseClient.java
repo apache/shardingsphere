@@ -100,11 +100,11 @@ public abstract class BaseClient implements IClient {
     }
     
     void registerWatch(final Listener globalListener) {
-        if (context.globalListener != null) {
+        if (context.getGlobalListener() != null) {
             LOGGER.warn("global listener can only register one");
             return;
         }
-        context.globalListener = globalListener;
+        context.setGlobalListener(globalListener);
         LOGGER.debug("globalListenerRegistered:{}", globalListener.getKey());
     }
     
@@ -139,7 +139,7 @@ public abstract class BaseClient implements IClient {
         }
         try {
             if (null == holder.getZooKeeper().exists(rootNode, false)) {
-                holder.zooKeeper.create(rootNode, date, authorities, CreateMode.PERSISTENT);
+                holder.getZooKeeper().create(rootNode, date, authorities, CreateMode.PERSISTENT);
             }
             rootExist = true;
             LOGGER.debug("creating root:{}", rootNode);
@@ -148,7 +148,7 @@ public abstract class BaseClient implements IClient {
             rootExist = true;
             return;
         }
-        holder.zooKeeper.exists(rootNode, WatcherCreator.deleteWatcher(new Listener(rootNode) {
+        holder.getZooKeeper().exists(rootNode, WatcherCreator.deleteWatcher(new Listener(rootNode) {
             @Override
             public void process(final WatchedEvent event) {
                 rootExist = false;
@@ -159,7 +159,7 @@ public abstract class BaseClient implements IClient {
     
     protected void deleteNamespace() throws KeeperException, InterruptedException {
         try {
-            holder.zooKeeper.delete(rootNode, Constants.VERSION);
+            holder.getZooKeeper().delete(rootNode, Constants.VERSION);
         } catch (KeeperException.NodeExistsException | KeeperException.NotEmptyException e) {
             LOGGER.info("delete root :{}", e.getMessage());
         }
@@ -168,8 +168,8 @@ public abstract class BaseClient implements IClient {
     }
     
     void setAuthorities(final String scheme, final byte[] auth, final List<ACL> authorities) {
-        context.scheme = scheme;
-        context.auth = auth;
+        context.setScheme(scheme);
+        context.setAuth(auth);
         this.authorities = authorities;
     }
 }

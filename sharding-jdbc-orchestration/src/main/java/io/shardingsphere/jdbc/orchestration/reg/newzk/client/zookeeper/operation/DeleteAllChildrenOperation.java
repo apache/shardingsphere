@@ -37,11 +37,11 @@ public class DeleteAllChildrenOperation extends BaseOperation {
     
     @Override
     protected void execute() throws KeeperException, InterruptedException {
-        new UsualStrategy(provider).deleteAllChildren(key);
+        new UsualStrategy(getProvider()).deleteAllChildren(key);
     }
     
     @Override
-    public String toString(){
+    public String toString() {
         return String.format("DeleteAllChildrenOperation key:%s", key);
     }
 }

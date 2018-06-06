@@ -30,7 +30,9 @@ import org.apache.zookeeper.KeeperException;
  */
 public class CreateAllNeedOperation extends BaseOperation {
     private final String key;
+    
     private final String value;
+    
     private final CreateMode createMode;
     
     public CreateAllNeedOperation(final IProvider provider, final String key, final String value, final CreateMode createMode) {
@@ -42,11 +44,11 @@ public class CreateAllNeedOperation extends BaseOperation {
     
     @Override
     protected void execute() throws KeeperException, InterruptedException {
-        new UsualStrategy(provider).createAllNeedPath(key, value, createMode);
+        new UsualStrategy(getProvider()).createAllNeedPath(key, value, createMode);
     }
     
     @Override
-    public String toString(){
+    public String toString() {
         return String.format("CreateAllNeedOperation key:%s,value:%s,createMode:%s", key, value, createMode.name());
     }
 }

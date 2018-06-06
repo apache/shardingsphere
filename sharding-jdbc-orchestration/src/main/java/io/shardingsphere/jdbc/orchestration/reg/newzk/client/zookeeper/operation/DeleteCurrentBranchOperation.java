@@ -37,11 +37,11 @@ public class DeleteCurrentBranchOperation extends BaseOperation {
     
     @Override
     protected void execute() throws KeeperException, InterruptedException {
-        new UsualStrategy(provider).deleteCurrentBranch(key);
+        new UsualStrategy(getProvider()).deleteCurrentBranch(key);
     }
     
     @Override
-    public String toString(){
+    public String toString() {
         return String.format("DeleteCurrentBranchOperation key:%s", key);
     }
 }

@@ -29,7 +29,9 @@ import org.apache.zookeeper.KeeperException;
  */
 public class CreateCurrentOperation extends BaseOperation {
     private final String key;
+    
     private final String value;
+    
     private final CreateMode createMode;
     
     public CreateCurrentOperation(final IProvider provider, final String key, final String value, final CreateMode createMode) {
@@ -41,11 +43,11 @@ public class CreateCurrentOperation extends BaseOperation {
     
     @Override
     public void execute() throws KeeperException, InterruptedException {
-        provider.create(provider.getRealPath(key), value, createMode);
+        getProvider().create(getProvider().getRealPath(key), value, createMode);
     }
     
     @Override
-    public String toString(){
+    public String toString() {
         return String.format("CreateCurrentOperation key:%s,value:%s,createMode:%s", key, value, createMode.name());
     }
 }

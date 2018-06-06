@@ -67,11 +67,10 @@ public class UsualClient extends BaseClient {
     }
     
     @Override
-    public void close(){
+    public void close() {
         this.strategies.clear();
         super.close();
     }
-    
     
     @Override
     public synchronized void useExecStrategy(final StrategyType strategyType) {
@@ -83,26 +82,21 @@ public class UsualClient extends BaseClient {
         
         IProvider provider = new BaseProvider(getRootNode(), getHolder(), watched, getAuthorities());
         switch (strategyType) {
-            case USUAL: {
+            case USUAL:
                 strategy = new UsualStrategy(provider);
                 break;
-            }
-            case CONTEND: {
+            case CONTEND:
                 strategy = new ContentionStrategy(provider);
                 break;
-            }
-            case SYNC_RETRY: {
+            case SYNC_RETRY:
                 strategy = new SyncRetryStrategy(provider, ((ClientContext) getContext()).getDelayRetryPolicy());
                 break;
-            }
-            case ASYNC_RETRY: {
+            case ASYNC_RETRY:
                 strategy = new AsyncRetryStrategy(provider, ((ClientContext) getContext()).getDelayRetryPolicy());
                 break;
-            }
-            default: {
+            default:
                 strategy = new UsualStrategy(provider);
                 break;
-            }
         }
         
         strategies.put(strategyType, strategy);
@@ -141,7 +135,7 @@ public class UsualClient extends BaseClient {
     @Override
     public void createCurrentOnly(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
         this.createNamespace();
-        if (getRootNode().equals(key)){
+        if (getRootNode().equals(key)) {
             return;
         }
         strategy.createCurrentOnly(key, value, createMode);
@@ -150,7 +144,7 @@ public class UsualClient extends BaseClient {
     @Override
     public void createAllNeedPath(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
         this.createNamespace();
-        if (getRootNode().equals(key)){
+        if (getRootNode().equals(key)) {
             return;
         }
         strategy.createAllNeedPath(key, value, createMode);
@@ -163,7 +157,7 @@ public class UsualClient extends BaseClient {
     
     @Override
     public void deleteOnlyCurrent(final String key) throws KeeperException, InterruptedException {
-        if (getRootNode().equals(key)){
+        if (getRootNode().equals(key)) {
             deleteNamespace();
             return;
         }
@@ -172,7 +166,7 @@ public class UsualClient extends BaseClient {
     
     @Override
     public void deleteOnlyCurrent(final String key, final AsyncCallback.VoidCallback callback, final Object ctx) throws KeeperException, InterruptedException {
-        if (getRootNode().equals(key)){
+        if (getRootNode().equals(key)) {
             deleteNamespace();
             return;
         }
@@ -182,7 +176,7 @@ public class UsualClient extends BaseClient {
     @Override
     public void deleteAllChildren(final String key) throws KeeperException, InterruptedException {
         strategy.deleteAllChildren(key);
-        if (getRootNode().equals(key)){
+        if (getRootNode().equals(key)) {
             setRootExist(false);
             LOGGER.debug("deleteAllChildren delete root:{}", getRootNode());
         }
@@ -191,7 +185,7 @@ public class UsualClient extends BaseClient {
     @Override
     public void deleteCurrentBranch(final String key) throws KeeperException, InterruptedException {
         strategy.deleteCurrentBranch(key);
-        if (!strategy.checkExists(getRootNode())){
+        if (!strategy.checkExists(getRootNode())) {
             setRootExist(false);
             LOGGER.debug("deleteCurrentBranch delete root:{}", getRootNode());
         }

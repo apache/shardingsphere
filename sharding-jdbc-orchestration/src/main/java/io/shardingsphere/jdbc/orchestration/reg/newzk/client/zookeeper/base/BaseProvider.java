@@ -19,9 +19,11 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.election.LeaderElection;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.ZKTransaction;
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -32,25 +34,33 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Stack;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /*
  * @author lidongbo
  */
 public class BaseProvider implements IProvider {
-    private static final Logger logger = LoggerFactory.getLogger(BaseProvider.class);
-    protected final Holder holder;
-    protected final boolean watched;
-    protected final List<ACL> authorities;
-    protected final String rootNode;
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseProvider.class);
     
-    public BaseProvider(final String rootNode, final Holder holder, final boolean watched, final List<ACL> authorities){
+    @Getter
+    private final Holder holder;
+    
+    @Getter
+    private final String rootNode;
+    
+    @Getter(value = AccessLevel.PROTECTED)
+    private final boolean watched;
+    
+    @Getter(value = AccessLevel.PROTECTED)
+    private final List<ACL> authorities;
+    
+    public BaseProvider(final String rootNode, final Holder holder, final boolean watched, final List<ACL> authorities) {
         this.rootNode = rootNode;
         this.holder = holder;
         this.watched = watched;
         this.authorities = authorities;
     }
     
+    @Override
     public String getDataString(final String key) throws KeeperException, InterruptedException {
         return new String(getData(key));
     }
@@ -83,26 +93,8 @@ public class BaseProvider implements IProvider {
     @Override
     public void create(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
         holder.getZooKeeper().create(key, value.getBytes(Constants.UTF_8), authorities, createMode);
-        logger.debug("BaseProvider createCurrentOnly:{}", key);
+        LOGGER.debug("BaseProvider createCurrentOnly:{}", key);
 //        create(key, value, createMode, new AtomicInteger());
-    }
-    
-    @Deprecated
-    private void create(final String key, final String value, final CreateMode createMode, final AtomicInteger count) throws KeeperException, InterruptedException {
-        try {
-            holder.getZooKeeper().create(key, value.getBytes(Constants.UTF_8), authorities, createMode);
-            logger.debug("BaseProvider createCurrentOnly:{}", key);
-        } catch (KeeperException.NoNodeException e) {
-            logger.error("BaseProvider createCurrentOnly:{}", e.getMessage(), e);
-            // I don't know whether it will happen or not, if root watcher don't update rootExist timely
-            if (!exists(rootNode)){
-                logger.info("BaseProvider createCurrentOnly root not exist:{}", count.get());
-                Thread.sleep(50);
-                if (count.incrementAndGet() < 3) {
-                    this.create(key, value, createMode, count);
-                }
-            }
-        }
     }
 
     @Override
@@ -113,30 +105,29 @@ public class BaseProvider implements IProvider {
     @Override
     public void delete(final String key) throws KeeperException, InterruptedException {
         holder.getZooKeeper().delete(key, Constants.VERSION);
-        logger.debug("BaseProvider deleteOnlyCurrent:{}", key);
+        LOGGER.debug("BaseProvider deleteOnlyCurrent:{}", key);
     }
     
     @Override
     public void delete(final String key, final AsyncCallback.VoidCallback callback, final Object ctx) throws KeeperException, InterruptedException {
         holder.getZooKeeper().delete(key, Constants.VERSION, callback, ctx);
-        logger.debug("BaseProvider deleteOnlyCurrent:{},ctx:{}", key, ctx);
+        LOGGER.debug("BaseProvider deleteOnlyCurrent:{},ctx:{}", key, ctx);
     }
-    
-    
+
     @Override
-    public String getRealPath(String path) {
+    public String getRealPath(final String path) {
         return PathUtil.getRealPath(rootNode, path);
     }
     
     @Override
-    public List<String> getNecessaryPaths(final String key){
+    public List<String> getNecessaryPaths(final String key) {
         List<String> nodes = PathUtil.getPathOrderNodes(rootNode, key);
         nodes.remove(rootNode);
         return nodes;
     }
     
     @Override
-    public Stack<String> getDeletingPaths(String key) {
+    public Stack<String> getDeletingPaths(final String key) {
         return PathUtil.getPathReverseNodes(rootNode, key);
     }
     
@@ -145,8 +136,8 @@ public class BaseProvider implements IProvider {
         this.executeContention(rootNode, election);
     }
     
-    public void executeContention(final String nodeBeCompete, final LeaderElection election) throws KeeperException, InterruptedException {
-        election.executeContention(rootNode, this);
+    private void executeContention(final String nodeBeCompete, final LeaderElection election) throws KeeperException, InterruptedException {
+        election.executeContention(nodeBeCompete, this);
     }
     
     @Override
@@ -158,16 +149,10 @@ public class BaseProvider implements IProvider {
     public void resetConnection() {
         try {
             holder.reset();
-        } catch (Exception ee) {
-            logger.error("resetConnection Exception:{}", ee.getMessage(), ee);
+            // CHECKSTYLE:OFF
+        } catch (Exception e) {
+            // CHECKSTYLE:ON
+            LOGGER.error("resetConnection Exception:{}", e.getMessage(), e);
         }
-    }
-    
-    public String getRootNode(){
-        return rootNode;
-    }
-    
-    public Holder getHolder(){
-        return holder;
     }
 }

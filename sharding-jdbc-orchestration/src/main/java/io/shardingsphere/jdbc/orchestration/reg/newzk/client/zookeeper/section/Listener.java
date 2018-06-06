@@ -17,34 +17,33 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.zookeeper.WatchedEvent;
 
 /*
  * @author lidongbo
  */
+@Getter
 public abstract class Listener {
     private final String key;
+    
+    @Setter
     private String path;
     
-    public Listener(){
+    public Listener() {
         this(null);
     }
-    public Listener(final String path){
+    
+    public Listener(final String path) {
         this.path = path;
         this.key = path + System.currentTimeMillis();
     }
     
+    /**
+     * process.
+     *
+     * @param event event
+     */
     public abstract void process(WatchedEvent event);
-    
-    public String getPath() {
-        return path;
-    }
-    
-    public void setPath(final String path){
-        this.path = path;
-    }
-    
-    public String getKey() {
-        return key;
-    }
 }

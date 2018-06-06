@@ -20,6 +20,7 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayPolicyExecutor;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayRetryPolicy;
+import lombok.Setter;
 import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,20 +31,35 @@ import org.slf4j.LoggerFactory;
  * @author lidongbo
  */
 public abstract class Callable<T> {
-    private static final Logger logger = LoggerFactory.getLogger(Callable.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Callable.class);
 
-    protected final DelayPolicyExecutor delayPolicyExecutor;
-    protected final IProvider provider;
+    private final DelayPolicyExecutor delayPolicyExecutor;
+    
+    private final IProvider provider;
+    
+    @Setter
     private T result;
-    public Callable(final IProvider provider, final DelayRetryPolicy delayRetryPolicy){
+    
+    public Callable(final IProvider provider, final DelayRetryPolicy delayRetryPolicy) {
         this.delayPolicyExecutor = new DelayPolicyExecutor(delayRetryPolicy);
         this.provider = provider;
     }
+    
+    /**
+     * call.
+     *
+     * @throws KeeperException Zookeeper Exception
+     * @throws InterruptedException InterruptedException
+     */
     public abstract void call() throws KeeperException, InterruptedException;
     
-    public void setResult(T result) {
-        this.result = result;
-    }
+    /**
+     * get result.
+     *
+     * @return result
+     * @throws KeeperException Zookeeper Exception
+     * @throws InterruptedException InterruptedException
+     */
     public T getResult() throws KeeperException, InterruptedException {
         if (result == null) {
             exec();
@@ -51,13 +67,19 @@ public abstract class Callable<T> {
         return result;
     }
     
+    /**
+     * call without result.
+     *
+     * @throws KeeperException Zookeeper Exception
+     * @throws InterruptedException InterruptedException
+     */
     public void exec() throws KeeperException, InterruptedException {
         try {
             call();
         } catch (KeeperException e) {
-            logger.warn("exec KeeperException:{}", e.getMessage());
+            LOGGER.warn("exec KeeperException:{}", e.getMessage());
             delayPolicyExecutor.next();
-            if (Connection.needReset(e)){
+            if (Connection.needReset(e)) {
                 provider.resetConnection();
             } else {
                 throw e;
@@ -68,19 +90,19 @@ public abstract class Callable<T> {
         }
     }
     
-    protected void execDelay() throws KeeperException, InterruptedException {
+    private void execDelay() throws KeeperException, InterruptedException {
         for (;;) {
             long delay = delayPolicyExecutor.getNextTick() - System.currentTimeMillis();
-            if (delay > 0){
+            if (delay > 0) {
                 try {
-                    logger.debug("exec delay:{}", delay);
+                    LOGGER.debug("exec delay:{}", delay);
                     Thread.sleep(delay);
-                } catch (InterruptedException ee) {
-                    throw ee;
+                } catch (InterruptedException e) {
+                    throw e;
                 }
             } else {
                 if (delayPolicyExecutor.hasNext()) {
-                    logger.debug("exec hasNext");
+                    LOGGER.debug("exec hasNext");
                     exec();
                 }
                 break;

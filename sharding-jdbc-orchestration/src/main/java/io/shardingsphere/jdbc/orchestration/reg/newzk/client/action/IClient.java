@@ -50,7 +50,7 @@ public interface IClient extends IAction, IGroupAction {
     boolean blockUntilConnected(int wait, TimeUnit units) throws InterruptedException;
     
     /**
-     * block until connected.
+     * close.
      */
     void close();
     

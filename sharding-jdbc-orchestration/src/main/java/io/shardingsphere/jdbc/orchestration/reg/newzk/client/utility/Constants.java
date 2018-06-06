@@ -26,18 +26,30 @@ import java.nio.charset.Charset;
  */
 public final class Constants {
     public static final int VERSION = -1;
+    
     public static final int WAIT = 60 * 1000;
+    
     public static final byte[] NOTHING_DATA = new byte[0];
+    
     public static final String NOTHING_VALUE = "";
+    
     public static final Charset UTF_8 = Charset.forName("UTF-8");
+    
     public static final String PATH_SEPARATOR = "/";
+    
     public static final String GLOBAL_LISTENER_KEY = "globalListener";
     
     public static final byte[] CHANGING_VALUE = new byte[]{'c'};
+    
     public static final byte[] RELEASE_VALUE = new byte[]{'r'};
+    
     public static final String CHANGING_KEY = "CHANGING_KEY";
+    
     public static final long THREAD_PERIOD = 3000L;
+    
     public static final long THREAD_INITIAL_DELAY = 1000L;
+    
     public static final int NODE_ELECTION_RETRY = 3;
+    
     public static final String CLIENT_ID = "1";
 }

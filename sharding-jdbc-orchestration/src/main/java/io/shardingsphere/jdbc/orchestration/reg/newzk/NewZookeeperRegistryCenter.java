@@ -62,7 +62,7 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
     
     private ClientFactory buildCreator(final ZookeeperConfiguration zkConfig) {
         ClientFactory creator = new ClientFactory();
-        creator.setNamespace(zkConfig.getNamespace())
+        creator.setClientNamespace(zkConfig.getNamespace())
                 .newClient(zkConfig.getServerLists(), zkConfig.getSessionTimeoutMilliseconds())
                 .setRetryPolicy(new DelayRetryPolicy(zkConfig.getBaseSleepTimeMilliseconds(), zkConfig.getMaxRetries(), zkConfig.getMaxSleepTimeMilliseconds()));
         if (!Strings.isNullOrEmpty(zkConfig.getDigest())) {

@@ -21,7 +21,14 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility;
  * @author lidongbo
  */
 public class StringUtil {
-    public static boolean isNullOrBlank(String string) {
+    
+    /**
+     * Null Or Blank.
+     *
+     * @param string string
+     * @return isNullOrBlank
+     */
+    public static boolean isNullOrBlank(final String string) {
         return string == null || string.trim().length() == 0;
     }
 }

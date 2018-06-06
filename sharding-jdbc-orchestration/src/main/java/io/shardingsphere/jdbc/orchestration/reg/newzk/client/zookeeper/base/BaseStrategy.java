@@ -19,23 +19,23 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IExecStrategy;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
+import lombok.Getter;
 import org.apache.zookeeper.KeeperException;
 
 /*
  * @author lidongbo
  */
 public abstract class BaseStrategy implements IExecStrategy {
-    protected final IProvider provider;
-    public BaseStrategy(final IProvider provider){
+    
+    @Getter
+    private final IProvider provider;
+    
+    public BaseStrategy(final IProvider provider) {
         this.provider = provider;
     }
     
     @Override
     public String getDataString(final String key) throws KeeperException, InterruptedException {
         return new String(getData(key));
-    }
-    
-    public IProvider getProvider() {
-        return provider;
     }
 }

@@ -20,6 +20,9 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayPolicyExecutor;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Connection;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,54 +35,57 @@ import java.util.concurrent.TimeUnit;
  *
  * @author lidongbo
  */
+@Getter(value = AccessLevel.PROTECTED)
 public abstract class BaseOperation implements Delayed {
-    private static final Logger logger = LoggerFactory.getLogger(BaseOperation.class);
-    protected final IProvider provider;
-    protected DelayPolicyExecutor delayPolicyExecutor;
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseOperation.class);
+    
+    private final IProvider provider;
+    
+    @Setter
+    private DelayPolicyExecutor delayPolicyExecutor;
     
     protected BaseOperation(final IProvider provider) {
         this.provider = provider;
     }
     
-    public void setRetrial(final DelayPolicyExecutor delayPolicyExecutor){
-        this.delayPolicyExecutor = delayPolicyExecutor;
-    }
-    
     @Override
-    public long getDelay(TimeUnit unit) {
+    public long getDelay(final TimeUnit unit) {
         long absoluteBlock = this.delayPolicyExecutor.getNextTick() - System.currentTimeMillis();
-        logger.debug("queue getDelay block:{}", absoluteBlock);
-        long result = unit.convert(absoluteBlock, TimeUnit.MILLISECONDS);
-        return result;
+        LOGGER.debug("queue getDelay block:{}", absoluteBlock);
+        return unit.convert(absoluteBlock, TimeUnit.MILLISECONDS);
     }
     
     /**
-     * queue precedence
+     * queue precedence.
      */
     @Override
-    public int compareTo(Delayed delayed) {
+    public int compareTo(final Delayed delayed) {
         return (int) (this.getDelay(TimeUnit.MILLISECONDS) - delayed.getDelay(TimeUnit.MILLISECONDS));
     }
 
     protected abstract void execute() throws KeeperException, InterruptedException;
     
-    /*
-    * @Return whether or not continue enqueue
-    */
+    /**
+     * queue precedence.
+     *
+     * @return whether or not continue enqueue
+     * @throws KeeperException Keeper Exception
+     * @throws InterruptedException InterruptedException
+     */
     public boolean executeOperation() throws KeeperException, InterruptedException {
         boolean result;
         try {
             execute();
             result = true;
-        } catch (KeeperException ee) {
-            if (Connection.needReset(ee)){
+        } catch (KeeperException e) {
+            if (Connection.needReset(e)) {
                 provider.resetConnection();
                 result = false;
             } else {
-                throw ee;
+                throw e;
             }
         }
-        if (!result && delayPolicyExecutor.hasNext()){
+        if (!result && delayPolicyExecutor.hasNext()) {
             delayPolicyExecutor.next();
             return true;
         }

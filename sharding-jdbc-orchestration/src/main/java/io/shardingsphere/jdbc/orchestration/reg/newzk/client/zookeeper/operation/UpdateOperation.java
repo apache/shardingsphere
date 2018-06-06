@@ -28,6 +28,7 @@ import org.apache.zookeeper.KeeperException;
  */
 public class UpdateOperation extends BaseOperation {
     private final String key;
+    
     private final String value;
     
     public UpdateOperation(final IProvider provider, final String key, final String value) {
@@ -38,11 +39,11 @@ public class UpdateOperation extends BaseOperation {
     
     @Override
     protected void execute() throws KeeperException, InterruptedException {
-        provider.update(provider.getRealPath(key), value);
+        getProvider().update(getProvider().getRealPath(key), value);
     }
     
     @Override
-    public String toString(){
+    public String toString() {
         return String.format("UpdateOperation key:%s,value:%s", key, value);
     }
 }
