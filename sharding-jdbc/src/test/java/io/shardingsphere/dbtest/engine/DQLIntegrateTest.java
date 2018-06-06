@@ -17,15 +17,15 @@
 
 package io.shardingsphere.dbtest.engine;
 
+import com.google.common.base.Splitter;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.dbtest.asserts.DataSetAssert;
 import io.shardingsphere.dbtest.asserts.DataSetDefinitions;
-import io.shardingsphere.dbtest.common.DatabaseUtil;
-import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.cases.dataset.expected.dataset.ExpectedDataSetsRoot;
+import io.shardingsphere.dbtest.common.DatabaseUtil;
+import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
 import org.junit.Before;
@@ -44,6 +44,11 @@ import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 @RunWith(Parameterized.class)
 public final class DQLIntegrateTest extends BaseIntegrateTest {
@@ -121,6 +126,25 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
         try (FileReader reader = new FileReader(getExpectedDataFile())) {
             expected = (ExpectedDataSetsRoot) JAXBContext.newInstance(ExpectedDataSetsRoot.class).createUnmarshaller().unmarshal(reader);
         }
-        DataSetAssert.assertDataSet(actual, expected);
+        assertData(actual.getDataList().get("data"), expected);
+    }
+    
+    private void assertData(final List<Map<String, String>> actual, final ExpectedDataSetsRoot expected) {
+        assertThat(actual.size(), is(expected.getDataSetRows().size()));
+        List<String> expectedColumnNames = Splitter.on(",").trimResults().splitToList(expected.getColumns().getValues());
+        int count = 0;
+        for (Map<String, String> each : actual) {
+            List<String> expectedValues = Splitter.on(",").trimResults().splitToList(expected.getDataSetRows().get(count++).getValues());
+            assertData(each, expectedValues, expectedColumnNames);
+        }
+    }
+    
+    private void assertData(final Map<String, String> actual, final List<String> expectedValues, final List<String> expectedColumnNames) {
+        assertThat(actual.size(), is(expectedValues.size()));
+        assertThat(actual.size(), is(expectedColumnNames.size()));
+        int count = 0;
+        for (String each : expectedValues) {
+            assertThat(actual.get(expectedColumnNames.get(count++)), is(each));
+        }
     }
 }

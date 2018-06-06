@@ -19,14 +19,14 @@ package io.shardingsphere.dbtest.engine;
 
 import com.google.common.base.Strings;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.dbtest.asserts.DataSetAssert;
-import io.shardingsphere.dbtest.common.DatabaseUtil;
-import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.cases.assertion.ddl.DDLIntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.ddl.DDLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.cases.dataset.expected.metadata.ExpectedColumn;
+import io.shardingsphere.dbtest.cases.dataset.expected.metadata.ExpectedMetadata;
 import io.shardingsphere.dbtest.cases.dataset.expected.metadata.ExpectedMetadataRoot;
+import io.shardingsphere.dbtest.common.DatabaseUtil;
+import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
 import org.junit.Before;
@@ -47,6 +47,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 @RunWith(Parameterized.class)
 public final class DDLIntegrateTest extends BaseIntegrateTest {
@@ -148,6 +151,20 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
         }
         String tableName = assertion.getTable();
         List<ExpectedColumn> actualColumns = DatabaseUtil.getExpectedColumns(connection, tableName);
-        DataSetAssert.assertMetadata(actualColumns, expected.find(tableName));
+        assertMetadata(actualColumns, expected.find(tableName));
+    }
+    
+    private static void assertMetadata(final List<ExpectedColumn> actual, final ExpectedMetadata expected) {
+        for (ExpectedColumn each : expected.getColumns()) {
+            assertMetadata(actual, each);
+        }
+    }
+    
+    private static void assertMetadata(final List<ExpectedColumn> actual, final ExpectedColumn expect) {
+        for (ExpectedColumn each : actual) {
+            if (expect.getName().equals(each.getName())) {
+                assertThat(each.getType(), is(expect.getType()));
+            }
+        }
     }
 }

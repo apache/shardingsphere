@@ -17,14 +17,19 @@
 
 package io.shardingsphere.dbtest.engine;
 
+import com.google.common.base.Splitter;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.dbtest.asserts.DataSetAssert;
-import io.shardingsphere.dbtest.common.DatabaseUtil;
-import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
+import io.shardingsphere.core.rule.DataNode;
+import io.shardingsphere.core.util.InlineExpressionParser;
 import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.cases.assertion.dml.DMLIntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.dml.DMLIntegrateTestCaseAssertion;
+import io.shardingsphere.dbtest.cases.dataset.init.DataSetColumnMetadata;
+import io.shardingsphere.dbtest.cases.dataset.init.DataSetMetadata;
+import io.shardingsphere.dbtest.cases.dataset.init.DataSetRow;
 import io.shardingsphere.dbtest.cases.dataset.init.DataSetsRoot;
+import io.shardingsphere.dbtest.common.DatabaseUtil;
+import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
 import org.junit.After;
@@ -39,14 +44,21 @@ import javax.xml.bind.JAXBException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
 public final class DMLIntegrateTest extends BaseIntegrateTest {
@@ -134,6 +146,66 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
         try (FileReader reader = new FileReader(getExpectedDataFile())) {
             expected = (DataSetsRoot) JAXBContext.newInstance(DataSetsRoot.class).createUnmarshaller().unmarshal(reader);
         }
-        DataSetAssert.assertDataSet(getDataSourceMap(), expected);
+        assertDataSet(expected);
+    }
+    
+    private void assertDataSet(final DataSetsRoot expected) throws SQLException {
+        assertThat("Only support single table for DML.", expected.getMetadataList().size(), is(1));
+        DataSetMetadata dataSetMetadata = expected.getMetadataList().get(0);
+        for (String each : new InlineExpressionParser(dataSetMetadata.getDataNodes()).evaluate()) {
+            DataNode dataNode = new DataNode(each);
+            try (Connection connection = getDataSourceMap().get(dataNode.getDataSourceName()).getConnection();
+                 PreparedStatement preparedStatement = connection.prepareStatement(String.format("SELECT * FROM %s", dataNode.getTableName()))) {
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    int count = 0;
+                    while (resultSet.next()) {
+                        List<String> actualResultSetData = getResultSetData(dataSetMetadata, resultSet);
+                        assertTrue(String.format("Cannot find actual record '%s' from data node '%s'", actualResultSetData, each), isMatch(each, actualResultSetData, expected.getDataSetRows()));
+                        count++;
+                    }
+                    assertThat(String.format("Count of records are different for data node '%s'", each), count, is(countExpectedDataSetRows(each, expected.getDataSetRows())));
+                }
+            }
+        }
+    }
+    
+    private List<String> getResultSetData(final DataSetMetadata dataSetMetadata, final ResultSet resultSet) throws SQLException {
+        List<String> result = new ArrayList<>(dataSetMetadata.getColumnMetadataList().size());
+        for (DataSetColumnMetadata each : dataSetMetadata.getColumnMetadataList()) {
+            Object resultSetValue = resultSet.getObject(each.getName());
+            result.add(resultSetValue instanceof Date ? new SimpleDateFormat("yyyy-MM-dd").format(resultSetValue) : resultSetValue.toString());
+        }
+        return result;
+    }
+    
+    private boolean isMatch(final String actualDataNode, final List<String> actualResultSetData, final List<DataSetRow> expectedDataSetRows) {
+        for (DataSetRow each : expectedDataSetRows) {
+            if (each.getDataNode().equals(actualDataNode) && isMatch(actualResultSetData, each)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean isMatch(final List<String> actualResultSetData, final DataSetRow expectedDataSetRow) {
+        int count = 0;
+        for (String each : Splitter.on(",").trimResults().splitToList(expectedDataSetRow.getValues())) {
+            if (!each.equals(actualResultSetData.get(count))) {
+                return false;
+            }
+            count++;
+        }
+        return true;
+    }
+    
+    private int countExpectedDataSetRows(final String actualDataNode, final List<DataSetRow> expectedDataSetRows) {
+        int result = 0;
+        for (DataSetRow each : expectedDataSetRows) {
+            if (each.getDataNode().equals(actualDataNode)) {
+                result++;
+            }
+            
+        }
+        return result;
     }
 }
