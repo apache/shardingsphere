@@ -201,6 +201,6 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
             }
             count++;
         }
-        assertThat(count, is(expectedDatSetRows.size()));
+        assertThat("Size of actual result set is different with size of expected dat set rows.", count, is(expectedDatSetRows.size()));
     }
 }
