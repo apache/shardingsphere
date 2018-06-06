@@ -58,4 +58,9 @@ public final class SQLValue {
         }
         throw new UnsupportedOperationException(String.format("Cannot support type: '%s'", type));
     }
+    
+    @Override
+    public String toString() {
+        return value instanceof String ? "'" + value + "'" : value.toString();
+    }
 }

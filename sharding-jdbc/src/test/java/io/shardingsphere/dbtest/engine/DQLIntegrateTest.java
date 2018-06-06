@@ -50,8 +50,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -107,20 +105,28 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
         }
         try (Connection connection = getDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
-                try (
-                        Statement statement = connection.createStatement();
-                        ResultSet resultSet = statement.executeQuery(generateSQL(getSql(), assertion.getSQLValues()))) {
-                    assertResultSet(resultSet);
-                }
+                assertExecuteQueryForStatement(connection);
             } else {
-                try (PreparedStatement preparedStatement = connection.prepareStatement(getSql().replaceAll("%s", "?"))) {
-                    for (SQLValue each : assertion.getSQLValues()) {
-                        preparedStatement.setObject(each.getIndex(), each.getValue());
-                    }
-                    try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                        assertResultSet(resultSet);
-                    }
-                }
+                assertExecuteQueryForPreparedStatement(connection);
+            }
+        }
+    }
+    
+    private void assertExecuteQueryForStatement(final Connection connection) throws SQLException, JAXBException, IOException, ParseException {
+        try (
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(String.format(getSql(), assertion.getSQLValues().toArray(new Object[10])))) {
+            assertResultSet(resultSet);
+        }
+    }
+    
+    private void assertExecuteQueryForPreparedStatement(final Connection connection) throws SQLException, ParseException, JAXBException, IOException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getSql().replaceAll("%s", "?"))) {
+            for (SQLValue each : assertion.getSQLValues()) {
+                preparedStatement.setObject(each.getIndex(), each.getValue());
+            }
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                assertResultSet(resultSet);
             }
         }
     }
@@ -132,36 +138,32 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
         }
         try (Connection connection = getDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
-                try (Statement statement = connection.createStatement()) {
-                    statement.execute(generateSQL(getSql(), assertion.getSQLValues()));
-                    try (ResultSet resultSet = statement.getResultSet()) {
-                        assertResultSet(resultSet);
-                    }
-                }
+                assertExecuteForStatement(connection);
             } else {
-                try (PreparedStatement preparedStatement = connection.prepareStatement(getSql().replaceAll("%s", "?"))) {
-                    for (SQLValue each : assertion.getSQLValues()) {
-                        preparedStatement.setObject(each.getIndex(), each.getValue());
-                    }
-                    assertTrue("Not a query statement.", preparedStatement.execute());
-                    try (ResultSet resultSet = preparedStatement.getResultSet()) {
-                        assertResultSet(resultSet);
-                    }
-                }
+                assertExecuteForPreparedStatement(connection);
             }
         }
     }
     
-    private static String generateSQL(final String sql, final Collection<SQLValue> sqlValues) {
-        if (null == sqlValues) {
-            return sql;
+    private void assertExecuteForStatement(final Connection connection) throws SQLException, ParseException, JAXBException, IOException {
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(String.format(getSql(), assertion.getSQLValues().toArray(new Object[10])));
+            try (ResultSet resultSet = statement.getResultSet()) {
+                assertResultSet(resultSet);
+            }
         }
-        String result = sql;
-        for (SQLValue each : sqlValues) {
-            result = Pattern.compile("%s", Pattern.LITERAL).matcher(result)
-                    .replaceFirst(Matcher.quoteReplacement(each.getValue() instanceof String ? "'" + each.getValue() + "'" : each.getValue().toString()));
+    }
+    
+    private void assertExecuteForPreparedStatement(final Connection connection) throws SQLException, ParseException, JAXBException, IOException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getSql().replaceAll("%s", "?"))) {
+            for (SQLValue each : assertion.getSQLValues()) {
+                preparedStatement.setObject(each.getIndex(), each.getValue());
+            }
+            assertTrue("Not a query statement.", preparedStatement.execute());
+            try (ResultSet resultSet = preparedStatement.getResultSet()) {
+                assertResultSet(resultSet);
+            }
         }
-        return result;
     }
     
     private void assertResultSet(final ResultSet resultSet) throws SQLException, JAXBException, IOException {
@@ -169,7 +171,7 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
         try (FileReader reader = new FileReader(getExpectedDataFile())) {
             expected = (ExpectedDataSetsRoot) JAXBContext.newInstance(ExpectedDataSetsRoot.class).createUnmarshaller().unmarshal(reader);
         }
-        List<String> expectedColumnNames = Splitter.on(",").trimResults().splitToList(expected.getColumns().getValues());
+        List<String> expectedColumnNames = expected.getColumns().getValues();
         ResultSetMetaData metaData = resultSet.getMetaData();
         int columnCount = metaData.getColumnCount();
         assertThat(columnCount, is(expectedColumnNames.size()));
