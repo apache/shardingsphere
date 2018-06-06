@@ -248,7 +248,7 @@ public final class DatabaseUtil {
         for (int i = 1; i < columnCount + 1; i++) {
             DataSetColumnMetadata each = new DataSetColumnMetadata();
             each.setName(metaData.getColumnName(i));
-            each.setType(getDataType(metaData.getColumnType(i), metaData.getScale(i)));
+            each.setType(Types.DATE == metaData.getColumnType(i) || Types.TIMESTAMP == metaData.getColumnType(i) ? "Date" : "Object");
             result.add(each);
         }
         return result;
@@ -269,60 +269,6 @@ public final class DatabaseUtil {
             result.add(data);
         }
         return result;
-    }
-    
-    private static String getDataType(final int type, final int scale) {
-        String result;
-        switch (type) {
-            case Types.BOOLEAN:
-                result = "boolean";
-                break;
-            case Types.CHAR:
-                result = "char";
-                break;
-            case Types.NUMERIC:
-                switch (scale) {
-                    case 0:
-                        result = "double";
-                        break;
-                    case -127:
-                        result = "float";
-                        break;
-                    default:
-                        result = "double";
-                }
-                break;
-            case Types.DATE:
-                result = "Date";
-                break;
-            case Types.TIMESTAMP:
-                result = "Date";
-                break;
-            case Types.BLOB:
-                result = "Blob";
-                break;
-            default:
-                result = getDataTypeMore(type);
-                break;
-        }
-        return result;
-    }
-    
-    private static String getDataTypeMore(final int type) {
-        switch (type) {
-            case Types.INTEGER:
-                return "int";
-            case Types.LONGVARCHAR:
-                return "long";
-            case Types.BIGINT:
-                return "long";
-            case Types.FLOAT:
-                return "float";
-            case Types.DOUBLE:
-                return "double";
-            default:
-                return "String";
-        }
     }
     
     /**
