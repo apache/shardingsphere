@@ -23,7 +23,7 @@ import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.cases.dataset.expected.dataset.ExpectedDataSetsRoot;
-import io.shardingsphere.dbtest.common.DatabaseUtil;
+import io.shardingsphere.dbtest.common.SQLValue;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
@@ -38,16 +38,24 @@ import javax.xml.bind.JAXBException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
 public final class DQLIntegrateTest extends BaseIntegrateTest {
@@ -99,9 +107,20 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
         }
         try (Connection connection = getDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
-                assertDataSet(DatabaseUtil.executeQueryForStatement(connection, getSql(), assertion.getSQLValues()));
+                try (
+                        Statement statement = connection.createStatement();
+                        ResultSet resultSet = statement.executeQuery(generateSQL(getSql(), assertion.getSQLValues()))) {
+                    assertResultSet(resultSet);
+                }
             } else {
-                assertDataSet(DatabaseUtil.executeQueryForPreparedStatement(connection, getSql(), assertion.getSQLValues()));
+                try (PreparedStatement preparedStatement = connection.prepareStatement(getSql().replaceAll("%s", "?"))) {
+                    for (SQLValue each : assertion.getSQLValues()) {
+                        preparedStatement.setObject(each.getIndex(), each.getValue());
+                    }
+                    try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                        assertResultSet(resultSet);
+                    }
+                }
             }
         }
     }
@@ -113,33 +132,67 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
         }
         try (Connection connection = getDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
-                assertDataSet(DatabaseUtil.executeDQLForStatement(connection, getSql(), assertion.getSQLValues()));
+                try (Statement statement = connection.createStatement()) {
+                    statement.execute(generateSQL(getSql(), assertion.getSQLValues()));
+                    try (ResultSet resultSet = statement.getResultSet()) {
+                        assertResultSet(resultSet);
+                    }
+                }
             } else {
-                assertDataSet(DatabaseUtil.executeDQLForPreparedStatement(connection, getSql(), assertion.getSQLValues()));
+                try (PreparedStatement preparedStatement = connection.prepareStatement(getSql().replaceAll("%s", "?"))) {
+                    for (SQLValue each : assertion.getSQLValues()) {
+                        preparedStatement.setObject(each.getIndex(), each.getValue());
+                    }
+                    assertTrue("Not a query statement.", preparedStatement.execute());
+                    try (ResultSet resultSet = preparedStatement.getResultSet()) {
+                        assertResultSet(resultSet);
+                    }
+                }
             }
         }
     }
     
-    private void assertDataSet(final List<Map<String, String>> actual) throws IOException, JAXBException {
+    private static String generateSQL(final String sql, final Collection<SQLValue> sqlValues) {
+        if (null == sqlValues) {
+            return sql;
+        }
+        String result = sql;
+        for (SQLValue each : sqlValues) {
+            result = Pattern.compile("%s", Pattern.LITERAL).matcher(result)
+                    .replaceFirst(Matcher.quoteReplacement(each.getValue() instanceof String ? "'" + each.getValue() + "'" : each.getValue().toString()));
+        }
+        return result;
+    }
+    
+    private void assertResultSet(final ResultSet resultSet) throws SQLException, JAXBException, IOException {
         ExpectedDataSetsRoot expected;
         try (FileReader reader = new FileReader(getExpectedDataFile())) {
             expected = (ExpectedDataSetsRoot) JAXBContext.newInstance(ExpectedDataSetsRoot.class).createUnmarshaller().unmarshal(reader);
         }
-        assertThat(actual.size(), is(expected.getDataSetRows().size()));
         List<String> expectedColumnNames = Splitter.on(",").trimResults().splitToList(expected.getColumns().getValues());
-        int count = 0;
-        for (Map<String, String> each : actual) {
-            List<String> expectedValues = Splitter.on(",").trimResults().splitToList(expected.getDataSetRows().get(count++).getValues());
-            assertData(each, expectedValues, expectedColumnNames);
+        ResultSetMetaData metaData = resultSet.getMetaData();
+        int columnCount = metaData.getColumnCount();
+        assertThat(columnCount, is(expectedColumnNames.size()));
+        int index = 1;
+        for (String each : expectedColumnNames) {
+            assertThat(metaData.getColumnLabel(index++), is(each));
         }
-    }
-    
-    private void assertData(final Map<String, String> actual, final List<String> expectedValues, final List<String> expectedColumnNames) {
-        assertThat(actual.size(), is(expectedValues.size()));
-        assertThat(actual.size(), is(expectedColumnNames.size()));
         int count = 0;
-        for (String each : expectedValues) {
-            assertThat(actual.get(expectedColumnNames.get(count++)), is(each));
+        while (resultSet.next()) {
+            List<String> values = Splitter.on(",").trimResults().splitToList(expected.getDataSetRows().get(count).getValues());
+            int valueIndex = 0;
+            for (String each : values) {
+                if (Types.DATE == metaData.getColumnType(valueIndex + 1)) {
+                    assertThat(new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date(resultSet.getDate(valueIndex + 1).getTime())), is(each));
+                    assertThat(new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date(resultSet.getDate(expectedColumnNames.get(valueIndex)).getTime())), is(each));
+                } else {
+                    assertThat(String.valueOf(resultSet.getObject(valueIndex + 1)), is(each));
+                    assertThat(String.valueOf(resultSet.getObject(expectedColumnNames.get(valueIndex))), is(each));
+                }
+                valueIndex++;
+            }
+            count++;
         }
+        assertThat(count, is(expected.getDataSetRows().size()));
     }
 }

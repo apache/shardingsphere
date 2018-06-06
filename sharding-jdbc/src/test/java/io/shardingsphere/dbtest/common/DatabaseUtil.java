@@ -25,20 +25,13 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Types;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static org.junit.Assert.assertTrue;
 
 /**
  * Database utility.
@@ -77,82 +70,6 @@ public final class DatabaseUtil {
     private static void setParameters(final PreparedStatement preparedStatement, final SQLValueGroup sqlValueGroup) throws SQLException {
         for (SQLValue each : sqlValueGroup.getSqlValues()) {
             preparedStatement.setObject(each.getIndex(), each.getValue());
-        }
-    }
-    
-    /**
-     * Execute DQL for statement.
-     *
-     * @param connection connection
-     * @param sql SQL
-     * @param sqlValues SQL values
-     * @return query result set
-     * @throws SQLException SQL exception
-     */
-    public static List<Map<String, String>> executeQueryForStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
-        try (Statement statement = connection.createStatement()) {
-            try (ResultSet resultSet = statement.executeQuery(generateSQL(sql, sqlValues))) {
-                return handleResultSet(resultSet);
-            }
-        }
-    }
-    
-    /**
-     * Execute query for prepared statement.
-     *
-     * @param connection connection
-     * @param sql SQL
-     * @param sqlValues SQL values 
-     * @return query result set
-     * @throws SQLException SQL exception
-     */
-    public static List<Map<String, String>> executeQueryForPreparedStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
-            for (SQLValue each : sqlValues) {
-                preparedStatement.setObject(each.getIndex(), each.getValue());
-            }
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                return handleResultSet(resultSet);
-            }
-        }
-    }
-    
-    /**
-     * Use Statement test SQL select.
-     *
-     * @param connection connection
-     * @param sql SQL
-     * @param sqlValues SQL values
-     * @return query result set
-     * @throws SQLException SQL exception
-     */
-    public static List<Map<String, String>> executeDQLForStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
-        try (Statement statement = connection.createStatement()) {
-            assertTrue("Not a query statement.", statement.execute(generateSQL(sql, sqlValues)));
-            try (ResultSet resultSet = statement.getResultSet()) {
-                return handleResultSet(resultSet);
-            }
-        }
-    }
-    
-    /**
-     * Execute DQL for prepared statement.
-     *
-     * @param connection connection
-     * @param sql SQL
-     * @param sqlValues SQL values
-     * @return query result set
-     * @throws SQLException SQL exception
-     */
-    public static List<Map<String, String>> executeDQLForPreparedStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
-            for (SQLValue each : sqlValues) {
-                preparedStatement.setObject(each.getIndex(), each.getValue());
-            }
-            assertTrue("Not a query statement.", preparedStatement.execute());
-            try (ResultSet resultSet = preparedStatement.getResultSet()) {
-                return handleResultSet(resultSet);
-            }
         }
     }
     
@@ -238,25 +155,6 @@ public final class DatabaseUtil {
             }
         }
         return 0;
-    }
-    
-    private static List<Map<String, String>> handleResultSet(final ResultSet resultSet) throws SQLException {
-        List<Map<String, String>> result = new LinkedList<>();
-        ResultSetMetaData metaData = resultSet.getMetaData();
-        int columnCount = metaData.getColumnCount();
-        while (resultSet.next()) {
-            Map<String, String> data = new HashMap<>();
-            for (int i = 1; i < columnCount + 1; i++) {
-                String name = metaData.getColumnName(i);
-                if (Types.DATE == metaData.getColumnType(i)) {
-                    data.put(name, new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date(resultSet.getDate(name).getTime())));
-                } else {
-                    data.put(name, String.valueOf(resultSet.getObject(name)));
-                }
-            }
-            result.add(data);
-        }
-        return result;
     }
     
     /**
