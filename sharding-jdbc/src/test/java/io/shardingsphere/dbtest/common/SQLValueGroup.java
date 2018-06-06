@@ -18,7 +18,7 @@
 package io.shardingsphere.dbtest.common;
 
 import com.google.common.base.Splitter;
-import io.shardingsphere.dbtest.jaxb.dataset.init.DataSetMetadata;
+import io.shardingsphere.dbtest.cases.dataset.init.DataSetMetadata;
 import lombok.Getter;
 
 import java.text.ParseException;

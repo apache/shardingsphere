@@ -17,6 +17,9 @@
 
 package io.shardingsphere.dbtest;
 
+import io.shardingsphere.dbtest.engine.DDLIntegrateTest;
+import io.shardingsphere.dbtest.engine.DMLIntegrateTest;
+import io.shardingsphere.dbtest.engine.DQLIntegrateTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;

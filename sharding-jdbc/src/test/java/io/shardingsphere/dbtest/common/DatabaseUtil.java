@@ -17,10 +17,7 @@
 
 package io.shardingsphere.dbtest.common;
 
-import io.shardingsphere.dbtest.asserts.DataSetDefinitions;
-import io.shardingsphere.dbtest.jaxb.dataset.expected.metadata.ExpectedColumn;
-import io.shardingsphere.dbtest.jaxb.dataset.expected.metadata.ExpectedMetadata;
-import io.shardingsphere.dbtest.jaxb.dataset.init.DataSetColumnMetadata;
+import io.shardingsphere.dbtest.cases.dataset.expected.metadata.ExpectedColumn;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -41,8 +38,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -86,47 +81,6 @@ public final class DatabaseUtil {
     }
     
     /**
-     * Execute query for prepared statement.
-     *
-     * @param connection connection
-     * @param sql SQL
-     * @param sqlValues SQL values 
-     * @return query result set
-     * @throws SQLException SQL exception
-     */
-    public static DataSetDefinitions executeQueryForPreparedStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
-            for (SQLValue each : sqlValues) {
-                preparedStatement.setObject(each.getIndex(), each.getValue());
-            }
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                return getDatasetDefinition(resultSet);
-            }
-        }
-    }
-    
-    /**
-     * Execute DQL for prepared statement.
-     *
-     * @param connection connection
-     * @param sql SQL
-     * @param sqlValues SQL values
-     * @return query result set
-     * @throws SQLException SQL exception
-     */
-    public static DataSetDefinitions executeDQLForPreparedStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
-            for (SQLValue each : sqlValues) {
-                preparedStatement.setObject(each.getIndex(), each.getValue());
-            }
-            assertTrue("Not a query statement.", preparedStatement.execute());
-            try (ResultSet resultSet = preparedStatement.getResultSet()) {
-                return getDatasetDefinition(resultSet);
-            }
-        }
-    }
-    
-    /**
      * Execute DQL for statement.
      *
      * @param connection connection
@@ -135,10 +89,30 @@ public final class DatabaseUtil {
      * @return query result set
      * @throws SQLException SQL exception
      */
-    public static DataSetDefinitions executeQueryForStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
+    public static List<Map<String, String>> executeQueryForStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             try (ResultSet resultSet = statement.executeQuery(generateSQL(sql, sqlValues))) {
-                return getDatasetDefinition(resultSet);
+                return handleResultSet(resultSet);
+            }
+        }
+    }
+    
+    /**
+     * Execute query for prepared statement.
+     *
+     * @param connection connection
+     * @param sql SQL
+     * @param sqlValues SQL values 
+     * @return query result set
+     * @throws SQLException SQL exception
+     */
+    public static List<Map<String, String>> executeQueryForPreparedStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
+            for (SQLValue each : sqlValues) {
+                preparedStatement.setObject(each.getIndex(), each.getValue());
+            }
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                return handleResultSet(resultSet);
             }
         }
     }
@@ -152,11 +126,32 @@ public final class DatabaseUtil {
      * @return query result set
      * @throws SQLException SQL exception
      */
-    public static DataSetDefinitions executeDQLForStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
+    public static List<Map<String, String>> executeDQLForStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             assertTrue("Not a query statement.", statement.execute(generateSQL(sql, sqlValues)));
             try (ResultSet resultSet = statement.getResultSet()) {
-                return getDatasetDefinition(resultSet);
+                return handleResultSet(resultSet);
+            }
+        }
+    }
+    
+    /**
+     * Execute DQL for prepared statement.
+     *
+     * @param connection connection
+     * @param sql SQL
+     * @param sqlValues SQL values
+     * @return query result set
+     * @throws SQLException SQL exception
+     */
+    public static List<Map<String, String>> executeDQLForPreparedStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
+            for (SQLValue each : sqlValues) {
+                preparedStatement.setObject(each.getIndex(), each.getValue());
+            }
+            assertTrue("Not a query statement.", preparedStatement.execute());
+            try (ResultSet resultSet = preparedStatement.getResultSet()) {
+                return handleResultSet(resultSet);
             }
         }
     }
@@ -245,35 +240,15 @@ public final class DatabaseUtil {
         return 0;
     }
     
-    private static DataSetDefinitions getDatasetDefinition(final ResultSet resultSet) throws SQLException {
-        List<DataSetColumnMetadata> dataSetColumnMetadataList = getDataSetColumnMetadataList(resultSet);
-        Map<String, List<DataSetColumnMetadata>> configs = new HashMap<>();
-        configs.put("data", dataSetColumnMetadataList);
-        Map<String, List<Map<String, String>>> dataMap = new HashMap<>();
-        dataMap.put("data", handleResultSet(resultSet, dataSetColumnMetadataList));
-        return new DataSetDefinitions(configs, dataMap);
-    }
-    
-    private static List<DataSetColumnMetadata> getDataSetColumnMetadataList(final ResultSet resultSet) throws SQLException {
-        List<DataSetColumnMetadata> result = new LinkedList<>();
+    private static List<Map<String, String>> handleResultSet(final ResultSet resultSet) throws SQLException {
+        List<Map<String, String>> result = new LinkedList<>();
         ResultSetMetaData metaData = resultSet.getMetaData();
         int columnCount = metaData.getColumnCount();
-        for (int i = 1; i < columnCount + 1; i++) {
-            DataSetColumnMetadata each = new DataSetColumnMetadata();
-            each.setName(metaData.getColumnName(i));
-            each.setType(getDataType(metaData.getColumnType(i), metaData.getScale(i)));
-            result.add(each);
-        }
-        return result;
-    }
-    
-    private static List<Map<String, String>> handleResultSet(final ResultSet resultSet, final Collection<DataSetColumnMetadata> dataSetColumnMetadataList) throws SQLException {
-        List<Map<String, String>> result = new LinkedList<>();
         while (resultSet.next()) {
             Map<String, String> data = new HashMap<>();
-            for (DataSetColumnMetadata each : dataSetColumnMetadataList) {
-                String name = each.getName();
-                if ("Date".equals(each.getType())) {
+            for (int i = 1; i < columnCount + 1; i++) {
+                String name = metaData.getColumnName(i);
+                if (Types.DATE == metaData.getColumnType(i)) {
                     data.put(name, new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date(resultSet.getDate(name).getTime())));
                 } else {
                     data.put(name, String.valueOf(resultSet.getObject(name)));
@@ -284,91 +259,17 @@ public final class DatabaseUtil {
         return result;
     }
     
-    private static String getDataType(final int type, final int scale) {
-        String result;
-        switch (type) {
-            case Types.BOOLEAN:
-                result = "boolean";
-                break;
-            case Types.CHAR:
-                result = "char";
-                break;
-            case Types.NUMERIC:
-                switch (scale) {
-                    case 0:
-                        result = "double";
-                        break;
-                    case -127:
-                        result = "float";
-                        break;
-                    default:
-                        result = "double";
-                }
-                break;
-            case Types.DATE:
-                result = "Date";
-                break;
-            case Types.TIMESTAMP:
-                result = "Date";
-                break;
-            case Types.BLOB:
-                result = "Blob";
-                break;
-            default:
-                result = getDataTypeMore(type);
-                break;
-        }
-        return result;
-    }
-    
-    private static String getDataTypeMore(final int type) {
-        switch (type) {
-            case Types.INTEGER:
-                return "int";
-            case Types.LONGVARCHAR:
-                return "long";
-            case Types.BIGINT:
-                return "long";
-            case Types.FLOAT:
-                return "float";
-            case Types.DOUBLE:
-                return "double";
-            default:
-                return "String";
-        }
-    }
-    
-    /**
-     * Comparative data set.
-     *
-     * @param expected expected
-     * @param actual actual
-     */
-    public static void assertConfigs(final ExpectedMetadata expected, final List<ExpectedColumn> actual) {
-        for (ExpectedColumn each : expected.getColumns()) {
-            checkActual(actual, each);
-        }
-    }
-    
-    private static void checkActual(final List<ExpectedColumn> actual, final ExpectedColumn expect) {
-        for (ExpectedColumn each : actual) {
-            if (expect.getName().equals(each.getName())) {
-                assertThat(each.getType(), is(expect.getType()));
-            }
-        }
-    }
-    
     /**
      * Get expected columns.
      *
      * @param connection connection
-     * @param table table
+     * @param tableName table
      * @return query result set
      * @throws SQLException SQL exception
      */
-    public static List<ExpectedColumn> getExpectedColumns(final Connection connection, final String table) throws SQLException {
+    public static List<ExpectedColumn> getExpectedColumns(final Connection connection, final String tableName) throws SQLException {
         DatabaseMetaData metaData = connection.getMetaData();
-        try (ResultSet resultSet = metaData.getColumns(null, null, table, null)) {
+        try (ResultSet resultSet = metaData.getColumns(null, null, tableName, null)) {
             List<ExpectedColumn> result = new LinkedList<>();
             while (resultSet.next()) {
                 ExpectedColumn each = new ExpectedColumn();
