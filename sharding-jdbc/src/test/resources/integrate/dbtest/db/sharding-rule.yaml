@@ -5,7 +5,7 @@ shardingRule:
       databaseStrategy:
         standard:
           shardingColumn: user_id
-          preciseAlgorithmClassName: io.shardingsphere.dbtest.core.yaml.fixture.SingleAlgorithm
+          preciseAlgorithmClassName: io.shardingsphere.dbtest.fixture.SingleAlgorithm
       tableStrategy:
         inline:
           shardingColumn: id
@@ -13,11 +13,11 @@ shardingRule:
     t_order_item:
       actualDataNodes: db_${0..9}.t_order_item
       keyGeneratorColumnName: order_item_id
-      keyGeneratorClassName: io.shardingsphere.dbtest.core.yaml.fixture.DecrementKeyGenerator
+      keyGeneratorClassName: io.shardingsphere.dbtest.fixture.DecrementKeyGenerator
       databaseStrategy:
         standard:
           shardingColumn: user_id
-          preciseAlgorithmClassName: io.shardingsphere.dbtest.core.yaml.fixture.SingleAlgorithm
+          preciseAlgorithmClassName: io.shardingsphere.dbtest.fixture.SingleAlgorithm
           rangeAlgorithmClassName: io.shardingsphere.core.fixture.RangeOrderShardingAlgorithm
       tableStrategy:
         inline:
@@ -26,12 +26,4 @@ shardingRule:
   bindingTables:
     - t_order,t_order_item
   defaultDataSourceName: db_0
-  defaultDatabaseStrategy:
-    complex:
-        shardingColumns: order_id, user_id
-        algorithmClassName: io.shardingsphere.dbtest.core.yaml.fixture.MultiAlgorithm
-  defaultTableStrategy:
-    complex:
-      shardingColumns: id, order_id
-      algorithmClassName: io.shardingsphere.dbtest.core.yaml.fixture.MultiAlgorithm
-  defaultKeyGeneratorClassName: io.shardingsphere.dbtest.core.yaml.fixture.IncrementKeyGenerator
+  defaultKeyGeneratorClassName: io.shardingsphere.dbtest.fixture.IncrementKeyGenerator

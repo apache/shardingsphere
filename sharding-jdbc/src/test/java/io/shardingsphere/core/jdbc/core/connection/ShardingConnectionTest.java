@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.jdbc.core.connection;
 
+import com.google.common.util.concurrent.ListeningExecutorService;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
@@ -30,6 +31,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -70,7 +72,8 @@ public final class ShardingConnectionTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put(DS_NAME, masterSlaveDataSource);
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, dataSourceMap.keySet());
-        ShardingMetaData shardingMetaData = new JDBCShardingMetaData(dataSourceMap, shardingRule, null);
+        ListeningExecutorService executorService = Mockito.mock(ListeningExecutorService.class);
+        ShardingMetaData shardingMetaData = new JDBCShardingMetaData(executorService, dataSourceMap, shardingRule, null);
         ShardingContext shardingContext = new ShardingContext(dataSourceMap, shardingRule, null, null, shardingMetaData, false);
         connection = new ShardingConnection(shardingContext);
     }

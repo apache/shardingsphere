@@ -36,4 +36,14 @@ public final class DataSourceParameter {
     private String username;
     
     private String password;
+    
+    private Boolean autoCommit;
+    
+    private long connectionTimeout;
+    
+    private long idleTimeout;
+    
+    private long maxLifetime;
+    
+    private int maximumPoolSize;
 }

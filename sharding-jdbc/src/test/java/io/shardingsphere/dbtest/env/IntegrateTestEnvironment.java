@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2015 dangdang.com.
+ * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 package io.shardingsphere.dbtest.env;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.dbtest.StartTest;
+import io.shardingsphere.dbtest.engine.DQLIntegrateTest;
 import io.shardingsphere.dbtest.env.datasource.DatabaseEnvironment;
 import lombok.Getter;
 
@@ -48,7 +48,7 @@ public final class IntegrateTestEnvironment {
     private IntegrateTestEnvironment() {
         Properties prop = new Properties();
         try {
-            prop.load(StartTest.class.getClassLoader().getResourceAsStream("integrate/env.properties"));
+            prop.load(DQLIntegrateTest.class.getClassLoader().getResourceAsStream("integrate/env.properties"));
         } catch (final IOException ex) {
             ex.printStackTrace();
         }

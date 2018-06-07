@@ -18,6 +18,7 @@
 package io.shardingsphere.proxy.metadata;
 
 import io.shardingsphere.core.metadata.ColumnMetaData;
+import io.shardingsphere.core.metadata.TableMetaData;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -26,6 +27,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -43,22 +45,22 @@ public final class ShardingMetaDataHandler {
     private final String actualTableName;
     
     /**
-     * Get column meta data list.
+     * Get table meta data.
      *
-     * @return column meta data list
+     * @return table meta data
      * @throws SQLException SQL exception
      */
-    public List<ColumnMetaData> getColumnMetaDataList() throws SQLException {
-        List<ColumnMetaData> result = new LinkedList<>();
+    public TableMetaData getTableMetaData() throws SQLException {
         try (Connection connection = getDataSource().getConnection();
              Statement statement = connection.createStatement()) {
+            TableMetaData result = new TableMetaData();
             if (isTableExist(statement)) {
-                result = getExistColumnMeta(statement);
+                result.getColumnMetaData().addAll(getExistColumnMeta(statement));
             }
             return result;
         }
     }
-
+    
     private boolean isTableExist(final Statement statement) throws SQLException {
         statement.executeQuery(String.format("show tables like '%s'", getActualTableName()));
         try (ResultSet resultSet = statement.getResultSet()) {
@@ -75,5 +77,25 @@ public final class ShardingMetaDataHandler {
             }
         }
         return result;
+    }
+    
+    /**
+     * Get table names from default data source.
+     *
+     * @return Table names from default data source
+     * @throws SQLException SQL exception.
+     */
+    public Collection<String> getTableNamesFromDefaultDataSource() throws SQLException {
+        Collection<String> result = new LinkedList<>();
+        try (Connection connection = getDataSource().getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.executeQuery("show tables;");
+            try (ResultSet resultSet = statement.getResultSet()) {
+                while (resultSet.next()) {
+                    result.add(resultSet.getString(1));
+                }
+            }
+            return result;
+        }
     }
 }

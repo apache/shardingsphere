@@ -34,7 +34,7 @@ public interface QueryResult {
      * @return has next data
      * @throws SQLException SQL Exception
      */
-    boolean next() throws SQLException, InterruptedException;
+    boolean next() throws SQLException;
     
     /**
      * Get column count.

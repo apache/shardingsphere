@@ -20,6 +20,7 @@ package io.shardingsphere.core.parsing.parser.sql.dql.select;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.metadata.TableMetaData;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.Assist;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
@@ -39,7 +40,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -204,8 +205,9 @@ public abstract class AbstractSelectParser implements SQLParser {
             if (orderItem.getOwner().isPresent() && tables.find(orderItem.getOwner().get()).equals(tableOptionalOfStarSelectItem)) {
                 return true;
             }
-            List<String> columnNames = tableOptionalOfStarSelectItem.isPresent()
-                    ? shardingMetaData.getTableMetaDataMap().get(tableOptionalOfStarSelectItem.get().getName()).getAllColumnNames() : new ArrayList<String>();
+            Optional<TableMetaData> tableMetaDataOptional = tableOptionalOfStarSelectItem.isPresent()
+                    ? Optional.fromNullable(shardingMetaData.getTableMetaDataMap().get(tableOptionalOfStarSelectItem.get().getName())) : Optional.<TableMetaData>absent();
+            Collection<String> columnNames = tableMetaDataOptional.isPresent() ? tableMetaDataOptional.get().getAllColumnNames() : new LinkedList<String>();
             if (columnNames.contains(orderItem.getName().get().toUpperCase()) || columnNames.contains(orderItem.getName().get().toLowerCase())) {
                 return true;
             }

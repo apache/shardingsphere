@@ -1,5 +1,4 @@
 <datasets>
-    <dataset>
-        <data order_id="1000" user_id="10" status="init" />
-    </dataset>
+    <columns values="order_id, user_id, status" />
+    <dataset values="1000, 10, init" />
 </datasets>

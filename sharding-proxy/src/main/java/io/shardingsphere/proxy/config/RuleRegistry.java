@@ -17,6 +17,8 @@
 
 package io.shardingsphere.proxy.config;
 
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import io.shardingsphere.core.constant.ShardingProperties;
@@ -33,11 +35,11 @@ import lombok.Getter;
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executors;
 
 /**
  * Sharding rule registry.
@@ -50,15 +52,15 @@ import java.util.Properties;
 @Getter
 public final class RuleRegistry {
     public static final boolean WITHOUT_JDBC = true;
-    
-    private static final int MAXIMUM_POOL_SIZE = Runtime.getRuntime().availableProcessors() * 2 + 1;
+
+    private static final int MAX_EXECUTOR_THREADS = Runtime.getRuntime().availableProcessors() * 2;
     
     private static final RuleRegistry INSTANCE = new RuleRegistry();
     
     private final Map<String, DataSource> dataSourceMap;
     
     private Map<String, HikariConfig> dataSourceConfigurationMap;
-    
+
     private final ShardingRule shardingRule;
     
     private final MasterSlaveRule masterSlaveRule;
@@ -67,6 +69,10 @@ public final class RuleRegistry {
     
     private final boolean isOnlyMasterSlave;
     
+    private final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(MAX_EXECUTOR_THREADS));
+
+    private final String proxyMode;
+
     private final boolean showSQL;
     
     private RuleRegistry() {
@@ -79,6 +85,8 @@ public final class RuleRegistry {
         dataSourceConfigurationMap = new HashMap<>(128, 1);
         dataSourceMap = new HashMap<>(128, 1);
         Map<String, DataSourceParameter> dataSourceParameters = yamlProxyConfiguration.getDataSources();
+        for (Map.Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
+            dataSourceMap.put(entry.getKey(), getDataSource(entry.getValue()));
         for (String each : dataSourceParameters.keySet()) {
             if (WITHOUT_JDBC) {
                 dataSourceConfigurationMap.put(each, getDataSourceConfiguration(dataSourceParameters.get(each)));
@@ -90,35 +98,29 @@ public final class RuleRegistry {
         isOnlyMasterSlave = shardingRule.getTableRules().isEmpty() && !masterSlaveRule.getMasterDataSourceName().isEmpty();
         Properties properties = yamlProxyConfiguration.getShardingRule().getProps();
         ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
+        proxyMode = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_MODE);
         showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
-        try {
-            shardingMetaData = new ProxyShardingMetaData(dataSourceMap);
-            if (!isOnlyMasterSlave) {
-                shardingMetaData.init(shardingRule);
-            }
-        } catch (final SQLException ex) {
-            throw new ShardingException(ex);
+        shardingMetaData = new ProxyShardingMetaData(executorService, dataSourceMap);
+        if (!isOnlyMasterSlave) {
+            shardingMetaData.init(shardingRule);
         }
+
     }
     
-    private HikariConfig getDataSourceConfiguration(final DataSourceParameter dataSourceParameter) {
+    private DataSource getDataSource(final DataSourceParameter dataSourceParameter) {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("com.mysql.jdbc.Driver");
         config.setJdbcUrl(dataSourceParameter.getUrl());
         config.setUsername(dataSourceParameter.getUsername());
         config.setPassword(dataSourceParameter.getPassword());
-        config.setAutoCommit(true);
-        config.setConnectionTimeout(30000);
-        config.setIdleTimeout(60000);
-        config.setMaxLifetime(1800000);
-        config.setMaximumPoolSize(MAXIMUM_POOL_SIZE);
+        config.setAutoCommit(dataSourceParameter.getAutoCommit());
+        config.setConnectionTimeout(dataSourceParameter.getConnectionTimeout());
+        config.setIdleTimeout(dataSourceParameter.getIdleTimeout());
+        config.setMaxLifetime(dataSourceParameter.getMaxLifetime());
+        config.setMaximumPoolSize(dataSourceParameter.getMaximumPoolSize());
         config.addDataSourceProperty("useServerPrepStmts", "true");
         config.addDataSourceProperty("cachePrepStmts", "true");
-        return config;
-    }
-    
-    private DataSource getDataSource(final DataSourceParameter dataSourceParameter) {
-        return new HikariDataSource(getDataSourceConfiguration(dataSourceParameter));
+        return new HikariDataSource(config);
     }
     
     /**

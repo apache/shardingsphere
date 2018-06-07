@@ -17,12 +17,12 @@
 
 package io.shardingsphere.proxy.metadata;
 
-import io.shardingsphere.core.metadata.ColumnMetaData;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.metadata.TableMetaData;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.rule.ShardingDataSourceNames;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -35,16 +35,25 @@ import java.util.Map;
  *
  * @author panjuan
  */
-@RequiredArgsConstructor
 @Getter
 public final class ProxyShardingMetaData extends ShardingMetaData {
     
     private final Map<String, DataSource> dataSourceMap;
     
+    public ProxyShardingMetaData(final ListeningExecutorService executorService, final Map<String, DataSource> dataSourceMap) {
+        super(executorService);
+        this.dataSourceMap = dataSourceMap;
+    }
+    
     @Override
-    public Collection<ColumnMetaData> getColumnMetaDataList(final DataNode dataNode, final ShardingDataSourceNames shardingDataSourceNames,
-                                                            final Map<String, Connection> connectionMap) throws SQLException {
-        return new ShardingMetaDataHandler(dataSourceMap.get(shardingDataSourceNames.getRawMasterDataSourceName(dataNode.getDataSourceName())), dataNode.getTableName()).getColumnMetaDataList();
+    public TableMetaData getTableMetaData(final DataNode dataNode, final ShardingDataSourceNames shardingDataSourceNames,
+                                          final Map<String, Connection> connectionMap) throws SQLException {
+        return new ShardingMetaDataHandler(dataSourceMap.get(shardingDataSourceNames.getRawMasterDataSourceName(dataNode.getDataSourceName())), dataNode.getTableName()).getTableMetaData();
+    }
+    
+    @Override
+    public Collection<String> getTableNamesFromDefaultDataSource(final String defaultDataSourceName) throws SQLException {
+        return new ShardingMetaDataHandler(dataSourceMap.get(defaultDataSourceName), "").getTableNamesFromDefaultDataSource();
     }
 }
 

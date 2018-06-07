@@ -22,29 +22,41 @@ import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.Assist;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
+import io.shardingsphere.core.parsing.parser.clause.expression.BasicExpressionParser;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
+import io.shardingsphere.core.parsing.parser.dialect.ExpressionParserFactory;
+import io.shardingsphere.core.parsing.parser.expression.SQLExpression;
+import io.shardingsphere.core.parsing.parser.expression.SQLIdentifierExpression;
+import io.shardingsphere.core.parsing.parser.expression.SQLIgnoreExpression;
+import io.shardingsphere.core.parsing.parser.expression.SQLPropertyExpression;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.token.InsertColumnToken;
 import io.shardingsphere.core.parsing.parser.token.ItemsToken;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.util.SQLUtil;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Insert columns clause parser.
  *
  * @author zhangliang
+ * @author maxiaoguang
  */
-@RequiredArgsConstructor
 public final class InsertColumnsClauseParser implements SQLClauseParser {
     
     private final ShardingRule shardingRule;
     
     private final LexerEngine lexerEngine;
+    
+    private final BasicExpressionParser basicExpressionParser;
+    
+    public InsertColumnsClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        this.shardingRule = shardingRule;
+        this.lexerEngine = lexerEngine;
+        basicExpressionParser = ExpressionParserFactory.createBasicExpressionParser(lexerEngine);
+    }
     
     /**
      * Parse insert columns.
@@ -60,9 +72,18 @@ public final class InsertColumnsClauseParser implements SQLClauseParser {
         if (lexerEngine.equalAny(Symbol.LEFT_PAREN)) {
             do {
                 lexerEngine.nextToken();
-                String columnName = SQLUtil.getExactlyValue(lexerEngine.getCurrentToken().getLiterals());
+                SQLExpression sqlExpression = basicExpressionParser.parse(insertStatement);
+                String columnName = null;
+                if (sqlExpression instanceof SQLPropertyExpression) {
+                    columnName = SQLUtil.getExactlyValue(((SQLPropertyExpression) sqlExpression).getName());
+                }
+                if (sqlExpression instanceof SQLIdentifierExpression) {
+                    columnName = SQLUtil.getExactlyValue(((SQLIdentifierExpression) sqlExpression).getName());
+                }
+                if (sqlExpression instanceof SQLIgnoreExpression) {
+                    columnName = SQLUtil.getExactlyValue(((SQLIgnoreExpression) sqlExpression).getExpression());
+                }
                 result.add(new Column(columnName, tableName));
-                lexerEngine.nextToken();
                 if (generateKeyColumn.isPresent() && generateKeyColumn.get().getName().equalsIgnoreCase(columnName)) {
                     insertStatement.setGenerateKeyColumnIndex(count);
                 }
@@ -71,7 +92,7 @@ public final class InsertColumnsClauseParser implements SQLClauseParser {
             insertStatement.setColumnsListLastPosition(lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length());
             lexerEngine.nextToken();
         } else {
-            List<String> columnNames = shardingMetaData.getTableMetaDataMap().get(tableName).getAllColumnNames();
+            Collection<String> columnNames = shardingMetaData.getTableMetaDataMap().get(tableName).getAllColumnNames();
             int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length() - 1;
             insertStatement.getSqlTokens().add(new InsertColumnToken(beginPosition, "("));
             ItemsToken columnsToken = new ItemsToken(beginPosition);

@@ -76,7 +76,10 @@ public final class StandardShardingStrategy implements ShardingStrategy {
     private Collection<String> doSharding(final Collection<String> availableTargetNames, final ListShardingValue<?> shardingValue) {
         Collection<String> result = new LinkedList<>();
         for (PreciseShardingValue<?> each : transferToPreciseShardingValues(shardingValue)) {
-            result.add(preciseShardingAlgorithm.doSharding(availableTargetNames, each));
+            String target = preciseShardingAlgorithm.doSharding(availableTargetNames, each);
+            if (null != target) {
+                result.add(target);
+            }
         }
         return result;
     }
