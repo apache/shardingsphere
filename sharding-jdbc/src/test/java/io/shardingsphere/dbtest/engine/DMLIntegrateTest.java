@@ -100,7 +100,7 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
     @Before
     public void insertData() throws SQLException, ParseException {
         if (getDatabaseTypeEnvironment().isEnabled()) {
-            getDataSetEnvironmentManager().initialize(true);
+            getDataSetEnvironmentManager().initialize();
         }
     }
     

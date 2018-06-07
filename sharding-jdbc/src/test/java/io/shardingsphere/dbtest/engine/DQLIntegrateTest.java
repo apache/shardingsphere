@@ -108,7 +108,7 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
                 continue;
             }
             for (String shardingRuleType : integrateTestCasesLoader.getShardingRuleTypes()) {
-                new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(shardingRuleType), createDataSourceMap(each, shardingRuleType)).initialize(false);
+                new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(shardingRuleType), createDataSourceMap(each, shardingRuleType)).initialize();
             }
         }
     }
