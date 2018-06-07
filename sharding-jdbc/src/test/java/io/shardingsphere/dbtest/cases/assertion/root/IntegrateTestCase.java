@@ -18,6 +18,7 @@
 package io.shardingsphere.dbtest.cases.assertion.root;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
 import io.shardingsphere.core.constant.DatabaseType;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,6 +26,7 @@ import lombok.Setter;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -63,6 +65,19 @@ public abstract class IntegrateTestCase {
         Set<String> result = new HashSet<>();
         for (IntegrateTestCaseAssertion each : getIntegrateTestCaseAssertions()) {
             result.add(each.getShardingRuleType());
+        }
+        return result;
+    }
+    
+    /**
+     * Get database types.
+     * 
+     * @return database types
+     */
+    public Collection<DatabaseType> getDatabaseTypes() {
+        Collection<DatabaseType> result = new HashSet<>();
+        for (String each : Splitter.on(",").trimResults().splitToList(databaseTypes)) {
+            result.add(DatabaseType.valueOf(each));
         }
         return result;
     }

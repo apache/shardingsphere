@@ -17,22 +17,21 @@
 
 package io.shardingsphere.dbtest.engine;
 
-import com.google.common.base.Splitter;
 import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
 import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
-import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
-import io.shardingsphere.dbtest.env.EnvironmentPath;
-import io.shardingsphere.dbtest.env.IntegrateTestEnvironment;
-import io.shardingsphere.dbtest.env.datasource.DataSourceUtil;
-import io.shardingsphere.dbtest.env.schema.SchemaEnvironmentManager;
 import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.cases.assertion.ddl.DDLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.cases.assertion.dml.DMLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
+import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
+import io.shardingsphere.dbtest.env.EnvironmentPath;
+import io.shardingsphere.dbtest.env.IntegrateTestEnvironment;
+import io.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
+import io.shardingsphere.dbtest.env.datasource.DataSourceUtil;
+import io.shardingsphere.dbtest.env.schema.SchemaEnvironmentManager;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
 import lombok.AccessLevel;
@@ -50,7 +49,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 @RunWith(Parameterized.class)
@@ -140,14 +138,6 @@ public abstract class BaseIntegrateTest {
             data[4] = caseType;
             data[5] = countInSameCase++;
             result.add(data);
-        }
-        return result;
-    }
-    
-    protected static List<DatabaseType> getDatabaseTypes(final String databaseTypes) {
-        List<DatabaseType> result = new LinkedList<>();
-        for (String each : Splitter.on(",").trimResults().splitToList(databaseTypes)) {
-            result.add(DatabaseType.valueOf(each));
         }
         return result;
     }

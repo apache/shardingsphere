@@ -25,14 +25,21 @@ import io.shardingsphere.dbtest.cases.dataset.expected.dataset.ExpectedDataSetRo
 import io.shardingsphere.dbtest.cases.dataset.expected.dataset.ExpectedDataSetsRoot;
 import io.shardingsphere.dbtest.common.SQLValue;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
+import io.shardingsphere.dbtest.env.EnvironmentPath;
+import io.shardingsphere.dbtest.env.IntegrateTestEnvironment;
+import io.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
+import io.shardingsphere.dbtest.env.datasource.DataSourceUtil;
+import io.shardingsphere.dbtest.env.schema.SchemaEnvironmentManager;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.FileReader;
@@ -48,8 +55,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -84,17 +93,44 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
             if (null == integrateTestCase) {
                 continue;
             }
-            if (getDatabaseTypes(integrateTestCase.getDatabaseTypes()).contains(databaseType)) {
+            if (integrateTestCase.getDatabaseTypes().contains(databaseType)) {
                 result.addAll(getParameters(databaseType, caseType, integrateTestCase));
             }
+        }
+        
+        return result;
+    }
+    
+    @BeforeClass
+    public static void insertData() throws IOException, JAXBException, SQLException, ParseException {
+        for (DatabaseType each : integrateTestCasesLoader.getDatabaseTypes()) {
+            if (!IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(each)) {
+                continue;
+            }
+            for (String shardingRuleType : integrateTestCasesLoader.getShardingRuleTypes()) {
+                new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(shardingRuleType), createDataSourceMap(each, shardingRuleType)).initialize(false);
+            }
+        }
+    }
+    
+    private static Map<String, DataSource> createDataSourceMap(final DatabaseType databaseType, final String shardingRuleType) throws IOException, JAXBException {
+        Collection<String> dataSourceNames = SchemaEnvironmentManager.getDataSourceNames(shardingRuleType);
+        Map<String, DataSource> result = new HashMap<>(dataSourceNames.size(), 1);
+        for (String each : dataSourceNames) {
+            result.put(each, DataSourceUtil.createDataSource(databaseType, each));
         }
         return result;
     }
     
-    @Before
-    public void insertData() throws SQLException, ParseException {
-        if (getDatabaseTypeEnvironment().isEnabled()) {
-            getDataSetEnvironmentManager().initialize(false);
+    @AfterClass
+    public static void clearData() throws IOException, JAXBException, SQLException {
+        for (DatabaseType each : integrateTestCasesLoader.getDatabaseTypes()) {
+            if (!IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(each)) {
+                continue;
+            }
+            for (String shardingRuleType : integrateTestCasesLoader.getShardingRuleTypes()) {
+                new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(shardingRuleType), createDataSourceMap(each, shardingRuleType)).clear();
+            }
         }
     }
     

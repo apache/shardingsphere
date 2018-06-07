@@ -81,7 +81,7 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
             if (null == integrateTestCase) {
                 continue;
             }
-            if (getDatabaseTypes(integrateTestCase.getDatabaseTypes()).contains(databaseType)) {
+            if (integrateTestCase.getDatabaseTypes().contains(databaseType)) {
                 result.addAll(getParameters(databaseType, caseType, integrateTestCase));
             }
             
