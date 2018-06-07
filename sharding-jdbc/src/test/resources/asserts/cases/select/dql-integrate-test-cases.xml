@@ -1,9 +1,9 @@
 <integrate-test-cases>
-    <dql-test-case sql-case-id="assertSelectOne">
-        <assertion sharding-rule-type="db" expected-data-file="SelectOne.xml" />
-        <assertion sharding-rule-type="tbl" expected-data-file="SelectOne.xml" />
-        <assertion sharding-rule-type="dbtbl" expected-data-file="SelectOne.xml" />
-        <assertion sharding-rule-type="masterslave" expected-data-file="SelectOne.xml" />
+    <dql-test-case sql-case-id="select_constant">
+        <assertion sharding-rule-type="db" expected-data-file="select_constant.xml" />
+        <assertion sharding-rule-type="tbl" expected-data-file="select_constant.xml" />
+        <assertion sharding-rule-type="dbtbl" expected-data-file="select_constant.xml" />
+        <assertion sharding-rule-type="masterslave" expected-data-file="select_constant.xml" />
     </dql-test-case>
     
     <dql-test-case sql-case-id="assertSelectNotEqualsWithSingleTable">

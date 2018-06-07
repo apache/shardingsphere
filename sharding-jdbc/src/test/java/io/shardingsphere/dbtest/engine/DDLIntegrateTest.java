@@ -69,7 +69,7 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
         this.assertion = assertion;
     }
     
-    @Parameters(name = "{0}.{5} -> {2} -> {3} -> {4}")
+    @Parameters(name = "{0}[{5}] -> {2} -> {3} -> {4}")
     public static Collection<Object[]> getParameters() {
         // TODO sqlCasesLoader size should eq integrateTestCasesLoader size
         // assertThat(sqlCasesLoader.countAllSupportedSQLCases(), is(integrateTestCasesLoader.countAllDataSetTestCases()));

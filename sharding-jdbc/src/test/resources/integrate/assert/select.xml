@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
-    <sql id="assertSelectOne">
+    <sql id="select_constant">
         <sharding-rule>
             <data expected="select/SelectOne.xml" />
         </sharding-rule>
