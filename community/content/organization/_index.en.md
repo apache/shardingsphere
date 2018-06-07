@@ -47,6 +47,8 @@ In various situations the Sharding shall hold a vote. These votes can happen on 
 
 * 赵俊, Jun Zhao, [@cherrylzhao](https://github.com/cherrylzhao) Senior engineer, Jingdong
 
+* 岳令, Ling Yue, [@ling.yue](https://github.com/yue530tom) QA Engineer, Dangdang
+
 ## External Committer
 
 * 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) Technical manager, Kangda
@@ -58,8 +60,6 @@ In various situations the Sharding shall hold a vote. These votes can happen on 
 * 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013) Java Expert, Antfin
 
 * 刘泽剑, ZeJian Liu, [@qiankunshe](https://github.com/qiankunshe) IT Manager, ZeDaYiSheng
-
-* 岳令, Ling Yue, [@ling.yue](https://github.com/yue530tom) QA Engineer, Dangdang
 
 * 陈清阳, QingYang Chen, [@beckhampu](https://github.com/beckhampu) Senior engineer, Orange Finance
 

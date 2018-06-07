@@ -47,6 +47,8 @@ Sharding在很多情况下需要投票。选票可以视情况通过手机、电
 
 * 赵俊, Jun Zhao, [@cherrylzhao](https://github.com/cherrylzhao) 高级工程师, 京东
 
+* 岳令, Ling Yue, [@ling.yue](https://github.com/yue530tom) 测试工程师, 当当
+
 ## External Committer
 
 * 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) 技术经理, 康大预诊
@@ -58,8 +60,6 @@ Sharding在很多情况下需要投票。选票可以视情况通过手机、电
 * 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013) Java技术专家, 蚂蚁金服
 
 * 刘泽剑, ZeJian Liu, [@qiankunshe](https://github.com/qiankunshe) IT经理, 泽达易盛
-
-* 岳令, Ling Yue, [@ling.yue](https://github.com/yue530tom) 测试工程师, 当当
 
 * 陈清阳, QingYang Chen, [@beckhampu](https://github.com/beckhampu) 高级工程师, 甜橙金融
 
