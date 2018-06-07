@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parser-result-sets>
-    <parser-result sql-case-id="assertSelectPaginationWithOffset" parameters="1 2 9 10 5">
+    <parser-result sql-case-id="assertSelectPaginationWithOffset" parameters="1, 2, 9, 10, 5">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -28,7 +28,7 @@
         <limit offset="5" offset-index="4" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectPaginationWithRowCount" parameters="1 2 9 10 5">
+    <parser-result sql-case-id="assertSelectPaginationWithRowCount" parameters="1, 2, 9, 10, 5">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -56,7 +56,7 @@
         <limit row-count="5" row-count-index="4" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectPaginationWithLimit" parameters="1 2 9 10 5 3">
+    <parser-result sql-case-id="assertSelectPaginationWithLimit" parameters="1, 2, 9, 10, 5, 3">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -85,7 +85,7 @@
         <limit offset="5" offset-index="4" row-count="3" row-count-index="5" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectSingleTablePaginationWithLimit" parameters="5 3">
+    <parser-result sql-case-id="assertSelectSingleTablePaginationWithLimit" parameters="5, 3">
         <tables>
             <table name="t_order" alias="o" />
         </tables>
@@ -100,7 +100,7 @@
         <limit offset="5" offset-index="0" row-count="3" row-count-index="1" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectPaginationWithTop" parameters="3 1 2 9 10">
+    <parser-result sql-case-id="assertSelectPaginationWithTop" parameters="3, 1, 2, 9, 10">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -128,7 +128,7 @@
         <limit row-count="3" row-count-index="0" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectPaginationWithOffsetAndLimit" parameters="1 2 9 10 5 3">
+    <parser-result sql-case-id="assertSelectPaginationWithOffsetAndLimit" parameters="1, 2, 9, 10, 5, 3">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -157,7 +157,7 @@
         <limit offset="5" offset-index="4" row-count="3" row-count-index="5" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectPaginationWithTopAndRange" parameters="3 1 2 9 10 6">
+    <parser-result sql-case-id="assertSelectPaginationWithTopAndRange" parameters="3, 1, 2, 9, 10, 6">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -186,7 +186,7 @@
         <limit offset="6" offset-index="5" row-count-index="0" row-count="3" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectPaginationWithTopAndRangeWithEqual" parameters="3 1 2 9 10 6">
+    <parser-result sql-case-id="assertSelectPaginationWithTopAndRangeWithEqual" parameters="3, 1, 2, 9, 10, 6">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -215,7 +215,7 @@
         <limit offset="6" offset-index="5" row-count-index="0" row-count="3" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectSingleTablePaginationWithTopAndRange" parameters="3 1">
+    <parser-result sql-case-id="assertSelectSingleTablePaginationWithTopAndRange" parameters="3, 1">
         <tables>
             <table name="t_order" alias="o" />
         </tables>
@@ -235,7 +235,7 @@
         <limit offset="1" offset-index="1" row-count-index="0" row-count="3" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectPaginationWithRowNumber" parameters="1 2 9 10 3">
+    <parser-result sql-case-id="assertSelectPaginationWithRowNumber" parameters="1, 2, 9, 10, 3">
         <tables>
             <table name="t_order" alias="order0_" />
             <table name="t_order_item" alias="i" />
@@ -268,7 +268,7 @@
         <limit row-count="3" row-count-index="4" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectPaginationWithRowNumberAndRange" parameters="1 2 9 10 5 3">
+    <parser-result sql-case-id="assertSelectPaginationWithRowNumberAndRange" parameters="1, 2, 9, 10, 5, 3">
         <tables>
             <table name="t_order" alias="order0_" />
             <table name="t_order_item" alias="i" />
@@ -302,7 +302,7 @@
         <limit offset="3" offset-index="5" row-count-index="4" row-count="5" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectPaginationWithRowNumberAndRangeWithEqual" parameters="1 2 9 10 5 3">
+    <parser-result sql-case-id="assertSelectPaginationWithRowNumberAndRangeWithEqual" parameters="1, 2, 9, 10, 5, 3">
         <tables>
             <table name="t_order" alias="order0_" />
             <table name="t_order_item" alias="i" />
@@ -336,7 +336,7 @@
         <limit offset="3" offset-index="5" row-count-index="4" row-count="5" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectSingleTablePaginationWithRowNumberAndRange" parameters="4 1">
+    <parser-result sql-case-id="assertSelectSingleTablePaginationWithRowNumberAndRange" parameters="4, 1">
         <tables>
             <table name="t_order"/>
         </tables>
@@ -351,7 +351,7 @@
         <limit offset="1" offset-index="1" row-count-index="0" row-count="4" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectSingleTablePaginationWithRowNumberAndRangeWithEqual" parameters="1000 4 1">
+    <parser-result sql-case-id="assertSelectSingleTablePaginationWithRowNumberAndRangeWithEqual" parameters="1000, 4, 1">
         <tables>
             <table name="t_order" />
         </tables>
@@ -366,7 +366,7 @@
         <limit offset="1" offset-index="2" row-count-index="1" row-count="4" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectSingleTablePaginationWithRowNumberAndRangeWithEqualDiffOrder" parameters="4 1000 1">
+    <parser-result sql-case-id="assertSelectSingleTablePaginationWithRowNumberAndRangeWithEqualDiffOrder" parameters="4, 1000, 1">
         <tables>
             <table name="t_order" />
         </tables>
@@ -381,7 +381,7 @@
         <limit offset="1" offset-index="2" row-count-index="0" row-count="4" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectSingleTablePaginationWithTopAndRangeWithEqual" parameters="4 1">
+    <parser-result sql-case-id="assertSelectSingleTablePaginationWithTopAndRangeWithEqual" parameters="4, 1">
         <tables>
             <table name="t_order" alias="o" />
         </tables>
@@ -401,7 +401,7 @@
         <limit offset="1" offset-index="1" row-count-index="0" row-count="4" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectLeftJoinAndLimit" parameters="10 1000 0 20">
+    <parser-result sql-case-id="assertSelectLeftJoinAndLimit" parameters="10, 1000, 0, 20">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
