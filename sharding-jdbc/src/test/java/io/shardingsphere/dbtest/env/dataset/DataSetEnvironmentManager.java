@@ -20,12 +20,12 @@ package io.shardingsphere.dbtest.env.dataset;
 import com.google.common.base.Joiner;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.util.InlineExpressionParser;
-import io.shardingsphere.dbtest.common.DatabaseUtil;
-import io.shardingsphere.dbtest.common.SQLValueGroup;
 import io.shardingsphere.dbtest.cases.dataset.init.DataSetColumnMetadata;
 import io.shardingsphere.dbtest.cases.dataset.init.DataSetMetadata;
 import io.shardingsphere.dbtest.cases.dataset.init.DataSetRow;
 import io.shardingsphere.dbtest.cases.dataset.init.DataSetsRoot;
+import io.shardingsphere.dbtest.common.SQLValue;
+import io.shardingsphere.dbtest.common.SQLValueGroup;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
@@ -85,7 +85,7 @@ public final class DataSetEnvironmentManager {
             }
             try (Connection connection = dataSourceMap.get(dataNode.getDataSourceName()).getConnection()) {
                 if (forceInsert || !isExisted(dataNode, connection)) {
-                    DatabaseUtil.executeBatch(connection, insertSQL, sqlValueGroups);
+                    executeBatch(connection, insertSQL, sqlValueGroups);
                 }
             }
         }
@@ -124,6 +124,22 @@ public final class DataSetEnvironmentManager {
             }
         }
         return 0 != count;
+    }
+    
+    private void executeBatch(final Connection connection, final String sql, final List<SQLValueGroup> sqlValueGroups) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            for (SQLValueGroup each : sqlValueGroups) {
+                setParameters(preparedStatement, each);
+                preparedStatement.addBatch();
+            }
+            preparedStatement.executeBatch();
+        }
+    }
+    
+    private void setParameters(final PreparedStatement preparedStatement, final SQLValueGroup sqlValueGroup) throws SQLException {
+        for (SQLValue each : sqlValueGroup.getSqlValues()) {
+            preparedStatement.setObject(each.getIndex(), each.getValue());
+        }
     }
     
     /**
