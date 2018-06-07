@@ -17,7 +17,6 @@
 
 package io.shardingsphere.dbtest.engine;
 
-import com.google.common.base.Splitter;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.util.InlineExpressionParser;
@@ -44,14 +43,14 @@ import javax.xml.bind.JAXBException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -60,7 +59,6 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
 public final class DMLIntegrateTest extends BaseIntegrateTest {
@@ -125,23 +123,22 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
                 assertExecuteUpdateForPreparedStatement(connection);
             }
         }
-    }
-    
-    private void assertExecuteUpdateForStatement(final Connection connection) throws SQLException, ParseException, IOException, JAXBException {
-        try (Statement statement = connection.createStatement()) {
-            assertThat(statement.executeUpdate(String.format(getSql(), assertion.getSQLValues().toArray())), is(assertion.getExpectedUpdate()));
-        }
         assertDataSet();
     }
     
-    private void assertExecuteUpdateForPreparedStatement(final Connection connection) throws SQLException, ParseException, IOException, JAXBException {
+    private void assertExecuteUpdateForStatement(final Connection connection) throws SQLException, ParseException {
+        try (Statement statement = connection.createStatement()) {
+            assertThat(statement.executeUpdate(String.format(getSql(), assertion.getSQLValues().toArray())), is(assertion.getExpectedUpdate()));
+        }
+    }
+    
+    private void assertExecuteUpdateForPreparedStatement(final Connection connection) throws SQLException, ParseException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(getSql().replaceAll("%s", "?"))) {
             for (SQLValue each : assertion.getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
             }
             assertThat(preparedStatement.executeUpdate(), is(assertion.getExpectedUpdate()));
         }
-        assertDataSet();
     }
     
     @Test
@@ -156,17 +153,17 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
                 assertExecuteForPreparedStatement(connection);
             }
         }
+        assertDataSet();
     }
     
-    private void assertExecuteForStatement(final Connection connection) throws SQLException, ParseException, IOException, JAXBException {
+    private void assertExecuteForStatement(final Connection connection) throws SQLException, ParseException {
         try (Statement statement = connection.createStatement()) {
             assertFalse("Not a DML statement.", statement.execute(String.format(getSql(), assertion.getSQLValues().toArray())));
             assertThat(statement.getUpdateCount(), is(assertion.getExpectedUpdate()));
         }
-        assertDataSet();
     }
     
-    private void assertExecuteForPreparedStatement(final Connection connection) throws SQLException, ParseException, IOException, JAXBException {
+    private void assertExecuteForPreparedStatement(final Connection connection) throws SQLException, ParseException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(getSql().replaceAll("%s", "?"))) {
             for (SQLValue each : assertion.getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
@@ -174,7 +171,6 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
             assertFalse("Not a DML statement.", preparedStatement.execute());
             assertThat(preparedStatement.getUpdateCount(), is(assertion.getExpectedUpdate()));
         }
-        assertDataSet();
     }
     
     private void assertDataSet() throws SQLException, IOException, JAXBException {
@@ -188,61 +184,40 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
             DataNode dataNode = new DataNode(each);
             try (Connection connection = getDataSourceMap().get(dataNode.getDataSourceName()).getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(String.format("SELECT * FROM %s", dataNode.getTableName()))) {
-                assertDataSet(preparedStatement, each, expected.getDataSetRows(), expectedDataSetMetadata);
+                assertDataSet(preparedStatement, expected.findDataSetRows(dataNode), expectedDataSetMetadata);
             }
         }
     }
     
-    private void assertDataSet(final PreparedStatement actualPreparedStatement, final String actualDataNode, 
-                               final List<DataSetRow> expectedDataSetRows, final DataSetMetadata expectedDataSetMetadata) throws SQLException {
+    private void assertDataSet(final PreparedStatement actualPreparedStatement, final List<DataSetRow> expectedDataSetRows, final DataSetMetadata expectedDataSetMetadata) throws SQLException {
         try (ResultSet actualResultSet = actualPreparedStatement.executeQuery()) {
-            int count = 0;
-            while (actualResultSet.next()) {
-                List<String> actualResultSetData = getResultSetData(actualResultSet, expectedDataSetMetadata);
-                assertTrue(String.format("Cannot find actual record '%s' from data node '%s'", actualResultSetData, actualDataNode), isMatch(actualDataNode, actualResultSetData, expectedDataSetRows));
-                count++;
-            }
-            assertThat(String.format("Count of records are different for data node '%s'", actualDataNode), count, is(countExpectedDataSetRows(actualDataNode, expectedDataSetRows)));
+            assertMetaData(actualResultSet.getMetaData(), expectedDataSetMetadata.getColumnMetadataList());
+            assertDataSets(actualResultSet, expectedDataSetRows);
         }
     }
     
-    private List<String> getResultSetData(final ResultSet actualResultSet, final DataSetMetadata expectedDataSetMetadata) throws SQLException {
-        List<String> result = new ArrayList<>(expectedDataSetMetadata.getColumnMetadataList().size());
-        for (DataSetColumnMetadata each : expectedDataSetMetadata.getColumnMetadataList()) {
-            Object resultSetValue = actualResultSet.getObject(each.getName());
-            result.add(resultSetValue instanceof Date ? new SimpleDateFormat("yyyy-MM-dd").format(resultSetValue) : resultSetValue.toString());
+    private void assertMetaData(final ResultSetMetaData actualMetaData, final List<DataSetColumnMetadata> columnMetadataList) throws SQLException {
+        assertThat(actualMetaData.getColumnCount(), is(columnMetadataList.size()));
+        int index = 1;
+        for (DataSetColumnMetadata each : columnMetadataList) {
+            assertThat(actualMetaData.getColumnLabel(index++), is(each.getName()));
         }
-        return result;
     }
     
-    private boolean isMatch(final String actualDataNode, final List<String> actualResultSetData, final List<DataSetRow> expectedDataSetRows) {
-        for (DataSetRow each : expectedDataSetRows) {
-            if (each.getDataNode().equals(actualDataNode) && isMatch(actualResultSetData, each)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private boolean isMatch(final List<String> actualResultSetData, final DataSetRow expectedDataSetRow) {
+    private void assertDataSets(final ResultSet actualResultSet, final List<DataSetRow> expectedDatSetRows) throws SQLException {
         int count = 0;
-        for (String each : Splitter.on(",").trimResults().splitToList(expectedDataSetRow.getValues())) {
-            if (!each.equals(actualResultSetData.get(count))) {
-                return false;
+        while (actualResultSet.next()) {
+            int index = 1;
+            for (String each : expectedDatSetRows.get(count).getValues()) {
+                if (Types.DATE == actualResultSet.getMetaData().getColumnType(index)) {
+                    assertThat(new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date(actualResultSet.getDate(index).getTime())), is(each));
+                } else {
+                    assertThat(String.valueOf(actualResultSet.getObject(index)), is(each));
+                }
+                index++;
             }
             count++;
         }
-        return true;
-    }
-    
-    private int countExpectedDataSetRows(final String actualDataNode, final List<DataSetRow> expectedDataSetRows) {
-        int result = 0;
-        for (DataSetRow each : expectedDataSetRows) {
-            if (each.getDataNode().equals(actualDataNode)) {
-                result++;
-            }
-            
-        }
-        return result;
+        assertThat("Size of actual result set is different with size of expected dat set rows.", count, is(expectedDatSetRows.size()));
     }
 }

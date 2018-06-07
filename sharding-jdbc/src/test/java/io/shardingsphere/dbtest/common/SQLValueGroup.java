@@ -17,13 +17,13 @@
 
 package io.shardingsphere.dbtest.common;
 
-import com.google.common.base.Splitter;
 import io.shardingsphere.dbtest.cases.dataset.init.DataSetMetadata;
 import lombok.Getter;
 
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Group of SQL value.
@@ -35,10 +35,10 @@ public final class SQLValueGroup {
     
     private final Collection<SQLValue> sqlValues;
     
-    public SQLValueGroup(final DataSetMetadata dataSetMetadata, final String values) throws ParseException {
+    public SQLValueGroup(final DataSetMetadata dataSetMetadata, final List<String> values) throws ParseException {
         sqlValues = new LinkedList<>();
         int count = 0;
-        for (String each : Splitter.on(',').trimResults().splitToList(values)) {
+        for (String each : values) {
             sqlValues.add(new SQLValue(each, dataSetMetadata.getColumnMetadataList().get(count).getType(), count + 1));
             count++;
         }

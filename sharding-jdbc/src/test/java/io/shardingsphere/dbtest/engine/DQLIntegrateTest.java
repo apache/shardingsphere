@@ -167,14 +167,13 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
     }
     
     private void assertResultSet(final ResultSet resultSet) throws SQLException, JAXBException, IOException {
-        ResultSetMetaData actualMetaData = resultSet.getMetaData();
         ExpectedDataSetsRoot expected;
         try (FileReader reader = new FileReader(getExpectedDataFile())) {
             expected = (ExpectedDataSetsRoot) JAXBContext.newInstance(ExpectedDataSetsRoot.class).createUnmarshaller().unmarshal(reader);
         }
         List<String> expectedColumnNames = expected.getColumns().getValues();
-        assertMetaData(actualMetaData, expectedColumnNames);
-        assertDataSets(resultSet, expected.getDataSetRows(), expectedColumnNames);
+        assertMetaData(resultSet.getMetaData(), expectedColumnNames);
+        assertDataSets(resultSet, expected.getDataSetRows());
     }
     
     private void assertMetaData(final ResultSetMetaData actualMetaData, final List<String> expectedColumnNames) throws SQLException {
@@ -185,17 +184,18 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
         }
     }
     
-    private void assertDataSets(final ResultSet actualResultSet, final List<ExpectedDataSetRow> expectedDatSetRows, final List<String> expectedColumnNames) throws SQLException {
+    private void assertDataSets(final ResultSet actualResultSet, final List<ExpectedDataSetRow> expectedDatSetRows) throws SQLException {
         int count = 0;
+        ResultSetMetaData actualMetaData = actualResultSet.getMetaData();
         while (actualResultSet.next()) {
-            int index = 0;
+            int index = 1;
             for (String each : expectedDatSetRows.get(count).getValues()) {
-                if (Types.DATE == actualResultSet.getMetaData().getColumnType(index + 1)) {
-                    assertThat(new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date(actualResultSet.getDate(index + 1).getTime())), is(each));
-                    assertThat(new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date(actualResultSet.getDate(expectedColumnNames.get(index)).getTime())), is(each));
+                if (Types.DATE == actualResultSet.getMetaData().getColumnType(index)) {
+                    assertThat(new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date(actualResultSet.getDate(index).getTime())), is(each));
+                    assertThat(new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date(actualResultSet.getDate(actualMetaData.getColumnLabel(index)).getTime())), is(each));
                 } else {
-                    assertThat(String.valueOf(actualResultSet.getObject(index + 1)), is(each));
-                    assertThat(String.valueOf(actualResultSet.getObject(expectedColumnNames.get(index))), is(each));
+                    assertThat(String.valueOf(actualResultSet.getObject(index)), is(each));
+                    assertThat(String.valueOf(actualResultSet.getObject(actualMetaData.getColumnLabel(index))), is(each));
                 }
                 index++;
             }

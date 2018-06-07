@@ -23,6 +23,7 @@ import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -36,10 +37,10 @@ public final class DataSetsRoot {
     private List<DataSetRow> dataSetRows;
     
     /**
-     * find data set meta data.
+     * Find data set meta data via data node.
      * 
      * @param dataNode data node
-     * @return data set meta data
+     * @return data set meta data belong to current data node
      */
     public DataSetMetadata findDataSetMetadata(final DataNode dataNode) {
         for (DataSetMetadata each : metadataList) {
@@ -57,5 +58,21 @@ public final class DataSetsRoot {
             }
         }
         return false;
+    }
+    
+    /**
+     * Find data set rows via data node.
+     * 
+     * @param dataNode data node
+     * @return data set rows belong to current data node
+     */
+    public List<DataSetRow> findDataSetRows(final DataNode dataNode) {
+        List<DataSetRow> result = new ArrayList<>(dataSetRows.size());
+        for (DataSetRow each : dataSetRows) {
+            if (new DataNode(each.getDataNode()).equals(dataNode)) {
+                result.add(each);
+            }
+        }
+        return result;
     }
 }
