@@ -69,6 +69,8 @@ public abstract class BaseIntegrateTest {
     
     private final SQLCaseType caseType;
     
+    private final int countInSameCase;
+    
     private final String sql;
     
     private final String expectedDataFile;
@@ -80,10 +82,11 @@ public abstract class BaseIntegrateTest {
     private final DataSetEnvironmentManager dataSetEnvironmentManager;
     
     public BaseIntegrateTest(final String sqlCaseId, final String path, final IntegrateTestCaseAssertion assertion, 
-                             final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException {
+                             final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType, final int countInSameCase) throws IOException, JAXBException, SQLException {
         this.databaseTypeEnvironment = databaseTypeEnvironment;
         this.assertion = assertion;
         this.caseType = caseType;
+        this.countInSameCase = countInSameCase;
         sql = SQLCasesLoader.getInstance().getSupportedSQL(sqlCaseId);
         expectedDataFile = path.substring(0, path.lastIndexOf(File.separator) + 1) + "asserts/" + getExpectedDataFileType() + "/" + assertion.getExpectedDataFile();
         if (databaseTypeEnvironment.isEnabled()) {
@@ -127,13 +130,15 @@ public abstract class BaseIntegrateTest {
     
     protected static Collection<Object[]> getParameters(final DatabaseType databaseType, final SQLCaseType caseType, final IntegrateTestCase integrateTestCase) {
         Collection<Object[]> result = new LinkedList<>();
+        int countInSameCase = 0;
         for (IntegrateTestCaseAssertion assertion : integrateTestCase.getIntegrateTestCaseAssertions()) {
-            Object[] data = new Object[5];
+            Object[] data = new Object[6];
             data[0] = integrateTestCase.getSqlCaseId();
             data[1] = integrateTestCase.getPath();
             data[2] = assertion;
             data[3] = new DatabaseTypeEnvironment(databaseType, IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType));
             data[4] = caseType;
+            data[5] = countInSameCase++;
             result.add(data);
         }
         return result;

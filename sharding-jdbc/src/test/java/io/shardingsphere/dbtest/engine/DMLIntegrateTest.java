@@ -70,12 +70,12 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
     private final DMLIntegrateTestCaseAssertion assertion;
     
     public DMLIntegrateTest(final String sqlCaseId, final String path, final DMLIntegrateTestCaseAssertion assertion, 
-                            final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException {
-        super(sqlCaseId, path, assertion, databaseTypeEnvironment, caseType);
+                            final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType, final int countInSameCase) throws IOException, JAXBException, SQLException {
+        super(sqlCaseId, path, assertion, databaseTypeEnvironment, caseType, countInSameCase);
         this.assertion = assertion;
     }
     
-    @Parameters(name = "{0} -> {2} -> {3} -> {4}")
+    @Parameters(name = "{0}.{5} -> {2} -> {3} -> {4}")
     public static Collection<Object[]> getParameters() {
         // TODO sqlCasesLoader size should eq integrateTestCasesLoader size
         // assertThat(sqlCasesLoader.countAllSupportedSQLCases(), is(integrateTestCasesLoader.countAllDataSetTestCases()));
