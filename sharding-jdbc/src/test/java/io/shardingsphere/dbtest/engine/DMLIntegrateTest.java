@@ -18,13 +18,19 @@
 package io.shardingsphere.dbtest.engine;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.dbtest.asserts.DataSetAssert;
-import io.shardingsphere.dbtest.common.DatabaseUtil;
-import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
+import io.shardingsphere.core.rule.DataNode;
+import io.shardingsphere.core.util.InlineExpressionParser;
 import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.cases.assertion.dml.DMLIntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.dml.DMLIntegrateTestCaseAssertion;
+import io.shardingsphere.dbtest.cases.assertion.root.SQLValue;
+import io.shardingsphere.dbtest.cases.dataset.init.DataSetColumnMetadata;
+import io.shardingsphere.dbtest.cases.dataset.init.DataSetMetadata;
+import io.shardingsphere.dbtest.cases.dataset.init.DataSetRow;
 import io.shardingsphere.dbtest.cases.dataset.init.DataSetsRoot;
+import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
+import io.shardingsphere.dbtest.env.EnvironmentPath;
+import io.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
 import org.junit.After;
@@ -39,13 +45,21 @@ import javax.xml.bind.JAXBException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Parameterized.class)
@@ -58,12 +72,12 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
     private final DMLIntegrateTestCaseAssertion assertion;
     
     public DMLIntegrateTest(final String sqlCaseId, final String path, final DMLIntegrateTestCaseAssertion assertion, 
-                            final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException {
-        super(sqlCaseId, path, assertion, databaseTypeEnvironment, caseType);
+                            final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType, final int countInSameCase) throws IOException, JAXBException, SQLException {
+        super(sqlCaseId, path, assertion, databaseTypeEnvironment, caseType, countInSameCase);
         this.assertion = assertion;
     }
     
-    @Parameters(name = "{0} -> {2} -> {3} -> {4}")
+    @Parameters(name = "{0}[{5}] -> {2} -> {3} -> {4}")
     public static Collection<Object[]> getParameters() {
         // TODO sqlCasesLoader size should eq integrateTestCasesLoader size
         // assertThat(sqlCasesLoader.countAllSupportedSQLCases(), is(integrateTestCasesLoader.countAllDataSetTestCases()));
@@ -77,7 +91,7 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
             if (null == integrateTestCase) {
                 continue;
             }
-            if (getDatabaseTypes(integrateTestCase.getDatabaseTypes()).contains(databaseType)) {
+            if (integrateTestCase.getDatabaseTypes().contains(databaseType)) {
                 result.addAll(getParameters(databaseType, caseType, integrateTestCase));
             }
             
@@ -86,16 +100,16 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
     }
     
     @Before
-    public void insertData() throws SQLException, ParseException {
+    public void insertData() throws SQLException, ParseException, IOException, JAXBException {
         if (getDatabaseTypeEnvironment().isEnabled()) {
-            getDataSetEnvironmentManager().initialize(true);
+            new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(assertion.getShardingRuleType()), getDataSourceMap()).initialize();
         }
     }
     
     @After
-    public void clearData() throws SQLException {
+    public void clearData() throws SQLException, IOException, JAXBException {
         if (getDatabaseTypeEnvironment().isEnabled()) {
-            getDataSetEnvironmentManager().clear();
+            new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(assertion.getShardingRuleType()), getDataSourceMap()).clear();
         }
     }
     
@@ -106,12 +120,27 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
         }
         try (Connection connection = getDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
-                assertThat(DatabaseUtil.executeUpdateForStatement(connection, getSql(), assertion.getSQLValues()), is(assertion.getExpectedUpdate()));
+                assertExecuteUpdateForStatement(connection);
             } else {
-                assertThat(DatabaseUtil.executeUpdateForPreparedStatement(connection, getSql(), assertion.getSQLValues()), is(assertion.getExpectedUpdate()));
-            } 
+                assertExecuteUpdateForPreparedStatement(connection);
+            }
         }
         assertDataSet();
+    }
+    
+    private void assertExecuteUpdateForStatement(final Connection connection) throws SQLException, ParseException {
+        try (Statement statement = connection.createStatement()) {
+            assertThat(statement.executeUpdate(String.format(getSql(), assertion.getSQLValues().toArray())), is(assertion.getExpectedUpdate()));
+        }
+    }
+    
+    private void assertExecuteUpdateForPreparedStatement(final Connection connection) throws SQLException, ParseException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getSql().replaceAll("%s", "?"))) {
+            for (SQLValue each : assertion.getSQLValues()) {
+                preparedStatement.setObject(each.getIndex(), each.getValue());
+            }
+            assertThat(preparedStatement.executeUpdate(), is(assertion.getExpectedUpdate()));
+        }
     }
     
     @Test
@@ -121,19 +150,76 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
         }
         try (Connection connection = getDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
-                assertThat(DatabaseUtil.executeDMLForStatement(connection, getSql(), assertion.getSQLValues()), is(assertion.getExpectedUpdate()));
+                assertExecuteForStatement(connection);
             } else {
-                assertThat(DatabaseUtil.executeDMLForPreparedStatement(connection, getSql(), assertion.getSQLValues()), is(assertion.getExpectedUpdate()));
+                assertExecuteForPreparedStatement(connection);
             }
         }
         assertDataSet();
     }
     
-    private void assertDataSet() throws IOException, JAXBException, SQLException {
+    private void assertExecuteForStatement(final Connection connection) throws SQLException, ParseException {
+        try (Statement statement = connection.createStatement()) {
+            assertFalse("Not a DML statement.", statement.execute(String.format(getSql(), assertion.getSQLValues().toArray())));
+            assertThat(statement.getUpdateCount(), is(assertion.getExpectedUpdate()));
+        }
+    }
+    
+    private void assertExecuteForPreparedStatement(final Connection connection) throws SQLException, ParseException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getSql().replaceAll("%s", "?"))) {
+            for (SQLValue each : assertion.getSQLValues()) {
+                preparedStatement.setObject(each.getIndex(), each.getValue());
+            }
+            assertFalse("Not a DML statement.", preparedStatement.execute());
+            assertThat(preparedStatement.getUpdateCount(), is(assertion.getExpectedUpdate()));
+        }
+    }
+    
+    private void assertDataSet() throws SQLException, IOException, JAXBException {
         DataSetsRoot expected;
         try (FileReader reader = new FileReader(getExpectedDataFile())) {
             expected = (DataSetsRoot) JAXBContext.newInstance(DataSetsRoot.class).createUnmarshaller().unmarshal(reader);
         }
-        DataSetAssert.assertDataSet(getDataSourceMap(), expected);
+        assertThat("Only support single table for DML.", expected.getMetadataList().size(), is(1));
+        DataSetMetadata expectedDataSetMetadata = expected.getMetadataList().get(0);
+        for (String each : new InlineExpressionParser(expectedDataSetMetadata.getDataNodes()).evaluate()) {
+            DataNode dataNode = new DataNode(each);
+            try (Connection connection = getDataSourceMap().get(dataNode.getDataSourceName()).getConnection();
+                 PreparedStatement preparedStatement = connection.prepareStatement(String.format("SELECT * FROM %s", dataNode.getTableName()))) {
+                assertDataSet(preparedStatement, expected.findDataSetRows(dataNode), expectedDataSetMetadata);
+            }
+        }
+    }
+    
+    private void assertDataSet(final PreparedStatement actualPreparedStatement, final List<DataSetRow> expectedDataSetRows, final DataSetMetadata expectedDataSetMetadata) throws SQLException {
+        try (ResultSet actualResultSet = actualPreparedStatement.executeQuery()) {
+            assertMetaData(actualResultSet.getMetaData(), expectedDataSetMetadata.getColumnMetadataList());
+            assertDataSets(actualResultSet, expectedDataSetRows);
+        }
+    }
+    
+    private void assertMetaData(final ResultSetMetaData actualMetaData, final List<DataSetColumnMetadata> columnMetadataList) throws SQLException {
+        assertThat(actualMetaData.getColumnCount(), is(columnMetadataList.size()));
+        int index = 1;
+        for (DataSetColumnMetadata each : columnMetadataList) {
+            assertThat(actualMetaData.getColumnLabel(index++), is(each.getName()));
+        }
+    }
+    
+    private void assertDataSets(final ResultSet actualResultSet, final List<DataSetRow> expectedDatSetRows) throws SQLException {
+        int count = 0;
+        while (actualResultSet.next()) {
+            int index = 1;
+            for (String each : expectedDatSetRows.get(count).getValues()) {
+                if (Types.DATE == actualResultSet.getMetaData().getColumnType(index)) {
+                    assertThat(new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date(actualResultSet.getDate(index).getTime())), is(each));
+                } else {
+                    assertThat(String.valueOf(actualResultSet.getObject(index)), is(each));
+                }
+                index++;
+            }
+            count++;
+        }
+        assertThat("Size of actual result set is different with size of expected dat set rows.", count, is(expectedDatSetRows.size()));
     }
 }

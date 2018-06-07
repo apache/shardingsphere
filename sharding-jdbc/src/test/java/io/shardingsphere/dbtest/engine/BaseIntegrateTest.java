@@ -17,22 +17,17 @@
 
 package io.shardingsphere.dbtest.engine;
 
-import com.google.common.base.Splitter;
 import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
 import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
+import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
+import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
+import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.dbtest.env.IntegrateTestEnvironment;
 import io.shardingsphere.dbtest.env.datasource.DataSourceUtil;
 import io.shardingsphere.dbtest.env.schema.SchemaEnvironmentManager;
-import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
-import io.shardingsphere.dbtest.cases.assertion.ddl.DDLIntegrateTestCaseAssertion;
-import io.shardingsphere.dbtest.cases.assertion.dml.DMLIntegrateTestCaseAssertion;
-import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCaseAssertion;
-import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
-import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
 import lombok.AccessLevel;
@@ -50,7 +45,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 @RunWith(Parameterized.class)
@@ -69,6 +63,8 @@ public abstract class BaseIntegrateTest {
     
     private final SQLCaseType caseType;
     
+    private final int countInSameCase;
+    
     private final String sql;
     
     private final String expectedDataFile;
@@ -77,41 +73,25 @@ public abstract class BaseIntegrateTest {
     
     private final DataSource dataSource;
     
-    private final DataSetEnvironmentManager dataSetEnvironmentManager;
-    
     public BaseIntegrateTest(final String sqlCaseId, final String path, final IntegrateTestCaseAssertion assertion, 
-                             final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException {
+                             final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType, final int countInSameCase) throws IOException, JAXBException, SQLException {
         this.databaseTypeEnvironment = databaseTypeEnvironment;
         this.assertion = assertion;
         this.caseType = caseType;
+        this.countInSameCase = countInSameCase;
         sql = SQLCasesLoader.getInstance().getSupportedSQL(sqlCaseId);
-        expectedDataFile = path.substring(0, path.lastIndexOf(File.separator) + 1) + "asserts/" + getExpectedDataFileType() + "/" + assertion.getExpectedDataFile();
+        expectedDataFile = path.substring(0, path.lastIndexOf(File.separator) + 1) + "dataset/" + assertion.getExpectedDataFile();
         if (databaseTypeEnvironment.isEnabled()) {
             dataSourceMap = createDataSourceMap(assertion);
             dataSource = createDataSource(dataSourceMap);
-            dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(assertion.getShardingRuleType()), dataSourceMap);
         } else {
             dataSourceMap = null;
             dataSource = null;
-            dataSetEnvironmentManager = null;
         }
     }
     
-    private String getExpectedDataFileType() {
-        if (assertion instanceof DDLIntegrateTestCaseAssertion) {
-            return "ddl";
-        }
-        if (assertion instanceof DMLIntegrateTestCaseAssertion) {
-            return "dml";
-        }
-        if (assertion instanceof DQLIntegrateTestCaseAssertion) {
-            return "dql";
-        }
-        throw new UnsupportedOperationException(String.format("Cannot support '%s'", assertion.getClass().getName()));
-    }
-    
-    private Map<String, DataSource> createDataSourceMap(final IntegrateTestCaseAssertion integrateTestCaseAssertion) throws IOException, JAXBException {
-        Collection<String> dataSourceNames = SchemaEnvironmentManager.getDataSourceNames(integrateTestCaseAssertion.getShardingRuleType());
+    private Map<String, DataSource> createDataSourceMap(final IntegrateTestCaseAssertion assertion) throws IOException, JAXBException {
+        Collection<String> dataSourceNames = SchemaEnvironmentManager.getDataSourceNames(assertion.getShardingRuleType());
         Map<String, DataSource> result = new HashMap<>(dataSourceNames.size(), 1);
         for (String each : dataSourceNames) {
             result.put(each, DataSourceUtil.createDataSource(databaseTypeEnvironment.getDatabaseType(), each));
@@ -127,22 +107,16 @@ public abstract class BaseIntegrateTest {
     
     protected static Collection<Object[]> getParameters(final DatabaseType databaseType, final SQLCaseType caseType, final IntegrateTestCase integrateTestCase) {
         Collection<Object[]> result = new LinkedList<>();
+        int countInSameCase = 0;
         for (IntegrateTestCaseAssertion assertion : integrateTestCase.getIntegrateTestCaseAssertions()) {
-            Object[] data = new Object[5];
+            Object[] data = new Object[6];
             data[0] = integrateTestCase.getSqlCaseId();
             data[1] = integrateTestCase.getPath();
             data[2] = assertion;
             data[3] = new DatabaseTypeEnvironment(databaseType, IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType));
             data[4] = caseType;
+            data[5] = countInSameCase++;
             result.add(data);
-        }
-        return result;
-    }
-    
-    protected static List<DatabaseType> getDatabaseTypes(final String databaseTypes) {
-        List<DatabaseType> result = new LinkedList<>();
-        for (String each : Splitter.on(",").trimResults().splitToList(databaseTypes)) {
-            result.add(DatabaseType.valueOf(each));
         }
         return result;
     }

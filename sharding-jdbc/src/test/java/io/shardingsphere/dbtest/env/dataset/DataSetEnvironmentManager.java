@@ -20,8 +20,8 @@ package io.shardingsphere.dbtest.env.dataset;
 import com.google.common.base.Joiner;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.util.InlineExpressionParser;
-import io.shardingsphere.dbtest.common.DatabaseUtil;
-import io.shardingsphere.dbtest.common.SQLValueGroup;
+import io.shardingsphere.dbtest.cases.assertion.root.SQLValue;
+import io.shardingsphere.dbtest.cases.assertion.root.SQLValueGroup;
 import io.shardingsphere.dbtest.cases.dataset.init.DataSetColumnMetadata;
 import io.shardingsphere.dbtest.cases.dataset.init.DataSetMetadata;
 import io.shardingsphere.dbtest.cases.dataset.init.DataSetRow;
@@ -34,7 +34,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Collection;
@@ -65,14 +64,11 @@ public final class DataSetEnvironmentManager {
     /**
      * Initialize data.
      * 
-     * @param forceInsert force insert
      * @throws SQLException SQL exception
      * @throws ParseException parse exception
      */
-    public void initialize(final boolean forceInsert) throws SQLException, ParseException {
-        if (forceInsert) {
-            clear();
-        }
+    public void initialize() throws SQLException, ParseException {
+        clear();
         Map<DataNode, List<DataSetRow>> dataNodeListMap = getDataSetRowMap();
         for (Entry<DataNode, List<DataSetRow>> entry : dataNodeListMap.entrySet()) {
             DataNode dataNode = entry.getKey();
@@ -84,9 +80,7 @@ public final class DataSetEnvironmentManager {
                 sqlValueGroups.add(new SQLValueGroup(dataSetMetadata, row.getValues()));
             }
             try (Connection connection = dataSourceMap.get(dataNode.getDataSourceName()).getConnection()) {
-                if (forceInsert || !isExisted(dataNode, connection)) {
-                    DatabaseUtil.executeBatch(connection, insertSQL, sqlValueGroups);
-                }
+                executeBatch(connection, insertSQL, sqlValueGroups);
             }
         }
     }
@@ -113,17 +107,20 @@ public final class DataSetEnvironmentManager {
         return String.format("INSERT INTO %s (%s) VALUES (%s)", tableName, Joiner.on(",").join(columnNames), Joiner.on(",").join(placeholders));
     }
     
-    private boolean isExisted(final DataNode dataNode, final Connection connection) throws SQLException {
-        int count = 0;
-        try (
-                PreparedStatement preparedStatement = connection.prepareStatement(String.format("SELECT COUNT(*) FROM %s", dataNode.getTableName()));
-                ResultSet resultSet = preparedStatement.executeQuery()) {
-            
-            if (resultSet.next()) {
-                count = resultSet.getInt(1);
+    private void executeBatch(final Connection connection, final String sql, final List<SQLValueGroup> sqlValueGroups) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            for (SQLValueGroup each : sqlValueGroups) {
+                setParameters(preparedStatement, each);
+                preparedStatement.addBatch();
             }
+            preparedStatement.executeBatch();
         }
-        return 0 != count;
+    }
+    
+    private void setParameters(final PreparedStatement preparedStatement, final SQLValueGroup sqlValueGroup) throws SQLException {
+        for (SQLValue each : sqlValueGroup.getSqlValues()) {
+            preparedStatement.setObject(each.getIndex(), each.getValue());
+        }
     }
     
     /**

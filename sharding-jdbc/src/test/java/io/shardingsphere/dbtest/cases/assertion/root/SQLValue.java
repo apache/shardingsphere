@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.common;
+package io.shardingsphere.dbtest.cases.assertion.root;
 
 import lombok.Getter;
 
@@ -57,5 +57,10 @@ public final class SQLValue {
             return new Date(new SimpleDateFormat("yyyy-MM-dd").parse(value).getTime());
         }
         throw new UnsupportedOperationException(String.format("Cannot support type: '%s'", type));
+    }
+    
+    @Override
+    public String toString() {
+        return value instanceof String ? "'" + value + "'" : value.toString();
     }
 }
