@@ -46,7 +46,7 @@ shardingRule:
   
   defaultTableStrategy:
     none:
-  defaultKeyGeneratorClassName: io.shardingjdbc.core.keygen.DefaultKeyGenerator
+  defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
   
   props:
     proxy.mode: CONNECTION_STRICTLY
@@ -139,7 +139,7 @@ shardingRule:
   
   defaultTableStrategy:
     none:
-  defaultKeyGeneratorClassName: io.shardingjdbc.core.keygen.DefaultKeyGenerator
+  defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
   
   masterSlaveRules:
       ms_ds_0:
