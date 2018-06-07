@@ -104,12 +104,30 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
     @BeforeClass
     public static void insertData() throws IOException, JAXBException, SQLException, ParseException {
         for (DatabaseType each : integrateTestCasesLoader.getDatabaseTypes()) {
-            if (!IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(each)) {
-                continue;
+            if (IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(each)) {
+                insertData(each);
             }
-            for (String shardingRuleType : integrateTestCasesLoader.getShardingRuleTypes()) {
-                new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(shardingRuleType), createDataSourceMap(each, shardingRuleType)).initialize();
+        }
+    }
+    
+    private static void insertData(final DatabaseType databaseType) throws SQLException, ParseException, IOException, JAXBException {
+        for (String each : integrateTestCasesLoader.getShardingRuleTypes()) {
+            new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(each), createDataSourceMap(databaseType, each)).initialize();
+        }
+    }
+    
+    @AfterClass
+    public static void clearData() throws IOException, JAXBException, SQLException {
+        for (DatabaseType each : integrateTestCasesLoader.getDatabaseTypes()) {
+            if (IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(each)) {
+                clearData(each);
             }
+        }
+    }
+    
+    private static void clearData(final DatabaseType databaseType) throws SQLException, IOException, JAXBException {
+        for (String each : integrateTestCasesLoader.getShardingRuleTypes()) {
+            new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(each), createDataSourceMap(databaseType, each)).clear();
         }
     }
     
@@ -120,18 +138,6 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
             result.put(each, DataSourceUtil.createDataSource(databaseType, each));
         }
         return result;
-    }
-    
-    @AfterClass
-    public static void clearData() throws IOException, JAXBException, SQLException {
-        for (DatabaseType each : integrateTestCasesLoader.getDatabaseTypes()) {
-            if (!IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(each)) {
-                continue;
-            }
-            for (String shardingRuleType : integrateTestCasesLoader.getShardingRuleTypes()) {
-                new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(shardingRuleType), createDataSourceMap(each, shardingRuleType)).clear();
-            }
-        }
     }
     
     @Test

@@ -106,8 +106,8 @@ public abstract class BaseIntegrateTest {
         throw new UnsupportedOperationException(String.format("Cannot support '%s'", assertion.getClass().getName()));
     }
     
-    private Map<String, DataSource> createDataSourceMap(final IntegrateTestCaseAssertion integrateTestCaseAssertion) throws IOException, JAXBException {
-        Collection<String> dataSourceNames = SchemaEnvironmentManager.getDataSourceNames(integrateTestCaseAssertion.getShardingRuleType());
+    private Map<String, DataSource> createDataSourceMap(final IntegrateTestCaseAssertion assertion) throws IOException, JAXBException {
+        Collection<String> dataSourceNames = SchemaEnvironmentManager.getDataSourceNames(assertion.getShardingRuleType());
         Map<String, DataSource> result = new HashMap<>(dataSourceNames.size(), 1);
         for (String each : dataSourceNames) {
             result.put(each, DataSourceUtil.createDataSource(databaseTypeEnvironment.getDatabaseType(), each));
