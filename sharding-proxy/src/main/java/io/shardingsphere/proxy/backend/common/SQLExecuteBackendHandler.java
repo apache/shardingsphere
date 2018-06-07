@@ -62,6 +62,7 @@ import java.util.List;
  * @author zhangliang
  * @author panjuan
  * @author wangkai
+ * @author linjiaqi
  */
 public class SQLExecuteBackendHandler implements BackendHandler {
     
@@ -102,17 +103,27 @@ public class SQLExecuteBackendHandler implements BackendHandler {
     
     @Override
     public CommandResponsePackets execute() {
-        try {
-            if (RuleRegistry.getInstance().isOnlyMasterSlave()) {
-                return executeForMasterSlave();
-            } else {
-                return executeForSharding();
-            }
-        } catch (final Exception ex) {
-            return new CommandResponsePackets(new ErrPacket(1, 0, "", "", ex.getMessage()));
+        if (RuleRegistry.getInstance().isOnlyMasterSlave()) {
+            return executeForMasterSlave();
+        } else {
+            return executeForSharding();
         }
     }
-    
+
+    protected CommandResponsePackets execute(final SQLStatement sqlStatement, final String dataSourceName, final String sql) {
+        switch (sqlStatement.getType()) {
+            case DQL:
+            case DAL:
+                return executeQuery(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql);
+            case DML:
+            case DDL:
+                return RuleRegistry.getInstance().isOnlyMasterSlave() ? executeUpdate(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql)
+                        : executeUpdate(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql, sqlStatement);
+            default:
+                return executeCommon(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql);
+        }
+    }
+
     protected CommandResponsePackets executeForMasterSlave() {
         MasterSlaveRouter masterSlaveRouter = new MasterSlaveRouter(RuleRegistry.getInstance().getMasterSlaveRule());
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
@@ -137,21 +148,7 @@ public class SQLExecuteBackendHandler implements BackendHandler {
         ProxyShardingRefreshHandler.build(routeResult).execute();
         return result;
     }
-    
-    protected CommandResponsePackets execute(final SQLStatement sqlStatement, final String dataSourceName, final String sql) {
-        switch (sqlStatement.getType()) {
-            case DQL:
-            case DAL:
-                return executeQuery(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql);
-            case DML:
-            case DDL:
-                return RuleRegistry.getInstance().isOnlyMasterSlave() ? executeUpdate(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql)
-                        : executeUpdate(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql, sqlStatement);
-            default:
-                return executeCommon(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql);
-        }
-    }
-    
+        
     private CommandResponsePackets executeQuery(final DataSource dataSource, final String sql) {
         try {
             Connection connection = dataSource.getConnection();

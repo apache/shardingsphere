@@ -17,8 +17,16 @@
 
 package io.shardingsphere.proxy.backend;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import com.google.common.collect.Maps;
 import com.zaxxer.hikari.HikariConfig;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
@@ -29,32 +37,31 @@ import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.pool.AbstractChannelPoolMap;
-import io.netty.channel.pool.ChannelPoolHandler;
 import io.netty.channel.pool.ChannelPoolMap;
 import io.netty.channel.pool.FixedChannelPool;
 import io.netty.channel.pool.SimpleChannelPool;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
-import io.shardingsphere.proxy.backend.netty.ClientHandlerInitializer;
+import io.shardingsphere.proxy.backend.common.NettyChannelPoolHandler;
+import io.shardingsphere.proxy.config.DataScourceConfig;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Map;
 
 /**
  * Sharding-Proxy Client.
  *
  * @author wangkai
+ * @author linjiaqi
  */
 @Slf4j
 public final class ShardingProxyClient {
     private static final ShardingProxyClient INSTANCE = new ShardingProxyClient();
     
     private static final int WORKER_MAX_THREADS = Runtime.getRuntime().availableProcessors();
+    
+    private static final int MAX_CONNECTIONS = 10;
+    
+    private static final int CONNECT_TIMEOUT = 30;
     
     private EventLoopGroup workerGroup;
     
@@ -66,8 +73,8 @@ public final class ShardingProxyClient {
     /**
      * Start Sharding-Proxy.
      *
-     * @throws InterruptedException  interrupted exception
      * @throws MalformedURLException url is illegal.
+     * @throws InterruptedException  interrupted exception
      */
     public void start() throws MalformedURLException, InterruptedException {
         Map<String, HikariConfig> dataSourceConfigurationMap = RuleRegistry.getInstance().getDataSourceConfigurationMap();
@@ -86,14 +93,7 @@ public final class ShardingProxyClient {
         } else {
             groupsNio(bootstrap);
         }
-        poolMap = new AbstractChannelPoolMap<String, SimpleChannelPool>() {
-            @Override
-            protected SimpleChannelPool newPool(String datasourceName) {
-                DataScourceConfig dataScourceConfig = dataScourceConfigMap.get(datasourceName);
-                //TODO maxConnection should be set.
-                return new FixedChannelPool(bootstrap.remoteAddress(dataScourceConfig.ip, dataScourceConfig.port), new NettyChannelPoolHandler(dataScourceConfig), 10);
-            }
-        };
+        initPoolMap(bootstrap);
     }
     
     /**
@@ -126,6 +126,32 @@ public final class ShardingProxyClient {
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
     }
     
+    private void initPoolMap(final Bootstrap bootstrap) throws InterruptedException {
+        poolMap = new AbstractChannelPoolMap<String, SimpleChannelPool>() {
+            @Override
+            protected SimpleChannelPool newPool(final String datasourceName) {
+                DataScourceConfig dataScourceConfig = dataScourceConfigMap.get(datasourceName);
+                //TODO maxConnection should be set.
+                return new FixedChannelPool(bootstrap.remoteAddress(dataScourceConfig.getIp(), dataScourceConfig.getPort()), new NettyChannelPoolHandler(dataScourceConfig), MAX_CONNECTIONS);
+            }
+        };
+        
+        for (String each : dataScourceConfigMap.keySet()) {
+            SimpleChannelPool pool = poolMap.get(each);
+            Channel[] channels = new Channel[MAX_CONNECTIONS];
+            for (int i = 0; i < MAX_CONNECTIONS; i++) {
+                try {
+                    channels[i] = pool.acquire().get(CONNECT_TIMEOUT, TimeUnit.SECONDS);
+                } catch (ExecutionException | TimeoutException e) {
+                    log.error(e.getMessage(), e);
+                }
+            }
+            for (int i = 0; i < MAX_CONNECTIONS; i++) {
+                pool.release(channels[i]);
+            }
+        }
+    }
+    
     /**
      * Get instance of sharding-proxy client.
      *
@@ -133,47 +159,5 @@ public final class ShardingProxyClient {
      */
     public static ShardingProxyClient getInstance() {
         return INSTANCE;
-    }
-    
-    class DataScourceConfig {
-        private final String ip;
-        private final int port;
-        private final String database;
-        private final String username;
-        private final String password;
-        
-        public DataScourceConfig(String ip, int port, String database, String username, String password) {
-            this.ip = ip;
-            this.port = port;
-            this.database = database;
-            this.username = username;
-            this.password = password;
-        }
-    }
-    
-    class NettyChannelPoolHandler implements ChannelPoolHandler {
-        private final DataScourceConfig dataScourceConfig;
-        
-        public NettyChannelPoolHandler(final DataScourceConfig dataScourceConfig) {
-            this.dataScourceConfig = dataScourceConfig;
-        }
-        
-        @Override
-        public void channelReleased(Channel channel) throws Exception {
-            log.info("channelReleased. Channel ID: {}" + channel.id().asShortText());
-        }
-        
-        @Override
-        public void channelAcquired(Channel channel) throws Exception {
-            log.info("channelAcquired. Channel ID: {}" + channel.id().asShortText());
-        }
-        
-        @Override
-        public void channelCreated(Channel channel) throws Exception {
-            channel.pipeline()
-                    .addLast(new LoggingHandler(LogLevel.INFO))
-                    .addLast(new ClientHandlerInitializer(dataScourceConfig.ip, dataScourceConfig.port, dataScourceConfig.database, dataScourceConfig.username, dataScourceConfig.password));
-            log.info("channelCreated. Channel ID: {}" + channel.id().asShortText());
-        }
     }
 }

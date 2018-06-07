@@ -21,21 +21,19 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
 
 import com.google.common.primitives.Bytes;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.shardingsphere.proxy.backend.common.CommandResponsePacketsHandler;
+import io.shardingsphere.proxy.backend.constant.AuthType;
+import io.shardingsphere.proxy.config.DataScourceConfig;
 import io.shardingsphere.proxy.transport.mysql.constant.CapabilityFlag;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerInfo;
-import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
-import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextResultSetRowPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
@@ -49,72 +47,75 @@ import lombok.extern.slf4j.Slf4j;
  * Backend handler.
  *
  * @author wangkai
+ * @author linjiaqi
  */
 @Slf4j
 @RequiredArgsConstructor
 public class MySQLBackendHandler extends CommandResponsePacketsHandler {
+    private final DataScourceConfig dataScourceConfig;
     
-    private boolean authorized;
+    private AuthType authType = AuthType.UN_AUTH;
     
-    private final String ip;
-    
-    private final int port;
-    
-    private final String database;
-    
-    private final String username;
-    
-    private final String password;
-    
-    private List<ColumnDefine> columnDefines;
-    
-    private BlockingQueue<byte[]> resultSet;
+    private MySQLQueryResult mysqlQueryResult;
     
     @Override
     public void channelRead(final ChannelHandlerContext context, final Object message) {
         MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload((ByteBuf) message);
-        //int packetSize = mysqlPacketPayload.readInt3();
         int sequenceId = mysqlPacketPayload.readInt1();
+        mysqlPacketPayload.getByteBuf().markReaderIndex();
         int header = mysqlPacketPayload.readInt1() & 0xFF;
-        if (OKPacket.HEADER == header || ErrPacket.HEADER == header || EofPacket.HEADER == header) {
-            genericResponsePacket(context, sequenceId, header, mysqlPacketPayload);
-        } else if (!authorized) {
+        
+        if (AuthType.UN_AUTH == authType) {
             auth(context, sequenceId, header, mysqlPacketPayload);
+        } else if (AuthType.AUTHING == authType) {
+            genericResponsePacket(context, sequenceId, header, mysqlPacketPayload);
+        } else if (AuthType.AUTH_FAILED == authType) {
+            log.error("mysql auth failed, cannot handle channel read message");
         } else {
-            executeCommandResponsePackets(context, sequenceId, header, mysqlPacketPayload);
+            if (EofPacket.HEADER == header) {
+                endOfFilePacket(context, sequenceId, header, mysqlPacketPayload);
+            } else if (OKPacket.HEADER == header || ErrPacket.HEADER == header) {
+                genericResponsePacket(context, sequenceId, header, mysqlPacketPayload);
+            } else {
+                executeCommandResponsePackets(context, sequenceId, header, mysqlPacketPayload);
+            }
         }
     }
     
     @Override
     protected void auth(final ChannelHandlerContext context, final int sequenceId, final int header, final MySQLPacketPayload mysqlPacketPayload) {
-        int protocolVersion = header;
-        String serverVersion = mysqlPacketPayload.readStringNul();
-        int connectionId = mysqlPacketPayload.readInt4();
-        MySQLResultCache.getInstance().putConnectionMap(context.channel().id().asShortText(), connectionId);
-        byte[] authPluginDataPart1 = mysqlPacketPayload.readStringNul().getBytes();
-        int capabilityFlagsLower = mysqlPacketPayload.readInt2();
-        int charset = mysqlPacketPayload.readInt1();
-        int statusFlag = mysqlPacketPayload.readInt2();
-        int capabilityFlagsUpper = mysqlPacketPayload.readInt2();
-        int authPluginDataLength = mysqlPacketPayload.readInt1();
-        mysqlPacketPayload.skipReserved(10);
-        byte[] authPluginDataPart2 = mysqlPacketPayload.readStringNul().getBytes();
-        byte[] authPluginData = Bytes.concat(authPluginDataPart1, authPluginDataPart2);
-        //byte[] authResponse = byteXOR(SHA1(password.getBytes()), SHA1(Bytes.concat(authPluginData, SHA1(SHA1(password.getBytes())))));
-        byte[] authResponse = securePasswordAuthentication(password.getBytes(), authPluginData);
-        //TODO maxSizePactet（16MB） should be set.
-        HandshakeResponse41Packet handshakeResponse41Packet = new HandshakeResponse41Packet(sequenceId + 1, CapabilityFlag.calculateHandshakeCapabilityFlagsLower(), 16777215, ServerInfo.CHARSET,
-                username, authResponse, database);
-        context.writeAndFlush(handshakeResponse41Packet);
+        try {
+            int protocolVersion = header;
+            String serverVersion = mysqlPacketPayload.readStringNul();
+            int connectionId = mysqlPacketPayload.readInt4();
+            MySQLResultCache.getInstance().putConnection(context.channel().id().asShortText(), connectionId);
+            byte[] authPluginDataPart1 = mysqlPacketPayload.readStringNul().getBytes();
+            int capabilityFlagsLower = mysqlPacketPayload.readInt2();
+            int charset = mysqlPacketPayload.readInt1();
+            int statusFlag = mysqlPacketPayload.readInt2();
+            int capabilityFlagsUpper = mysqlPacketPayload.readInt2();
+            int authPluginDataLength = mysqlPacketPayload.readInt1();
+            mysqlPacketPayload.skipReserved(10);
+            byte[] authPluginDataPart2 = mysqlPacketPayload.readStringNul().getBytes();
+            byte[] authPluginData = Bytes.concat(authPluginDataPart1, authPluginDataPart2);
+            byte[] authResponse = securePasswordAuthentication(dataScourceConfig.getPassword().getBytes(), authPluginData);
+            //TODO maxSizePactet（16MB） should be set.
+            HandshakeResponse41Packet handshakeResponse41Packet = new HandshakeResponse41Packet(sequenceId + 1, CapabilityFlag.calculateHandshakeCapabilityFlagsLower(), 16777215, ServerInfo.CHARSET,
+                    dataScourceConfig.getUsername(), authResponse, dataScourceConfig.getDatabase());
+            context.writeAndFlush(handshakeResponse41Packet);
+        } finally {
+            authType = AuthType.AUTHING;
+            mysqlPacketPayload.getByteBuf().release();
+        }
     }
     
     @Override
     protected void genericResponsePacket(final ChannelHandlerContext context, final int sequenceId, final int header, final MySQLPacketPayload mysqlPacketPayload) {
-        CommandResponsePackets commandResponsePackets = null;
+        mysqlQueryResult = new MySQLQueryResult();
         switch (header) {
             case OKPacket.HEADER:
-                if (!authorized) {
-                    authorized = true;
+                if (authType == AuthType.AUTHING) {
+                    authType = AuthType.AUTH_SUCCESS;
                 }
                 long affectedRows = mysqlPacketPayload.readIntLenenc();
                 long lastInsertId = mysqlPacketPayload.readIntLenenc();
@@ -122,74 +123,88 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
                 int warnings = mysqlPacketPayload.readInt2();
                 String info = mysqlPacketPayload.readStringEOF();
                 log.debug("OKPacket[affectedRows={},lastInsertId={},statusFlags={},warnings={},info={}]", affectedRows, lastInsertId, statusFlags, warnings, info);
-                commandResponsePackets = new CommandResponsePackets(new OKPacket(sequenceId + 1, affectedRows, lastInsertId, statusFlags, warnings, info));
+                mysqlQueryResult.setGenericResponse(new OKPacket(sequenceId, affectedRows, lastInsertId, statusFlags, warnings, info));
                 break;
             case ErrPacket.HEADER:
+                if (authType == AuthType.AUTHING) {
+                    authType = AuthType.AUTH_FAILED;
+                }
                 int errorCode = mysqlPacketPayload.readInt2();
                 String sqlStateMarker = mysqlPacketPayload.readStringFix(1);
                 String sqlState = mysqlPacketPayload.readStringFix(5);
                 String errorMessage = mysqlPacketPayload.readStringEOF();
                 log.debug("ErrPacket[errorCode={},sqlStateMarker={},sqlState={},errorMessage={}]", errorCode, sqlStateMarker, sqlState, errorMessage);
-                commandResponsePackets = new CommandResponsePackets(new ErrPacket(sequenceId + 1, errorCode, sqlStateMarker, sqlState, errorMessage));
-                break;
-            case EofPacket.HEADER:
-                warnings = mysqlPacketPayload.readInt2();
-                statusFlags = mysqlPacketPayload.readInt2();
-                log.debug("EofPacket[warnings={},statusFlags={}]", warnings, statusFlags);
-                commandResponsePackets = new CommandResponsePackets(new EofPacket(sequenceId + 1, warnings, statusFlags));
+                mysqlQueryResult.setGenericResponse(new ErrPacket(sequenceId, errorCode, sqlStateMarker, sqlState, errorMessage));
                 break;
             default:
                 break;
         }
-        int connectionId = MySQLResultCache.getInstance().getConnectionMap(context.channel().id().asShortText());
-        if (MySQLResultCache.getInstance().get(connectionId) != null) {
-            MySQLResultCache.getInstance().get(connectionId).setResponse(commandResponsePackets);
+        
+        try {
+            int connectionId = MySQLResultCache.getInstance().getConnection(context.channel().id().asShortText());
+            if (MySQLResultCache.getInstance().getFuture(connectionId) != null) {
+                MySQLResultCache.getInstance().getFuture(connectionId).setResponse(mysqlQueryResult);
+            }
+        } finally {
+            mysqlQueryResult = null;
+            mysqlPacketPayload.getByteBuf().release();
         }
     }
     
-    //TODO
     @Override
-    protected void executeCommandResponsePackets(final ChannelHandlerContext context, final int sequenceId, final int header, final MySQLPacketPayload mysqlPacketPayload) {
-        CommandResponsePackets result = new CommandResponsePackets();
-        
-        //TODO
-        int columnCount = header <= 0xfb ? header : (int) mysqlPacketPayload.readIntLenenc();
-        if (0 == columnCount) {
-            result.addPacket(new OKPacket(sequenceId + 1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+    protected void endOfFilePacket(final ChannelHandlerContext context, final int sequenceId, final int header, final MySQLPacketPayload mysqlPacketPayload) {
+        int warnings = mysqlPacketPayload.readInt2();
+        int statusFlags = mysqlPacketPayload.readInt2();
+        log.debug("EofPacket[warnings={},statusFlags={}]", warnings, statusFlags);
+        EofPacket eofPacket = new EofPacket(sequenceId, warnings, statusFlags);
+        if (mysqlQueryResult.isColumnFinished()) {
+            mysqlQueryResult.setRowFinished(eofPacket);
+            mysqlQueryResult = null;
+            mysqlPacketPayload.getByteBuf().release();
         } else {
-            result.addPacket(new FieldCountPacket(sequenceId + 1, columnCount));
-            for (int i = 1; i <= columnCount; i++) {
-                String catalog = mysqlPacketPayload.readStringLenenc();
-                String schema = mysqlPacketPayload.readStringLenenc();
-                String table = mysqlPacketPayload.readStringLenenc();
-                String orgTable = mysqlPacketPayload.readStringLenenc();
-                String name = mysqlPacketPayload.readStringLenenc();
-                String orgName = mysqlPacketPayload.readStringLenenc();
-                mysqlPacketPayload.skipReserved(1 + 2); // fixed value and charset
-                int columnLength = mysqlPacketPayload.readInt4();
-                int columnType = mysqlPacketPayload.readInt1();
-                mysqlPacketPayload.skipReserved(2); // field flags
-                int decimals = mysqlPacketPayload.readInt1();
-                mysqlPacketPayload.skipReserved(2); // filler value 0x00 0x00
-                result.addPacket(new ColumnDefinition41Packet(sequenceId + 1, schema, table, orgTable, name, orgName,
-                        columnLength, ColumnType.valueOfJDBCType(columnType), decimals));
-            }
-            result.addPacket(new EofPacket(sequenceId + 1, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
-            
-            if (mysqlPacketPayload.isReadable()) {
-                while (mysqlPacketPayload.isReadable()) {
-                    List<Object> data = new ArrayList<>(columnCount);
-                    for (int i = 1; i <= columnCount; i++) {
-                        data.add(mysqlPacketPayload.readStringLenenc());
-                    }
-                    result.addPacket(new TextResultSetRowPacket(sequenceId + 1, data));
-                }
-                result.addPacket(new EofPacket(sequenceId + 1, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
+            mysqlQueryResult.setColumnFinished(eofPacket);
+            int connectionId = MySQLResultCache.getInstance().getConnection(context.channel().id().asShortText());
+            if (MySQLResultCache.getInstance().getFuture(connectionId) != null) {
+                MySQLResultCache.getInstance().getFuture(connectionId).setResponse(mysqlQueryResult);
             }
         }
-        
-        int connectionId = MySQLResultCache.getInstance().getConnectionMap(context.channel().id().asShortText());
-        MySQLResultCache.getInstance().get(connectionId).setResponse(result);
+    }
+    
+    @Override
+    protected void executeCommandResponsePackets(final ChannelHandlerContext context, final int sequenceId, final int header, final MySQLPacketPayload mysqlPacketPayload) {
+        if (mysqlQueryResult == null) {
+            mysqlQueryResult = new MySQLQueryResult(sequenceId, header);
+        } else if (mysqlQueryResult.needColumnDefinition()) {
+            mysqlPacketPayload.getByteBuf().resetReaderIndex();
+            String catalog = mysqlPacketPayload.readStringLenenc();
+            String schema = mysqlPacketPayload.readStringLenenc();
+            String table = mysqlPacketPayload.readStringLenenc();
+            String orgTable = mysqlPacketPayload.readStringLenenc();
+            String name = mysqlPacketPayload.readStringLenenc();
+            String orgName = mysqlPacketPayload.readStringLenenc();
+            // fixed value and charset
+            mysqlPacketPayload.skipReserved(1 + 2);
+            int columnLength = mysqlPacketPayload.readInt4();
+            int columnType = mysqlPacketPayload.readInt1();
+            // field flags
+            mysqlPacketPayload.skipReserved(2);
+            int decimals = mysqlPacketPayload.readInt1();
+            // filler value 0x00 0x00
+            mysqlPacketPayload.skipReserved(2);
+            
+            ColumnDefinition41Packet columnDefinition = new ColumnDefinition41Packet(sequenceId, schema, table, orgTable, name, orgName,
+                    columnLength, ColumnType.valueOfJDBCType(columnType), decimals);
+            mysqlQueryResult.addColumnDefinition(columnDefinition);
+        } else {
+            mysqlPacketPayload.getByteBuf().resetReaderIndex();
+            List<Object> data = new ArrayList<>(mysqlQueryResult.getColumnCount());
+            for (int i = 1; i <= mysqlQueryResult.getColumnCount(); i++) {
+                data.add(mysqlPacketPayload.readStringLenenc());
+            }
+            
+            TextResultSetRowPacket textResultSetRow = new TextResultSetRowPacket(sequenceId, data);
+            mysqlQueryResult.addTextResultSetRow(textResultSetRow);
+        }
     }
     
     @Override

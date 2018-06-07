@@ -15,32 +15,39 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.netty;
+package io.shardingsphere.proxy.backend.common;
 
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelPipeline;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.proxy.backend.common.BackendHandlerFactory;
+import io.netty.channel.pool.ChannelPoolHandler;
+import io.shardingsphere.proxy.backend.netty.ClientHandlerInitializer;
 import io.shardingsphere.proxy.config.DataScourceConfig;
-import io.shardingsphere.proxy.transport.common.codec.PacketCodecFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
- * Channel initializer.
+ * NettyChannelPoolHandler.
  *
  * @author wangkai
  * @author linjiaqi
  */
 @RequiredArgsConstructor
-public final class ClientHandlerInitializer extends ChannelInitializer<Channel> {
+@Slf4j
+public class NettyChannelPoolHandler implements ChannelPoolHandler {
     private final DataScourceConfig dataScourceConfig;
     
     @Override
-    protected void initChannel(final Channel channel) {
-        ChannelPipeline pipeline = channel.pipeline();
-        // TODO load database type from yaml or startup arguments
-        pipeline.addLast(PacketCodecFactory.createPacketCodecInstance(DatabaseType.MySQL));
-        pipeline.addLast(BackendHandlerFactory.createBackendHandlerInstance(DatabaseType.MySQL, dataScourceConfig));
+    public void channelReleased(final Channel channel) throws Exception {
+        log.info("channelReleased. Channel ID: {}" + channel.id().asShortText());
+    }
+    
+    @Override
+    public void channelAcquired(final Channel channel) throws Exception {
+        log.info("channelAcquired. Channel ID: {}" + channel.id().asShortText());
+    }
+    
+    @Override
+    public void channelCreated(final Channel channel) throws Exception {
+        log.info("channelCreated. Channel ID: {}" + channel.id().asShortText());
+        channel.pipeline().addLast(new ClientHandlerInitializer(dataScourceConfig));
     }
 }

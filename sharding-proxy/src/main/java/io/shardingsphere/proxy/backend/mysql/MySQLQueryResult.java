@@ -17,69 +17,146 @@
 
 package io.shardingsphere.proxy.backend.mysql;
 
-import io.netty.buffer.ByteBuf;
+import java.io.InputStream;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
+import com.google.common.collect.Lists;
+
 import io.shardingsphere.core.merger.QueryResult;
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextResultSetRowPacket;
-import lombok.RequiredArgsConstructor;
-
-import java.io.InputStream;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * MySQL packet query result.
  *
  * @author wangkai
+ * @author linjiaqi
  */
 
+@Slf4j
 public final class MySQLQueryResult implements QueryResult {
+    @Getter
+    private final CommandResponsePackets commandResponsePackets;
     
     private final int columnCount;
     
     private final Map<Integer, String> columnIndexAndLabelMap;
     
     private final Map<String, Integer> columnLabelAndIndexMap;
+
+    private final List<ColumnDefinition41Packet> columnDefinitions;
     
-    private final BlockingQueue<byte[]> resultSet;
+    private final BlockingQueue<MySQLPacket> resultSet;
+    
+    @Getter
+    private int currentSequenceId;
     
     private TextResultSetRowPacket currentRow;
     
-    public MySQLQueryResult(final List<ColumnDefine> columnDefines, final BlockingQueue<byte[]> resultSet) {
-        columnCount = columnDefines.size();
+    @Getter
+    private boolean columnFinished;
+    
+    public MySQLQueryResult() {
+        commandResponsePackets = new CommandResponsePackets();
+        columnCount = 0;
+        columnIndexAndLabelMap = null;
+        columnLabelAndIndexMap = null;
+        columnDefinitions = null;
+        resultSet = null;
+    }
+    
+    public MySQLQueryResult(final int sequenceId, final int columnCount) {
+        commandResponsePackets = new CommandResponsePackets(new FieldCountPacket(sequenceId, columnCount));
+        this.columnCount = columnCount;
         columnIndexAndLabelMap = new HashMap<>(columnCount, 1);
         columnLabelAndIndexMap = new HashMap<>(columnCount, 1);
-        for(int i = 0; i<=columnCount;i++){
-            columnIndexAndLabelMap.put(i, columnDefines.get(i).getName());
-            columnLabelAndIndexMap.put(columnDefines.get(i).getName(), i);
+        columnDefinitions = Lists.newArrayListWithCapacity(columnCount);
+        currentSequenceId = sequenceId;
+        resultSet = new LinkedBlockingQueue<>();
+    }
+    
+    /**
+     * Set GenericResponse to the CommandResponsePackets.
+     * @param mysqlPacket mysqlPacket
+     */
+    public void setGenericResponse(final MySQLPacket mysqlPacket) {
+        commandResponsePackets.addPacket(mysqlPacket);
+    }
+    
+    /**
+     * Whether the QueryResult is needed to add ColumnDefinition.
+     * @return whether the columnCount is larger than columnDefinitions's size
+     */
+    public boolean needColumnDefinition() {
+        return columnCount > columnDefinitions.size();
+    }
+    
+    /**
+     * Add ColumnDefinition to the QueryResult.
+     * @param columnDefinition columnDefinition
+     */
+    public void addColumnDefinition(final ColumnDefinition41Packet columnDefinition) {
+        commandResponsePackets.addPacket(columnDefinition);
+        columnDefinitions.add(columnDefinition);
+        columnIndexAndLabelMap.put(columnDefinitions.indexOf(columnDefinition) + 1, columnDefinition.getName());
+        columnLabelAndIndexMap.put(columnDefinition.getName(), columnDefinitions.indexOf(columnDefinition) + 1);
+        currentSequenceId++;
+    }
+    
+    /**
+     * Add TextResultSetRow to the QueryResult.
+     * @param textResultSetRow textResultSetRow
+     */
+    public void addTextResultSetRow(final TextResultSetRowPacket textResultSetRow) {
+        put(textResultSetRow);
+    }
+    
+    /**
+     * Set Column Finished.
+     * @param eofPacket eofPacket
+     */
+    public void setColumnFinished(final EofPacket eofPacket) {
+        commandResponsePackets.addPacket(eofPacket);
+        currentSequenceId++;
+        columnFinished = true;
+    }
+    
+    /**
+     * Set Row Finished.
+     * @param eofPacket eofPacket
+     */
+    public void setRowFinished(final EofPacket eofPacket) {
+        put(eofPacket);
+    }
+    
+    private void put(final MySQLPacket mysqlPacket) {
+        try {
+            resultSet.put(mysqlPacket);
+        } catch (InterruptedException e) {
+            log.error(e.getMessage(), e);
         }
-        columnDefines.clear();
-        this.resultSet = resultSet;
     }
     
     @Override
-    public boolean next() throws InterruptedException {
-        byte[] result = resultSet.take();
-//        if(result == "eof"){
-              resultSet.clear();
-//            reutnr false;
-//        }else{
-//            currentRow = new TextResultSetRowPacket(++currentSequenceId, result);
-//            return true;
-//        }
+    public boolean next() {
+        try {
+            MySQLPacket mysqlPacket = resultSet.take();
+            currentRow = (mysqlPacket instanceof TextResultSetRowPacket) ? (TextResultSetRowPacket) mysqlPacket : null;
+            return currentRow == null ? false : true;
+        } catch (InterruptedException e) {
+            log.error(e.getMessage(), e);
+        }
         return false;
     }
     

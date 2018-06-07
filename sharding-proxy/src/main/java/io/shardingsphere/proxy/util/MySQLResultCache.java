@@ -17,11 +17,13 @@
 
 package io.shardingsphere.proxy.util;
 
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 
-import java.util.concurrent.TimeUnit;
+import io.shardingsphere.core.merger.QueryResult;
 
 /**
  * cache for SynchronizedFuture.
@@ -32,11 +34,9 @@ public class MySQLResultCache {
     private static final MySQLResultCache INSTANCE = new MySQLResultCache();
     
     //TODO expire time should be set.
-    private Cache<Integer, SynchronizedFuture> resultCache = CacheBuilder.newBuilder().expireAfterWrite(60, TimeUnit.SECONDS).build();
+    private Cache<Integer, SynchronizedFuture<List<QueryResult>>> resultCache = CacheBuilder.newBuilder().expireAfterWrite(60, TimeUnit.SECONDS).build();
     
     private Cache<String, Integer> connectionCache = CacheBuilder.newBuilder().build();
-    
-    private Cache<String, Integer> channelCache = CacheBuilder.newBuilder().build();
     
     /**
      * put synchronizedFuture by connectionId.
@@ -44,7 +44,7 @@ public class MySQLResultCache {
      * @param connectionId       mysql connection id.
      * @param synchronizedFuture multiple result set.
      */
-    public void put(final int connectionId, final SynchronizedFuture<CommandResponsePackets> synchronizedFuture) {
+    public void putFuture(final int connectionId, final SynchronizedFuture<List<QueryResult>> synchronizedFuture) {
         resultCache.put(connectionId, synchronizedFuture);
     }
     
@@ -54,7 +54,7 @@ public class MySQLResultCache {
      * @param connectionId mysql connection id.
      * @return multiple result set.
      */
-    public SynchronizedFuture<CommandResponsePackets> get(final int connectionId) {
+    public SynchronizedFuture<List<QueryResult>> getFuture(final int connectionId) {
         return resultCache.getIfPresent(connectionId);
     }
     
@@ -63,7 +63,7 @@ public class MySQLResultCache {
      *
      * @param connectionId mysql connection id.
      */
-    public void delete(final int connectionId) {
+    public void deleteFuture(final int connectionId) {
         resultCache.invalidate(connectionId);
     }
     
@@ -73,7 +73,7 @@ public class MySQLResultCache {
      * @param channelId    netty channel id.
      * @param connectionId mysql connection id.
      */
-    public void putConnectionMap(final String channelId, final int connectionId) {
+    public void putConnection(final String channelId, final int connectionId) {
         connectionCache.put(channelId, connectionId);
     }
     
@@ -83,7 +83,7 @@ public class MySQLResultCache {
      * @param channelId netty channel id.
      * @return connectionId   mysql connection id.
      */
-    public int getConnectionMap(final String channelId) {
+    public int getConnection(final String channelId) {
         return connectionCache.getIfPresent(channelId);
     }
     

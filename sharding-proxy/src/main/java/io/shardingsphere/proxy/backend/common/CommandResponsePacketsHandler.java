@@ -25,9 +25,12 @@ import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
  * SQL execute backend handler.
  *
  * @author wangkai
+ * @author linjiaqi
  */
 public abstract class CommandResponsePacketsHandler extends ChannelInboundHandlerAdapter {
     protected abstract void auth(ChannelHandlerContext context, int sequenceId, int header, MySQLPacketPayload mysqlPacketPayload);
+    
+    protected abstract void endOfFilePacket(ChannelHandlerContext context, int sequenceId, int header, MySQLPacketPayload mysqlPacketPayload);
     
     protected abstract void genericResponsePacket(ChannelHandlerContext context, int sequenceId, int header, MySQLPacketPayload mysqlPacketPayload);
     

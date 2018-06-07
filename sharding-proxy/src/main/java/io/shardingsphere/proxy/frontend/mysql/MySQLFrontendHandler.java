@@ -51,7 +51,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
     protected void handshake(final ChannelHandlerContext context) {
         authPluginData = new AuthPluginData();
         int connectionId = ConnectionIdGenerator.getInstance().nextId();
-        MySQLResultCache.getInstance().putConnectionMap(context.channel().id().asShortText(), connectionId);
+        MySQLResultCache.getInstance().putConnection(context.channel().id().asShortText(), connectionId);
         context.writeAndFlush(new HandshakePacket(ConnectionIdGenerator.getInstance().nextId(), authPluginData));
     }
     
@@ -76,7 +76,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
                 MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message);
                 try {
                     int sequenceId = mysqlPacketPayload.readInt1();
-                    int connectionId = MySQLResultCache.getInstance().getConnectionMap(context.channel().id().asShortText());
+                    int connectionId = MySQLResultCache.getInstance().getConnection(context.channel().id().asShortText());
                     CommandPacket commandPacket = CommandPacketFactory.getCommandPacket(sequenceId, connectionId, mysqlPacketPayload);
                     for (DatabaseProtocolPacket each : commandPacket.execute().getDatabaseProtocolPackets()) {
                         context.writeAndFlush(each);

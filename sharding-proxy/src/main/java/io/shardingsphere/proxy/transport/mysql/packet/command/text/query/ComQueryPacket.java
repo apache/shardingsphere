@@ -17,6 +17,8 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command.text.query;
 
+import java.sql.SQLException;
+
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.proxy.backend.common.SQLExecuteBackendHandler;
 import io.shardingsphere.proxy.backend.common.SQLPacketsBackendHandler;
@@ -24,21 +26,22 @@ import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-
-import java.sql.SQLException;
 
 /**
  * COM_QUERY command packet.
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-query.html">COM_QUERY</a>
  *
  * @author zhangliang
+ * @author linjiaqi
  */
 @Slf4j
 public final class ComQueryPacket extends CommandPacket {
-    
-    private final String sql;
+    @Setter
+    private String sql;
     
     private final SQLExecuteBackendHandler sqlExecuteBackendHandler;
     
@@ -53,6 +56,7 @@ public final class ComQueryPacket extends CommandPacket {
     
     @Override
     public void write(final MySQLPacketPayload mysqlPacketPayload) {
+        mysqlPacketPayload.writeInt1(CommandPacketType.COM_QUERY.getValue());
         mysqlPacketPayload.writeStringEOF(sql);
     }
     
@@ -74,7 +78,7 @@ public final class ComQueryPacket extends CommandPacket {
     public boolean hasMoreResultValue() {
         try {
             if (RuleRegistry.WITHOUT_JDBC) {
-                return false;
+                return sqlPacketsBackendHandler.hasMoreResultValue();
             } else {
                 return sqlExecuteBackendHandler.hasMoreResultValue();
             }
@@ -89,6 +93,10 @@ public final class ComQueryPacket extends CommandPacket {
      * @return database protocol packet
      */
     public DatabaseProtocolPacket getResultValue() {
-        return sqlExecuteBackendHandler.getResultValue();
+        if (RuleRegistry.WITHOUT_JDBC) {
+            return sqlPacketsBackendHandler.getResultValue();
+        } else {
+            return sqlExecuteBackendHandler.getResultValue();
+        }
     }
 }
