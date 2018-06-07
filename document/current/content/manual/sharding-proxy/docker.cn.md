@@ -16,11 +16,11 @@ docker pull shardingsphere/sharding-proxy
 ``` 
 git clone https://github.com/sharding-sphere/sharding-sphere
 mvn clean install
-cd sharing-sphere/sharding-proxy
+cd sharding-sphere/sharding-proxy
 mvn clean package docker:build
 ```
 
-## 配置Sharing-Proxy
+## 配置Sharding-Proxy
 
 创建/${your_work_dir}/conf/config.yaml文件，进行分片规则配置。配置方式请参考[配置手册](/cn/manual/sharding-proxy/configuration/)。
 
@@ -38,7 +38,7 @@ docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf --env JVM_OPTS=
 
 可以自定义JVM相关参数到环境变量`JVM_OPTS`中。
 
-## 访问Sharing-Proxy
+## 访问Sharding-Proxy
 
 与连接MySQL的方式相同。
 

@@ -16,7 +16,7 @@ languageName = "English"
 
 [Languages.cn]
 #baseURL = "http://shardingsphere.io/document/current/"
-title = "Sharing-Sphere"
+title = "Sharding-Sphere"
 weight = 2
 languageName = "Chinese"
 

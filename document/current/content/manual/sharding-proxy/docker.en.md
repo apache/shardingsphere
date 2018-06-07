@@ -16,11 +16,11 @@ docker pull shardingsphere/sharding-proxy
 ``` 
 git clone https://github.com/sharding-sphere/sharding-sphere
 mvn clean install
-cd sharing-sphere/sharding-proxy
+cd sharding-sphere/sharding-proxy
 mvn clean package docker:build
 ```
 
-## Configure Sharing-Proxy
+## Configure Sharding-Proxy
 
 Create /${your_work_dir}/conf/config.yaml file to configure sharding rule. More details please reference [Configuration Manual](/en/manual/sharding-proxy/configuration/).
 
@@ -38,7 +38,7 @@ docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf --env JVM_OPTS=
 
 Set JVM relative parameters into `JVM_OPTS`.
 
-## Access Sharing-Proxy
+## Access Sharding-Proxy
 
 Same as access MySQL.
 
