@@ -24,6 +24,7 @@ public abstract class TestCallable extends Callable {
         
             System.out.println("TestCallable injectSessionExpiration==================================================" + count);
             ((BaseProvider)provider).getHolder().getZooKeeper().getTestable().injectSessionExpiration();
+//            ((BaseProvider)provider).getHolder().close();
         }
         System.out.println("TestCallable ================================================" + count);
         test();

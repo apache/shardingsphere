@@ -64,8 +64,8 @@ public class AsyncRetryCenterTest {
         AsyncRetryCenter.INSTANCE.add(new TestCreateCurrentOperation(provider, key, value, CreateMode.PERSISTENT));
         Thread.sleep(2000);
         String path = PathUtil.getRealPath(TestSupport.ROOT, key);
-        assert provider.exists(path);
-//        assert client.checkExists(path);
+//        assert provider.exists(path);
+        assert client.checkExists(path);
         client.useExecStrategy(StrategyType.USUAL);
         client.deleteAllChildren(path);
         client.deleteCurrentBranch(path);

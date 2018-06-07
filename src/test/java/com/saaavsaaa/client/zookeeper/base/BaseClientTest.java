@@ -170,7 +170,8 @@ public abstract class BaseClientTest {
     }
     
     private void updateWithCheck(String key, String value, IClient client) throws KeeperException, InterruptedException {
-        client.transaction().check(key, Constants.VERSION).setData(key, value.getBytes(Constants.UTF_8), Constants.VERSION).commit();
+        client.update(key, value);
+//        client.transaction().check(key, Constants.VERSION).setData(key, value.getBytes(Constants.UTF_8), Constants.VERSION).commit();
     }
     
     protected void persistEphemeral(IClient client) throws KeeperException, InterruptedException {

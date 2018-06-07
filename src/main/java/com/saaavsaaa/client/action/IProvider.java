@@ -30,7 +30,7 @@ public interface IProvider {
     Stack<String> getDeletingPaths(final String key);
     void executeContention(final LeaderElection election) throws KeeperException, InterruptedException;
     
-    void createInTransaction(final String key, final String value, final CreateMode createMode, final ZKTransaction transaction) throws KeeperException, InterruptedException;
+//    void createInTransaction(final String key, final String value, final CreateMode createMode, final ZKTransaction transaction) throws KeeperException, InterruptedException;
     
     void resetConnection();
 }

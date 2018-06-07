@@ -132,10 +132,10 @@ public class BaseProvider implements IProvider {
         election.executeContention(rootNode, this);
     }
     
-    @Override
+    /*@Override
     public void createInTransaction(final String key, final String value, final CreateMode createMode, final ZKTransaction transaction) throws KeeperException, InterruptedException {
         transaction.create(key, value.getBytes(Constants.UTF_8), authorities, createMode);
-    }
+    }*/
     
     @Override
     public void resetConnection() {

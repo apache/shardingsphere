@@ -15,16 +15,16 @@ import java.util.List;
  */
 public class ZKTransaction {
     private static final Logger logger = LoggerFactory.getLogger(ZKTransaction.class);
-    private final Transaction transaction;
+//    private final Transaction transaction;
     private final String rootNode;
 
     public ZKTransaction(final String root, final Holder holder) {
-        transaction = holder.getZooKeeper().transaction();
+//        transaction = holder.getZooKeeper().transaction();
         rootNode = root;
         logger.debug("ZKTransaction root:{}", rootNode);
     }
     
-    public ZKTransaction create(final String path, final byte[] data, final List<ACL> acl, final CreateMode createMode) {
+    /*public ZKTransaction create(final String path, final byte[] data, final List<ACL> acl, final CreateMode createMode) {
         this.transaction.create(PathUtil.getRealPath(rootNode, path), data, acl, createMode);
         logger.debug("wait create:{},data:{},acl:{},createMode:{}", new Object[]{path, data, acl, createMode});
         return this;
@@ -65,5 +65,5 @@ public class ZKTransaction {
     public void commit(final AsyncCallback.MultiCallback cb, final Object ctx) {
         this.transaction.commit(cb, ctx);
         logger.debug("ZKTransaction commit ctx:{}", ctx);
-    }
+    }*/
 }

@@ -25,6 +25,7 @@ public class TestCreateCurrentOperation extends CreateCurrentOperation {
     
             System.out.println("test injectSessionExpiration==================================================" + count);
             ((BaseProvider)provider).getHolder().getZooKeeper().getTestable().injectSessionExpiration();
+//            ((BaseProvider)provider).getHolder().close();
         }
         System.out.println("test ================================================" + count);
         super.execute();

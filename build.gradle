@@ -17,7 +17,7 @@
 
 group 'com.saaavsaaa'
 //version '1.0-SNAPSHOT'
-version '1.6'
+version '2.1-RELEASE'
 
 apply plugin: 'idea'
 apply plugin: 'java'
@@ -30,11 +30,20 @@ repositories {
 
 dependencies {
     // https://mvnrepository.com/artifact/org.apache.zookeeper/zookeeper
-    compile group: 'org.apache.zookeeper', name: 'zookeeper', version: '3.4.11'
+//    compile group: 'org.apache.zookeeper', name: 'zookeeper', version: '3.3.0'
+//    compile group: 'org.apache.zookeeper', name: 'zookeeper', version: '3.4.12'
+    compile group: 'org.apache.zookeeper', name: 'zookeeper', version: '3.5.3-beta'
+
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+//    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.6.1'
+
 
     testCompile group: 'junit', name: 'junit', version: '4.11'
     // https://mvnrepository.com/artifact/org.apache.zookeeper/zookeeper
+//    testCompile group: 'org.apache.zookeeper', name: 'zookeeper', version: '3.4.12'
     testCompile group: 'org.apache.zookeeper', name: 'zookeeper', version: '3.5.3-beta'
+//    testCompile group: 'org.apache.zookeeper', name: 'zookeeper', version: '3.3.0'
+//    testCompile group: 'org.slf4j', name: 'slf4j-api', version: '1.6.1'
 }
 
 uploadArchives {
