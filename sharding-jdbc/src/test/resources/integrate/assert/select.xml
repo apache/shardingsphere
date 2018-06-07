@@ -5,7 +5,7 @@
             <data expected="select/SelectOne.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectNotEqualsWithSingleTable">
+    <sql id="select_not_equal_with_single_table">
         <sharding-rule value="tbl">
             <data parameter="100000" expected="select/SelectNotEqualsWithSingleTable.xml" />
         </sharding-rule>
