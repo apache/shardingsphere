@@ -14,7 +14,7 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectNotEqualsWithSingleTableForExclamationEqual" parameters="1">
+    <parser-result sql-case-id="select_exclamation_equal_with_single_table" parameters="1">
         <tables>
             <table name="t_order_item" />
         </tables>
