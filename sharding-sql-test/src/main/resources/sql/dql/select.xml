@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sql-cases>
-    <sql-case id="select_constant" value="SELECT 1 as a" />
+    <sql-case id="select_constant_without_table" value="SELECT 1 as a" />
     <sql-case id="select_not_equal_with_single_table" value="SELECT * FROM t_order_item WHERE item_id &lt;&gt; %s ORDER BY item_id" />
     <sql-case id="assertSelectNotEqualsWithSingleTableForExclamationEqual" value="SELECT * FROM t_order_item WHERE item_id != %s ORDER BY item_id" />
     <sql-case id="assertSelectNotEqualsWithSingleTableForNotIn" value="SELECT * FROM t_order_item WHERE item_id IS NOT NULL AND item_id NOT IN (%s, %s) ORDER BY item_id" />

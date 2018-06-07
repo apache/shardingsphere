@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
-    <sql id="select_constant">
+    <sql id="select_constant_without_table">
         <sharding-rule>
             <data expected="select/SelectOne.xml" />
         </sharding-rule>

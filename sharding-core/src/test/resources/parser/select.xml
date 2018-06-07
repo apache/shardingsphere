@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parser-result-sets>
-    <parser-result sql-case-id="select_constant" />
+    <parser-result sql-case-id="select_constant_without_table" />
     
     <parser-result sql-case-id="select_not_equal_with_single_table" parameters="1">
         <tables>
