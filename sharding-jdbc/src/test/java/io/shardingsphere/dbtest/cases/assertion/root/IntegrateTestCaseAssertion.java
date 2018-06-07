@@ -18,7 +18,6 @@
 package io.shardingsphere.dbtest.cases.assertion.root;
 
 import com.google.common.base.Splitter;
-import io.shardingsphere.dbtest.common.SQLValue;
 import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlAccessType;

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.common;
+package io.shardingsphere.dbtest.cases.assertion.root;
 
 import io.shardingsphere.dbtest.cases.dataset.init.DataSetMetadata;
 import lombok.Getter;
