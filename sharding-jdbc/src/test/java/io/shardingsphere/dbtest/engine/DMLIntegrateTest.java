@@ -183,28 +183,33 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
             expected = (DataSetsRoot) JAXBContext.newInstance(DataSetsRoot.class).createUnmarshaller().unmarshal(reader);
         }
         assertThat("Only support single table for DML.", expected.getMetadataList().size(), is(1));
-        DataSetMetadata dataSetMetadata = expected.getMetadataList().get(0);
-        for (String each : new InlineExpressionParser(dataSetMetadata.getDataNodes()).evaluate()) {
+        DataSetMetadata expectedDataSetMetadata = expected.getMetadataList().get(0);
+        for (String each : new InlineExpressionParser(expectedDataSetMetadata.getDataNodes()).evaluate()) {
             DataNode dataNode = new DataNode(each);
             try (Connection connection = getDataSourceMap().get(dataNode.getDataSourceName()).getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(String.format("SELECT * FROM %s", dataNode.getTableName()))) {
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    int count = 0;
-                    while (resultSet.next()) {
-                        List<String> actualResultSetData = getResultSetData(dataSetMetadata, resultSet);
-                        assertTrue(String.format("Cannot find actual record '%s' from data node '%s'", actualResultSetData, each), isMatch(each, actualResultSetData, expected.getDataSetRows()));
-                        count++;
-                    }
-                    assertThat(String.format("Count of records are different for data node '%s'", each), count, is(countExpectedDataSetRows(each, expected.getDataSetRows())));
-                }
+                assertDataSet(preparedStatement, each, expected.getDataSetRows(), expectedDataSetMetadata);
             }
         }
     }
     
-    private List<String> getResultSetData(final DataSetMetadata dataSetMetadata, final ResultSet resultSet) throws SQLException {
-        List<String> result = new ArrayList<>(dataSetMetadata.getColumnMetadataList().size());
-        for (DataSetColumnMetadata each : dataSetMetadata.getColumnMetadataList()) {
-            Object resultSetValue = resultSet.getObject(each.getName());
+    private void assertDataSet(final PreparedStatement actualPreparedStatement, final String actualDataNode, 
+                               final List<DataSetRow> expectedDataSetRows, final DataSetMetadata expectedDataSetMetadata) throws SQLException {
+        try (ResultSet actualResultSet = actualPreparedStatement.executeQuery()) {
+            int count = 0;
+            while (actualResultSet.next()) {
+                List<String> actualResultSetData = getResultSetData(actualResultSet, expectedDataSetMetadata);
+                assertTrue(String.format("Cannot find actual record '%s' from data node '%s'", actualResultSetData, actualDataNode), isMatch(actualDataNode, actualResultSetData, expectedDataSetRows));
+                count++;
+            }
+            assertThat(String.format("Count of records are different for data node '%s'", actualDataNode), count, is(countExpectedDataSetRows(actualDataNode, expectedDataSetRows)));
+        }
+    }
+    
+    private List<String> getResultSetData(final ResultSet actualResultSet, final DataSetMetadata expectedDataSetMetadata) throws SQLException {
+        List<String> result = new ArrayList<>(expectedDataSetMetadata.getColumnMetadataList().size());
+        for (DataSetColumnMetadata each : expectedDataSetMetadata.getColumnMetadataList()) {
+            Object resultSetValue = actualResultSet.getObject(each.getName());
             result.add(resultSetValue instanceof Date ? new SimpleDateFormat("yyyy-MM-dd").format(resultSetValue) : resultSetValue.toString());
         }
         return result;
