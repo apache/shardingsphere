@@ -29,6 +29,8 @@ import io.shardingsphere.dbtest.cases.dataset.init.DataSetRow;
 import io.shardingsphere.dbtest.cases.dataset.init.DataSetsRoot;
 import io.shardingsphere.dbtest.common.SQLValue;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
+import io.shardingsphere.dbtest.env.EnvironmentPath;
+import io.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
 import org.junit.After;
@@ -98,16 +100,16 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
     }
     
     @Before
-    public void insertData() throws SQLException, ParseException {
+    public void insertData() throws SQLException, ParseException, IOException, JAXBException {
         if (getDatabaseTypeEnvironment().isEnabled()) {
-            getDataSetEnvironmentManager().initialize();
+            new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(assertion.getShardingRuleType()), getDataSourceMap()).initialize();
         }
     }
     
     @After
-    public void clearData() throws SQLException {
+    public void clearData() throws SQLException, IOException, JAXBException {
         if (getDatabaseTypeEnvironment().isEnabled()) {
-            getDataSetEnvironmentManager().clear();
+            new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(assertion.getShardingRuleType()), getDataSourceMap()).clear();
         }
     }
     

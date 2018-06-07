@@ -29,7 +29,6 @@ import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.dbtest.env.IntegrateTestEnvironment;
-import io.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
 import io.shardingsphere.dbtest.env.datasource.DataSourceUtil;
 import io.shardingsphere.dbtest.env.schema.SchemaEnvironmentManager;
 import io.shardingsphere.test.sql.SQLCaseType;
@@ -77,8 +76,6 @@ public abstract class BaseIntegrateTest {
     
     private final DataSource dataSource;
     
-    private final DataSetEnvironmentManager dataSetEnvironmentManager;
-    
     public BaseIntegrateTest(final String sqlCaseId, final String path, final IntegrateTestCaseAssertion assertion, 
                              final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType, final int countInSameCase) throws IOException, JAXBException, SQLException {
         this.databaseTypeEnvironment = databaseTypeEnvironment;
@@ -90,11 +87,9 @@ public abstract class BaseIntegrateTest {
         if (databaseTypeEnvironment.isEnabled()) {
             dataSourceMap = createDataSourceMap(assertion);
             dataSource = createDataSource(dataSourceMap);
-            dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(assertion.getShardingRuleType()), dataSourceMap);
         } else {
             dataSourceMap = null;
             dataSource = null;
-            dataSetEnvironmentManager = null;
         }
     }
     
