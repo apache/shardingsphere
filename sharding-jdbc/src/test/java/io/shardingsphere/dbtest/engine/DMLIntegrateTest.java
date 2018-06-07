@@ -120,17 +120,26 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
         }
         try (Connection connection = getDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
-                try (Statement statement = connection.createStatement()) {
-                    assertThat(statement.executeUpdate(String.format(getSql(), assertion.getSQLValues().toArray())), is(assertion.getExpectedUpdate()));
-                }
+                assertExecuteUpdateForStatement(connection);
             } else {
-                try (PreparedStatement preparedStatement = connection.prepareStatement(getSql().replaceAll("%s", "?"))) {
-                    for (SQLValue each : assertion.getSQLValues()) {
-                        preparedStatement.setObject(each.getIndex(), each.getValue());
-                    }
-                    assertThat(preparedStatement.executeUpdate(), is(assertion.getExpectedUpdate()));
-                }
+                assertExecuteUpdateForPreparedStatement(connection);
             }
+        }
+    }
+    
+    private void assertExecuteUpdateForStatement(final Connection connection) throws SQLException, ParseException, IOException, JAXBException {
+        try (Statement statement = connection.createStatement()) {
+            assertThat(statement.executeUpdate(String.format(getSql(), assertion.getSQLValues().toArray())), is(assertion.getExpectedUpdate()));
+        }
+        assertDataSet();
+    }
+    
+    private void assertExecuteUpdateForPreparedStatement(final Connection connection) throws SQLException, ParseException, IOException, JAXBException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getSql().replaceAll("%s", "?"))) {
+            for (SQLValue each : assertion.getSQLValues()) {
+                preparedStatement.setObject(each.getIndex(), each.getValue());
+            }
+            assertThat(preparedStatement.executeUpdate(), is(assertion.getExpectedUpdate()));
         }
         assertDataSet();
     }
@@ -142,19 +151,28 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
         }
         try (Connection connection = getDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
-                try (Statement statement = connection.createStatement()) {
-                    assertFalse("Not a DML statement.", statement.execute(String.format(getSql(), assertion.getSQLValues().toArray())));
-                    assertThat(statement.getUpdateCount(), is(assertion.getExpectedUpdate()));
-                }
+                assertExecuteForStatement(connection);
             } else {
-                try (PreparedStatement preparedStatement = connection.prepareStatement(getSql().replaceAll("%s", "?"))) {
-                    for (SQLValue each : assertion.getSQLValues()) {
-                        preparedStatement.setObject(each.getIndex(), each.getValue());
-                    }
-                    assertFalse("Not a DML statement.", preparedStatement.execute());
-                    assertThat(preparedStatement.getUpdateCount(), is(assertion.getExpectedUpdate()));
-                }
+                assertExecuteForPreparedStatement(connection);
             }
+        }
+    }
+    
+    private void assertExecuteForStatement(final Connection connection) throws SQLException, ParseException, IOException, JAXBException {
+        try (Statement statement = connection.createStatement()) {
+            assertFalse("Not a DML statement.", statement.execute(String.format(getSql(), assertion.getSQLValues().toArray())));
+            assertThat(statement.getUpdateCount(), is(assertion.getExpectedUpdate()));
+        }
+        assertDataSet();
+    }
+    
+    private void assertExecuteForPreparedStatement(final Connection connection) throws SQLException, ParseException, IOException, JAXBException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getSql().replaceAll("%s", "?"))) {
+            for (SQLValue each : assertion.getSQLValues()) {
+                preparedStatement.setObject(each.getIndex(), each.getValue());
+            }
+            assertFalse("Not a DML statement.", preparedStatement.execute());
+            assertThat(preparedStatement.getUpdateCount(), is(assertion.getExpectedUpdate()));
         }
         assertDataSet();
     }
