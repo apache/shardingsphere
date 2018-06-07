@@ -183,7 +183,7 @@ weight = 1
 | defaultDataSourceName (?)                 | String                                     | 未配置分片规则的表将通过默认数据源定位                                       |
 | defaultDatabaseShardingStrategyConfig (?) | ShardingStrategyConfiguration              | 默认分库策略                                                              |
 | defaultTableShardingStrategyConfig (?)    | ShardingStrategyConfiguration              | 默认分表策略                                                              |
-| defaultKeyGenerator (?)                   | KeyGenerator                               | 默认自增列值生成器，缺省使用io.shardingjdbc.core.keygen.DefaultKeyGenerator |
+| defaultKeyGenerator (?)                   | KeyGenerator                               | 默认自增列值生成器，缺省使用io.shardingsphere.core.keygen.DefaultKeyGenerator |
 | masterSlaveRuleConfigs (?)                | Collection\<MasterSlaveRuleConfiguration\> | 读写分离规则，缺省表示不使用读写分离                                         |
 
 #### TableRuleConfiguration

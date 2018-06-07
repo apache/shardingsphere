@@ -19,11 +19,11 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
        xmlns:p="http://www.springframework.org/schema/p"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:sharding="http://shardingjdbc.io/schema/shardingjdbc/sharding"
+       xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/sharding"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd
-                        http://shardingjdbc.io/schema/shardingjdbc/sharding 
-                        http://shardingjdbc.io/schema/shardingjdbc/sharding/sharding.xsd
+                        http://shardingsphere.io/schema/shardingsphere/sharding 
+                        http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
                         http://www.springframework.org/schema/context
                         http://www.springframework.org/schema/context/spring-context.xsd
                         http://www.springframework.org/schema/tx
@@ -88,15 +88,15 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:p="http://www.springframework.org/schema/p"
        xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:master-slave="http://shardingjdbc.io/schema/shardingjdbc/masterslave"
+       xmlns:master-slave="http://shardingsphere.io/schema/shardingsphere/masterslave"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd 
                         http://www.springframework.org/schema/context 
                         http://www.springframework.org/schema/context/spring-context.xsd
                         http://www.springframework.org/schema/tx 
                         http://www.springframework.org/schema/tx/spring-tx.xsd
-                        http://shardingjdbc.io/schema/shardingjdbc/masterslave  
-                        http://shardingjdbc.io/schema/shardingjdbc/masterslave/master-slave.xsd">
+                        http://shardingsphere.io/schema/shardingsphere/masterslave  
+                        http://shardingsphere.io/schema/shardingsphere/masterslave/master-slave.xsd">
     <context:annotation-config />
     <context:component-scan base-package="io.shardingsphere.example.spring.namespace.jpa" />
     
@@ -138,7 +138,7 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
         <property name="password" value="" />
     </bean>
     
-    <bean id="randomStrategy" class="io.shardingjdbc.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
+    <bean id="randomStrategy" class="io.shardingsphere.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
     
     <master-slave:data-source id="masterSlaveDataSource" master-data-source-name="ds_master" slave-data-source-names="ds_slave_0, ds_slave_1" strategy-ref="randomStrategy" />
 </beans>
@@ -153,18 +153,18 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
        xmlns:p="http://www.springframework.org/schema/p"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:sharding="http://shardingjdbc.io/schema/shardingjdbc/sharding"
-       xmlns:master-slave="http://shardingjdbc.io/schema/shardingjdbc/masterslave"
+       xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/sharding"
+       xmlns:master-slave="http://shardingsphere.io/schema/shardingsphere/masterslave"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://www.springframework.org/schema/context
                         http://www.springframework.org/schema/context/spring-context.xsd
                         http://www.springframework.org/schema/tx
                         http://www.springframework.org/schema/tx/spring-tx.xsd
-                        http://shardingjdbc.io/schema/shardingjdbc/sharding 
-                        http://shardingjdbc.io/schema/shardingjdbc/sharding/sharding.xsd
-                        http://shardingjdbc.io/schema/shardingjdbc/masterslave
-                        http://shardingjdbc.io/schema/shardingjdbc/masterslave/master-slave.xsd">
+                        http://shardingsphere.io/schema/shardingsphere/sharding 
+                        http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
+                        http://shardingsphere.io/schema/shardingsphere/masterslave
+                        http://shardingsphere.io/schema/shardingsphere/masterslave/master-slave.xsd">
     <context:annotation-config />
     <context:component-scan base-package="io.shardingsphere.example.spring.namespace.jpa" />
     
@@ -253,17 +253,17 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-       xmlns:sharding="http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding"
-       xmlns:master-slave="http://shardingjdbc.io/schema/shardingjdbc/orchestration/masterslave"
-       xmlns:reg="http://shardingjdbc.io/schema/shardingjdbc/orchestration/reg"
+       xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/orchestration/sharding"
+       xmlns:master-slave="http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave"
+       xmlns:reg="http://shardingsphere.io/schema/shardingsphere/orchestration/reg"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
-                           http://shardingjdbc.io/schema/shardingjdbc/orchestration/reg 
-                           http://shardingjdbc.io/schema/shardingjdbc/orchestration/reg/reg.xsd
-                           http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding 
-                           http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding/sharding.xsd
-                           http://shardingjdbc.io/schema/shardingjdbc/orchestration/masterslave  
-                           http://shardingjdbc.io/schema/shardingjdbc/orchestration/masterslave/master-slave.xsd">
+                           http://shardingsphere.io/schema/shardingsphere/orchestration/reg 
+                           http://shardingsphere.io/schema/shardingsphere/orchestration/reg/reg.xsd
+                           http://shardingsphere.io/schema/shardingsphere/orchestration/sharding 
+                           http://shardingsphere.io/schema/shardingsphere/orchestration/sharding/sharding.xsd
+                           http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave  
+                           http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave/master-slave.xsd">
     
     <reg:zookeeper id="regCenter" server-lists="localhost:2181" namespace="orchestration-spring-namespace-demo" overwtite="false" />
     <sharding:data-source id="shardingMasterSlaveDataSource" registry-center-ref="regCenter" />
@@ -277,17 +277,17 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-       xmlns:sharding="http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding"
-       xmlns:master-slave="http://shardingjdbc.io/schema/shardingjdbc/orchestration/masterslave"
-       xmlns:reg="http://shardingjdbc.io/schema/shardingjdbc/orchestration/reg"
+       xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/orchestration/sharding"
+       xmlns:master-slave="http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave"
+       xmlns:reg="http://shardingsphere.io/schema/shardingsphere/orchestration/reg"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
-                           http://shardingjdbc.io/schema/shardingjdbc/orchestration/reg 
-                           http://shardingjdbc.io/schema/shardingjdbc/orchestration/reg/reg.xsd
-                           http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding 
-                           http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding/sharding.xsd
-                           http://shardingjdbc.io/schema/shardingjdbc/orchestration/masterslave  
-                           http://shardingjdbc.io/schema/shardingjdbc/orchestration/masterslave/master-slave.xsd">
+                           http://shardingsphere.io/schema/shardingsphere/orchestration/reg 
+                           http://shardingsphere.io/schema/shardingsphere/orchestration/reg/reg.xsd
+                           http://shardingsphere.io/schema/shardingsphere/orchestration/sharding 
+                           http://shardingsphere.io/schema/shardingsphere/orchestration/sharding/sharding.xsd
+                           http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave  
+                           http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave/master-slave.xsd">
     
     <reg:etcd id="regCenter" server-lists="http://localhost:2379" />
     <sharding:data-source id="shardingMasterSlaveDataSource" registry-center-ref="regCenter" />
@@ -299,7 +299,7 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
 
 ### Sharding
 
-Namespace: http://shardingjdbc.io/schema/shardingjdbc/sharding/sharding.xsd
+Namespace: http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
 
 #### \<sharding:data-source />
 
@@ -401,7 +401,7 @@ Namespace: http://shardingjdbc.io/schema/shardingjdbc/sharding/sharding.xsd
 
 ### Read-write splitting
 
-Namespace: http://shardingjdbc.io/schema/shardingjdbc/masterslave/master-slave.xsd
+Namespace: http://shardingsphere.io/schema/shardingsphere/masterslave/master-slave.xsd
 
 #### \<master-slave:data-source />
 
@@ -418,7 +418,7 @@ Namespace: http://shardingjdbc.io/schema/shardingjdbc/masterslave/master-slave.x
 
 ### Sharding + orchestration
 
-Namespace: http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding/sharding.xsd
+Namespace: http://shardingsphere.io/schema/shardingsphere/orchestration/sharding/sharding.xsd
 
 #### \<sharding:data-source />
 
@@ -433,7 +433,7 @@ Namespace: http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding/sha
 
 ### Read-write splitting + orchestration
 
-Namespace: http://shardingjdbc.io/schema/shardingjdbc/orchestration/masterslave/master-slave.xsd
+Namespace: http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave/master-slave.xsd
 
 #### \<master-slave:data-source />
 
@@ -450,7 +450,7 @@ Namespace: http://shardingjdbc.io/schema/shardingjdbc/orchestration/masterslave/
 
 ### Orchestration registry center
 
-Namespace: http://shardingjdbc.io/schema/shardingjdbc/orchestration/reg/reg.xsd
+Namespace: http://shardingsphere.io/schema/shardingsphere/orchestration/reg/reg.xsd
 
 #### \<reg:zookeeper />
 

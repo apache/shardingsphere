@@ -26,7 +26,7 @@ weight = 2
 
 在数据库中应该用大于等于64bit的数字类型的字段来保存该值，比如在MySQL中应该使用BIGINT。
 
-类名称：`io.shardingjdbc.core.keygen.DefaultKeyGenerator`
+类名称：`io.shardingsphere.core.keygen.DefaultKeyGenerator`
 
 ### 时间位(41bit)
 

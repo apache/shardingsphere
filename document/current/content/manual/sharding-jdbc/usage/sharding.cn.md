@@ -181,11 +181,11 @@ sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.algorith
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xmlns:sharding="http://shardingjdbc.io/schema/shardingjdbc/sharding" 
+    xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/sharding" 
     xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd
-                        http://shardingjdbc.io/schema/shardingjdbc/sharding 
-                        http://shardingjdbc.io/schema/shardingjdbc/sharding/sharding.xsd 
+                        http://shardingsphere.io/schema/shardingsphere/sharding 
+                        http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd 
                         ">
     <bean id="ds_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />

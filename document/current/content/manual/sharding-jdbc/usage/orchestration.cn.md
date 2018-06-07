@@ -90,11 +90,11 @@ sharding.jdbc.config.orchestration.zookeeper.namespace=sharding-jdbc-orchestrati
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xmlns:sharding="http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding" 
+    xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/orchestration/sharding" 
     xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd
-                        http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding 
-                        http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding/sharding.xsd
+                        http://shardingsphere.io/schema/shardingsphere/orchestration/sharding 
+                        http://shardingsphere.io/schema/shardingsphere/orchestration/sharding/sharding.xsd
                         ">
     <sharding:data-source id="shardingDatabaseTableDataSource" registry-center-ref="regCenter" />
 </beans>

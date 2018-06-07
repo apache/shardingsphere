@@ -161,11 +161,11 @@ sharding.jdbc.config.masterslave.slave-data-source-names=ds_slave_0,ds_slave_1
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xmlns:sharding="http://shardingjdbc.io/schema/shardingjdbc/masterslave" 
+    xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/masterslave" 
     xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd
-                        http://shardingjdbc.io/schema/shardingjdbc/masterslave 
-                        http://shardingjdbc.io/schema/shardingjdbc/sharding/master-slave.xsd 
+                        http://shardingsphere.io/schema/shardingsphere/masterslave 
+                        http://shardingsphere.io/schema/shardingsphere/sharding/master-slave.xsd 
                         ">
     <bean id="ds_master" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />

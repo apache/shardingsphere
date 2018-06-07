@@ -69,6 +69,6 @@ Sharding在很多情况下需要投票。选票可以视情况通过手机、电
 
 ## 即时通信
 
-* [Gitter](https://gitter.im/Sharding-JDBC/shardingjdbc)
+* [Gitter](https://gitter.im/shardingsphere/Lobby)
 
 * [Slack](https://sharding.slack.com)

@@ -19,24 +19,24 @@ weight = 4
        xmlns:p="http://www.springframework.org/schema/p"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:sharding="http://shardingjdbc.io/schema/shardingjdbc/sharding"
+       xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/sharding"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd
-                        http://shardingjdbc.io/schema/shardingjdbc/sharding 
-                        http://shardingjdbc.io/schema/shardingjdbc/sharding/sharding.xsd
+                        http://shardingsphere.io/schema/shardingsphere/sharding 
+                        http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
                         http://www.springframework.org/schema/context
                         http://www.springframework.org/schema/context/spring-context.xsd
                         http://www.springframework.org/schema/tx
                         http://www.springframework.org/schema/tx/spring-tx.xsd">
     <context:annotation-config />
-    <context:component-scan base-package="io.shardingjdbc.example.spring.namespace.jpa" />
+    <context:component-scan base-package="io.shardingsphere.example.spring.namespace.jpa" />
     
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="shardingDataSource" />
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:database="MYSQL" />
         </property>
-        <property name="packagesToScan" value="io.shardingjdbc.example.spring.namespace.jpa.entity" />
+        <property name="packagesToScan" value="io.shardingsphere.example.spring.namespace.jpa.entity" />
         <property name="jpaProperties">
             <props>
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
@@ -62,8 +62,8 @@ weight = 4
         <property name="password" value="" />
     </bean>
     
-    <bean id="preciseModuloDatabaseShardingAlgorithm" class="io.shardingjdbc.example.spring.namespace.jpa.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
-    <bean id="preciseModuloTableShardingAlgorithm" class="io.shardingjdbc.example.spring.namespace.jpa.algorithm.PreciseModuloTableShardingAlgorithm" />
+    <bean id="preciseModuloDatabaseShardingAlgorithm" class="io.shardingsphere.example.spring.namespace.jpa.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
+    <bean id="preciseModuloTableShardingAlgorithm" class="io.shardingsphere.example.spring.namespace.jpa.algorithm.PreciseModuloTableShardingAlgorithm" />
     
     <sharding:standard-strategy id="databaseShardingStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
     <sharding:standard-strategy id="tableShardingStrategy" sharding-column="order_id" precise-algorithm-ref="preciseModuloTableShardingAlgorithm" />
@@ -88,24 +88,24 @@ weight = 4
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:p="http://www.springframework.org/schema/p"
        xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:master-slave="http://shardingjdbc.io/schema/shardingjdbc/masterslave"
+       xmlns:master-slave="http://shardingsphere.io/schema/shardingsphere/masterslave"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd 
                         http://www.springframework.org/schema/context 
                         http://www.springframework.org/schema/context/spring-context.xsd
                         http://www.springframework.org/schema/tx 
                         http://www.springframework.org/schema/tx/spring-tx.xsd
-                        http://shardingjdbc.io/schema/shardingjdbc/masterslave  
-                        http://shardingjdbc.io/schema/shardingjdbc/masterslave/master-slave.xsd">
+                        http://shardingsphere.io/schema/shardingsphere/masterslave  
+                        http://shardingsphere.io/schema/shardingsphere/masterslave/master-slave.xsd">
     <context:annotation-config />
-    <context:component-scan base-package="io.shardingjdbc.example.spring.namespace.jpa" />
+    <context:component-scan base-package="io.shardingsphere.example.spring.namespace.jpa" />
     
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="masterSlaveDataSource" />
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:database="MYSQL" />
         </property>
-        <property name="packagesToScan" value="io.shardingjdbc.example.spring.namespace.jpa.entity" />
+        <property name="packagesToScan" value="io.shardingsphere.example.spring.namespace.jpa.entity" />
         <property name="jpaProperties">
             <props>
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
@@ -138,7 +138,7 @@ weight = 4
         <property name="password" value="" />
     </bean>
     
-    <bean id="randomStrategy" class="io.shardingjdbc.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
+    <bean id="randomStrategy" class="io.shardingsphere.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
     
     <master-slave:data-source id="masterSlaveDataSource" master-data-source-name="ds_master" slave-data-source-names="ds_slave_0, ds_slave_1" strategy-ref="randomStrategy" />
 </beans>
@@ -153,27 +153,27 @@ weight = 4
        xmlns:p="http://www.springframework.org/schema/p"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:sharding="http://shardingjdbc.io/schema/shardingjdbc/sharding"
-       xmlns:master-slave="http://shardingjdbc.io/schema/shardingjdbc/masterslave"
+       xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/sharding"
+       xmlns:master-slave="http://shardingsphere.io/schema/shardingsphere/masterslave"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://www.springframework.org/schema/context
                         http://www.springframework.org/schema/context/spring-context.xsd
                         http://www.springframework.org/schema/tx
                         http://www.springframework.org/schema/tx/spring-tx.xsd
-                        http://shardingjdbc.io/schema/shardingjdbc/sharding 
-                        http://shardingjdbc.io/schema/shardingjdbc/sharding/sharding.xsd
-                        http://shardingjdbc.io/schema/shardingjdbc/masterslave
-                        http://shardingjdbc.io/schema/shardingjdbc/masterslave/master-slave.xsd">
+                        http://shardingsphere.io/schema/shardingsphere/sharding 
+                        http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
+                        http://shardingsphere.io/schema/shardingsphere/masterslave
+                        http://shardingsphere.io/schema/shardingsphere/masterslave/master-slave.xsd">
     <context:annotation-config />
-    <context:component-scan base-package="io.shardingjdbc.example.spring.namespace.jpa" />
+    <context:component-scan base-package="io.shardingsphere.example.spring.namespace.jpa" />
     
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="shardingDataSource" />
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:database="MYSQL" />
         </property>
-        <property name="packagesToScan" value="io.shardingjdbc.example.spring.namespace.jpa.entity" />
+        <property name="packagesToScan" value="io.shardingsphere.example.spring.namespace.jpa.entity" />
         <property name="jpaProperties">
             <props>
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
@@ -227,7 +227,7 @@ weight = 4
         <property name="password" value="" />
     </bean>
 
-    <bean id="randomStrategy" class="io.shardingjdbc.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
+    <bean id="randomStrategy" class="io.shardingsphere.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
 
     <master-slave:data-source id="ds_ms_0" master-data-source-name="ds_master_0" slave-data-source-names="ds_master_0_slave_0, ds_master_0_slave_1" strategy-ref="randomStrategy" />
     <master-slave:data-source id="ds_ms_1" master-data-source-name="ds_master_1" slave-data-source-names="ds_master_1_slave_0, ds_master_1_slave_1" strategy-ref="randomStrategy" />
@@ -253,17 +253,17 @@ weight = 4
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-       xmlns:sharding="http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding"
-       xmlns:master-slave="http://shardingjdbc.io/schema/shardingjdbc/orchestration/masterslave"
-       xmlns:reg="http://shardingjdbc.io/schema/shardingjdbc/orchestration/reg"
+       xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/orchestration/sharding"
+       xmlns:master-slave="http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave"
+       xmlns:reg="http://shardingsphere.io/schema/shardingsphere/orchestration/reg"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
-                           http://shardingjdbc.io/schema/shardingjdbc/orchestration/reg 
-                           http://shardingjdbc.io/schema/shardingjdbc/orchestration/reg/reg.xsd
-                           http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding 
-                           http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding/sharding.xsd
-                           http://shardingjdbc.io/schema/shardingjdbc/orchestration/masterslave  
-                           http://shardingjdbc.io/schema/shardingjdbc/orchestration/masterslave/master-slave.xsd">
+                           http://shardingsphere.io/schema/shardingsphere/orchestration/reg 
+                           http://shardingsphere.io/schema/shardingsphere/orchestration/reg/reg.xsd
+                           http://shardingsphere.io/schema/shardingsphere/orchestration/sharding 
+                           http://shardingsphere.io/schema/shardingsphere/orchestration/sharding/sharding.xsd
+                           http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave  
+                           http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave/master-slave.xsd">
     
     <reg:zookeeper id="regCenter" server-lists="localhost:2181" namespace="orchestration-spring-namespace-demo" overwtite="false" />
     <sharding:data-source id="shardingMasterSlaveDataSource" registry-center-ref="regCenter" />
@@ -277,17 +277,17 @@ weight = 4
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-       xmlns:sharding="http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding"
-       xmlns:master-slave="http://shardingjdbc.io/schema/shardingjdbc/orchestration/masterslave"
-       xmlns:reg="http://shardingjdbc.io/schema/shardingjdbc/orchestration/reg"
+       xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/orchestration/sharding"
+       xmlns:master-slave="http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave"
+       xmlns:reg="http://shardingsphere.io/schema/shardingsphere/orchestration/reg"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
-                           http://shardingjdbc.io/schema/shardingjdbc/orchestration/reg 
-                           http://shardingjdbc.io/schema/shardingjdbc/orchestration/reg/reg.xsd
-                           http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding 
-                           http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding/sharding.xsd
-                           http://shardingjdbc.io/schema/shardingjdbc/orchestration/masterslave  
-                           http://shardingjdbc.io/schema/shardingjdbc/orchestration/masterslave/master-slave.xsd">
+                           http://shardingsphere.io/schema/shardingsphere/orchestration/reg 
+                           http://shardingsphere.io/schema/shardingsphere/orchestration/reg/reg.xsd
+                           http://shardingsphere.io/schema/shardingsphere/orchestration/sharding 
+                           http://shardingsphere.io/schema/shardingsphere/orchestration/sharding/sharding.xsd
+                           http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave  
+                           http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave/master-slave.xsd">
     
     <reg:etcd id="regCenter" server-lists="http://localhost:2379" />
     <sharding:data-source id="shardingMasterSlaveDataSource" registry-center-ref="regCenter" />
@@ -299,7 +299,7 @@ weight = 4
 
 ### 分库分表
 
-命名空间：http://shardingjdbc.io/schema/shardingjdbc/sharding/sharding.xsd
+命名空间：http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
 
 #### \<sharding:data-source />
 
@@ -320,7 +320,7 @@ weight = 4
 | default-data-source-name (?)      | 属性  | 未配置分片规则的表将通过默认数据源定位                                                                       |
 | default-database-strategy-ref (?) | 属性  | 默认数据库分片策略，对应\<sharding:xxx-strategy>中的策略Id，缺省表示不分库                                    |
 | default-table-strategy-ref (?)    | 属性  | 默认表分片策略，对应\<sharding:xxx-strategy>中的策略Id，缺省表示不分表                                       |
-| default-key-generator-ref (?)     | 属性  | 默认自增列值生成器引用，缺省使用`io.shardingjdbc.core.keygen.DefaultKeyGenerator`。该类需实现KeyGenerator接口 |
+| default-key-generator-ref (?)     | 属性  | 默认自增列值生成器引用，缺省使用`io.shardingsphere.core.keygen.DefaultKeyGenerator`。该类需实现KeyGenerator接口 |
 
 #### \<sharding:table-rules />
 
@@ -401,7 +401,7 @@ weight = 4
 
 ### 读写分离
 
-命名空间：http://shardingjdbc.io/schema/shardingjdbc/masterslave/master-slave.xsd
+命名空间：http://shardingsphere.io/schema/shardingsphere/masterslave/master-slave.xsd
 
 #### \<master-slave:data-source />
 
@@ -418,7 +418,7 @@ weight = 4
 
 ### 数据分片 + 数据治理
 
-命名空间：http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding/sharding.xsd
+命名空间：http://shardingsphere.io/schema/shardingsphere/orchestration/sharding/sharding.xsd
 
 #### \<sharding:data-source />
 
@@ -433,7 +433,7 @@ weight = 4
 
 ### 读写分离 + 数据治理
 
-命名空间：http://shardingjdbc.io/schema/shardingjdbc/orchestration/masterslave/master-slave.xsd
+命名空间：http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave/master-slave.xsd
 
 #### \<master-slave:data-source />
 
@@ -450,7 +450,7 @@ weight = 4
 
 ### 数据治理注册中心
 
-命名空间：http://shardingjdbc.io/schema/shardingjdbc/orchestration/reg/reg.xsd
+命名空间：http://shardingsphere.io/schema/shardingsphere/orchestration/reg/reg.xsd
 
 #### \<reg:zookeeper />
 

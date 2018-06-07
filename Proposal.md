@@ -6,19 +6,19 @@ Sharding is a distributed database middleware, focus on data sharding, read-writ
 
 ## Proposal
 
-Sharding has good community in China, it has many end users, including [companies and organizations](http://shardingjdbc.io/community/en/03-company/). 
+Sharding has good community in China, it has many end users, including [companies and organizations](http://shardingsphere.io/community/en/company/). 
 
 We want to bring Sharding into Apache Software Foundation in order to build a global, diverse and stronger open source community.
 
 Dangdang submits this proposal to donate Sharding's source codes and all related documentations to the Apache Software Foundation. The codes are already under Apache License Version 2.0.
 
-* Code base: https://github.com/shardingjdbc
-  
-* Web site: http://shardingjdbc.io/
-  
-* Documentations: http://shardingjdbc.io/document/en/
-  
-* Community: http://shardingjdbc.io/community/en/
+* Code base: https://github.com/shardingsphere
+
+* Web site: http://shardingsphere.io/
+
+* Documentations: http://shardingsphere.io/document/en/
+
+* Community: http://shardingsphere.io/community/en/
 
 ## Background
 
@@ -43,7 +43,7 @@ By using Database Mesh, applications and databases will form a large grid system
 ### Meritocracy
 
 This project started from Dangdang at 2015 and opened on GitHub at 2016. At 2017 Jingdong recognized its value, and determined to sponsor. We set up the PMC team and committer team.
-The project has contributors and users from many companies. The new contributors are guided, discussed and reviewed by the existed PMC members. When they are ready, PMC will start a vote to promote him/her to become a member of PMC and Committer Team. See the details [here](http://shardingjdbc.io/community/en/organization/). Contributions are always welcomed and highly valued. 
+The project has contributors and users from many companies. The new contributors are guided, discussed and reviewed by the existed PMC members. When they are ready, PMC will start a vote to promote him/her to become a member of PMC and Committer Team. See the details [here](http://shardingsphere.io/community/en/organization/). Contributions are always welcomed and highly valued. 
 
 ### Community
 
@@ -84,7 +84,7 @@ The core developers are a diverse group of experienced open source developers an
 
 ### Orphaned products
 
-Two development teams in JingDong and Dangdang will continue to work on Sharding 100% of the time for the foreseeable future with others from the growing community as well. And Sharding is widely used in China by many [companies and organizations](http://shardingjdbc.io/community/en/03-company/). So the risk of Sharding becoming orphaned is low.
+Two development teams in JingDong and Dangdang will continue to work on Sharding 100% of the time for the foreseeable future with others from the growing community as well. And Sharding is widely used in China by many [companies and organizations](http://shardingsphere.io/community/en/03-company/). So the risk of Sharding becoming orphaned is low.
 
 ### Inexperience with Open Source
 
@@ -108,23 +108,23 @@ The Sharding community acknowledges the value and recognition that the Apache br
 
 ## Documentation
 
-A complete set of Sharding documentations is provided on shardingjdbc.io in both English and Simplified Chinese.
+A complete set of Sharding documentations is provided on shardingsphere.io in both English and Simplified Chinese.
 
-* [English](http://shardingjdbc.io/document/en/)
+* [English](http://shardingsphere.io/document/en/)
 
-* [Chinese](http://shardingjdbc.io/document/cn/)
+* [Chinese](http://shardingsphere.io/document/cn/)
 
 ## Initial Source
 
 The project consists of four distinct codebases: Core, Opentracing adapter, example and document. These have existed as separate git repositories.
 
-* https://github.com/shardingjdbc/sharding-jdbc
+* https://github.com/shardingsphere/sharding-jdbc
 
-* https://github.com/shardingjdbc/sharding-jdbc-opentracing
+* https://github.com/shardingsphere/sharding-jdbc-opentracing
 
-* https://github.com/shardingjdbc/sharding-jdbc-example
+* https://github.com/shardingsphere/sharding-jdbc-example
 
-* https://github.com/shardingjdbc/sharding-jdbc-doc
+* https://github.com/shardingsphere/sharding-jdbc-doc
 
 ## Source and Intellectual Property Submission Plan
 
@@ -174,17 +174,17 @@ MySQL JDBC driver is using on MySQL Proxy to connect MySQL now, we will use MySQ
 
 ### Git Repositories
 
-https://github.com/shardingjdbc/sharding-jdbc.git
+https://github.com/shardingsphere/sharding-jdbc.git
 
-https://github.com/shardingjdbc/sharding-jdbc-opentracing.git
+https://github.com/shardingsphere/sharding-jdbc-opentracing.git
 
-https://github.com/shardingjdbc/sharding-jdbc-example.git
+https://github.com/shardingsphere/sharding-jdbc-example.git
 
-https://github.com/shardingjdbc/sharding-jdbc-doc.git
+https://github.com/shardingsphere/sharding-jdbc-doc.git
 
 ### Issue Tracking
 
-https://github.com/shardingjdbc/sharding-jdbc/issues
+https://github.com/shardingsphere/sharding-jdbc/issues
 
 ### Continuous Integration tool
 
@@ -196,7 +196,7 @@ Travis
 
 ### Communication
 
-Gitter [https://gitter.im/Sharding-JDBC/shardingjdbc](https://gitter.im/Sharding-JDBC/shardingjdbc)
+Gitter [https://gitter.im/Sharding-JDBC/shardingsphere](https://gitter.im/Sharding-JDBC/shardingsphere)
 
 Slack [https://sharding.slack.com](https://sharding.slack.com)
 

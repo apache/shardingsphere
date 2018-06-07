@@ -47,7 +47,7 @@ shardingRule:
   
   defaultTableStrategy:
     none:
-  defaultKeyGeneratorClassName: io.shardingjdbc.core.keygen.DefaultKeyGenerator
+  defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
   
   props:
     sql.show: true
@@ -142,7 +142,7 @@ shardingRule:
   
   defaultTableStrategy:
     none:
-  defaultKeyGeneratorClassName: io.shardingjdbc.core.keygen.DefaultKeyGenerator
+  defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
   
   masterSlaveRules:
       ms_ds_0:
@@ -239,7 +239,7 @@ shardingRule:
   defaultDataSourceName: #未配置分片规则的表将通过默认数据源定位  
   defaultDatabaseStrategy: #默认数据库分片策略，同分库策略
   defaultTableStrategy: #默认表分片策略，同分库策略
-  defaultKeyGeneratorClassName: #默认自增列值生成器类名称，缺省使用io.shardingjdbc.core.keygen.DefaultKeyGenerator。该类需实现KeyGenerator接口并提供无参数的构造器
+  defaultKeyGeneratorClassName: #默认自增列值生成器类名称，缺省使用io.shardingsphere.core.keygen.DefaultKeyGenerator。该类需实现KeyGenerator接口并提供无参数的构造器
   
   masterSlaveRules: #读写分离规则，详见读写分离部分
     <data_source_name>: #数据源名称，需要与真实数据源匹配，可配置多个data_source_name

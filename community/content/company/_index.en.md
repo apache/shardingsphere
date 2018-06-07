@@ -61,6 +61,7 @@ Organizations using Sharding in chronological order.
 * [BBGame](http://www.bbgameonline.com/)
 * [500px](https://500px.me/)
 * [bilibili](https://www.bilibili.com/)
+
 ## Smart Device
 
 * [hiveview](http://www.hiveview.com/)

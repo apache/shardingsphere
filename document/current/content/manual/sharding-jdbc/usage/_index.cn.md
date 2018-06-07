@@ -8,4 +8,4 @@ chapter = true
 
 ## 导览
 
-本章节将介绍Sharding-JDBC相关使用。更多使用细节请参见[使用示例](https://github.com/shardingjdbc/sharding-jdbc-example)。
+本章节将介绍Sharding-JDBC相关使用。更多使用细节请参见[使用示例](https://github.com/sharding-sphere/sharding-sphere-example)。
