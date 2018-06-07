@@ -17,16 +17,12 @@
 
 package io.shardingsphere.dbtest.common;
 
-import io.shardingsphere.dbtest.cases.dataset.expected.metadata.ExpectedColumn;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -66,28 +62,6 @@ public final class DatabaseUtil {
     private static void setParameters(final PreparedStatement preparedStatement, final SQLValueGroup sqlValueGroup) throws SQLException {
         for (SQLValue each : sqlValueGroup.getSqlValues()) {
             preparedStatement.setObject(each.getIndex(), each.getValue());
-        }
-    }
-    
-    /**
-     * Get expected columns.
-     *
-     * @param connection connection
-     * @param tableName table
-     * @return query result set
-     * @throws SQLException SQL exception
-     */
-    public static List<ExpectedColumn> getExpectedColumns(final Connection connection, final String tableName) throws SQLException {
-        DatabaseMetaData metaData = connection.getMetaData();
-        try (ResultSet resultSet = metaData.getColumns(null, null, tableName, null)) {
-            List<ExpectedColumn> result = new LinkedList<>();
-            while (resultSet.next()) {
-                ExpectedColumn each = new ExpectedColumn();
-                each.setName(resultSet.getString("COLUMN_NAME"));
-                each.setType(resultSet.getString("TYPE_NAME").toLowerCase());
-                result.add(each);
-            }
-            return result;
         }
     }
 }

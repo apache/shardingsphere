@@ -25,7 +25,6 @@ import io.shardingsphere.dbtest.cases.assertion.ddl.DDLIntegrateTestCaseAssertio
 import io.shardingsphere.dbtest.cases.dataset.expected.metadata.ExpectedColumn;
 import io.shardingsphere.dbtest.cases.dataset.expected.metadata.ExpectedMetadata;
 import io.shardingsphere.dbtest.cases.dataset.expected.metadata.ExpectedMetadataRoot;
-import io.shardingsphere.dbtest.common.DatabaseUtil;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
@@ -40,7 +39,9 @@ import javax.xml.bind.JAXBException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Arrays;
@@ -135,36 +136,50 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
         }
     }
     
-    private void dropTableIfExisted(final Connection connection) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DROP TABLE %s", assertion.getTable()))) {
-            preparedStatement.executeUpdate();
-            // CHECKSTYLE: OFF
-        } catch (final SQLException ex) {
-            // CHECKSTYLE: ON
-        }
-    }
-    
     private void assertMetadata(final Connection connection) throws IOException, JAXBException, SQLException {
         ExpectedMetadataRoot expected;
         try (FileReader reader = new FileReader(getExpectedDataFile())) {
             expected = (ExpectedMetadataRoot) JAXBContext.newInstance(ExpectedMetadataRoot.class).createUnmarshaller().unmarshal(reader);
         }
         String tableName = assertion.getTable();
-        List<ExpectedColumn> actualColumns = DatabaseUtil.getExpectedColumns(connection, tableName);
+        List<ExpectedColumn> actualColumns = getExpectedColumns(connection, tableName);
         assertMetadata(actualColumns, expected.find(tableName));
     }
     
-    private static void assertMetadata(final List<ExpectedColumn> actual, final ExpectedMetadata expected) {
+    private void assertMetadata(final List<ExpectedColumn> actual, final ExpectedMetadata expected) {
         for (ExpectedColumn each : expected.getColumns()) {
             assertMetadata(actual, each);
         }
     }
     
-    private static void assertMetadata(final List<ExpectedColumn> actual, final ExpectedColumn expect) {
+    private void assertMetadata(final List<ExpectedColumn> actual, final ExpectedColumn expect) {
         for (ExpectedColumn each : actual) {
             if (expect.getName().equals(each.getName())) {
                 assertThat(each.getType(), is(expect.getType()));
             }
+        }
+    }
+    
+    private List<ExpectedColumn> getExpectedColumns(final Connection connection, final String tableName) throws SQLException {
+        DatabaseMetaData metaData = connection.getMetaData();
+        try (ResultSet resultSet = metaData.getColumns(null, null, tableName, null)) {
+            List<ExpectedColumn> result = new LinkedList<>();
+            while (resultSet.next()) {
+                ExpectedColumn each = new ExpectedColumn();
+                each.setName(resultSet.getString("COLUMN_NAME"));
+                each.setType(resultSet.getString("TYPE_NAME").toLowerCase());
+                result.add(each);
+            }
+            return result;
+        }
+    }
+    
+    private void dropTableIfExisted(final Connection connection) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DROP TABLE %s", assertion.getTable()))) {
+            preparedStatement.executeUpdate();
+            // CHECKSTYLE: OFF
+        } catch (final SQLException ex) {
+            // CHECKSTYLE: ON
         }
     }
 }
