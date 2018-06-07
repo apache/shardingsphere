@@ -28,7 +28,7 @@ import io.shardingsphere.dbtest.cases.dataset.init.DataSetColumnMetadata;
 import io.shardingsphere.dbtest.cases.dataset.init.DataSetMetadata;
 import io.shardingsphere.dbtest.cases.dataset.init.DataSetRow;
 import io.shardingsphere.dbtest.cases.dataset.init.DataSetsRoot;
-import io.shardingsphere.dbtest.common.DatabaseUtil;
+import io.shardingsphere.dbtest.common.SQLValue;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
@@ -48,6 +48,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -57,6 +58,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -118,10 +120,17 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
         }
         try (Connection connection = getDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
-                assertThat(DatabaseUtil.executeUpdateForStatement(connection, getSql(), assertion.getSQLValues()), is(assertion.getExpectedUpdate()));
+                try (Statement statement = connection.createStatement()) {
+                    assertThat(statement.executeUpdate(String.format(getSql(), assertion.getSQLValues().toArray())), is(assertion.getExpectedUpdate()));
+                }
             } else {
-                assertThat(DatabaseUtil.executeUpdateForPreparedStatement(connection, getSql(), assertion.getSQLValues()), is(assertion.getExpectedUpdate()));
-            } 
+                try (PreparedStatement preparedStatement = connection.prepareStatement(getSql().replaceAll("%s", "?"))) {
+                    for (SQLValue each : assertion.getSQLValues()) {
+                        preparedStatement.setObject(each.getIndex(), each.getValue());
+                    }
+                    assertThat(preparedStatement.executeUpdate(), is(assertion.getExpectedUpdate()));
+                }
+            }
         }
         assertDataSet();
     }
@@ -133,23 +142,28 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
         }
         try (Connection connection = getDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
-                assertThat(DatabaseUtil.executeDMLForStatement(connection, getSql(), assertion.getSQLValues()), is(assertion.getExpectedUpdate()));
+                try (Statement statement = connection.createStatement()) {
+                    assertFalse("Not a DML statement.", statement.execute(String.format(getSql(), assertion.getSQLValues().toArray())));
+                    assertThat(statement.getUpdateCount(), is(assertion.getExpectedUpdate()));
+                }
             } else {
-                assertThat(DatabaseUtil.executeDMLForPreparedStatement(connection, getSql(), assertion.getSQLValues()), is(assertion.getExpectedUpdate()));
+                try (PreparedStatement preparedStatement = connection.prepareStatement(getSql().replaceAll("%s", "?"))) {
+                    for (SQLValue each : assertion.getSQLValues()) {
+                        preparedStatement.setObject(each.getIndex(), each.getValue());
+                    }
+                    assertFalse("Not a DML statement.", preparedStatement.execute());
+                    assertThat(preparedStatement.getUpdateCount(), is(assertion.getExpectedUpdate()));
+                }
             }
         }
         assertDataSet();
     }
     
-    private void assertDataSet() throws IOException, JAXBException, SQLException {
+    private void assertDataSet() throws SQLException, IOException, JAXBException {
         DataSetsRoot expected;
         try (FileReader reader = new FileReader(getExpectedDataFile())) {
             expected = (DataSetsRoot) JAXBContext.newInstance(DataSetsRoot.class).createUnmarshaller().unmarshal(reader);
         }
-        assertDataSet(expected);
-    }
-    
-    private void assertDataSet(final DataSetsRoot expected) throws SQLException {
         assertThat("Only support single table for DML.", expected.getMetadataList().size(), is(1));
         DataSetMetadata dataSetMetadata = expected.getMetadataList().get(0);
         for (String each : new InlineExpressionParser(dataSetMetadata.getDataNodes()).evaluate()) {

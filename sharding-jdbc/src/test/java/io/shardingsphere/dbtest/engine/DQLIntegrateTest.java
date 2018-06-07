@@ -115,7 +115,7 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
     private void assertExecuteQueryForStatement(final Connection connection) throws SQLException, JAXBException, IOException, ParseException {
         try (
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(String.format(getSql(), assertion.getSQLValues().toArray(new Object[assertion.getSQLValues().size()])))) {
+                ResultSet resultSet = statement.executeQuery(String.format(getSql(), assertion.getSQLValues().toArray()))) {
             assertResultSet(resultSet);
         }
     }
@@ -147,7 +147,7 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
     
     private void assertExecuteForStatement(final Connection connection) throws SQLException, ParseException, JAXBException, IOException {
         try (Statement statement = connection.createStatement()) {
-            statement.execute(String.format(getSql(), assertion.getSQLValues().toArray(new Object[assertion.getSQLValues().size()])));
+            assertTrue("Not a DQL statement.", statement.execute(String.format(getSql(), assertion.getSQLValues().toArray())));
             try (ResultSet resultSet = statement.getResultSet()) {
                 assertResultSet(resultSet);
             }
@@ -159,7 +159,7 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
             for (SQLValue each : assertion.getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
             }
-            assertTrue("Not a query statement.", preparedStatement.execute());
+            assertTrue("Not a DQL statement.", preparedStatement.execute());
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 assertResultSet(resultSet);
             }

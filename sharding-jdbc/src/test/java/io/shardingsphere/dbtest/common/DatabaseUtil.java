@@ -26,12 +26,8 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Database utility.
@@ -71,90 +67,6 @@ public final class DatabaseUtil {
         for (SQLValue each : sqlValueGroup.getSqlValues()) {
             preparedStatement.setObject(each.getIndex(), each.getValue());
         }
-    }
-    
-    /**
-     * Execute update for statement.
-     *
-     * @param connection connection
-     * @param sql SQL
-     * @param sqlValues SQL values
-     * @return Number of rows as a result of execution
-     * @throws SQLException SQL exception
-     */
-    public static int executeUpdateForStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
-        try (Statement statement = connection.createStatement()) {
-            return statement.executeUpdate(generateSQL(sql, sqlValues));
-        }
-    }
-    
-    /**
-     * Execute DML for statement.
-     *
-     * @param connection connection
-     * @param sql SQL
-     * @param sqlValues SQL values
-     * @return implementation results
-     * @throws SQLException SQL exception
-     */
-    public static int executeDMLForStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
-        try (Statement statement = connection.createStatement()) {
-            if (!statement.execute(generateSQL(sql, sqlValues))) {
-                return statement.getUpdateCount();
-            }
-        }
-        return 0;
-    }
-    
-    private static String generateSQL(final String sql, final Collection<SQLValue> sqlValues) {
-        if (null == sqlValues) {
-            return sql;
-        }
-        String result = sql;
-        for (SQLValue each : sqlValues) {
-            result = Pattern.compile("%s", Pattern.LITERAL).matcher(result)
-                    .replaceFirst(Matcher.quoteReplacement(each.getValue() instanceof String ? "'" + each.getValue() + "'" : each.getValue().toString()));
-        }
-        return result;
-    }
-    
-    /**
-     * execute update for prepared statement.
-     *
-     * @param connection connection
-     * @param sql SQL
-     * @param sqlValues SQL values
-     * @return Number of rows as a result of execution
-     * @throws SQLException SQL exception
-     */
-    public static int executeUpdateForPreparedStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
-            for (SQLValue each : sqlValues) {
-                preparedStatement.setObject(each.getIndex(), each.getValue());
-            }
-            return preparedStatement.executeUpdate();
-        }
-    }
-    
-    /**
-     * Execute DML for prepared statement.
-     *
-     * @param connection connection
-     * @param sql SQL
-     * @param sqlValues SQL values
-     * @return implementation results
-     * @throws SQLException   SQL exception
-     */
-    public static int executeDMLForPreparedStatement(final Connection connection, final String sql, final Collection<SQLValue> sqlValues) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql.replaceAll("%s", "?"))) {
-            for (SQLValue each : sqlValues) {
-                preparedStatement.setObject(each.getIndex(), each.getValue());
-            }
-            if (!preparedStatement.execute()) {
-                return preparedStatement.getUpdateCount();
-            }
-        }
-        return 0;
     }
     
     /**
