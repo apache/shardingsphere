@@ -12,7 +12,7 @@ chapter = true
 
  - Make sure all test cases passed.
  - Make sure test coverage not lower than dev branch.
- - Use checkstyle to check code style, provide special reason if rule violated. Find checkstyle template from `sharding-jdbc/src/resources/sharding_checks.xml`, please use checkstyle 8.8 to run the rule.
+ - Use checkstyle to check code style, provide special reason if rule violated. Find checkstyle template from `sharding-sphere/src/resources/sharding_checks.xml`, please use checkstyle 8.8 to run the rule.
  - Make sure `mvn clean install` can be success.
  - Delete unused code in time.
  

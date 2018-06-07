@@ -12,7 +12,7 @@ chapter = true
 
  - 确保通过全部测试用例。
  - 确保覆盖率不低于dev分支。
- - 确保使用Checkstyle检查代码，违反验证规则的需要有特殊理由。模板位置在`sharding-jdbc/src/resources/sharding_checks.xml`，请使用checkstyle 8.8运行规则。
+ - 确保使用Checkstyle检查代码，违反验证规则的需要有特殊理由。模板位置在`sharding-sphere/src/resources/sharding_checks.xml`，请使用checkstyle 8.8运行规则。
  - 确保执行`mvn clean install`可以编译和测试通过。
  - 及时删除无用代码。
  

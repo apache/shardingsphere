@@ -27,7 +27,7 @@ weight = 4
     // 配置基于Zookeeper的注册中心
     ZookeeperConfiguration zkConfig = new ZookeeperConfiguration();
     zkConfig.setServerLists("localhost:2181");
-    zkConfig.setNamespace("sharding-jdbc-orchestration");
+    zkConfig.setNamespace("sharding-sphere-orchestration");
     
     // 配置数据治理
     OrchestrationConfiguration orchConfig = new OrchestrationConfiguration("orchestration-sharding-data-source", zkConfig, false, OrchestrationConfiguration.SHARDING);
@@ -47,7 +47,7 @@ orchestration:
   overwrite: false
   zookeeper:
     serverLists: localhost:2181
-    namespace: sharding-jdbc-orchestration
+    namespace: sharding-sphere-orchestration
 ```
 
 ```java

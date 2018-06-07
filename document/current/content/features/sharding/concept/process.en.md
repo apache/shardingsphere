@@ -24,7 +24,7 @@ Sharding routing is used to routing SQL with sharding keys. According to the dif
 Hint routing is used as a route to the way the destination is injected through a program, and it can be used when the sharding information is not included in the SQL.
 Broadcast routing is used for scenes that do not contain sharding keys in SQL. According to the SQL type, it can be divided into all databases broadcast routing (SET AUTOCOMMIT=1) and all databases and tables broadcast routing (DQL, DML, DDL).
 Unicast routing is used to obtain information of a actual table, such as DESCRIBE table_name.
-Block routing is used to block the operation of SQL to the database, such as USE db_name, because Sharding-JDBC has only one logical data source and does not need to switch.
+Block routing is used to block the operation of SQL to the database, such as USE db_name, because Sharding-Sphere has only one logical data source and does not need to switch.
 
 ## SQL Rewrite
 

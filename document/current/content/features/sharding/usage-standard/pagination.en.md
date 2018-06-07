@@ -28,9 +28,9 @@ The records before the offset are taken out, and only the last 10 of all the rec
 Two of aspects is optimized in Sharding-Sphere.
 
 First, uses streaming + merge sort to avoid excessive memory consumption. Sharding-Sphere uses the rewrote SQLs for the query, and necessarily takes up additional bandwidth, but does not cause the memory a sharp rise.
-Most of people think that Sharding-Sphere will load 1000010 * 2 records into memory, which will take up a lot of memory and cause a memory leak. However, because the records of each result set are ordered, sharding-jdbc only compares the current record of each sharding at a time, and only saves the cursor of the current record in memory. The time complexity of merge sort is only O(n), and the loss of performance is very small.
+Most of people think that Sharding-Sphere will load 1000010 * 2 records into memory, which will take up a lot of memory and cause a memory leak. However, because the records of each result set are ordered, Sharding-Sphere only compares the current record of each sharding at a time, and only saves the cursor of the current record in memory. The time complexity of merge sort is only O(n), and the loss of performance is very small.
 
-Second, sharding-jdbc also optimizes queries that are only routed to a single slice. The query routing to a single slice can ensure the result are correct without the SQL rewriting. Therefore, Sharding-Sphere will save the bandwidth by means of not rewriting SQL.
+Second, Sharding-Sphere also optimizes queries that are only routed to a single slice. The query routing to a single slice can ensure the result are correct without the SQL rewriting. Therefore, Sharding-Sphere will save the bandwidth by means of not rewriting SQL.
 
 ## Better solution of pagination
 

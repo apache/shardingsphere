@@ -95,13 +95,13 @@ The answer is:
 
 To ensure that the type of Sharding column in the database are consistent with the type of columns in the Sharding algorithm. For example, the column type in the database is int(11) and the Sharding column is Integer. If the Sharding column is Long, the column type in the database is bigint.
 
-#### 10. Does Sharding-JDBC support native self-incrementing primary keys in addition to supporting distributed self-incrementing primary keys?
+#### 10. Does Sharding-Sphere support native self-incrementing primary keys in addition to supporting distributed self-incrementing primary keys?
 
 The answer is:
 
 Yes. However, there are restrictions on the use of native self-increment primary keys, which means that you cannot use native self-increment primary keys as Sharding columns at the same time.
 
-Because Sharding-JDBC does not know the table structure, and native self-increment primary key is not included in the original SQL, so that Sharding-JDBC cannot parse the key into Sharding column, resulting in SQL being routed to multiple tables.
+Because Sharding-Sphere does not know the table structure, and native self-increment primary key is not included in the original SQL, so that Sharding-Sphere cannot parse the key into Sharding column, resulting in SQL being routed to multiple tables.
 When the INSERT SQL is routed to one table, the native self-increment primary key has a value; When the INSERT SQL is routed to more than one table, it will be 0.
 
 #### 11. Why does the Oracle throw an exception "Order by value must implements Comparable" when you use the Order By statement including Timestamp column?

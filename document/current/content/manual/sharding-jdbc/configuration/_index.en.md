@@ -22,7 +22,7 @@ The yellow part of the figure represents the Sharding-JDBC entry API, which is p
 
 ## Configuration Object
 
-The blue part of the figure shows the sharding-jdbc configuration objects. ShardingRuleConfiguration is the entrance to configure the Sharding strategy, and it can include multiple TableRuleConfiguration and MasterSlaveRuleConfiguration. A TableRuleConfiguration is configured for a group of tables with the same sharding strategy. If both Sharding and Read-write splitting are used, you need to set MasterSlaveRuleConfiguration for each logic database used to do Read-write splitting. There is one-to-one correspondence between each TableRuleConfiguration and each ShardingStrategyConfiguration which consists of 5 kinds of strategies to choose from. For details on the use of sharding strategies, please read the [Database Sharding] (/02-guide/sharding/).
+The blue part of the figure shows the Sharding-JDBC configuration objects. ShardingRuleConfiguration is the entrance to configure the Sharding strategy, and it can include multiple TableRuleConfiguration and MasterSlaveRuleConfiguration. A TableRuleConfiguration is configured for a group of tables with the same sharding strategy. If both Sharding and Read-write splitting are used, you need to set MasterSlaveRuleConfiguration for each logic database used to do Read-write splitting. There is one-to-one correspondence between each TableRuleConfiguration and each ShardingStrategyConfiguration which consists of 5 kinds of strategies to choose from. For details on the use of sharding strategies, please read the [Database Sharding] (/02-guide/sharding/).
 
 MasterSlaveRuleConfiguration is only used for Read-write splitting.
 

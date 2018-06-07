@@ -27,7 +27,7 @@ Use orchestration feature need indicate a registry center. Configuration will sa
     // Configure registry center of Zookeeper
     ZookeeperConfiguration zkConfig = new ZookeeperConfiguration();
     zkConfig.setServerLists("localhost:2181");
-    zkConfig.setNamespace("sharding-jdbc-orchestration");
+    zkConfig.setNamespace("sharding-sphere-orchestration");
     
     // Configure orchestration configuration
     OrchestrationConfiguration orchConfig = new OrchestrationConfiguration("orchestration-sharding-data-source", zkConfig, false, OrchestrationConfiguration.SHARDING);
@@ -81,7 +81,7 @@ sharding.jdbc.config.orchestration.name=orchestration-sharding-data-source
 sharding.jdbc.config.orchestration.type=sharding
 sharding.jdbc.config.orchestration.overwrite=false
 sharding.jdbc.config.orchestration.zookeeper.server-lists=localhost:2181
-sharding.jdbc.config.orchestration.zookeeper.namespace=sharding-jdbc-orchestration
+sharding.jdbc.config.orchestration.zookeeper.namespace=sharding-sphere-orchestration
 ```
 
 ### Configure orchestration with spring namespace
