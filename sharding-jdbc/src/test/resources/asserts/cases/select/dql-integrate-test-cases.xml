@@ -27,8 +27,11 @@
         <assertion sharding-rule-type="masterslave" parameters="100000:int, 100001:int" expected-data-file="masterslave/select_not_in_with_single_table.xml" />
     </dql-test-case>
     
-    <dql-test-case sql-case-id="assertSelectNotEqualsWithSingleTableForNotBetween">
-        <assertion sharding-rule-type="tbl" parameters="100000:int, 100001:int" expected-data-file="select_not_in_with_single_table.xml" />
+    <dql-test-case sql-case-id="select_not_between_with_single_table">
+        <assertion sharding-rule-type="db" parameters="100000:int, 100001:int" expected-data-file="db/select_not_in_with_single_table.xml" />
+        <assertion sharding-rule-type="tbl" parameters="100000:int, 100001:int" expected-data-file="tbl/select_not_in_with_single_table.xml" />
+        <assertion sharding-rule-type="dbtbl" parameters="100000:int, 100001:int" expected-data-file="dbtbl/select_not_in_with_single_table.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="100000:int, 100001:int" expected-data-file="masterslave/select_not_in_with_single_table.xml" />
     </dql-test-case>
     
     <dql-test-case sql-case-id="assertSelectEqualsWithSameShardingColumns">

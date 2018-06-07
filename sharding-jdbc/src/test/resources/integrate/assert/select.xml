@@ -20,7 +20,7 @@
             <data parameter="100000,100001" expected="select/SelectNotWithSingleTable.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectNotEqualsWithSingleTableForNotBetween">
+    <sql id="select_not_between_with_single_table">
         <sharding-rule value="tbl">
             <data parameter="100000,100001" expected="select/SelectNotWithSingleTable.xml" />
         </sharding-rule>

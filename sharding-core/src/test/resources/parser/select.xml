@@ -38,7 +38,7 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectNotEqualsWithSingleTableForNotBetween" parameters="100000 100001">
+    <parser-result sql-case-id="select_not_between_with_single_table" parameters="100000 100001">
         <tables>
             <table name="t_order_item" />
         </tables>
