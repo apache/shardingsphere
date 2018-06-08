@@ -20,6 +20,7 @@ package io.shardingsphere.dbtest.engine;
 import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
 import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
@@ -32,6 +33,7 @@ import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
@@ -145,6 +147,13 @@ public abstract class BaseIntegrateTest {
                 SchemaEnvironmentManager.dropDatabase(each);
             }
             isCleaned = false;
+        }
+    }
+    
+    @After
+    public void closeShardingDataSource() {
+        if (dataSource instanceof ShardingDataSource) {
+            ((ShardingDataSource) dataSource).close();
         }
     }
 }
