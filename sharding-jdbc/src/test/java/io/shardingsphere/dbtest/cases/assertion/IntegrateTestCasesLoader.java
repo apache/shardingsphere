@@ -99,7 +99,7 @@ public final class IntegrateTestCasesLoader {
     }
     
     private Map<String, IntegrateTestCase> loadIntegrateTestCases(final String filePrefix) throws IOException, URISyntaxException, JAXBException {
-        URL url = IntegrateTestCasesLoader.class.getClassLoader().getResource("asserts/");
+        URL url = IntegrateTestCasesLoader.class.getClassLoader().getResource("asserts/cases/");
         Preconditions.checkNotNull(url, "Cannot found integrate test cases.");
         return new HashMap<>(loadIntegrateTestCases(url, filePrefix));
     }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parser-result-sets>
-    <parser-result sql-case-id="assertSelectOne" />
+    <parser-result sql-case-id="select_constant_without_table" />
     
-    <parser-result sql-case-id="assertSelectNotEqualsWithSingleTable" parameters="1">
+    <parser-result sql-case-id="select_not_equal_with_single_table" parameters="1">
         <tables>
             <table name="t_order_item" />
         </tables>
@@ -14,7 +14,7 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectNotEqualsWithSingleTableForExclamationEqual" parameters="1">
+    <parser-result sql-case-id="select_exclamation_equal_with_single_table" parameters="1">
         <tables>
             <table name="t_order_item" />
         </tables>
@@ -26,7 +26,7 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectNotEqualsWithSingleTableForNotIn" parameters="100000 100001">
+    <parser-result sql-case-id="select_not_in_with_single_table" parameters="100000, 100001">
         <tables>
             <table name="t_order_item" />
         </tables>
@@ -38,7 +38,7 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectNotEqualsWithSingleTableForNotBetween" parameters="100000 100001">
+    <parser-result sql-case-id="select_not_between_with_single_table" parameters="100000, 100001">
         <tables>
             <table name="t_order_item" />
         </tables>
@@ -50,7 +50,7 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectEqualsWithSingleTable" parameters="1 1">
+    <parser-result sql-case-id="select_equal_with_single_table" parameters="1, 1">
         <tables>
             <table name="t_order" />
         </tables>
@@ -68,9 +68,8 @@
             </and-condition>
         </or-condition>
     </parser-result>
-
-    <!-- // TODO 这里可优化，将两个字段AND = 替换为永false, 目前因为condition是map，同样的column会覆盖 -->
-    <parser-result sql-case-id="assertSelectEqualsWithSameShardingColumns" parameters="1 2">
+    
+    <parser-result sql-case-id="select_equal_with_same_sharding_column" parameters="1, 2">
         <tables>
             <table name="t_order" />
         </tables>
@@ -89,7 +88,7 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectBetweenWithSingleTable" parameters="1 10 2 5">
+    <parser-result sql-case-id="select_between_with_single_table" parameters="1, 10, 2, 5">
         <tables>
             <table name="t_order" />
         </tables>
@@ -114,7 +113,7 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectInWithSingleTable" parameters="1 2 3 9 10">
+    <parser-result sql-case-id="assertSelectInWithSingleTable" parameters="1, 2, 3, 9, 10">
         <tables>
             <table name="t_order" />
         </tables>
@@ -140,8 +139,7 @@
         </order-by-columns>
     </parser-result>
     
-    <!-- // TODO 目前对于IN多结果不同做到交集处理 仅仅是简单的加入, 目前因为condition是map，同样的column会覆盖 -->
-    <parser-result sql-case-id="assertSelectInWithSameShardingColumns" parameters="100 1001 1001 1002">
+    <parser-result sql-case-id="select_in_with_same_sharding_column" parameters="1000, 1001, 1001, 1002">
         <tables>
             <table name="t_order" />
         </tables>
@@ -151,7 +149,7 @@
         <or-condition>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="IN">
-                    <value index="0" literal="100" type="int" />
+                    <value index="0" literal="1000" type="int" />
                     <value index="1" literal="1001" type="int" />
                 </condition>
                 <condition column-name="order_id" table-name="t_order" operator="IN">
@@ -165,7 +163,7 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectIterator" parameters="1 2">
+    <parser-result sql-case-id="assertSelectIterator" parameters="1, 2">
         <tables>
             <table name="t_order_item" alias="t"/>
         </tables>
@@ -196,7 +194,7 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectLikeWithCount" parameters="'init' 1 2 9 10">
+    <parser-result sql-case-id="assertSelectLikeWithCount" parameters="'init', 1, 2, 9, 10">
         <tables>
             <table name="t_order" alias="o"/>
         </tables>
@@ -220,7 +218,7 @@
         </aggregation-select-items>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectWithBindingTable" parameters="1 2 9 10">
+    <parser-result sql-case-id="assertSelectWithBindingTable" parameters="1, 2, 9, 10">
         <tables>
             <table name="t_order" alias="o"/>
             <table name="t_order_item" alias="i"/>
@@ -246,7 +244,7 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectWithBindingTableAndConfigTable" parameters="1 2 9 10 'init'">
+    <parser-result sql-case-id="assertSelectWithBindingTableAndConfigTable" parameters="1, 2, 9, 10, 'init'">
         <tables>
             <table name="t_order" alias="o"/>
             <table name="t_order_item" alias="i"/>
@@ -272,7 +270,7 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectWithUpperCaseBindingTable" parameters="1 2 9 10">
+    <parser-result sql-case-id="assertSelectWithUpperCaseBindingTable" parameters="1, 2, 9, 10">
         <tables>
             <table name="T_ORDER" alias="o"/>
             <table name="T_order_item" alias="i"/>
@@ -298,7 +296,7 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectWithUpperCaseBindingTableAndConfigTable" parameters="1 2 9 10 'init'">
+    <parser-result sql-case-id="assertSelectWithUpperCaseBindingTableAndConfigTable" parameters="1, 2, 9, 10, 'init'">
         <tables>
             <table name="T_ORDER" alias="o"/>
             <table name="T_order_item" alias="i"/>
@@ -324,7 +322,7 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectCountWithBindingTable" parameters="1 2 9 10">
+    <parser-result sql-case-id="assertSelectCountWithBindingTable" parameters="1, 2, 9, 10">
         <tables>
             <table name="t_order" alias="o"/>
             <table name="t_order_item" alias="i"/>
@@ -350,7 +348,7 @@
         </aggregation-select-items>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectCountWithBindingTableWithJoin" parameters="1 2 9 10">
+    <parser-result sql-case-id="assertSelectCountWithBindingTableWithJoin" parameters="1, 2, 9, 10">
         <tables>
             <table name="t_order" alias="o"/>
             <table name="t_order_item" alias="i"/>
@@ -410,7 +408,7 @@
             </and-condition>
         </or-condition>
     </parser-result>
-    <parser-result sql-case-id="assertSelectEqualsWithJsonAnGeo" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}' 100 200 1">
+    <parser-result sql-case-id="assertSelectEqualsWithJsonAnGeo" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', 100, 200, 1">
         <tables>
             <table name="t_place" />
         </tables>
@@ -425,7 +423,7 @@
             </and-condition>
         </or-condition>
     </parser-result>
-    <parser-result sql-case-id="assertSelectInWithJsonAnGeo" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}' '{&quot;rule3&quot;:&quot;null3&quot;}' 100 200 1">
+    <parser-result sql-case-id="assertSelectInWithJsonAnGeo" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1">
         <tables>
             <table name="t_place" />
         </tables>
@@ -440,7 +438,7 @@
             </and-condition>
         </or-condition>
     </parser-result>
-    <parser-result sql-case-id="assertSelectBetweenWithJsonAnGeo" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}' '{&quot;rule3&quot;:&quot;null3&quot;}' 100 200 1">
+    <parser-result sql-case-id="assertSelectBetweenWithJsonAnGeo" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1">
         <tables>
             <table name="t_place" />
         </tables>

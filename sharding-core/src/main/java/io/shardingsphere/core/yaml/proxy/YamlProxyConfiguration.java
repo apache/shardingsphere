@@ -44,6 +44,7 @@ import java.util.Map;
  *
  * @author zhangyonglun
  * @author panjuan
+ * @author zhaojun
  */
 @Getter
 @Setter
@@ -54,6 +55,8 @@ public class YamlProxyConfiguration {
     private YamlMasterSlaveRuleConfiguration masterSlaveRule = new YamlMasterSlaveRuleConfiguration();
    
     private YamlShardingRuleConfiguration shardingRule = new YamlShardingRuleConfiguration();
+    
+    private String transactionMode;
     
     /**
      * Unmarshal yaml sharding configuration from yaml file.

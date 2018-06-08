@@ -69,7 +69,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
     
     @Override
     protected void executeCommand(final ChannelHandlerContext context, final ByteBuf message) {
-        eventLoopGroup.execute(new Runnable() {
+        ChannelThreadHolder.get(context.channel().id()).execute(new Runnable() {
             
             @Override
             public void run() {
