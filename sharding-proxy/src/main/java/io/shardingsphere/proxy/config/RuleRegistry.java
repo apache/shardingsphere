@@ -17,6 +17,7 @@
 
 package io.shardingsphere.proxy.config;
 
+import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import io.shardingsphere.core.constant.ShardingProperties;
@@ -95,6 +96,7 @@ public final class RuleRegistry {
             shardingMetaData.init(shardingRule);
         }
         proxyAuthority = yamlProxyConfiguration.getProxyAuthority();
+        Preconditions.checkNotNull(proxyAuthority.getUsername(), "Invalid configuration for proxyAuthority.");
     }
     
     /**
