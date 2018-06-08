@@ -50,7 +50,7 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectEqualsWithSingleTable" parameters="1, 1">
+    <parser-result sql-case-id="select_equal_with_single_table" parameters="1, 1">
         <tables>
             <table name="t_order" />
         </tables>
