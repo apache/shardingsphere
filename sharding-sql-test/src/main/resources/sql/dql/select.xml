@@ -6,13 +6,8 @@
     <sql-case id="select_not_in_with_single_table" value="SELECT * FROM t_order_item WHERE item_id IS NOT NULL AND item_id NOT IN (%s, %s) ORDER BY item_id" />
     <sql-case id="select_not_between_with_single_table" value="SELECT * FROM t_order_item WHERE item_id IS NOT NULL AND item_id NOT BETWEEN %s AND %s ORDER BY item_id" />
     <sql-case id="select_equal_with_single_table" value="SELECT * FROM t_order WHERE user_id = %s AND order_id = %s" />
-    
-    
-    <sql-case id="assertSelectInWithSingleTable" value="SELECT * FROM t_order WHERE user_id IN (%s, %s, %s) AND order_id IN (%s, %s) ORDER BY user_id, order_id" />
-    
+    <sql-case id="select_in_with_single_table" value="SELECT * FROM t_order WHERE user_id IN (%s, %s, %s) AND order_id IN (%s, %s) ORDER BY user_id, order_id" />
     <sql-case id="select_between_with_single_table" value="SELECT * FROM t_order WHERE user_id BETWEEN %s AND %s AND order_id BETWEEN %s AND %s ORDER BY user_id, order_id" />
-    
-    
     <sql-case id="select_equal_with_same_sharding_column" value="SELECT * FROM t_order WHERE order_id = %s AND order_id = %s" />
     <sql-case id="select_in_with_same_sharding_column" value="SELECT * FROM t_order WHERE order_id IN (%s, %s) AND order_id IN (%s, %s) ORDER BY order_id" />
     

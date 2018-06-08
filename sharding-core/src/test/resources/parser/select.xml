@@ -113,7 +113,7 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectInWithSingleTable" parameters="1, 2, 3, 9, 10">
+    <parser-result sql-case-id="select_in_with_single_table" parameters="1, 2, 3, 9, 10">
         <tables>
             <table name="t_order" />
         </tables>
