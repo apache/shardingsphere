@@ -159,7 +159,7 @@ public final class DataSetEnvironmentManager {
     
     private Map<String, Collection<String>> getDataNodeMap(final DataSetMetadata dataSetMetadata) {
         Map<String, Collection<String>> result = new LinkedHashMap<>();
-        for (String each : new InlineExpressionParser(dataSetMetadata.getDataNodes()).evaluate()) {
+        for (String each : new InlineExpressionParser(dataSetMetadata.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
             if (!result.containsKey(dataNode.getDataSourceName())) {
                 result.put(dataNode.getDataSourceName(), new LinkedList<String>());
