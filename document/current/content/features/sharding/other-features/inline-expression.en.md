@@ -75,13 +75,13 @@ db1
 Use inline expression can simplify to: 
 
 ```
-db${0..1}.t_order_${2..4}
+db0.t_order_${0..1},db1.t_order_${2..4}
 ```
 
 Or
 
 ```
-db$->{0..1}.t_order_$->{2..4}
+db0.t_order_$->{0..1},db1.t_order_$->{2..4}
 ```
 
 ### Sharding Algorithm Configuration
