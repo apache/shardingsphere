@@ -66,7 +66,6 @@ public final class InlineExpressionParser {
     
     private List<Object> evaluate(final List<String> inlineExpressions) {
         List<Object> result = new ArrayList<>(inlineExpressions.size());
-        GroovyShell shell = new GroovyShell();
         for (String each : inlineExpressions) {
             StringBuilder expression = new StringBuilder(handlePlaceHolder(each));
             if (!each.startsWith("\"")) {
@@ -75,7 +74,7 @@ public final class InlineExpressionParser {
             if (!each.endsWith("\"")) {
                 expression.append("\"");
             }
-            result.add(shell.evaluate(expression.toString()));
+            result.add(GroovyUtil.getResult(expression.toString()));
         }
         return result;
     }
