@@ -25,7 +25,7 @@
             <data parameter="100000,100001" expected="select/SelectNotWithSingleTable.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectEqualsWithSameShardingColumns">
+    <sql id="select_equal_with_same_sharding_column">
         <sharding-rule value="tbl">
             <data parameter="1000,1001" />
         </sharding-rule>
