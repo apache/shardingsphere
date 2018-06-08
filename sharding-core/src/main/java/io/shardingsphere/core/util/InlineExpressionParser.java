@@ -21,7 +21,6 @@ import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
 import groovy.lang.GString;
-import groovy.lang.GroovyShell;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
@@ -74,7 +73,7 @@ public final class InlineExpressionParser {
             if (!each.endsWith("\"")) {
                 expression.append("\"");
             }
-            result.add(GroovyUtil.getResult(expression.toString()));
+            result.add(GroovyUtil.evaluate(expression.toString()));
         }
         return result;
     }
