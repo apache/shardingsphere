@@ -31,8 +31,8 @@ import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.jdbc.orchestration.reg.etcd.EtcdConfiguration;
 import io.shardingsphere.jdbc.orchestration.reg.etcd.EtcdRegistryCenter;
-import io.shardingsphere.jdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.NewZookeeperRegistryCenter;
+import io.shardingsphere.jdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import io.shardingsphere.jdbc.orchestration.reg.zookeeper.ZookeeperRegistryCenter;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -85,12 +85,10 @@ public final class OrchestrationFacade implements AutoCloseable {
         throw new UnsupportedOperationException(regCenterConfig.getClass().getName());
     }
     
-    private RegistryCenter getZookeeperRegistryCenter(final ZookeeperConfiguration regCenterConfig){
-        if (regCenterConfig.isUseNative()){
-            System.out.println("NewZookeeperRegistryCenter");
+    private RegistryCenter getZookeeperRegistryCenter(final ZookeeperConfiguration regCenterConfig) {
+        if (regCenterConfig.isUseNative()) {
             return new NewZookeeperRegistryCenter(regCenterConfig);
         } else {
-            System.out.println("ZookeeperRegistryCenter");
             return new ZookeeperRegistryCenter(regCenterConfig);
         }
     }

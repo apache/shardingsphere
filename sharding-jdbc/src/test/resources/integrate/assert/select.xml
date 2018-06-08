@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
-    <sql id="assertSelectOne">
+    <sql id="select_constant_without_table">
         <sharding-rule>
             <data expected="select/SelectOne.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectNotEqualsWithSingleTable">
+    <sql id="select_not_equal_with_single_table">
         <sharding-rule value="tbl">
             <data parameter="100000" expected="select/SelectNotEqualsWithSingleTable.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectNotEqualsWithSingleTableForExclamationEqual">
+    <sql id="select_exclamation_equal_with_single_table">
         <sharding-rule value="tbl">
             <data parameter="100000" expected="select/SelectNotEqualsWithSingleTable.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectNotEqualsWithSingleTableForNotIn">
+    <sql id="select_not_in_with_single_table">
         <sharding-rule value="tbl">
             <data parameter="100000,100001" expected="select/SelectNotWithSingleTable.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectNotEqualsWithSingleTableForNotBetween">
+    <sql id="select_not_between_with_single_table">
         <sharding-rule value="tbl">
             <data parameter="100000,100001" expected="select/SelectNotWithSingleTable.xml" />
         </sharding-rule>

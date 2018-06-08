@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.integrate.jaxb.root;
 
+import com.google.common.base.Splitter;
 import io.shardingsphere.core.parsing.integrate.jaxb.condition.ExpectedOrCondition;
 import io.shardingsphere.core.parsing.integrate.jaxb.groupby.ExpectedGroupByColumn;
 import io.shardingsphere.core.parsing.integrate.jaxb.item.ExpectedAggregationSelectItem;
@@ -32,7 +33,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -45,8 +46,7 @@ public final class ParserResult {
     private String sqlCaseId;
     
     @XmlAttribute
-    @XmlList
-    private List<String> parameters = new LinkedList<>();
+    private String parameters;
     
     @XmlElementWrapper
     @XmlElement(name = "table")
@@ -72,4 +72,13 @@ public final class ParserResult {
     
     @XmlElement 
     private ExpectedLimit limit;
+    
+    /**
+     * Get parameters.
+     * 
+     * @return parameters
+     */
+    public List<String> getParameters() {
+        return null == parameters ? Collections.<String>emptyList() : Splitter.on(",").trimResults().splitToList(parameters);
+    }
 }
