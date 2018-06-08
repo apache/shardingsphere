@@ -45,8 +45,12 @@ public class ProxyAuthorityHandler {
      * @return legal or illegal.
      */
     public boolean isLegalForProxyLogin(final String username, final byte[] authResponse) {
-        byte[] configAuthResponse = getAuthCipherBytes(RuleRegistry.getInstance().getProxyAuthority().getPassword());
+        String configPassword = RuleRegistry.getInstance().getProxyAuthority().getPassword();
         String configUsername = RuleRegistry.getInstance().getProxyAuthority().getUsername();
+        if (null == configPassword) {
+            return configUsername.equals(username);
+        }
+        byte[] configAuthResponse = getAuthCipherBytes(configPassword);
         return configUsername.equals(username) && Arrays.equals(configAuthResponse, authResponse);
     }
     
