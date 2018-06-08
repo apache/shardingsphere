@@ -71,10 +71,6 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     
     private final CommandPacket commandPacket;
     
-    private final String sql;
-    
-    private int connectionId;
-    
     private final DatabaseType databaseType;
     
     private final boolean showSQL;
@@ -89,10 +85,8 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     
     private boolean hasMoreResultValueFlag;
     
-    public SQLPacketsBackendHandler(final CommandPacket commandPacket, final String sql, final int connectionId, final DatabaseType databaseType, final boolean showSQL) {
+    public SQLPacketsBackendHandler(final CommandPacket commandPacket, final DatabaseType databaseType, final boolean showSQL) {
         this.commandPacket = commandPacket;
-        this.sql = sql;
-        this.connectionId = connectionId;
         this.databaseType = databaseType;
         this.showSQL = showSQL;
         isMerged = false;
@@ -110,15 +104,15 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
 
     protected CommandResponsePackets executeForMasterSlave() {
         MasterSlaveRouter masterSlaveRouter = new MasterSlaveRouter(RuleRegistry.getInstance().getMasterSlaveRule());
-        SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
+        SQLStatement sqlStatement = new SQLJudgeEngine(commandPacket.getSql()).judge();
         String dataSourceName = masterSlaveRouter.route(sqlStatement.getType()).iterator().next();
         
         synchronizedFuture = new SynchronizedFuture<>(1);
-        MySQLResultCache.getInstance().putFuture(connectionId, synchronizedFuture);
-        executeCommand(dataSourceName, connectionId, commandPacket);
+        MySQLResultCache.getInstance().putFuture(commandPacket.getConnectionId(), synchronizedFuture);
+        executeCommand(dataSourceName, commandPacket.getConnectionId(), commandPacket);
         //TODO timeout should be set.
         List<QueryResult> queryResults = synchronizedFuture.get(CONNECT_TIMEOUT, TimeUnit.SECONDS);
-        MySQLResultCache.getInstance().deleteFuture(connectionId);
+        MySQLResultCache.getInstance().deleteFuture(commandPacket.getConnectionId());
         
         List<CommandResponsePackets> packets = new LinkedList<>();
         for (QueryResult each : queryResults) {
@@ -129,22 +123,25 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     
     protected CommandResponsePackets executeForSharding() {
         StatementRoutingEngine routingEngine = new StatementRoutingEngine(RuleRegistry.getInstance().getShardingRule(), RuleRegistry.getInstance().getShardingMetaData(), databaseType, showSQL);
-        SQLRouteResult routeResult = routingEngine.route(sql);
+        SQLRouteResult routeResult = routingEngine.route(commandPacket.getSql());
         if (routeResult.getExecutionUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
         }
         
         synchronizedFuture = new SynchronizedFuture<>(routeResult.getExecutionUnits().size());
-        MySQLResultCache.getInstance().putFuture(connectionId, synchronizedFuture);
+        MySQLResultCache.getInstance().putFuture(commandPacket.getConnectionId(), synchronizedFuture);
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             if (commandPacket instanceof ComQueryPacket) {
-                ((ComQueryPacket) commandPacket).setSql(each.getSqlUnit().getSql());
+                ComQueryPacket queryPacket = (ComQueryPacket) ((ComQueryPacket) commandPacket).clone();
+                queryPacket.setSql(each.getSqlUnit().getSql());
+                executeCommand(each.getDataSource(), queryPacket.getConnectionId(), queryPacket);
+            } else {
+                executeCommand(each.getDataSource(), commandPacket.getConnectionId(), commandPacket);
             }
-            executeCommand(each.getDataSource(), connectionId, commandPacket);
         }
         //TODO timeout should be set.
         List<QueryResult> queryResults = synchronizedFuture.get(CONNECT_TIMEOUT, TimeUnit.SECONDS);
-        MySQLResultCache.getInstance().deleteFuture(connectionId);
+        MySQLResultCache.getInstance().deleteFuture(commandPacket.getConnectionId());
         
         List<CommandResponsePackets> packets = Lists.newArrayListWithCapacity(queryResults.size());
         for (QueryResult each : queryResults) {

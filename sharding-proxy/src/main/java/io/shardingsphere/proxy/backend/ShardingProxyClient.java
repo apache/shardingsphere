@@ -25,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import com.google.common.collect.Maps;
-import com.zaxxer.hikari.HikariConfig;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
@@ -41,6 +40,7 @@ import io.netty.channel.pool.ChannelPoolMap;
 import io.netty.channel.pool.FixedChannelPool;
 import io.netty.channel.pool.SimpleChannelPool;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.shardingsphere.core.yaml.sharding.DataSourceParameter;
 import io.shardingsphere.proxy.backend.common.NettyChannelPoolHandler;
 import io.shardingsphere.proxy.config.DataScourceConfig;
 import io.shardingsphere.proxy.config.RuleRegistry;
@@ -77,9 +77,9 @@ public final class ShardingProxyClient {
      * @throws InterruptedException  interrupted exception
      */
     public void start() throws MalformedURLException, InterruptedException {
-        Map<String, HikariConfig> dataSourceConfigurationMap = RuleRegistry.getInstance().getDataSourceConfigurationMap();
-        for (Map.Entry<String, HikariConfig> each : dataSourceConfigurationMap.entrySet()) {
-            URL url = new URL(each.getValue().getJdbcUrl().replaceAll("jdbc:mysql:", "http:"));
+        Map<String, DataSourceParameter> dataSourceConfigurationMap = RuleRegistry.getInstance().getDataSourceConfigurationMap();
+        for (Map.Entry<String, DataSourceParameter> each : dataSourceConfigurationMap.entrySet()) {
+            URL url = new URL(each.getValue().getUrl().replaceAll("jdbc:mysql:", "http:"));
             final String ip = url.getHost();
             final int port = url.getPort();
             final String database = url.getPath().substring(1);

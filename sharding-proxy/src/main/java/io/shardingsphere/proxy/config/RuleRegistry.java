@@ -17,10 +17,21 @@
 
 package io.shardingsphere.proxy.config;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.Executors;
+
+import javax.sql.DataSource;
+
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+
 import io.shardingsphere.core.constant.ShardingProperties;
 import io.shardingsphere.core.constant.ShardingPropertiesConstant;
 import io.shardingsphere.core.exception.ShardingException;
@@ -31,15 +42,6 @@ import io.shardingsphere.core.yaml.proxy.YamlProxyConfiguration;
 import io.shardingsphere.core.yaml.sharding.DataSourceParameter;
 import io.shardingsphere.proxy.metadata.ProxyShardingMetaData;
 import lombok.Getter;
-
-import javax.sql.DataSource;
-import java.io.File;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.Executors;
 
 /**
  * Sharding rule registry.
@@ -59,7 +61,7 @@ public final class RuleRegistry {
     
     private final Map<String, DataSource> dataSourceMap;
     
-    private Map<String, HikariConfig> dataSourceConfigurationMap;
+    private Map<String, DataSourceParameter> dataSourceConfigurationMap;
 
     private final ShardingRule shardingRule;
     
@@ -86,12 +88,10 @@ public final class RuleRegistry {
         dataSourceMap = new HashMap<>(128, 1);
         Map<String, DataSourceParameter> dataSourceParameters = yamlProxyConfiguration.getDataSources();
         for (Map.Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
-            dataSourceMap.put(entry.getKey(), getDataSource(entry.getValue()));
-        for (String each : dataSourceParameters.keySet()) {
             if (WITHOUT_JDBC) {
-                dataSourceConfigurationMap.put(each, getDataSourceConfiguration(dataSourceParameters.get(each)));
+                dataSourceConfigurationMap.put(entry.getKey(), entry.getValue());
             }
-            dataSourceMap.put(each, getDataSource(dataSourceParameters.get(each)));
+            dataSourceMap.put(entry.getKey(), getDataSource(entry.getValue()));
         }
         shardingRule = yamlProxyConfiguration.obtainShardingRule(Collections.<String>emptyList());
         masterSlaveRule = yamlProxyConfiguration.obtainMasterSlaveRule();

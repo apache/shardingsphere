@@ -53,8 +53,8 @@ public class OKPacket extends MySQLPacket {
         this.info = info;
     }
     
-    public OKPacket(final MySQLPacketPayload mysqlPacketPayload) {
-        super(mysqlPacketPayload.readInt1());
+    public OKPacket(final int sequenceId, final MySQLPacketPayload mysqlPacketPayload) {
+        super(sequenceId);
         Preconditions.checkArgument(HEADER == mysqlPacketPayload.readInt1());
         affectedRows = mysqlPacketPayload.readIntLenenc();
         lastInsertId = mysqlPacketPayload.readIntLenenc();

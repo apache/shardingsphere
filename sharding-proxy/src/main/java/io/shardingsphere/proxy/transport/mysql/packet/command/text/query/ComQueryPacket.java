@@ -28,7 +28,6 @@ import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -39,9 +38,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author linjiaqi
  */
 @Slf4j
-public final class ComQueryPacket extends CommandPacket {
-    @Setter
-    private String sql;
+public final class ComQueryPacket extends CommandPacket implements Cloneable {
     
     private final SQLExecuteBackendHandler sqlExecuteBackendHandler;
     
@@ -49,20 +46,30 @@ public final class ComQueryPacket extends CommandPacket {
     
     public ComQueryPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload mysqlPacketPayload) {
         super(sequenceId, connectionId);
-        sql = mysqlPacketPayload.readStringEOF();
-        sqlExecuteBackendHandler = new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
-        sqlPacketsBackendHandler = new SQLPacketsBackendHandler(this, sql, connectionId, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
+        setSql(mysqlPacketPayload.readStringEOF());
+        sqlExecuteBackendHandler = new SQLExecuteBackendHandler(getSql(), DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
+        sqlPacketsBackendHandler = new SQLPacketsBackendHandler(this, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
+    }
+    
+    @Override
+    public Object clone() {
+        try {
+            return super.clone();
+        } catch (CloneNotSupportedException e) {
+            log.error(e.getMessage(), e);
+        }
+        return null;
     }
     
     @Override
     public void write(final MySQLPacketPayload mysqlPacketPayload) {
         mysqlPacketPayload.writeInt1(CommandPacketType.COM_QUERY.getValue());
-        mysqlPacketPayload.writeStringEOF(sql);
+        mysqlPacketPayload.writeStringEOF(getSql());
     }
     
     @Override
     public CommandResponsePackets execute() {
-        log.debug("COM_QUERY received for Sharding-Proxy: {}", sql);
+        log.debug("COM_QUERY received for Sharding-Proxy: {}", getSql());
         if (RuleRegistry.WITHOUT_JDBC) {
             return sqlPacketsBackendHandler.execute();
         } else {

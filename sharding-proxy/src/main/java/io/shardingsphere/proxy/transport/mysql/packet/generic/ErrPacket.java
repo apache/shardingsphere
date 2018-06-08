@@ -50,8 +50,8 @@ public class ErrPacket extends MySQLPacket {
         this.errorMessage = errorMessage;
     }
     
-    public ErrPacket(final MySQLPacketPayload mysqlPacketPayload) {
-        super(mysqlPacketPayload.readInt1());
+    public ErrPacket(final int sequenceId, final MySQLPacketPayload mysqlPacketPayload) {
+        super(sequenceId);
         Preconditions.checkArgument(HEADER == mysqlPacketPayload.readInt1());
         errorCode = mysqlPacketPayload.readInt2();
         sqlStateMarker = mysqlPacketPayload.readStringFix(1);

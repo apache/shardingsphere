@@ -30,7 +30,6 @@ import io.shardingsphere.proxy.backend.common.CommandResponsePacketsHandler;
 import io.shardingsphere.proxy.backend.constant.AuthType;
 import io.shardingsphere.proxy.config.DataScourceConfig;
 import io.shardingsphere.proxy.transport.mysql.constant.CapabilityFlag;
-import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerInfo;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
@@ -63,7 +62,7 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
         MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload((ByteBuf) message);
         int sequenceId = mysqlPacketPayload.readInt1();
         mysqlPacketPayload.getByteBuf().markReaderIndex();
-        int header = mysqlPacketPayload.readInt1() & 0xFF;
+        int header = mysqlPacketPayload.readInt1();
         
         if (AuthType.UN_AUTH == authType) {
             auth(context, sequenceId, header, mysqlPacketPayload);
@@ -112,29 +111,19 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
     @Override
     protected void genericResponsePacket(final ChannelHandlerContext context, final int sequenceId, final int header, final MySQLPacketPayload mysqlPacketPayload) {
         mysqlQueryResult = new MySQLQueryResult();
+        mysqlPacketPayload.getByteBuf().resetReaderIndex();
         switch (header) {
             case OKPacket.HEADER:
                 if (authType == AuthType.AUTHING) {
                     authType = AuthType.AUTH_SUCCESS;
                 }
-                long affectedRows = mysqlPacketPayload.readIntLenenc();
-                long lastInsertId = mysqlPacketPayload.readIntLenenc();
-                int statusFlags = mysqlPacketPayload.readInt2();
-                int warnings = mysqlPacketPayload.readInt2();
-                String info = mysqlPacketPayload.readStringEOF();
-                log.debug("OKPacket[affectedRows={},lastInsertId={},statusFlags={},warnings={},info={}]", affectedRows, lastInsertId, statusFlags, warnings, info);
-                mysqlQueryResult.setGenericResponse(new OKPacket(sequenceId, affectedRows, lastInsertId, statusFlags, warnings, info));
+                mysqlQueryResult.setGenericResponse(new OKPacket(sequenceId, mysqlPacketPayload));
                 break;
             case ErrPacket.HEADER:
                 if (authType == AuthType.AUTHING) {
                     authType = AuthType.AUTH_FAILED;
                 }
-                int errorCode = mysqlPacketPayload.readInt2();
-                String sqlStateMarker = mysqlPacketPayload.readStringFix(1);
-                String sqlState = mysqlPacketPayload.readStringFix(5);
-                String errorMessage = mysqlPacketPayload.readStringEOF();
-                log.debug("ErrPacket[errorCode={},sqlStateMarker={},sqlState={},errorMessage={}]", errorCode, sqlStateMarker, sqlState, errorMessage);
-                mysqlQueryResult.setGenericResponse(new ErrPacket(sequenceId, errorCode, sqlStateMarker, sqlState, errorMessage));
+                mysqlQueryResult.setGenericResponse(new ErrPacket(sequenceId, mysqlPacketPayload));
                 break;
             default:
                 break;
@@ -153,10 +142,8 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
     
     @Override
     protected void endOfFilePacket(final ChannelHandlerContext context, final int sequenceId, final int header, final MySQLPacketPayload mysqlPacketPayload) {
-        int warnings = mysqlPacketPayload.readInt2();
-        int statusFlags = mysqlPacketPayload.readInt2();
-        log.debug("EofPacket[warnings={},statusFlags={}]", warnings, statusFlags);
-        EofPacket eofPacket = new EofPacket(sequenceId, warnings, statusFlags);
+        mysqlPacketPayload.getByteBuf().resetReaderIndex();
+        EofPacket eofPacket = new EofPacket(sequenceId, mysqlPacketPayload);
         if (mysqlQueryResult.isColumnFinished()) {
             mysqlQueryResult.setRowFinished(eofPacket);
             mysqlQueryResult = null;
@@ -176,24 +163,7 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
             mysqlQueryResult = new MySQLQueryResult(sequenceId, header);
         } else if (mysqlQueryResult.needColumnDefinition()) {
             mysqlPacketPayload.getByteBuf().resetReaderIndex();
-            String catalog = mysqlPacketPayload.readStringLenenc();
-            String schema = mysqlPacketPayload.readStringLenenc();
-            String table = mysqlPacketPayload.readStringLenenc();
-            String orgTable = mysqlPacketPayload.readStringLenenc();
-            String name = mysqlPacketPayload.readStringLenenc();
-            String orgName = mysqlPacketPayload.readStringLenenc();
-            // fixed value and charset
-            mysqlPacketPayload.skipReserved(1 + 2);
-            int columnLength = mysqlPacketPayload.readInt4();
-            int columnType = mysqlPacketPayload.readInt1();
-            // field flags
-            mysqlPacketPayload.skipReserved(2);
-            int decimals = mysqlPacketPayload.readInt1();
-            // filler value 0x00 0x00
-            mysqlPacketPayload.skipReserved(2);
-            
-            ColumnDefinition41Packet columnDefinition = new ColumnDefinition41Packet(sequenceId, schema, table, orgTable, name, orgName,
-                    columnLength, ColumnType.valueOfJDBCType(columnType), decimals);
+            ColumnDefinition41Packet columnDefinition = new ColumnDefinition41Packet(sequenceId, mysqlPacketPayload);
             mysqlQueryResult.addColumnDefinition(columnDefinition);
         } else {
             mysqlPacketPayload.getByteBuf().resetReaderIndex();

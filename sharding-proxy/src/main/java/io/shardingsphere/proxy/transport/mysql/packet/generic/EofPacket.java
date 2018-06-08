@@ -44,8 +44,8 @@ public class EofPacket extends MySQLPacket {
         this.statusFlags = statusFlags;
     }
     
-    public EofPacket(final MySQLPacketPayload mysqlPacketPayload) {
-        super(mysqlPacketPayload.readInt1());
+    public EofPacket(final int sequenceId, final MySQLPacketPayload mysqlPacketPayload) {
+        super(sequenceId);
         Preconditions.checkArgument(HEADER == mysqlPacketPayload.readInt1());
         warnings = mysqlPacketPayload.readInt2();
         statusFlags = mysqlPacketPayload.readInt2();

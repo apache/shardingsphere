@@ -20,6 +20,7 @@ package io.shardingsphere.proxy.transport.mysql.packet.command;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Command packet.
@@ -28,6 +29,10 @@ import lombok.Getter;
  * @author wangkai
  */
 public abstract class CommandPacket extends MySQLPacket {
+    @Getter
+    @Setter
+    private String sql;
+    
     @Getter
     private final int connectionId;
     

@@ -37,9 +37,9 @@ public final class ColumnDefinition41Packet extends MySQLPacket {
     
     private final int nextLength = 0x0c;
     
-    private final int characterSet = ServerInfo.CHARSET;
+    private int characterSet = ServerInfo.CHARSET;
     
-    private final int flags = 0;
+    private int flags;
     
     private final String schema;
     
@@ -70,8 +70,8 @@ public final class ColumnDefinition41Packet extends MySQLPacket {
         this.decimals = decimals;
     }
     
-    public ColumnDefinition41Packet(final MySQLPacketPayload mysqlPacketPayload) {
-        super(mysqlPacketPayload.readInt1());
+    public ColumnDefinition41Packet(final int sequenceId, final MySQLPacketPayload mysqlPacketPayload) {
+        super(sequenceId);
         Preconditions.checkArgument(catalog.equals(mysqlPacketPayload.readStringLenenc()));
         schema = mysqlPacketPayload.readStringLenenc();
         table = mysqlPacketPayload.readStringLenenc();
@@ -79,10 +79,12 @@ public final class ColumnDefinition41Packet extends MySQLPacket {
         name = mysqlPacketPayload.readStringLenenc();
         orgName = mysqlPacketPayload.readStringLenenc();
         Preconditions.checkArgument(nextLength == mysqlPacketPayload.readIntLenenc());
-        Preconditions.checkArgument(characterSet == mysqlPacketPayload.readInt2());
+        //TODO the characterSet maybe not always equal to ServerInfo.CHARSET
+        characterSet = mysqlPacketPayload.readInt2();
         columnLength = mysqlPacketPayload.readInt4();
         columnType = ColumnType.valueOf(mysqlPacketPayload.readInt1());
-        Preconditions.checkArgument(flags == mysqlPacketPayload.readInt2());
+        //TODO the flags maybe not always equal to 0
+        flags = mysqlPacketPayload.readInt2();
         decimals = mysqlPacketPayload.readInt1();
         mysqlPacketPayload.skipReserved(2);
     }

@@ -47,6 +47,7 @@ public final class ComFieldListPacket extends CommandPacket {
         super(sequenceId, connectionId);
         table = mysqlPacketPayload.readStringNul();
         fieldWildcard = mysqlPacketPayload.readStringEOF();
+        setSql(String.format("SHOW COLUMNS FROM %s FROM %s", table, ShardingConstant.LOGIC_SCHEMA_NAME));
     }
     
     @Override
@@ -60,12 +61,11 @@ public final class ComFieldListPacket extends CommandPacket {
     public CommandResponsePackets execute() {
         log.debug("table name received for Sharding-Proxy: {}", table);
         log.debug("field wildcard received for Sharding-Proxy: {}", fieldWildcard);
-        String sql = String.format("SHOW COLUMNS FROM %s FROM %s", table, ShardingConstant.LOGIC_SCHEMA_NAME);
         // TODO use common database type
         if (RuleRegistry.WITHOUT_JDBC) {
-            return new SQLPacketsBackendHandler(this, sql, getConnectionId(), DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL()).execute();
+            return new SQLPacketsBackendHandler(this, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL()).execute();
         } else {
-            return new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL()).execute();
+            return new SQLExecuteBackendHandler(getSql(), DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL()).execute();
         }
     }
     
