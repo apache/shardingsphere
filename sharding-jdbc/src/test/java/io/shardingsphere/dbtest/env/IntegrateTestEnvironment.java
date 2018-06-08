@@ -76,7 +76,7 @@ public final class IntegrateTestEnvironment {
                             prop.getProperty("sqlserver.username", "sa"), prop.getProperty("sqlserver.password", "Jdbc1234")));
                     break;
                 case Oracle:
-                    databaseEnvironments.put(each, new DatabaseEnvironment(each, prop.getProperty("oracle.host", "127.0.0.1"), Integer.parseInt(prop.getProperty("oracle.port", "8521")),
+                    databaseEnvironments.put(each, new DatabaseEnvironment(each, prop.getProperty("oracle.host", "127.0.0.1"), Integer.parseInt(prop.getProperty("oracle.port", "1521")),
                             prop.getProperty("oracle.username", "jdbc"), prop.getProperty("oracle.password", "jdbc")));
                     break;
                 default:
