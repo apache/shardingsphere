@@ -156,7 +156,7 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
         ProxyShardingRefreshHandler.build(routeResult).execute();
         return result;
     }
-
+    
     private void getCommandResponsePackets(final List<Future<CommandResponsePackets>> resultList, final List<CommandResponsePackets> packets) {
         for (Future<CommandResponsePackets> each : resultList) {
             try {
@@ -169,7 +169,7 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
             }
         }
     }
-
+    
     List<Object> getComStmtExecuteParameters() {
         List<Object> result = new ArrayList<>(32);
         for (PreparedStatementParameter each : preparedStatementParameters) {

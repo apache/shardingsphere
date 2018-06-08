@@ -19,7 +19,7 @@ package io.shardingsphere.proxy.backend.common;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.proxy.backend.mysql.MySQLBackendHandler;
-import io.shardingsphere.proxy.config.DataScourceConfig;
+import io.shardingsphere.proxy.config.DataSourceConfig;
 
 /**
  * Backend handler factory.
@@ -32,13 +32,13 @@ public final class BackendHandlerFactory {
      * Create bakcend handler instance.
      *
      * @param databaseType database type
-     * @param dataScourceConfig dataScourceConfig
+     * @param dataSourceConfig dataSourceConfig
      * @return backend handler instance
      */
-    public static CommandResponsePacketsHandler createBackendHandlerInstance(final DatabaseType databaseType, final DataScourceConfig dataScourceConfig) {
+    public static CommandResponsePacketsHandler createBackendHandlerInstance(final DatabaseType databaseType, final DataSourceConfig dataSourceConfig) {
         switch (databaseType) {
             case MySQL:
-                return new MySQLBackendHandler(dataScourceConfig);
+                return new MySQLBackendHandler(dataSourceConfig);
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseType));
         }

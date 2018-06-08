@@ -70,7 +70,7 @@ public final class ComQueryPacket extends CommandPacket implements Cloneable {
     @Override
     public CommandResponsePackets execute() {
         log.debug("COM_QUERY received for Sharding-Proxy: {}", getSql());
-        if (RuleRegistry.WITHOUT_JDBC) {
+        if (RuleRegistry.getInstance().isWithoutJdbc()) {
             return sqlPacketsBackendHandler.execute();
         } else {
             return sqlExecuteBackendHandler.execute();
@@ -84,7 +84,7 @@ public final class ComQueryPacket extends CommandPacket implements Cloneable {
      */
     public boolean hasMoreResultValue() {
         try {
-            if (RuleRegistry.WITHOUT_JDBC) {
+            if (RuleRegistry.getInstance().isWithoutJdbc()) {
                 return sqlPacketsBackendHandler.hasMoreResultValue();
             } else {
                 return sqlExecuteBackendHandler.hasMoreResultValue();
@@ -100,7 +100,7 @@ public final class ComQueryPacket extends CommandPacket implements Cloneable {
      * @return database protocol packet
      */
     public DatabaseProtocolPacket getResultValue() {
-        if (RuleRegistry.WITHOUT_JDBC) {
+        if (RuleRegistry.getInstance().isWithoutJdbc()) {
             return sqlPacketsBackendHandler.getResultValue();
         } else {
             return sqlExecuteBackendHandler.getResultValue();

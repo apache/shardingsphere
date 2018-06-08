@@ -42,7 +42,7 @@ import io.netty.channel.pool.SimpleChannelPool;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.shardingsphere.core.yaml.sharding.DataSourceParameter;
 import io.shardingsphere.proxy.backend.common.NettyChannelPoolHandler;
-import io.shardingsphere.proxy.config.DataScourceConfig;
+import io.shardingsphere.proxy.config.DataSourceConfig;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -68,7 +68,7 @@ public final class ShardingProxyClient {
     @Getter
     private ChannelPoolMap<String, SimpleChannelPool> poolMap;
     
-    private Map<String, DataScourceConfig> dataScourceConfigMap = Maps.newHashMap();
+    private Map<String, DataSourceConfig> dataSourceConfigMap = Maps.newHashMap();
     
     /**
      * Start Sharding-Proxy.
@@ -85,7 +85,7 @@ public final class ShardingProxyClient {
             final String database = url.getPath().substring(1);
             final String username = (each.getValue()).getUsername();
             final String password = (each.getValue()).getPassword();
-            dataScourceConfigMap.put(each.getKey(), new DataScourceConfig(ip, port, database, username, password));
+            dataSourceConfigMap.put(each.getKey(), new DataSourceConfig(ip, port, database, username, password));
         }
         final Bootstrap bootstrap = new Bootstrap();
         if (workerGroup instanceof EpollEventLoopGroup) {
@@ -130,13 +130,13 @@ public final class ShardingProxyClient {
         poolMap = new AbstractChannelPoolMap<String, SimpleChannelPool>() {
             @Override
             protected SimpleChannelPool newPool(final String datasourceName) {
-                DataScourceConfig dataScourceConfig = dataScourceConfigMap.get(datasourceName);
+                DataSourceConfig dataSourceConfig = dataSourceConfigMap.get(datasourceName);
                 //TODO maxConnection should be set.
-                return new FixedChannelPool(bootstrap.remoteAddress(dataScourceConfig.getIp(), dataScourceConfig.getPort()), new NettyChannelPoolHandler(dataScourceConfig), MAX_CONNECTIONS);
+                return new FixedChannelPool(bootstrap.remoteAddress(dataSourceConfig.getIp(), dataSourceConfig.getPort()), new NettyChannelPoolHandler(dataSourceConfig), MAX_CONNECTIONS);
             }
         };
         
-        for (String each : dataScourceConfigMap.keySet()) {
+        for (String each : dataSourceConfigMap.keySet()) {
             SimpleChannelPool pool = poolMap.get(each);
             Channel[] channels = new Channel[MAX_CONNECTIONS];
             for (int i = 0; i < MAX_CONNECTIONS; i++) {

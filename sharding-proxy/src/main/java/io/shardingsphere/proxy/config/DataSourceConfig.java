@@ -21,13 +21,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * DataScourceConfig.
+ * DataSourceConfig.
  *
  * @author linjiaqi
  */
 @RequiredArgsConstructor
 @Getter
-public class DataScourceConfig {
+public class DataSourceConfig {
     private final String ip;
     
     private final int port;

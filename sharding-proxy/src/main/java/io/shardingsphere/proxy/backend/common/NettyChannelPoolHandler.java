@@ -20,7 +20,7 @@ package io.shardingsphere.proxy.backend.common;
 import io.netty.channel.Channel;
 import io.netty.channel.pool.ChannelPoolHandler;
 import io.shardingsphere.proxy.backend.netty.ClientHandlerInitializer;
-import io.shardingsphere.proxy.config.DataScourceConfig;
+import io.shardingsphere.proxy.config.DataSourceConfig;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class NettyChannelPoolHandler implements ChannelPoolHandler {
-    private final DataScourceConfig dataScourceConfig;
+    private final DataSourceConfig dataSourceConfig;
     
     @Override
     public void channelReleased(final Channel channel) throws Exception {
@@ -48,6 +48,6 @@ public class NettyChannelPoolHandler implements ChannelPoolHandler {
     @Override
     public void channelCreated(final Channel channel) throws Exception {
         log.info("channelCreated. Channel ID: {}" + channel.id().asShortText());
-        channel.pipeline().addLast(new ClientHandlerInitializer(dataScourceConfig));
+        channel.pipeline().addLast(new ClientHandlerInitializer(dataSourceConfig));
     }
 }

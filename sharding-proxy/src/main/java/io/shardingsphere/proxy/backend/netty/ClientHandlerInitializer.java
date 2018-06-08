@@ -22,7 +22,7 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.proxy.backend.common.BackendHandlerFactory;
-import io.shardingsphere.proxy.config.DataScourceConfig;
+import io.shardingsphere.proxy.config.DataSourceConfig;
 import io.shardingsphere.proxy.transport.common.codec.PacketCodecFactory;
 import lombok.RequiredArgsConstructor;
 
@@ -34,13 +34,13 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 public final class ClientHandlerInitializer extends ChannelInitializer<Channel> {
-    private final DataScourceConfig dataScourceConfig;
+    private final DataSourceConfig dataSourceConfig;
     
     @Override
     protected void initChannel(final Channel channel) {
         ChannelPipeline pipeline = channel.pipeline();
         // TODO load database type from yaml or startup arguments
         pipeline.addLast(PacketCodecFactory.createPacketCodecInstance(DatabaseType.MySQL));
-        pipeline.addLast(BackendHandlerFactory.createBackendHandlerInstance(DatabaseType.MySQL, dataScourceConfig));
+        pipeline.addLast(BackendHandlerFactory.createBackendHandlerInstance(DatabaseType.MySQL, dataSourceConfig));
     }
 }

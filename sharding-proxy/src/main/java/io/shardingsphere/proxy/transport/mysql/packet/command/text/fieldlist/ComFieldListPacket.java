@@ -62,7 +62,7 @@ public final class ComFieldListPacket extends CommandPacket {
         log.debug("table name received for Sharding-Proxy: {}", table);
         log.debug("field wildcard received for Sharding-Proxy: {}", fieldWildcard);
         // TODO use common database type
-        if (RuleRegistry.WITHOUT_JDBC) {
+        if (RuleRegistry.getInstance().isWithoutJdbc()) {
             return new SQLPacketsBackendHandler(this, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL()).execute();
         } else {
             return new SQLExecuteBackendHandler(getSql(), DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL()).execute();

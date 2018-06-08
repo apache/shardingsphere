@@ -37,9 +37,9 @@ public final class ColumnDefinition41Packet extends MySQLPacket {
     
     private final int nextLength = 0x0c;
     
-    private int characterSet = ServerInfo.CHARSET;
+    private final int characterSet;
     
-    private int flags;
+    private final int flags;
     
     private final String schema;
     
@@ -60,6 +60,8 @@ public final class ColumnDefinition41Packet extends MySQLPacket {
     public ColumnDefinition41Packet(final int sequenceId, final String schema, final String table, final String orgTable, 
                                     final String name, final String orgName, final int columnLength, final ColumnType columnType, final int decimals) {
         super(sequenceId);
+        this.characterSet = ServerInfo.CHARSET;
+        this.flags = 0;
         this.schema = schema;
         this.table = table;
         this.orgTable = orgTable;
@@ -79,11 +81,9 @@ public final class ColumnDefinition41Packet extends MySQLPacket {
         name = mysqlPacketPayload.readStringLenenc();
         orgName = mysqlPacketPayload.readStringLenenc();
         Preconditions.checkArgument(nextLength == mysqlPacketPayload.readIntLenenc());
-        //TODO the characterSet maybe not always equal to ServerInfo.CHARSET
         characterSet = mysqlPacketPayload.readInt2();
         columnLength = mysqlPacketPayload.readInt4();
         columnType = ColumnType.valueOf(mysqlPacketPayload.readInt1());
-        //TODO the flags maybe not always equal to 0
         flags = mysqlPacketPayload.readInt2();
         decimals = mysqlPacketPayload.readInt1();
         mysqlPacketPayload.skipReserved(2);

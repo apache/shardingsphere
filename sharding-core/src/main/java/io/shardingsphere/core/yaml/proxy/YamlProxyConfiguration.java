@@ -56,6 +56,8 @@ public class YamlProxyConfiguration {
    
     private YamlShardingRuleConfiguration shardingRule = new YamlShardingRuleConfiguration();
     
+    private boolean withoutJdbc;
+    
     private String transactionMode;
     
     /**

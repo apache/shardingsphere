@@ -54,7 +54,7 @@ public final class MySQLQueryResult implements QueryResult {
     private final Map<Integer, String> columnIndexAndLabelMap;
     
     private final Map<String, Integer> columnLabelAndIndexMap;
-
+    
     private final List<ColumnDefinition41Packet> columnDefinitions;
     
     private final BlockingQueue<MySQLPacket> resultSet;

@@ -101,7 +101,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
             return executeForSharding();
         }
     }
-
+    
     protected CommandResponsePackets executeForMasterSlave() {
         MasterSlaveRouter masterSlaveRouter = new MasterSlaveRouter(RuleRegistry.getInstance().getMasterSlaveRule());
         SQLStatement sqlStatement = new SQLJudgeEngine(commandPacket.getSql()).judge();
@@ -159,7 +159,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
         ProxyShardingRefreshHandler.build(routeResult).execute();
         return result;
     }
-
+    
     protected CommandResponsePackets merge(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets, final List<QueryResult> queryResults) {
         CommandResponsePackets headPackets = new CommandResponsePackets();
         for (CommandResponsePackets each : packets) {
@@ -184,6 +184,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
         Channel channel = null;
         try {
             pool = ShardingProxyClient.getInstance().getPoolMap().get(dataSourceName);
+            //TODO timeout should be set.
             channel = pool.acquire().get(CONNECT_TIMEOUT, TimeUnit.SECONDS);
             MySQLResultCache.getInstance().putConnection(channel.id().asShortText(), connectionId);
             channel.writeAndFlush(commandPacket);
@@ -195,7 +196,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
             }
         }
     }
-
+    
     private CommandResponsePackets mergeDML(final CommandResponsePackets firstPackets) {
         int affectedRows = 0;
         long lastInsertId = 0;

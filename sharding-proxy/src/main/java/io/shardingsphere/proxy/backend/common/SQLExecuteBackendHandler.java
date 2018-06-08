@@ -66,9 +66,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public final class SQLExecuteBackendHandler implements BackendHandler {
-
+    
     private final String sql;
-
+    
     private List<Connection> connections;
     
     private List<ResultSet> resultSets;

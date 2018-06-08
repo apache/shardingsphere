@@ -28,7 +28,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.shardingsphere.proxy.backend.common.CommandResponsePacketsHandler;
 import io.shardingsphere.proxy.backend.constant.AuthType;
-import io.shardingsphere.proxy.config.DataScourceConfig;
+import io.shardingsphere.proxy.config.DataSourceConfig;
 import io.shardingsphere.proxy.transport.mysql.constant.CapabilityFlag;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerInfo;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
@@ -51,7 +51,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class MySQLBackendHandler extends CommandResponsePacketsHandler {
-    private final DataScourceConfig dataScourceConfig;
+    private final DataSourceConfig dataSourceConfig;
     
     private AuthType authType = AuthType.UN_AUTH;
     
@@ -97,10 +97,10 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
             mysqlPacketPayload.skipReserved(10);
             byte[] authPluginDataPart2 = mysqlPacketPayload.readStringNul().getBytes();
             byte[] authPluginData = Bytes.concat(authPluginDataPart1, authPluginDataPart2);
-            byte[] authResponse = securePasswordAuthentication(dataScourceConfig.getPassword().getBytes(), authPluginData);
+            byte[] authResponse = securePasswordAuthentication(dataSourceConfig.getPassword().getBytes(), authPluginData);
             //TODO maxSizePactet（16MB） should be set.
             HandshakeResponse41Packet handshakeResponse41Packet = new HandshakeResponse41Packet(sequenceId + 1, CapabilityFlag.calculateHandshakeCapabilityFlagsLower(), 16777215, ServerInfo.CHARSET,
-                    dataScourceConfig.getUsername(), authResponse, dataScourceConfig.getDatabase());
+                    dataSourceConfig.getUsername(), authResponse, dataSourceConfig.getDatabase());
             context.writeAndFlush(handshakeResponse41Packet);
         } finally {
             authType = AuthType.AUTHING;

@@ -46,20 +46,21 @@ import java.util.concurrent.Executors;
  * @author zhangliang
  * @author zhangyonglun
  * @author panjuan
+ * @author zhaojun
  * @author wangkai
  */
 @Getter
 public final class RuleRegistry {
-    public static final boolean WITHOUT_JDBC = true;
-
     private static final int MAX_EXECUTOR_THREADS = Runtime.getRuntime().availableProcessors() * 2;
     
     private static final RuleRegistry INSTANCE = new RuleRegistry();
     
+    private final boolean withoutJdbc;
+    
     private final Map<String, DataSource> dataSourceMap;
     
     private Map<String, DataSourceParameter> dataSourceConfigurationMap;
-
+    
     private final ShardingRule shardingRule;
     
     private final MasterSlaveRule masterSlaveRule;
@@ -75,7 +76,7 @@ public final class RuleRegistry {
     private final boolean showSQL;
     
     private final TransactionType transactionType;
-
+    
     private RuleRegistry() {
         YamlProxyConfiguration yamlProxyConfiguration;
         try {
@@ -83,11 +84,12 @@ public final class RuleRegistry {
         } catch (final IOException ex) {
             throw new ShardingException(ex);
         }
+        withoutJdbc = yamlProxyConfiguration.isWithoutJdbc();
         transactionType = TransactionType.findByValue(yamlProxyConfiguration.getTransactionMode());
         dataSourceMap = ProxyRawDataSourceFactory.create(transactionType, yamlProxyConfiguration);
         dataSourceConfigurationMap = new HashMap<>(128, 1);
         for (Map.Entry<String, DataSourceParameter> entry : yamlProxyConfiguration.getDataSources().entrySet()) {
-            if (WITHOUT_JDBC) {
+            if (withoutJdbc) {
                 dataSourceConfigurationMap.put(entry.getKey(), entry.getValue());
             }
         }
