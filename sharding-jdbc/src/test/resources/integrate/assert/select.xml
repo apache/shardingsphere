@@ -78,7 +78,7 @@
             <data expected="select/SelectNoShardingTable.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectLikeWithCount">
+    <sql id="select_count_like_concat">
         <sharding-rule value="tbl">
             <data parameter="'init',10,11,1000,1909" expected="select/SelectLikeWithCount.xml" />
         </sharding-rule>

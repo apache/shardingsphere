@@ -91,4 +91,24 @@
         <assertion sharding-rule-type="dbtbl" expected-data-file="dbtbl/select_full_route_with_binding_table.xml" />
         <assertion sharding-rule-type="masterslave" expected-data-file="masterslave/select_full_route_with_binding_table.xml" />
     </dql-test-case>
+    
+    <dql-test-case sql-case-id="select_count_like_concat">
+        <assertion sharding-rule-type="db" parameters="init:String, 10:int, 11:int, 1000:int, 2901:int" expected-data-file="db/select_count_like_concat.xml" />
+        <assertion sharding-rule-type="tbl" parameters="init:String, 10:int, 11:int, 1000:int, 1909:int" expected-data-file="tbl/select_count_like_concat.xml" />
+        <assertion sharding-rule-type="dbtbl" parameters="init:String, 10:int, 11:int, 1000:int, 2901:int" expected-data-file="dbtbl/select_count_like_concat.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="init:String, 10:int, 11:int, 1000:int, 2901:int" expected-data-file="masterslave/select_count_like_concat.xml" />
+    </dql-test-case>
+
+
+
+
+
+    <!--<sql id="select_count_like_concat">-->
+        <!--<sharding-rule value="tbl">-->
+            <!--<data parameter="'init',10,11,1000,1909" expected="select/SelectLikeWithCount.xml" />-->
+        <!--</sharding-rule>-->
+        <!--<sharding-rule value="db,masterslave,dbtbl">-->
+            <!--<data parameter="'init',10,11,1000,2901" expected="select/SelectLikeWithCount.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
 </integrate-test-cases>
