@@ -15,10 +15,21 @@ dataSources:
     url: jdbc:mysql://localhost:3306/ds_0
     username: root
     password: 
+    autoCommit: true
+    connectionTimeout: 30000
+    idleTimeout: 60000
+    maxLifetime: 1800000
+    maximumPoolSize: 65
+    
   ds_1:
     url: jdbc:mysql://localhost:3306/ds_1
     username: root
     password: 
+    autoCommit: true
+    connectionTimeout: 30000
+    idleTimeout: 60000
+    maxLifetime: 1800000
+    maximumPoolSize: 65
 
 shardingRule:  
   tables:
@@ -51,6 +62,10 @@ shardingRule:
   props:
     proxy.mode: CONNECTION_STRICTLY
     sql.show: false
+    
+proxyAuthority:
+  username: root
+  password:
 ```
 
 ### 读写分离
@@ -61,15 +76,32 @@ dataSources:
     url: jdbc:mysql://localhost:3306/ds_master
     username: root
     password: 
+    autoCommit: true
+    connectionTimeout: 30000
+    idleTimeout: 60000
+    maxLifetime: 1800000
+    maximumPoolSize: 65
+    
   ds_slave_0:
     url: jdbc:mysql://localhost:3306/ds_slave_0
     username: root
-    password: 
+    password:
+    autoCommit: true
+    connectionTimeout: 30000
+    idleTimeout: 60000
+    maxLifetime: 1800000
+    maximumPoolSize: 65 
+    
   ds_slave_1: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ds_slave_1
     username: root
-    password: 
+    password:
+    autoCommit: true
+    connectionTimeout: 30000
+    idleTimeout: 60000
+    maxLifetime: 1800000
+    maximumPoolSize: 65 
 
 masterSlaveRule:
   name: ds_ms
@@ -77,7 +109,12 @@ masterSlaveRule:
   slaveDataSourceNames: 
     - ds_slave_0
     - ds_slave_1
+    
+proxyAuthority:
+  username: root
+  password:
 ```
+
 ### 数据分片 + 读写分离
 
 ```yaml
@@ -86,32 +123,67 @@ dataSources:
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ds_0
     username: root
-    password: 
+    password:
+    autoCommit: true
+    connectionTimeout: 30000
+    idleTimeout: 60000
+    maxLifetime: 1800000
+    maximumPoolSize: 65 
+    
   ds_0_slave_0: !!org.apache.commons.dbcp.BasicDataSource
-      driverClassName: com.mysql.jdbc.Driver
-      url: jdbc:mysql://localhost:3306/ds_0_slave_0
-      username: root
-      password: 
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ds_0_slave_0
+    username: root
+    password: 
+    autoCommit: true
+    connectionTimeout: 30000
+    idleTimeout: 60000
+    maxLifetime: 1800000
+    maximumPoolSize: 65
+          
   ds_0_slave_1: !!org.apache.commons.dbcp.BasicDataSource
-      driverClassName: com.mysql.jdbc.Driver
-      url: jdbc:mysql://localhost:3306/ds_0_slave_1
-      username: root
-      password: 
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ds_0_slave_1
+    username: root
+    password:
+    autoCommit: true
+    connectionTimeout: 30000
+    idleTimeout: 60000
+    maxLifetime: 1800000
+    maximumPoolSize: 65
+           
   ds_1: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ds_1
     username: root
     password: 
+    autoCommit: true
+    connectionTimeout: 30000
+    idleTimeout: 60000
+    maxLifetime: 1800000
+    maximumPoolSize: 65
+      
   ds_1_slave_0: !!org.apache.commons.dbcp.BasicDataSource
-        driverClassName: com.mysql.jdbc.Driver
-        url: jdbc:mysql://localhost:3306/ds_1_slave_0
-        username: root
-        password: 
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ds_1_slave_0
+    username: root
+    password: 
+    autoCommit: true
+    connectionTimeout: 30000
+    idleTimeout: 60000
+    maxLifetime: 1800000
+    maximumPoolSize: 65
+            
   ds_1_slave_1: !!org.apache.commons.dbcp.BasicDataSource
-        driverClassName: com.mysql.jdbc.Driver
-        url: jdbc:mysql://localhost:3306/ds_1_slave_1
-        username: root
-        password: 
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ds_1_slave_1
+    username: root
+    password:
+    autoCommit: true
+    connectionTimeout: 30000
+    idleTimeout: 60000
+    maxLifetime: 1800000
+    maximumPoolSize: 65 
 
 shardingRule:  
   tables:
@@ -162,6 +234,10 @@ shardingRule:
   props:
     proxy.mode: CONNECTION_STRICTLY
     sql.show: false
+    
+proxyAuthority:
+  username: root
+  password:
 ```
 
 ### 使用Zookeeper的数据治理
@@ -220,6 +296,16 @@ masterSlaveRule: #省略读写分离配置，与Sharding-JDBC配置一致
     # CONNECTION_STRICTLY: 代理在取出ResultSet中的所有数据后会释放连接.
     #                      同时，内存的消耗将会增加.
     proxy.mode: 
+```
+
+### 权限验证
+
+用于执行登录Sharding Proxy的权限验证。配置用户名、密码后，必须使用正确的用户名、密码才可登录Proxy。
+
+```yaml
+proxyAuthority:
+   username: root
+   password:
 ```
 
 ### 使用Zookeeper的数据治理
