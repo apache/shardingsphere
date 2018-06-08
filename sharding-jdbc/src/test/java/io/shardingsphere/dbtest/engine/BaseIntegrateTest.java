@@ -21,9 +21,6 @@ import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
 import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
-import io.shardingsphere.dbtest.cases.assertion.ddl.DDLIntegrateTestCaseAssertion;
-import io.shardingsphere.dbtest.cases.assertion.dml.DMLIntegrateTestCaseAssertion;
-import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
@@ -83,7 +80,7 @@ public abstract class BaseIntegrateTest {
         this.caseType = caseType;
         this.countInSameCase = countInSameCase;
         sql = SQLCasesLoader.getInstance().getSupportedSQL(sqlCaseId);
-        expectedDataFile = path.substring(0, path.lastIndexOf(File.separator) + 1) + "asserts/" + getExpectedDataFileType() + "/" + assertion.getExpectedDataFile();
+        expectedDataFile = path.substring(0, path.lastIndexOf(File.separator) + 1) + "dataset/" + assertion.getExpectedDataFile();
         if (databaseTypeEnvironment.isEnabled()) {
             dataSourceMap = createDataSourceMap(assertion);
             dataSource = createDataSource(dataSourceMap);
@@ -91,19 +88,6 @@ public abstract class BaseIntegrateTest {
             dataSourceMap = null;
             dataSource = null;
         }
-    }
-    
-    private String getExpectedDataFileType() {
-        if (assertion instanceof DDLIntegrateTestCaseAssertion) {
-            return "ddl";
-        }
-        if (assertion instanceof DMLIntegrateTestCaseAssertion) {
-            return "dml";
-        }
-        if (assertion instanceof DQLIntegrateTestCaseAssertion) {
-            return "dql";
-        }
-        throw new UnsupportedOperationException(String.format("Cannot support '%s'", assertion.getClass().getName()));
     }
     
     private Map<String, DataSource> createDataSourceMap(final IntegrateTestCaseAssertion assertion) throws IOException, JAXBException {

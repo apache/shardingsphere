@@ -41,7 +41,7 @@
         </aggregation-select-items>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectRegexpWithSingleTable" parameters="'init' 1 2">
+    <parser-result sql-case-id="assertSelectRegexpWithSingleTable" parameters="'init', 1, 2">
         <tables>
             <table name="t_order_item" alias="t"/>
         </tables>

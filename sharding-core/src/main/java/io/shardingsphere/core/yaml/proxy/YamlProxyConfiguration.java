@@ -58,6 +58,8 @@ public final class YamlProxyConfiguration {
     
     private ProxyAuthority proxyAuthority = new ProxyAuthority();
     
+    private String transactionMode;
+
     /**
      * Unmarshal yaml sharding configuration from yaml file.
      * 

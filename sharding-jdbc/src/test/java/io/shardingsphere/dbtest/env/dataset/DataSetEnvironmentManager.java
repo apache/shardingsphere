@@ -20,12 +20,12 @@ package io.shardingsphere.dbtest.env.dataset;
 import com.google.common.base.Joiner;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.util.InlineExpressionParser;
+import io.shardingsphere.dbtest.cases.assertion.root.SQLValue;
+import io.shardingsphere.dbtest.cases.assertion.root.SQLValueGroup;
 import io.shardingsphere.dbtest.cases.dataset.init.DataSetColumnMetadata;
 import io.shardingsphere.dbtest.cases.dataset.init.DataSetMetadata;
 import io.shardingsphere.dbtest.cases.dataset.init.DataSetRow;
 import io.shardingsphere.dbtest.cases.dataset.init.DataSetsRoot;
-import io.shardingsphere.dbtest.common.SQLValue;
-import io.shardingsphere.dbtest.common.SQLValueGroup;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;

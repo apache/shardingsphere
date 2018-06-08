@@ -21,9 +21,9 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCaseAssertion;
+import io.shardingsphere.dbtest.cases.assertion.root.SQLValue;
 import io.shardingsphere.dbtest.cases.dataset.expected.dataset.ExpectedDataSetRow;
 import io.shardingsphere.dbtest.cases.dataset.expected.dataset.ExpectedDataSetsRoot;
-import io.shardingsphere.dbtest.common.SQLValue;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.dbtest.env.IntegrateTestEnvironment;
@@ -79,7 +79,7 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
         this.assertion = assertion;
     }
     
-    @Parameters(name = "{0}.{5} -> {2} -> {3} -> {4}")
+    @Parameters(name = "{0}[{5}] -> {2} -> {3} -> {4}")
     public static Collection<Object[]> getParameters() {
         // TODO sqlCasesLoader size should eq integrateTestCasesLoader size
         // assertThat(sqlCasesLoader.countAllSupportedSQLCases(), is(integrateTestCasesLoader.countAllDataSetTestCases()));
@@ -97,7 +97,6 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
                 result.addAll(getParameters(databaseType, caseType, integrateTestCase));
             }
         }
-        
         return result;
     }
     
