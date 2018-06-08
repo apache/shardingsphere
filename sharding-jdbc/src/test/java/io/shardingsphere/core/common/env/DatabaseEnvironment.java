@@ -71,7 +71,7 @@ public final class DatabaseEnvironment {
         SCHEMA.put(DatabaseType.SQLServer, null);
 
         DRIVER_CLASS_NAME.put(DatabaseType.Oracle, "oracle.jdbc.driver.OracleDriver");
-        URL.put(DatabaseType.Oracle, "jdbc:oracle:thin:@db.oracle:8521:db_1");
+        URL.put(DatabaseType.Oracle, "jdbc:oracle:thin:@db.oracle:1521:db_1");
         USERNAME.put(DatabaseType.Oracle, "jdbc");
         PASSWORD.put(DatabaseType.Oracle, "jdbc");
         SCHEMA.put(DatabaseType.Oracle, "%s");
