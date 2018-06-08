@@ -78,6 +78,7 @@
         <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
         <coveralls-maven-plugin.version>4.1.0</coveralls-maven-plugin.version>
         <docker-maven-plugin.version>0.4.14</docker-maven-plugin.version>
+        <commons-codec.version>1.10</commons-codec.version>
         
         <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
     </properties>
@@ -314,6 +315,11 @@
                 <artifactId>opentracing-mock</artifactId>
                 <version>${opentracing.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons-codec.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

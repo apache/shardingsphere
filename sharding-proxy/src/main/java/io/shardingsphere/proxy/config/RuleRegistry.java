@@ -26,9 +26,10 @@ import io.shardingsphere.core.constant.ShardingPropertiesConstant;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.MasterSlaveRule;
+import io.shardingsphere.core.rule.ProxyAuthority;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.yaml.proxy.YamlProxyConfiguration;
-import io.shardingsphere.core.yaml.sharding.DataSourceParameter;
+import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.proxy.metadata.ProxyShardingMetaData;
 import lombok.Getter;
 
@@ -71,6 +72,8 @@ public final class RuleRegistry {
     
     private final boolean showSQL;
     
+    private final ProxyAuthority proxyAuthority;
+    
     private RuleRegistry() {
         YamlProxyConfiguration yamlProxyConfiguration;
         try {
@@ -94,7 +97,7 @@ public final class RuleRegistry {
         if (!isOnlyMasterSlave) {
             shardingMetaData.init(shardingRule);
         }
-        
+        proxyAuthority = yamlProxyConfiguration.getProxyAuthority();
     }
     
     private DataSource getDataSource(final DataSourceParameter dataSourceParameter) {

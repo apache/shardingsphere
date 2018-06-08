@@ -20,8 +20,9 @@ package io.shardingsphere.core.yaml.proxy;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.core.rule.ProxyAuthority;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
-import io.shardingsphere.core.yaml.sharding.DataSourceParameter;
+import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
 import lombok.Getter;
 import lombok.Setter;
@@ -47,13 +48,15 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public class YamlProxyConfiguration {
+public final class YamlProxyConfiguration {
     
     private Map<String, DataSourceParameter> dataSources = new HashMap<>();
     
     private YamlMasterSlaveRuleConfiguration masterSlaveRule = new YamlMasterSlaveRuleConfiguration();
    
     private YamlShardingRuleConfiguration shardingRule = new YamlShardingRuleConfiguration();
+    
+    private ProxyAuthority proxyAuthority = new ProxyAuthority();
     
     /**
      * Unmarshal yaml sharding configuration from yaml file.
