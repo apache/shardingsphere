@@ -47,7 +47,7 @@
             <data parameter="12,1000" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectBetweenWithSingleTable">
+    <sql id="select_between_with_single_table">
         <sharding-rule value="tbl,masterslave,dbtbl">
             <data parameter="10,12,1009,1108" expected="select/SelectBetweenWithSingleTable.xml" />
         </sharding-rule>

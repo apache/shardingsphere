@@ -5,11 +5,8 @@ shardingRule:
       databaseStrategy:
         standard:
           shardingColumn: user_id
-          preciseAlgorithmClassName: io.shardingsphere.dbtest.fixture.SingleAlgorithm
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: t_order
+          preciseAlgorithmClassName: io.shardingsphere.dbtest.fixture.PreciseModuloAlgorithm
+          rangeAlgorithmClassName: io.shardingsphere.dbtest.fixture.RangeModuloAlgorithm
     t_order_item:
       actualDataNodes: db_${0..9}.t_order_item
       keyGeneratorColumnName: order_item_id
@@ -17,12 +14,8 @@ shardingRule:
       databaseStrategy:
         standard:
           shardingColumn: user_id
-          preciseAlgorithmClassName: io.shardingsphere.dbtest.fixture.SingleAlgorithm
-          rangeAlgorithmClassName: io.shardingsphere.core.fixture.RangeOrderShardingAlgorithm
-      tableStrategy:
-        inline:
-          shardingColumn: id
-          algorithmExpression: t_order_item
+          preciseAlgorithmClassName: io.shardingsphere.dbtest.fixture.PreciseModuloAlgorithm
+          rangeAlgorithmClassName: io.shardingsphere.dbtest.fixture.RangeModuloAlgorithm
   bindingTables:
     - t_order,t_order_item
   defaultDataSourceName: db_0

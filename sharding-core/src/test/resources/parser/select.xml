@@ -88,7 +88,7 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectBetweenWithSingleTable" parameters="1, 10, 2, 5">
+    <parser-result sql-case-id="select_between_with_single_table" parameters="1, 10, 2, 5">
         <tables>
             <table name="t_order" />
         </tables>
