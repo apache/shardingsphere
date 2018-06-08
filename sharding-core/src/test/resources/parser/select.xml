@@ -212,8 +212,8 @@
             <order-by-column owner="i" name="item_id" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
-
-    <parser-result sql-case-id="select_full_route_with_binding_table">
+    
+    <parser-result sql-case-id="select_full_route_with_binding_tables">
         <tables>
             <table name="t_order" alias="o"/>
             <table name="t_order_item" alias="i"/>
