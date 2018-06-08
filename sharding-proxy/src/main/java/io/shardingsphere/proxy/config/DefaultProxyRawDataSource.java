@@ -19,7 +19,7 @@ package io.shardingsphere.proxy.config;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import io.shardingsphere.core.yaml.sharding.DataSourceParameter;
+import io.shardingsphere.core.rule.DataSourceParameter;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
