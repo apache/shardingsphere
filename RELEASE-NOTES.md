@@ -22,7 +22,7 @@
 1. [ISSUE #719](https://github.com/sharding-sphere/sharding-sphere/issues/719) Support Spring bean namespace to inject key generator objects
 1. [ISSUE #720](https://github.com/sharding-sphere/sharding-sphere/issues/720) Support Spring bean namespace to inject sharding algorithm objects
 1. [ISSUE #773](https://github.com/sharding-sphere/sharding-sphere/issues/773) Support sharding and autoincrement primary key of INSERT statements without column names
-1. [ISSUE #916](https://github.com/sharding-sphere/sharding-sphere/issues/916) Support authorization for Sharding Proxy.
+1. [ISSUE #916](https://github.com/sharding-sphere/sharding-sphere/issues/916) Support authorization for Sharding Proxy
 
 ### Bug Fixes
 
