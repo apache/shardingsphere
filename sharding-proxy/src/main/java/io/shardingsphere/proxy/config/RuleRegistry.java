@@ -35,6 +35,7 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executors;
@@ -85,13 +86,10 @@ public final class RuleRegistry {
         transactionType = TransactionType.findByValue(yamlProxyConfiguration.getTransactionMode());
         dataSourceMap = ProxyRawDataSourceFactory.create(transactionType, yamlProxyConfiguration);
         dataSourceConfigurationMap = new HashMap<>(128, 1);
-        dataSourceMap = new HashMap<>(128, 1);
-        Map<String, DataSourceParameter> dataSourceParameters = yamlProxyConfiguration.getDataSources();
-        for (Map.Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
+        for (Map.Entry<String, DataSourceParameter> entry : yamlProxyConfiguration.getDataSources().entrySet()) {
             if (WITHOUT_JDBC) {
                 dataSourceConfigurationMap.put(entry.getKey(), entry.getValue());
             }
-            dataSourceMap.put(entry.getKey(), getDataSource(entry.getValue()));
         }
         shardingRule = yamlProxyConfiguration.obtainShardingRule(Collections.<String>emptyList());
         masterSlaveRule = yamlProxyConfiguration.obtainMasterSlaveRule();
