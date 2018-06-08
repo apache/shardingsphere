@@ -163,23 +163,6 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectIterator" parameters="1, 2">
-        <tables>
-            <table name="t_order_item" alias="t"/>
-        </tables>
-        <tokens>
-            <table-token begin-position="16" original-literals="t_order_item" />
-        </tokens>
-        <or-condition>
-            <and-condition>
-                <condition column-name="item_id" table-name="t_order_item" operator="IN">
-                    <value index="0" literal="1" type="int" />
-                    <value index="1" literal="2" type="int" />
-                </condition>
-            </and-condition>
-        </or-condition>
-    </parser-result>
-    
     <parser-result sql-case-id="assertSelectNoShardingTable">
         <tables>
             <table name="t_order" alias="o"/>
