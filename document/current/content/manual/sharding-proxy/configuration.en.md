@@ -275,6 +275,11 @@ dataSources: #Data sources configuration, multiple `data_source_name` available
     url: #Database URL
     username: #Database username
     password: #Database password
+    autoCommit: true #The default config of hikari connection pool
+    connectionTimeout: 30000 #The default config of hikari connection pool
+    idleTimeout: 60000 #The default config of hikari connection pool
+    maxLifetime: 1800000 #The default config of hikari connection pool
+    maximumPoolSize: 65 #The default config of hikari connection pool
 
 shardingRule: #Ignore sharding rule configuration, same as Sharding-JDBC
 ```

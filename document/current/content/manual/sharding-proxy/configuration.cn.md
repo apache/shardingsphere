@@ -275,6 +275,12 @@ dataSources: #数据源配置，可配置多个data_source_name
     url: #数据库url连接
     username: #数据库用户名
     password: #数据库密码
+    autoCommit: true #hikari连接池默认配置
+    connectionTimeout: 30000 #hikari连接池默认配置
+    idleTimeout: 60000 #hikari连接池默认配置
+    maxLifetime: 1800000 #hikari连接池默认配置
+    maximumPoolSize: 65 #hikari连接池默认配置
+    
 
 shardingRule: #省略数据分片配置，与Sharding-JDBC配置一致
 ```
