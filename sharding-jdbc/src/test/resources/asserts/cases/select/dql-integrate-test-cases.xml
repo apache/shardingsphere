@@ -84,4 +84,11 @@
         <assertion sharding-rule-type="dbtbl" parameters="10:int, 12:int, 1309:int, 1408:int" expected-data-file="empty_result.xml" />
         <assertion sharding-rule-type="masterslave" parameters="10:int, 12:int, 1309:int, 1408:int" expected-data-file="empty_result.xml" />
     </dql-test-case>
+    
+    <dql-test-case sql-case-id="select_full_route_with_binding_table">
+        <assertion sharding-rule-type="db" expected-data-file="db/select_full_route_with_binding_table.xml" />
+        <assertion sharding-rule-type="tbl" expected-data-file="tbl/select_full_route_with_binding_table.xml" />
+        <assertion sharding-rule-type="dbtbl" expected-data-file="dbtbl/select_full_route_with_binding_table.xml" />
+        <assertion sharding-rule-type="masterslave" expected-data-file="masterslave/select_full_route_with_binding_table.xml" />
+    </dql-test-case>
 </integrate-test-cases>

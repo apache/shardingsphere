@@ -73,7 +73,7 @@
             <data parameter="10,12,15,1309,1408" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectNoShardingTable">
+    <sql id="select_full_route_with_binding_table">
         <sharding-rule value="tbl,db,dbtbl">
             <data expected="select/SelectNoShardingTable.xml" />
         </sharding-rule>
