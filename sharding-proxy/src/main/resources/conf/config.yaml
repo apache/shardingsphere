@@ -63,7 +63,10 @@
 #    #                      Meanwhile, the cost of the memory will be increased.
 #    proxy.mode: MEMORY_STRICTLY
 #    sql.show: false
-
+#
+#proxyAuthority:
+#  username: root
+#  password: root
 
 
 # The example of master-slave rule.
@@ -92,3 +95,7 @@
 #  masterDataSourceName: ds_0
 #  slaveDataSourceNames:
 #    - ds_1
+#
+#proxyAuthority:
+#  username: root
+#  password: root

@@ -59,14 +59,14 @@ import java.util.concurrent.TimeUnit;
 public final class ExecutorEngine implements AutoCloseable {
     
     private static final ThreadPoolExecutor SHUTDOWN_EXECUTOR = new ThreadPoolExecutor(
-            0, 1, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(10), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("Sharding-JDBC-ExecutorEngineCloseTimer").build());
+            0, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(10), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("Sharding-JDBC-ExecutorEngineCloseTimer").build());
     
     @Getter
     private final ListeningExecutorService executorService;
     
     public ExecutorEngine(final int executorSize) {
         executorService = MoreExecutors.listeningDecorator(new ThreadPoolExecutor(
-                executorSize, executorSize, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("Sharding-JDBC-%d").build()));
+                executorSize, executorSize, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("Sharding-JDBC-%d").build()));
         MoreExecutors.addDelayedShutdownHook(executorService, 60, TimeUnit.SECONDS);
     }
     

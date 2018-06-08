@@ -7,11 +7,13 @@ shardingRule:
       databaseStrategy:
         standard:
           shardingColumn: user_id
-          preciseAlgorithmClassName: io.shardingsphere.core.integrate.api.yaml.fixture.SingleAlgorithm
+          preciseAlgorithmClassName: io.shardingsphere.dbtest.fixture.PreciseModuloAlgorithm
+          rangeAlgorithmClassName: io.shardingsphere.dbtest.fixture.RangeModuloAlgorithm
       tableStrategy:
-        inline:
+        standard:
           shardingColumn: order_id
-          algorithmExpression: t_order_${order_id % 10}
+          preciseAlgorithmClassName: io.shardingsphere.dbtest.fixture.PreciseModuloAlgorithm
+          rangeAlgorithmClassName: io.shardingsphere.dbtest.fixture.RangeModuloAlgorithm
       keyGeneratorColumnName: order_id
       keyGeneratorClassName: io.shardingsphere.core.integrate.api.yaml.fixture.IncrementKeyGenerator
       logicIndex: t_order_index
@@ -20,19 +22,15 @@ shardingRule:
       databaseStrategy:
         standard:
           shardingColumn: user_id
-          preciseAlgorithmClassName: io.shardingsphere.core.integrate.api.yaml.fixture.SingleAlgorithm
+          preciseAlgorithmClassName: io.shardingsphere.dbtest.fixture.PreciseModuloAlgorithm
+          rangeAlgorithmClassName: io.shardingsphere.dbtest.fixture.RangeModuloAlgorithm
       tableStrategy:
-        inline:
+        standard:
           shardingColumn: order_id
-          algorithmExpression: t_order_item_${order_id % 10}
+          preciseAlgorithmClassName: io.shardingsphere.dbtest.fixture.PreciseModuloAlgorithm
+          rangeAlgorithmClassName: io.shardingsphere.dbtest.fixture.RangeModuloAlgorithm
   bindingTables:
     - t_order,t_order_item
-  defaultDatabaseStrategy:
-    none:
-  defaultTableStrategy:
-    complex:
-      shardingColumns: id, order_id
-      algorithmClassName: io.shardingsphere.core.integrate.api.yaml.fixture.MultiAlgorithm
 
   masterSlaveRules:
     db_ms_0:

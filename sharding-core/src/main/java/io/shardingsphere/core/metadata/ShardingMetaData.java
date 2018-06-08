@@ -60,7 +60,7 @@ public abstract class ShardingMetaData {
     public ShardingMetaData(final ListeningExecutorService executorService) {
         this.executorService = executorService;
     }
-
+    
     /**
      * Initialize sharding metadata.
      *
@@ -109,7 +109,7 @@ public abstract class ShardingMetaData {
     public void refresh(final TableRule each, final ShardingRule shardingRule) {
         refresh(each, shardingRule, Collections.<String, Connection>emptyMap());
     }
-
+    
     /**
      * Refresh each tableMetaData by TableRule.
      *
@@ -120,7 +120,7 @@ public abstract class ShardingMetaData {
     public void refresh(final TableRule each, final ShardingRule shardingRule, final Map<String, Connection> connectionMap) {
         tableMetaDataMap.put(each.getLogicTable(), getFinalTableMetaData(each.getLogicTable(), each.getActualDataNodes(), shardingRule.getShardingDataSourceNames(), connectionMap));
     }
-
+    
     private TableMetaData getFinalTableMetaData(final String logicTableName, final List<DataNode> actualDataNodes,
                                                 final ShardingDataSourceNames shardingDataSourceNames, final Map<String, Connection> connectionMap) {
         List<TableMetaData> actualTableMetaDataList = getAllActualTableMetaData(actualDataNodes, shardingDataSourceNames, connectionMap);
@@ -145,7 +145,7 @@ public abstract class ShardingMetaData {
                 }
             }));
         }
-
+        
         try {
             return Futures.allAsList(result).get();
         } catch (final InterruptedException | ExecutionException ex) {
@@ -163,7 +163,7 @@ public abstract class ShardingMetaData {
      * @throws SQLException SQL exception
      */
     public abstract TableMetaData getTableMetaData(DataNode dataNode, ShardingDataSourceNames shardingDataSourceNames, Map<String, Connection> connectionMap) throws SQLException;
-
+    
     private String getErrorMsgOfTableMetaData(final String logicTableName, final TableMetaData oldTableMetaData, final TableMetaData newTableMetaData) {
         return String.format("Cannot get uniformed table structure for %s. The different metadata of actual tables is as follows:\n%s\n%s.",
                 logicTableName, oldTableMetaData.toString(), newTableMetaData.toString());

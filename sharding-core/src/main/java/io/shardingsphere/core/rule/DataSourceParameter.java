@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.yaml.sharding;
+package io.shardingsphere.core.rule;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

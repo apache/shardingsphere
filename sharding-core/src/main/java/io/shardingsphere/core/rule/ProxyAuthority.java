@@ -15,18 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.core;
+package io.shardingsphere.core.rule;
 
-import io.shardingsphere.core.integrate.AllIntegrateTests;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        AllUnitTests.class,
-        AllIntegrateTests.class,
-        io.shardingsphere.dbtest.AllIntegrateTests.class
-    })
-public class AllTests {
+/**
+ * Yam proxy authority.
+ *
+ * @author panjuan
+ */
+@NoArgsConstructor
+@Getter
+@Setter
+public final class ProxyAuthority {
+    
+    private String username;
+    
+    private String password;
 }

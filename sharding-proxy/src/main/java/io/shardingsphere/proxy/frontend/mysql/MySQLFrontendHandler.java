@@ -26,38 +26,45 @@ import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketFactory;
+import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.handshake.AuthPluginData;
 import io.shardingsphere.proxy.transport.mysql.packet.handshake.ConnectionIdGenerator;
 import io.shardingsphere.proxy.transport.mysql.packet.handshake.HandshakePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.handshake.HandshakeResponse41Packet;
-import lombok.RequiredArgsConstructor;
+import io.shardingsphere.proxy.transport.mysql.packet.handshake.ProxyAuthorityHandler;
 
 /**
  * MySQL frontend handler.
  *
  * @author zhangliang
+ * @author panjuan
  */
-@RequiredArgsConstructor
 public final class MySQLFrontendHandler extends FrontendHandler {
     
     private final EventLoopGroup eventLoopGroup;
     
-    private AuthPluginData authPluginData;
+    private final ProxyAuthorityHandler proxyAuthorityHandler;
+    
+    public MySQLFrontendHandler(final EventLoopGroup eventLoopGroup) {
+        this.eventLoopGroup = eventLoopGroup;
+        proxyAuthorityHandler = new ProxyAuthorityHandler();
+    }
     
     @Override
     protected void handshake(final ChannelHandlerContext context) {
-        authPluginData = new AuthPluginData();
-        context.writeAndFlush(new HandshakePacket(ConnectionIdGenerator.getInstance().nextId(), authPluginData));
+        context.writeAndFlush(new HandshakePacket(ConnectionIdGenerator.getInstance().nextId(), proxyAuthorityHandler.getAuthPluginData()));
     }
     
     @Override
     protected void auth(final ChannelHandlerContext context, final ByteBuf message) {
         MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message);
         try {
-            // TODO use authPluginData to auth
             HandshakeResponse41Packet response41 = new HandshakeResponse41Packet(mysqlPacketPayload);
-            context.writeAndFlush(new OKPacket(response41.getSequenceId() + 1, 0L, 0L, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+            if (proxyAuthorityHandler.isLegalForProxyLogin(response41.getUsername(), response41.getAuthResponse())) {
+                context.writeAndFlush(new OKPacket(response41.getSequenceId() + 1, 0L, 0L, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+            } else {
+                context.writeAndFlush(new ErrPacket(response41.getSequenceId() + 1, 1045, "", "", "Access denied because of invalid username and password for Sharding Proxy."));
+            }
         } finally {
             mysqlPacketPayload.getByteBuf().release();
         }
@@ -65,7 +72,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
     
     @Override
     protected void executeCommand(final ChannelHandlerContext context, final ByteBuf message) {
-        eventLoopGroup.execute(new Runnable() {
+        ChannelThreadHolder.get(context.channel().id()).execute(new Runnable() {
             
             @Override
             public void run() {

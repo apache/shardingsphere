@@ -223,6 +223,18 @@ public final class MySQLPacketPayload {
     }
     
     /**
+     * Read fixed length string from byte buffers.
+     *
+     * @return fixed length bytes
+     */
+    public byte[] readStringLenencByBytes() {
+        int length = (int) readIntLenenc();
+        byte[] result = new byte[length];
+        byteBuf.readBytes(result);
+        return result;
+    }
+    
+    /**
      * Write fixed length string to byte buffers.
      * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::FixedLengthString">FixedLengthString</a>
      *

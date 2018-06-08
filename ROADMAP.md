@@ -35,10 +35,10 @@
   - [x] COM_INIT_DB Packet
   - [x] COM_QUERY Packet
   - [x] COM_FIELD_LIST Packet
-  - [ ] COM_STMT_PREPARE
-  - [ ] COM_STMT_EXECUTE
-  - [ ] COM_STMT_CLOSE
-  - [ ] COM_STMT_RESET
+  - [x] COM_STMT_PREPARE
+  - [x] COM_STMT_EXECUTE
+  - [x] COM_STMT_CLOSE
+  - [x] COM_STMT_RESET
 - [ ] Oracle
 - [ ] SQLServer
 - [ ] PostgreSQL
@@ -62,9 +62,9 @@
     - [x] Aggregation Functions
     - [x] LIMIT, rownum, TOP
     - [x] Simple Sub Query
+    - [x] OR
     - [ ] DISTINCT
     - [ ] HAVING
-    - [ ] OR
     - [ ] UNION, UNION ALL
     - [ ] Calculate Expression, eg: SUM(pv) / COUNT(uv)
     - [ ] Complicated Sub Query
@@ -74,7 +74,7 @@
     - [x] INSERT SET
     - [x] UPDATE
     - [x] DELETE
-    - [ ] INSERT INTO VALUES (xxx), (xxx)
+    - [x] INSERT INTO VALUES (xxx), (xxx)
     - [ ] UPDATE Multiple Tables
     - [ ] DELETE Multiple Tables
 - [x] DDL
