@@ -139,8 +139,7 @@
         </order-by-columns>
     </parser-result>
     
-    <!-- // TODO 目前对于IN多结果不同做到交集处理 仅仅是简单的加入, 目前因为condition是map，同样的column会覆盖 -->
-    <parser-result sql-case-id="assertSelectInWithSameShardingColumns" parameters="100, 1001, 1001, 1002">
+    <parser-result sql-case-id="select_in_with_same_sharding_column" parameters="1000, 1001, 1001, 1002">
         <tables>
             <table name="t_order" />
         </tables>
@@ -150,7 +149,7 @@
         <or-condition>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="IN">
-                    <value index="0" literal="100" type="int" />
+                    <value index="0" literal="1000" type="int" />
                     <value index="1" literal="1001" type="int" />
                 </condition>
                 <condition column-name="order_id" table-name="t_order" operator="IN">

@@ -30,7 +30,7 @@
             <data parameter="1000,1001" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectInWithSameShardingColumns">
+    <sql id="select_in_with_same_sharding_column">
         <sharding-rule value="tbl">
             <data parameter="1000,1001,1001,1100" expected="select/SelectInWithSameShardingColumns.xml" />
         </sharding-rule>

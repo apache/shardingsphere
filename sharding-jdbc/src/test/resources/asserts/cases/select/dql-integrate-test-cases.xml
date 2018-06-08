@@ -52,8 +52,11 @@
         <assertion sharding-rule-type="masterslave" parameters="1000:int, 1001:int" expected-data-file="empty_result.xml" />
     </dql-test-case>
     
-    <dql-test-case sql-case-id="assertSelectInWithSameShardingColumns">
-        <assertion sharding-rule-type="tbl" parameters="1000:int, 1001:int, 1001:int, 1100:int" expected-data-file="SelectInWithSameShardingColumns.xml" />
+    <dql-test-case sql-case-id="select_in_with_same_sharding_column">
+        <assertion sharding-rule-type="db" parameters="1000:int, 1001:int, 1001:int, 1100:int" expected-data-file="db/select_in_with_same_sharding_column.xml" />
+        <assertion sharding-rule-type="tbl" parameters="1000:int, 1001:int, 1001:int, 1100:int" expected-data-file="tbl/select_in_with_same_sharding_column.xml" />
+        <assertion sharding-rule-type="dbtbl" parameters="1000:int, 1001:int, 1001:int, 1100:int" expected-data-file="dbtbl/select_in_with_same_sharding_column.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="1000:int, 1001:int, 1001:int, 1100:int" expected-data-file="masterslave/select_in_with_same_sharding_column.xml" />
     </dql-test-case>
     
     <!--<dql-test-case sql-case-id="assertSelectBetweenWithSingleTable">
