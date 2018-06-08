@@ -17,6 +17,7 @@
 
 package io.shardingsphere.proxy.config;
 
+import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import io.shardingsphere.core.constant.ShardingProperties;
@@ -25,9 +26,10 @@ import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.MasterSlaveRule;
+import io.shardingsphere.core.rule.ProxyAuthority;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.yaml.proxy.YamlProxyConfiguration;
-import io.shardingsphere.core.yaml.sharding.DataSourceParameter;
+import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.proxy.metadata.ProxyShardingMetaData;
 import lombok.Getter;
 
@@ -51,16 +53,17 @@ import java.util.concurrent.Executors;
  */
 @Getter
 public final class RuleRegistry {
+    
     private static final int MAX_EXECUTOR_THREADS = Runtime.getRuntime().availableProcessors() * 2;
     
     private static final RuleRegistry INSTANCE = new RuleRegistry();
-    
+
     private final boolean withoutJdbc;
-    
+
     private final Map<String, DataSource> dataSourceMap;
-    
+
     private Map<String, DataSourceParameter> dataSourceConfigurationMap;
-    
+
     private final ShardingRule shardingRule;
     
     private final MasterSlaveRule masterSlaveRule;
@@ -76,6 +79,8 @@ public final class RuleRegistry {
     private final boolean showSQL;
     
     private final TransactionType transactionType;
+
+    private final ProxyAuthority proxyAuthority;
     
     private RuleRegistry() {
         YamlProxyConfiguration yamlProxyConfiguration;
@@ -104,6 +109,8 @@ public final class RuleRegistry {
         if (!isOnlyMasterSlave) {
             shardingMetaData.init(shardingRule);
         }
+        proxyAuthority = yamlProxyConfiguration.getProxyAuthority();
+        Preconditions.checkNotNull(proxyAuthority.getUsername(), "Invalid configuration for proxyAuthority.");
     }
     
     /**
