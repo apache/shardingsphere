@@ -1,41 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
-    <sql id="select_constant">
+    <sql id="select_constant_without_table">
         <sharding-rule>
             <data expected="select/SelectOne.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectNotEqualsWithSingleTable">
+    <sql id="select_not_equal_with_single_table">
         <sharding-rule value="tbl">
             <data parameter="100000" expected="select/SelectNotEqualsWithSingleTable.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectNotEqualsWithSingleTableForExclamationEqual">
+    <sql id="select_exclamation_equal_with_single_table">
         <sharding-rule value="tbl">
             <data parameter="100000" expected="select/SelectNotEqualsWithSingleTable.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectNotEqualsWithSingleTableForNotIn">
+    <sql id="select_not_in_with_single_table">
         <sharding-rule value="tbl">
             <data parameter="100000,100001" expected="select/SelectNotWithSingleTable.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectNotEqualsWithSingleTableForNotBetween">
+    <sql id="select_not_between_with_single_table">
         <sharding-rule value="tbl">
             <data parameter="100000,100001" expected="select/SelectNotWithSingleTable.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectEqualsWithSameShardingColumns">
+    <sql id="select_equal_with_same_sharding_column">
         <sharding-rule value="tbl">
             <data parameter="1000,1001" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectInWithSameShardingColumns">
+    <sql id="select_in_with_same_sharding_column">
         <sharding-rule value="tbl">
             <data parameter="1000,1001,1001,1100" expected="select/SelectInWithSameShardingColumns.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectEqualsWithSingleTable">
+    <sql id="select_equal_with_single_table">
         <sharding-rule value="tbl">
             <data parameter="10,1000" expected="select/SelectEqualsWithSingleTable_0.xml" />
             <data parameter="11,1109" expected="select/SelectEqualsWithSingleTable_1.xml" />
@@ -47,7 +47,7 @@
             <data parameter="12,1000" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectBetweenWithSingleTable">
+    <sql id="select_between_with_single_table">
         <sharding-rule value="tbl,masterslave,dbtbl">
             <data parameter="10,12,1009,1108" expected="select/SelectBetweenWithSingleTable.xml" />
         </sharding-rule>

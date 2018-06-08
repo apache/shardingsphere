@@ -1,53 +1,72 @@
 <integrate-test-cases>
-    <dql-test-case sql-case-id="select_constant">
-        <assertion sharding-rule-type="db" expected-data-file="select_constant.xml" />
-        <assertion sharding-rule-type="tbl" expected-data-file="select_constant.xml" />
-        <assertion sharding-rule-type="dbtbl" expected-data-file="select_constant.xml" />
-        <assertion sharding-rule-type="masterslave" expected-data-file="select_constant.xml" />
+    <dql-test-case sql-case-id="select_constant_without_table">
+        <assertion sharding-rule-type="db" expected-data-file="select_constant_without_table.xml" />
+        <assertion sharding-rule-type="tbl" expected-data-file="select_constant_without_table.xml" />
+        <assertion sharding-rule-type="dbtbl" expected-data-file="select_constant_without_table.xml" />
+        <assertion sharding-rule-type="masterslave" expected-data-file="select_constant_without_table.xml" />
     </dql-test-case>
     
-    <dql-test-case sql-case-id="assertSelectNotEqualsWithSingleTable">
-        <assertion sharding-rule-type="tbl" parameters="100000:int" expected-data-file="SelectNotEqualsWithSingleTable.xml" />
+    <dql-test-case sql-case-id="select_not_equal_with_single_table">
+        <assertion sharding-rule-type="db" parameters="100001:int" expected-data-file="db/select_not_equal_with_single_table.xml" />
+        <assertion sharding-rule-type="tbl" parameters="100001:int" expected-data-file="tbl/select_not_equal_with_single_table.xml" />
+        <assertion sharding-rule-type="dbtbl" parameters="100001:int" expected-data-file="dbtbl/select_not_equal_with_single_table.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="100001:int" expected-data-file="masterslave/select_not_equal_with_single_table.xml" />
     </dql-test-case>
     
-    <dql-test-case sql-case-id="assertSelectNotEqualsWithSingleTableForExclamationEqual">
-        <assertion sharding-rule-type="tbl" parameters="100000:int" expected-data-file="SelectNotEqualsWithSingleTable.xml" />
+    <dql-test-case sql-case-id="select_exclamation_equal_with_single_table">
+        <assertion sharding-rule-type="db" parameters="100001:int" expected-data-file="db/select_not_equal_with_single_table.xml" />
+        <assertion sharding-rule-type="tbl" parameters="100001:int" expected-data-file="tbl/select_not_equal_with_single_table.xml" />
+        <assertion sharding-rule-type="dbtbl" parameters="100001:int" expected-data-file="dbtbl/select_not_equal_with_single_table.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="100001:int" expected-data-file="masterslave/select_not_equal_with_single_table.xml" />
     </dql-test-case>
     
-    <dql-test-case sql-case-id="assertSelectNotEqualsWithSingleTableForNotIn">
-        <assertion sharding-rule-type="tbl" parameters="100000:int, 100001:int" expected-data-file="SelectNotWithSingleTable.xml" />
+    <dql-test-case sql-case-id="select_not_in_with_single_table">
+        <assertion sharding-rule-type="db" parameters="100000:int, 100001:int" expected-data-file="db/select_not_in_with_single_table.xml" />
+        <assertion sharding-rule-type="tbl" parameters="100000:int, 100001:int" expected-data-file="tbl/select_not_in_with_single_table.xml" />
+        <assertion sharding-rule-type="dbtbl" parameters="100000:int, 100001:int" expected-data-file="dbtbl/select_not_in_with_single_table.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="100000:int, 100001:int" expected-data-file="masterslave/select_not_in_with_single_table.xml" />
     </dql-test-case>
     
-    <dql-test-case sql-case-id="assertSelectNotEqualsWithSingleTableForNotBetween">
-        <assertion sharding-rule-type="tbl" parameters="100000:int, 100001:int" expected-data-file="SelectNotWithSingleTable.xml" />
+    <dql-test-case sql-case-id="select_not_between_with_single_table">
+        <assertion sharding-rule-type="db" parameters="100000:int, 100001:int" expected-data-file="db/select_not_in_with_single_table.xml" />
+        <assertion sharding-rule-type="tbl" parameters="100000:int, 100001:int" expected-data-file="tbl/select_not_in_with_single_table.xml" />
+        <assertion sharding-rule-type="dbtbl" parameters="100000:int, 100001:int" expected-data-file="dbtbl/select_not_in_with_single_table.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="100000:int, 100001:int" expected-data-file="masterslave/select_not_in_with_single_table.xml" />
     </dql-test-case>
     
-    <dql-test-case sql-case-id="assertSelectEqualsWithSameShardingColumns">
-        <assertion sharding-rule-type="tbl" parameters="1000:int, 1001:int" expected-data-file="SelectEqualsWithSameShardingColumns.xml" />
+    <dql-test-case sql-case-id="select_equal_with_single_table">
+        <assertion sharding-rule-type="db" parameters="12:int, 1201:int" expected-data-file="db/select_equal_with_single_table.xml" />
+        <assertion sharding-rule-type="tbl" parameters="10:int, 1000:int" expected-data-file="tbl/select_equal_with_single_table.xml" />
+        <assertion sharding-rule-type="dbtbl" parameters="12:int, 1201:int" expected-data-file="dbtbl/select_equal_with_single_table.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="12:int, 1201:int" expected-data-file="masterslave/select_equal_with_single_table.xml" />
+        <assertion sharding-rule-type="tbl" parameters="12:int, 1000:int" expected-data-file="empty_result.xml" />
+        <assertion sharding-rule-type="db" parameters="12:int, 1000:int" expected-data-file="empty_result.xml" />
+        <assertion sharding-rule-type="dbtbl" parameters="12:int, 1000:int" expected-data-file="empty_result.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="12:int, 1000:int" expected-data-file="empty_result.xml" />
     </dql-test-case>
     
-    <dql-test-case sql-case-id="assertSelectInWithSameShardingColumns">
-        <assertion sharding-rule-type="tbl" parameters="1000:int, 1001:int, 1001:int, 1100:int" expected-data-file="SelectInWithSameShardingColumns.xml" />
+    <dql-test-case sql-case-id="select_equal_with_same_sharding_column">
+        <assertion sharding-rule-type="db" parameters="1000:int, 1001:int" expected-data-file="empty_result.xml" />
+        <assertion sharding-rule-type="tbl" parameters="1000:int, 1001:int" expected-data-file="empty_result.xml" />
+        <assertion sharding-rule-type="dbtbl" parameters="1000:int, 1001:int" expected-data-file="empty_result.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="1000:int, 1001:int" expected-data-file="empty_result.xml" />
     </dql-test-case>
     
-    <dql-test-case sql-case-id="assertSelectEqualsWithSingleTable">
-        <assertion sharding-rule-type="tbl" parameters="10:int, 1000:int" expected-data-file="SelectEqualsWithSingleTable_0.xml" />
-        <assertion sharding-rule-type="tbl" parameters="11:int, 1109:int" expected-data-file="SelectEqualsWithSingleTable_1.xml" />
-        <assertion sharding-rule-type="db" parameters="12:int, 1201:int" expected-data-file="SelectEqualsWithSingleTable_2.xml" />
-        <assertion sharding-rule-type="dbtbl" parameters="12:int, 1201:int" expected-data-file="SelectEqualsWithSingleTable_2.xml" />
-        <assertion sharding-rule-type="masterslave" parameters="12:int, 1201:int" expected-data-file="masterslave/SelectEqualsWithSingleTable_2.xml" />
-        <assertion sharding-rule-type="tbl" parameters="12:int, 1000:int" expected-data-file="Empty.xml" />
-        <assertion sharding-rule-type="db" parameters="12:int, 1000:int" expected-data-file="Empty.xml" />
-        <assertion sharding-rule-type="dbtbl" parameters="12:int, 1000:int" expected-data-file="Empty.xml" />
-        <assertion sharding-rule-type="masterslave" parameters="12:int, 1000:int" expected-data-file="Empty.xml" />
+    <dql-test-case sql-case-id="select_in_with_same_sharding_column">
+        <assertion sharding-rule-type="db" parameters="1000:int, 1001:int, 1001:int, 1100:int" expected-data-file="db/select_in_with_same_sharding_column.xml" />
+        <assertion sharding-rule-type="tbl" parameters="1000:int, 1001:int, 1001:int, 1100:int" expected-data-file="tbl/select_in_with_same_sharding_column.xml" />
+        <assertion sharding-rule-type="dbtbl" parameters="1000:int, 1001:int, 1001:int, 1100:int" expected-data-file="dbtbl/select_in_with_same_sharding_column.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="1000:int, 1001:int, 1001:int, 1100:int" expected-data-file="masterslave/select_in_with_same_sharding_column.xml" />
     </dql-test-case>
     
-    <!--<dql-test-case sql-case-id="assertSelectBetweenWithSingleTable">
-        <assertion sharding-rule-type="tbl" parameters="10:int, 12:int, 1009:int, 1108:int" expected-data-file="SelectBetweenWithSingleTable.xml" />
-        <assertion sharding-rule-type="dbtbl" parameters="10:int, 12:int, 1009:int, 1108:int" expected-data-file="SelectBetweenWithSingleTable.xml" />
-        <assertion sharding-rule-type="db" parameters="10:int, 12:int, 1001:int, 1200:int" expected-data-file="SelectBetweenWithSingleTable.xml" />
-        <assertion sharding-rule-type="tbl" parameters="10:int, 12:int, 1309:int, 1408:int" expected-data-file="Empty.xml" />
-        <assertion sharding-rule-type="db" parameters="10:int, 12:int, 1309:int, 1408:int" expected-data-file="Empty.xml" />
-        <assertion sharding-rule-type="dbtbl" parameters="10:int, 12:int, 1309:int, 1408:int" expected-data-file="Empty.xml" />
-    </dql-test-case>-->
+    <dql-test-case sql-case-id="select_between_with_single_table">
+        <assertion sharding-rule-type="db" parameters="10:int, 12:int, 1001:int, 1200:int" expected-data-file="db/select_between_with_single_table.xml" />
+        <assertion sharding-rule-type="tbl" parameters="10:int, 12:int, 1009:int, 1108:int" expected-data-file="tbl/select_between_with_single_table.xml" />
+        <assertion sharding-rule-type="dbtbl" parameters="10:int, 12:int, 1009:int, 1108:int" expected-data-file="dbtbl/select_between_with_single_table.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="10:int, 12:int, 1009:int, 1108:int" expected-data-file="masterslave/select_between_with_single_table.xml" />
+        <assertion sharding-rule-type="db" parameters="10:int, 12:int, 1309:int, 1408:int" expected-data-file="empty_result.xml" />
+        <assertion sharding-rule-type="tbl" parameters="10:int, 12:int, 1309:int, 1408:int" expected-data-file="empty_result.xml" />
+        <assertion sharding-rule-type="dbtbl" parameters="10:int, 12:int, 1309:int, 1408:int" expected-data-file="empty_result.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="10:int, 12:int, 1309:int, 1408:int" expected-data-file="empty_result.xml" />
+    </dql-test-case>
 </integrate-test-cases>

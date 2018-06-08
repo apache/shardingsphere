@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parser-result-sets>
-    <parser-result sql-case-id="assertSelectInWithNullParameter" parameters="1 null">
+    <parser-result sql-case-id="assertSelectInWithNullParameter" parameters="1, null">
         <tables>
             <table name="t_order"/>
         </tables>

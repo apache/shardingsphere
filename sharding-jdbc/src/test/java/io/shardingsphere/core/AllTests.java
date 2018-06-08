@@ -25,7 +25,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         AllUnitTests.class,
-        AllIntegrateTests.class
+        AllIntegrateTests.class,
+        io.shardingsphere.dbtest.AllIntegrateTests.class
     })
 public class AllTests {
 }
