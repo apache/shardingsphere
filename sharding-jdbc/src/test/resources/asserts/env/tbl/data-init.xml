@@ -11,7 +11,7 @@
         <column name="status" type="varchar" />
         <column name="c_date" type="datetime" />
     </metadata>
-    <metadata data-nodes="tbl.t_config">
+    <metadata data-nodes="tbl.t_broadcast_table">
         <column name="id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
@@ -75,5 +75,5 @@
     <dataset data-node="tbl.t_order_item_8" values="110801, 1108, 11, init, 2017-08-19" />
     <dataset data-node="tbl.t_order_item_9" values="110900, 1109, 11, init, 2017-08-19" />
     <dataset data-node="tbl.t_order_item_9" values="110901, 1109, 11, init, 2017-08-19" />
-    <dataset data-node="tbl.t_config" values="1, init" />
+    <dataset data-node="tbl.t_broadcast_table" values="1, init" />
 </datasets>

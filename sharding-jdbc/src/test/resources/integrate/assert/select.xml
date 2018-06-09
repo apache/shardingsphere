@@ -97,7 +97,7 @@
             <data parameter="10,11,1009,1108" expected="select/SelectWithBindingTable.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectWithBindingTableAndConfigTable">
+    <sql id="select_sharding_route_with_broadcast_table">
         <sharding-rule value="tbl">
             <data parameter="10,11,1009,1108,'init'" expected="select/SelectWithBindingTableAndConfigTable.xml" />
         </sharding-rule>

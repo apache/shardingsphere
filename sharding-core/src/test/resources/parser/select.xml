@@ -227,7 +227,7 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectWithBindingTableAndConfigTable" parameters="1, 2, 9, 10, 'init'">
+    <parser-result sql-case-id="select_sharding_route_with_broadcast_table" parameters="1, 2, 9, 10, 'init'">
         <tables>
             <table name="t_order" alias="o"/>
             <table name="t_order_item" alias="i"/>

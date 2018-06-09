@@ -10,7 +10,7 @@
         <column name="user_id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
-    <metadata data-nodes="master_${0..9}.t_config,slave_${0..9}.t_config">
+    <metadata data-nodes="master_${0..9}.t_broadcast_table,slave_${0..9}.t_broadcast_table">
         <column name="id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
@@ -318,16 +318,16 @@
     <dataset data-node="master_9.t_order_item_8" values="190801, 1908, 19, init" />
     <dataset data-node="master_9.t_order_item_9" values="190900, 1909, 19, init" />
     <dataset data-node="master_9.t_order_item_9" values="190901, 1909, 19, init" />
-    <dataset data-node="master_0.t_config" values="1, init" />
-    <dataset data-node="master_1.t_config" values="1, init" />
-    <dataset data-node="master_2.t_config" values="1, init" />
-    <dataset data-node="master_3.t_config" values="1, init" />
-    <dataset data-node="master_4.t_config" values="1, init" />
-    <dataset data-node="master_5.t_config" values="1, init" />
-    <dataset data-node="master_6.t_config" values="1, init" />
-    <dataset data-node="master_7.t_config" values="1, init" />
-    <dataset data-node="master_8.t_config" values="1, init" />
-    <dataset data-node="master_9.t_config" values="1, init" />
+    <dataset data-node="master_0.t_broadcast_table" values="1, init" />
+    <dataset data-node="master_1.t_broadcast_table" values="1, init" />
+    <dataset data-node="master_2.t_broadcast_table" values="1, init" />
+    <dataset data-node="master_3.t_broadcast_table" values="1, init" />
+    <dataset data-node="master_4.t_broadcast_table" values="1, init" />
+    <dataset data-node="master_5.t_broadcast_table" values="1, init" />
+    <dataset data-node="master_6.t_broadcast_table" values="1, init" />
+    <dataset data-node="master_7.t_broadcast_table" values="1, init" />
+    <dataset data-node="master_8.t_broadcast_table" values="1, init" />
+    <dataset data-node="master_9.t_broadcast_table" values="1, init" />
     <dataset data-node="master_0.t_global" values="1, global_master" />
     <dataset data-node="slave_0.t_order_0" values="1000, 10, init_slave" />
     <dataset data-node="slave_0.t_order_1" values="1001, 10, init_slave" />
@@ -629,15 +629,15 @@
     <dataset data-node="slave_9.t_order_item_8" values="190801, 1908, 19, init_slave" />
     <dataset data-node="slave_9.t_order_item_9" values="190900, 1909, 19, init_slave" />
     <dataset data-node="slave_9.t_order_item_9" values="190901, 1909, 19, init_slave" />
-    <dataset data-node="slave_0.t_config" values="1, init_slave" />
-    <dataset data-node="slave_1.t_config" values="1, init_slave" />
-    <dataset data-node="slave_2.t_config" values="1, init_slave" />
-    <dataset data-node="slave_3.t_config" values="1, init_slave" />
-    <dataset data-node="slave_4.t_config" values="1, init_slave" />
-    <dataset data-node="slave_5.t_config" values="1, init_slave" />
-    <dataset data-node="slave_6.t_config" values="1, init_slave" />
-    <dataset data-node="slave_7.t_config" values="1, init_slave" />
-    <dataset data-node="slave_8.t_config" values="1, init_slave" />
-    <dataset data-node="slave_9.t_config" values="1, init_slave" />
+    <dataset data-node="slave_0.t_broadcast_table" values="1, init_slave" />
+    <dataset data-node="slave_1.t_broadcast_table" values="1, init_slave" />
+    <dataset data-node="slave_2.t_broadcast_table" values="1, init_slave" />
+    <dataset data-node="slave_3.t_broadcast_table" values="1, init_slave" />
+    <dataset data-node="slave_4.t_broadcast_table" values="1, init_slave" />
+    <dataset data-node="slave_5.t_broadcast_table" values="1, init_slave" />
+    <dataset data-node="slave_6.t_broadcast_table" values="1, init_slave" />
+    <dataset data-node="slave_7.t_broadcast_table" values="1, init_slave" />
+    <dataset data-node="slave_8.t_broadcast_table" values="1, init_slave" />
+    <dataset data-node="slave_9.t_broadcast_table" values="1, init_slave" />
     <dataset data-node="slave_0.t_global" values="1, global_slave" />
 </datasets>
