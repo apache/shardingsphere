@@ -21,7 +21,6 @@ import com.google.common.base.Strings;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
