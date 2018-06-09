@@ -18,7 +18,6 @@
 package io.shardingsphere.proxy.transport.mysql.packet.command.text.query;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.proxy.backend.common.SQLExecuteBackendHandler;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transaction.AtomikosUserTransaction;
@@ -89,7 +88,7 @@ public final class ComQueryPacket extends CommandPacket {
     }
     
     private void doTransactionIntercept() throws Exception {
-        if (TransactionType.XA.equals(RuleRegistry.getInstance().getTransactionType())) {
+        if (RuleRegistry.isXaTransaction()) {
             if (isXaBegin()) {
                 AtomikosUserTransaction.getInstance().begin();
             } else if (isXaCommit()) {
