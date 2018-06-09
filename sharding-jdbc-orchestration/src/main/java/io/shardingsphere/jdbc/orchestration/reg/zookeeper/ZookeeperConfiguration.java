@@ -73,4 +73,11 @@ public final class ZookeeperConfiguration implements RegistryCenterConfiguration
      * <p>Default is not need digest</p>
      */
     private String digest;
+    
+    /**
+     * RegCenter for zookeeper.
+     *
+     * <p>Default is ZookeeperRegistryCenter</p>
+     */
+    private boolean useNative;
 }
