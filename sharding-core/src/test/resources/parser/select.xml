@@ -227,14 +227,14 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="select_sharding_route_with_broadcast_table" parameters="1, 2, 9, 10, 'init'">
+    <parser-result sql-case-id="select_full_route_for_upper_case_with_binding_tables" parameters="1, 2, 9, 10">
         <tables>
-            <table name="t_order" alias="o"/>
-            <table name="t_order_item" alias="i"/>
+            <table name="T_ORDER" alias="o"/>
+            <table name="T_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-token begin-position="16" original-literals="t_order" />
-            <table-token begin-position="31" original-literals="t_order_item" />
+            <table-token begin-position="16" original-literals="T_ORDER" />
+            <table-token begin-position="31" original-literals="T_order_item" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -253,14 +253,14 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectWithUpperCaseBindingTable" parameters="1, 2, 9, 10">
+    <parser-result sql-case-id="select_sharding_route_with_broadcast_table" parameters="1, 2, 9, 10, 'init'">
         <tables>
-            <table name="T_ORDER" alias="o"/>
-            <table name="T_order_item" alias="i"/>
+            <table name="t_order" alias="o"/>
+            <table name="t_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-token begin-position="16" original-literals="T_ORDER" />
-            <table-token begin-position="31" original-literals="T_order_item" />
+            <table-token begin-position="16" original-literals="t_order" />
+            <table-token begin-position="31" original-literals="t_order_item" />
         </tokens>
         <or-condition>
             <and-condition>

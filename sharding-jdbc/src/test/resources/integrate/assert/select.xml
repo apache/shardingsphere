@@ -111,7 +111,7 @@
             <data parameter="10,11,1009,1108,'none"/>
         </sharding-rule>
     </sql>
-    <sql id="assertSelectWithUpperCaseBindingTable">
+    <sql id="select_full_route_for_upper_case_with_binding_tables">
         <sharding-rule value="tbl">
             <data parameter="10,11,1009,1108" expected="select/SelectWithBindingTable.xml" />
         </sharding-rule>
