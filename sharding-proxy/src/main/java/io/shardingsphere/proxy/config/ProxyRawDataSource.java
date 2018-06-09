@@ -17,7 +17,7 @@
 
 package io.shardingsphere.proxy.config;
 
-import io.shardingsphere.core.yaml.sharding.DataSourceParameter;
+import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;

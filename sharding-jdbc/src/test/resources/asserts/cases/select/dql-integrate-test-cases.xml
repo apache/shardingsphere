@@ -84,4 +84,25 @@
         <assertion sharding-rule-type="dbtbl" parameters="10:int, 12:int, 1309:int, 1408:int" expected-data-file="empty_result.xml" />
         <assertion sharding-rule-type="masterslave" parameters="10:int, 12:int, 1309:int, 1408:int" expected-data-file="empty_result.xml" />
     </dql-test-case>
+    
+    <dql-test-case sql-case-id="select_count_like_concat">
+        <assertion sharding-rule-type="db" parameters="init:String, 10:int, 11:int, 1000:int, 2901:int" expected-data-file="db/select_count_like_concat.xml" />
+        <assertion sharding-rule-type="tbl" parameters="init:String, 10:int, 11:int, 1000:int, 1909:int" expected-data-file="tbl/select_count_like_concat.xml" />
+        <assertion sharding-rule-type="dbtbl" parameters="init:String, 10:int, 11:int, 1000:int, 2901:int" expected-data-file="dbtbl/select_count_like_concat.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="init:String, 10:int, 11:int, 1000:int, 2901:int" expected-data-file="masterslave/select_count_like_concat.xml" />
+    </dql-test-case>
+    
+    <dql-test-case sql-case-id="select_sharding_route_with_binding_tables">
+        <assertion sharding-rule-type="db" parameters="10:int, 11:int, 1000:int, 1909:int" expected-data-file="db/select_sharding_route_with_binding_tables.xml" />
+        <assertion sharding-rule-type="tbl" parameters="10:int, 11:int, 1009:int, 1108:int" expected-data-file="tbl/select_sharding_route_with_binding_tables.xml" />
+        <assertion sharding-rule-type="dbtbl" parameters="10:int, 11:int, 1009:int, 1108:int" expected-data-file="dbtbl/select_sharding_route_with_binding_tables.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="10:int, 11:int, 1009:int, 1108:int" expected-data-file="masterslave/select_sharding_route_with_binding_tables.xml" />
+    </dql-test-case>
+    
+    <dql-test-case sql-case-id="select_full_route_with_binding_tables">
+        <assertion sharding-rule-type="db" expected-data-file="db/select_full_route_with_binding_tables.xml" />
+        <assertion sharding-rule-type="tbl" expected-data-file="tbl/select_full_route_with_binding_tables.xml" />
+        <assertion sharding-rule-type="dbtbl" expected-data-file="dbtbl/select_full_route_with_binding_tables.xml" />
+        <assertion sharding-rule-type="masterslave" expected-data-file="masterslave/select_full_route_with_binding_tables.xml" />
+    </dql-test-case>
 </integrate-test-cases>

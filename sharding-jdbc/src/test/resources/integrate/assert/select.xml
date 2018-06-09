@@ -73,12 +73,12 @@
             <data parameter="10,12,15,1309,1408" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectNoShardingTable">
+    <sql id="select_full_route_with_binding_tables">
         <sharding-rule value="tbl,db,dbtbl">
             <data expected="select/SelectNoShardingTable.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectLikeWithCount">
+    <sql id="select_count_like_concat">
         <sharding-rule value="tbl">
             <data parameter="'init',10,11,1000,1909" expected="select/SelectLikeWithCount.xml" />
         </sharding-rule>
@@ -86,7 +86,7 @@
             <data parameter="'init',10,11,1000,2901" expected="select/SelectLikeWithCount.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectWithBindingTable">
+    <sql id="select_sharding_route_with_binding_tables">
         <sharding-rule value="tbl">
             <data parameter="10,11,1009,1108" expected="select/SelectWithBindingTable.xml" />
         </sharding-rule>

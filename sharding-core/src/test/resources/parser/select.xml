@@ -163,26 +163,12 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectNoShardingTable">
-        <tables>
-            <table name="t_order" alias="o"/>
-            <table name="t_order_item" alias="i"/>
-        </tables>
-        <tokens>
-            <table-token begin-position="16" original-literals="t_order" />
-            <table-token begin-position="31" original-literals="t_order_item" />
-        </tokens>
-        <order-by-columns>
-            <order-by-column owner="i" name="item_id" order-direction="ASC" />
-        </order-by-columns>
-    </parser-result>
-    
-    <parser-result sql-case-id="assertSelectLikeWithCount" parameters="'init', 1, 2, 9, 10">
+    <parser-result sql-case-id="select_count_like_concat" parameters="'init', 1, 2, 9, 10">
         <tables>
             <table name="t_order" alias="o"/>
         </tables>
         <tokens>
-            <table-token begin-position="37" original-literals="`t_order`" />
+            <table-token begin-position="37" original-literals="t_order" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -201,7 +187,7 @@
         </aggregation-select-items>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectWithBindingTable" parameters="1, 2, 9, 10">
+    <parser-result sql-case-id="select_sharding_route_with_binding_tables" parameters="1, 2, 9, 10">
         <tables>
             <table name="t_order" alias="o"/>
             <table name="t_order_item" alias="i"/>
@@ -222,6 +208,20 @@
                 </condition>
             </and-condition>
         </or-condition>
+        <order-by-columns>
+            <order-by-column owner="i" name="item_id" order-direction="ASC" />
+        </order-by-columns>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_full_route_with_binding_tables">
+        <tables>
+            <table name="t_order" alias="o"/>
+            <table name="t_order_item" alias="i"/>
+        </tables>
+        <tokens>
+            <table-token begin-position="16" original-literals="t_order" />
+            <table-token begin-position="31" original-literals="t_order_item" />
+        </tokens>
         <order-by-columns>
             <order-by-column owner="i" name="item_id" order-direction="ASC" />
         </order-by-columns>

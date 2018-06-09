@@ -182,7 +182,7 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
         }
         assertThat("Only support single table for DML.", expected.getMetadataList().size(), is(1));
         DataSetMetadata expectedDataSetMetadata = expected.getMetadataList().get(0);
-        for (String each : new InlineExpressionParser(expectedDataSetMetadata.getDataNodes()).evaluate()) {
+        for (String each : new InlineExpressionParser(expectedDataSetMetadata.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
             try (Connection connection = getDataSourceMap().get(dataNode.getDataSourceName()).getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(String.format("SELECT * FROM %s", dataNode.getTableName()))) {
