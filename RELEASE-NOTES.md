@@ -32,6 +32,7 @@
 1. [ISSUE #735](https://github.com/sharding-sphere/sharding-sphere/issues/735) Unexpected slave datasource routing result when using Round-robin load-balance algorithm in Mybatis
 1. [ISSUE #806](https://github.com/sharding-sphere/sharding-sphere/issues/806) SQL parse error with `NOT IN`
 1. [ISSUE #827](https://github.com/sharding-sphere/sharding-sphere/issues/827) Fix endless loop for bad SQL like `SELECT * FROM table WHERE id IN ()`
+1. [ISSUE #919](https://github.com/sharding-sphere/sharding-sphere/issues/919) Use groovy to parse inline expression may cause memory leak
 
 ## 2.0.3
 

@@ -17,10 +17,8 @@
 
 package io.shardingsphere.core.routing.strategy.inline;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import groovy.lang.Closure;
-import groovy.lang.GroovyShell;
 import groovy.util.Expando;
 import io.shardingsphere.core.api.algorithm.sharding.ListShardingValue;
 import io.shardingsphere.core.api.algorithm.sharding.PreciseShardingValue;
@@ -51,7 +49,7 @@ public final class InlineShardingStrategy implements ShardingStrategy {
         Preconditions.checkNotNull(inlineShardingStrategyConfig.getAlgorithmExpression(), "Sharding algorithm expression cannot be null.");
         shardingColumn = inlineShardingStrategyConfig.getShardingColumn();
         String algorithmExpression = InlineExpressionParser.handlePlaceHolder(inlineShardingStrategyConfig.getAlgorithmExpression().trim());
-        closure = (Closure) new GroovyShell().evaluate(Joiner.on("").join("{it -> \"", algorithmExpression, "\"}"));
+        closure = new InlineExpressionParser(algorithmExpression).evaluateClosure();
     }
     
     @Override

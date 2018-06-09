@@ -44,7 +44,7 @@ public final class DataSetsRoot {
      */
     public DataSetMetadata findDataSetMetadata(final DataNode dataNode) {
         for (DataSetMetadata each : metadataList) {
-            if (contains(new InlineExpressionParser(each.getDataNodes()).evaluate(), dataNode)) {
+            if (contains(new InlineExpressionParser(each.getDataNodes()).splitAndEvaluate(), dataNode)) {
                 return each;
             }
         }
