@@ -44,9 +44,11 @@ import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -108,19 +110,22 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
         }
     }
     
-    private CommandResponsePackets executeForMasterSlave() {
+    private CommandResponsePackets executeForMasterSlave() throws SQLException {
         MasterSlaveRouter masterSlaveRouter = new MasterSlaveRouter(RuleRegistry.getInstance().getMasterSlaveRule());
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
         String dataSourceName = masterSlaveRouter.route(sqlStatement.getType()).iterator().next();
         List<CommandResponsePackets> packets = new CopyOnWriteArrayList<>();
         ExecutorService executorService = RuleRegistry.getInstance().getExecutorService();
         List<Future<CommandResponsePackets>> resultList = new ArrayList<>(1024);
-        resultList.add(executorService.submit(new SQLExecuteWorker(this, sqlStatement, dataSourceName, sql)));
+        DataSource dataSource = RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName);
+        Connection connection = dataSource.getConnection();
+        Statement statement = connection.createStatement();
+        resultList.add(executorService.submit(new SQLExecuteWorker(this, sqlStatement, statement, sql)));
         getCommandResponsePackets(resultList, packets);
         return merge(sqlStatement, packets);
     }
     
-    private CommandResponsePackets executeForSharding() {
+    private CommandResponsePackets executeForSharding() throws SQLException {
         StatementRoutingEngine routingEngine = new StatementRoutingEngine(RuleRegistry.getInstance().getShardingRule(), RuleRegistry.getInstance().getShardingMetaData(), databaseType, showSQL);
         SQLRouteResult routeResult = routingEngine.route(sql);
         if (routeResult.getExecutionUnits().isEmpty()) {
@@ -130,7 +135,11 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
         ExecutorService executorService = RuleRegistry.getInstance().getExecutorService();
         List<Future<CommandResponsePackets>> resultList = new ArrayList<>(1024);
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
-            resultList.add(executorService.submit(new SQLExecuteWorker(this, routeResult.getSqlStatement(), each.getDataSource(), each.getSqlUnit().getSql())));
+            DataSource dataSource = RuleRegistry.getInstance().getDataSourceMap().get(each.getDataSource());
+            Connection connection = dataSource.getConnection();
+            Statement statement = connection.createStatement();
+            resultList.add(executorService.submit(new SQLExecuteWorker(this, routeResult.getSqlStatement(), statement, each.getSqlUnit().getSql())));
+            
         }
         getCommandResponsePackets(resultList, packets);
         CommandResponsePackets result = merge(routeResult.getSqlStatement(), packets);

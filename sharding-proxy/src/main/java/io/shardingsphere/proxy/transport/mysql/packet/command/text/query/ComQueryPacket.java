@@ -22,10 +22,12 @@ import io.shardingsphere.proxy.backend.common.SQLExecuteBackendHandler;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transaction.AtomikosUserTransaction;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
@@ -58,7 +60,9 @@ public final class ComQueryPacket extends CommandPacket {
     public CommandResponsePackets execute() {
         log.debug("COM_QUERY received for Sharding-Proxy: {}", sql);
         try {
-            doTransactionIntercept();
+            if (doTransactionIntercept()) {
+                return new CommandResponsePackets(new OKPacket(1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+            }
         } catch (final Exception ex) {
             return new CommandResponsePackets(new ErrPacket(1, 0, "", "", "" + ex.getMessage()));
         }
@@ -87,16 +91,20 @@ public final class ComQueryPacket extends CommandPacket {
         return sqlExecuteBackendHandler.getResultValue();
     }
     
-    private void doTransactionIntercept() throws Exception {
+    private boolean doTransactionIntercept() throws Exception {
         if (RuleRegistry.isXaTransaction()) {
             if (isXaBegin()) {
                 AtomikosUserTransaction.getInstance().begin();
+                return true;
             } else if (isXaCommit()) {
                 AtomikosUserTransaction.getInstance().commit();
+                return true;
             } else if (isXaRollback()) {
                 AtomikosUserTransaction.getInstance().rollback();
+                return true;
             }
         }
+        return false;
     }
     
     private boolean isXaBegin() {

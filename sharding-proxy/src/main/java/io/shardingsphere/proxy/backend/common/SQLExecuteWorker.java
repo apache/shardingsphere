@@ -33,9 +33,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import lombok.AllArgsConstructor;
 
-import javax.sql.DataSource;
 import javax.sql.rowset.CachedRowSet;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -58,44 +56,41 @@ public final class SQLExecuteWorker implements Callable<CommandResponsePackets> 
     
     private final SQLStatement sqlStatement;
     
-    private final String dataSourceName;
+    private final Statement statement;
     
     private final String realSQL;
     
     @Override
     public CommandResponsePackets call() {
-        return execute(sqlStatement, dataSourceName, realSQL);
+        return execute(sqlStatement, statement, realSQL);
     }
     
-    private CommandResponsePackets execute(final SQLStatement sqlStatement, final String dataSourceName, final String sql) {
+    private CommandResponsePackets execute(final SQLStatement sqlStatement, final Statement statement, final String sql) {
         switch (sqlStatement.getType()) {
             case DQL:
             case DAL:
-                return executeQuery(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql);
+                return executeQuery(statement, sql);
             case DML:
             case DDL:
-                return RuleRegistry.getInstance().isOnlyMasterSlave() ? executeUpdate(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql)
-                    : executeUpdate(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql, sqlStatement);
+                return RuleRegistry.getInstance().isOnlyMasterSlave() ? executeUpdate(statement, sql)
+                    : executeUpdate(statement, sql, sqlStatement);
             default:
-                return executeCommon(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql);
+                return executeCommon(statement, sql);
         }
     }
     
-    private CommandResponsePackets executeQuery(final DataSource dataSource, final String sql) {
+    private CommandResponsePackets executeQuery(final Statement statement, final String sql) {
         if (ProxyMode.MEMORY_STRICTLY == ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode())) {
-            return executeQueryWithStreamResultSet(dataSource, sql);
+            return executeQueryWithStreamResultSet(statement, sql);
         } else if (ProxyMode.CONNECTION_STRICTLY == ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode())) {
-            return executeQueryWithNonStreamResultSet(dataSource, sql);
+            return executeQueryWithNonStreamResultSet(statement, sql);
         } else {
             return new CommandResponsePackets(new ErrPacket(1, 0, "", "", "Invalid proxy.mode"));
         }
     }
     
-    private CommandResponsePackets executeQueryWithStreamResultSet(final DataSource dataSource, final String sql) {
+    private CommandResponsePackets executeQueryWithStreamResultSet(final Statement statement, final String sql) {
         try {
-            Connection connection = dataSource.getConnection();
-            sqlExecuteBackendHandler.getConnections().add(connection);
-            Statement statement = connection.createStatement();
             statement.setFetchSize(FETCH_ONE_ROW_A_TIME);
             sqlExecuteBackendHandler.getResultSets().add(statement.executeQuery(sql));
             return getQueryDatabaseProtocolPackets();
@@ -104,10 +99,8 @@ public final class SQLExecuteWorker implements Callable<CommandResponsePackets> 
         }
     }
     
-    private CommandResponsePackets executeQueryWithNonStreamResultSet(final DataSource dataSource, final String sql) {
+    private CommandResponsePackets executeQueryWithNonStreamResultSet(final Statement statement, final String sql) {
         try (
-            Connection connection = dataSource.getConnection();
-            Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql)
         ) {
             CachedRowSet cachedRowSet = new CachedRowSetImpl();
@@ -119,10 +112,8 @@ public final class SQLExecuteWorker implements Callable<CommandResponsePackets> 
         }
     }
     
-    private CommandResponsePackets executeUpdate(final DataSource dataSource, final String sql, final SQLStatement sqlStatement) {
-        try (
-            Connection connection = dataSource.getConnection();
-            Statement statement = connection.createStatement()) {
+    private CommandResponsePackets executeUpdate(final Statement statement, final String sql, final SQLStatement sqlStatement) {
+        try {
             int affectedRows;
             long lastInsertId = 0;
             if (sqlStatement instanceof InsertStatement) {
@@ -139,9 +130,8 @@ public final class SQLExecuteWorker implements Callable<CommandResponsePackets> 
         }
     }
     
-    private CommandResponsePackets executeUpdate(final DataSource dataSource, final String sql) {
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
+    private CommandResponsePackets executeUpdate(final Statement statement, final String sql) {
+        try {
             int affectedRows = statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
             ResultSet resultSet = statement.getGeneratedKeys();
             long lastInsertId = 0;
@@ -156,10 +146,8 @@ public final class SQLExecuteWorker implements Callable<CommandResponsePackets> 
         }
     }
     
-    private CommandResponsePackets executeCommon(final DataSource dataSource, final String sql) {
-        try (
-            Connection connection = dataSource.getConnection();
-            Statement statement = connection.createStatement()) {
+    private CommandResponsePackets executeCommon(final Statement statement, final String sql) {
+        try {
             boolean hasResultSet = statement.execute(sql);
             if (hasResultSet) {
                 return getCommonDatabaseProtocolPackets(statement.getResultSet());
