@@ -305,7 +305,7 @@
         </aggregation-select-items>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectCountWithBindingTableWithJoin" parameters="1, 2, 9, 10">
+    <parser-result sql-case-id="select_count_with_binding_tables_with_join" parameters="1, 2, 9, 10">
         <tables>
             <table name="t_order" alias="o"/>
             <table name="t_order_item" alias="i"/>
