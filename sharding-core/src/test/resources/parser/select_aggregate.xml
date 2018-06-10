@@ -69,7 +69,7 @@
         </aggregation-select-items>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectCountForSpecialSymbol">
+    <parser-result sql-case-id="select_count_with_escape_character">
         <tables>
             <table name="t_order" />
         </tables>

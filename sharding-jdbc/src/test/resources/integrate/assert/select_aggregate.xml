@@ -25,7 +25,7 @@
             <data expected="select_aggregate/SelectAvg.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectCountForSpecialSymbol">
+    <sql id="select_count_with_escape_character">
         <sharding-rule>
             <data expected="select_aggregate/SelectCount.xml" />
         </sharding-rule>
