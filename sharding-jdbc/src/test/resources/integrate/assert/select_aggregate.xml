@@ -5,7 +5,7 @@
             <data expected="select_aggregate/SelectSum.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectCount">
+    <sql id="select_count">
         <sharding-rule>
             <data expected="select_aggregate/SelectCount.xml" />
         </sharding-rule>
