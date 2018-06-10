@@ -279,6 +279,22 @@
         </order-by-columns>
     </parser-result>
     
+    <parser-result sql-case-id="select_alias_as_keyword" parameters="1">
+        <tables>
+            <table name="t_order_item" alias="length" />
+        </tables>
+        <tokens>
+            <table-token begin-position="36" original-literals="t_order_item" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="item_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="0" literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+    
     <parser-result sql-case-id="select_with_force_index_join" parameters="1000">
         <tables>
             <table name="t_order" alias="o" />
@@ -297,18 +313,50 @@
             </and-condition>
         </or-condition>
     </parser-result>
-    
-    <parser-result sql-case-id="select_alias_as_keyword" parameters="1">
+
+    <parser-result sql-case-id="select_equal_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', 100, 200, 1">
         <tables>
-            <table name="t_order_item" alias="length" />
+            <table name="t_place" />
         </tables>
         <tokens>
-            <table-token begin-position="36" original-literals="t_order_item" />
+            <table-token begin-position="14" original-literals="t_place" />
         </tokens>
         <or-condition>
             <and-condition>
-                <condition column-name="item_id" table-name="t_order_item" operator="EQUAL">
-                    <value index="0" literal="1" type="int" />
+                <condition column-name="user_new_id" table-name="t_place" operator="EQUAL">
+                    <value index="3" literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+
+    <parser-result sql-case-id="select_in_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1">
+        <tables>
+            <table name="t_place" />
+        </tables>
+        <tokens>
+            <table-token begin-position="14" original-literals="t_place" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="user_new_id" table-name="t_place" operator="EQUAL">
+                    <value index="4" literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+
+    <parser-result sql-case-id="select_between_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1">
+        <tables>
+            <table name="t_place" />
+        </tables>
+        <tokens>
+            <table-token begin-position="14" original-literals="t_place" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="user_new_id" table-name="t_place" operator="EQUAL">
+                    <value index="4" literal="1" type="int" />
                 </condition>
             </and-condition>
         </or-condition>
@@ -364,53 +412,5 @@
         <aggregation-select-items>
             <aggregation-select-item type="COUNT" inner-expression="(*)" alias="items_count"/>
         </aggregation-select-items>
-    </parser-result>
-    
-    <parser-result sql-case-id="assertSelectEqualsWithJsonAnGeo" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', 100, 200, 1">
-        <tables>
-            <table name="t_place" />
-        </tables>
-        <tokens>
-            <table-token begin-position="14" original-literals="t_place" />
-        </tokens>
-        <or-condition>
-            <and-condition>
-                <condition column-name="user_new_id" table-name="t_place" operator="EQUAL">
-                    <value index="3" literal="1" type="int" />
-                </condition>
-            </and-condition>
-        </or-condition>
-    </parser-result>
-    
-    <parser-result sql-case-id="assertSelectInWithJsonAnGeo" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1">
-        <tables>
-            <table name="t_place" />
-        </tables>
-        <tokens>
-            <table-token begin-position="14" original-literals="t_place" />
-        </tokens>
-        <or-condition>
-            <and-condition>
-                <condition column-name="user_new_id" table-name="t_place" operator="EQUAL">
-                    <value index="4" literal="1" type="int" />
-                </condition>
-            </and-condition>
-        </or-condition>
-    </parser-result>
-    
-    <parser-result sql-case-id="assertSelectBetweenWithJsonAnGeo" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1">
-        <tables>
-            <table name="t_place" />
-        </tables>
-        <tokens>
-            <table-token begin-position="14" original-literals="t_place" />
-        </tokens>
-        <or-condition>
-            <and-condition>
-                <condition column-name="user_new_id" table-name="t_place" operator="EQUAL">
-                    <value index="4" literal="1" type="int" />
-                </condition>
-            </and-condition>
-        </or-condition>
     </parser-result>
 </parser-result-sets>
