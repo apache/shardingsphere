@@ -16,7 +16,8 @@
     <sql-case id="select_full_route_for_upper_case_with_binding_tables" value="SELECT i.* FROM T_ORDER o JOIN T_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s ORDER BY i.item_id" />
     <sql-case id="select_sharding_route_with_broadcast_table" value="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN t_broadcast_table c ON o.status = c.status WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s AND c.status = %s ORDER BY i.item_id" />
     
-    <sql-case id="assertSelectCountWithBindingTable" value="SELECT COUNT(*) AS items_count FROM t_order o, t_order_item i WHERE o.user_id = i.user_id AND o.order_id = i.order_id AND o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s" />
+    <sql-case id="select_count_with_binding_tables_without_join" value="SELECT COUNT(*) AS items_count FROM t_order o, t_order_item i WHERE o.user_id = i.user_id AND o.order_id = i.order_id AND o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s" />
+    
     <sql-case id="assertSelectCountWithBindingTableWithJoin" value="SELECT COUNT(*) AS items_count FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s" />
     <sql-case id="assertSelectAliasWithKeyword" value="SELECT length.item_id password FROM t_order_item length where length.item_id = %s " db-types="MySQL,H2,SQLServer,Oracle" />
 

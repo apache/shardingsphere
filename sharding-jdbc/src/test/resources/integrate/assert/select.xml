@@ -122,7 +122,7 @@
             <data parameter="10,11,1009,1108" expected="select/SelectWithBindingTable.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectCountWithBindingTable">
+    <sql id="select_count_with_binding_tables_without_join">
         <sharding-rule>
             <data parameter="10,11,1000,1909" expected="select_aggregate/SelectCountWithBindingTable_0.xml" />
             <data parameter="1,9,1000,1909" expected="select_aggregate/SelectCountWithBindingTable_1.xml" />
