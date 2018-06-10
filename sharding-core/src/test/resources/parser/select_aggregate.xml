@@ -69,6 +69,58 @@
         </aggregation-select-items>
     </parser-result>
     
+    <parser-result sql-case-id="select_count_with_binding_tables_without_join" parameters="1, 2, 9, 10">
+        <tables>
+            <table name="t_order" alias="o"/>
+            <table name="t_order_item" alias="i"/>
+        </tables>
+        <tokens>
+            <table-token begin-position="36" original-literals="t_order" />
+            <table-token begin-position="47" original-literals="t_order_item" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="user_id" table-name="t_order" operator="IN">
+                    <value index="0" literal="1" type="int" />
+                    <value index="1" literal="2" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                    <value index="2" literal="9" type="int" />
+                    <value index="3" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+        <aggregation-select-items>
+            <aggregation-select-item type="COUNT" inner-expression="(*)" alias="items_count"/>
+        </aggregation-select-items>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_count_with_binding_tables_with_join" parameters="1, 2, 9, 10">
+        <tables>
+            <table name="t_order" alias="o"/>
+            <table name="t_order_item" alias="i"/>
+        </tables>
+        <tokens>
+            <table-token begin-position="36" original-literals="t_order" />
+            <table-token begin-position="51" original-literals="t_order_item" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="user_id" table-name="t_order" operator="IN">
+                    <value index="0" literal="1" type="int" />
+                    <value index="1" literal="2" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                    <value index="2" literal="9" type="int" />
+                    <value index="3" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+        <aggregation-select-items>
+            <aggregation-select-item type="COUNT" inner-expression="(*)" alias="items_count"/>
+        </aggregation-select-items>
+    </parser-result>
+    
     <parser-result sql-case-id="select_count_with_escape_character">
         <tables>
             <table name="t_order" />
