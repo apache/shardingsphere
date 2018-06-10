@@ -279,6 +279,22 @@
         </order-by-columns>
     </parser-result>
     
+    <parser-result sql-case-id="select_alias_as_keyword" parameters="1">
+        <tables>
+            <table name="t_order_item" alias="length" />
+        </tables>
+        <tokens>
+            <table-token begin-position="36" original-literals="t_order_item" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="item_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="0" literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+    
     <parser-result sql-case-id="select_count_with_binding_tables_without_join" parameters="1, 2, 9, 10">
         <tables>
             <table name="t_order" alias="o"/>
@@ -329,22 +345,6 @@
         <aggregation-select-items>
             <aggregation-select-item type="COUNT" inner-expression="(*)" alias="items_count"/>
         </aggregation-select-items>
-    </parser-result>
-    
-    <parser-result sql-case-id="assertSelectAliasWithKeyword" parameters="1">
-        <tables>
-            <table name="t_order_item" alias="length" />
-        </tables>
-        <tokens>
-            <table-token begin-position="36" original-literals="t_order_item" />
-        </tokens>
-        <or-condition>
-            <and-condition>
-                <condition column-name="item_id" table-name="t_order_item" operator="EQUAL">
-                    <value index="0" literal="1" type="int" />
-                </condition>
-            </and-condition>
-        </or-condition>
     </parser-result>
     
     <parser-result sql-case-id="assertSelectWithJoinForceIndex" parameters="1000">
