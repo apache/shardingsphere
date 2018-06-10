@@ -24,7 +24,7 @@
         </aggregation-select-items>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectMax">
+    <parser-result sql-case-id="select_max">
         <tables>
             <table name="t_order" />
         </tables>
