@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
-    <sql id="assertSelectSum">
+    <sql id="select_sum">
         <sharding-rule>
             <data expected="select_aggregate/SelectSum.xml" />
         </sharding-rule>
