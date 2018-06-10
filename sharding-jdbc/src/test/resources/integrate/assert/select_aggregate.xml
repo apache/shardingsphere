@@ -20,7 +20,7 @@
             <data expected="select_aggregate/SelectMin.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectAvg">
+    <sql id="select_avg">
         <sharding-rule>
             <data expected="select_aggregate/SelectAvg.xml" />
         </sharding-rule>

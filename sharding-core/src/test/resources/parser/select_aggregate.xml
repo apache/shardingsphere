@@ -48,7 +48,7 @@
         </aggregation-select-items>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectAvg">
+    <parser-result sql-case-id="select_avg">
         <tables>
             <table name="t_order" />
         </tables>
