@@ -150,11 +150,24 @@ public final class SchemaEnvironmentManager {
         for (String each : databaseEnvironmentSchema.getDatabases()) {
             try (BasicDataSource dataSource = (BasicDataSource) DataSourceUtil.createDataSource(databaseType, each);
                  Connection connection = dataSource.getConnection();
-                 StringReader stringReader = new StringReader(StringUtils.join(databaseEnvironmentSchema.getTableCreateSQLs(), ";\n"))) {
+                 StringReader stringReader = new StringReader(StringUtils.join(getTableCreateSQLs(databaseEnvironmentSchema.getTableCreateSQLs(), databaseType), ";\n"))) {
                 RunScript.execute(connection, stringReader);
             } catch (final SQLException ex) {
                 // TODO schema maybe not exist for oracle only
             }
         }
+    }
+    
+    private static List<String> getTableCreateSQLs(final List<String> tableCreateSQLs, final DatabaseType databaseType) {
+        if (DatabaseType.H2 != databaseType) {
+            return tableCreateSQLs;
+        }
+        List<String> result = new LinkedList<>();
+        for (String each : tableCreateSQLs) {
+            if (!each.startsWith("CREATE INDEX")) {
+                result.add(each);
+            }
+        }
+        return result;
     }
 }
