@@ -122,20 +122,6 @@
             <data parameter="10,11,1009,1108" expected="select/SelectWithBindingTable.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectWithUpperCaseBindingTableAndConfigTable">
-        <sharding-rule value="tbl">
-            <data parameter="10,11,1009,1108,'init'" expected="select/SelectWithUpperCaseBindingTableAndConfigTable.xml" />
-        </sharding-rule>
-        <sharding-rule value="masterslave">
-            <data parameter="10,11,1009,1108,'init_slave'" expected="select/SelectWithUpperCaseBindingTableAndConfigTable.xml" />
-        </sharding-rule>
-        <sharding-rule value="dbtbl">
-            <data parameter="10,11,1009,1108,'init'" expected="select/SelectWithUpperCaseBindingTableAndConfigTable.xml" />
-        </sharding-rule>
-        <sharding-rule>
-            <data parameter="10,11,1009,1108,'none"/>
-        </sharding-rule>
-    </sql>
     <sql id="assertSelectCountWithBindingTable">
         <sharding-rule>
             <data parameter="10,11,1000,1909" expected="select_aggregate/SelectCountWithBindingTable_0.xml" />

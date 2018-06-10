@@ -279,32 +279,6 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectWithUpperCaseBindingTableAndConfigTable" parameters="1, 2, 9, 10, 'init'">
-        <tables>
-            <table name="T_ORDER" alias="o"/>
-            <table name="T_order_item" alias="i"/>
-        </tables>
-        <tokens>
-            <table-token begin-position="34" original-literals="T_ORDER" />
-            <table-token begin-position="49" original-literals="T_order_item" />
-        </tokens>
-        <or-condition>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="IN">
-                    <value index="0" literal="1" type="int" />
-                    <value index="1" literal="2" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                    <value index="2" literal="9" type="int" />
-                    <value index="3" literal="10" type="int" />
-                </condition>
-            </and-condition>
-        </or-condition>
-        <order-by-columns>
-            <order-by-column owner="i" name="item_id" order-direction="ASC" />
-        </order-by-columns>
-    </parser-result>
-    
     <parser-result sql-case-id="assertSelectCountWithBindingTable" parameters="1, 2, 9, 10">
         <tables>
             <table name="t_order" alias="o"/>
