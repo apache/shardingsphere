@@ -9,7 +9,7 @@
         <column name="order_id" type="numeric" />
         <column name="user_id" type="numeric" />
         <column name="status" type="varchar" />
-        <column name="c_date" type="datetime" />
+        <column name="creation_date" type="datetime" />
     </metadata>
     <metadata data-nodes="tbl.t_broadcast_table">
         <column name="id" type="numeric" />

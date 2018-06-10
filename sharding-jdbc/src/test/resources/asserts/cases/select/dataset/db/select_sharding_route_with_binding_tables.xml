@@ -1,5 +1,5 @@
 <datasets>
-    <columns values="item_id, order_id, user_id, status, c_date" />
+    <columns values="item_id, order_id, user_id, status, creation_date" />
     <dataset values="100001, 1000, 10, init, 2017-08-08" />
     <dataset values="100002, 1000, 10, init, 2017-08-08" />
     <dataset values="100101, 1001, 10, init, 2017-08-08" />
