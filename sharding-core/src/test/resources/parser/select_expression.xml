@@ -17,15 +17,15 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectDateFuncWithSingleTable">
+    <parser-result sql-case-id="select_date_function">
         <tables>
             <table name="t_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-token begin-position="37" original-literals="`t_order_item`" />
+            <table-token begin-position="51" original-literals="`t_order_item`" />
         </tokens>
         <order-by-columns>
-            <order-by-column name="DATE(i.c_date)" order-direction="DESC" alias="c_date"/>
+            <order-by-column name="DATE(i.creation_date)" order-direction="DESC" alias="creation_date"/>
         </order-by-columns>
     </parser-result>
     
