@@ -17,18 +17,6 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectCountWithExpression">
-        <tables>
-            <table name="t_order" alias="o" />
-        </tables>
-        <tokens>
-            <table-token begin-position="36" original-literals="t_order" />
-        </tokens>
-        <aggregation-select-items>
-            <aggregation-select-item type="COUNT" inner-expression="(o.order_id)" />
-        </aggregation-select-items>
-    </parser-result>
-    
     <parser-result sql-case-id="assertSelectDateFuncWithSingleTable">
         <tables>
             <table name="t_order_item" alias="i"/>
