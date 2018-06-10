@@ -133,6 +133,12 @@
         <assertion sharding-rule-type="tbl" expected-data-file="tbl/select_max.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_max.xml" />
     </dql-test-case>
+    
+    <dql-test-case sql-case-id="select_min">
+        <assertion sharding-rule-type="db" expected-data-file="db/select_min.xml" />
+        <assertion sharding-rule-type="tbl" expected-data-file="tbl/select_min.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_min.xml" />
+    </dql-test-case>
 
 
 
@@ -141,13 +147,7 @@
 
 
 
-
-
-    <!--<sql id="assertSelectMin">-->
-        <!--<sharding-rule>-->
-            <!--<data expected="select_aggregate/SelectMin.xml" />-->
-        <!--</sharding-rule>-->
-    <!--</sql>-->
+    
     <!--<sql id="assertSelectAvg">-->
         <!--<sharding-rule>-->
             <!--<data expected="select_aggregate/SelectAvg.xml" />-->

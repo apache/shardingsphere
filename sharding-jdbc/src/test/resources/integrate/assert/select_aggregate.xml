@@ -15,7 +15,7 @@
             <data expected="select_aggregate/SelectMax.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectMin">
+    <sql id="select_min">
         <sharding-rule>
             <data expected="select_aggregate/SelectMin.xml" />
         </sharding-rule>

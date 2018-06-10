@@ -36,7 +36,7 @@
         </aggregation-select-items>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectMin">
+    <parser-result sql-case-id="select_min">
         <tables>
             <table name="t_order" />
         </tables>
