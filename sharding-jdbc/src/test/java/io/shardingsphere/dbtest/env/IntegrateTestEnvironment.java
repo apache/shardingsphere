@@ -39,8 +39,6 @@ public final class IntegrateTestEnvironment {
     
     private static final IntegrateTestEnvironment INSTANCE = new IntegrateTestEnvironment();
     
-    private final boolean initialized;
-    
     private final Collection<DatabaseType> databaseTypes;
     
     private final Map<DatabaseType, DatabaseEnvironment> databaseEnvironments;
@@ -52,7 +50,6 @@ public final class IntegrateTestEnvironment {
         } catch (final IOException ex) {
             ex.printStackTrace();
         }
-        initialized = Boolean.valueOf(prop.getProperty("initialized", Boolean.FALSE.toString()));
         databaseTypes = new LinkedList<>();
         for (String each : prop.getProperty("databases", DatabaseType.H2.name()).split(",")) {
             databaseTypes.add(DatabaseType.valueOf(each.trim()));

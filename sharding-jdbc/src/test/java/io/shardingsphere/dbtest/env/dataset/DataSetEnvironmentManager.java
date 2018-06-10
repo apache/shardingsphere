@@ -139,6 +139,9 @@ public final class DataSetEnvironmentManager {
             for (String each : tableNames) {
                 try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("TRUNCATE TABLE %s", each))) {
                     preparedStatement.executeUpdate();
+                    // CHECKSTYLE:OFF
+                } catch (final SQLException ex) {
+                    // CHECKSTYLE:ON
                 }
             }
         }

@@ -230,6 +230,7 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
         ResultSetMetaData actualMetaData = actualResultSet.getMetaData();
         while (actualResultSet.next()) {
             int index = 1;
+            assertTrue("Size of actual result set is different with size of expected dat set rows.", count < expectedDatSetRows.size());
             for (String each : expectedDatSetRows.get(count).getValues()) {
                 if (Types.DATE == actualResultSet.getMetaData().getColumnType(index)) {
                     assertThat(new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date(actualResultSet.getDate(index).getTime())), is(each));
