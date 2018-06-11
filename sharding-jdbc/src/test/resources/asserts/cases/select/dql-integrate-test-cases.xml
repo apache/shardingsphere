@@ -187,8 +187,76 @@
         <assertion sharding-rule-type="tbl" expected-data-file="tbl/select_group_by_with_sum.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_group_by_with_sum.xml" />
     </dql-test-case>
+    
+    <dql-test-case sql-case-id="select_group_by_with_count">
+        <assertion sharding-rule-type="db" expected-data-file="db/select_group_by_with_count.xml" />
+        <assertion sharding-rule-type="tbl" expected-data-file="tbl/select_group_by_with_count.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_group_by_with_count.xml" />
+    </dql-test-case>
 
 
+
+
+
+
+
+
+    <!--<sql id="select_group_by_with_count">-->
+        <!--<sharding-rule>-->
+            <!--<data expected="select_group_by/SelectCount.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    <!--<sql id="assertSelectMaxWithGroupBy">-->
+        <!--<sharding-rule>-->
+            <!--<data expected="select_group_by/SelectMax.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    <!--<sql id="assertSelectMinWithGroupBy">-->
+        <!--<sharding-rule>-->
+            <!--<data expected="select_group_by/SelectMin.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    <!--<sql id="assertSelectAvgWithGroupBy">-->
+        <!--<sharding-rule>-->
+            <!--<data expected="select_group_by/SelectAvg.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    <!--<sql id="assertSelectOrderByDescWithGroupBy">-->
+        <!--<sharding-rule>-->
+            <!--<data expected="select_group_by/SelectOrderByDesc.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    <!--<sql id="assertSelectCountWithoutGroupedColumn">-->
+        <!--<sharding-rule>-->
+            <!--<data parameter="10,11,1000,1109" expected="select_group_by/SelectGroupByWithoutGroupedColumn.xml" />-->
+            <!--<data parameter="1,9,1000,1909"/>-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    <!--<sql id="assertSelectCountWithGroupByBindingTable">-->
+        <!--<sharding-rule>-->
+            <!--<data parameter="10,11,1000,1109" expected="select_group_by/SelectGroupByWithBindingTable.xml" />-->
+            <!--<data parameter="1,9,1000,1909"/>-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    <!--<sql id="assertSelectWithGroupByAndLimit">-->
+        <!--<sharding-rule>-->
+            <!--<data parameter="1" expected="select_group_by/SelectLimit.xml" />-->
+            <!--<data parameter="0" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    <!--<sql id="assertSelectItemWithAliasAndMatchOrderByAndGroupByItems">-->
+        <!--<sharding-rule>-->
+            <!--<data expected="select_group_by/SelectItemWithAliasAndMatchOrderByAndGroupByItems.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    <!--<sql id="assertSelectGroupByWithAliasIsKeyword">-->
+        <!--<sharding-rule>-->
+            <!--<data expected="select_group_by/SelectGroupByWithAliasIsKeyword.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    
+    
+    
 
 
     <!--<dql-test-case sql-case-id="select_group_by_with_date_function">-->

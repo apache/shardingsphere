@@ -10,7 +10,7 @@
             <data expected="select_group_by/SelectSum.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectCountWithGroupBy">
+    <sql id="select_group_by_with_count">
         <sharding-rule>
             <data expected="select_group_by/SelectCount.xml" />
         </sharding-rule>
