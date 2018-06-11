@@ -21,6 +21,8 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.UsualClient;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.zookeeper.KeeperException;
@@ -44,7 +46,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author lidongbo
  */
 public final class PathTree {
-    private static final Logger LOGGER = LoggerFactory.getLogger(io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.PathTree.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PathTree.class);
     
     private final transient ReentrantLock lock = new ReentrantLock();
     
@@ -60,16 +62,16 @@ public final class PathTree {
     
     @Getter
     @Setter
-    private io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.PathStatus status;
+    private PathStatus status;
     
     private boolean closed;
     
     public PathTree(final String root, final IClient client) {
         this.rootNode.set(new PathNode(root));
-        this.status = io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.PathStatus.RELEASE;
+        this.status = PathStatus.RELEASE;
         this.client = client;
         // todo It looks unpleasant
-        this.provider = ((io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.UsualClient) client).getStrategy().getProvider();
+        this.provider = ((UsualClient) client).getStrategy().getProvider();
     }
     
     /**
@@ -87,7 +89,7 @@ public final class PathTree {
         try {
             if (status == status.RELEASE) {
                 LOGGER.debug("loading status:{}", status);
-                this.setStatus(io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.PathStatus.CHANGING);
+                this.setStatus(PathStatus.CHANGING);
         
                 PathNode newRoot = new PathNode(rootNode.get().getKey());
                 List<String> children = provider.getChildren(rootNode.get().getKey());
@@ -95,7 +97,7 @@ public final class PathTree {
                 this.attechIntoNode(children, newRoot);
                 rootNode.set(newRoot);
         
-                this.setStatus(io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.PathStatus.RELEASE);
+                this.setStatus(PathStatus.RELEASE);
 //                watch();
                 LOGGER.debug("loading release:{}", status);
             } else {
@@ -155,7 +157,7 @@ public final class PathTree {
                 @Override
                 public void run() {
                     LOGGER.debug("cacheService run:{}", getStatus());
-                    if (io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.PathStatus.RELEASE == getStatus()) {
+                    if (PathStatus.RELEASE == getStatus()) {
                         try {
                             load();
                             // CHECKSTYLE:OFF
@@ -191,7 +193,7 @@ public final class PathTree {
      * watch data change.
      */
     public void watch() {
-        watch(new io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener(rootNode.get().getKey()) {
+        watch(new Listener(rootNode.get().getKey()) {
             @Override
             public void process(final WatchedEvent event) {
                 String path = event.getPath();
@@ -217,7 +219,7 @@ public final class PathTree {
      *
      * @param listener listener
      */
-    public void watch(final io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener listener) {
+    public void watch(final Listener listener) {
         if (closed) {
             return;
         }
@@ -312,6 +314,7 @@ public final class PathTree {
         if (path.equals(rootNode.get().getKey())) {
             return rootNode.get();
         }
+        // todo iterator -> token
         Iterator<String> iterator = keyIterator(path);
         if (iterator.hasNext()) {
             return rootNode.get().get(iterator);
@@ -341,9 +344,9 @@ public final class PathTree {
                     rootNode.set(new PathNode(rootNode.get().getKey(), value.getBytes(Constants.UTF_8)));
                     return;
                 }
-                this.setStatus(io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.PathStatus.CHANGING);
+                this.setStatus(PathStatus.CHANGING);
                 rootNode.get().set(keyIterator(path), value);
-                this.setStatus(io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.PathStatus.RELEASE);
+                this.setStatus(PathStatus.RELEASE);
             } else {
                 try {
                     LOGGER.debug("put but cache status not release");

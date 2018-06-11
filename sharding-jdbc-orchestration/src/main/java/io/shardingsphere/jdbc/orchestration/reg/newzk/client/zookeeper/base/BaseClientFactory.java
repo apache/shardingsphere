@@ -18,6 +18,7 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,7 +36,7 @@ import java.util.List;
 public abstract class BaseClientFactory {
     private BaseClient client;
     
-    private io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener globalListener;
+    private Listener globalListener;
     
     private String namespace;
     

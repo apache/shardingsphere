@@ -17,6 +17,8 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy;
 
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.Callback;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.election.LeaderElection;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
@@ -34,10 +36,10 @@ import java.util.Stack;
  *
  * @author lidongbo
  */
-public class ContentionStrategy extends io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.UsualStrategy {
-    private static final Logger LOGGER = LoggerFactory.getLogger(io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.ContentionStrategy.class);
+public class ContentionStrategy extends UsualStrategy {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ContentionStrategy.class);
     
-    public ContentionStrategy(final io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider provider) {
+    public ContentionStrategy(final IProvider provider) {
         super(provider);
     }
     
@@ -65,7 +67,7 @@ public class ContentionStrategy extends io.shardingsphere.jdbc.orchestration.reg
         election.waitDone();
     }
     
-    private LeaderElection buildCreateElection(final String key, final String value, final CreateMode createMode, final io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.Callback callback) {
+    private LeaderElection buildCreateElection(final String key, final String value, final CreateMode createMode, final Callback callback) {
         return new LeaderElection() {
             @Override
             public void action() throws KeeperException, InterruptedException {
@@ -89,7 +91,7 @@ public class ContentionStrategy extends io.shardingsphere.jdbc.orchestration.reg
         election.waitDone();
     }
     
-    private LeaderElection buildUpdateElection(final String key, final String value, final io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.Callback callback) {
+    private LeaderElection buildUpdateElection(final String key, final String value, final Callback callback) {
         return new LeaderElection() {
             @Override
             public void action() throws KeeperException, InterruptedException {
@@ -125,7 +127,7 @@ public class ContentionStrategy extends io.shardingsphere.jdbc.orchestration.reg
         });
     }
     
-    private LeaderElection buildDeleteElection(final String key, final io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.Callback callback) {
+    private LeaderElection buildDeleteElection(final String key, final Callback callback) {
         return new LeaderElection() {
             @Override
             public void action() throws KeeperException, InterruptedException {
@@ -149,7 +151,7 @@ public class ContentionStrategy extends io.shardingsphere.jdbc.orchestration.reg
         election.waitDone();
     }
     
-    private LeaderElection buildCreateAllNeedElection(final String key, final String value, final CreateMode createMode, final io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.Callback callback) {
+    private LeaderElection buildCreateAllNeedElection(final String key, final String value, final CreateMode createMode, final Callback callback) {
         return new LeaderElection() {
             @Override
             public void action() throws KeeperException, InterruptedException {

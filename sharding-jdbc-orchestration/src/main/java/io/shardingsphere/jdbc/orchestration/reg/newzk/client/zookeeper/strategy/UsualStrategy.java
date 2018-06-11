@@ -36,7 +36,7 @@ import java.util.List;
  * @author lidongbo
  */
 public class UsualStrategy extends BaseStrategy {
-    private static final Logger LOGGER = LoggerFactory.getLogger(io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.UsualStrategy.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UsualStrategy.class);
     
     public UsualStrategy(final IProvider provider) {
         super(provider);

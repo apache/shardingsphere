@@ -31,7 +31,7 @@ import java.util.concurrent.DelayQueue;
 public enum AsyncRetryCenter {
     INSTANCE;
     
-    private static final Logger LOGGER = LoggerFactory.getLogger(io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.AsyncRetryCenter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AsyncRetryCenter.class);
     
     private final DelayQueue<BaseOperation> queue = new DelayQueue<>();
     
@@ -77,7 +77,7 @@ public enum AsyncRetryCenter {
             LOGGER.warn("delayRetryPolicy no init and auto init with DelayRetryPolicy.newNoInitDelayPolicy");
             delayRetryPolicy = DelayRetryPolicy.newNoInitDelayPolicy();
         }
-        operation.setDelayPolicyExecutor(new io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayPolicyExecutor(delayRetryPolicy));
+        operation.setDelayPolicyExecutor(new DelayPolicyExecutor(delayRetryPolicy));
         queue.offer(operation);
         LOGGER.debug("enqueue operation:{}", operation.toString());
     }

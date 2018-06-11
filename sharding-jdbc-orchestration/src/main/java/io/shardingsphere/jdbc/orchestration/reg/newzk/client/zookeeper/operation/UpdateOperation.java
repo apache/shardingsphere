@@ -17,6 +17,8 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.operation;
 
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseOperation;
 import org.apache.zookeeper.KeeperException;
 
 /*
@@ -24,12 +26,12 @@ import org.apache.zookeeper.KeeperException;
  *
  * @author lidongbo
  */
-public class UpdateOperation extends io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseOperation {
+public class UpdateOperation extends BaseOperation {
     private final String key;
     
     private final String value;
     
-    public UpdateOperation(final io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider provider, final String key, final String value) {
+    public UpdateOperation(final IProvider provider, final String key, final String value) {
         super(provider);
         this.key = key;
         this.value = value;

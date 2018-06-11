@@ -36,7 +36,7 @@ import java.util.List;
  * @author lidongbo
  */
 public final class CacheClient extends UsualClient {
-    private static final Logger LOGGER = LoggerFactory.getLogger(io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.CacheClient.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CacheClient.class);
     
     private PathTree pathTree;
     
@@ -64,20 +64,17 @@ public final class CacheClient extends UsualClient {
     void useCacheStrategy(final CacheStrategy cacheStrategy) throws KeeperException, InterruptedException {
         LOGGER.debug("use cache strategy:{}", cacheStrategy);
         switch (cacheStrategy) {
-            case WATCH: {
+            case WATCH:
                 pathTree = new PathTree(getRootNode(), this);
                 pathTree.watch();
                 return;
-            }
-            case ALL: {
+            case ALL:
                 pathTree = loadPathTree();
                 pathTree.refreshPeriodic(Constants.THREAD_PERIOD);
                 return;
-            }
             case NONE:
-            default: {
+            default:
                 return;
-            }
         }
     }
     

@@ -17,6 +17,7 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy;
 
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.Callback;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.election.LeaderElection;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
@@ -36,7 +37,7 @@ import java.util.Stack;
  * @since zookeeper 3.4.0
  */
 public class TransactionContendStrategy extends ContentionStrategy {
-    private static final Logger LOGGER = LoggerFactory.getLogger(io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.TransactionContendStrategy.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TransactionContendStrategy.class);
     
     public TransactionContendStrategy(final IProvider provider) {
         super(provider);
@@ -50,7 +51,7 @@ public class TransactionContendStrategy extends ContentionStrategy {
         election.waitDone();
     }
     
-    private LeaderElection buildCreateAllNeedElection(final String key, final String value, final CreateMode createMode, final io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.Callback callback) {
+    private LeaderElection buildCreateAllNeedElection(final String key, final String value, final CreateMode createMode, final Callback callback) {
         return new LeaderElection() {
             @Override
             public void action() throws KeeperException, InterruptedException {

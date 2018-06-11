@@ -40,7 +40,7 @@ public class PathUtil {
     }
     
     private static String adjustPath(final String root, final String path) {
-        if (io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.StringUtil.isNullOrBlank(path)) {
+        if (StringUtil.isNullOrBlank(path)) {
             throw new IllegalArgumentException("path should have content!");
         }
         String rootPath = root;
@@ -138,7 +138,7 @@ public class PathUtil {
     // CHECKSTYLE:OFF
     public static String checkPath(final String key) throws IllegalArgumentException {
         // CHECKSTYLE:ON
-        if (io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.StringUtil.isNullOrBlank(key)) {
+        if (StringUtil.isNullOrBlank(key)) {
             throw new IllegalArgumentException("path should not be null");
         }
         String path = key;

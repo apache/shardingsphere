@@ -17,6 +17,7 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -38,9 +39,9 @@ public abstract class BaseContext {
     
     private byte[] auth;
     
-    private io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener globalListener;
+    private Listener globalListener;
     
-    private final Map<String, io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener> watchers = new ConcurrentHashMap<>();
+    private final Map<String, Listener> watchers = new ConcurrentHashMap<>();
     
     /**
      * close.

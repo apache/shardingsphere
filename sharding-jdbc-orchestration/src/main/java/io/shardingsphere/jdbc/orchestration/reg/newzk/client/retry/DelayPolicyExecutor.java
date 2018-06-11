@@ -28,7 +28,7 @@ import java.util.Random;
  * @author lidongbo
  */
 public class DelayPolicyExecutor {
-    private static final Logger LOGGER = LoggerFactory.getLogger(io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayPolicyExecutor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DelayPolicyExecutor.class);
     
     private final DelayRetryPolicy delayRetryPolicy;
     

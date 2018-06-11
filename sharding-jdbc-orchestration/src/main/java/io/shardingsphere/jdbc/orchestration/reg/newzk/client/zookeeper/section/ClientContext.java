@@ -17,6 +17,8 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section;
 
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayRetryPolicy;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseClientFactory;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseContext;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,9 +30,9 @@ import lombok.Setter;
 @Getter
 public final class ClientContext extends BaseContext {
     
-    private io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayRetryPolicy delayRetryPolicy;
+    private DelayRetryPolicy delayRetryPolicy;
     
-    private io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseClientFactory clientFactory;
+    private BaseClientFactory clientFactory;
     
     public ClientContext(final String servers, final int sessionTimeoutMilliseconds) {
         super();
@@ -52,7 +54,7 @@ public final class ClientContext extends BaseContext {
      *
      * @param context context
      */
-    public void updateContext(final io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ClientContext context) {
+    public void updateContext(final ClientContext context) {
         this.delayRetryPolicy = context.getDelayRetryPolicy();
         this.clientFactory = context.clientFactory;
         getWatchers().clear();

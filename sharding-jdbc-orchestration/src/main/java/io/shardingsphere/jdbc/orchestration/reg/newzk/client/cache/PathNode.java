@@ -33,9 +33,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author lidongbo
  */
 public class PathNode {
-    private static final Logger LOGGER = LoggerFactory.getLogger(io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.PathNode.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PathNode.class);
 
-    private final Map<String, io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.PathNode> children = new ConcurrentHashMap<>();
+    private final Map<String, PathNode> children = new ConcurrentHashMap<>();
 
     private final String nodeKey;
 
@@ -57,7 +57,7 @@ public class PathNode {
      *
      * @return children
      */
-    public Map<String, io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.PathNode> getChildren() {
+    public Map<String, PathNode> getChildren() {
         return children;
     }
     
@@ -75,17 +75,17 @@ public class PathNode {
      *
      * @param node node
      */
-    public void attachChild(final io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.PathNode node) {
+    public void attachChild(final PathNode node) {
         this.children.put(node.nodeKey, node);
     }
     
-    io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.PathNode set(final Iterator<String> iterator, final String value) {
+    PathNode set(final Iterator<String> iterator, final String value) {
         String key = iterator.next();
         LOGGER.debug("PathNode set:{},value:{}", key, value);
-        io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.PathNode node = children.get(key);
+        PathNode node = children.get(key);
         if (node == null) {
             LOGGER.debug("set children haven't:{}", key);
-            node = new io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.PathNode(key);
+            node = new PathNode(key);
             children.put(key, node);
         }
         if (iterator.hasNext()) {
@@ -96,10 +96,10 @@ public class PathNode {
         return node;
     }
     
-    io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.PathNode get(final Iterator<String> iterator) {
+    PathNode get(final Iterator<String> iterator) {
         String key = iterator.next();
         LOGGER.debug("get:{}", key);
-        io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.PathNode node = children.get(key);
+        PathNode node = children.get(key);
         if (node == null) {
             LOGGER.debug("get children haven't:{}", key);
             return null;

@@ -18,6 +18,8 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayPolicyExecutor;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Connection;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,12 +37,12 @@ import java.util.concurrent.TimeUnit;
  */
 @Getter(value = AccessLevel.PROTECTED)
 public abstract class BaseOperation implements Delayed {
-    private static final Logger LOGGER = LoggerFactory.getLogger(io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseOperation.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseOperation.class);
     
     private final IProvider provider;
     
     @Setter
-    private io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayPolicyExecutor delayPolicyExecutor;
+    private DelayPolicyExecutor delayPolicyExecutor;
     
     protected BaseOperation(final IProvider provider) {
         this.provider = provider;
@@ -76,7 +78,7 @@ public abstract class BaseOperation implements Delayed {
             execute();
             result = true;
         } catch (KeeperException e) {
-            if (io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Connection.needReset(e)) {
+            if (Connection.needReset(e)) {
                 provider.resetConnection();
                 result = false;
             } else {

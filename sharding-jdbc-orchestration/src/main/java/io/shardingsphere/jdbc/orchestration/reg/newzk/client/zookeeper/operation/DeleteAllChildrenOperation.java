@@ -17,6 +17,9 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.operation;
 
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseOperation;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.UsualStrategy;
 import org.apache.zookeeper.KeeperException;
 
 /*
@@ -24,17 +27,17 @@ import org.apache.zookeeper.KeeperException;
  *
  * @author lidongbo
  */
-public class DeleteAllChildrenOperation extends io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseOperation {
+public class DeleteAllChildrenOperation extends BaseOperation {
     private final String key;
     
-    public DeleteAllChildrenOperation(final io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider provider, final String key) {
+    public DeleteAllChildrenOperation(final IProvider provider, final String key) {
         super(provider);
         this.key = key;
     }
     
     @Override
     protected void execute() throws KeeperException, InterruptedException {
-        new io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.UsualStrategy(getProvider()).deleteAllChildren(key);
+        new UsualStrategy(getProvider()).deleteAllChildren(key);
     }
     
     @Override

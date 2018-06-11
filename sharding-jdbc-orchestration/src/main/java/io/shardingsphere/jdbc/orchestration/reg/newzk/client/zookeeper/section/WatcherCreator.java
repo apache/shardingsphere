@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * @author lidongbo
  */
 public class WatcherCreator {
-    private static final Logger LOGGER = LoggerFactory.getLogger(io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.WatcherCreator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WatcherCreator.class);
     
     /**
      * get string type data.
@@ -34,7 +34,7 @@ public class WatcherCreator {
      * @param listener listener
      * @return watcher
      */
-    public static Watcher deleteWatcher(final io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener listener) {
+    public static Watcher deleteWatcher(final Listener listener) {
         return new Watcher() {
             @Override
             public void process(final WatchedEvent event) {

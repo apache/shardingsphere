@@ -35,8 +35,8 @@ import java.util.List;
  *
  * @author lidongbo
  */
-public class SyncRetryStrategy extends io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.UsualStrategy {
-    private static final Logger LOGGER = LoggerFactory.getLogger(io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.SyncRetryStrategy.class);
+public class SyncRetryStrategy extends UsualStrategy {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SyncRetryStrategy.class);
     
     @Getter(value = AccessLevel.PROTECTED)
     private final DelayRetryPolicy delayRetryPolicy;
@@ -53,7 +53,7 @@ public class SyncRetryStrategy extends io.shardingsphere.jdbc.orchestration.reg.
 
     @Override
     public byte[] getData(final String key) throws KeeperException, InterruptedException {
-        Callable<byte[]> callable = new Callable(getProvider(), delayRetryPolicy) {
+        Callable<byte[]> callable = new Callable<byte[]>(getProvider(), delayRetryPolicy) {
             @Override
             public void call() throws KeeperException, InterruptedException {
                 setResult(getProvider().getData(getProvider().getRealPath(key)));
@@ -64,7 +64,7 @@ public class SyncRetryStrategy extends io.shardingsphere.jdbc.orchestration.reg.
     
     @Override
     public boolean checkExists(final String key) throws KeeperException, InterruptedException {
-        Callable<Boolean> callable = new Callable(getProvider(), delayRetryPolicy) {
+        Callable<Boolean> callable = new Callable<Boolean>(getProvider(), delayRetryPolicy) {
             @Override
             public void call() throws KeeperException, InterruptedException {
                 setResult(getProvider().exists(getProvider().getRealPath(key)));
@@ -75,7 +75,7 @@ public class SyncRetryStrategy extends io.shardingsphere.jdbc.orchestration.reg.
     
     @Override
     public boolean checkExists(final String key, final Watcher watcher) throws KeeperException, InterruptedException {
-        Callable<Boolean> callable = new Callable(getProvider(), delayRetryPolicy) {
+        Callable<Boolean> callable = new Callable<Boolean>(getProvider(), delayRetryPolicy) {
             @Override
             public void call() throws KeeperException, InterruptedException {
                 setResult(getProvider().exists(getProvider().getRealPath(key), watcher));
@@ -86,7 +86,7 @@ public class SyncRetryStrategy extends io.shardingsphere.jdbc.orchestration.reg.
     
     @Override
     public List<String> getChildren(final String key) throws KeeperException, InterruptedException {
-        Callable<List<String>> callable = new Callable(getProvider(), delayRetryPolicy) {
+        Callable<List<String>> callable = new Callable<List<String>>(getProvider(), delayRetryPolicy) {
             @Override
             public void call() throws KeeperException, InterruptedException {
                 setResult(getProvider().getChildren(getProvider().getRealPath(key)));
@@ -133,7 +133,7 @@ public class SyncRetryStrategy extends io.shardingsphere.jdbc.orchestration.reg.
         Callable callable = new Callable(getProvider(), delayRetryPolicy) {
             @Override
             public void call() throws KeeperException, InterruptedException {
-                new io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.UsualStrategy(getProvider()).createAllNeedPath(key, value, createMode);
+                new UsualStrategy(getProvider()).createAllNeedPath(key, value, createMode);
             }
         };
         callable.exec();
@@ -144,7 +144,7 @@ public class SyncRetryStrategy extends io.shardingsphere.jdbc.orchestration.reg.
         Callable callable = new Callable(getProvider(), delayRetryPolicy) {
             @Override
             public void call() throws KeeperException, InterruptedException {
-                new io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.UsualStrategy(getProvider()).deleteAllChildren(key);
+                new UsualStrategy(getProvider()).deleteAllChildren(key);
             }
         };
         callable.exec();
@@ -155,7 +155,7 @@ public class SyncRetryStrategy extends io.shardingsphere.jdbc.orchestration.reg.
         Callable callable = new Callable(getProvider(), delayRetryPolicy) {
             @Override
             public void call() throws KeeperException, InterruptedException {
-                new io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.UsualStrategy(getProvider()).deleteCurrentBranch(key);
+                new UsualStrategy(getProvider()).deleteCurrentBranch(key);
             }
         };
         callable.exec();

@@ -20,6 +20,9 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.StringUtil;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.WatcherCreator;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -38,7 +41,7 @@ import java.util.concurrent.TimeUnit;
  * @author lidongbo
  */
 public abstract class BaseClient implements IClient {
-    private static final Logger LOGGER = LoggerFactory.getLogger(io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseClient.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseClient.class);
     
     private final int circleWait = 30;
     
@@ -96,7 +99,7 @@ public abstract class BaseClient implements IClient {
         holder.close();
     }
     
-    void registerWatch(final io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener globalListener) {
+    void registerWatch(final Listener globalListener) {
         if (context.getGlobalListener() != null) {
             LOGGER.warn("global listener can only register one");
             return;
@@ -106,7 +109,7 @@ public abstract class BaseClient implements IClient {
     }
     
     @Override
-    public void registerWatch(final String key, final io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener listener) {
+    public void registerWatch(final String key, final Listener listener) {
         String path = PathUtil.getRealPath(rootNode, key);
         listener.setPath(path);
         context.getWatchers().put(listener.getKey(), listener);
@@ -115,7 +118,7 @@ public abstract class BaseClient implements IClient {
     
     @Override
     public void unregisterWatch(final String key) {
-        if (io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.StringUtil.isNullOrBlank(key)) {
+        if (StringUtil.isNullOrBlank(key)) {
             throw new IllegalArgumentException("key should not be blank");
         }
 //        String path = PathUtil.getRealPath(rootNode, key);
@@ -145,7 +148,7 @@ public abstract class BaseClient implements IClient {
             rootExist = true;
             return;
         }
-        holder.getZooKeeper().exists(rootNode, io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.WatcherCreator.deleteWatcher(new io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener(rootNode) {
+        holder.getZooKeeper().exists(rootNode, WatcherCreator.deleteWatcher(new Listener(rootNode) {
             @Override
             public void process(final WatchedEvent event) {
                 rootExist = false;

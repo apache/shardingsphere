@@ -17,13 +17,17 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper;
 
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IExecStrategy;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseContext;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ClientContext;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.AsyncRetryStrategy;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.ContentionStrategy;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.SyncRetryStrategy;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.UsualStrategy;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.ZKTransaction;
 import lombok.Getter;
 import org.apache.zookeeper.AsyncCallback;
@@ -42,9 +46,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author lidongbo
  */
 public class UsualClient extends BaseClient {
-    private static final Logger LOGGER = LoggerFactory.getLogger(io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.UsualClient.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UsualClient.class);
     
-    private final Map<StrategyType, io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IExecStrategy> strategies = new ConcurrentHashMap<>();
+    private final Map<StrategyType, IExecStrategy> strategies = new ConcurrentHashMap<>();
     
     private final boolean watched = true;
     
@@ -75,22 +79,22 @@ public class UsualClient extends BaseClient {
             return;
         }
         
-        IProvider provider = new io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseProvider(getRootNode(), getHolder(), watched, getAuthorities());
+        IProvider provider = new BaseProvider(getRootNode(), getHolder(), watched, getAuthorities());
         switch (strategyType) {
             case USUAL:
-                strategy = new io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.UsualStrategy(provider);
+                strategy = new UsualStrategy(provider);
                 break;
             case CONTEND:
                 strategy = new ContentionStrategy(provider);
                 break;
             case SYNC_RETRY:
-                strategy = new io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.SyncRetryStrategy(provider, ((ClientContext) getContext()).getDelayRetryPolicy());
+                strategy = new SyncRetryStrategy(provider, ((ClientContext) getContext()).getDelayRetryPolicy());
                 break;
             case ASYNC_RETRY:
                 strategy = new AsyncRetryStrategy(provider, ((ClientContext) getContext()).getDelayRetryPolicy());
                 break;
             default:
-                strategy = new io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.UsualStrategy(provider);
+                strategy = new UsualStrategy(provider);
                 break;
         }
         

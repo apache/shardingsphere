@@ -17,6 +17,7 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.action;
 
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
 
 import java.io.IOException;
@@ -58,7 +59,7 @@ public interface IClient extends io.shardingsphere.jdbc.orchestration.reg.newzk.
      * @param key key
      * @param listener listener
      */
-    void registerWatch(String key, io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener listener);
+    void registerWatch(String key, Listener listener);
     
     /**
      * unregister watcher.

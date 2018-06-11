@@ -58,7 +58,7 @@ public class DelayRetryPolicy {
      *
      * @return DelayPolicy
      */
-    public static io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayRetryPolicy newNoInitDelayPolicy() {
-        return new io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayRetryPolicy(BASE_COUNT, BASE_DELAY, Integer.MAX_VALUE);
+    public static DelayRetryPolicy newNoInitDelayPolicy() {
+        return new DelayRetryPolicy(BASE_COUNT, BASE_DELAY, Integer.MAX_VALUE);
     }
 }

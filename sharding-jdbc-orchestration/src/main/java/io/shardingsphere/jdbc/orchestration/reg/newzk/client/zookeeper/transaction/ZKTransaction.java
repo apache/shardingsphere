@@ -18,6 +18,8 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.Holder;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.OpResult;
@@ -33,13 +35,13 @@ import java.util.List;
  * @since zookeeper 3.4.0
  */
 public class ZKTransaction {
-    private static final Logger LOGGER = LoggerFactory.getLogger(io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.ZKTransaction.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ZKTransaction.class);
     
     private final Transaction transaction;
     
     private final String rootNode;
 
-    public ZKTransaction(final String root, final io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.Holder holder) {
+    public ZKTransaction(final String root, final Holder holder) {
         transaction = holder.getZooKeeper().transaction();
         rootNode = root;
         LOGGER.debug("ZKTransaction root:{}", rootNode);
@@ -54,8 +56,8 @@ public class ZKTransaction {
      * @param createMode createMode
      * @return ZKTransaction
      */
-    public io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.ZKTransaction create(final String path, final byte[] data, final List<ACL> acl, final CreateMode createMode) {
-        this.transaction.create(io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil.getRealPath(rootNode, path), data, acl, createMode);
+    public ZKTransaction create(final String path, final byte[] data, final List<ACL> acl, final CreateMode createMode) {
+        this.transaction.create(PathUtil.getRealPath(rootNode, path), data, acl, createMode);
         LOGGER.debug("wait create:{},data:{},acl:{},createMode:{}", new Object[]{path, data, acl, createMode});
         return this;
     }
@@ -66,7 +68,7 @@ public class ZKTransaction {
      * @param path key
      * @return ZKTransaction
      */
-    public io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.ZKTransaction delete(final String path) {
+    public ZKTransaction delete(final String path) {
         return delete(path, Constants.VERSION);
     }
     
@@ -77,8 +79,8 @@ public class ZKTransaction {
      * @param version version
      * @return ZKTransaction
      */
-    public io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.ZKTransaction delete(final String path, final int version) {
-        this.transaction.delete(io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil.getRealPath(rootNode, path), version);
+    public ZKTransaction delete(final String path, final int version) {
+        this.transaction.delete(PathUtil.getRealPath(rootNode, path), version);
         LOGGER.debug("wait delete:{}", path);
         return this;
     }
@@ -89,7 +91,7 @@ public class ZKTransaction {
      * @param path key
      * @return ZKTransaction
      */
-    public io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.ZKTransaction check(final String path) {
+    public ZKTransaction check(final String path) {
         return check(path, Constants.VERSION);
     }
     
@@ -100,8 +102,8 @@ public class ZKTransaction {
      * @param version version
      * @return ZKTransaction
      */
-    public io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.ZKTransaction check(final String path, final int version) {
-        this.transaction.check(io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil.getRealPath(rootNode, path), version);
+    public ZKTransaction check(final String path, final int version) {
+        this.transaction.check(PathUtil.getRealPath(rootNode, path), version);
         LOGGER.debug("wait check:{}", path);
         return this;
     }
@@ -113,7 +115,7 @@ public class ZKTransaction {
      * @param data data
      * @return ZKTransaction
      */
-    public io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.ZKTransaction setData(final String path, final byte[] data) {
+    public ZKTransaction setData(final String path, final byte[] data) {
         return setData(path, data, Constants.VERSION);
     }
     
@@ -125,8 +127,8 @@ public class ZKTransaction {
      * @param version version
      * @return ZKTransaction
      */
-    public io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.ZKTransaction setData(final String path, final byte[] data, final int version) {
-        this.transaction.setData(io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil.getRealPath(rootNode, path), data, version);
+    public ZKTransaction setData(final String path, final byte[] data, final int version) {
+        this.transaction.setData(PathUtil.getRealPath(rootNode, path), data, version);
         LOGGER.debug("wait setData:{},data:{}", path, data);
         return this;
     }

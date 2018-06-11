@@ -35,7 +35,7 @@ import java.util.concurrent.CountDownLatch;
  * @author lidongbo
  */
 public class Holder {
-    private static final Logger LOGGER = LoggerFactory.getLogger(io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.Holder.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Holder.class);
     
     private static final CountDownLatch CONNECTED = new CountDownLatch(1);
     

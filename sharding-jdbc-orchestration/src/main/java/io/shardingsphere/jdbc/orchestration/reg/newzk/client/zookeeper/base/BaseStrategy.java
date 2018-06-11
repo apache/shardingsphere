@@ -17,18 +17,20 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IExecStrategy;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import lombok.Getter;
 import org.apache.zookeeper.KeeperException;
 
 /*
  * @author lidongbo
  */
-public abstract class BaseStrategy implements io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IExecStrategy {
+public abstract class BaseStrategy implements IExecStrategy {
     
     @Getter
-    private final io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider provider;
+    private final IProvider provider;
     
-    public BaseStrategy(final io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider provider) {
+    public BaseStrategy(final IProvider provider) {
         this.provider = provider;
     }
     

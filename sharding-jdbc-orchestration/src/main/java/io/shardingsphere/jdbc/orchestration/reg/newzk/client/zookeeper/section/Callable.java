@@ -17,6 +17,9 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section;
 
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayPolicyExecutor;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayRetryPolicy;
 import lombok.Setter;
 import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
@@ -28,17 +31,17 @@ import org.slf4j.LoggerFactory;
  * @author lidongbo
  */
 public abstract class Callable<T> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Callable.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Callable.class);
 
-    private final io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayPolicyExecutor delayPolicyExecutor;
+    private final DelayPolicyExecutor delayPolicyExecutor;
     
-    private final io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider provider;
+    private final IProvider provider;
     
     @Setter
     private T result;
     
-    public Callable(final io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider provider, final io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayRetryPolicy delayRetryPolicy) {
-        this.delayPolicyExecutor = new io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayPolicyExecutor(delayRetryPolicy);
+    public Callable(final IProvider provider, final DelayRetryPolicy delayRetryPolicy) {
+        this.delayPolicyExecutor = new DelayPolicyExecutor(delayRetryPolicy);
         this.provider = provider;
     }
     
@@ -76,7 +79,7 @@ public abstract class Callable<T> {
         } catch (KeeperException e) {
             LOGGER.warn("exec KeeperException:{}", e.getMessage());
             delayPolicyExecutor.next();
-            if (io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Connection.needReset(e)) {
+            if (Connection.needReset(e)) {
                 provider.resetConnection();
             } else {
                 throw e;

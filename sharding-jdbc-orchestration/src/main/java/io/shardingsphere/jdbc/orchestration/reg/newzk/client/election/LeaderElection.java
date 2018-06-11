@@ -17,7 +17,10 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.election;
 
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.WatcherCreator;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
@@ -31,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * @author lidongbo
  */
 public abstract class LeaderElection {
-    private static final Logger LOGGER = LoggerFactory.getLogger(io.shardingsphere.jdbc.orchestration.reg.newzk.client.election.LeaderElection.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LeaderElection.class);
     
     private boolean done;
     
@@ -41,7 +44,7 @@ public abstract class LeaderElection {
         retryCount = Constants.NODE_ELECTION_RETRY;
     }
 
-    private boolean contend(final String node, final io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider provider, final io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener listener) throws KeeperException, InterruptedException {
+    private boolean contend(final String node, final IProvider provider, final Listener listener) throws KeeperException, InterruptedException {
         boolean success = false;
         try {
             // todo EPHEMERAL_SEQUENTIAL check index value
@@ -50,7 +53,7 @@ public abstract class LeaderElection {
         } catch (KeeperException.NodeExistsException e) {
             LOGGER.info("contend not success");
             // TODO or changing_key node value == current client id
-            provider.exists(node, io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.WatcherCreator.deleteWatcher(listener));
+            provider.exists(node, WatcherCreator.deleteWatcher(listener));
         }
         return success;
     }

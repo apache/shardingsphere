@@ -39,7 +39,7 @@ import java.util.Stack;
  * @author lidongbo
  */
 public class BaseProvider implements IProvider {
-    private static final Logger LOGGER = LoggerFactory.getLogger(io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseProvider.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseProvider.class);
     
     @Getter
     private final Holder holder;

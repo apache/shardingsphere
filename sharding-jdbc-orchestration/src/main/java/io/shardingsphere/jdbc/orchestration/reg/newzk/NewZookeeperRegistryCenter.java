@@ -23,7 +23,14 @@ import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.jdbc.orchestration.reg.exception.RegExceptionHandler;
 import io.shardingsphere.jdbc.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.jdbc.orchestration.reg.listener.EventListener;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.PathTree;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayRetryPolicy;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.StringUtil;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.ClientFactory;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
+import io.shardingsphere.jdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
@@ -44,28 +51,28 @@ import java.util.concurrent.TimeUnit;
  */
 public final class NewZookeeperRegistryCenter implements RegistryCenter {
     
-    private final io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient client;
+    private final IClient client;
     
-    private final Map<String, io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.PathTree> caches = new HashMap<>();
+    private final Map<String, PathTree> caches = new HashMap<>();
     
-    public NewZookeeperRegistryCenter(final io.shardingsphere.jdbc.orchestration.reg.zookeeper.ZookeeperConfiguration zkConfig) {
-        io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.ClientFactory creator = buildCreator(zkConfig);
+    public NewZookeeperRegistryCenter(final ZookeeperConfiguration zkConfig) {
+        ClientFactory creator = buildCreator(zkConfig);
         client = initClient(creator, zkConfig);
     }
     
-    private io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.ClientFactory buildCreator(final io.shardingsphere.jdbc.orchestration.reg.zookeeper.ZookeeperConfiguration zkConfig) {
-        io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.ClientFactory creator = new io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.ClientFactory();
+    private ClientFactory buildCreator(final ZookeeperConfiguration zkConfig) {
+        ClientFactory creator = new ClientFactory();
         creator.setClientNamespace(zkConfig.getNamespace())
                 .newClient(zkConfig.getServerLists(), zkConfig.getSessionTimeoutMilliseconds())
-                .setRetryPolicy(new io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayRetryPolicy(zkConfig.getBaseSleepTimeMilliseconds(), zkConfig.getMaxRetries(), zkConfig.getMaxSleepTimeMilliseconds()));
+                .setRetryPolicy(new DelayRetryPolicy(zkConfig.getBaseSleepTimeMilliseconds(), zkConfig.getMaxRetries(), zkConfig.getMaxSleepTimeMilliseconds()));
         if (!Strings.isNullOrEmpty(zkConfig.getDigest())) {
             creator.authorization("digest", zkConfig.getDigest().getBytes(Charsets.UTF_8), ZooDefs.Ids.CREATOR_ALL_ACL);
         }
         return creator;
     }
     
-    private io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient initClient(final io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.ClientFactory creator, final io.shardingsphere.jdbc.orchestration.reg.zookeeper.ZookeeperConfiguration zkConfig) {
-        io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient newClient = null;
+    private IClient initClient(final ClientFactory creator, final ZookeeperConfiguration zkConfig) {
+        IClient newClient = null;
         try {
             newClient = creator.start();
             // block, slowly
@@ -84,7 +91,7 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
     
     @Override
     public String get(final String key) {
-        io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.PathTree cache = findTreeCache(key);
+        PathTree cache = findTreeCache(key);
         if (null == cache) {
             return getDirectly(key);
         }
@@ -95,8 +102,8 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
         return getDirectly(key);
     }
     
-    private io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.PathTree findTreeCache(final String key) {
-        for (Entry<String, io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.PathTree> entry : caches.entrySet()) {
+    private PathTree findTreeCache(final String key) {
+        for (Entry<String, PathTree> entry : caches.entrySet()) {
             if (key.startsWith(entry.getKey())) {
                 return entry.getValue();
             }
@@ -194,11 +201,11 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
         if (!caches.containsKey(path)) {
             addCacheData(key);
         }
-        io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.PathTree cache = caches.get(path);
-        cache.watch(new io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener() {
+        final PathTree cache = caches.get(path);
+        cache.watch(new Listener() {
             @Override
             public void process(final WatchedEvent event) {
-                if (!io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.StringUtil.isNullOrBlank(event.getPath())) {
+                if (!StringUtil.isNullOrBlank(event.getPath())) {
                     eventListener.onChange(new DataChangedEvent(getEventType(event), event.getPath(), getWithoutCache(event.getPath())));
                 }
             }
@@ -232,7 +239,7 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
     }
     
     private void addCacheData(final String cachePath) {
-        io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.PathTree cache = new io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.PathTree(cachePath, client);
+        PathTree cache = new PathTree(cachePath, client);
         try {
             cache.load();
             cache.watch();
@@ -246,7 +253,7 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
     
     @Override
     public void close() {
-        for (Entry<String, io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.PathTree> each : caches.entrySet()) {
+        for (Entry<String, PathTree> each : caches.entrySet()) {
             each.getValue().close();
         }
         client.close();

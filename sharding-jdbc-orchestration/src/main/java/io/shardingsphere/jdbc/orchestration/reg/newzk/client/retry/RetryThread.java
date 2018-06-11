@@ -17,6 +17,7 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry;
 
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +35,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author lidongbo
  */
 public class RetryThread extends Thread {
-    private static final Logger LOGGER = LoggerFactory.getLogger(io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.RetryThread.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RetryThread.class);
     
     private final int corePoolSize = Runtime.getRuntime().availableProcessors();
     
@@ -46,9 +47,9 @@ public class RetryThread extends Thread {
     
     private final int closeDelay = 60;
     
-    private final DelayQueue<io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseOperation> queue;
+    private final DelayQueue<BaseOperation> queue;
     
-    public RetryThread(final DelayQueue<io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseOperation> queue) {
+    public RetryThread(final DelayQueue<BaseOperation> queue) {
         this.queue = queue;
         retryExecutor = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(10), new ThreadFactory() {
             private final AtomicInteger threadIndex = new AtomicInteger(0);
@@ -68,7 +69,7 @@ public class RetryThread extends Thread {
     public void run() {
         LOGGER.debug("RetryThread start");
         for (;;) {
-            final io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseOperation operation;
+            final BaseOperation operation;
             try {
                 operation = queue.take();
                 LOGGER.debug("take operation:{}", operation.toString());

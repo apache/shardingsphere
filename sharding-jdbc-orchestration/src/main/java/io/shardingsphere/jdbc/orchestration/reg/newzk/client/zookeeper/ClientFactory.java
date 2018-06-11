@@ -23,6 +23,7 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseClientFactory;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ClientContext;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
 import org.apache.zookeeper.data.ACL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,7 @@ import java.util.List;
  */
 public class ClientFactory extends BaseClientFactory {
     //    private static final String CLIENT_EXCLUSIVE_NODE = "ZKC";
-    private static final Logger LOGGER = LoggerFactory.getLogger(io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.ClientFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClientFactory.class);
     
     private DelayRetryPolicy delayRetryPolicy;
     
@@ -46,13 +47,13 @@ public class ClientFactory extends BaseClientFactory {
      * @param sessionTimeoutMilliseconds sessionTimeoutMilliseconds
      * @return ClientFactory this
      */
-    public io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.ClientFactory newClient(final String servers, final int sessionTimeoutMilliseconds) {
+    public ClientFactory newClient(final String servers, final int sessionTimeoutMilliseconds) {
         int wait = sessionTimeoutMilliseconds;
         if (sessionTimeoutMilliseconds == 0) {
             wait = Constants.WAIT;
         }
         setContext(new ClientContext(servers, wait));
-        setClient(new io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.UsualClient(getContext()));
+        setClient(new UsualClient(getContext()));
         LOGGER.debug("new usual client");
         return this;
     }
@@ -63,7 +64,7 @@ public class ClientFactory extends BaseClientFactory {
     */
     synchronized BaseClientFactory newClientByOriginal(final boolean closeOriginal) {
         IClient oldClient = getClient();
-        setClient(new io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.UsualClient(getContext()));
+        setClient(new UsualClient(getContext()));
         if (closeOriginal) {
             oldClient.close();
         }
@@ -71,9 +72,9 @@ public class ClientFactory extends BaseClientFactory {
         return this;
     }
     
-    io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.ClientFactory newCacheClient(final String servers, final int sessionTimeoutMilliseconds) {
+    ClientFactory newCacheClient(final String servers, final int sessionTimeoutMilliseconds) {
         setContext(new ClientContext(servers, sessionTimeoutMilliseconds));
-        setClient(new io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.CacheClient(getContext()));
+        setClient(new CacheClient(getContext()));
         LOGGER.debug("new cache client");
         return this;
     }
@@ -84,7 +85,7 @@ public class ClientFactory extends BaseClientFactory {
      * @param globalListener globalListener
      * @return ClientFactory this
      */
-    public io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.ClientFactory watch(final io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener globalListener) {
+    public ClientFactory watch(final Listener globalListener) {
         setGlobalListener(globalListener);
         return this;
     }
@@ -95,7 +96,7 @@ public class ClientFactory extends BaseClientFactory {
      * @param namespace namespace
      * @return ClientFactory this
      */
-    public io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.ClientFactory setClientNamespace(final String namespace) {
+    public ClientFactory setClientNamespace(final String namespace) {
         setNamespace(PathUtil.checkPath(namespace));
         return this;
     }
@@ -108,7 +109,7 @@ public class ClientFactory extends BaseClientFactory {
      * @param authorities authorities
      * @return ClientFactory this
      */
-    public io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.ClientFactory authorization(final String scheme, final byte[] auth, final List<ACL> authorities) {
+    public ClientFactory authorization(final String scheme, final byte[] auth, final List<ACL> authorities) {
         setScheme(scheme);
         setAuth(auth);
         setAuthorities(authorities);
@@ -121,7 +122,7 @@ public class ClientFactory extends BaseClientFactory {
      * @param delayRetryPolicy delayRetryPolicy
      * @return ClientFactory this
      */
-    public io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.ClientFactory setRetryPolicy(final DelayRetryPolicy delayRetryPolicy) {
+    public ClientFactory setRetryPolicy(final DelayRetryPolicy delayRetryPolicy) {
         this.delayRetryPolicy = delayRetryPolicy;
         return this;
     }
