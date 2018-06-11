@@ -314,6 +314,7 @@ public final class PathTree {
         if (path.equals(rootNode.get().getKey())) {
             return rootNode.get();
         }
+        // todo iterator -> token
         Iterator<String> iterator = keyIterator(path);
         if (iterator.hasNext()) {
             return rootNode.get().get(iterator);
