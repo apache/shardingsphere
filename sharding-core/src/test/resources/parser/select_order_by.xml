@@ -13,7 +13,7 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectWithOrderByForIndex">
+    <parser-result sql-case-id="select_order_by_desc_and_index_asc">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />

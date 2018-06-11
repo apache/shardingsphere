@@ -5,7 +5,7 @@
             <data expected="select_order_by/Select.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectWithOrderByForIndex">
+    <sql id="select_order_by_desc_and_index_asc">
         <sharding-rule value="tbl">
             <data expected="select_order_by/SelectForIndex.xml" />
         </sharding-rule>
