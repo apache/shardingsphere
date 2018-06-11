@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
-    <sql id="select_date_function">
+    <sql id="select_with_date_function">
         <sharding-rule value="tbl">
             <data expected="select/SelectDateFuncWithSingleTable.xml" />
         </sharding-rule>
