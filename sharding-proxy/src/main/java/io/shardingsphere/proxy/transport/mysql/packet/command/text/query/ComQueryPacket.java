@@ -71,7 +71,7 @@ public final class ComQueryPacket extends CommandPacket implements Cloneable {
     
     @Override
     public CommandResponsePackets execute() {
-        log.debug("COM_QUERY received for Sharding-Proxy: {}", sql);
+        log.debug("COM_QUERY received for Sharding-Proxy: {}", getSql());
         try {
             doTransactionIntercept();
         } catch (final Exception ex) {
@@ -127,14 +127,14 @@ public final class ComQueryPacket extends CommandPacket implements Cloneable {
     }
 
     private boolean isXaBegin() {
-        return "BEGIN".equalsIgnoreCase(sql) || "START TRANSACTION".equalsIgnoreCase(sql) || "SET AUTOCOMMIT=0".equalsIgnoreCase(sql);
+        return "BEGIN".equalsIgnoreCase(getSql()) || "START TRANSACTION".equalsIgnoreCase(getSql()) || "SET AUTOCOMMIT=0".equalsIgnoreCase(getSql());
     }
 
     private boolean isXaCommit() {
-        return "COMMIT".equalsIgnoreCase(sql);
+        return "COMMIT".equalsIgnoreCase(getSql());
     }
 
     private boolean isXaRollback() {
-        return "ROLLBACK".equalsIgnoreCase(sql);
+        return "ROLLBACK".equalsIgnoreCase(getSql());
     }
 }
