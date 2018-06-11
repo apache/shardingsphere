@@ -177,17 +177,17 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="35" original-literals="t_order" />
-            <row-count-token row-count="5" begin-position="89" />
+            <table-token begin-position="49" original-literals="t_order" />
+            <row-count-token row-count="5" begin-position="103" />
         </tokens>
         <aggregation-select-items>
-            <aggregation-select-item type="SUM" inner-expression="(order_id)" />
+            <aggregation-select-item type="SUM" inner-expression="(order_id)" alias="orders_sum" />
         </aggregation-select-items>
         <group-by-columns>
             <group-by-column name="user_id" order-direction="ASC" />
         </group-by-columns>
         <order-by-columns>
-            <order-by-column name="SUM(order_id)" order-direction="ASC" />
+            <order-by-column name="SUM(order_id)" order-direction="ASC" alias="orders_sum" />
         </order-by-columns>
         <limit row-count-index="0" row-count="5" />
     </parser-result>
@@ -212,8 +212,8 @@
             <table name="t_order_item" />
         </tables>
         <tokens>
-            <table-token begin-position="76" original-literals="`t_order_item`" />
-            <order-by-token placeholder-begin-position="156" literal-begin-position="162" />
+            <table-token begin-position="90" original-literals="`t_order_item`" />
+            <order-by-token placeholder-begin-position="177" literal-begin-position="183" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -227,10 +227,10 @@
             <aggregation-select-item type="COUNT" inner-expression="(*)" alias="c_number" />
         </aggregation-select-items>
         <group-by-columns>
-            <group-by-column name="date_format(c_date, '%y-%m-%d')" order-direction="ASC" alias="c_date" />
+            <group-by-column name="date_format(creation_date, '%y-%m-%d')" order-direction="ASC" alias="creation_date" />
         </group-by-columns>
         <order-by-columns>
-            <order-by-column name="date_format(c_date, '%y-%m-%d')" order-direction="ASC" alias="c_date" />
+            <order-by-column name="date_format(creation_date, '%y-%m-%d')" order-direction="ASC" alias="creation_date" />
         </order-by-columns>
     </parser-result>
     
