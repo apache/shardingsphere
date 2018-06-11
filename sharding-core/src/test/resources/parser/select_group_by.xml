@@ -117,7 +117,7 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectCountWithoutGroupedColumn" parameters="1, 2, 9, 10">
+    <parser-result sql-case-id="select_group_by_without_grouped_column" parameters="1, 2, 9, 10">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />

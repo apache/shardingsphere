@@ -35,7 +35,7 @@
             <data expected="select_group_by/SelectOrderByDesc.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectCountWithoutGroupedColumn">
+    <sql id="select_group_by_without_grouped_column">
         <sharding-rule>
             <data parameter="10,11,1000,1109" expected="select_group_by/SelectGroupByWithoutGroupedColumn.xml" />
             <data parameter="1,9,1000,1909"/>
