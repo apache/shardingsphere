@@ -92,7 +92,7 @@ public final class SQLExecuteWorker implements Callable<CommandResponsePackets> 
     private CommandResponsePackets executeQueryWithStreamResultSet(final Statement statement, final String sql) {
         try {
             statement.setFetchSize(FETCH_ONE_ROW_A_TIME);
-            sqlExecuteBackendHandler.getResultSets().add(statement.executeQuery(sql));
+            sqlExecuteBackendHandler.getProxyJDBCResource().addResultSet(statement.executeQuery(sql));
             return getQueryDatabaseProtocolPackets();
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
@@ -105,7 +105,7 @@ public final class SQLExecuteWorker implements Callable<CommandResponsePackets> 
         ) {
             CachedRowSet cachedRowSet = new CachedRowSetImpl();
             cachedRowSet.populate(resultSet);
-            sqlExecuteBackendHandler.getResultSets().add(cachedRowSet);
+            sqlExecuteBackendHandler.getProxyJDBCResource().addResultSet(cachedRowSet);
             return getQueryDatabaseProtocolPackets();
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
@@ -164,7 +164,8 @@ public final class SQLExecuteWorker implements Callable<CommandResponsePackets> 
     private CommandResponsePackets getQueryDatabaseProtocolPackets() throws SQLException {
         CommandResponsePackets result = new CommandResponsePackets();
         int currentSequenceId = 0;
-        ResultSetMetaData resultSetMetaData = sqlExecuteBackendHandler.getResultSets().get(sqlExecuteBackendHandler.getResultSets().size() - 1).getMetaData();
+        int lastResultSetIndex = sqlExecuteBackendHandler.getProxyJDBCResource().getResultSets().size() - 1;
+        ResultSetMetaData resultSetMetaData = sqlExecuteBackendHandler.getProxyJDBCResource().getResultSets().get(lastResultSetIndex).getMetaData();
         int columnCount = resultSetMetaData.getColumnCount();
         sqlExecuteBackendHandler.setColumnCount(columnCount);
         if (0 == columnCount) {

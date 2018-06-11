@@ -29,8 +29,9 @@ import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.StatementRoutingEngine;
 import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
-import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.proxy.backend.mysql.MySQLPacketQueryResult;
+import io.shardingsphere.proxy.backend.resource.ProxyJDBCResource;
+import io.shardingsphere.proxy.backend.resource.ProxyJDBCResourceFactory;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
@@ -46,7 +47,6 @@ import lombok.Setter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -69,10 +69,6 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
     
     private final String sql;
     
-    private List<Connection> connections;
-    
-    private List<ResultSet> resultSets;
-    
     private MergedResult mergedResult;
     
     private int currentSequenceId;
@@ -87,10 +83,11 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
     
     private final boolean showSQL;
     
+    private ProxyJDBCResource proxyJDBCResource;
+    
     public SQLExecuteBackendHandler(final String sql, final DatabaseType databaseType, final boolean showSQL) {
         this.sql = sql;
-        connections = new CopyOnWriteArrayList<>();
-        resultSets = new CopyOnWriteArrayList<>();
+        proxyJDBCResource = ProxyJDBCResourceFactory.newResource();
         isMerged = false;
         hasMoreResultValueFlag = true;
         this.databaseType = databaseType;
@@ -117,9 +114,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
         List<CommandResponsePackets> packets = new CopyOnWriteArrayList<>();
         ExecutorService executorService = RuleRegistry.getInstance().getExecutorService();
         List<Future<CommandResponsePackets>> resultList = new ArrayList<>(1024);
-        DataSource dataSource = RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName);
-        Connection connection = dataSource.getConnection();
-        Statement statement = connection.createStatement();
+        Statement statement = prepareResource(dataSourceName);
         resultList.add(executorService.submit(new SQLExecuteWorker(this, sqlStatement, statement, sql)));
         getCommandResponsePackets(resultList, packets);
         return merge(sqlStatement, packets);
@@ -135,9 +130,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
         ExecutorService executorService = RuleRegistry.getInstance().getExecutorService();
         List<Future<CommandResponsePackets>> resultList = new ArrayList<>(1024);
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
-            DataSource dataSource = RuleRegistry.getInstance().getDataSourceMap().get(each.getDataSource());
-            Connection connection = dataSource.getConnection();
-            Statement statement = connection.createStatement();
+            Statement statement = prepareResource(each.getDataSource());
             resultList.add(executorService.submit(new SQLExecuteWorker(this, routeResult.getSqlStatement(), statement, each.getSqlUnit().getSql())));
             
         }
@@ -145,6 +138,15 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
         CommandResponsePackets result = merge(routeResult.getSqlStatement(), packets);
         ProxyShardingRefreshHandler.build(routeResult).execute();
         return result;
+    }
+    
+    private Statement prepareResource(final String dataSourceName) throws SQLException {
+        DataSource dataSource = RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName);
+        Connection connection = dataSource.getConnection();
+        Statement statement = connection.createStatement();
+        proxyJDBCResource.addConnection(connection);
+        proxyJDBCResource.addStatement(statement);
+        return statement;
     }
     
     private void getCommandResponsePackets(final List<Future<CommandResponsePackets>> resultList, final List<CommandResponsePackets> packets) {
@@ -196,7 +198,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
         List<QueryResult> queryResults = new ArrayList<>(packets.size());
         for (int i = 0; i < packets.size(); i++) {
             // TODO replace to a common PacketQueryResult
-            queryResults.add(new MySQLPacketQueryResult(packets.get(i), resultSets.get(i)));
+            queryResults.add(new MySQLPacketQueryResult(packets.get(i), proxyJDBCResource.getResultSets().get(i)));
         }
         try {
             mergedResult = MergeEngineFactory.newInstance(RuleRegistry.getInstance().getShardingRule(), queryResults, sqlStatement).merge();
@@ -234,7 +236,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
         }
         if (!mergedResult.next()) {
             hasMoreResultValueFlag = false;
-            cleanJDBCResources();
+            proxyJDBCResource.clear();
         }
         return true;
     }
@@ -256,26 +258,6 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
             return new TextResultSetRowPacket(++currentSequenceId, data);
         } catch (final SQLException ex) {
             return new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage());
-        }
-    }
-    
-    private void cleanJDBCResources() {
-        for (ResultSet each : resultSets) {
-            if (null != each) {
-                try {
-                    each.close();
-                } catch (final SQLException ignore) {
-                }
-            }
-        }
-        for (Connection each : connections) {
-            if (null != each) {
-                try {
-                    each.close();
-                    MasterVisitedManager.clear();
-                } catch (final SQLException ignore) {
-                }
-            }
         }
     }
 }
