@@ -307,6 +307,12 @@
         <assertion sharding-rule-type="tbl" expected-data-file="tbl/select_order_by_desc_and_index_asc.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_order_by_desc_and_index_asc.xml" />
     </dql-test-case>
+    
+    <dql-test-case sql-case-id="select_order_by_with_ordered_column">
+        <assertion sharding-rule-type="db" expected-data-file="db/select_order_by_with_ordered_column.xml" />
+        <assertion sharding-rule-type="tbl" expected-data-file="tbl/select_order_by_with_ordered_column.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_order_by_with_ordered_column.xml" />
+    </dql-test-case>
 
 
 
@@ -314,18 +320,7 @@
 
 
 
-
-
-    <!--<sql id="select_order_by_desc_and_index_asc">-->
-        <!--<sharding-rule value="tbl">-->
-            <!--<data expected="select_order_by/SelectForIndex.xml" />-->
-        <!--</sharding-rule>-->
-    <!--</sql>-->
-    <!--<sql id="assertSelectWithOrderByForAlias">-->
-        <!--<sharding-rule value="tbl">-->
-            <!--<data expected="select_order_by/SelectForAlias.xml" />-->
-        <!--</sharding-rule>-->
-    <!--</sql>-->
+    
     <!--<sql id="assertSelectWithOrderByForDate">-->
         <!--<sharding-rule value="tbl">-->
             <!--<data expected="select_order_by/SelectForDate.xml" />-->

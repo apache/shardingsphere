@@ -10,7 +10,7 @@
             <data expected="select_order_by/SelectForIndex.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectWithOrderByForAlias">
+    <sql id="select_order_by_with_ordered_column">
         <sharding-rule value="tbl">
             <data expected="select_order_by/SelectForAlias.xml" />
         </sharding-rule>
