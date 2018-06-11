@@ -15,7 +15,7 @@
             <data expected="select_group_by/SelectCount.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectMaxWithGroupBy">
+    <sql id="select_group_by_with_max">
         <sharding-rule>
             <data expected="select_group_by/SelectMax.xml" />
         </sharding-rule>

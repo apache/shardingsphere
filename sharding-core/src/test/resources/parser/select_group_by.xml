@@ -36,7 +36,7 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectMaxWithGroupBy">
+    <parser-result sql-case-id="select_group_by_with_max">
         <tables>
             <table name="t_order" />
         </tables>
