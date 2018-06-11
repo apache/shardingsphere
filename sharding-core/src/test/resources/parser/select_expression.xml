@@ -17,7 +17,7 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="select_date_function">
+    <parser-result sql-case-id="select_with_date_function">
         <tables>
             <table name="t_order_item" alias="i"/>
         </tables>
@@ -29,7 +29,7 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectRegexpWithSingleTable" parameters="'init', 1, 2">
+    <parser-result sql-case-id="select_with_regexp" parameters="'init', 1, 2">
         <tables>
             <table name="t_order_item" alias="t"/>
         </tables>
