@@ -253,4 +253,56 @@
         <!--<assertion sharding-rule-type="tbl" parameters="1000:int, 1100:int" expected-data-file="tbl/select_group_by_with_date_function.xml" />-->
         <!--<assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1000:int, 1100:int" expected-data-file="dbtbl_with_masterslave/select_group_by_with_date_function.xml" />-->
     <!--</dql-test-case>-->
+    
+    <dql-test-case sql-case-id="select_or_with_same_sharding_columns">
+        <assertion sharding-rule-type="db" parameters="1000:int, 1001:int" expected-data-file="db/select_or_with_same_sharding_columns.xml" />
+        <assertion sharding-rule-type="tbl" parameters="1000:int, 1001:int" expected-data-file="tbl/select_or_with_same_sharding_columns.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1000:int, 1001:int" expected-data-file="dbtbl_with_masterslave/select_or_with_same_sharding_columns.xml" />
+    </dql-test-case>
+
+
+
+
+
+
+
+
+
+
+
+    <!--<sql id="select_or_with_same_sharding_columns">-->
+        <!--<sharding-rule value="tbl">-->
+            <!--<data parameter="1000,1001" expected="select_or/SelectOrWithSameShardingColumns.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    <!--<sql id="assertSelectOrWithDifferentShardingColumns">-->
+        <!--<sharding-rule value="tbl">-->
+            <!--<data parameter="1000,11" expected="select_or/SelectOrWithDifferentShardingColumns.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    <!--<sql id="assertSelectOrWithShardingColumnsAndNoShardingColumns">-->
+        <!--<sharding-rule value="tbl">-->
+            <!--<data parameter="1000,'init'" expected="select_or/SelectOrWithShardingColumnsAndNoShardingColumns.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    <!--<sql id="assertSelectOrWithSimpleParen">-->
+        <!--<sharding-rule value="tbl">-->
+            <!--<data parameter="1000,'init',11" expected="select_or/SelectOrWithSimpleParen.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    <!--<sql id="assertSelectOrWithComplexParen">-->
+        <!--<sharding-rule value="tbl">-->
+            <!--<data parameter="'init',1000,1100,10,11" expected="select_or/SelectOrWithComplexParen.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    <!--<sql id="assertSelectOrWithBindingTable">-->
+        <!--<sharding-rule value="tbl">-->
+            <!--<data parameter="1000,1100,11" expected="select_or/SelectOrWithBindingTable.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    <!--<sql id="assertSelectOrWithBindingTableAndConfigTable">-->
+        <!--<sharding-rule value="tbl">-->
+            <!--<data parameter="1000,1100,11,'init'" expected="select_or/SelectOrWithBindingTableAndConfigTable.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
 </integrate-test-cases>

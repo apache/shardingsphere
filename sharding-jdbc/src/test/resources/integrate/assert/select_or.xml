@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
-    <sql id="assertSelectOrWithSameShardingColumns">
+    <sql id="select_or_with_same_sharding_columns">
         <sharding-rule value="tbl">
             <data parameter="1000,1001" expected="select_or/SelectOrWithSameShardingColumns.xml" />
         </sharding-rule>
