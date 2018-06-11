@@ -39,8 +39,8 @@
             <order-by-column owner="o" name="order_id" alias="gen_order_id_" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
-
-    <parser-result sql-case-id="assertSelectWithOrderByForDate">
+    
+    <parser-result sql-case-id="select_order_by_with_date">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -50,7 +50,7 @@
             <table-token begin-position="27" original-literals="t_order_item" />
         </tokens>
         <order-by-columns>
-            <order-by-column owner="i" name="c_date" order-direction="DESC" />
+            <order-by-column owner="i" name="creation_date" order-direction="DESC" />
             <order-by-column owner="o" name="order_id" order-direction="DESC" />
             <order-by-column owner="i" name="item_id" order-direction="ASC" />
         </order-by-columns>
