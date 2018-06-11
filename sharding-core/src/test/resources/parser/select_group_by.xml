@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parser-result-sets>
-    <parser-result sql-case-id="assertSelectSumWithGroupBy">
+    <parser-result sql-case-id="select_group_by_with_sum">
         <tables>
             <table name="t_order" />
         </tables>

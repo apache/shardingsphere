@@ -5,7 +5,7 @@
             <data parameter="1000,1100" expected="select_group_by/SelectFunc.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectSumWithGroupBy">
+    <sql id="select_group_by_with_sum">
         <sharding-rule>
             <data expected="select_group_by/SelectSum.xml" />
         </sharding-rule>

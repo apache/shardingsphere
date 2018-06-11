@@ -181,7 +181,12 @@
         <assertion sharding-rule-type="tbl" parameters="init:String, 100001:int, 100002:int" expected-data-file="tbl/select_with_regexp.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="init:String, 100000:int, 100001:int" expected-data-file="dbtbl_with_masterslave/select_with_regexp.xml" />
     </dql-test-case>
-
+    
+    <dql-test-case sql-case-id="select_group_by_with_sum">
+        <assertion sharding-rule-type="db" expected-data-file="db/select_group_by_with_sum.xml" />
+        <assertion sharding-rule-type="tbl" expected-data-file="tbl/select_group_by_with_sum.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_group_by_with_sum.xml" />
+    </dql-test-case>
 
 
 
