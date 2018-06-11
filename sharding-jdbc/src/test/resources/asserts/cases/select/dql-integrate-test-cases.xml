@@ -230,7 +230,13 @@
         <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1:int" expected-data-file="dbtbl_with_masterslave/select_group_by_with_limit.xml" />
     </dql-test-case>
     
+    <dql-test-case sql-case-id="select_group_by_with_order_by_and_limit">
+        <assertion sharding-rule-type="db" parameters="1:int" expected-data-file="db/select_group_by_with_order_by_and_limit.xml" />
+        <assertion sharding-rule-type="tbl" parameters="1:int" expected-data-file="tbl/select_group_by_with_order_by_and_limit.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1:int" expected-data-file="dbtbl_with_masterslave/select_group_by_with_order_by_and_limit.xml" />
+    </dql-test-case>
 
+    
     <!--<sql id="select_group_by_with_limit">-->
         <!--<sharding-rule>-->
             <!--<data parameter="1" expected="select_group_by/SelectLimit.xml" />-->
