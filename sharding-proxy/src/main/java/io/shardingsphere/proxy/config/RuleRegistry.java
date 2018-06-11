@@ -57,13 +57,13 @@ public final class RuleRegistry {
     private static final int MAX_EXECUTOR_THREADS = Runtime.getRuntime().availableProcessors() * 2;
     
     private static final RuleRegistry INSTANCE = new RuleRegistry();
-
+    
     private final boolean withoutJdbc;
-
+    
     private final Map<String, DataSource> dataSourceMap;
-
+    
     private Map<String, DataSourceParameter> dataSourceConfigurationMap;
-
+    
     private final ShardingRule shardingRule;
     
     private final MasterSlaveRule masterSlaveRule;
@@ -79,7 +79,7 @@ public final class RuleRegistry {
     private final boolean showSQL;
     
     private final TransactionType transactionType;
-
+    
     private final ProxyAuthority proxyAuthority;
     
     private RuleRegistry() {

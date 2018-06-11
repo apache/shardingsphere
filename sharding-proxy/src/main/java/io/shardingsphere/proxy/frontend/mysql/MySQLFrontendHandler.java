@@ -46,7 +46,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
     private final EventLoopGroup eventLoopGroup;
     
     private final ProxyAuthorityHandler proxyAuthorityHandler;
-
+    
     public MySQLFrontendHandler(final EventLoopGroup eventLoopGroup) {
         this.eventLoopGroup = eventLoopGroup;
         proxyAuthorityHandler = new ProxyAuthorityHandler();

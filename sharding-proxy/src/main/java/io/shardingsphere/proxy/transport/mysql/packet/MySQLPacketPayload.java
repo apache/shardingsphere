@@ -50,7 +50,7 @@ public final class MySQLPacketPayload {
     public boolean isReadable() {
         return byteBuf.isReadable();
     }
-
+    
     /**
      * Read 1 byte fixed length integer from byte buffers.
      * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
@@ -243,7 +243,7 @@ public final class MySQLPacketPayload {
         byteBuf.readBytes(result);
         return result;
     }
-
+    
     /**
      * Write fixed length string to byte buffers.
      * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::FixedLengthString">FixedLengthString</a>
@@ -292,7 +292,7 @@ public final class MySQLPacketPayload {
     public void writeBytes(final byte[] value) {
         byteBuf.writeBytes(value);
     }
-
+    
     /**
      * Read variable length string from byte buffers.
      * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::VariableLengthString">FixedLengthString</a>
