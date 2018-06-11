@@ -25,7 +25,7 @@
             <data parameter="'init',1000,1100,10,11" expected="select_or/SelectOrWithComplexParen.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectOrWithBindingTable">
+    <sql id="select_or_mix_and_for_simple_pattern_with_binding_tables">
         <sharding-rule value="tbl">
             <data parameter="1000,1100,11" expected="select_or/SelectOrWithBindingTable.xml" />
         </sharding-rule>

@@ -283,6 +283,12 @@
         <assertion sharding-rule-type="tbl" parameters="init:String, 1000:int, 1100:int, 10:int, 11:int" expected-data-file="tbl/select_or_mix_and_for_complex_pattern.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="init:String, 1000:int, 1100:int, 10:int, 11:int" expected-data-file="dbtbl_with_masterslave/select_or_mix_and_for_complex_pattern.xml" />
     </dql-test-case>
+    
+    <dql-test-case sql-case-id="select_or_mix_and_for_simple_pattern_with_binding_tables">
+        <assertion sharding-rule-type="db" parameters="1000:int, 1100:int, 11:int" expected-data-file="db/select_or_mix_and_for_simple_pattern_with_binding_tables.xml" />
+        <assertion sharding-rule-type="tbl" parameters="1000:int, 1100:int, 11:int" expected-data-file="tbl/select_or_mix_and_for_simple_pattern_with_binding_tables.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1000:int, 1100:int, 11:int" expected-data-file="dbtbl_with_masterslave/select_or_mix_and_for_simple_pattern_with_binding_tables.xml" />
+    </dql-test-case>
 
 
 
@@ -290,12 +296,6 @@
 
 
 
-
-    <!--<sql id="assertSelectOrWithBindingTable">-->
-        <!--<sharding-rule value="tbl">-->
-            <!--<data parameter="1000,1100,11" expected="select_or/SelectOrWithBindingTable.xml" />-->
-        <!--</sharding-rule>-->
-    <!--</sql>-->
     <!--<sql id="assertSelectOrWithBindingTableAndConfigTable">-->
         <!--<sharding-rule value="tbl">-->
             <!--<data parameter="1000,1100,11,'init'" expected="select_or/SelectOrWithBindingTableAndConfigTable.xml" />-->
