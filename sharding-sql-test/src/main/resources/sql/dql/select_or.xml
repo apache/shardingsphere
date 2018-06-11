@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sql-cases>
     <sql-case id="select_or_with_same_sharding_columns" value="SELECT * FROM t_order WHERE order_id = %s OR order_id = %s" />
-    
     <sql-case id="select_or_with_different_sharding_columns" value="SELECT * FROM t_order WHERE order_id = %s OR user_id = %s" />
+    <sql-case id="select_or_with_none_sharding_columns" value="SELECT * FROM t_order WHERE order_id = %s OR status = %s" />
     
-    <sql-case id="assertSelectOrWithShardingColumnsAndNoShardingColumns" value="SELECT * FROM t_order WHERE order_id = %s OR status = %s" />
     <sql-case id="assertSelectOrWithSimpleParen" value="SELECT * FROM t_order WHERE (order_id = %s OR status = %s) AND user_id = %s" />
     <sql-case id="assertSelectOrWithComplexParen" value="SELECT * FROM t_order WHERE ((status = %s AND (order_id = %s OR (order_id = %s)) AND (user_id = %s OR (user_id = %s))))" />
     <sql-case id="assertSelectOrWithBindingTable" value="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE (o.order_id = %s OR o.order_id = %s) AND o.user_id = %s" />

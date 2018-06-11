@@ -41,8 +41,8 @@
             </and-condition>
         </or-condition>
     </parser-result>
-
-    <parser-result sql-case-id="assertSelectOrWithShardingColumnsAndNoShardingColumns" parameters="1, 'init'">
+    
+    <parser-result sql-case-id="select_or_with_none_sharding_columns" parameters="1, 'init'">
         <tables>
             <table name="t_order"/>
         </tables>
@@ -50,7 +50,7 @@
             <table-token begin-position="14" original-literals="t_order" />
         </tokens>
     </parser-result>
-
+    
     <parser-result sql-case-id="assertSelectOrWithSimpleParen" parameters="1, 'init', 3">
         <tables>
             <table name="t_order"/>
@@ -74,7 +74,7 @@
             </and-condition>
         </or-condition>
     </parser-result>
-
+    
     <parser-result sql-case-id="assertSelectOrWithComplexParen" parameters="'init', 1, 2, 3, 4">
         <tables>
             <table name="t_order"/>
@@ -117,7 +117,7 @@
             </and-condition>
         </or-condition>
     </parser-result>
-
+    
     <parser-result sql-case-id="assertSelectOrWithBindingTable" parameters="1, 2, 3">
         <tables>
             <table name="t_order" alias="o"/>
@@ -146,7 +146,7 @@
             </and-condition>
         </or-condition>
     </parser-result>
-
+    
     <parser-result sql-case-id="assertSelectOrWithBindingTableAndConfigTable" parameters="1, 2, 3, 'init'">
         <tables>
             <table name="t_order" alias="o"/>
