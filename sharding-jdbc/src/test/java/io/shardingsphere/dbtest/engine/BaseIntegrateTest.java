@@ -128,6 +128,9 @@ public abstract class BaseIntegrateTest {
             SchemaEnvironmentManager.createDatabase(each);
         }
         for (String each : integrateTestCasesLoader.getShardingRuleTypes()) {
+            SchemaEnvironmentManager.dropTable(each);
+        }
+        for (String each : integrateTestCasesLoader.getShardingRuleTypes()) {
             SchemaEnvironmentManager.createTable(each);
         }
     }
