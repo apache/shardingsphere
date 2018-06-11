@@ -319,27 +319,18 @@
         <assertion sharding-rule-type="tbl" expected-data-file="tbl/select_order_by_with_date.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_order_by_with_date.xml" />
     </dql-test-case>
-    
+
+    <!-- // TODO add null data -->
     <dql-test-case sql-case-id="select_order_by_for_nulls_first">
         <assertion sharding-rule-type="db" expected-data-file="db/select_order_by_with_ordered_column.xml" />
         <assertion sharding-rule-type="tbl" expected-data-file="tbl/select_order_by_with_ordered_column.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_order_by_with_ordered_column.xml" />
     </dql-test-case>
 
-
-
-    
-
-    <!--&lt;!&ndash; // TODO add null data &ndash;&gt;-->
-    <!--<sql id="select_order_by_for_nulls_first">-->
-        <!--<sharding-rule value="tbl">-->
-            <!--<data expected="select_order_by/SelectForAlias.xml" />-->
-        <!--</sharding-rule>-->
-    <!--</sql>-->
-    <!--&lt;!&ndash; // TODO add null data &ndash;&gt;-->
-    <!--<sql id="assertSelectWithOrderByForNullsLast">-->
-        <!--<sharding-rule value="tbl">-->
-            <!--<data expected="select_order_by/SelectForAlias.xml" />-->
-        <!--</sharding-rule>-->
-    <!--</sql>-->
+    <!-- // TODO add null data -->
+    <dql-test-case sql-case-id="select_order_by_for_nulls_last">
+        <assertion sharding-rule-type="db" expected-data-file="db/select_order_by_with_ordered_column.xml" />
+        <assertion sharding-rule-type="tbl" expected-data-file="tbl/select_order_by_with_ordered_column.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_order_by_with_ordered_column.xml" />
+    </dql-test-case>
 </integrate-test-cases>

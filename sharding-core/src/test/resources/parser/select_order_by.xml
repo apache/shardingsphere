@@ -70,7 +70,7 @@
     </parser-result>
     
     <!-- //TODO add order-by-null-type -->
-    <parser-result sql-case-id="assertSelectWithOrderByForNullsLast">
+    <parser-result sql-case-id="select_order_by_for_nulls_last">
         <tables>
             <table name="t_order" alias="o" />
         </tables>
