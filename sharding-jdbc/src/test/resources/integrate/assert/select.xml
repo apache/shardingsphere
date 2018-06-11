@@ -97,7 +97,7 @@
             <data parameter="10,11,1009,1108" expected="select/SelectWithBindingTable.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectWithBindingTableAndConfigTable">
+    <sql id="select_sharding_route_with_broadcast_table">
         <sharding-rule value="tbl">
             <data parameter="10,11,1009,1108,'init'" expected="select/SelectWithBindingTableAndConfigTable.xml" />
         </sharding-rule>
@@ -111,7 +111,7 @@
             <data parameter="10,11,1009,1108,'none"/>
         </sharding-rule>
     </sql>
-    <sql id="assertSelectWithUpperCaseBindingTable">
+    <sql id="select_full_route_for_upper_case_with_binding_tables">
         <sharding-rule value="tbl">
             <data parameter="10,11,1009,1108" expected="select/SelectWithBindingTable.xml" />
         </sharding-rule>
@@ -122,38 +122,24 @@
             <data parameter="10,11,1009,1108" expected="select/SelectWithBindingTable.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectWithUpperCaseBindingTableAndConfigTable">
-        <sharding-rule value="tbl">
-            <data parameter="10,11,1009,1108,'init'" expected="select/SelectWithUpperCaseBindingTableAndConfigTable.xml" />
-        </sharding-rule>
-        <sharding-rule value="masterslave">
-            <data parameter="10,11,1009,1108,'init_slave'" expected="select/SelectWithUpperCaseBindingTableAndConfigTable.xml" />
-        </sharding-rule>
-        <sharding-rule value="dbtbl">
-            <data parameter="10,11,1009,1108,'init'" expected="select/SelectWithUpperCaseBindingTableAndConfigTable.xml" />
-        </sharding-rule>
-        <sharding-rule>
-            <data parameter="10,11,1009,1108,'none"/>
-        </sharding-rule>
-    </sql>
-    <sql id="assertSelectCountWithBindingTable">
+    <sql id="select_count_with_binding_tables_without_join">
         <sharding-rule>
             <data parameter="10,11,1000,1909" expected="select_aggregate/SelectCountWithBindingTable_0.xml" />
             <data parameter="1,9,1000,1909" expected="select_aggregate/SelectCountWithBindingTable_1.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectCountWithBindingTableWithJoin">
+    <sql id="select_count_with_binding_tables_with_join">
         <sharding-rule>
             <data parameter="10,11,1000,1909" expected="select_aggregate/SelectCountWithBindingTable_0.xml" />
             <data parameter="1,9,1000,1909" expected="select_aggregate/SelectCountWithBindingTable_1.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectAliasWithKeyword">
+    <sql id="select_alias_as_keyword">
         <sharding-rule value="tbl">
             <data parameter="100000" expected="select/SelectAliasWithKeyword.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectWithJoinForceIndex">
+    <sql id="select_with_force_index_join">
         <sharding-rule value="tbl">
             <data parameter="1000" expected="select/SelectWithJoinForceIndex.xml" />
         </sharding-rule>

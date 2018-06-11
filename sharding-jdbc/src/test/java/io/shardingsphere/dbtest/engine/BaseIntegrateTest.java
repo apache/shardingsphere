@@ -55,10 +55,6 @@ public abstract class BaseIntegrateTest {
     
     private static IntegrateTestCasesLoader integrateTestCasesLoader = IntegrateTestCasesLoader.getInstance();
     
-    private static boolean isInitialized = IntegrateTestEnvironment.getInstance().isInitialized();
-    
-    private static boolean isCleaned = IntegrateTestEnvironment.getInstance().isInitialized();
-    
     private final DatabaseTypeEnvironment databaseTypeEnvironment;
     
     private final IntegrateTestCaseAssertion assertion;
@@ -125,12 +121,8 @@ public abstract class BaseIntegrateTest {
     
     @BeforeClass
     public static void createDatabasesAndTables() throws JAXBException, IOException {
-        if (isInitialized) {
-            isInitialized = false;
-        } else {
-            for (String each : integrateTestCasesLoader.getShardingRuleTypes()) {
-                SchemaEnvironmentManager.dropDatabase(each);
-            }
+        for (String each : integrateTestCasesLoader.getShardingRuleTypes()) {
+            SchemaEnvironmentManager.dropDatabase(each);
         }
         for (String each : integrateTestCasesLoader.getShardingRuleTypes()) {
             SchemaEnvironmentManager.createDatabase(each);
@@ -142,11 +134,8 @@ public abstract class BaseIntegrateTest {
     
     @AfterClass
     public static void dropDatabases() throws JAXBException, IOException {
-        if (isCleaned) {
-            for (String each : integrateTestCasesLoader.getShardingRuleTypes()) {
-                SchemaEnvironmentManager.dropDatabase(each);
-            }
-            isCleaned = false;
+        for (String each : integrateTestCasesLoader.getShardingRuleTypes()) {
+            SchemaEnvironmentManager.dropDatabase(each);
         }
     }
     

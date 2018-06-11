@@ -66,6 +66,28 @@ public final class DatabaseEnvironment {
     /**
      * Get URL.
      *
+     * @return URL
+     */
+    public String getURL() {
+        switch (databaseType) {
+            case H2:
+                return "jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
+            case MySQL:
+                return String.format("jdbc:mysql://%s:%s", host, port);
+            case PostgreSQL:
+                return String.format("jdbc:postgresql://%s:%s", host, port);
+            case SQLServer:
+                return String.format("jdbc:sqlserver://%s:%s", host, port);
+            case Oracle:
+                return String.format("jdbc:oracle:thin:@%s:%s", host, port);
+            default:
+                throw new UnsupportedOperationException(databaseType.name());
+        }
+    }
+    
+    /**
+     * Get URL.
+     *
      * @param dataSourceName data source name
      * @return URL
      */

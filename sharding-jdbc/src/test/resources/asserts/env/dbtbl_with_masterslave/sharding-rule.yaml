@@ -31,6 +31,8 @@ shardingRule:
           rangeAlgorithmClassName: io.shardingsphere.dbtest.fixture.RangeModuloAlgorithm
   bindingTables:
     - t_order,t_order_item
+  defaultDataSourceName: db_ms_0
+  defaultKeyGeneratorClassName: io.shardingsphere.dbtest.fixture.IncrementKeyGenerator
 
   masterSlaveRules:
     db_ms_0:

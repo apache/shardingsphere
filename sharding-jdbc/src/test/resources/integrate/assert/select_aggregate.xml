@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
-    <sql id="assertSelectSum">
+    <sql id="select_sum">
         <sharding-rule>
             <data expected="select_aggregate/SelectSum.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectCount">
+    <sql id="select_count">
         <sharding-rule>
             <data expected="select_aggregate/SelectCount.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectMax">
+    <sql id="select_max">
         <sharding-rule>
             <data expected="select_aggregate/SelectMax.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectMin">
+    <sql id="select_min">
         <sharding-rule>
             <data expected="select_aggregate/SelectMin.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectAvg">
+    <sql id="select_avg">
         <sharding-rule>
             <data expected="select_aggregate/SelectAvg.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectCountForSpecialSymbol">
+    <sql id="select_count_with_escape_character">
         <sharding-rule>
             <data expected="select_aggregate/SelectCount.xml" />
         </sharding-rule>

@@ -142,41 +142,32 @@ public final class SchemaEnvironmentManager {
     public static void createTable(final String shardingRuleType) throws JAXBException, IOException {
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
             SchemaEnvironment databaseEnvironmentSchema = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(shardingRuleType));
-            List<String> databases = databaseEnvironmentSchema.getDatabases();
-            for (String database : databases) {
-                try (BasicDataSource dataSource = (BasicDataSource) DataSourceUtil.createDataSource(each, database);
-                     Connection connection = dataSource.getConnection();
-                     StringReader stringReader = new StringReader(StringUtils.join(databaseEnvironmentSchema.getTableCreateSQLs(), ";\n"))) {
-                    RunScript.execute(connection, stringReader);
-                } catch (final SQLException ex) {
-                    // TODO schema maybe not exist for oracle only
-                }
+            createTable(databaseEnvironmentSchema, each);
+        }
+    }
+    
+    private static void createTable(final SchemaEnvironment databaseEnvironmentSchema, final DatabaseType databaseType) {
+        for (String each : databaseEnvironmentSchema.getDatabases()) {
+            try (BasicDataSource dataSource = (BasicDataSource) DataSourceUtil.createDataSource(databaseType, each);
+                 Connection connection = dataSource.getConnection();
+                 StringReader stringReader = new StringReader(StringUtils.join(getTableCreateSQLs(databaseEnvironmentSchema.getTableCreateSQLs(), databaseType), ";\n"))) {
+                RunScript.execute(connection, stringReader);
+            } catch (final SQLException ex) {
+                // TODO schema maybe not exist for oracle only
             }
         }
     }
     
-    /**
-     * Execute SQL.
-     * 
-     * @param shardingRuleType sharding rule type
-     * @param databaseType database type
-     * @param sql SQL to be executed
-     * @throws IOException IO exception
-     * @throws JAXBException JAXB exception
-     */
-    public static void executeSQL(final String shardingRuleType, final DatabaseType databaseType, final String sql) throws IOException, JAXBException {
-        try {
-            SchemaEnvironment databaseEnvironmentSchema = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(shardingRuleType));
-            List<String> databases = databaseEnvironmentSchema.getDatabases();
-            for (String database : databases) {
-                try (BasicDataSource dataSource = (BasicDataSource) DataSourceUtil.createDataSource(databaseType, database);
-                     Connection connection = dataSource.getConnection();
-                     StringReader stringReader = new StringReader(sql)) {
-                    RunScript.execute(connection, stringReader);
-                }
-            }
-        } catch (final SQLException ex) {
-            // TODO: Table may not exist on deletion
+    private static List<String> getTableCreateSQLs(final List<String> tableCreateSQLs, final DatabaseType databaseType) {
+        if (DatabaseType.H2 != databaseType) {
+            return tableCreateSQLs;
         }
+        List<String> result = new LinkedList<>();
+        for (String each : tableCreateSQLs) {
+            if (!each.startsWith("CREATE INDEX")) {
+                result.add(each);
+            }
+        }
+        return result;
     }
 }
