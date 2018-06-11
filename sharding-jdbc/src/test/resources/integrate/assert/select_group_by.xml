@@ -1,64 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
-    <sql id="assertSelectDateFuncWithGroupBy">
+    <sql id="select_group_by_with_date_function">
         <sharding-rule value="tbl">
             <data parameter="1000,1100" expected="select_group_by/SelectFunc.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectSumWithGroupBy">
+    <sql id="select_group_by_with_sum">
         <sharding-rule>
             <data expected="select_group_by/SelectSum.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectCountWithGroupBy">
+    <sql id="select_group_by_with_count">
         <sharding-rule>
             <data expected="select_group_by/SelectCount.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectMaxWithGroupBy">
+    <sql id="select_group_by_with_max">
         <sharding-rule>
             <data expected="select_group_by/SelectMax.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectMinWithGroupBy">
+    <sql id="select_group_by_with_min">
         <sharding-rule>
             <data expected="select_group_by/SelectMin.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectAvgWithGroupBy">
+    <sql id="select_group_by_with_avg">
         <sharding-rule>
             <data expected="select_group_by/SelectAvg.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectOrderByDescWithGroupBy">
+    <sql id="select_group_by_with_order_by_desc">
         <sharding-rule>
             <data expected="select_group_by/SelectOrderByDesc.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectCountWithoutGroupedColumn">
+    <sql id="select_group_by_without_grouped_column">
         <sharding-rule>
             <data parameter="10,11,1000,1109" expected="select_group_by/SelectGroupByWithoutGroupedColumn.xml" />
             <data parameter="1,9,1000,1909"/>
         </sharding-rule>
     </sql>
-    <sql id="assertSelectCountWithGroupByBindingTable">
-        <sharding-rule>
-            <data parameter="10,11,1000,1109" expected="select_group_by/SelectGroupByWithBindingTable.xml" />
-            <data parameter="1,9,1000,1909"/>
-        </sharding-rule>
-    </sql>
-    <sql id="assertSelectWithGroupByAndLimit">
+    <sql id="select_group_by_with_limit">
         <sharding-rule>
             <data parameter="1" expected="select_group_by/SelectLimit.xml" />
             <data parameter="0" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectItemWithAliasAndMatchOrderByAndGroupByItems">
+    <sql id="select_with_item_alias_match_order_by_and_group_by_items">
         <sharding-rule>
             <data expected="select_group_by/SelectItemWithAliasAndMatchOrderByAndGroupByItems.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectGroupByWithAliasIsKeyword">
+    <sql id="select_group_by_with_key_word_alias">
         <sharding-rule>
             <data expected="select_group_by/SelectGroupByWithAliasIsKeyword.xml" />
         </sharding-rule>

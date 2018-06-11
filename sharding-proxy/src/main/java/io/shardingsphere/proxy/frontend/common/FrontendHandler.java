@@ -20,6 +20,7 @@ package io.shardingsphere.proxy.frontend.common;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.shardingsphere.proxy.frontend.mysql.ChannelThreadHolder;
 
 /**
  * Frontend handler.
@@ -45,6 +46,12 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
         } else {
             executeCommand(context, (ByteBuf) message);
         }
+    }
+    
+    @Override
+    public void channelInactive(final ChannelHandlerContext ctx) {
+        ctx.fireChannelInactive();
+        ChannelThreadHolder.remove(ctx.channel().id());
     }
     
     protected abstract void auth(ChannelHandlerContext context, ByteBuf message);

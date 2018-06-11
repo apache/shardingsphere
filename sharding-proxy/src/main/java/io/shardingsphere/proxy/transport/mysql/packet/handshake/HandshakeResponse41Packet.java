@@ -55,13 +55,14 @@ public final class HandshakeResponse41Packet extends MySQLPacket {
     }
     
     private void readAuthResponse(final MySQLPacketPayload mysqlPacketPayload) {
+        
         if (0 != (capabilityFlags & CapabilityFlag.CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA.getValue())) {
-            authResponse = mysqlPacketPayload.readStringLenenc().getBytes();
+            authResponse = mysqlPacketPayload.readStringLenencByBytes();
         } else if (0 != (capabilityFlags & CapabilityFlag.CLIENT_SECURE_CONNECTION.getValue())) {
             int length = mysqlPacketPayload.readInt1();
-            authResponse = mysqlPacketPayload.readStringFix(length).getBytes();
+            authResponse = mysqlPacketPayload.readStringFixByBytes(length);
         } else {
-            authResponse = mysqlPacketPayload.readStringNul().getBytes();
+            authResponse = mysqlPacketPayload.readStringNulByBytes();
         }
     }
     

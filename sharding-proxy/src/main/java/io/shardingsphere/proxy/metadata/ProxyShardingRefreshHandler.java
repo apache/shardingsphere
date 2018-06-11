@@ -25,8 +25,6 @@ import io.shardingsphere.core.rule.TableRule;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import lombok.extern.slf4j.Slf4j;
 
-import java.sql.SQLException;
-
 /**
  * Refresh table metadata of ProxySharding.
  *
@@ -43,11 +41,8 @@ public final class ProxyShardingRefreshHandler extends AbstractRefreshHandler {
         if (getRouteResult().canRefreshMetaData()) {
             String logicTable = getRouteResult().getSqlStatement().getTables().getSingleTableName();
             TableRule tableRule = getShardingRule().getTableRule(logicTable);
-            try {
-                getShardingMetaData().refresh(tableRule, getShardingRule());
-            } catch (SQLException ex) {
-                log.error("Refresh Sharding metadata error", ex);
-            }
+            getShardingMetaData().refresh(tableRule, getShardingRule());
+           
         }
     }
     

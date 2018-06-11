@@ -223,6 +223,18 @@ public final class MySQLPacketPayload {
     }
     
     /**
+     * Read fixed length string from byte buffers.
+     *
+     * @return fixed length bytes
+     */
+    public byte[] readStringLenencByBytes() {
+        int length = (int) readIntLenenc();
+        byte[] result = new byte[length];
+        byteBuf.readBytes(result);
+        return result;
+    }
+    
+    /**
      * Write fixed length string to byte buffers.
      * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::FixedLengthString">FixedLengthString</a>
      *
@@ -249,6 +261,19 @@ public final class MySQLPacketPayload {
         byte[] result = new byte[length];
         byteBuf.readBytes(result);
         return new String(result);
+    }
+    
+    /**
+     * Read fixed length string from byte buffers.
+     *
+     * @param length length of fixed string
+     *
+     * @return fixed length string
+     */
+    public byte[] readStringFixByBytes(final int length) {
+        byte[] result = new byte[length];
+        byteBuf.readBytes(result);
+        return result;
     }
     
     /**
@@ -293,6 +318,18 @@ public final class MySQLPacketPayload {
         byteBuf.readBytes(result);
         byteBuf.skipBytes(1);
         return new String(result);
+    }
+    
+    /**
+     * Read null terminated string from byte buffers.
+     *
+     * @return null terminated string
+     */
+    public byte[] readStringNulByBytes() {
+        byte[] result = new byte[byteBuf.bytesBefore((byte) 0)];
+        byteBuf.readBytes(result);
+        byteBuf.skipBytes(1);
+        return result;
     }
     
     /**

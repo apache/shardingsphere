@@ -20,10 +20,12 @@ package io.shardingsphere.proxy.transport.mysql.packet.command.text.query;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.proxy.backend.common.SQLExecuteBackendHandler;
 import io.shardingsphere.proxy.config.RuleRegistry;
+import io.shardingsphere.proxy.transaction.AtomikosUserTransaction;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
@@ -55,6 +57,11 @@ public final class ComQueryPacket extends CommandPacket {
     @Override
     public CommandResponsePackets execute() {
         log.debug("COM_QUERY received for Sharding-Proxy: {}", sql);
+        try {
+            doTransactionIntercept();
+        } catch (final Exception ex) {
+            return new CommandResponsePackets(new ErrPacket(1, 0, "", "", "" + ex.getMessage()));
+        }
         return sqlExecuteBackendHandler.execute();
     }
     
@@ -78,5 +85,29 @@ public final class ComQueryPacket extends CommandPacket {
      */
     public DatabaseProtocolPacket getResultValue() {
         return sqlExecuteBackendHandler.getResultValue();
+    }
+    
+    private void doTransactionIntercept() throws Exception {
+        if (RuleRegistry.isXaTransaction()) {
+            if (isXaBegin()) {
+                AtomikosUserTransaction.getInstance().begin();
+            } else if (isXaCommit()) {
+                AtomikosUserTransaction.getInstance().commit();
+            } else if (isXaRollback()) {
+                AtomikosUserTransaction.getInstance().rollback();
+            }
+        }
+    }
+    
+    private boolean isXaBegin() {
+        return "BEGIN".equalsIgnoreCase(sql) || "START TRANSACTION".equalsIgnoreCase(sql) || "SET AUTOCOMMIT=0".equalsIgnoreCase(sql);
+    }
+    
+    private boolean isXaCommit() {
+        return "COMMIT".equalsIgnoreCase(sql);
+    }
+    
+    private boolean isXaRollback() {
+        return "ROLLBACK".equalsIgnoreCase(sql);
     }
 }

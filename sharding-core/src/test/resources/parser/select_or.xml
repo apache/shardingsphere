@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parser-result-sets>
-    <parser-result sql-case-id="assertSelectOrWithSameShardingColumns" parameters="1 2">
+    <parser-result sql-case-id="assertSelectOrWithSameShardingColumns" parameters="1, 2">
         <tables>
             <table name="t_order"/>
         </tables>
@@ -21,7 +21,7 @@
         </or-condition>
     </parser-result>
 
-    <parser-result sql-case-id="assertSelectOrWithDifferentShardingColumns" parameters="1 2">
+    <parser-result sql-case-id="assertSelectOrWithDifferentShardingColumns" parameters="1, 2">
         <tables>
             <table name="t_order"/>
         </tables>
@@ -42,7 +42,7 @@
         </or-condition>
     </parser-result>
 
-    <parser-result sql-case-id="assertSelectOrWithShardingColumnsAndNoShardingColumns" parameters="1 'init'">
+    <parser-result sql-case-id="assertSelectOrWithShardingColumnsAndNoShardingColumns" parameters="1, 'init'">
         <tables>
             <table name="t_order"/>
         </tables>
@@ -51,7 +51,7 @@
         </tokens>
     </parser-result>
 
-    <parser-result sql-case-id="assertSelectOrWithSimpleParen" parameters="1 'init' 3">
+    <parser-result sql-case-id="assertSelectOrWithSimpleParen" parameters="1, 'init', 3">
         <tables>
             <table name="t_order"/>
         </tables>
@@ -75,7 +75,7 @@
         </or-condition>
     </parser-result>
 
-    <parser-result sql-case-id="assertSelectOrWithComplexParen" parameters="'init' 1 2 3 4">
+    <parser-result sql-case-id="assertSelectOrWithComplexParen" parameters="'init', 1, 2, 3, 4">
         <tables>
             <table name="t_order"/>
         </tables>
@@ -118,7 +118,7 @@
         </or-condition>
     </parser-result>
 
-    <parser-result sql-case-id="assertSelectOrWithBindingTable" parameters="1 2 3">
+    <parser-result sql-case-id="assertSelectOrWithBindingTable" parameters="1, 2, 3">
         <tables>
             <table name="t_order" alias="o"/>
             <table name="t_order_item" alias="i"/>
@@ -147,7 +147,7 @@
         </or-condition>
     </parser-result>
 
-    <parser-result sql-case-id="assertSelectOrWithBindingTableAndConfigTable" parameters="1 2 3 'init'">
+    <parser-result sql-case-id="assertSelectOrWithBindingTableAndConfigTable" parameters="1, 2, 3, 'init'">
         <tables>
             <table name="t_order" alias="o"/>
             <table name="t_order_item" alias="i"/>

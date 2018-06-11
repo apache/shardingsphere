@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
-    <sql id="assertSelectDateFuncWithSingleTable">
+    <sql id="select_with_date_function">
         <sharding-rule value="tbl">
             <data expected="select/SelectDateFuncWithSingleTable.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectRegexpWithSingleTable">
+    <sql id="select_with_regexp">
         <sharding-rule value="tbl">
             <data parameter="'init',100000,100001" expected="select/SelectIteratorSql_0.xml" />
             <data parameter="'init',100900,100901" expected="select/SelectIteratorSql_1.xml" />

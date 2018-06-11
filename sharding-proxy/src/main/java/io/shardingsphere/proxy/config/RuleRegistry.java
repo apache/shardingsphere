@@ -17,27 +17,28 @@
 
 package io.shardingsphere.proxy.config;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
+import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import io.shardingsphere.core.constant.ShardingProperties;
 import io.shardingsphere.core.constant.ShardingPropertiesConstant;
+import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.MasterSlaveRule;
+import io.shardingsphere.core.rule.ProxyAuthority;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.yaml.proxy.YamlProxyConfiguration;
-import io.shardingsphere.core.yaml.sharding.DataSourceParameter;
 import io.shardingsphere.proxy.metadata.ProxyShardingMetaData;
 import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executors;
 
 /**
  * Sharding rule registry.
@@ -45,26 +46,35 @@ import java.util.Properties;
  * @author zhangliang
  * @author zhangyonglun
  * @author panjuan
+ * @author zhaojun
  */
 @Getter
 public final class RuleRegistry {
-    
+
+    private static final int MAX_EXECUTOR_THREADS = Runtime.getRuntime().availableProcessors() * 2;
+
     private static final RuleRegistry INSTANCE = new RuleRegistry();
-    
+
     private final Map<String, DataSource> dataSourceMap;
-    
+
     private final ShardingRule shardingRule;
-    
+
     private final MasterSlaveRule masterSlaveRule;
-    
+
     private final ShardingMetaData shardingMetaData;
-    
+
     private final boolean isOnlyMasterSlave;
-    
+
+    private final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(MAX_EXECUTOR_THREADS));
+
     private final String proxyMode;
-    
+
     private final boolean showSQL;
-    
+
+    private final TransactionType transactionType;
+
+    private final ProxyAuthority proxyAuthority;
+
     private RuleRegistry() {
         YamlProxyConfiguration yamlProxyConfiguration;
         try {
@@ -72,11 +82,8 @@ public final class RuleRegistry {
         } catch (final IOException ex) {
             throw new ShardingException(ex);
         }
-        dataSourceMap = new HashMap<>(128, 1);
-        Map<String, DataSourceParameter> dataSourceParameters = yamlProxyConfiguration.getDataSources();
-        for (Map.Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
-            dataSourceMap.put(entry.getKey(), getDataSource(entry.getValue()));
-        }
+        transactionType = TransactionType.findByValue(yamlProxyConfiguration.getTransactionMode());
+        dataSourceMap = ProxyRawDataSourceFactory.create(transactionType, yamlProxyConfiguration);
         shardingRule = yamlProxyConfiguration.obtainShardingRule(Collections.<String>emptyList());
         masterSlaveRule = yamlProxyConfiguration.obtainMasterSlaveRule();
         isOnlyMasterSlave = shardingRule.getTableRules().isEmpty() && !masterSlaveRule.getMasterDataSourceName().isEmpty();
@@ -84,30 +91,12 @@ public final class RuleRegistry {
         ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
         proxyMode = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_MODE);
         showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
-        try {
-            shardingMetaData = new ProxyShardingMetaData(dataSourceMap);
-            if (!isOnlyMasterSlave) {
-                shardingMetaData.init(shardingRule);
-            }
-        } catch (final SQLException ex) {
-            throw new ShardingException(ex);
+        shardingMetaData = new ProxyShardingMetaData(executorService, dataSourceMap);
+        if (!isOnlyMasterSlave) {
+            shardingMetaData.init(shardingRule);
         }
-    }
-    
-    private DataSource getDataSource(final DataSourceParameter dataSourceParameter) {
-        HikariConfig config = new HikariConfig();
-        config.setDriverClassName("com.mysql.jdbc.Driver");
-        config.setJdbcUrl(dataSourceParameter.getUrl());
-        config.setUsername(dataSourceParameter.getUsername());
-        config.setPassword(dataSourceParameter.getPassword());
-        config.setAutoCommit(dataSourceParameter.getAutoCommit());
-        config.setConnectionTimeout(dataSourceParameter.getConnectionTimeout());
-        config.setIdleTimeout(dataSourceParameter.getIdleTimeout());
-        config.setMaxLifetime(dataSourceParameter.getMaxLifetime());
-        config.setMaximumPoolSize(dataSourceParameter.getMaximumPoolSize());
-        config.addDataSourceProperty("useServerPrepStmts", "true");
-        config.addDataSourceProperty("cachePrepStmts", "true");
-        return new HikariDataSource(config);
+        proxyAuthority = yamlProxyConfiguration.getProxyAuthority();
+        Preconditions.checkNotNull(proxyAuthority.getUsername(), "Invalid configuration for proxyAuthority.");
     }
     
     /**
@@ -117,5 +106,14 @@ public final class RuleRegistry {
      */
     public static RuleRegistry getInstance() {
         return INSTANCE;
+    }
+    
+    /**
+     * Judge whether current thread is xa transaction or not.
+     *
+     * @return true or false
+     */
+    public static boolean isXaTransaction() {
+        return TransactionType.XA.equals(RuleRegistry.getInstance().getTransactionType());
     }
 }

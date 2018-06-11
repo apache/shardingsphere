@@ -1,0 +1,23 @@
+<datasets>
+    <columns values="item_id, order_id, user_id, status, creation_date" />
+    <dataset values="100900, 1009, 10, init_slave, 2017-08-08" />
+    <dataset values="100901, 1009, 10, init_slave, 2017-08-08" />
+    <dataset values="110000, 1100, 11, init_slave, 2017-08-08" />
+    <dataset values="110001, 1100, 11, init_slave, 2017-08-08" />
+    <dataset values="110100, 1101, 11, init_slave, 2017-08-08" />
+    <dataset values="110101, 1101, 11, init_slave, 2017-08-08" />
+    <dataset values="110200, 1102, 11, init_slave, 2017-08-08" />
+    <dataset values="110201, 1102, 11, init_slave, 2017-08-08" />
+    <dataset values="110300, 1103, 11, init_slave, 2017-08-08" />
+    <dataset values="110301, 1103, 11, init_slave, 2017-08-08" />
+    <dataset values="110400, 1104, 11, init_slave, 2017-08-08" />
+    <dataset values="110401, 1104, 11, init_slave, 2017-08-08" />
+    <dataset values="110500, 1105, 11, init_slave, 2017-08-08" />
+    <dataset values="110501, 1105, 11, init_slave, 2017-08-08" />
+    <dataset values="110600, 1106, 11, init_slave, 2017-08-08" />
+    <dataset values="110601, 1106, 11, init_slave, 2017-08-08" />
+    <dataset values="110700, 1107, 11, init_slave, 2017-08-08" />
+    <dataset values="110701, 1107, 11, init_slave, 2017-08-08" />
+    <dataset values="110800, 1108, 11, init_slave, 2017-08-08" />
+    <dataset values="110801, 1108, 11, init_slave, 2017-08-08" />
+</datasets>

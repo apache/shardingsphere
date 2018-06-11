@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parser-result-sets>
-    <parser-result sql-case-id="assertInsertWithAllPlaceholders" parameters="1 1 'init'">
+    <parser-result sql-case-id="assertInsertWithAllPlaceholders" parameters="1, 1, 'init'">
         <tables>
             <table name="t_order" />
         </tables>
@@ -20,7 +20,7 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="assertInsertWithPartialPlaceholder" parameters="1 1">
+    <parser-result sql-case-id="assertInsertWithPartialPlaceholder" parameters="1, 1">
         <tables>
             <table name="t_order" />
         </tables>
@@ -40,7 +40,7 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="assertInsertWithGenerateKeyColumn" parameters="10000 1000 10">
+    <parser-result sql-case-id="assertInsertWithGenerateKeyColumn" parameters="10000, 1000, 10">
         <tables>
             <table name="t_order_item" />
         </tables>
@@ -63,7 +63,7 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="assertInsertWithoutGenerateKeyColumn" parameters="1000 10">
+    <parser-result sql-case-id="assertInsertWithoutGenerateKeyColumn" parameters="1000, 10">
         <tables>
             <table name="t_order_item" />
         </tables>
@@ -88,7 +88,7 @@
         </or-condition>
     </parser-result>
 
-    <parser-result sql-case-id="assertInsertSetWithAllPlaceholders" parameters="1 1 'init'">
+    <parser-result sql-case-id="assertInsertSetWithAllPlaceholders" parameters="1, 1, 'init'">
         <tables>
             <table name="t_order" />
         </tables>
@@ -108,7 +108,7 @@
         </or-condition>
     </parser-result>
 
-    <parser-result sql-case-id="assertInsertSetWithPartialPlaceholder" parameters="1 1">
+    <parser-result sql-case-id="assertInsertSetWithPartialPlaceholder" parameters="1, 1">
         <tables>
             <table name="t_order" />
         </tables>
@@ -128,7 +128,7 @@
         </or-condition>
     </parser-result>
 
-    <parser-result sql-case-id="assertInsertSetWithGenerateKeyColumn" parameters="10000 1000 10">
+    <parser-result sql-case-id="assertInsertSetWithGenerateKeyColumn" parameters="10000, 1000, 10">
         <tables>
             <table name="t_order_item" />
         </tables>
@@ -151,7 +151,7 @@
         </or-condition>
     </parser-result>
 
-    <parser-result sql-case-id="assertInsertSetWithoutGenerateKeyColumn" parameters="1000 10">
+    <parser-result sql-case-id="assertInsertSetWithoutGenerateKeyColumn" parameters="1000, 10">
         <tables>
             <table name="t_order_item" />
         </tables>
@@ -171,7 +171,7 @@
         </or-condition>
     </parser-result>
 
-    <parser-result sql-case-id="assertInsertOnDuplicateKeyUpdate" parameters="1 1 'init'">
+    <parser-result sql-case-id="assertInsertOnDuplicateKeyUpdate" parameters="1, 1, 'init'">
         <tables>
             <table name="t_order" />
         </tables>
@@ -191,7 +191,7 @@
         </or-condition>
     </parser-result>
 
-    <parser-result sql-case-id="assertInsertWithTableIdentifier" parameters="1 1 'init'">
+    <parser-result sql-case-id="assertInsertWithTableIdentifier" parameters="1, 1, 'init'">
         <tables>
             <table name="t_order" />
         </tables>
@@ -214,7 +214,7 @@
         </or-condition>
     </parser-result>
 
-    <parser-result sql-case-id="assertInsertSetWithTableIdentifier" parameters="1 1 'init'">
+    <parser-result sql-case-id="assertInsertSetWithTableIdentifier" parameters="1, 1, 'init'">
         <tables>
             <table name="t_order" />
         </tables>
@@ -237,7 +237,7 @@
         </or-condition>
     </parser-result>
 
-    <!--<parser-result sql-case-id="assertInsertOnDuplicateKeyUpdateWithTableIdentifier" parameters="1 1 'init'">-->
+    <!--<parser-result sql-case-id="assertInsertOnDuplicateKeyUpdateWithTableIdentifier" parameters="1, 1, 'init'">-->
         <!--<tables>-->
             <!--<table name="t_order" />-->
         <!--</tables>-->
@@ -262,7 +262,7 @@
         <!--</or-condition>-->
     <!--</parser-result>-->
 
-    <parser-result sql-case-id="assertBatchInsertWithGenerateKeyColumn" parameters="10000 1000 10 10010 1001 10">
+    <parser-result sql-case-id="assertBatchInsertWithGenerateKeyColumn" parameters="10000, 1000, 10, 10010, 1001, 10">
         <tables>
             <table name="t_order_item" />
         </tables>
@@ -296,7 +296,7 @@
         </or-condition>
     </parser-result>
 
-    <parser-result sql-case-id="assertBatchInsertWithoutGenerateKeyColumn" parameters="1000 10 1001 10">
+    <parser-result sql-case-id="assertBatchInsertWithoutGenerateKeyColumn" parameters="1000, 10, 1001, 10">
         <tables>
             <table name="t_order_item" />
         </tables>
@@ -329,7 +329,7 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="assertInsertWithJsonAndGeo" parameters="7 200 100 200 '{&quot;rule&quot;:&quot;null&quot;}'">
+    <parser-result sql-case-id="assertInsertWithJsonAndGeo" parameters="7, 200, 100, 200, '{&quot;rule&quot;:&quot;null&quot;}'">
         <tables>assertInsertWithJsonAndGeo
             <table name="t_place" />
         </tables>
@@ -349,7 +349,7 @@
         </or-condition>
     </parser-result>
 
-    <parser-result sql-case-id="assertInsertWithoutColumnsWithAllPlaceholders" parameters="1 1 'init'">
+    <parser-result sql-case-id="assertInsertWithoutColumnsWithAllPlaceholders" parameters="1, 1, 'init'">
         <tables>
             <table name="t_order" />
         </tables>
@@ -377,7 +377,7 @@
         </or-condition>
     </parser-result>
 
-    <parser-result sql-case-id="assertInsertWithoutColumnsWithPartialPlaceholder" parameters="1 1">
+    <parser-result sql-case-id="assertInsertWithoutColumnsWithPartialPlaceholder" parameters="1, 1">
         <tables>
             <table name="t_order" />
         </tables>
@@ -405,7 +405,7 @@
         </or-condition>
     </parser-result>
 
-    <parser-result sql-case-id="assertInsertWithoutColumnsWithGenerateKeyColumn" parameters="10000 1000 10">
+    <parser-result sql-case-id="assertInsertWithoutColumnsWithGenerateKeyColumn" parameters="10000, 1000, 10">
         <tables>
             <table name="t_order_item" />
         </tables>
@@ -439,7 +439,7 @@
         </or-condition>
     </parser-result>
 
-    <parser-result sql-case-id="assertInsertWithoutColumnsWithoutGenerateKeyColumn" parameters="1000 10">
+    <parser-result sql-case-id="assertInsertWithoutColumnsWithoutGenerateKeyColumn" parameters="1000, 10">
         <tables>
             <table name="t_order_item" />
         </tables>

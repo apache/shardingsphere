@@ -45,7 +45,7 @@ public final class DataSourceUtil {
         BasicDataSource result = new BasicDataSource();
         DatabaseEnvironment databaseEnvironment = IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().get(databaseType);
         result.setDriverClassName(databaseEnvironment.getDriverClassName());
-        result.setUrl(databaseEnvironment.getURL(dataSourceName));
+        result.setUrl(null == dataSourceName ? databaseEnvironment.getURL() : databaseEnvironment.getURL(dataSourceName));
         result.setUsername(databaseEnvironment.getUsername());
         result.setPassword(databaseEnvironment.getPassword());
         result.setMaxTotal(1);
