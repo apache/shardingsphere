@@ -235,15 +235,14 @@
         <assertion sharding-rule-type="tbl" parameters="1:int" expected-data-file="tbl/select_group_by_with_order_by_and_limit.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1:int" expected-data-file="dbtbl_with_masterslave/select_group_by_with_order_by_and_limit.xml" />
     </dql-test-case>
-
     
-    <!--<sql id="select_group_by_with_limit">-->
-        <!--<sharding-rule>-->
-            <!--<data parameter="1" expected="select_group_by/SelectLimit.xml" />-->
-            <!--<data parameter="0" />-->
-        <!--</sharding-rule>-->
-    <!--</sql>-->
-    <!--<sql id="assertSelectItemWithAliasAndMatchOrderByAndGroupByItems">-->
+    <dql-test-case sql-case-id="select_with_item_alias_match_order_by_and_group_by_items">
+        <assertion sharding-rule-type="db" expected-data-file="db/select_with_item_alias_match_order_by_and_group_by_items.xml" />
+        <assertion sharding-rule-type="tbl" expected-data-file="tbl/select_with_item_alias_match_order_by_and_group_by_items.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_with_item_alias_match_order_by_and_group_by_items.xml" />
+    </dql-test-case>
+    
+    <!--<sql id="select_with_item_alias_match_order_by_and_group_by_items">-->
         <!--<sharding-rule>-->
             <!--<data expected="select_group_by/SelectItemWithAliasAndMatchOrderByAndGroupByItems.xml" />-->
         <!--</sharding-rule>-->

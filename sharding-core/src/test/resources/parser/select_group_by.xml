@@ -192,7 +192,7 @@
         <limit row-count-index="0" row-count="5" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectItemWithAliasAndMatchOrderByAndGroupByItems">
+    <parser-result sql-case-id="select_with_item_alias_match_order_by_and_group_by_items">
         <tables>
             <table name="t_order" alias="o" />
         </tables>
