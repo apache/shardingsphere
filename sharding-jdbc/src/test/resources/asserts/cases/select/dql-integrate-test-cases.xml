@@ -242,21 +242,12 @@
         <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_with_item_alias_match_order_by_and_group_by_items.xml" />
     </dql-test-case>
     
-    <!--<sql id="select_with_item_alias_match_order_by_and_group_by_items">-->
-        <!--<sharding-rule>-->
-            <!--<data expected="select_group_by/SelectItemWithAliasAndMatchOrderByAndGroupByItems.xml" />-->
-        <!--</sharding-rule>-->
-    <!--</sql>-->
-    <!--<sql id="assertSelectGroupByWithAliasIsKeyword">-->
-        <!--<sharding-rule>-->
-            <!--<data expected="select_group_by/SelectGroupByWithAliasIsKeyword.xml" />-->
-        <!--</sharding-rule>-->
-    <!--</sql>-->
+    <dql-test-case sql-case-id="select_group_by_with_key_word_alias">
+        <assertion sharding-rule-type="db" expected-data-file="db/select_group_by_with_key_word_alias.xml" />
+        <assertion sharding-rule-type="tbl" expected-data-file="tbl/select_group_by_with_key_word_alias.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_group_by_with_key_word_alias.xml" />
+    </dql-test-case>
     
-    
-    
-
-
     <!--<dql-test-case sql-case-id="select_group_by_with_date_function">-->
         <!--<assertion sharding-rule-type="db" parameters="1000:int, 1100:int" expected-data-file="db/select_group_by_with_date_function.xml" />-->
         <!--<assertion sharding-rule-type="tbl" parameters="1000:int, 1100:int" expected-data-file="tbl/select_group_by_with_date_function.xml" />-->

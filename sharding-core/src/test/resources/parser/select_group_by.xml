@@ -234,7 +234,7 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectGroupByWithAliasIsKeyword">
+    <parser-result sql-case-id="select_group_by_with_key_word_alias">
         <tables>
             <table name="t_order" />
         </tables>

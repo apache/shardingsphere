@@ -52,7 +52,7 @@
             <data expected="select_group_by/SelectItemWithAliasAndMatchOrderByAndGroupByItems.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectGroupByWithAliasIsKeyword">
+    <sql id="select_group_by_with_key_word_alias">
         <sharding-rule>
             <data expected="select_group_by/SelectGroupByWithAliasIsKeyword.xml" />
         </sharding-rule>
