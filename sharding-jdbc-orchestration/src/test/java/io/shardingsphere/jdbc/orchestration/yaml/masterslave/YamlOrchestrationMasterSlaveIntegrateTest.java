@@ -56,8 +56,6 @@ public class YamlOrchestrationMasterSlaveIntegrateTest extends AbstractYamlDataS
     
     @Test
     public void assertWithDataSource() throws SQLException, URISyntaxException, IOException {
-        long start = System.currentTimeMillis();
-        
         File yamlFile = new File(YamlOrchestrationMasterSlaveIntegrateTest.class.getResource(filePath).toURI());
         DataSource dataSource;
         if (hasDataSource) {
@@ -77,7 +75,5 @@ public class YamlOrchestrationMasterSlaveIntegrateTest extends AbstractYamlDataS
             stm.executeQuery("SELECT * FROM t_config");
         }
         ((OrchestrationMasterSlaveDataSource) dataSource).close();
-        
-        System.out.println(System.currentTimeMillis() - start);
     }
 }
