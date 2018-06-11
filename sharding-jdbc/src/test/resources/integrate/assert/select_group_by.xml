@@ -30,7 +30,7 @@
             <data expected="select_group_by/SelectAvg.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectOrderByDescWithGroupBy">
+    <sql id="select_group_by_with_order_by_desc">
         <sharding-rule>
             <data expected="select_group_by/SelectOrderByDesc.xml" />
         </sharding-rule>
