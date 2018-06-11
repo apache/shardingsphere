@@ -5,7 +5,7 @@
             <data parameter="1000,1001" expected="select_or/SelectOrWithSameShardingColumns.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectOrWithDifferentShardingColumns">
+    <sql id="select_or_with_different_sharding_columns">
         <sharding-rule value="tbl">
             <data parameter="1000,11" expected="select_or/SelectOrWithDifferentShardingColumns.xml" />
         </sharding-rule>

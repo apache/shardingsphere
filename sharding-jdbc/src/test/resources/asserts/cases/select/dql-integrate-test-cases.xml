@@ -259,6 +259,12 @@
         <assertion sharding-rule-type="tbl" parameters="1000:int, 1001:int" expected-data-file="tbl/select_or_with_same_sharding_columns.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1000:int, 1001:int" expected-data-file="dbtbl_with_masterslave/select_or_with_same_sharding_columns.xml" />
     </dql-test-case>
+    
+    <dql-test-case sql-case-id="select_or_with_different_sharding_columns">
+        <assertion sharding-rule-type="db" parameters="1000:int, 11:int" expected-data-file="db/select_or_with_different_sharding_columns.xml" />
+        <assertion sharding-rule-type="tbl" parameters="1000:int, 11:int" expected-data-file="tbl/select_or_with_different_sharding_columns.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1000:int, 11:int" expected-data-file="dbtbl_with_masterslave/select_or_with_different_sharding_columns.xml" />
+    </dql-test-case>
 
 
 
@@ -270,16 +276,6 @@
 
 
 
-    <!--<sql id="select_or_with_same_sharding_columns">-->
-        <!--<sharding-rule value="tbl">-->
-            <!--<data parameter="1000,1001" expected="select_or/SelectOrWithSameShardingColumns.xml" />-->
-        <!--</sharding-rule>-->
-    <!--</sql>-->
-    <!--<sql id="assertSelectOrWithDifferentShardingColumns">-->
-        <!--<sharding-rule value="tbl">-->
-            <!--<data parameter="1000,11" expected="select_or/SelectOrWithDifferentShardingColumns.xml" />-->
-        <!--</sharding-rule>-->
-    <!--</sql>-->
     <!--<sql id="assertSelectOrWithShardingColumnsAndNoShardingColumns">-->
         <!--<sharding-rule value="tbl">-->
             <!--<data parameter="1000,'init'" expected="select_or/SelectOrWithShardingColumnsAndNoShardingColumns.xml" />-->

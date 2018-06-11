@@ -20,8 +20,8 @@
             </and-condition>
         </or-condition>
     </parser-result>
-
-    <parser-result sql-case-id="assertSelectOrWithDifferentShardingColumns" parameters="1, 2">
+    
+    <parser-result sql-case-id="select_or_with_different_sharding_columns" parameters="1, 2">
         <tables>
             <table name="t_order"/>
         </tables>
