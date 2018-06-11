@@ -30,7 +30,7 @@
             <data parameter="1000,1100,11" expected="select_or/SelectOrWithBindingTable.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectOrWithBindingTableAndConfigTable">
+    <sql id="select_or_mix_and_with_binding_and_broadcast_tables">
         <sharding-rule value="tbl">
             <data parameter="1000,1100,11,'init'" expected="select_or/SelectOrWithBindingTableAndConfigTable.xml" />
         </sharding-rule>
