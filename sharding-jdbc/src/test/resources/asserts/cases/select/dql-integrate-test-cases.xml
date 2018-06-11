@@ -206,13 +206,17 @@
         <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_group_by_with_min.xml" />
     </dql-test-case>
     
+    <dql-test-case sql-case-id="select_group_by_with_avg">
+        <assertion sharding-rule-type="db" expected-data-file="db/select_group_by_with_avg.xml" />
+        <assertion sharding-rule-type="tbl" expected-data-file="tbl/select_group_by_with_avg.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_group_by_with_avg.xml" />
+    </dql-test-case>
 
 
 
 
 
-
-    <!--<sql id="assertSelectAvgWithGroupBy">-->
+    <!--<sql id="select_group_by_with_avg">-->
         <!--<sharding-rule>-->
             <!--<data expected="select_group_by/SelectAvg.xml" />-->
         <!--</sharding-rule>-->

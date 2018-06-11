@@ -4,8 +4,8 @@
     <sql-case id="select_group_by_with_count" value="SELECT COUNT(order_id) AS orders_count, user_id FROM t_order GROUP BY user_id ORDER BY user_id" />
     <sql-case id="select_group_by_with_max" value="SELECT MAX(order_id) AS max_order_id, user_id FROM t_order GROUP BY user_id ORDER BY user_id" />
     <sql-case id="select_group_by_with_min" value="SELECT MIN(order_id) AS min_order_id, user_id FROM t_order GROUP BY user_id ORDER BY user_id" />
+    <sql-case id="select_group_by_with_avg" value="SELECT AVG(order_id) AS orders_avg, user_id FROM t_order GROUP BY user_id ORDER BY user_id" />
     
-    <sql-case id="assertSelectAvgWithGroupBy" value="SELECT AVG(order_id) AS orders_avg, user_id FROM t_order GROUP BY user_id ORDER BY user_id" />
     <sql-case id="assertSelectOrderByDescWithGroupBy" value="SELECT SUM(order_id) AS orders_sum, user_id FROM t_order GROUP BY user_id ORDER BY orders_sum DESC" />
     <sql-case id="assertSelectCountWithoutGroupedColumn" value="SELECT count(*) as items_count FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s GROUP BY o.user_id" />
     <sql-case id="assertSelectCountWithGroupByBindingTable" value="SELECT count(*) as items_count, o.user_id FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s GROUP BY o.user_id ORDER BY o.user_id" />

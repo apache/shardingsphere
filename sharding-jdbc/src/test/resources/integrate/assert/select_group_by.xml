@@ -25,7 +25,7 @@
             <data expected="select_group_by/SelectMin.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectAvgWithGroupBy">
+    <sql id="select_group_by_with_avg">
         <sharding-rule>
             <data expected="select_group_by/SelectAvg.xml" />
         </sharding-rule>
