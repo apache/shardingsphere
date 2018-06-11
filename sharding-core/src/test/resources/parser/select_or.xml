@@ -51,7 +51,7 @@
         </tokens>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectOrWithSimpleParen" parameters="1, 'init', 3">
+    <parser-result sql-case-id="select_or_mix_and_for_simple_pattern" parameters="1, 'init', 3">
         <tables>
             <table name="t_order"/>
         </tables>

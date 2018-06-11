@@ -15,7 +15,7 @@
             <data parameter="1000,'init'" expected="select_or/SelectOrWithShardingColumnsAndNoShardingColumns.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectOrWithSimpleParen">
+    <sql id="select_or_mix_and_for_simple_pattern">
         <sharding-rule value="tbl">
             <data parameter="1000,'init',11" expected="select_or/SelectOrWithSimpleParen.xml" />
         </sharding-rule>
