@@ -118,7 +118,7 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="select_or_mix_and_for_simple_pattern_with_binding_tables" parameters="1, 2, 3">
+    <parser-result sql-case-id="select_or_mix_and_with_binding_tables" parameters="1, 2, 3">
         <tables>
             <table name="t_order" alias="o"/>
             <table name="t_order_item" alias="i"/>
