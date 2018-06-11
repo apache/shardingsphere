@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
-    <sql id="assertSelectWithOrderBy">
+    <sql id="select_order_by_desc">
         <sharding-rule value="tbl">
             <data expected="select_order_by/Select.xml" />
         </sharding-rule>
