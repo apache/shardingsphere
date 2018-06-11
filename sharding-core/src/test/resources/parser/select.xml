@@ -163,26 +163,12 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="select_full_route_with_binding_table">
-        <tables>
-            <table name="t_order" alias="o"/>
-            <table name="t_order_item" alias="i"/>
-        </tables>
-        <tokens>
-            <table-token begin-position="16" original-literals="t_order" />
-            <table-token begin-position="31" original-literals="t_order_item" />
-        </tokens>
-        <order-by-columns>
-            <order-by-column owner="i" name="item_id" order-direction="ASC" />
-        </order-by-columns>
-    </parser-result>
-    
     <parser-result sql-case-id="select_count_like_concat" parameters="'init', 1, 2, 9, 10">
         <tables>
             <table name="t_order" alias="o"/>
         </tables>
         <tokens>
-            <table-token begin-position="37" original-literals="`t_order`" />
+            <table-token begin-position="37" original-literals="t_order" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -201,7 +187,7 @@
         </aggregation-select-items>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectWithBindingTable" parameters="1, 2, 9, 10">
+    <parser-result sql-case-id="select_sharding_route_with_binding_tables" parameters="1, 2, 9, 10">
         <tables>
             <table name="t_order" alias="o"/>
             <table name="t_order_item" alias="i"/>
@@ -227,7 +213,7 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectWithBindingTableAndConfigTable" parameters="1, 2, 9, 10, 'init'">
+    <parser-result sql-case-id="select_full_route_with_binding_tables">
         <tables>
             <table name="t_order" alias="o"/>
             <table name="t_order_item" alias="i"/>
@@ -236,24 +222,12 @@
             <table-token begin-position="16" original-literals="t_order" />
             <table-token begin-position="31" original-literals="t_order_item" />
         </tokens>
-        <or-condition>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="IN">
-                    <value index="0" literal="1" type="int" />
-                    <value index="1" literal="2" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                    <value index="2" literal="9" type="int" />
-                    <value index="3" literal="10" type="int" />
-                </condition>
-            </and-condition>
-        </or-condition>
         <order-by-columns>
             <order-by-column owner="i" name="item_id" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectWithUpperCaseBindingTable" parameters="1, 2, 9, 10">
+    <parser-result sql-case-id="select_full_route_for_upper_case_with_binding_tables" parameters="1, 2, 9, 10">
         <tables>
             <table name="T_ORDER" alias="o"/>
             <table name="T_order_item" alias="i"/>
@@ -279,14 +253,14 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectWithUpperCaseBindingTableAndConfigTable" parameters="1, 2, 9, 10, 'init'">
+    <parser-result sql-case-id="select_sharding_route_with_broadcast_table" parameters="1, 2, 9, 10, 'init'">
         <tables>
-            <table name="T_ORDER" alias="o"/>
-            <table name="T_order_item" alias="i"/>
+            <table name="t_order" alias="o"/>
+            <table name="t_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-token begin-position="34" original-literals="T_ORDER" />
-            <table-token begin-position="49" original-literals="T_order_item" />
+            <table-token begin-position="16" original-literals="t_order" />
+            <table-token begin-position="31" original-literals="t_order_item" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -305,59 +279,7 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectCountWithBindingTable" parameters="1, 2, 9, 10">
-        <tables>
-            <table name="t_order" alias="o"/>
-            <table name="t_order_item" alias="i"/>
-        </tables>
-        <tokens>
-            <table-token begin-position="36" original-literals="t_order" />
-            <table-token begin-position="47" original-literals="t_order_item" />
-        </tokens>
-        <or-condition>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="IN">
-                    <value index="0" literal="1" type="int" />
-                    <value index="1" literal="2" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                    <value index="2" literal="9" type="int" />
-                    <value index="3" literal="10" type="int" />
-                </condition>
-            </and-condition>
-        </or-condition>
-        <aggregation-select-items>
-            <aggregation-select-item type="COUNT" inner-expression="(*)" alias="items_count"/>
-        </aggregation-select-items>
-    </parser-result>
-    
-    <parser-result sql-case-id="assertSelectCountWithBindingTableWithJoin" parameters="1, 2, 9, 10">
-        <tables>
-            <table name="t_order" alias="o"/>
-            <table name="t_order_item" alias="i"/>
-        </tables>
-        <tokens>
-            <table-token begin-position="36" original-literals="t_order" />
-            <table-token begin-position="51" original-literals="t_order_item" />
-        </tokens>
-        <or-condition>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="IN">
-                    <value index="0" literal="1" type="int" />
-                    <value index="1" literal="2" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                    <value index="2" literal="9" type="int" />
-                    <value index="3" literal="10" type="int" />
-                </condition>
-            </and-condition>
-        </or-condition>
-        <aggregation-select-items>
-            <aggregation-select-item type="COUNT" inner-expression="(*)" alias="items_count"/>
-        </aggregation-select-items>
-    </parser-result>
-    
-    <parser-result sql-case-id="assertSelectAliasWithKeyword" parameters="1">
+    <parser-result sql-case-id="select_alias_as_keyword" parameters="1">
         <tables>
             <table name="t_order_item" alias="length" />
         </tables>
@@ -373,7 +295,7 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectWithJoinForceIndex" parameters="1000">
+    <parser-result sql-case-id="select_with_force_index_join" parameters="1000">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i"/>
@@ -391,7 +313,8 @@
             </and-condition>
         </or-condition>
     </parser-result>
-    <parser-result sql-case-id="assertSelectEqualsWithJsonAnGeo" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', 100, 200, 1">
+
+    <parser-result sql-case-id="select_equal_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', 100, 200, 1">
         <tables>
             <table name="t_place" />
         </tables>
@@ -406,7 +329,8 @@
             </and-condition>
         </or-condition>
     </parser-result>
-    <parser-result sql-case-id="assertSelectInWithJsonAnGeo" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1">
+
+    <parser-result sql-case-id="select_in_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1">
         <tables>
             <table name="t_place" />
         </tables>
@@ -421,7 +345,8 @@
             </and-condition>
         </or-condition>
     </parser-result>
-    <parser-result sql-case-id="assertSelectBetweenWithJsonAnGeo" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1">
+
+    <parser-result sql-case-id="select_between_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1">
         <tables>
             <table name="t_place" />
         </tables>

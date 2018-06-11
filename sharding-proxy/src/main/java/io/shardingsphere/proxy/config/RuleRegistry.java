@@ -121,4 +121,13 @@ public final class RuleRegistry {
     public static RuleRegistry getInstance() {
         return INSTANCE;
     }
+    
+    /**
+     * Judge whether current thread is xa transaction or not.
+     *
+     * @return true or false
+     */
+    public static boolean isXaTransaction() {
+        return TransactionType.XA.equals(RuleRegistry.getInstance().getTransactionType());
+    }
 }
