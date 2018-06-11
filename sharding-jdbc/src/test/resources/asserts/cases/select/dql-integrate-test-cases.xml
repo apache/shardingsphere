@@ -226,12 +226,7 @@
 
 
     
-    <!--<sql id="assertSelectCountWithGroupByBindingTable">-->
-        <!--<sharding-rule>-->
-            <!--<data parameter="10,11,1000,1109" expected="select_group_by/SelectGroupByWithBindingTable.xml" />-->
-            <!--<data parameter="1,9,1000,1909"/>-->
-        <!--</sharding-rule>-->
-    <!--</sql>-->
+
     <!--<sql id="assertSelectWithGroupByAndLimit">-->
         <!--<sharding-rule>-->
             <!--<data parameter="1" expected="select_group_by/SelectLimit.xml" />-->
