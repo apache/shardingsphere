@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
-    <sql id="assertSelectDateFuncWithGroupBy">
+    <sql id="select_group_by_with_date_function">
         <sharding-rule value="tbl">
             <data parameter="1000,1100" expected="select_group_by/SelectFunc.xml" />
         </sharding-rule>

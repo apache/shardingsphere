@@ -1,32 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parser-result-sets>
-    <parser-result sql-case-id="assertSelectDateFuncWithGroupBy" parameters="1000, 1100">
-        <tables>
-            <table name="t_order_item" />
-        </tables>
-        <tokens>
-            <table-token begin-position="76" original-literals="`t_order_item`" />
-            <order-by-token placeholder-begin-position="156" literal-begin-position="162" />
-        </tokens>
-        <or-condition>
-            <and-condition>
-                <condition column-name="order_id" table-name="t_order_item" operator="IN">
-                    <value index="0" literal="1000" type="int" />
-                    <value index="1" literal="1100" type="int" />
-                </condition>
-            </and-condition>
-        </or-condition>
-        <aggregation-select-items>
-            <aggregation-select-item type="COUNT" inner-expression="(*)" alias="c_number" />
-        </aggregation-select-items>
-        <group-by-columns>
-            <group-by-column name="date_format(c_date, '%y-%m-%d')" order-direction="ASC" alias="c_date" />
-        </group-by-columns>
-        <order-by-columns>
-            <order-by-column name="date_format(c_date, '%y-%m-%d')" order-direction="ASC" alias="c_date" />
-        </order-by-columns>
-    </parser-result>
-    
     <parser-result sql-case-id="assertSelectSumWithGroupBy">
         <tables>
             <table name="t_order" />
@@ -263,6 +236,33 @@
         </group-by-columns>
         <order-by-columns>
             <order-by-column name="user_id" owner="o" alias="uid" order-direction="ASC" />
+        </order-by-columns>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_group_by_with_date_function" parameters="1000, 1100">
+        <tables>
+            <table name="t_order_item" />
+        </tables>
+        <tokens>
+            <table-token begin-position="76" original-literals="`t_order_item`" />
+            <order-by-token placeholder-begin-position="156" literal-begin-position="162" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order_item" operator="IN">
+                    <value index="0" literal="1000" type="int" />
+                    <value index="1" literal="1100" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+        <aggregation-select-items>
+            <aggregation-select-item type="COUNT" inner-expression="(*)" alias="c_number" />
+        </aggregation-select-items>
+        <group-by-columns>
+            <group-by-column name="date_format(c_date, '%y-%m-%d')" order-direction="ASC" alias="c_date" />
+        </group-by-columns>
+        <order-by-columns>
+            <order-by-column name="date_format(c_date, '%y-%m-%d')" order-direction="ASC" alias="c_date" />
         </order-by-columns>
     </parser-result>
     
