@@ -75,7 +75,7 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectOrWithComplexParen" parameters="'init', 1, 2, 3, 4">
+    <parser-result sql-case-id="select_or_mix_and_for_complex_pattern" parameters="'init', 1, 2, 3, 4">
         <tables>
             <table name="t_order"/>
         </tables>

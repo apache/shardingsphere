@@ -4,8 +4,8 @@
     <sql-case id="select_or_with_different_sharding_columns" value="SELECT * FROM t_order WHERE order_id = %s OR user_id = %s" />
     <sql-case id="select_or_with_none_sharding_columns" value="SELECT * FROM t_order WHERE order_id = %s OR status = %s" />
     <sql-case id="select_or_mix_and_for_simple_pattern" value="SELECT * FROM t_order WHERE (order_id = %s OR status = %s) AND user_id = %s" />
+    <sql-case id="select_or_mix_and_for_complex_pattern" value="SELECT * FROM t_order WHERE ((status = %s AND (order_id = %s OR (order_id = %s)) AND (user_id = %s OR (user_id = %s))))" />
     
-    <sql-case id="assertSelectOrWithComplexParen" value="SELECT * FROM t_order WHERE ((status = %s AND (order_id = %s OR (order_id = %s)) AND (user_id = %s OR (user_id = %s))))" />
     <sql-case id="assertSelectOrWithBindingTable" value="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE (o.order_id = %s OR o.order_id = %s) AND o.user_id = %s" />
     <sql-case id="assertSelectOrWithBindingTableAndConfigTable" value="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN t_config c ON o.status = c.status WHERE (o.order_id = %s OR o.order_id = %s) AND o.user_id = %s AND c.status = %s" />
 </sql-cases>
