@@ -54,7 +54,7 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectMinWithGroupBy">
+    <parser-result sql-case-id="select_group_by_with_min">
         <tables>
             <table name="t_order" />
         </tables>
