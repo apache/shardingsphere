@@ -57,7 +57,7 @@
     </parser-result>
     
     <!-- //TODO add order-by-null-type -->
-    <parser-result sql-case-id="assertSelectWithOrderByForNullsFirst">
+    <parser-result sql-case-id="select_order_by_for_nulls_first">
         <tables>
             <table name="t_order" alias="o" />
         </tables>

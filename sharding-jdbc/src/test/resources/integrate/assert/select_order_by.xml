@@ -21,7 +21,7 @@
         </sharding-rule>
     </sql>
     <!-- // TODO add null data -->
-    <sql id="assertSelectWithOrderByForNullsFirst">
+    <sql id="select_order_by_for_nulls_first">
         <sharding-rule value="tbl">
             <data expected="select_order_by/SelectForAlias.xml" />
         </sharding-rule>
