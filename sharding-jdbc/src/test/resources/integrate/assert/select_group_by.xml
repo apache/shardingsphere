@@ -41,7 +41,7 @@
             <data parameter="1,9,1000,1909"/>
         </sharding-rule>
     </sql>
-    <sql id="assertSelectWithGroupByAndLimit">
+    <sql id="select_group_by_with_limit">
         <sharding-rule>
             <data parameter="1" expected="select_group_by/SelectLimit.xml" />
             <data parameter="0" />

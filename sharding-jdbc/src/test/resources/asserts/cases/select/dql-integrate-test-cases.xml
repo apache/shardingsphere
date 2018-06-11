@@ -223,11 +223,15 @@
         <assertion sharding-rule-type="tbl" parameters="10:int, 11:int, 1000:int, 1109:int" expected-data-file="tbl/select_group_by_without_grouped_column.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="10:int, 11:int, 1000:int, 1109:int" expected-data-file="dbtbl_with_masterslave/select_group_by_without_grouped_column.xml" />
     </dql-test-case>
-
-
+    
+    <dql-test-case sql-case-id="select_group_by_with_limit">
+        <assertion sharding-rule-type="db" parameters="1:int" expected-data-file="db/select_group_by_with_limit.xml" />
+        <assertion sharding-rule-type="tbl" parameters="1:int" expected-data-file="tbl/select_group_by_with_limit.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1:int" expected-data-file="dbtbl_with_masterslave/select_group_by_with_limit.xml" />
+    </dql-test-case>
     
 
-    <!--<sql id="assertSelectWithGroupByAndLimit">-->
+    <!--<sql id="select_group_by_with_limit">-->
         <!--<sharding-rule>-->
             <!--<data parameter="1" expected="select_group_by/SelectLimit.xml" />-->
             <!--<data parameter="0" />-->

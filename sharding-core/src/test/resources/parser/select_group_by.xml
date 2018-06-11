@@ -155,7 +155,7 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectWithGroupByAndLimit" parameters="5">
+    <parser-result sql-case-id="select_group_by_with_limit" parameters="5">
         <tables>
             <table name="t_order" />
         </tables>
