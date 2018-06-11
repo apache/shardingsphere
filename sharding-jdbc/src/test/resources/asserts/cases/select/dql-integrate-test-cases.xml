@@ -319,18 +319,114 @@
         <assertion sharding-rule-type="tbl" expected-data-file="tbl/select_order_by_with_date.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_order_by_with_date.xml" />
     </dql-test-case>
-
+    
     <!-- // TODO add null data -->
     <dql-test-case sql-case-id="select_order_by_for_nulls_first">
         <assertion sharding-rule-type="db" expected-data-file="db/select_order_by_with_ordered_column.xml" />
         <assertion sharding-rule-type="tbl" expected-data-file="tbl/select_order_by_with_ordered_column.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_order_by_with_ordered_column.xml" />
     </dql-test-case>
-
+    
     <!-- // TODO add null data -->
     <dql-test-case sql-case-id="select_order_by_for_nulls_last">
         <assertion sharding-rule-type="db" expected-data-file="db/select_order_by_with_ordered_column.xml" />
         <assertion sharding-rule-type="tbl" expected-data-file="tbl/select_order_by_with_ordered_column.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_order_by_with_ordered_column.xml" />
     </dql-test-case>
+    
+    <dql-test-case sql-case-id="select_pagination_with_offset">
+        <assertion sharding-rule-type="db" parameters="10:int, 19:int, 1000:int, 1909:int, 18:int" expected-data-file="db/select_pagination_with_offset.xml" />
+        <assertion sharding-rule-type="tbl" parameters="10:int, 19:int, 1000:int, 1909:int, 38:int" expected-data-file="tbl/select_pagination_with_offset.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="10:int, 19:int, 1000:int, 1909:int, 6:int" expected-data-file="dbtbl_with_masterslave/select_pagination_with_offset.xml" />
+    </dql-test-case>
+
+
+
+
+
+
+
+
+
+
+    <!--<sql id="assertSelectPaginationWithRowCount">-->
+        <!--<sharding-rule>-->
+            <!--<data parameter="10,19,1000,1909,2" expected="select/SelectPagingWithRowCountSql.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    <!--<sql id="assertSelectPaginationWithLimit">-->
+        <!--<sharding-rule>-->
+            <!--<data parameter="10,19,1000,1909,2,2" expected="select/SelectPagingWithOffsetAndRowCountSql.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    <!--<sql id="assertSelectSingleTablePaginationWithLimit">-->
+        <!--<sharding-rule value="tbl">-->
+            <!--<data parameter="2,2" expected="select/SelectSingleTablePagingWithOffsetAndRowCountSql.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    <!--<sql id="assertSelectPaginationWithRowNumber">-->
+        <!--<sharding-rule>-->
+            <!--<data parameter="10,19,1000,1909,2" expected="select/oracle/SelectPagingWithRowCountSql.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    <!--<sql id="assertSelectPaginationWithOffsetAndLimit">-->
+        <!--<sharding-rule>-->
+            <!--<data parameter="10,19,1000,1909,2,2" expected="select/postgresql/SelectPagingWithOffsetAndRowCountSql.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    <!--<sql id="assertSelectPaginationWithTop">-->
+        <!--<sharding-rule>-->
+            <!--<data parameter="2,10,19,1000,1909" expected="select/sqlserver/SelectPagingWithRowCountSql.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    <!--<sql id="assertSelectPaginationWithTopAndRange">-->
+        <!--<sharding-rule>-->
+            <!--<data parameter="4,10,19,1000,1909,2" expected="select/sqlserver/SelectPagingWithOffsetAndRowCountSql.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    <!--<sql id="assertSelectSingleTablePaginationWithTopAndRange">-->
+        <!--<sharding-rule value="tbl">-->
+            <!--<data parameter="7,3" expected="select/sqlserver/SelectSingleTablePagingWithOffsetAndRowCountSql.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    <!--<sql id="assertSelectPaginationWithTopAndRangeWithEqual">-->
+        <!--<sharding-rule value="tbl">-->
+            <!--<data parameter="4,10,19,1000,1909,3" expected="select/sqlserver/SelectPagingWithOffsetAndRowCountSql.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    <!--<sql id="assertSelectSingleTablePaginationWithTopAndRangeWithEqual">-->
+        <!--<sharding-rule value="tbl">-->
+            <!--<data parameter="7,4" expected="select/sqlserver/SelectSingleTablePagingWithOffsetAndRowCountSql.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    <!--<sql id="assertSelectPaginationWithRowNumberAndRange">-->
+        <!--<sharding-rule>-->
+            <!--<data parameter="10,19,1000,1909,4,2" expected="select/oracle/SelectPagingWithOffsetAndRowCountSql.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    <!--<sql id="assertSelectPaginationWithRowNumberAndRangeWithEqual">-->
+        <!--<sharding-rule>-->
+            <!--<data parameter="10,19,1000,1909,4,3" expected="select/oracle/SelectPagingWithOffsetAndRowCountSql.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    <!--<sql id="assertSelectSingleTablePaginationWithRowNumberAndRange">-->
+        <!--<sharding-rule value="tbl">-->
+            <!--<data parameter="8,3" expected="select/oracle/SelectSingleTablePagingWithOffsetAndRowCountSql.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    <!--<sql id="assertSelectSingleTablePaginationWithRowNumberAndRangeWithEqual">-->
+        <!--<sharding-rule value="db,tbl">-->
+            <!--<data parameter="100000,7,4" expected="select/oracle/SelectSingleTablePagingWithOffsetAndRowCountSql.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    <!--<sql id="assertSelectSingleTablePaginationWithRowNumberAndRangeWithEqualDiffOrder">-->
+        <!--<sharding-rule value="db,tbl">-->
+            <!--<data parameter="7,100000,4" expected="select/oracle/SelectSingleTablePagingWithOffsetAndRowCountSql.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    <!--<sql id="assertSelectLeftJoinAndLimit">-->
+        <!--<sharding-rule value="tbl">-->
+            <!--<data parameter="10,1000,0,20" expected="select/SelectLeftJoinAndLimit.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
 </integrate-test-cases>

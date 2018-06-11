@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
-    <sql id="assertSelectPaginationWithOffset">
+    <sql id="select_pagination_with_offset">
         <sharding-rule value="tbl">
             <data parameter="10,19,1000,1909,18" expected="select/postgresql/SelectPagingWithOffsetSql.xml" />
         </sharding-rule>
