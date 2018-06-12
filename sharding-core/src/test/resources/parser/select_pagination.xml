@@ -85,21 +85,6 @@
         <limit offset="5" offset-index="4" row-count="3" row-count-index="5" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectSingleTablePaginationWithLimit" parameters="5, 3">
-        <tables>
-            <table name="t_order" alias="o" />
-        </tables>
-        <tokens>
-            <table-token begin-position="16" original-literals="`t_order`" />
-            <offset-token begin-position="59" offset="5" />
-            <row-count-token begin-position="62" row-count="3" />
-        </tokens>
-        <order-by-columns>
-            <order-by-column name="order_id" owner="o" order-direction="DESC" />
-        </order-by-columns>
-        <limit offset="5" offset-index="0" row-count="3" row-count-index="1" />
-    </parser-result>
-    
     <parser-result sql-case-id="select_pagination_with_top" parameters="3, 1, 2, 9, 10">
         <tables>
             <table name="t_order" alias="o" />

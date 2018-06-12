@@ -21,11 +21,6 @@
             <data parameter="10,19,1000,1909,2,2" expected="select/SelectPagingWithOffsetAndRowCountSql.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectSingleTablePaginationWithLimit">
-        <sharding-rule value="tbl">
-            <data parameter="2,2" expected="select/SelectSingleTablePagingWithOffsetAndRowCountSql.xml" />
-        </sharding-rule>
-    </sql>
     <sql id="select_pagination_with_row_number">
         <sharding-rule>
             <data parameter="10,19,1000,1909,2" expected="select/oracle/SelectPagingWithRowCountSql.xml" />
