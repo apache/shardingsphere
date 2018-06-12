@@ -411,4 +411,37 @@
         <assertion sharding-rule-type="tbl" parameters="1000:int" expected-data-file="tbl/select_inner_join.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1000:int" expected-data-file="dbtbl_with_masterslave/select_inner_join.xml" />
     </dql-test-case>
+    
+    <dql-test-case sql-case-id="select_sub_query_with_single_table">
+        <assertion sharding-rule-type="db" parameters="1000:int, 1001:int" expected-data-file="db/select_sub_query_with_single_table.xml" />
+        <assertion sharding-rule-type="tbl" parameters="1000:int, 1001:int" expected-data-file="tbl/select_sub_query_with_single_table.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1000:int, 1001:int" expected-data-file="dbtbl_with_masterslave/select_sub_query_with_single_table.xml" />
+    </dql-test-case>
+
+
+
+
+
+    <!--<sql id="select_sub_query_with_single_table">-->
+        <!--<sharding-rule>-->
+            <!--<data parameter="1000,1001" expected="select_sub_query/SelectSubQuerySingleTableWithParentheses.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    <!--&lt;!&ndash; TODO cannot pass,add later -->
+    <!--<sql id="assertSelectSubQueryMultiTableWithParentheses">-->
+        <!--<sharding-rule>-->
+            <!--<data parameter="1000,1001" expected="select_sub_query/SelectSubQueryMultiTableWithParentheses.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    <!--&ndash;&gt;-->
+    <!--<sql id="assertSelectSubQueryWithOrderBy">-->
+        <!--<sharding-rule>-->
+            <!--<data expected="select_sub_query/SelectSubQueryWithOrderBy.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
+    <!--<sql id="assertSelectSubQueryWithGroupBy">-->
+        <!--<sharding-rule>-->
+            <!--<data expected="select_sub_query/SelectSubQueryWithGroupBy.xml" />-->
+        <!--</sharding-rule>-->
+    <!--</sql>-->
 </integrate-test-cases>

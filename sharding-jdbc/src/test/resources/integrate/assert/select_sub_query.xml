@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
-    <sql id="assertSelectSubQuerySingleTableWithParentheses">
+    <sql id="select_sub_query_with_single_table">
         <sharding-rule>
             <data parameter="1000,1001" expected="select_sub_query/SelectSubQuerySingleTableWithParentheses.xml" />
         </sharding-rule>

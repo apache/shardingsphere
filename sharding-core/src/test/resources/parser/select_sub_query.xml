@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parser-result-sets>
-    <parser-result sql-case-id="assertSelectSubQuerySingleTableWithParentheses" parameters="1, 2">
+    <parser-result sql-case-id="select_sub_query_with_single_table" parameters="1, 2">
         <tables>
             <table name="t_order" alias="o" />
         </tables>
