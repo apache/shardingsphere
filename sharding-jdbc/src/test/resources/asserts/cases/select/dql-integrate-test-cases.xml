@@ -384,12 +384,7 @@
 
 
     
-
-    <!--<sql id="assertSelectSingleTablePaginationWithTopAndRangeWithEqual">-->
-        <!--<sharding-rule value="tbl">-->
-            <!--<data parameter="7,4" expected="select/sqlserver/SelectSingleTablePagingWithOffsetAndRowCountSql.xml" />-->
-        <!--</sharding-rule>-->
-    <!--</sql>-->
+    
     <!--<sql id="assertSelectPaginationWithRowNumberAndRange">-->
         <!--<sharding-rule>-->
             <!--<data parameter="10,19,1000,1909,4,2" expected="select/oracle/SelectPagingWithOffsetAndRowCountSql.xml" />-->
