@@ -36,7 +36,7 @@
     </parser-result>
     -->
     
-    <parser-result sql-case-id="assertSelectSubQueryWithOrderBy">
+    <parser-result sql-case-id="select_sub_query_with_order_by">
         <tables>
             <table name="t_order"/>
         </tables>

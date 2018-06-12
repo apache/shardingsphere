@@ -12,7 +12,7 @@
         </sharding-rule>
     </sql>
     -->
-    <sql id="assertSelectSubQueryWithOrderBy">
+    <sql id="select_sub_query_with_order_by">
         <sharding-rule>
             <data expected="select_sub_query/SelectSubQueryWithOrderBy.xml" />
         </sharding-rule>
