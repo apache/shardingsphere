@@ -46,7 +46,7 @@
             <data parameter="4,10,19,1000,1909,3" expected="select/sqlserver/SelectPagingWithOffsetAndRowCountSql.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectPaginationWithRowNumberAndRange">
+    <sql id="select_pagination_with_row_number_for_greater_than">
         <sharding-rule>
             <data parameter="10,19,1000,1909,4,2" expected="select/oracle/SelectPagingWithOffsetAndRowCountSql.xml" />
         </sharding-rule>
