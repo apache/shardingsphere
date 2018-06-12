@@ -36,7 +36,7 @@
             <data parameter="2,10,19,1000,1909" expected="select/sqlserver/SelectPagingWithRowCountSql.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectPaginationWithTopAndRange">
+    <sql id="select_pagination_with_top_for_range">
         <sharding-rule>
             <data parameter="4,10,19,1000,1909,2" expected="select/sqlserver/SelectPagingWithOffsetAndRowCountSql.xml" />
         </sharding-rule>
