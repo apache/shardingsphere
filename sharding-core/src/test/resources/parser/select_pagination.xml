@@ -113,7 +113,7 @@
         <limit row-count="3" row-count-index="0" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectPaginationWithOffsetAndLimit" parameters="1, 2, 9, 10, 5, 3">
+    <parser-result sql-case-id="select_pagination_with_offset_and_limit" parameters="1, 2, 9, 10, 5, 3">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
