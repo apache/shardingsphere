@@ -235,7 +235,7 @@
         <limit offset="1" offset-index="1" row-count-index="0" row-count="3" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectPaginationWithRowNumber" parameters="1, 2, 9, 10, 3">
+    <parser-result sql-case-id="select_pagination_with_row_number" parameters="1, 2, 9, 10, 3">
         <tables>
             <table name="t_order" alias="order0_" />
             <table name="t_order_item" alias="i" />
