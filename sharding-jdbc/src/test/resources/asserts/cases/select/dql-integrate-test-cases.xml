@@ -395,21 +395,7 @@
     </dql-test-case>
     
 
-    <!--<sql id="assertSelectSingleTablePaginationWithRowNumberAndRange">-->
-        <!--<sharding-rule value="tbl">-->
-            <!--<data parameter="8,3" expected="select/oracle/SelectSingleTablePagingWithOffsetAndRowCountSql.xml" />-->
-        <!--</sharding-rule>-->
-    <!--</sql>-->
-    <!--<sql id="assertSelectSingleTablePaginationWithRowNumberAndRangeWithEqual">-->
-        <!--<sharding-rule value="db,tbl">-->
-            <!--<data parameter="100000,7,4" expected="select/oracle/SelectSingleTablePagingWithOffsetAndRowCountSql.xml" />-->
-        <!--</sharding-rule>-->
-    <!--</sql>-->
-    <!--<sql id="assertSelectSingleTablePaginationWithRowNumberAndRangeWithEqualDiffOrder">-->
-        <!--<sharding-rule value="db,tbl">-->
-            <!--<data parameter="7,100000,4" expected="select/oracle/SelectSingleTablePagingWithOffsetAndRowCountSql.xml" />-->
-        <!--</sharding-rule>-->
-    <!--</sql>-->
+    
     <!--<sql id="assertSelectLeftJoinAndLimit">-->
         <!--<sharding-rule value="tbl">-->
             <!--<data parameter="10,1000,0,20" expected="select/SelectLeftJoinAndLimit.xml" />-->

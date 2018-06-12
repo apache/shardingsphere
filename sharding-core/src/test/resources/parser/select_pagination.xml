@@ -301,51 +301,6 @@
         <limit offset="3" offset-index="5" row-count-index="4" row-count="5" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectSingleTablePaginationWithRowNumberAndRange" parameters="4, 1">
-        <tables>
-            <table name="t_order"/>
-        </tables>
-        <tokens>
-            <table-token begin-position="62" original-literals="t_order" />
-            <offset-token begin-position="140" offset="1" />
-            <row-count-token begin-position="111" row-count="4" />
-        </tokens>
-        <order-by-columns>
-            <order-by-column name="order_id" order-direction="DESC" />
-        </order-by-columns>
-        <limit offset="1" offset-index="1" row-count-index="0" row-count="4" />
-    </parser-result>
-    
-    <parser-result sql-case-id="assertSelectSingleTablePaginationWithRowNumberAndRangeWithEqual" parameters="1000, 4, 1">
-        <tables>
-            <table name="t_order" />
-        </tables>
-        <tokens>
-            <table-token begin-position="62" original-literals="t_order" />
-            <offset-token begin-position="165" offset="1" />
-            <row-count-token begin-position="135" row-count="4" />
-        </tokens>
-        <order-by-columns>
-            <order-by-column name="order_id" order-direction="DESC" />
-        </order-by-columns>
-        <limit offset="1" offset-index="2" row-count-index="1" row-count="4" />
-    </parser-result>
-    
-    <parser-result sql-case-id="assertSelectSingleTablePaginationWithRowNumberAndRangeWithEqualDiffOrder" parameters="4, 1000, 1">
-        <tables>
-            <table name="t_order" />
-        </tables>
-        <tokens>
-            <table-token begin-position="62" original-literals="t_order" />
-            <offset-token begin-position="165" offset="1" />
-            <row-count-token begin-position="113" row-count="4" />
-        </tokens>
-        <order-by-columns>
-            <order-by-column name="order_id" order-direction="DESC" />
-        </order-by-columns>
-        <limit offset="1" offset-index="2" row-count-index="0" row-count="4" />
-    </parser-result>
-    
     <parser-result sql-case-id="assertSelectLeftJoinAndLimit" parameters="10, 1000, 0, 20">
         <tables>
             <table name="t_order" alias="o" />
