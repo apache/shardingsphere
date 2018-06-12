@@ -267,7 +267,7 @@
         <limit offset="3" offset-index="5" row-count-index="4" row-count="5" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectPaginationWithRowNumberAndRangeWithEqual" parameters="1, 2, 9, 10, 5, 3">
+    <parser-result sql-case-id="select_pagination_with_row_number_for_greater_than_and_equal" parameters="1, 2, 9, 10, 5, 3">
         <tables>
             <table name="t_order" alias="order0_" />
             <table name="t_order_item" alias="i" />
