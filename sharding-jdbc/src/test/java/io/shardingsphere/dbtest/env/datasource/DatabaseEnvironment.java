@@ -75,7 +75,7 @@ public final class DatabaseEnvironment {
             case MySQL:
                 return String.format("jdbc:mysql://%s:%s", host, port);
             case PostgreSQL:
-                return String.format("jdbc:postgresql://%s:%s", host, port);
+                return String.format("jdbc:postgresql://%s:%s/", host, port);
             case SQLServer:
                 return String.format("jdbc:sqlserver://%s:%s", host, port);
             case Oracle:
