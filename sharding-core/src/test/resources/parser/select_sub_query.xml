@@ -48,7 +48,7 @@
         </aggregation-select-items>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectSubQueryWithGroupBy">
+    <parser-result sql-case-id="select_sub_query_with_group_by">
         <tables>
             <table name="t_order_item"/>
         </tables>

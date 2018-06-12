@@ -17,7 +17,7 @@
             <data expected="select_sub_query/SelectSubQueryWithOrderBy.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectSubQueryWithGroupBy">
+    <sql id="select_sub_query_with_group_by">
         <sharding-rule>
             <data expected="select_sub_query/SelectSubQueryWithGroupBy.xml" />
         </sharding-rule>
