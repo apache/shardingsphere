@@ -383,12 +383,7 @@
     </dql-test-case>
 
 
-
-    <!--<sql id="assertSelectSingleTablePaginationWithTopAndRange">-->
-        <!--<sharding-rule value="tbl">-->
-            <!--<data parameter="7,3" expected="select/sqlserver/SelectSingleTablePagingWithOffsetAndRowCountSql.xml" />-->
-        <!--</sharding-rule>-->
-    <!--</sql>-->
+    
 
     <!--<sql id="assertSelectSingleTablePaginationWithTopAndRangeWithEqual">-->
         <!--<sharding-rule value="tbl">-->

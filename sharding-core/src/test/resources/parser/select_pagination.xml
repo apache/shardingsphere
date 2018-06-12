@@ -200,26 +200,6 @@
         <limit offset="6" offset-index="5" row-count-index="0" row-count="3" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectSingleTablePaginationWithTopAndRange" parameters="3, 1">
-        <tables>
-            <table name="t_order" alias="o" />
-        </tables>
-        <tokens>
-            <table-token begin-position="157" original-literals="t_order" />
-            <items-token begin-position="152">
-                <items>
-                    <item>o.order_id AS ORDER_BY_DERIVED_0 </item>
-                </items>
-            </items-token>
-            <offset-token begin-position="197" offset="1" />
-            <row-count-token begin-position="27" row-count="3" />
-        </tokens>
-        <order-by-columns>
-            <order-by-column name="order_id" owner="o" alias="ORDER_BY_DERIVED_0" order-direction="DESC" />
-        </order-by-columns>
-        <limit offset="1" offset-index="1" row-count-index="0" row-count="3" />
-    </parser-result>
-    
     <parser-result sql-case-id="select_pagination_with_row_number" parameters="1, 2, 9, 10, 3">
         <tables>
             <table name="t_order" alias="order0_" />

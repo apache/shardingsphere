@@ -41,11 +41,6 @@
             <data parameter="4,10,19,1000,1909,2" expected="select/sqlserver/SelectPagingWithOffsetAndRowCountSql.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectSingleTablePaginationWithTopAndRange">
-        <sharding-rule value="tbl">
-            <data parameter="7,3" expected="select/sqlserver/SelectSingleTablePagingWithOffsetAndRowCountSql.xml" />
-        </sharding-rule>
-    </sql>
     <sql id="select_pagination_with_top_for_greater_than_and_equal">
         <sharding-rule value="tbl">
             <data parameter="4,10,19,1000,1909,3" expected="select/sqlserver/SelectPagingWithOffsetAndRowCountSql.xml" />
