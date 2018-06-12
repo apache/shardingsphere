@@ -6,7 +6,7 @@
         </sharding-rule>
     </sql>
     <!-- TODO cannot pass,add later 
-    <sql id="assertSelectSubQueryMultiTableWithParentheses">
+    <sql id="select_sub_query_with_multiple_tables">
         <sharding-rule>
             <data parameter="1000,1001" expected="select_sub_query/SelectSubQueryMultiTableWithParentheses.xml" />
         </sharding-rule>
