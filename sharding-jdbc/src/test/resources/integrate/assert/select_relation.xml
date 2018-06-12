@@ -5,7 +5,7 @@
             <data parameter="1000" expected="select_relation/SelectWithInnerJoin.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectWithInnerJoinAndRelatedWithTableName">
+    <sql id="select_inner_join_related_with_name">
         <sharding-rule value="tbl">
             <data parameter="1000" expected="select_relation/SelectWithInnerJoin.xml" />
         </sharding-rule>
