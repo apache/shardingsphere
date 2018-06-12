@@ -16,7 +16,7 @@
             <data parameter="10,19,1000,1909,2" expected="select/SelectPagingWithRowCountSql.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectPaginationWithLimit">
+    <sql id="select_pagination_with_limit">
         <sharding-rule>
             <data parameter="10,19,1000,1909,2,2" expected="select/SelectPagingWithOffsetAndRowCountSql.xml" />
         </sharding-rule>

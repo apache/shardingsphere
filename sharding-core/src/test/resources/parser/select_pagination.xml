@@ -56,7 +56,7 @@
         <limit row-count="5" row-count-index="4" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectPaginationWithLimit" parameters="1, 2, 9, 10, 5, 3">
+    <parser-result sql-case-id="select_pagination_with_limit" parameters="1, 2, 9, 10, 5, 3">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
