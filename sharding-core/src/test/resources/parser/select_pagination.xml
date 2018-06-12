@@ -142,7 +142,7 @@
         <limit offset="5" offset-index="4" row-count="3" row-count-index="5" />
     </parser-result>
     
-    <parser-result sql-case-id="select_pagination_with_top_for_range" parameters="3, 1, 2, 9, 10, 6">
+    <parser-result sql-case-id="select_pagination_with_top_for_greater_than" parameters="3, 1, 2, 9, 10, 6">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />

@@ -370,16 +370,16 @@
         <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="10:int, 19:int, 1000:int, 1909:int, 2:int, 2:int" expected-data-file="dbtbl_with_masterslave/select_pagination_with_offset_and_limit.xml" />
     </dql-test-case>
     
-    <dql-test-case sql-case-id="select_pagination_with_top_for_range">
-        <assertion sharding-rule-type="db" parameters="4:int, 10:int, 19:int, 1000:int, 1909:int, 2:int" expected-data-file="db/select_pagination_with_top_for_range.xml" />
-        <assertion sharding-rule-type="tbl" parameters="4:int, 10:int, 19:int, 1000:int, 1909:int, 2:int" expected-data-file="tbl/select_pagination_with_top_for_range.xml" />
-        <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="4:int, 10:int, 19:int, 1000:int, 1909:int, 2:int" expected-data-file="dbtbl_with_masterslave/select_pagination_with_top_for_range.xml" />
+    <dql-test-case sql-case-id="select_pagination_with_top_for_greater_than">
+        <assertion sharding-rule-type="db" parameters="4:int, 10:int, 19:int, 1000:int, 1909:int, 2:int" expected-data-file="db/select_pagination_with_top_for_greater_than.xml" />
+        <assertion sharding-rule-type="tbl" parameters="4:int, 10:int, 19:int, 1000:int, 1909:int, 2:int" expected-data-file="tbl/select_pagination_with_top_for_greater_than.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="4:int, 10:int, 19:int, 1000:int, 1909:int, 2:int" expected-data-file="dbtbl_with_masterslave/select_pagination_with_top_for_greater_than.xml" />
     </dql-test-case>
 
 
 
 
-    <!--<sql id="select_pagination_with_top_for_range">-->
+    <!--<sql id="select_pagination_with_top_for_greater_than">-->
         <!--<sharding-rule>-->
             <!--<data parameter="4,10,19,1000,1909,2" expected="select/sqlserver/SelectPagingWithOffsetAndRowCountSql.xml" />-->
         <!--</sharding-rule>-->
