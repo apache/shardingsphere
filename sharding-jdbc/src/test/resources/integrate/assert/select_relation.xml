@@ -10,7 +10,7 @@
             <data parameter="1000" expected="select_relation/SelectWithInnerJoin.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertSelectWithJoinUsing">
+    <sql id="select_join_using">
         <sharding-rule value="tbl">
             <data parameter="1000" expected="select_relation/SelectWithJoinUsing.xml" />
         </sharding-rule>

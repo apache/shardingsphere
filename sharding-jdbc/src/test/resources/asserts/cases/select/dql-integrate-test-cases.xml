@@ -405,22 +405,10 @@
         <assertion sharding-rule-type="tbl" parameters="1000:int" expected-data-file="tbl/select_inner_join.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1000:int" expected-data-file="dbtbl_with_masterslave/select_inner_join.xml" />
     </dql-test-case>
-
-
-
-    <!--<sql id="select_inner_join_related_with_alias">-->
-        <!--<sharding-rule value="tbl">-->
-            <!--<data parameter="1000" expected="select_relation/SelectWithInnerJoin.xml" />-->
-        <!--</sharding-rule>-->
-    <!--</sql>-->
-    <!--<sql id="select_inner_join_related_with_name">-->
-        <!--<sharding-rule value="tbl">-->
-            <!--<data parameter="1000" expected="select_relation/SelectWithInnerJoin.xml" />-->
-        <!--</sharding-rule>-->
-    <!--</sql>-->
-    <!--<sql id="assertSelectWithJoinUsing">-->
-        <!--<sharding-rule value="tbl">-->
-            <!--<data parameter="1000" expected="select_relation/SelectWithJoinUsing.xml" />-->
-        <!--</sharding-rule>-->
-    <!--</sql>-->
+    
+    <dql-test-case sql-case-id="select_join_using">
+        <assertion sharding-rule-type="db" parameters="1000:int" expected-data-file="db/select_inner_join.xml" />
+        <assertion sharding-rule-type="tbl" parameters="1000:int" expected-data-file="tbl/select_inner_join.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1000:int" expected-data-file="dbtbl_with_masterslave/select_inner_join.xml" />
+    </dql-test-case>
 </integrate-test-cases>

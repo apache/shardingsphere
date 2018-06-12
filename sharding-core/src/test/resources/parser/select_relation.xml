@@ -40,7 +40,7 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectWithJoinUsing" parameters="1000">
+    <parser-result sql-case-id="select_join_using" parameters="1000">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i"/>
