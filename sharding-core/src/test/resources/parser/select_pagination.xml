@@ -100,7 +100,7 @@
         <limit offset="5" offset-index="0" row-count="3" row-count-index="1" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectPaginationWithTop" parameters="3, 1, 2, 9, 10">
+    <parser-result sql-case-id="select_pagination_with_top" parameters="3, 1, 2, 9, 10">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
