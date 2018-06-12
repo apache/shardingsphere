@@ -300,31 +300,4 @@
         </order-by-columns>
         <limit offset="3" offset-index="5" row-count-index="4" row-count="5" />
     </parser-result>
-    
-    <parser-result sql-case-id="assertSelectLeftJoinAndLimit" parameters="10, 1000, 0, 20">
-        <tables>
-            <table name="t_order" alias="o" />
-            <table name="t_order_item" alias="i" />
-        </tables>
-        <tokens>
-            <table-token begin-position="16" original-literals="t_order" />
-            <table-token begin-position="36" original-literals="t_order_item" />
-            <offset-token begin-position="154" offset="0" />
-            <row-count-token begin-position="157" row-count="20" />
-        </tokens>
-        <or-condition>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
-                    <value index="0" literal="10" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="1" literal="1000" type="int" />
-                </condition>
-            </and-condition>
-        </or-condition>
-        <order-by-columns>
-            <order-by-column name="item_id" owner="i" order-direction="ASC" />
-        </order-by-columns>
-        <limit offset="0" offset-index="2" row-count="20" row-count-index="3" />
-    </parser-result>
 </parser-result-sets>
