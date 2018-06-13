@@ -98,7 +98,7 @@ public abstract class BaseIntegrateTest {
     }
     
     private DataSource createDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException, IOException {
-        return "masterslaveonly".equals(assertion.getShardingRuleType())
+        return "masterslave".equals(assertion.getShardingRuleType())
                 ? YamlMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(assertion.getShardingRuleType())))
                 : YamlShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(assertion.getShardingRuleType())));
     }
@@ -126,6 +126,9 @@ public abstract class BaseIntegrateTest {
         }
         for (String each : integrateTestCasesLoader.getShardingRuleTypes()) {
             SchemaEnvironmentManager.createDatabase(each);
+        }
+        for (String each : integrateTestCasesLoader.getShardingRuleTypes()) {
+            SchemaEnvironmentManager.dropTable(each);
         }
         for (String each : integrateTestCasesLoader.getShardingRuleTypes()) {
             SchemaEnvironmentManager.createTable(each);
