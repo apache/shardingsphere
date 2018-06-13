@@ -305,6 +305,7 @@
         <assertion sharding-rule-type="db" parameters="1000:int, 11:int" expected-data-file="db/select_or_with_different_sharding_columns.xml" />
         <assertion sharding-rule-type="tbl" parameters="1000:int, 11:int" expected-data-file="tbl/select_or_with_different_sharding_columns.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1000:int, 11:int" expected-data-file="dbtbl_with_masterslave/select_or_with_different_sharding_columns.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="1000:int, 11:int" expected-data-file="masterslave/select_or_with_different_sharding_columns.xml" />
     </dql-test-case>
     
     <dql-test-case sql-case-id="select_or_with_none_sharding_columns">
