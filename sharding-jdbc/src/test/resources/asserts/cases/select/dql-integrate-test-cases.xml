@@ -3,6 +3,7 @@
         <assertion sharding-rule-type="db" expected-data-file="select_constant_without_table.xml" />
         <assertion sharding-rule-type="tbl" expected-data-file="select_constant_without_table.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="select_constant_without_table.xml" />
+        <assertion sharding-rule-type="masterslave" expected-data-file="select_constant_without_table.xml" />
     </dql-test-case>
     
     <dql-test-case sql-case-id="select_not_equal_with_single_table">
