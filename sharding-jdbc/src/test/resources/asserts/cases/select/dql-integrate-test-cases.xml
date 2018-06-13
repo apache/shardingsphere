@@ -49,6 +49,7 @@
         <assertion sharding-rule-type="db" parameters="1000:int, 1001:int" expected-data-file="empty_order.xml" />
         <assertion sharding-rule-type="tbl" parameters="1000:int, 1001:int" expected-data-file="empty_order.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1000:int, 1001:int" expected-data-file="empty_order.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="1000:int, 1001:int" expected-data-file="empty_order.xml" />
     </dql-test-case>
     
     <dql-test-case sql-case-id="select_in_with_same_sharding_column">
