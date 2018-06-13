@@ -232,6 +232,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
      */
     public boolean hasMoreResultValue() throws SQLException {
         if (!isMerged || !hasMoreResultValueFlag) {
+            proxyJDBCResource.clear();
             return false;
         }
         if (!mergedResult.next()) {
