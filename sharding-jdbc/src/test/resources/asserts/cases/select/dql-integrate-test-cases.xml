@@ -85,6 +85,7 @@
         <assertion sharding-rule-type="db" parameters="init:String, 10:int, 11:int, 1000:int, 2901:int" expected-data-file="db/select_count_like_concat.xml" />
         <assertion sharding-rule-type="tbl" parameters="init:String, 10:int, 11:int, 1000:int, 2901:int" expected-data-file="tbl/select_count_like_concat.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="init:String, 10:int, 11:int, 1000:int, 2901:int" expected-data-file="dbtbl_with_masterslave/select_count_like_concat.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="init:String, 10:int, 11:int, 1000:int, 2901:int" expected-data-file="masterslave/select_count_like_concat.xml" />
     </dql-test-case>
     
     <dql-test-case sql-case-id="select_sharding_route_with_binding_tables">
