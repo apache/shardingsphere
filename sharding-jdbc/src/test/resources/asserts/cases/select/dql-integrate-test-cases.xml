@@ -180,6 +180,7 @@
         <assertion sharding-rule-type="db" parameters="10:int, 11:int, 1000:int, 1909:int" expected-data-file="db/select_count_with_binding_tables.xml" />
         <assertion sharding-rule-type="tbl" parameters="10:int, 11:int, 1000:int, 1909:int" expected-data-file="tbl/select_count_with_binding_tables.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="10:int, 11:int, 1000:int, 1909:int" expected-data-file="dbtbl_with_masterslave/select_count_with_binding_tables.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="10:int, 11:int, 1000:int, 1909:int" expected-data-file="masterslave/select_count_with_binding_tables.xml" />
     </dql-test-case>
     
     <dql-test-case sql-case-id="select_count_with_escape_character">
