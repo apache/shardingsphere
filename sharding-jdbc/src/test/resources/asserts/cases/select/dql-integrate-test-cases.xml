@@ -17,6 +17,7 @@
         <assertion sharding-rule-type="db" parameters="100001:int" expected-data-file="db/select_not_equal_with_single_table.xml" />
         <assertion sharding-rule-type="tbl" parameters="100001:int" expected-data-file="tbl/select_not_equal_with_single_table.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="100001:int" expected-data-file="dbtbl_with_masterslave/select_not_equal_with_single_table.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="100001:int" expected-data-file="masterslave/select_not_equal_with_single_table.xml" />
     </dql-test-case>
     
     <dql-test-case sql-case-id="select_not_in_with_single_table">
