@@ -19,6 +19,7 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.action;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.ZKTransaction;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -28,7 +29,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author lidongbo
  */
-public interface IClient extends io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IAction, IGroupAction {
+public interface IClient extends IAction, IGroupAction {
     
     /**
      * start.
@@ -80,7 +81,7 @@ public interface IClient extends io.shardingsphere.jdbc.orchestration.reg.newzk.
      *
      * @return ZKTransaction
      */
-    io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.ZKTransaction transaction();
+   ZKTransaction transaction();
     /*
     void createNamespace();
     void deleteNamespace();
