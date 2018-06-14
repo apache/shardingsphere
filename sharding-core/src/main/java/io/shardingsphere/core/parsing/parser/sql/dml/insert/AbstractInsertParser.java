@@ -70,6 +70,7 @@ public abstract class AbstractInsertParser implements SQLParser {
         }
         insertClauseParserFacade.getInsertValuesClauseParser().parse(result, shardingMetaData);
         insertClauseParserFacade.getInsertSetClauseParser().parse(result);
+        insertClauseParserFacade.getInsertDuplicateKeyUpdateClauseParser().parse(result);
         processGeneratedKey(result);
         return result;
     }

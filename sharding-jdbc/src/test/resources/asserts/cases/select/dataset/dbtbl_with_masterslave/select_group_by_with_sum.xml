@@ -1,0 +1,13 @@
+<datasets>
+    <columns values="orders_sum, user_id" />
+    <dataset values="10045, 10" />
+    <dataset values="11045, 11" />
+    <dataset values="12045, 12" />
+    <dataset values="13045, 13" />
+    <dataset values="14045, 14" />
+    <dataset values="15045, 15" />
+    <dataset values="16045, 16" />
+    <dataset values="17045, 17" />
+    <dataset values="18045, 18" />
+    <dataset values="19045, 19" />
+</datasets>

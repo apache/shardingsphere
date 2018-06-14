@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parser-result-sets>
-    <parser-result sql-case-id="assertInsertWithAllPlaceholders" parameters="1 1 'init'">
+    <parser-result sql-case-id="assertInsertWithAllPlaceholders" parameters="1, 1, 'init'">
         <tables>
             <table name="t_order" />
         </tables>
@@ -20,7 +20,7 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="assertInsertWithPartialPlaceholder" parameters="1 1">
+    <parser-result sql-case-id="assertInsertWithPartialPlaceholder" parameters="1, 1">
         <tables>
             <table name="t_order" />
         </tables>
@@ -40,7 +40,7 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="assertInsertWithGenerateKeyColumn" parameters="10000 1000 10">
+    <parser-result sql-case-id="assertInsertWithGenerateKeyColumn" parameters="10000, 1000, 10">
         <tables>
             <table name="t_order_item" />
         </tables>
@@ -63,7 +63,7 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="assertInsertWithoutGenerateKeyColumn" parameters="1000 10">
+    <parser-result sql-case-id="assertInsertWithoutGenerateKeyColumn" parameters="1000, 10">
         <tables>
             <table name="t_order_item" />
         </tables>
@@ -88,7 +88,181 @@
         </or-condition>
     </parser-result>
 
-    <parser-result sql-case-id="assertBatchInsertWithGenerateKeyColumn" parameters="10000 1000 10 10010 1001 10">
+    <parser-result sql-case-id="assertInsertSetWithAllPlaceholders" parameters="1, 1, 'init'">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+            <insert-values-token begin-position="24" table-name="t_order"/>
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="1" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+
+    <parser-result sql-case-id="assertInsertSetWithPartialPlaceholder" parameters="1, 1">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+            <insert-values-token begin-position="24" table-name="t_order"/>
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="1" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+
+    <parser-result sql-case-id="assertInsertSetWithGenerateKeyColumn" parameters="10000, 1000, 10">
+        <tables>
+            <table name="t_order_item" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order_item" />
+            <insert-values-token begin-position="29" table-name="t_order_item"/>
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="item_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="0" literal="10000" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="1" literal="1000" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="2" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+
+    <parser-result sql-case-id="assertInsertSetWithoutGenerateKeyColumn" parameters="1000, 10">
+        <tables>
+            <table name="t_order_item" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order_item" />
+            <insert-values-token begin-position="29" table-name="t_order_item"/>
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="0" literal="1000" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="1" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+
+    <parser-result sql-case-id="assertInsertOnDuplicateKeyUpdate" parameters="1, 1, 'init'">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+            <insert-values-token begin-position="55" table-name="t_order"/>
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="1" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+
+    <parser-result sql-case-id="assertInsertWithTableIdentifier" parameters="1, 1, 'init'">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+            <table-token begin-position="21" original-literals="t_order" />
+            <table-token begin-position="39" original-literals="t_order" />
+            <table-token begin-position="56" original-literals="t_order" />
+            <insert-values-token begin-position="79" table-name="t_order"/>
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="1" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+
+    <parser-result sql-case-id="assertInsertSetWithTableIdentifier" parameters="1, 1, 'init'">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+            <insert-values-token begin-position="24" table-name="t_order"/>
+            <table-token begin-position="24" original-literals="t_order" />
+            <table-token begin-position="46" original-literals="t_order" />
+            <table-token begin-position="67" original-literals="t_order" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="1" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+
+    <!--<parser-result sql-case-id="assertInsertOnDuplicateKeyUpdateWithTableIdentifier" parameters="1, 1, 'init'">-->
+        <!--<tables>-->
+            <!--<table name="t_order" />-->
+        <!--</tables>-->
+        <!--<tokens>-->
+            <!--<table-token begin-position="12" original-literals="t_order" />-->
+            <!--<table-token begin-position="21" original-literals="t_order" />-->
+            <!--<table-token begin-position="39" original-literals="t_order" />-->
+            <!--<table-token begin-position="56" original-literals="t_order" />-->
+            <!--<insert-values-token begin-position="79" table-name="t_order"/>-->
+            <!--<table-token begin-position="113" original-literals="t_order" />-->
+            <!--<table-token begin-position="137" original-literals="t_order" />-->
+        <!--</tokens>-->
+        <!--<or-condition>-->
+            <!--<and-condition>-->
+                <!--<condition column-name="order_id" table-name="t_order" operator="EQUAL">-->
+                    <!--<value index="0" literal="1" type="int" />-->
+                <!--</condition>-->
+                <!--<condition column-name="user_id" table-name="t_order" operator="EQUAL">-->
+                    <!--<value index="1" literal="1" type="int" />-->
+                <!--</condition>-->
+            <!--</and-condition>-->
+        <!--</or-condition>-->
+    <!--</parser-result>-->
+
+    <parser-result sql-case-id="assertBatchInsertWithGenerateKeyColumn" parameters="10000, 1000, 10, 10010, 1001, 10">
         <tables>
             <table name="t_order_item" />
         </tables>
@@ -122,7 +296,7 @@
         </or-condition>
     </parser-result>
 
-    <parser-result sql-case-id="assertBatchInsertWithoutGenerateKeyColumn" parameters="1000 10 1001 10">
+    <parser-result sql-case-id="assertBatchInsertWithoutGenerateKeyColumn" parameters="1000, 10, 1001, 10">
         <tables>
             <table name="t_order_item" />
         </tables>
@@ -155,7 +329,7 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="assertInsertWithJsonAndGeo" parameters="7 200 100 200 '{&quot;rule&quot;:&quot;null&quot;}'">
+    <parser-result sql-case-id="assertInsertWithJsonAndGeo" parameters="7, 200, 100, 200, '{&quot;rule&quot;:&quot;null&quot;}'">
         <tables>assertInsertWithJsonAndGeo
             <table name="t_place" />
         </tables>
@@ -175,7 +349,7 @@
         </or-condition>
     </parser-result>
 
-    <parser-result sql-case-id="assertInsertWithoutColumnsWithAllPlaceholders" parameters="1 1 'init'">
+    <parser-result sql-case-id="assertInsertWithoutColumnsWithAllPlaceholders" parameters="1, 1, 'init'">
         <tables>
             <table name="t_order" />
         </tables>
@@ -203,7 +377,7 @@
         </or-condition>
     </parser-result>
 
-    <parser-result sql-case-id="assertInsertWithoutColumnsWithPartialPlaceholder" parameters="1 1">
+    <parser-result sql-case-id="assertInsertWithoutColumnsWithPartialPlaceholder" parameters="1, 1">
         <tables>
             <table name="t_order" />
         </tables>
@@ -231,7 +405,7 @@
         </or-condition>
     </parser-result>
 
-    <parser-result sql-case-id="assertInsertWithoutColumnsWithGenerateKeyColumn" parameters="10000 1000 10">
+    <parser-result sql-case-id="assertInsertWithoutColumnsWithGenerateKeyColumn" parameters="10000, 1000, 10">
         <tables>
             <table name="t_order_item" />
         </tables>
@@ -265,7 +439,7 @@
         </or-condition>
     </parser-result>
 
-    <parser-result sql-case-id="assertInsertWithoutColumnsWithoutGenerateKeyColumn" parameters="1000 10">
+    <parser-result sql-case-id="assertInsertWithoutColumnsWithoutGenerateKeyColumn" parameters="1000, 10">
         <tables>
             <table name="t_order_item" />
         </tables>

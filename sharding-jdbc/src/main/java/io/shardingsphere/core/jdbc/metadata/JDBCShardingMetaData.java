@@ -17,14 +17,14 @@
 
 package io.shardingsphere.core.jdbc.metadata;
 
+import com.google.common.util.concurrent.ListeningExecutorService;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.metadata.ColumnMetaData;
 import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.metadata.TableMetaData;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.rule.ShardingDataSourceNames;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -37,7 +37,6 @@ import java.util.Map;
  *
  * @author panjuan
  */
-@RequiredArgsConstructor
 @Getter
 public final class JDBCShardingMetaData extends ShardingMetaData {
 
@@ -46,15 +45,28 @@ public final class JDBCShardingMetaData extends ShardingMetaData {
     private final ShardingRule shardingRule;
 
     private final DatabaseType databaseType;
+    
+    public JDBCShardingMetaData(final ListeningExecutorService executorService, final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType) {
+        super(executorService);
+        this.dataSourceMap = dataSourceMap;
+        this.shardingRule = shardingRule;
+        this.databaseType = databaseType;
+    }
 
     @Override
-    public Collection<ColumnMetaData> getColumnMetaDataList(final DataNode dataNode, final ShardingDataSourceNames shardingDataSourceNames,
-                                                            final Map<String, Connection> connectionMap) throws SQLException {
+    public TableMetaData getTableMetaData(final DataNode dataNode, final ShardingDataSourceNames shardingDataSourceNames,
+                                          final Map<String, Connection> connectionMap) throws SQLException {
         String dataSourceName = shardingDataSourceNames.getRawMasterDataSourceName(dataNode.getDataSourceName());
         if (connectionMap.containsKey(dataSourceName)) {
-            return ShardingMetaDataHandlerFactory.newInstance(dataNode.getTableName(), databaseType).getColumnMetaDataList(connectionMap.get(dataSourceName));
+            return ShardingMetaDataHandlerFactory.newInstance(dataNode.getTableName(), databaseType).getTableMetaData(connectionMap.get(dataSourceName));
         } else {
-            return ShardingMetaDataHandlerFactory.newInstance(dataSourceMap.get(dataSourceName), dataNode.getTableName(), databaseType).getColumnMetaDataList();
+            return ShardingMetaDataHandlerFactory.newInstance(dataSourceMap.get(dataSourceName), dataNode.getTableName(), databaseType).getTableMetaData();
         }
     }
+    
+    @Override
+    public Collection<String> getTableNamesFromDefaultDataSource(final String defaultDataSourceName) throws SQLException {
+        return ShardingMetaDataHandlerFactory.newInstance(dataSourceMap.get(defaultDataSourceName), "", databaseType).getTableNamesFromDefaultDataSource();
+    }
+
 }

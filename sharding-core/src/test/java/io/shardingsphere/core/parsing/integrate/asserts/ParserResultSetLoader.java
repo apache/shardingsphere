@@ -86,4 +86,13 @@ public final class ParserResultSetLoader {
         Preconditions.checkState(parserResultMap.containsKey(sqlCaseId), "Can't find SQL of id: " + sqlCaseId);
         return parserResultMap.get(sqlCaseId);
     }
+    
+    /**
+     * Count all parser test cases.
+     *
+     * @return count of all parser test cases
+     */
+    public int countAllParserTestCases() {
+        return parserResultMap.size();
+    }
 }

@@ -121,6 +121,8 @@ public final class ShardingDataSourceTest {
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         Statement statement = mock(Statement.class);
         ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.next()).thenReturn(false);
+        when(statement.getResultSet()).thenReturn(resultSet);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(databaseMetaData.getDatabaseProductName()).thenReturn(dataBaseProductName);
         when(result.getConnection()).thenReturn(connection);

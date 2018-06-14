@@ -22,6 +22,7 @@ import io.shardingsphere.core.api.algorithm.sharding.ListShardingValue;
 import io.shardingsphere.core.optimizer.OptimizeEngine;
 import io.shardingsphere.core.optimizer.condition.ShardingCondition;
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;
+import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.parser.context.condition.AndCondition;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
 import io.shardingsphere.core.parsing.parser.context.condition.Condition;
@@ -79,10 +80,19 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
                 String expression;
                 Number currentGeneratedKey = generatedKeys.next();
                 if (0 == parameters.size()) {
-                    expression = insertValue.getExpression().substring(0, insertValue.getExpression().length() - 1) + ", " + currentGeneratedKey.toString() + ")";
+                    if (DefaultKeyword.VALUES.equals(insertValue.getType())) {
+                        expression = insertValue.getExpression().substring(0, insertValue.getExpression().length() - 1) + ", " + currentGeneratedKey.toString() + ")";
+                    } else {
+                        expression = generateKeyColumn.get().getName() + " = " + currentGeneratedKey + ", " + insertValue.getExpression();
+                    }
                 } else {
-                    expression = insertValue.getExpression().substring(0, insertValue.getExpression().length() - 1) + ", ?)";
-                    currentParameters.add(currentGeneratedKey);
+                    if (DefaultKeyword.VALUES.equals(insertValue.getType())) {
+                        expression = insertValue.getExpression().substring(0, insertValue.getExpression().length() - 1) + ", ?)";
+                        currentParameters.add(currentGeneratedKey);
+                    } else {
+                        expression = generateKeyColumn.get().getName() + " = ?, " + insertValue.getExpression();
+                        currentParameters.add(0, currentGeneratedKey);
+                    }
                 }
                 insertShardingCondition = new InsertShardingCondition(expression, currentParameters);
                 insertShardingCondition.getShardingValues().add(getShardingCondition(generateKeyColumn.get(), currentGeneratedKey));

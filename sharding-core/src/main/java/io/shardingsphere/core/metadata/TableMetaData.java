@@ -20,9 +20,10 @@ package io.shardingsphere.core.metadata;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -33,17 +34,22 @@ import java.util.List;
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
+@ToString
 public final class TableMetaData {
     
     private final Collection<ColumnMetaData> columnMetaData;
+    
+    public TableMetaData() {
+        columnMetaData = new LinkedList<>();
+    }
     
     /**
      * Get all column names.
      *
      * @return column name list.
      */
-    public List<String> getAllColumnNames() {
-        List<String> columnNames = new ArrayList<>();
+    public Collection<String> getAllColumnNames() {
+        List<String> columnNames = new LinkedList<>();
         for (ColumnMetaData each : columnMetaData) {
             columnNames.add(each.getColumnName());
         }

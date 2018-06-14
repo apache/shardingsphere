@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parser-result-sets>
-    <parser-result sql-case-id="assertDeleteWithShardingValue" parameters="1000 1001 'init'">
+    <parser-result sql-case-id="assertDeleteWithShardingValue" parameters="1000, 1001, 'init'">
         <tables>
             <table name="t_order"/>
         </tables>

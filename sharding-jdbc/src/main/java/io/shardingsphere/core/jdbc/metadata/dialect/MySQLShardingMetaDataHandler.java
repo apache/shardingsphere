@@ -24,6 +24,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -42,7 +43,7 @@ public final class MySQLShardingMetaDataHandler extends ShardingMetaDataHandler 
     @Override
     public boolean isTableExist(final Connection connection) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            statement.executeQuery(String.format("show tables like '%s'", getActualTableName()));
+            statement.execute(String.format("show tables like '%s'", getActualTableName()));
             try (ResultSet resultSet = statement.getResultSet()) {
                 return resultSet.next();
             }
@@ -53,10 +54,25 @@ public final class MySQLShardingMetaDataHandler extends ShardingMetaDataHandler 
     public List<ColumnMetaData> getExistColumnMeta(final Connection connection) throws SQLException {
         List<ColumnMetaData> result = new LinkedList<>();
         try (Statement statement = connection.createStatement()) {
-            statement.executeQuery(String.format("desc %s;", getActualTableName()));
+            statement.execute(String.format("desc %s;", getActualTableName()));
             try (ResultSet resultSet = statement.getResultSet()) {
                 while (resultSet.next()) {
                     result.add(new ColumnMetaData(resultSet.getString("Field"), resultSet.getString("Type"), resultSet.getString("Key")));
+                }
+            }
+            return result;
+        }
+    }
+    
+    @Override
+    public Collection<String> getTableNamesFromDefaultDataSource() throws SQLException {
+        Collection<String> result = new LinkedList<>();
+        try (Connection connection = getDataSource().getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.executeQuery("show tables;");
+            try (ResultSet resultSet = statement.getResultSet()) {
+                while (resultSet.next()) {
+                    result.add(resultSet.getString(1));
                 }
             }
             return result;

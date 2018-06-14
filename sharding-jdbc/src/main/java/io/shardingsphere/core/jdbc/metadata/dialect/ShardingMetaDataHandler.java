@@ -18,6 +18,7 @@
 package io.shardingsphere.core.jdbc.metadata.dialect;
 
 import io.shardingsphere.core.metadata.ColumnMetaData;
+import io.shardingsphere.core.metadata.TableMetaData;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,6 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -44,35 +44,43 @@ public abstract class ShardingMetaDataHandler {
     private final String actualTableName;
 
     /**
-     * Get column meta data list.
+     * Get table meta data.
      *
-     * @return column meta data list
+     * @return table meta data
      * @throws SQLException SQL exception
      */
-    public Collection<ColumnMetaData> getColumnMetaDataList() throws SQLException {
-        List<ColumnMetaData> result = new LinkedList<>();
+    public TableMetaData getTableMetaData() throws SQLException {
+        TableMetaData result = new TableMetaData();
         try (Connection connection = dataSource.getConnection()) {
             if (isTableExist(connection)) {
-                result = getExistColumnMeta(connection);
+                result.getColumnMetaData().addAll(getExistColumnMeta(connection));
             }
         }
         return result;
     }
 
     /**
-     * Get column metadata by Sharding Connection.
+     * Get table metadata by Sharding Connection.
      *
      * @param connection connection
-     * @return column metadata List
+     * @return table metadata
      * @throws SQLException SQL exception
      */
-    public Collection<ColumnMetaData> getColumnMetaDataList(final Connection connection) throws SQLException {
-        List<ColumnMetaData> result = new LinkedList<>();
+    public TableMetaData getTableMetaData(final Connection connection) throws SQLException {
+        TableMetaData result = new TableMetaData();
         if (isTableExist(connection)) {
-            result = getExistColumnMeta(connection);
+            result.getColumnMetaData().addAll(getExistColumnMeta(connection));
         }
         return result;
     }
+    
+    /**
+     * Get table names from default data source.
+     *
+     * @return Table names from default data source
+     * @throws SQLException SQL exception.
+     */
+    public abstract Collection<String> getTableNamesFromDefaultDataSource() throws SQLException;
 
     /**
      * Judge whether table exist or not.

@@ -23,29 +23,47 @@ import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
 import io.shardingsphere.core.parsing.lexer.token.Literals;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
+import io.shardingsphere.core.parsing.parser.clause.expression.BasicExpressionParser;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
 import io.shardingsphere.core.parsing.parser.context.condition.Condition;
+import io.shardingsphere.core.parsing.parser.context.insertvalue.InsertValue;
+import io.shardingsphere.core.parsing.parser.dialect.ExpressionParserFactory;
 import io.shardingsphere.core.parsing.parser.expression.SQLExpression;
+import io.shardingsphere.core.parsing.parser.expression.SQLIdentifierExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLIgnoreExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
+import io.shardingsphere.core.parsing.parser.expression.SQLPropertyExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
+import io.shardingsphere.core.parsing.parser.token.InsertColumnToken;
+import io.shardingsphere.core.parsing.parser.token.InsertValuesToken;
+import io.shardingsphere.core.parsing.parser.token.ItemsToken;
+import io.shardingsphere.core.parsing.parser.token.SQLToken;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.util.SQLUtil;
-import lombok.RequiredArgsConstructor;
+
+import java.util.Iterator;
 
 /**
  * Insert set clause parser.
  *
  * @author zhangliang
+ * @author maxiaoguang
  */
-@RequiredArgsConstructor
 public class InsertSetClauseParser implements SQLClauseParser {
     
     private final ShardingRule shardingRule;
     
     private final LexerEngine lexerEngine;
+    
+    private final BasicExpressionParser basicExpressionParser;
+    
+    public InsertSetClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        this.shardingRule = shardingRule;
+        this.lexerEngine = lexerEngine;
+        basicExpressionParser = ExpressionParserFactory.createBasicExpressionParser(lexerEngine);
+    }
     
     /**
      * Parse insert set.
@@ -56,11 +74,23 @@ public class InsertSetClauseParser implements SQLClauseParser {
         if (!lexerEngine.skipIfEqual(getCustomizedInsertKeywords())) {
             return;
         }
+        removeUnnecessaryToken(insertStatement);
+        int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
+        insertStatement.getSqlTokens().add(new InsertValuesToken(beginPosition, insertStatement.getTables().getSingleTableName()));
+        int parametersCount = 0;
         do {
-            Column column = new Column(SQLUtil.getExactlyValue(lexerEngine.getCurrentToken().getLiterals()), insertStatement.getTables().getSingleTableName());
-            lexerEngine.nextToken();
+            SQLExpression sqlExpression = basicExpressionParser.parse(insertStatement);
+            Column column = null;
+            if (sqlExpression instanceof SQLPropertyExpression) {
+                column = new Column(SQLUtil.getExactlyValue(((SQLPropertyExpression) sqlExpression).getName()), insertStatement.getTables().getSingleTableName());
+            }
+            if (sqlExpression instanceof SQLIdentifierExpression) {
+                column = new Column(SQLUtil.getExactlyValue(((SQLIdentifierExpression) sqlExpression).getName()), insertStatement.getTables().getSingleTableName());
+            }
+            if (sqlExpression instanceof SQLIgnoreExpression) {
+                column = new Column(SQLUtil.getExactlyValue(((SQLIgnoreExpression) sqlExpression).getExpression()), insertStatement.getTables().getSingleTableName());
+            }
             lexerEngine.accept(Symbol.EQ);
-            SQLExpression sqlExpression;
             if (lexerEngine.equalAny(Literals.INT)) {
                 sqlExpression = new SQLNumberExpression(Integer.parseInt(lexerEngine.getCurrentToken().getLiterals()));
             } else if (lexerEngine.equalAny(Literals.FLOAT)) {
@@ -72,6 +102,7 @@ public class InsertSetClauseParser implements SQLClauseParser {
             } else if (lexerEngine.equalAny(Symbol.QUESTION)) {
                 sqlExpression = new SQLPlaceholderExpression(insertStatement.getParametersIndex());
                 insertStatement.increaseParametersIndex();
+                parametersCount++;
             } else {
                 throw new UnsupportedOperationException("");
             }
@@ -82,6 +113,19 @@ public class InsertSetClauseParser implements SQLClauseParser {
                 lexerEngine.skipUntil(Symbol.COMMA, DefaultKeyword.ON);
             }
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));
+        int endPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
+        insertStatement.getInsertValues().getInsertValues().add(new InsertValue(DefaultKeyword.VALUES, lexerEngine.getInput().substring(beginPosition, endPosition), parametersCount));
+        insertStatement.setInsertValuesListLastPosition(endPosition);
+    }
+    
+    private void removeUnnecessaryToken(final InsertStatement insertStatement) {
+        Iterator<SQLToken> sqlTokenIterable = insertStatement.getSqlTokens().iterator();
+        while (sqlTokenIterable.hasNext()) {
+            SQLToken sqlToken = sqlTokenIterable.next();
+            if (sqlToken instanceof InsertColumnToken || sqlToken instanceof ItemsToken) {
+                sqlTokenIterable.remove();
+            }
+        }
     }
     
     protected Keyword[] getCustomizedInsertKeywords() {
