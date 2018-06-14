@@ -29,6 +29,7 @@ import com.google.common.collect.Lists;
 
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
@@ -76,13 +77,14 @@ public final class MySQLQueryResult implements QueryResult {
         resultSet = null;
     }
     
-    public MySQLQueryResult(final int sequenceId, final int columnCount) {
-        commandResponsePackets = new CommandResponsePackets(new FieldCountPacket(sequenceId, columnCount));
-        this.columnCount = columnCount;
-        columnIndexAndLabelMap = new HashMap<>(columnCount, 1);
-        columnLabelAndIndexMap = new HashMap<>(columnCount, 1);
-        columnDefinitions = Lists.newArrayListWithCapacity(columnCount);
-        currentSequenceId = sequenceId;
+    public MySQLQueryResult(final MySQLPacketPayload mysqlPacketPayload) {
+        FieldCountPacket fieldCountPacket = new FieldCountPacket(mysqlPacketPayload);
+        commandResponsePackets = new CommandResponsePackets(fieldCountPacket);
+        columnCount = fieldCountPacket.getColumnCount();
+        columnIndexAndLabelMap = new HashMap<>(fieldCountPacket.getColumnCount(), 1);
+        columnLabelAndIndexMap = new HashMap<>(fieldCountPacket.getColumnCount(), 1);
+        columnDefinitions = Lists.newArrayListWithCapacity(fieldCountPacket.getColumnCount());
+        currentSequenceId = fieldCountPacket.getSequenceId();
         resultSet = new LinkedBlockingQueue<>();
     }
     

@@ -32,7 +32,7 @@ import lombok.Getter;
 @Getter
 public class ErrPacket extends MySQLPacket {
     
-    public static final int HEADER = 0xff;
+    private static final int HEADER = 0xff;
     
     private final int errorCode;
     
@@ -50,8 +50,8 @@ public class ErrPacket extends MySQLPacket {
         this.errorMessage = errorMessage;
     }
     
-    public ErrPacket(final int sequenceId, final MySQLPacketPayload mysqlPacketPayload) {
-        super(sequenceId);
+    public ErrPacket(final MySQLPacketPayload mysqlPacketPayload) {
+        super(mysqlPacketPayload.readInt1());
         Preconditions.checkArgument(HEADER == mysqlPacketPayload.readInt1());
         errorCode = mysqlPacketPayload.readInt2();
         sqlStateMarker = mysqlPacketPayload.readStringFix(1);

@@ -32,7 +32,7 @@ import lombok.Getter;
 @Getter
 public class OKPacket extends MySQLPacket {
     
-    public static final int HEADER = 0x00;
+    private static final int HEADER = 0x00;
     
     private final long affectedRows;
     
@@ -53,8 +53,8 @@ public class OKPacket extends MySQLPacket {
         this.info = info;
     }
     
-    public OKPacket(final int sequenceId, final MySQLPacketPayload mysqlPacketPayload) {
-        super(sequenceId);
+    public OKPacket(final MySQLPacketPayload mysqlPacketPayload) {
+        super(mysqlPacketPayload.readInt1());
         Preconditions.checkArgument(HEADER == mysqlPacketPayload.readInt1());
         affectedRows = mysqlPacketPayload.readIntLenenc();
         lastInsertId = mysqlPacketPayload.readIntLenenc();

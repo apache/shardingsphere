@@ -72,8 +72,8 @@ public final class ColumnDefinition41Packet extends MySQLPacket {
         this.decimals = decimals;
     }
     
-    public ColumnDefinition41Packet(final int sequenceId, final MySQLPacketPayload mysqlPacketPayload) {
-        super(sequenceId);
+    public ColumnDefinition41Packet(final MySQLPacketPayload mysqlPacketPayload) {
+        super(mysqlPacketPayload.readInt1());
         Preconditions.checkArgument(catalog.equals(mysqlPacketPayload.readStringLenenc()));
         schema = mysqlPacketPayload.readStringLenenc();
         table = mysqlPacketPayload.readStringLenenc();

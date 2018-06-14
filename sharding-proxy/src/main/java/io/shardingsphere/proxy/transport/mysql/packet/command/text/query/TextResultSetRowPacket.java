@@ -23,6 +23,8 @@ import lombok.Getter;
 
 import java.util.List;
 
+import com.google.common.collect.Lists;
+
 /**
  * Text result set row packet.
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-query-response.html#packet-ProtocolText::ResultsetRow">ResultsetRow</a>
@@ -39,6 +41,14 @@ public final class TextResultSetRowPacket extends MySQLPacket {
     public TextResultSetRowPacket(final int sequenceId, final List<Object> data) {
         super(sequenceId);
         this.data = data;
+    }
+    
+    public TextResultSetRowPacket(final MySQLPacketPayload mysqlPacketPayload, final int columnCount) {
+        super(mysqlPacketPayload.readInt1());
+        data = Lists.newArrayListWithExpectedSize(columnCount);
+        for (int i = 1; i <= columnCount; i++) {
+            data.add(mysqlPacketPayload.readStringLenenc());
+        }
     }
     
     @Override

@@ -44,11 +44,11 @@ import io.shardingsphere.proxy.backend.ShardingProxyClient;
 import io.shardingsphere.proxy.backend.mysql.MySQLQueryResult;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;
+import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
-import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ComQueryPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextResultSetRowPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
@@ -69,7 +69,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     
     private SynchronizedFuture<List<QueryResult>> synchronizedFuture;
     
-    private final CommandPacket commandPacket;
+    private final CommandPacketRebuilder rebuilder;
     
     private final DatabaseType databaseType;
     
@@ -85,8 +85,8 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     
     private boolean hasMoreResultValueFlag;
     
-    public SQLPacketsBackendHandler(final CommandPacket commandPacket, final DatabaseType databaseType, final boolean showSQL) {
-        this.commandPacket = commandPacket;
+    public SQLPacketsBackendHandler(final CommandPacketRebuilder rebuilder, final DatabaseType databaseType, final boolean showSQL) {
+        this.rebuilder = rebuilder;
         this.databaseType = databaseType;
         this.showSQL = showSQL;
         isMerged = false;
@@ -104,15 +104,16 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     
     protected CommandResponsePackets executeForMasterSlave() {
         MasterSlaveRouter masterSlaveRouter = new MasterSlaveRouter(RuleRegistry.getInstance().getMasterSlaveRule());
-        SQLStatement sqlStatement = new SQLJudgeEngine(commandPacket.getSql()).judge();
+        SQLStatement sqlStatement = new SQLJudgeEngine(rebuilder.sql()).judge();
         String dataSourceName = masterSlaveRouter.route(sqlStatement.getType()).iterator().next();
         
         synchronizedFuture = new SynchronizedFuture<>(1);
-        MySQLResultCache.getInstance().putFuture(commandPacket.getConnectionId(), synchronizedFuture);
-        executeCommand(dataSourceName, commandPacket.getConnectionId(), commandPacket);
+        MySQLResultCache.getInstance().putFuture(rebuilder.connectionId(), synchronizedFuture);
+        CommandPacket commandPacket = rebuilder.rebuild(new Object[]{rebuilder.sequenceId(), rebuilder.connectionId(), rebuilder.sql()});
+        executeCommand(dataSourceName, rebuilder.connectionId(), commandPacket);
         //TODO timeout should be set.
         List<QueryResult> queryResults = synchronizedFuture.get(CONNECT_TIMEOUT, TimeUnit.SECONDS);
-        MySQLResultCache.getInstance().deleteFuture(commandPacket.getConnectionId());
+        MySQLResultCache.getInstance().deleteFuture(rebuilder.connectionId());
         
         List<CommandResponsePackets> packets = new LinkedList<>();
         for (QueryResult each : queryResults) {
@@ -123,25 +124,20 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     
     protected CommandResponsePackets executeForSharding() {
         StatementRoutingEngine routingEngine = new StatementRoutingEngine(RuleRegistry.getInstance().getShardingRule(), RuleRegistry.getInstance().getShardingMetaData(), databaseType, showSQL);
-        SQLRouteResult routeResult = routingEngine.route(commandPacket.getSql());
+        SQLRouteResult routeResult = routingEngine.route(rebuilder.sql());
         if (routeResult.getExecutionUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
         }
         
         synchronizedFuture = new SynchronizedFuture<>(routeResult.getExecutionUnits().size());
-        MySQLResultCache.getInstance().putFuture(commandPacket.getConnectionId(), synchronizedFuture);
+        MySQLResultCache.getInstance().putFuture(rebuilder.connectionId(), synchronizedFuture);
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
-            if (commandPacket instanceof ComQueryPacket) {
-                ComQueryPacket queryPacket = (ComQueryPacket) ((ComQueryPacket) commandPacket).clone();
-                queryPacket.setSql(each.getSqlUnit().getSql());
-                executeCommand(each.getDataSource(), queryPacket.getConnectionId(), queryPacket);
-            } else {
-                executeCommand(each.getDataSource(), commandPacket.getConnectionId(), commandPacket);
-            }
+            CommandPacket commandPacket = rebuilder.rebuild(new Object[]{rebuilder.sequenceId(), rebuilder.connectionId(), each.getSqlUnit().getSql()});
+            executeCommand(each.getDataSource(), rebuilder.connectionId(), commandPacket);
         }
         //TODO timeout should be set.
         List<QueryResult> queryResults = synchronizedFuture.get(CONNECT_TIMEOUT, TimeUnit.SECONDS);
-        MySQLResultCache.getInstance().deleteFuture(commandPacket.getConnectionId());
+        MySQLResultCache.getInstance().deleteFuture(rebuilder.connectionId());
         
         List<CommandResponsePackets> packets = Lists.newArrayListWithCapacity(queryResults.size());
         for (QueryResult each : queryResults) {

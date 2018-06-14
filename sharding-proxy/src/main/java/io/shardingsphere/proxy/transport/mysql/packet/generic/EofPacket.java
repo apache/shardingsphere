@@ -32,7 +32,7 @@ import lombok.Getter;
 @Getter
 public class EofPacket extends MySQLPacket {
     
-    public static final int HEADER = 0xfe;
+    private static final int HEADER = 0xfe;
     
     private final int warnings;
     
@@ -44,8 +44,8 @@ public class EofPacket extends MySQLPacket {
         this.statusFlags = statusFlags;
     }
     
-    public EofPacket(final int sequenceId, final MySQLPacketPayload mysqlPacketPayload) {
-        super(sequenceId);
+    public EofPacket(final MySQLPacketPayload mysqlPacketPayload) {
+        super(mysqlPacketPayload.readInt1());
         Preconditions.checkArgument(HEADER == mysqlPacketPayload.readInt1());
         warnings = mysqlPacketPayload.readInt2();
         statusFlags = mysqlPacketPayload.readInt2();

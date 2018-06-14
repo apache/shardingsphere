@@ -22,11 +22,13 @@ import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.proxy.backend.common.SQLExecuteBackendHandler;
 import io.shardingsphere.proxy.backend.common.SQLPacketsBackendHandler;
 import io.shardingsphere.proxy.config.RuleRegistry;
+import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ComQueryPacket;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -37,17 +39,26 @@ import lombok.extern.slf4j.Slf4j;
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-field-list.html">COM_FIELD_LIST</a>
  */
 @Slf4j
-public final class ComFieldListPacket extends CommandPacket {
+public final class ComFieldListPacket extends CommandPacket implements CommandPacketRebuilder {
+    
+    private final int connectionId;
     
     private final String table;
     
     private final String fieldWildcard;
     
     public ComFieldListPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload mysqlPacketPayload) {
-        super(sequenceId, connectionId);
+        super(sequenceId);
+        this.connectionId = connectionId;
         table = mysqlPacketPayload.readStringNul();
         fieldWildcard = mysqlPacketPayload.readStringEOF();
-        setSql(String.format("SHOW COLUMNS FROM %s FROM %s", table, ShardingConstant.LOGIC_SCHEMA_NAME));
+    }
+    
+    public ComFieldListPacket(final int sequenceId, final int connectionId, final String table, final String fieldWildcard) {
+        super(sequenceId);
+        this.connectionId = connectionId;
+        this.table = table;
+        this.fieldWildcard = fieldWildcard;
     }
     
     @Override
@@ -61,11 +72,12 @@ public final class ComFieldListPacket extends CommandPacket {
     public CommandResponsePackets execute() {
         log.debug("table name received for Sharding-Proxy: {}", table);
         log.debug("field wildcard received for Sharding-Proxy: {}", fieldWildcard);
+        String sql = String.format("SHOW COLUMNS FROM %s FROM %s", table, ShardingConstant.LOGIC_SCHEMA_NAME);
         // TODO use common database type
         if (RuleRegistry.getInstance().isWithoutJdbc()) {
             return new SQLPacketsBackendHandler(this, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL()).execute();
         } else {
-            return new SQLExecuteBackendHandler(getSql(), DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL()).execute();
+            return new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL()).execute();
         }
     }
     
@@ -77,5 +89,25 @@ public final class ComFieldListPacket extends CommandPacket {
     @Override
     public DatabaseProtocolPacket getResultValue() {
         return null;
+    }
+    
+    @Override
+    public int connectionId() {
+        return connectionId;
+    }
+    
+    @Override
+    public int sequenceId() {
+        return getSequenceId();
+    }
+    
+    @Override
+    public String sql() {
+        return String.format("SHOW COLUMNS FROM %s FROM %s", table, ShardingConstant.LOGIC_SCHEMA_NAME);
+    }
+    
+    @Override
+    public CommandPacket rebuild(final Object... params) {
+        return new ComQueryPacket((int) params[0], (int) params[1], (String) params[2]);
     }
 }

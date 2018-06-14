@@ -25,6 +25,7 @@ import io.shardingsphere.proxy.backend.common.SQLPacketsBackendHandler;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transaction.AtomikosUserTransaction;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
@@ -40,38 +41,46 @@ import lombok.extern.slf4j.Slf4j;
  * @author linjiaqi
  */
 @Slf4j
-public final class ComQueryPacket extends CommandPacket implements Cloneable {
+public final class ComQueryPacket extends CommandPacket implements CommandPacketRebuilder {
+    
+    private final int connectionId;
+    
+    private final String sql;
     
     private final SQLExecuteBackendHandler sqlExecuteBackendHandler;
     
     private final SQLPacketsBackendHandler sqlPacketsBackendHandler;
-
+    
     public ComQueryPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload mysqlPacketPayload) {
-        super(sequenceId, connectionId);
-        setSql(mysqlPacketPayload.readStringEOF());
-        sqlExecuteBackendHandler = new SQLExecuteBackendHandler(getSql(), DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
-        sqlPacketsBackendHandler = new SQLPacketsBackendHandler(this, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
-    }
-
-    @Override
-    public Object clone() {
-        try {
-            return super.clone();
-        } catch (CloneNotSupportedException e) {
-            log.error(e.getMessage(), e);
+        super(sequenceId);
+        this.connectionId = connectionId;
+        sql = mysqlPacketPayload.readStringEOF();
+        if (RuleRegistry.getInstance().isWithoutJdbc()) {
+            sqlExecuteBackendHandler = null;
+            sqlPacketsBackendHandler = new SQLPacketsBackendHandler(this, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
+        } else {
+            sqlPacketsBackendHandler = null;
+            sqlExecuteBackendHandler = new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
         }
-        return null;
+    }
+    
+    public ComQueryPacket(final int sequenceId, final int connectionId, final String sql) {
+        super(sequenceId);
+        this.connectionId = connectionId;
+        this.sql = sql;
+        sqlExecuteBackendHandler = null;
+        sqlPacketsBackendHandler = null;
     }
     
     @Override
     public void write(final MySQLPacketPayload mysqlPacketPayload) {
         mysqlPacketPayload.writeInt1(CommandPacketType.COM_QUERY.getValue());
-        mysqlPacketPayload.writeStringEOF(getSql());
+        mysqlPacketPayload.writeStringEOF(sql);
     }
     
     @Override
     public CommandResponsePackets execute() {
-        log.debug("COM_QUERY received for Sharding-Proxy: {}", getSql());
+        log.debug("COM_QUERY received for Sharding-Proxy: {}", sql);
         try {
             doTransactionIntercept();
         } catch (final Exception ex) {
@@ -113,7 +122,27 @@ public final class ComQueryPacket extends CommandPacket implements Cloneable {
             return sqlExecuteBackendHandler.getResultValue();
         }
     }
-
+    
+    @Override
+    public int connectionId() {
+        return connectionId;
+    }
+    
+    @Override
+    public int sequenceId() {
+        return getSequenceId();
+    }
+    
+    @Override
+    public String sql() {
+        return sql;
+    }
+    
+    @Override
+    public CommandPacket rebuild(final Object... params) {
+        return new ComQueryPacket((int) params[0], (int) params[1], (String) params[2]);
+    }
+    
     private void doTransactionIntercept() throws Exception {
         if (RuleRegistry.isXaTransaction()) {
             if (isXaBegin()) {
@@ -125,16 +154,16 @@ public final class ComQueryPacket extends CommandPacket implements Cloneable {
             }
         }
     }
-
+    
     private boolean isXaBegin() {
-        return "BEGIN".equalsIgnoreCase(getSql()) || "START TRANSACTION".equalsIgnoreCase(getSql()) || "SET AUTOCOMMIT=0".equalsIgnoreCase(getSql());
+        return "BEGIN".equalsIgnoreCase(sql) || "START TRANSACTION".equalsIgnoreCase(sql) || "SET AUTOCOMMIT=0".equalsIgnoreCase(sql);
     }
-
+    
     private boolean isXaCommit() {
-        return "COMMIT".equalsIgnoreCase(getSql());
+        return "COMMIT".equalsIgnoreCase(sql);
     }
-
+    
     private boolean isXaRollback() {
-        return "ROLLBACK".equalsIgnoreCase(getSql());
+        return "ROLLBACK".equalsIgnoreCase(sql);
     }
 }
