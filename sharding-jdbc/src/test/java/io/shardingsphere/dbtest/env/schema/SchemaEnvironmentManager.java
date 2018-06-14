@@ -170,4 +170,37 @@ public final class SchemaEnvironmentManager {
         }
         return result;
     }
+    
+    /**
+     * Drop table.
+     *
+     * @param shardingRuleType sharding rule type
+     * @throws JAXBException JAXB exception
+     * @throws IOException IO exception
+     */
+    public static void dropTable(final String shardingRuleType) throws JAXBException, IOException {
+        for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
+            SchemaEnvironment databaseEnvironmentSchema = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(shardingRuleType));
+            dropTable(databaseEnvironmentSchema, each);
+        }
+    }
+    
+    private static void dropTable(final SchemaEnvironment databaseEnvironmentSchema, final DatabaseType databaseType) {
+        for (String each : databaseEnvironmentSchema.getDatabases()) {
+            try (BasicDataSource dataSource = (BasicDataSource) DataSourceUtil.createDataSource(databaseType, each);
+                 Connection connection = dataSource.getConnection();
+                 StringReader stringReader = new StringReader(StringUtils.join(getTableDropSQLs(databaseEnvironmentSchema.getTableDropSQLs(), databaseType), ";\n"))) {
+                RunScript.execute(connection, stringReader);
+            } catch (final SQLException ex) {
+                // TODO schema maybe not exist for oracle only
+            }
+        }
+    }
+    
+    private static List<String> getTableDropSQLs(final List<String> tableDropSQLs, final DatabaseType databaseType) {
+        if (DatabaseType.H2 == databaseType) {
+            return tableDropSQLs;
+        }
+        return new LinkedList<>();
+    }
 }
