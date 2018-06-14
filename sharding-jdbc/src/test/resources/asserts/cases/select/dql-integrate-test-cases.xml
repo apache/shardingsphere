@@ -487,5 +487,6 @@
         <assertion sharding-rule-type="db" expected-data-file="db/select_sub_query_with_group_by.xml" />
         <assertion sharding-rule-type="tbl"  expected-data-file="tbl/select_sub_query_with_group_by.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_sub_query_with_group_by.xml" />
+        <assertion sharding-rule-type="masterslave" expected-data-file="masterslave/select_sub_query_with_group_by.xml" />
     </dql-test-case>
 </integrate-test-cases>
