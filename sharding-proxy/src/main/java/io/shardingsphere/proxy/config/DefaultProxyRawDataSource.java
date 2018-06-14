@@ -40,7 +40,7 @@ public class DefaultProxyRawDataSource extends ProxyRawDataSource {
     protected Map<String, DataSource> buildInternal(final String key, final DataSourceParameter dataSourceParameter) {
         final Map<String, DataSource> result = new HashMap<>(128, 1);
         HikariConfig config = new HikariConfig();
-        config.setDriverClassName("com.mysql.jdbc.Driver");
+        config.setDriverClassName("com.mysql.cj.jdbc.Driver");
         config.setJdbcUrl(dataSourceParameter.getUrl());
         config.setUsername(dataSourceParameter.getUsername());
         config.setPassword(dataSourceParameter.getPassword());
