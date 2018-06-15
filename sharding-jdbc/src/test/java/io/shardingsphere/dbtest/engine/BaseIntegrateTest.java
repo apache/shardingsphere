@@ -21,6 +21,7 @@ import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
 import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingsphere.core.parsing.cache.ParsingResultCache;
 import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
@@ -148,9 +149,10 @@ public abstract class BaseIntegrateTest {
     }
     
     @After
-    public void closeShardingDataSource() {
+    public void tearDown() {
         if (dataSource instanceof ShardingDataSource) {
             ((ShardingDataSource) dataSource).close();
         }
+        ParsingResultCache.getInstance().clear();
     }
 }

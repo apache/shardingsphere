@@ -41,7 +41,7 @@ import java.util.Calendar;
 @RequiredArgsConstructor
 public final class JDBCQueryResult implements QueryResult {
     
-    private final ResultSet resultSet; 
+    private final ResultSet resultSet;
     
     @Override
     public boolean next() throws SQLException {
