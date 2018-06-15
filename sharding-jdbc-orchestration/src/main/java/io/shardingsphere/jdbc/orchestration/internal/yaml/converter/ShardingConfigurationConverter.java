@@ -59,7 +59,7 @@ public class ShardingConfigurationConverter {
      * @return sharding rule configuration
      */
     public static ShardingRuleConfiguration shardingRuleConfigFromYaml(final String shardingRuleConfigYamlString) {
-        return yaml.loadAs(shardingRuleConfigYamlString, ShardingRuleConfiguration.class);
+        return yaml.loadAs(shardingRuleConfigYamlString, YamlShardingRuleConfiguration.class).getShardingRuleConfiguration();
     }
     
     /**

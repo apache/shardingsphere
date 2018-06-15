@@ -59,7 +59,7 @@ public class MasterSlaveConfigurationConverter {
      * @return master slave rule configuration
      */
     public static MasterSlaveRuleConfiguration masterSlaveRuleConfigFromYaml(final String masteSlaveRuleConfigYamlString) {
-        return yaml.loadAs(masteSlaveRuleConfigYamlString, MasterSlaveRuleConfiguration.class);
+        return yaml.loadAs(masteSlaveRuleConfigYamlString, YamlMasterSlaveRuleConfiguration.class).getMasterSlaveRuleConfiguration();
     }
     
     /**
