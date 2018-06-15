@@ -51,7 +51,7 @@ public final class DatabaseEnvironment {
             case H2:
                 return "org.h2.Driver";
             case MySQL:
-                return "com.mysql.jdbc.Driver";
+                return "com.mysql.cj.jdbc.Driver";
             case PostgreSQL:
                 return "org.postgresql.Driver";
             case SQLServer:
@@ -73,7 +73,7 @@ public final class DatabaseEnvironment {
             case H2:
                 return "jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
             case MySQL:
-                return String.format("jdbc:mysql://%s:%s", host, port);
+                return String.format("jdbc:mysql://%s:%s?serverTimezone=UTC&useSSL=false", host, port);
             case PostgreSQL:
                 return String.format("jdbc:postgresql://%s:%s/", host, port);
             case SQLServer:
@@ -96,7 +96,7 @@ public final class DatabaseEnvironment {
             case H2:
                 return String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", dataSourceName);
             case MySQL:
-                return String.format("jdbc:mysql://%s:%s/%s", host, port, dataSourceName);
+                return String.format("jdbc:mysql://%s:%s/%s?serverTimezone=UTC&useSSL=false", host, port, dataSourceName);
             case PostgreSQL:
                 return String.format("jdbc:postgresql://%s:%s/%s", host, port, dataSourceName);
             case SQLServer:

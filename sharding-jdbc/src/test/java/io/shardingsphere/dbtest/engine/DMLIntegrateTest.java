@@ -31,6 +31,7 @@ import io.shardingsphere.dbtest.cases.dataset.init.DataSetsRoot;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
+import io.shardingsphere.dbtest.util.DateUtil;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
 import org.junit.After;
@@ -52,7 +53,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -212,7 +212,7 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
             int index = 1;
             for (String each : expectedDatSetRows.get(count).getValues()) {
                 if (Types.DATE == actualResultSet.getMetaData().getColumnType(index)) {
-                    assertThat(new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date(actualResultSet.getDate(index).getTime())), is(each));
+                    assertThat(DateUtil.format(actualResultSet.getDate(index)), is(each));
                 } else {
                     assertThat(String.valueOf(actualResultSet.getObject(index)), is(each));
                 }
