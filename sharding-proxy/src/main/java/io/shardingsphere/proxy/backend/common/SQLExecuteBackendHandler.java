@@ -132,7 +132,6 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             Statement statement = prepareResource(each.getDataSource());
             resultList.add(executorService.submit(new SQLExecuteWorker(this, routeResult.getSqlStatement(), statement, each.getSqlUnit().getSql())));
-            
         }
         getCommandResponsePackets(resultList, packets);
         CommandResponsePackets result = merge(routeResult.getSqlStatement(), packets);

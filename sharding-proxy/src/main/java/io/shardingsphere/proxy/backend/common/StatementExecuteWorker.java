@@ -96,7 +96,7 @@ public final class StatementExecuteWorker implements Callable<CommandResponsePac
         try {
             preparedStatement.setFetchSize(FETCH_ONE_ROW_A_TIME);
             setJDBCPreparedStatementParameters(preparedStatement);
-            statementExecuteBackendHandler.getResultSets().add(preparedStatement.executeQuery());
+            statementExecuteBackendHandler.getProxyPrepareJDBCResource().getResultSets().add(preparedStatement.executeQuery());
             return getQueryDatabaseProtocolPackets();
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
@@ -109,7 +109,7 @@ public final class StatementExecuteWorker implements Callable<CommandResponsePac
             ResultSet resultSet = preparedStatement.executeQuery();
             CachedRowSet cachedRowSet = new CachedRowSetImpl();
             cachedRowSet.populate(resultSet);
-            statementExecuteBackendHandler.getResultSets().add(cachedRowSet);
+            statementExecuteBackendHandler.getProxyPrepareJDBCResource().getResultSets().add(cachedRowSet);
             return getQueryDatabaseProtocolPackets();
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
@@ -162,7 +162,8 @@ public final class StatementExecuteWorker implements Callable<CommandResponsePac
     private CommandResponsePackets getQueryDatabaseProtocolPackets() throws SQLException {
         CommandResponsePackets result = new CommandResponsePackets();
         int currentSequenceId = 0;
-        ResultSetMetaData resultSetMetaData = statementExecuteBackendHandler.getResultSets().get(statementExecuteBackendHandler.getResultSets().size() - 1).getMetaData();
+        int lastIndex = statementExecuteBackendHandler.getProxyPrepareJDBCResource().getResultSets().size() - 1;
+        ResultSetMetaData resultSetMetaData = statementExecuteBackendHandler.getProxyPrepareJDBCResource().getResultSets().get(lastIndex).getMetaData();
         int columnCount = resultSetMetaData.getColumnCount();
         statementExecuteBackendHandler.setColumnCount(columnCount);
         if (0 == columnCount) {
