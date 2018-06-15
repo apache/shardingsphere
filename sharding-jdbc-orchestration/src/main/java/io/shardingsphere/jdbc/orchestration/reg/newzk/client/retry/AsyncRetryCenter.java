@@ -51,6 +51,7 @@ public enum AsyncRetryCenter {
         if (delayRetryPolicy == null) {
             LOGGER.warn("delayRetryPolicy is null and auto init with DelayRetryPolicy.newNoInitDelayPolicy");
             this.delayRetryPolicy = DelayRetryPolicy.newNoInitDelayPolicy();
+            return;
         }
         this.delayRetryPolicy = delayRetryPolicy;
     }
