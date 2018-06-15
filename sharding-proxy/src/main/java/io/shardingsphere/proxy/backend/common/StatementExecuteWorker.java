@@ -33,14 +33,11 @@ import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import lombok.AllArgsConstructor;
 
-import javax.sql.DataSource;
 import javax.sql.rowset.CachedRowSet;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -59,34 +56,31 @@ public final class StatementExecuteWorker implements Callable<CommandResponsePac
     
     private final SQLStatement sqlStatement;
     
-    private final String dataSourceName;
-    
-    private final String realSQL;
+    private final PreparedStatement preparedStatement;
     
     @Override
     public CommandResponsePackets call() {
-        return execute(sqlStatement, dataSourceName, realSQL);
+        return execute(sqlStatement);
     }
     
-    private CommandResponsePackets execute(final SQLStatement sqlStatement, final String dataSourceName, final String sql) {
+    private CommandResponsePackets execute(final SQLStatement sqlStatement) {
         switch (sqlStatement.getType()) {
             case DQL:
             case DAL:
-                return executeQuery(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql);
+                return executeQuery();
             case DML:
             case DDL:
-                return RuleRegistry.getInstance().isOnlyMasterSlave() ? executeUpdate(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql)
-                    : executeUpdate(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql, sqlStatement);
+                return executeUpdate();
             default:
-                return executeCommon(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql);
+                return executeCommon();
         }
     }
     
-    private CommandResponsePackets executeQuery(final DataSource dataSource, final String sql) {
+    private CommandResponsePackets executeQuery() {
         if (ProxyMode.MEMORY_STRICTLY == ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode())) {
-            return executeQueryWithStreamResultSet(dataSource, sql);
+            return executeQueryWithStreamResultSet();
         } else if (ProxyMode.CONNECTION_STRICTLY == ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode())) {
-            return executeQueryWithNonStreamResultSet(dataSource, sql);
+            return executeQueryWithNonStreamResultSet();
         } else {
             return new CommandResponsePackets(new ErrPacket(1, 0, "", "", "Invalid proxy.mode"));
         }
@@ -98,11 +92,8 @@ public final class StatementExecuteWorker implements Callable<CommandResponsePac
         }
     }
     
-    private CommandResponsePackets executeQueryWithStreamResultSet(final DataSource dataSource, final String sql) {
+    private CommandResponsePackets executeQueryWithStreamResultSet() {
         try {
-            Connection connection = dataSource.getConnection();
-            statementExecuteBackendHandler.getConnections().add(connection);
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setFetchSize(FETCH_ONE_ROW_A_TIME);
             setJDBCPreparedStatementParameters(preparedStatement);
             statementExecuteBackendHandler.getResultSets().add(preparedStatement.executeQuery());
@@ -112,11 +103,8 @@ public final class StatementExecuteWorker implements Callable<CommandResponsePac
         }
     }
     
-    private CommandResponsePackets executeQueryWithNonStreamResultSet(final DataSource dataSource, final String sql) {
-        try (
-            Connection connection = dataSource.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(sql)
-        ) {
+    private CommandResponsePackets executeQueryWithNonStreamResultSet() {
+        try {
             setJDBCPreparedStatementParameters(preparedStatement);
             ResultSet resultSet = preparedStatement.executeQuery();
             CachedRowSet cachedRowSet = new CachedRowSetImpl();
@@ -128,19 +116,16 @@ public final class StatementExecuteWorker implements Callable<CommandResponsePac
         }
     }
     
-    private CommandResponsePackets executeUpdate(final DataSource dataSource, final String sql, final SQLStatement sqlStatement) {
+    private CommandResponsePackets executeUpdate() {
         PreparedStatement preparedStatement = null;
-        try (
-            Connection connection = dataSource.getConnection()) {
+        try {
             int affectedRows;
             long lastInsertId = 0;
             if (sqlStatement instanceof InsertStatement) {
-                preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
                 setJDBCPreparedStatementParameters(preparedStatement);
                 affectedRows = preparedStatement.executeUpdate();
                 lastInsertId = getGeneratedKey(preparedStatement);
             } else {
-                preparedStatement = connection.prepareStatement(sql);
                 setJDBCPreparedStatementParameters(preparedStatement);
                 affectedRows = preparedStatement.executeUpdate();
             }
@@ -158,28 +143,8 @@ public final class StatementExecuteWorker implements Callable<CommandResponsePac
         }
     }
     
-    private CommandResponsePackets executeUpdate(final DataSource dataSource, final String sql) {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            setJDBCPreparedStatementParameters(preparedStatement);
-            int affectedRows = preparedStatement.executeUpdate();
-            ResultSet resultSet = preparedStatement.getGeneratedKeys();
-            long lastInsertId = 0;
-            while (resultSet.next()) {
-                lastInsertId = resultSet.getLong(1);
-            }
-            return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
-        } catch (final SQLException ex) {
-            return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
-        } finally {
-            MasterVisitedManager.clear();
-        }
-    }
-    
-    private CommandResponsePackets executeCommon(final DataSource dataSource, final String sql) {
-        try (
-            Connection connection = dataSource.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+    private CommandResponsePackets executeCommon() {
+        try {
             setJDBCPreparedStatementParameters(preparedStatement);
             boolean hasResultSet = preparedStatement.execute();
             if (hasResultSet) {

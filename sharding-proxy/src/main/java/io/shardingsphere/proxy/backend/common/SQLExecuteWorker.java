@@ -58,38 +58,37 @@ public final class SQLExecuteWorker implements Callable<CommandResponsePackets> 
     
     private final Statement statement;
     
-    private final String realSQL;
+    private final String sql;
     
     @Override
     public CommandResponsePackets call() {
-        return execute(sqlStatement, statement, realSQL);
+        return execute();
     }
     
-    private CommandResponsePackets execute(final SQLStatement sqlStatement, final Statement statement, final String sql) {
+    private CommandResponsePackets execute() {
         switch (sqlStatement.getType()) {
             case DQL:
             case DAL:
-                return executeQuery(statement, sql);
+                return executeQuery();
             case DML:
             case DDL:
-                return RuleRegistry.getInstance().isOnlyMasterSlave() ? executeUpdate(statement, sql)
-                    : executeUpdate(statement, sql, sqlStatement);
+                return executeUpdate();
             default:
-                return executeCommon(statement, sql);
+                return executeCommon();
         }
     }
     
-    private CommandResponsePackets executeQuery(final Statement statement, final String sql) {
+    private CommandResponsePackets executeQuery() {
         if (ProxyMode.MEMORY_STRICTLY == ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode())) {
-            return executeQueryWithStreamResultSet(statement, sql);
+            return executeQueryWithStreamResultSet();
         } else if (ProxyMode.CONNECTION_STRICTLY == ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode())) {
-            return executeQueryWithNonStreamResultSet(statement, sql);
+            return executeQueryWithNonStreamResultSet();
         } else {
             return new CommandResponsePackets(new ErrPacket(1, 0, "", "", "Invalid proxy.mode"));
         }
     }
     
-    private CommandResponsePackets executeQueryWithStreamResultSet(final Statement statement, final String sql) {
+    private CommandResponsePackets executeQueryWithStreamResultSet() {
         try {
             statement.setFetchSize(FETCH_ONE_ROW_A_TIME);
             sqlExecuteBackendHandler.getProxyJDBCResource().addResultSet(statement.executeQuery(sql));
@@ -99,7 +98,7 @@ public final class SQLExecuteWorker implements Callable<CommandResponsePackets> 
         }
     }
     
-    private CommandResponsePackets executeQueryWithNonStreamResultSet(final Statement statement, final String sql) {
+    private CommandResponsePackets executeQueryWithNonStreamResultSet() {
         try (
             ResultSet resultSet = statement.executeQuery(sql)
         ) {
@@ -112,7 +111,7 @@ public final class SQLExecuteWorker implements Callable<CommandResponsePackets> 
         }
     }
     
-    private CommandResponsePackets executeUpdate(final Statement statement, final String sql, final SQLStatement sqlStatement) {
+    private CommandResponsePackets executeUpdate() {
         try {
             int affectedRows;
             long lastInsertId = 0;
@@ -130,23 +129,7 @@ public final class SQLExecuteWorker implements Callable<CommandResponsePackets> 
         }
     }
     
-    private CommandResponsePackets executeUpdate(final Statement statement, final String sql) {
-        try {
-            int affectedRows = statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
-            ResultSet resultSet = statement.getGeneratedKeys();
-            long lastInsertId = 0;
-            while (resultSet.next()) {
-                lastInsertId = resultSet.getLong(1);
-            }
-            return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
-        } catch (final SQLException ex) {
-            return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
-        } finally {
-            MasterVisitedManager.clear();
-        }
-    }
-    
-    private CommandResponsePackets executeCommon(final Statement statement, final String sql) {
+    private CommandResponsePackets executeCommon() {
         try {
             boolean hasResultSet = statement.execute(sql);
             if (hasResultSet) {
