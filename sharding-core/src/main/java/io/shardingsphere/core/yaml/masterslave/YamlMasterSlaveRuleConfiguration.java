@@ -58,7 +58,8 @@ public class YamlMasterSlaveRuleConfiguration {
         name = masterSlaveRuleConfiguration.getName();
         masterDataSourceName = masterSlaveRuleConfiguration.getMasterDataSourceName();
         slaveDataSourceNames = masterSlaveRuleConfiguration.getSlaveDataSourceNames();
-        loadBalanceAlgorithmClassName = masterSlaveRuleConfiguration.getLoadBalanceAlgorithm().getClass().getName();
+        loadBalanceAlgorithmClassName = null == masterSlaveRuleConfiguration.getLoadBalanceAlgorithm()
+                ? null : masterSlaveRuleConfiguration.getLoadBalanceAlgorithm().getClass().getName();
         this.configMap = configMap;
     }
     
