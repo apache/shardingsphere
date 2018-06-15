@@ -27,11 +27,11 @@ import org.yaml.snakeyaml.representer.Representer;
  *
  * @author panjuan
  */
-public class ConfigurationRepresenter extends Representer {
+public class DefaultConfigurationRepresenter extends Representer {
     
-    public ConfigurationRepresenter() {
+    public DefaultConfigurationRepresenter() {
         super();
-        this.nullRepresenter = new ConfigurationRepresenter.NullRepresent();
+        this.nullRepresenter = new DefaultConfigurationRepresenter.NullRepresent();
     }
     
     private class NullRepresent implements Represent {
