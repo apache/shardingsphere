@@ -56,5 +56,3 @@ public final class ProxyShardingMetaData extends ShardingMetaData {
         return new ShardingMetaDataHandler(dataSourceMap.get(defaultDataSourceName), "").getTableNamesFromDefaultDataSource();
     }
 }
-
-

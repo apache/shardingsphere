@@ -173,7 +173,7 @@ public final class StatementExecuteWorker implements Callable<CommandResponsePac
         for (int i = 1; i <= columnCount; i++) {
             ColumnType columnType = ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(i));
             ColumnDefinition41Packet columnDefinition41Packet = new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData.getSchemaName(i), resultSetMetaData.getTableName(i),
-                resultSetMetaData.getTableName(i), resultSetMetaData.getColumnLabel(i), resultSetMetaData.getColumnName(i), resultSetMetaData.getColumnDisplaySize(i), columnType, 0);
+                    resultSetMetaData.getTableName(i), resultSetMetaData.getColumnLabel(i), resultSetMetaData.getColumnName(i), resultSetMetaData.getColumnDisplaySize(i), columnType, 0);
             result.addPacket(columnDefinition41Packet);
             statementExecuteBackendHandler.getColumnTypes().add(columnType);
         }
@@ -194,7 +194,7 @@ public final class StatementExecuteWorker implements Callable<CommandResponsePac
         for (int i = 1; i <= columnCount; i++) {
             ColumnType columnType = ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(i));
             ColumnDefinition41Packet columnDefinition41Packet = new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData.getSchemaName(i), resultSetMetaData.getTableName(i),
-                resultSetMetaData.getTableName(i), resultSetMetaData.getColumnLabel(i), resultSetMetaData.getColumnName(i), resultSetMetaData.getColumnDisplaySize(i), columnType, 0);
+                    resultSetMetaData.getTableName(i), resultSetMetaData.getColumnLabel(i), resultSetMetaData.getColumnName(i), resultSetMetaData.getColumnDisplaySize(i), columnType, 0);
             result.addPacket(columnDefinition41Packet);
             statementExecuteBackendHandler.getColumnTypes().add(columnType);
         }

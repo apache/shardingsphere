@@ -215,66 +215,77 @@
         <assertion sharding-rule-type="db" expected-data-file="db/select_group_by_with_sum.xml" />
         <assertion sharding-rule-type="tbl" expected-data-file="tbl/select_group_by_with_sum.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_group_by_with_sum.xml" />
+        <assertion sharding-rule-type="masterslave" expected-data-file="masterslave/select_group_by_with_sum.xml" />
     </dql-test-case>
     
     <dql-test-case sql-case-id="select_group_by_with_count">
         <assertion sharding-rule-type="db" expected-data-file="db/select_group_by_with_count.xml" />
         <assertion sharding-rule-type="tbl" expected-data-file="tbl/select_group_by_with_count.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_group_by_with_count.xml" />
+        <assertion sharding-rule-type="masterslave" expected-data-file="masterslave/select_group_by_with_count.xml" />
     </dql-test-case>
     
     <dql-test-case sql-case-id="select_group_by_with_max">
         <assertion sharding-rule-type="db" expected-data-file="db/select_group_by_with_max.xml" />
         <assertion sharding-rule-type="tbl" expected-data-file="tbl/select_group_by_with_max.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_group_by_with_max.xml" />
+        <assertion sharding-rule-type="masterslave" expected-data-file="masterslave/select_group_by_with_max.xml" />
     </dql-test-case>
     
     <dql-test-case sql-case-id="select_group_by_with_min">
         <assertion sharding-rule-type="db" expected-data-file="db/select_group_by_with_min.xml" />
         <assertion sharding-rule-type="tbl" expected-data-file="tbl/select_group_by_with_min.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_group_by_with_min.xml" />
+        <assertion sharding-rule-type="masterslave" expected-data-file="masterslave/select_group_by_with_min.xml" />
     </dql-test-case>
     
     <dql-test-case sql-case-id="select_group_by_with_avg">
         <assertion sharding-rule-type="db" expected-data-file="db/select_group_by_with_avg.xml" />
         <assertion sharding-rule-type="tbl" expected-data-file="tbl/select_group_by_with_avg.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_group_by_with_avg.xml" />
+        <assertion sharding-rule-type="masterslave" expected-data-file="masterslave/select_group_by_with_avg.xml" />
     </dql-test-case>
     
     <dql-test-case sql-case-id="select_group_by_with_order_by_desc">
         <assertion sharding-rule-type="db" expected-data-file="db/select_group_by_with_order_by_desc.xml" />
         <assertion sharding-rule-type="tbl" expected-data-file="tbl/select_group_by_with_order_by_desc.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_group_by_with_order_by_desc.xml" />
+        <assertion sharding-rule-type="masterslave" expected-data-file="masterslave/select_group_by_with_order_by_desc.xml" />
     </dql-test-case>
     
     <dql-test-case sql-case-id="select_group_by_without_grouped_column">
         <assertion sharding-rule-type="db" parameters="10:int, 11:int, 1000:int, 1109:int" expected-data-file="db/select_group_by_without_grouped_column.xml" />
         <assertion sharding-rule-type="tbl" parameters="10:int, 11:int, 1000:int, 1109:int" expected-data-file="tbl/select_group_by_without_grouped_column.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="10:int, 11:int, 1000:int, 1109:int" expected-data-file="dbtbl_with_masterslave/select_group_by_without_grouped_column.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="10:int, 11:int, 1000:int, 1109:int" expected-data-file="masterslave/select_group_by_without_grouped_column.xml" />
     </dql-test-case>
     
     <dql-test-case sql-case-id="select_group_by_with_limit">
         <assertion sharding-rule-type="db" parameters="1:int" expected-data-file="db/select_group_by_with_limit.xml" />
         <assertion sharding-rule-type="tbl" parameters="1:int" expected-data-file="tbl/select_group_by_with_limit.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1:int" expected-data-file="dbtbl_with_masterslave/select_group_by_with_limit.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="1:int" expected-data-file="masterslave/select_group_by_with_limit.xml" />
     </dql-test-case>
     
     <dql-test-case sql-case-id="select_group_by_with_order_by_and_limit">
         <assertion sharding-rule-type="db" parameters="1:int" expected-data-file="db/select_group_by_with_order_by_and_limit.xml" />
         <assertion sharding-rule-type="tbl" parameters="1:int" expected-data-file="tbl/select_group_by_with_order_by_and_limit.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1:int" expected-data-file="dbtbl_with_masterslave/select_group_by_with_order_by_and_limit.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="1:int" expected-data-file="masterslave/select_group_by_with_order_by_and_limit.xml" />
     </dql-test-case>
     
     <dql-test-case sql-case-id="select_with_item_alias_match_order_by_and_group_by_items">
         <assertion sharding-rule-type="db" expected-data-file="db/select_with_item_alias_match_order_by_and_group_by_items.xml" />
         <assertion sharding-rule-type="tbl" expected-data-file="tbl/select_with_item_alias_match_order_by_and_group_by_items.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_with_item_alias_match_order_by_and_group_by_items.xml" />
+        <assertion sharding-rule-type="masterslave" expected-data-file="masterslave/select_with_item_alias_match_order_by_and_group_by_items.xml" />
     </dql-test-case>
     
     <dql-test-case sql-case-id="select_group_by_with_key_word_alias">
         <assertion sharding-rule-type="db" expected-data-file="db/select_group_by_with_key_word_alias.xml" />
         <assertion sharding-rule-type="tbl" expected-data-file="tbl/select_group_by_with_key_word_alias.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_group_by_with_key_word_alias.xml" />
+        <assertion sharding-rule-type="masterslave" expected-data-file="masterslave/select_group_by_with_key_word_alias.xml" />
     </dql-test-case>
     
     <!--<dql-test-case sql-case-id="select_group_by_with_date_function">-->
@@ -287,66 +298,77 @@
         <assertion sharding-rule-type="db" parameters="1000:int, 1001:int" expected-data-file="db/select_or_with_same_sharding_columns.xml" />
         <assertion sharding-rule-type="tbl" parameters="1000:int, 1001:int" expected-data-file="tbl/select_or_with_same_sharding_columns.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1000:int, 1001:int" expected-data-file="dbtbl_with_masterslave/select_or_with_same_sharding_columns.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="1000:int, 1001:int" expected-data-file="masterslave/select_or_with_same_sharding_columns.xml" />
     </dql-test-case>
     
     <dql-test-case sql-case-id="select_or_with_different_sharding_columns">
         <assertion sharding-rule-type="db" parameters="1000:int, 11:int" expected-data-file="db/select_or_with_different_sharding_columns.xml" />
         <assertion sharding-rule-type="tbl" parameters="1000:int, 11:int" expected-data-file="tbl/select_or_with_different_sharding_columns.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1000:int, 11:int" expected-data-file="dbtbl_with_masterslave/select_or_with_different_sharding_columns.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="1000:int, 11:int" expected-data-file="masterslave/select_or_with_different_sharding_columns.xml" />
     </dql-test-case>
     
     <dql-test-case sql-case-id="select_or_with_none_sharding_columns">
         <assertion sharding-rule-type="db" parameters="1000:int, init:String" expected-data-file="db/select_or_with_none_sharding_columns.xml" />
         <assertion sharding-rule-type="tbl" parameters="1000:int, init:String" expected-data-file="tbl/select_or_with_none_sharding_columns.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1000:int, init:String" expected-data-file="dbtbl_with_masterslave/select_or_with_none_sharding_columns.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="1000:int, init:String" expected-data-file="dbtbl_with_masterslave/select_or_with_none_sharding_columns.xml" />
     </dql-test-case>
     
     <dql-test-case sql-case-id="select_or_mix_and_for_simple_pattern">
         <assertion sharding-rule-type="db" parameters="1000:int, init:String, 11:int" expected-data-file="db/select_or_mix_and_for_simple_pattern.xml" />
         <assertion sharding-rule-type="tbl" parameters="1000:int, init:String, 11:int" expected-data-file="tbl/select_or_mix_and_for_simple_pattern.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1000:int, init:String, 11:int" expected-data-file="dbtbl_with_masterslave/select_or_mix_and_for_simple_pattern.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="1000:int, init:String, 11:int" expected-data-file="dbtbl_with_masterslave/select_or_mix_and_for_simple_pattern.xml" />
     </dql-test-case>
     
     <dql-test-case sql-case-id="select_or_mix_and_for_complex_pattern">
         <assertion sharding-rule-type="db" parameters="init:String, 1000:int, 1100:int, 10:int, 11:int" expected-data-file="db/select_or_mix_and_for_complex_pattern.xml" />
         <assertion sharding-rule-type="tbl" parameters="init:String, 1000:int, 1100:int, 10:int, 11:int" expected-data-file="tbl/select_or_mix_and_for_complex_pattern.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="init:String, 1000:int, 1100:int, 10:int, 11:int" expected-data-file="dbtbl_with_masterslave/select_or_mix_and_for_complex_pattern.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="init:String, 1000:int, 1100:int, 10:int, 11:int" expected-data-file="masterslave/select_or_mix_and_for_complex_pattern.xml" />
     </dql-test-case>
     
     <dql-test-case sql-case-id="select_or_mix_and_with_binding_tables">
         <assertion sharding-rule-type="db" parameters="1000:int, 1100:int, 11:int" expected-data-file="db/select_or_mix_and_with_binding_tables.xml" />
         <assertion sharding-rule-type="tbl" parameters="1000:int, 1100:int, 11:int" expected-data-file="tbl/select_or_mix_and_with_binding_tables.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1000:int, 1100:int, 11:int" expected-data-file="dbtbl_with_masterslave/select_or_mix_and_with_binding_tables.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="1000:int, 1100:int, 11:int" expected-data-file="masterslave/select_or_mix_and_with_binding_tables.xml" />
     </dql-test-case>
     
     <dql-test-case sql-case-id="select_or_mix_and_with_binding_and_broadcast_tables">
         <assertion sharding-rule-type="db" parameters="1000:int, 1100:int, 11:int, init:String" expected-data-file="db/select_or_mix_and_with_binding_and_broadcast_tables.xml" />
         <assertion sharding-rule-type="tbl" parameters="1000:int, 1100:int, 11:int, init:String" expected-data-file="tbl/select_or_mix_and_with_binding_and_broadcast_tables.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1000:int, 1100:int, 11:int, init:String" expected-data-file="dbtbl_with_masterslave/select_or_mix_and_with_binding_and_broadcast_tables.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="1000:int, 1100:int, 11:int, init:String" expected-data-file="masterslave/select_or_mix_and_with_binding_and_broadcast_tables.xml" />
     </dql-test-case>
     
     <dql-test-case sql-case-id="select_order_by_asc_and_index_desc">
         <assertion sharding-rule-type="db" expected-data-file="db/select_order_by_asc_and_index_desc.xml" />
         <assertion sharding-rule-type="tbl" expected-data-file="tbl/select_order_by_asc_and_index_desc.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_order_by_asc_and_index_desc.xml" />
+        <assertion sharding-rule-type="masterslave" expected-data-file="masterslave/select_order_by_asc_and_index_desc.xml" />
     </dql-test-case>
     
     <dql-test-case sql-case-id="select_order_by_desc_and_index_asc">
         <assertion sharding-rule-type="db" expected-data-file="db/select_order_by_desc_and_index_asc.xml" />
         <assertion sharding-rule-type="tbl" expected-data-file="tbl/select_order_by_desc_and_index_asc.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_order_by_desc_and_index_asc.xml" />
+        <assertion sharding-rule-type="masterslave" expected-data-file="masterslave/select_order_by_desc_and_index_asc.xml" />
     </dql-test-case>
     
     <dql-test-case sql-case-id="select_order_by_with_ordered_column">
         <assertion sharding-rule-type="db" expected-data-file="db/select_order_by_with_ordered_column.xml" />
         <assertion sharding-rule-type="tbl" expected-data-file="tbl/select_order_by_with_ordered_column.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_order_by_with_ordered_column.xml" />
+        <assertion sharding-rule-type="masterslave" expected-data-file="masterslave/select_order_by_with_ordered_column.xml" />
     </dql-test-case>
     
     <dql-test-case sql-case-id="select_order_by_with_date">
         <assertion sharding-rule-type="db" expected-data-file="db/select_order_by_with_date.xml" />
         <assertion sharding-rule-type="tbl" expected-data-file="tbl/select_order_by_with_date.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_order_by_with_date.xml" />
+        <assertion sharding-rule-type="masterslave" expected-data-file="masterslave/select_order_by_with_date.xml" />
     </dql-test-case>
     
     <!-- // TODO add null data -->
@@ -354,6 +376,7 @@
         <assertion sharding-rule-type="db" expected-data-file="db/select_order_by_with_ordered_column.xml" />
         <assertion sharding-rule-type="tbl" expected-data-file="tbl/select_order_by_with_ordered_column.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_order_by_with_ordered_column.xml" />
+        <assertion sharding-rule-type="masterslave" expected-data-file="masterslave/select_order_by_with_ordered_column.xml" />
     </dql-test-case>
     
     <!-- // TODO add null data -->
@@ -361,6 +384,7 @@
         <assertion sharding-rule-type="db" expected-data-file="db/select_order_by_with_ordered_column.xml" />
         <assertion sharding-rule-type="tbl" expected-data-file="tbl/select_order_by_with_ordered_column.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_order_by_with_ordered_column.xml" />
+        <assertion sharding-rule-type="masterslave" expected-data-file="masterslave/select_order_by_with_ordered_column.xml" />
     </dql-test-case>
     
     <dql-test-case sql-case-id="select_pagination_with_offset">
@@ -439,29 +463,34 @@
         <assertion sharding-rule-type="db" parameters="1000:int" expected-data-file="db/select_inner_join.xml" />
         <assertion sharding-rule-type="tbl" parameters="1000:int" expected-data-file="tbl/select_inner_join.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1000:int" expected-data-file="dbtbl_with_masterslave/select_inner_join.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="1000:int" expected-data-file="masterslave/select_inner_join.xml" />
     </dql-test-case>
     
     <dql-test-case sql-case-id="select_sub_query_with_single_table">
         <assertion sharding-rule-type="db" parameters="1000:int, 1001:int" expected-data-file="db/select_sub_query_with_single_table.xml" />
         <assertion sharding-rule-type="tbl" parameters="1000:int, 1001:int" expected-data-file="tbl/select_sub_query_with_single_table.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1000:int, 1001:int" expected-data-file="dbtbl_with_masterslave/select_sub_query_with_single_table.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="1000:int, 1001:int" expected-data-file="masterslave/select_sub_query_with_single_table.xml" />
     </dql-test-case>
     
     <!--<dql-test-case sql-case-id="select_sub_query_with_multiple_tables">-->
         <!--<assertion sharding-rule-type="db" parameters="1000:int, 1001:int" expected-data-file="db/select_sub_query_with_multiple_tables.xml" />-->
         <!--<assertion sharding-rule-type="tbl" parameters="1000:int, 1001:int" expected-data-file="tbl/select_sub_query_with_multiple_tables.xml" />-->
         <!--<assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1000:int, 1001:int" expected-data-file="dbtbl_with_masterslave/select_sub_query_with_multiple_tables.xml" />-->
+    <!--<assertion sharding-rule-type="masterslave" parameters="1000:int, 1001:int" expected-data-file="masterslave/select_sub_query_with_multiple_tables.xml" />-->
     <!--</dql-test-case>-->
     
     <dql-test-case sql-case-id="select_sub_query_with_order_by">
         <assertion sharding-rule-type="db" expected-data-file="db/select_sub_query_with_order_by.xml" />
         <assertion sharding-rule-type="tbl"  expected-data-file="tbl/select_sub_query_with_order_by.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_sub_query_with_order_by.xml" />
+        <assertion sharding-rule-type="masterslave" expected-data-file="masterslave/select_sub_query_with_order_by.xml" />
     </dql-test-case>
     
     <dql-test-case sql-case-id="select_sub_query_with_group_by">
         <assertion sharding-rule-type="db" expected-data-file="db/select_sub_query_with_group_by.xml" />
         <assertion sharding-rule-type="tbl"  expected-data-file="tbl/select_sub_query_with_group_by.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" expected-data-file="dbtbl_with_masterslave/select_sub_query_with_group_by.xml" />
+        <assertion sharding-rule-type="masterslave" expected-data-file="masterslave/select_sub_query_with_group_by.xml" />
     </dql-test-case>
 </integrate-test-cases>

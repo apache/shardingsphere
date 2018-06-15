@@ -26,7 +26,8 @@ import lombok.Getter;
  * OK packet protocol.
  * @see <a href="https://dev.mysql.com/doc/internals/en/packet-OK_Packet.html">OK Packet</a>
  * 
- * @author zhangliang 
+ * @author zhangliang
+ * @author wangkai
  */
 @Getter
 public class OKPacket extends MySQLPacket {

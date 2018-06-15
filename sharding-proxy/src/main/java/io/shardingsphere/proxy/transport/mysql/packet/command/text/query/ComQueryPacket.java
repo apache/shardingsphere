@@ -19,15 +19,16 @@ package io.shardingsphere.proxy.transport.mysql.packet.command.text.query;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.proxy.backend.common.SQLExecuteBackendHandler;
+import io.shardingsphere.proxy.backend.common.SQLPacketsBackendHandler;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transaction.AtomikosUserTransaction;
+import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
-import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
@@ -37,22 +38,43 @@ import java.sql.SQLException;
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-query.html">COM_QUERY</a>
  *
  * @author zhangliang
+ * @author linjiaqi
  */
 @Slf4j
-public final class ComQueryPacket extends CommandPacket {
+public final class ComQueryPacket extends CommandPacket implements CommandPacketRebuilder {
+    
+    private final int connectionId;
     
     private final String sql;
     
     private final SQLExecuteBackendHandler sqlExecuteBackendHandler;
     
-    public ComQueryPacket(final int sequenceId, final MySQLPacketPayload mysqlPacketPayload) {
+    private final SQLPacketsBackendHandler sqlPacketsBackendHandler;
+    
+    public ComQueryPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload mysqlPacketPayload) {
         super(sequenceId);
+        this.connectionId = connectionId;
         sql = mysqlPacketPayload.readStringEOF();
-        sqlExecuteBackendHandler = new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
+        if (RuleRegistry.getInstance().isWithoutJdbc()) {
+            sqlExecuteBackendHandler = null;
+            sqlPacketsBackendHandler = new SQLPacketsBackendHandler(this, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
+        } else {
+            sqlPacketsBackendHandler = null;
+            sqlExecuteBackendHandler = new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
+        }
+    }
+    
+    public ComQueryPacket(final int sequenceId, final int connectionId, final String sql) {
+        super(sequenceId);
+        this.connectionId = connectionId;
+        this.sql = sql;
+        sqlExecuteBackendHandler = null;
+        sqlPacketsBackendHandler = null;
     }
     
     @Override
     public void write(final MySQLPacketPayload mysqlPacketPayload) {
+        mysqlPacketPayload.writeInt1(CommandPacketType.COM_QUERY.getValue());
         mysqlPacketPayload.writeStringEOF(sql);
     }
     
@@ -60,13 +82,15 @@ public final class ComQueryPacket extends CommandPacket {
     public CommandResponsePackets execute() {
         log.debug("COM_QUERY received for Sharding-Proxy: {}", sql);
         try {
-            if (doTransactionIntercept()) {
-                return new CommandResponsePackets(new OKPacket(1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
-            }
+            doTransactionIntercept();
         } catch (final Exception ex) {
             return new CommandResponsePackets(new ErrPacket(1, 0, "", "", "" + ex.getMessage()));
         }
-        return sqlExecuteBackendHandler.execute();
+        if (RuleRegistry.getInstance().isWithoutJdbc()) {
+            return sqlPacketsBackendHandler.execute();
+        } else {
+            return sqlExecuteBackendHandler.execute();
+        }
     }
     
     /**
@@ -76,7 +100,11 @@ public final class ComQueryPacket extends CommandPacket {
      */
     public boolean hasMoreResultValue() {
         try {
-            return sqlExecuteBackendHandler.hasMoreResultValue();
+            if (RuleRegistry.getInstance().isWithoutJdbc()) {
+                return sqlPacketsBackendHandler.hasMoreResultValue();
+            } else {
+                return sqlExecuteBackendHandler.hasMoreResultValue();
+            }
         } catch (final SQLException ex) {
             return false;
         }
@@ -88,7 +116,31 @@ public final class ComQueryPacket extends CommandPacket {
      * @return database protocol packet
      */
     public DatabaseProtocolPacket getResultValue() {
-        return sqlExecuteBackendHandler.getResultValue();
+        if (RuleRegistry.getInstance().isWithoutJdbc()) {
+            return sqlPacketsBackendHandler.getResultValue();
+        } else {
+            return sqlExecuteBackendHandler.getResultValue();
+        }
+    }
+    
+    @Override
+    public int connectionId() {
+        return connectionId;
+    }
+    
+    @Override
+    public int sequenceId() {
+        return getSequenceId();
+    }
+    
+    @Override
+    public String sql() {
+        return sql;
+    }
+    
+    @Override
+    public CommandPacket rebuild(final Object... params) {
+        return new ComQueryPacket((int) params[0], (int) params[1], (String) params[2]);
     }
     
     private boolean doTransactionIntercept() throws Exception {
