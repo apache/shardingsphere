@@ -38,7 +38,7 @@
             <data parameter="'update',1909,19" expected="update/%s_9.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertUpdateWithoutAlias">
+    <sql id="update_without_alias">
         <sharding-rule value="tbl">
             <data parameter="'update',1000,10" expected="update/%s_0.xml" />
             <data parameter="'update',1001,10" expected="update/%s_1.xml" />
