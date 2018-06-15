@@ -36,9 +36,9 @@ public final class DataSourceConverter {
     private static final Yaml yaml = new Yaml();
     
     /**
-     * Convert dataSourceMap to Yaml string.
+     * Convert data source map to Yaml string.
      *
-     * @param dataSourceMap Data source Map
+     * @param dataSourceMap Data source map
      * @return Yaml string
      */
     public static String dataSourceMapToYaml(final Map<String, DataSource> dataSourceMap) {
@@ -47,7 +47,7 @@ public final class DataSourceConverter {
     }
     
     /**
-     * Convert yaml to dataSourceMap.
+     * Convert yaml to data source map.
      *
      * @param dataSourceMapYamlString String in yaml.
      * @return Data source Map.

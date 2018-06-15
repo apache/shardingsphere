@@ -54,11 +54,12 @@ public class YamlMasterSlaveRuleConfiguration {
     
     private Map<String, Object> configMap = new ConcurrentHashMap<>();
     
-    public YamlMasterSlaveRuleConfiguration(final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration) {
+    public YamlMasterSlaveRuleConfiguration(final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration, final Map<String, Object> configMap) {
         name = masterSlaveRuleConfiguration.getName();
         masterDataSourceName = masterSlaveRuleConfiguration.getMasterDataSourceName();
         slaveDataSourceNames = masterSlaveRuleConfiguration.getSlaveDataSourceNames();
         loadBalanceAlgorithmClassName = masterSlaveRuleConfiguration.getLoadBalanceAlgorithm().getClass().getName();
+        this.configMap = configMap;
     }
     
     /**
