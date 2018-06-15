@@ -20,6 +20,7 @@ package io.shardingsphere.proxy.frontend.mysql;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.EventLoopGroup;
+import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.proxy.frontend.common.FrontendHandler;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
@@ -95,6 +96,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
                         context.writeAndFlush(commandPacket.getResultValue());
                     }
                 } finally {
+                    MasterVisitedManager.clear();
                     mysqlPacketPayload.getByteBuf().release();
                 }
             }
