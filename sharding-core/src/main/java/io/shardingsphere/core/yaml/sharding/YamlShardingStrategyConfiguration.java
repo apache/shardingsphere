@@ -62,14 +62,17 @@ public class YamlShardingStrategyConfiguration {
     public YamlShardingStrategyConfiguration(final ShardingStrategyConfiguration shardingStrategyConfiguration) {
         if (shardingStrategyConfiguration instanceof StandardShardingStrategyConfiguration) {
             standard = new YamlStandardShardingStrategyConfiguration();
-            standard.setShardingColumn(((StandardShardingStrategyConfiguration) shardingStrategyConfiguration).getShardingColumn());
-            standard.setPreciseAlgorithmClassName(((StandardShardingStrategyConfiguration) shardingStrategyConfiguration).getPreciseShardingAlgorithm().getClass().getName());
-            standard.setRangeAlgorithmClassName(((StandardShardingStrategyConfiguration) shardingStrategyConfiguration).getRangeShardingAlgorithm().getClass().getName());
+            StandardShardingStrategyConfiguration config = (StandardShardingStrategyConfiguration) shardingStrategyConfiguration;
+            standard.setShardingColumn(config.getShardingColumn());
+            standard.setPreciseAlgorithmClassName(config.getPreciseShardingAlgorithm().getClass().getName());
+            standard.setRangeAlgorithmClassName(null == config.getRangeShardingAlgorithm()
+                    ? null : config.getRangeShardingAlgorithm().getClass().getName());
         }
         if (shardingStrategyConfiguration instanceof ComplexShardingStrategyConfiguration) {
             complex = new YamlComplexShardingStrategyConfiguration();
-            complex.setShardingColumns(((ComplexShardingStrategyConfiguration) shardingStrategyConfiguration).getShardingColumns());
-            complex.setAlgorithmClassName(((ComplexShardingStrategyConfiguration) shardingStrategyConfiguration).getShardingAlgorithm().getClass().getName());
+            ComplexShardingStrategyConfiguration config = (ComplexShardingStrategyConfiguration) shardingStrategyConfiguration;
+            complex.setShardingColumns(config.getShardingColumns());
+            complex.setAlgorithmClassName(config.getShardingAlgorithm().getClass().getName());
         }
         if (shardingStrategyConfiguration instanceof HintShardingStrategyConfiguration) {
             hint = new YamlHintShardingStrategyConfiguration();
@@ -77,8 +80,9 @@ public class YamlShardingStrategyConfiguration {
         }
         if (shardingStrategyConfiguration instanceof InlineShardingStrategyConfiguration) {
             inline = new YamlInlineShardingStrategyConfiguration();
-            inline.setShardingColumn(((InlineShardingStrategyConfiguration) shardingStrategyConfiguration).getShardingColumn());
-            inline.setAlgorithmExpression(((InlineShardingStrategyConfiguration) shardingStrategyConfiguration).getAlgorithmExpression());
+            InlineShardingStrategyConfiguration config = (InlineShardingStrategyConfiguration) shardingStrategyConfiguration;
+            inline.setShardingColumn(config.getShardingColumn());
+            inline.setAlgorithmExpression(config.getAlgorithmExpression());
         }
     }
     

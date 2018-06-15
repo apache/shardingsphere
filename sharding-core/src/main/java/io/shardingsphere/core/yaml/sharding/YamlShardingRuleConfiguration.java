@@ -28,6 +28,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -70,11 +71,13 @@ public class YamlShardingRuleConfiguration {
         for (TableRuleConfiguration each : shardingRuleConfiguration.getTableRuleConfigs()) {
             tables.put(each.getLogicTable(), new YamlTableRuleConfiguration(each));
         }
+        bindingTables.addAll(shardingRuleConfiguration.getBindingTableGroups());
         defaultDatabaseStrategy = new YamlShardingStrategyConfiguration(shardingRuleConfiguration.getDefaultDatabaseShardingStrategyConfig());
         defaultTableStrategy = new YamlShardingStrategyConfiguration(shardingRuleConfiguration.getDefaultTableShardingStrategyConfig());
-        defaultKeyGeneratorClassName = shardingRuleConfiguration.getDefaultKeyGenerator().getClass().getName();
+        defaultKeyGeneratorClassName = null == shardingRuleConfiguration.getDefaultKeyGenerator()
+                ? null : shardingRuleConfiguration.getDefaultKeyGenerator().getClass().getName();
         for (MasterSlaveRuleConfiguration each : shardingRuleConfiguration.getMasterSlaveRuleConfigs()) {
-            masterSlaveRules.put(each.getName(), new YamlMasterSlaveRuleConfiguration(each));
+            masterSlaveRules.put(each.getName(), new YamlMasterSlaveRuleConfiguration(each, new HashMap<String, Object>()));
         }
         this.configMap = configMap;
         this.props = props;

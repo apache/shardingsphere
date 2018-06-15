@@ -56,7 +56,8 @@ public class YamlTableRuleConfiguration {
         databaseStrategy = new YamlShardingStrategyConfiguration(tableRuleConfiguration.getDatabaseShardingStrategyConfig());
         tableStrategy = new YamlShardingStrategyConfiguration(tableRuleConfiguration.getTableShardingStrategyConfig());
         keyGeneratorColumnName = tableRuleConfiguration.getKeyGeneratorColumnName();
-        keyGeneratorClassName = tableRuleConfiguration.getKeyGenerator().getClass().getName();
+        keyGeneratorClassName = null == tableRuleConfiguration.getKeyGenerator()
+                ? null : tableRuleConfiguration.getKeyGenerator().getClass().getName();
         logicTable = tableRuleConfiguration.getLogicTable();
     }
     
