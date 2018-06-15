@@ -23,7 +23,6 @@ import lombok.NoArgsConstructor;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.TimeZone;
 
 /**
  * Date utility.
@@ -41,7 +40,7 @@ public final class DateUtil {
      */
     public static Date parse(final String date) throws ParseException {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+//        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         return simpleDateFormat.parse(date);
     }
     
@@ -53,7 +52,7 @@ public final class DateUtil {
      */
     public static String format(final Date date) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+//        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         return simpleDateFormat.format(date);
     }
 }

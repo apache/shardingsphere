@@ -48,6 +48,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.TimeZone;
 
 @RunWith(Parameterized.class)
 @Getter(AccessLevel.PROTECTED)
@@ -70,6 +71,10 @@ public abstract class BaseIntegrateTest {
     private final Map<String, DataSource> dataSourceMap;
     
     private final DataSource dataSource;
+    
+    static {
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+    }
     
     public BaseIntegrateTest(final String sqlCaseId, final String path, final IntegrateTestCaseAssertion assertion, 
                              final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType, final int countInSameCase) throws IOException, JAXBException, SQLException {
