@@ -35,10 +35,10 @@ import java.util.Properties;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ShardingConfigurationConverter {
     
-    private static final Yaml yaml = new Yaml();
+    private static final Yaml yaml = new Yaml(new DefaultConfigurationRepresenter());
     
     /**
-     * Convert shardingRuleConfiguration to yaml string.
+     * Convert sharding rule configuration to yaml string.
      *
      * @param shardingRuleConfiguration sharding rule configuration
      * @return sharding rule configuration string
@@ -67,7 +67,6 @@ public class ShardingConfigurationConverter {
      * @return config map string
      */
     public static String configMapToYaml(final Map<String, Object> configMap) {
-        Yaml yaml = new Yaml(new DefaultConfigurationRepresenter());
         return yaml.dumpAsMap(configMap);
     }
     
@@ -89,7 +88,6 @@ public class ShardingConfigurationConverter {
      * @return properties string
      */
     public static String propertiesToYaml(final Properties props) {
-        Yaml yaml = new Yaml(new DefaultConfigurationRepresenter());
         return yaml.dumpAsMap(props);
     }
     
