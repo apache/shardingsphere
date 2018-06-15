@@ -18,6 +18,8 @@
 package io.shardingsphere.dbtest.engine;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.parsing.SQLJudgeEngine;
 import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCaseAssertion;
@@ -86,6 +88,9 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
         Collection<Object[]> result = new LinkedList<>();
         for (Object[] each : sqlCasesLoader.getSupportedSQLTestParameters(Arrays.<Enum>asList(DatabaseType.values()), DatabaseType.class)) {
             String sqlCaseId = each[0].toString();
+            if (SQLType.DQL != new SQLJudgeEngine(sqlCasesLoader.getSupportedSQL(sqlCaseId)).judge().getType()) {
+                continue;
+            }
             DatabaseType databaseType = (DatabaseType) each[1];
             SQLCaseType caseType = (SQLCaseType) each[2];
             DQLIntegrateTestCase integrateTestCase = integrateTestCasesLoader.getDQLIntegrateTestCase(sqlCaseId);
