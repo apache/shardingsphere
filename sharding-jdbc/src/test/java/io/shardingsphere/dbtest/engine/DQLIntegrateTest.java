@@ -30,7 +30,6 @@ import io.shardingsphere.dbtest.env.IntegrateTestEnvironment;
 import io.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
 import io.shardingsphere.dbtest.env.datasource.DataSourceUtil;
 import io.shardingsphere.dbtest.env.schema.SchemaEnvironmentManager;
-import io.shardingsphere.dbtest.util.DateUtil;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
 import org.junit.AfterClass;
@@ -53,6 +52,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -233,8 +233,8 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
             assertTrue("Size of actual result set is different with size of expected dat set rows.", count < expectedDatSetRows.size());
             for (String each : expectedDatSetRows.get(count).getValues()) {
                 if (Types.DATE == actualResultSet.getMetaData().getColumnType(index)) {
-                    assertThat(DateUtil.format(actualResultSet.getDate(index)), is(each));
-                    assertThat(DateUtil.format(actualResultSet.getDate(actualMetaData.getColumnLabel(index))), is(each));
+                    assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actualResultSet.getDate(index)), is(each));
+                    assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actualResultSet.getDate(actualMetaData.getColumnLabel(index))), is(each));
                 } else {
                     assertThat(String.valueOf(actualResultSet.getObject(index)), is(each));
                     assertThat(String.valueOf(actualResultSet.getObject(actualMetaData.getColumnLabel(index))), is(each));
