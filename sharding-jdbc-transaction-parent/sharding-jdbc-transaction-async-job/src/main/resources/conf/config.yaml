@@ -1,21 +1,21 @@
 #Transaction log data source.
 targetDataSource:
   ds_trans_0: !!org.apache.commons.dbcp2.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_trans_0
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ds_trans_0?serverTimezone=UTC&useSSL=false
     username: root
     password:
   ds_trans_1: !!org.apache.commons.dbcp2.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_trans_1
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ds_trans_1?serverTimezone=UTC&useSSL=false
     username: root
     password:
 
 #Data source for transaction manager.
 transactionLogDataSource:
   ds_trans: !!org.apache.commons.dbcp2.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/trans_log
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/trans_log?serverTimezone=UTC&useSSL=false
     username: root
     password:
 

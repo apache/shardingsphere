@@ -17,7 +17,7 @@
 
 package io.shardingsphere.jdbc.orchestration.internal.json;
 
-import com.mysql.jdbc.Driver;
+import com.mysql.cj.jdbc.Driver;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.Test;
 
@@ -31,20 +31,20 @@ import static org.junit.Assert.assertThat;
 public final class DataSourceJsonConverterTest {
     
     private final String dataSourceMapJson = "[{\"shardingJdbcDataSourceName\":\"ds_jdbc_1\",\"shardingJdbcDataSourceClazz\":\"org.apache.commons.dbcp2.BasicDataSource\","
-            + "\"abandonedUsageTracking\":\"false\",\"cacheState\":\"true\",\"defaultTransactionIsolation\":\"-1\",\"driverClassName\":\"com.mysql.jdbc.Driver\","
+            + "\"abandonedUsageTracking\":\"false\",\"cacheState\":\"true\",\"defaultTransactionIsolation\":\"-1\",\"driverClassName\":\"com.mysql.cj.jdbc.Driver\","
             + "\"enableAutoCommitOnReturn\":\"true\",\"evictionPolicyClassName\":\"org.apache.commons.pool2.impl.DefaultEvictionPolicy\",\"fastFailValidation\":\"false\","
             + "\"initialSize\":\"0\",\"lifo\":\"true\",\"logAbandoned\":\"false\",\"logExpiredConnections\":\"true\",\"maxConnLifetimeMillis\":\"-1\",\"maxIdle\":\"8\","
             + "\"maxOpenPreparedStatements\":\"-1\",\"maxTotal\":\"8\",\"maxWaitMillis\":\"-1\",\"minEvictableIdleTimeMillis\":\"1800000\",\"minIdle\":\"0\",\"numTestsPerEvictionRun\":\"3\","
             + "\"password\":\"\",\"removeAbandonedOnBorrow\":\"false\",\"removeAbandonedOnMaintenance\":\"false\",\"removeAbandonedTimeout\":\"300\",\"rollbackOnReturn\":\"true\","
             + "\"softMinEvictableIdleTimeMillis\":\"-1\",\"testOnBorrow\":\"true\",\"testOnCreate\":\"false\",\"testOnReturn\":\"false\",\"testWhileIdle\":\"false\","
-            + "\"timeBetweenEvictionRunsMillis\":\"-1\",\"url\":\"jdbc:mysql://localhost:3306/ds_jdbc_1\",\"username\":\"root\",\"validationQueryTimeout\":\"-1\"},"
+            + "\"timeBetweenEvictionRunsMillis\":\"-1\",\"url\":\"jdbc:mysql://localhost:3306/ds_jdbc_1?serverTimezone=UTC&useSSL=false\",\"username\":\"root\",\"validationQueryTimeout\":\"-1\"},"
             + "{\"shardingJdbcDataSourceName\":\"ds_jdbc_0\",\"shardingJdbcDataSourceClazz\":\"org.apache.commons.dbcp2.BasicDataSource\",\"abandonedUsageTracking\":\"false\","
-            + "\"cacheState\":\"true\",\"defaultTransactionIsolation\":\"-1\",\"driverClassName\":\"com.mysql.jdbc.Driver\",\"enableAutoCommitOnReturn\":\"true\","
+            + "\"cacheState\":\"true\",\"defaultTransactionIsolation\":\"-1\",\"driverClassName\":\"com.mysql.cj.jdbc.Driver\",\"enableAutoCommitOnReturn\":\"true\","
             + "\"evictionPolicyClassName\":\"org.apache.commons.pool2.impl.DefaultEvictionPolicy\",\"fastFailValidation\":\"false\",\"initialSize\":\"0\",\"lifo\":\"true\","
             + "\"logAbandoned\":\"false\",\"logExpiredConnections\":\"true\",\"maxConnLifetimeMillis\":\"-1\",\"maxIdle\":\"8\",\"maxOpenPreparedStatements\":\"-1\",\"maxTotal\":\"8\","
             + "\"maxWaitMillis\":\"-1\",\"minEvictableIdleTimeMillis\":\"1800000\",\"minIdle\":\"0\",\"numTestsPerEvictionRun\":\"3\",\"password\":\"\",\"removeAbandonedOnBorrow\":\"false\","
             + "\"removeAbandonedOnMaintenance\":\"false\",\"removeAbandonedTimeout\":\"300\",\"rollbackOnReturn\":\"true\",\"softMinEvictableIdleTimeMillis\":\"-1\",\"testOnBorrow\":\"true\","
-            + "\"testOnCreate\":\"false\",\"testOnReturn\":\"false\",\"testWhileIdle\":\"false\",\"timeBetweenEvictionRunsMillis\":\"-1\",\"url\":\"jdbc:mysql://localhost:3306/ds_jdbc_0\","
+            + "\"testOnCreate\":\"false\",\"testOnReturn\":\"false\",\"testWhileIdle\":\"false\",\"timeBetweenEvictionRunsMillis\":\"-1\",\"url\":\"jdbc:mysql://localhost:3306/ds_jdbc_0?serverTimezone=UTC&useSSL=false\","
             + "\"username\":\"root\",\"validationQueryTimeout\":\"-1\"}]";
     
     @Test
@@ -77,7 +77,7 @@ public final class DataSourceJsonConverterTest {
     private DataSource createDataSource(final String dataSourceName) {
         BasicDataSource result = new BasicDataSource();
         result.setDriverClassName(Driver.class.getName());
-        result.setUrl(String.format("jdbc:mysql://localhost:3306/%s", dataSourceName));
+        result.setUrl(String.format("jdbc:mysql://localhost:3306/%s?serverTimezone=UTC&useSSL=false", dataSourceName));
         result.setUsername("root");
         result.setPassword("");
         return result;
