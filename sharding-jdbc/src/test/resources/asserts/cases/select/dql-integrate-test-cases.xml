@@ -427,6 +427,7 @@
         <assertion sharding-rule-type="db" parameters="4:int, 10:int, 19:int, 1000:int, 1909:int, 2:int" expected-data-file="db/select_pagination_with_top_and_limit.xml" />
         <assertion sharding-rule-type="tbl" parameters="4:int, 10:int, 19:int, 1000:int, 1909:int, 2:int" expected-data-file="tbl/select_pagination_with_top_and_limit.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="4:int, 10:int, 19:int, 1000:int, 1909:int, 2:int" expected-data-file="dbtbl_with_masterslave/select_pagination_with_top_and_limit.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="4:int, 10:int, 19:int, 1000:int, 1909:int, 2:int" expected-data-file="masterslave/select_pagination_with_top_and_limit.xml" />
     </dql-test-case>
     
     <dql-test-case sql-case-id="select_pagination_with_top_for_greater_than_and_equal">
