@@ -20,7 +20,7 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="assertInsertWithPartialPlaceholder" parameters="1, 1">
+    <parser-result sql-case-id="insert_with_partial_placeholders" parameters="1, 1">
         <tables>
             <table name="t_order" />
         </tables>

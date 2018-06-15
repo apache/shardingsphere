@@ -5,7 +5,7 @@
             <data parameter="1,1,'insert'" expected="insert/%s_1.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertInsertWithPartialPlaceholder">
+    <sql id="insert_with_partial_placeholders">
         <sharding-rule>
             <data parameter="1,1" expected="insert/%s_1.xml" />
         </sharding-rule>
