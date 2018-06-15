@@ -153,9 +153,6 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
     private void getCommandResponsePackets(final List<Future<CommandResponsePackets>> resultList, final List<CommandResponsePackets> packets) {
         for (Future<CommandResponsePackets> each : resultList) {
             try {
-                while (!each.isDone()) {
-                    continue;
-                }
                 packets.add(each.get());
             } catch (final InterruptedException | ExecutionException ex) {
                 throw new ShardingException(ex.getMessage(), ex);
