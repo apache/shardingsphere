@@ -15,8 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.internal.yaml;
+package io.shardingsphere.jdbc.orchestration.internal.yaml.converter;
 
+import io.shardingsphere.jdbc.orchestration.internal.yaml.representer.DataSourceRepresenter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.yaml.snakeyaml.Yaml;

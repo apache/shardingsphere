@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.internal.yaml;
+package io.shardingsphere.jdbc.orchestration.internal.yaml.representer;
 
 import io.shardingsphere.core.exception.ShardingException;
 import org.yaml.snakeyaml.introspector.Property;

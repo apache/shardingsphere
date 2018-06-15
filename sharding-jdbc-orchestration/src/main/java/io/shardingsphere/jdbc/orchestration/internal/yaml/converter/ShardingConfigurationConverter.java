@@ -15,10 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.internal.yaml;
+package io.shardingsphere.jdbc.orchestration.internal.yaml.converter;
 
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
+import io.shardingsphere.jdbc.orchestration.internal.yaml.representer.DefaultConfigurationRepresenter;
+import io.shardingsphere.jdbc.orchestration.internal.yaml.representer.ShardingConfigurationRepresenter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.yaml.snakeyaml.Yaml;

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.internal.yaml;
+package io.shardingsphere.jdbc.orchestration.internal.yaml.representer;
 
 import com.google.common.collect.Sets;
 import io.shardingsphere.core.exception.ShardingException;
