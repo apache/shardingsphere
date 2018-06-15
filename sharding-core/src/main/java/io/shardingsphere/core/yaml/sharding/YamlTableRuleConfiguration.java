@@ -22,13 +22,16 @@ import com.google.common.base.Strings;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.keygen.KeyGeneratorFactory;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
  * Yaml table rule configuration.
  *
  * @author caohao
+ * @author panjuan
  */
+@NoArgsConstructor
 @Getter
 @Setter
 public class YamlTableRuleConfiguration {
@@ -46,6 +49,16 @@ public class YamlTableRuleConfiguration {
     private String keyGeneratorClassName;
     
     private String logicIndex;
+    
+    public YamlTableRuleConfiguration(final TableRuleConfiguration tableRuleConfiguration) {
+        logicTable = tableRuleConfiguration.getLogicTable();
+        actualDataNodes = tableRuleConfiguration.getActualDataNodes();
+        databaseStrategy = new YamlShardingStrategyConfiguration(tableRuleConfiguration.getDatabaseShardingStrategyConfig());
+        tableStrategy = new YamlShardingStrategyConfiguration(tableRuleConfiguration.getTableShardingStrategyConfig());
+        keyGeneratorColumnName = tableRuleConfiguration.getKeyGeneratorColumnName();
+        keyGeneratorClassName = tableRuleConfiguration.getKeyGenerator().getClass().getName();
+        logicTable = tableRuleConfiguration.getLogicTable();
+    }
     
     /**
      * Build table rule configuration.

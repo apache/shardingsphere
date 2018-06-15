@@ -19,9 +19,11 @@ package io.shardingsphere.core.yaml.sharding;
 
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.keygen.KeyGeneratorFactory;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
@@ -37,7 +39,9 @@ import java.util.Properties;
  * Sharding rule configuration for yaml.
  *
  * @author caohao
+ * @author panjuan
  */
+@NoArgsConstructor
 @Getter
 @Setter
 public class YamlShardingRuleConfiguration {
@@ -59,6 +63,22 @@ public class YamlShardingRuleConfiguration {
     private Map<String, Object> configMap = new LinkedHashMap<>();
     
     private Properties props = new Properties();
+    
+    public YamlShardingRuleConfiguration(final ShardingRuleConfiguration shardingRuleConfiguration,
+                                         final Map<String, Object> configMap, final Properties props) {
+        defaultDataSourceName = shardingRuleConfiguration.getDefaultDataSourceName();
+        for (TableRuleConfiguration each : shardingRuleConfiguration.getTableRuleConfigs()) {
+            tables.put(each.getLogicTable(), new YamlTableRuleConfiguration(each));
+        }
+        defaultDatabaseStrategy = new YamlShardingStrategyConfiguration(shardingRuleConfiguration.getDefaultDatabaseShardingStrategyConfig());
+        defaultTableStrategy = new YamlShardingStrategyConfiguration(shardingRuleConfiguration.getDefaultTableShardingStrategyConfig());
+        defaultKeyGeneratorClassName = shardingRuleConfiguration.getDefaultKeyGenerator().getClass().getName();
+        for (MasterSlaveRuleConfiguration each : shardingRuleConfiguration.getMasterSlaveRuleConfigs()) {
+            masterSlaveRules.put(each.getName(), new YamlMasterSlaveRuleConfiguration(each));
+        }
+        this.configMap = configMap;
+        this.props = props;
+    }
     
     /**
      * Get sharding rule configuration.
