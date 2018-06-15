@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
-    <sql id="assertUpdateWithAlias">
+    <sql id="update_with_alias">
         <sharding-rule value="tbl">
             <data parameter="'update',1000,10" expected="update/%s_0.xml" />
             <data parameter="'update',1001,10" expected="update/%s_1.xml" />
