@@ -36,4 +36,11 @@
         <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1000:int, 10:int, init:String" expected-update="1" expected-data-file="dbtbl_with_masterslave/delete_with_sharding_value.xml" />
         <assertion sharding-rule-type="masterslave" parameters="1000:int, 10:int, init:String" expected-update="1" expected-data-file="masterslave/delete_with_sharding_value.xml" />
     </dml-test-case>
+    
+    <dml-test-case sql-case-id="delete_without_sharding_value">
+        <assertion sharding-rule-type="db" parameters="init:String" expected-update="40" expected-data-file="db/delete_without_sharding_value.xml" />
+        <assertion sharding-rule-type="tbl" parameters="init:String" expected-update="20" expected-data-file="tbl/delete_without_sharding_value.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="init:String" expected-update="100" expected-data-file="dbtbl_with_masterslave/delete_without_sharding_value.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="init:String" expected-update="40" expected-data-file="masterslave/delete_without_sharding_value.xml" />
+    </dml-test-case>
 </integrate-test-cases>

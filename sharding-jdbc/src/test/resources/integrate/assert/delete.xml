@@ -38,7 +38,7 @@
             <data parameter="1909,19,'init'" expected="delete/%s_9.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertDeleteWithoutShardingValue">
+    <sql id="delete_without_sharding_value">
         <sharding-rule>
             <data parameter="'init'" expected="delete/%s.xml" />
         </sharding-rule>

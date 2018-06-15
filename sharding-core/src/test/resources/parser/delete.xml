@@ -19,7 +19,7 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="assertDeleteWithoutShardingValue" parameters="'init'">
+    <parser-result sql-case-id="delete_without_sharding_value" parameters="'init'">
         <tables>
             <table name="t_order" />
         </tables>
