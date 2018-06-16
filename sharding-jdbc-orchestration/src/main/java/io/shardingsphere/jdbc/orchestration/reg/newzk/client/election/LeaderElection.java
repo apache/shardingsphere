@@ -19,6 +19,7 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.election;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.WatcherCreator;
 import org.apache.zookeeper.CreateMode;
@@ -66,11 +67,11 @@ public abstract class LeaderElection {
      * @throws KeeperException Zookeeper Exception
      * @throws InterruptedException InterruptedException
     */
-    public void executeContention(final String nodeBeContend, final io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider provider) throws KeeperException, InterruptedException {
+    public void executeContention(final String nodeBeContend, final IProvider provider) throws KeeperException, InterruptedException {
         boolean canBegin;
         final String realNode = provider.getRealPath(nodeBeContend);
-        final String contendNode = io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil.getRealPath(realNode, Constants.CHANGING_KEY);
-        canBegin = this.contend(contendNode, provider, new io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener(contendNode) {
+        final String contendNode = PathUtil.getRealPath(realNode, Constants.CHANGING_KEY);
+        canBegin = this.contend(contendNode, provider, new Listener(contendNode) {
             @Override
             public void process(final WatchedEvent event) {
                 try {

@@ -18,6 +18,7 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.zookeeper.WatchedEvent;
@@ -77,7 +78,7 @@ public class Holder {
                     LOGGER.debug("BaseClient {} process", Constants.GLOBAL_LISTENER_KEY);
                 }
                 if (!context.getWatchers().isEmpty()) {
-                    for (io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener listener : context.getWatchers().values()) {
+                    for (Listener listener : context.getWatchers().values()) {
                         if (listener.getPath() == null || listener.getPath().equals(event.getPath())) {
                             LOGGER.debug("listener process:{}, listener:{}", listener.getPath(), listener.getKey());
                             listener.process(event);
