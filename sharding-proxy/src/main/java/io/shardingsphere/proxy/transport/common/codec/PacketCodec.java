@@ -41,7 +41,7 @@ public abstract class PacketCodec<T extends DatabaseProtocolPacket> extends Byte
             return;
         }
         if (log.isDebugEnabled()) {
-            log.debug("Read from client: \n {}", ByteBufUtil.prettyHexDump(in));
+            log.debug("Read from client {} : \n {}", context.channel().id().asShortText(), ByteBufUtil.prettyHexDump(in));
         }
         doDecode(context, in, out, readableBytes);
     }
@@ -54,7 +54,7 @@ public abstract class PacketCodec<T extends DatabaseProtocolPacket> extends Byte
     protected void encode(final ChannelHandlerContext context, final T message, final ByteBuf out) {
         doEncode(context, message, out);
         if (log.isDebugEnabled()) {
-            log.debug("Write to client: \n {}", ByteBufUtil.prettyHexDump(out));
+            log.debug("Write to client {} : \n {}", context.channel().id().asShortText(), ByteBufUtil.prettyHexDump(out));
         }
     }
     

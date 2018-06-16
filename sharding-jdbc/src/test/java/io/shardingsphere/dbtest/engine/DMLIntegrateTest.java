@@ -18,6 +18,8 @@
 package io.shardingsphere.dbtest.engine;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.parsing.SQLJudgeEngine;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.util.InlineExpressionParser;
 import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
@@ -84,6 +86,9 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
         Collection<Object[]> result = new LinkedList<>();
         for (Object[] each : sqlCasesLoader.getSupportedSQLTestParameters(Arrays.<Enum>asList(DatabaseType.values()), DatabaseType.class)) {
             String sqlCaseId = each[0].toString();
+            if (SQLType.DML != new SQLJudgeEngine(sqlCasesLoader.getSupportedSQL(sqlCaseId)).judge().getType()) {
+                continue;
+            }
             DatabaseType databaseType = (DatabaseType) each[1];
             SQLCaseType caseType = (SQLCaseType) each[2];
             DMLIntegrateTestCase integrateTestCase = integrateTestCasesLoader.getDMLIntegrateTestCase(sqlCaseId);
@@ -212,7 +217,7 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
             int index = 1;
             for (String each : expectedDatSetRows.get(count).getValues()) {
                 if (Types.DATE == actualResultSet.getMetaData().getColumnType(index)) {
-                    assertThat(new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date(actualResultSet.getDate(index).getTime())), is(each));
+                    assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actualResultSet.getDate(index)), is(each));
                 } else {
                     assertThat(String.valueOf(actualResultSet.getObject(index)), is(each));
                 }

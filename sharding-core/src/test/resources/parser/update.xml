@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parser-result-sets>
-    <parser-result sql-case-id="assertUpdateWithAlias" parameters="'update', 1, 1">
+    <parser-result sql-case-id="update_without_alias" parameters="'update', 1, 1">
         <tables>
-            <table name="t_order" alias="o" />
+            <table name="t_order" />
         </tables>
         <tokens>
             <table-token begin-position="7" original-literals="t_order" />
@@ -19,9 +19,9 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="assertUpdateWithoutAlias" parameters="'update', 1, 1">
+    <parser-result sql-case-id="update_with_alias" parameters="'update', 1, 1">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" alias="o" />
         </tables>
         <tokens>
             <table-token begin-position="7" original-literals="t_order" />

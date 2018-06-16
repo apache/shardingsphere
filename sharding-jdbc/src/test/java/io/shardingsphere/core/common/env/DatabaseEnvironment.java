@@ -52,8 +52,8 @@ public final class DatabaseEnvironment {
         PASSWORD.put(DatabaseType.H2, "");
         SCHEMA.put(DatabaseType.H2, null);
         
-        DRIVER_CLASS_NAME.put(DatabaseType.MySQL, com.mysql.jdbc.Driver.class.getName());
-        URL.put(DatabaseType.MySQL, "jdbc:mysql://db.mysql:3306/%s");
+        DRIVER_CLASS_NAME.put(DatabaseType.MySQL, com.mysql.cj.jdbc.Driver.class.getName());
+        URL.put(DatabaseType.MySQL, "jdbc:mysql://db.mysql:3306/%s?serverTimezone=UTC&useSSL=false");
         USERNAME.put(DatabaseType.MySQL, "root");
         PASSWORD.put(DatabaseType.MySQL, "");
         SCHEMA.put(DatabaseType.MySQL, null);

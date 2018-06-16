@@ -17,6 +17,17 @@
 
 package io.shardingsphere.proxy.backend.common;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.exception.ShardingException;
@@ -44,22 +55,13 @@ import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-
 /**
  * SQL execute backend handler.
  *
  * @author zhangliang
  * @author panjuan
+ * @author wangkai
+ * @author linjiaqi
  */
 @Getter
 @Setter
@@ -141,9 +143,6 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
     private void getCommandResponsePackets(final List<Future<CommandResponsePackets>> resultList, final List<CommandResponsePackets> packets) {
         for (Future<CommandResponsePackets> each : resultList) {
             try {
-                while (!each.isDone()) {
-                    continue;
-                }
                 packets.add(each.get());
             } catch (final InterruptedException | ExecutionException ex) {
                 throw new ShardingException(ex.getMessage(), ex);

@@ -1,28 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sql-cases>
-    <sql-case id="assertInsertWithAllPlaceholders" value="INSERT INTO t_order (order_id, user_id, status) VALUES (%s, %s, %s)" />
-    <sql-case id="assertInsertWithPartialPlaceholder" value="INSERT INTO t_order (order_id, user_id, status) VALUES (%s, %s, 'insert')" />
-
+    <sql-case id="insert_with_all_placeholders" value="INSERT INTO t_order (order_id, user_id, status) VALUES (%s, %s, %s)" />
+    <sql-case id="insert_with_partial_placeholders" value="INSERT INTO t_order (order_id, user_id, status) VALUES (%s, %s, 'insert')" />
     <sql-case id="assertInsertWithGenerateKeyColumn" value="INSERT INTO t_order_item(item_id, order_id, user_id, status) values (%s, %s, %s, 'insert')" />
+    
     <sql-case id="assertInsertWithoutGenerateKeyColumn" value="INSERT INTO t_order_item(order_id, user_id, status) values (%s, %s, 'insert')" />
-
     <sql-case id="assertInsertSetWithAllPlaceholders" value="INSERT INTO t_order SET order_id = %s, user_id = %s, status = %s" db-types="MySQL" />
     <sql-case id="assertInsertSetWithPartialPlaceholder" value="INSERT INTO t_order SET order_id = %s, user_id = %s, status = 'insert'" db-types="MySQL" />
-
     <sql-case id="assertInsertSetWithGenerateKeyColumn" value="INSERT INTO t_order_item SET item_id = %s, order_id = %s, user_id = %s, status = 'insert'" db-types="MySQL" />
     <sql-case id="assertInsertSetWithoutGenerateKeyColumn" value="INSERT INTO t_order_item SET order_id = %s, user_id = %s, status = 'insert'" db-types="MySQL" />
-
-   <!-- <sql-case id="assertInsertWithPartialPlaceholders" value="INSERT INTO t_order (order_id, user_id, status) VALUES (#s, #s, %s)"/>-->
-
     <sql-case id="assertInsertOnDuplicateKeyUpdate" value="INSERT INTO t_order (order_id, user_id, status) VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE status = VALUES(status)" db-types="MySQL" />
-
     <sql-case id="assertInsertWithTableIdentifier" value="INSERT INTO t_order (t_order.order_id, t_order.user_id, t_order.status) VALUES (%s, %s, %s)" />
     <sql-case id="assertInsertSetWithTableIdentifier" value="INSERT INTO t_order SET t_order.order_id = %s, t_order.user_id = %s, t_order.status = %s" db-types="MySQL" />
     <!--<sql-case id="assertInsertOnDuplicateKeyUpdateWithTableIdentifier" value="INSERT INTO t_order (t_order.order_id, t_order.user_id, t_order.status) VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE t_order.status = VALUES(t_order.status)" db-types="MySQL" />-->
-
     <sql-case id="assertBatchInsertWithGenerateKeyColumn" value="INSERT INTO t_order_item(item_id, order_id, user_id, status) values (%s, %s, %s, 'insert'), (%s, %s, %s, 'insert')" />
     <sql-case id="assertBatchInsertWithoutGenerateKeyColumn" value="INSERT INTO t_order_item(order_id, user_id, status) values (%s, %s, 'insert'), (%s, %s, 'insert')" />
-
     <sql-case id="assertInsertWithJsonAndGeo" value="INSERT INTO t_place(user_new_id, guid, start_point,rule) VALUES (%s, %s, ST_GeographyFromText('SRID=4326;POINT('||%s||' '||%s||')'), %s::jsonb)" db-types="PostgreSQL" />
     <sql-case id="assertInsertWithoutColumnsWithAllPlaceholders" value="INSERT INTO t_order VALUES (%s, %s, %s)" />
     <sql-case id="assertInsertWithoutColumnsWithPartialPlaceholder" value="INSERT INTO t_order VALUES (%s, %s, 'insert')" />

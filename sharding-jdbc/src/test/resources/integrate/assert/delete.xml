@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
-    <sql id="assertDeleteWithShardingValue">
+    <sql id="delete_with_sharding_value">
         <sharding-rule value="tbl">
             <data parameter="1000,10,'init'" expected="delete/%s_0.xml" />
             <data parameter="1001,10,'init'" expected="delete/%s_1.xml" />
@@ -38,7 +38,7 @@
             <data parameter="1909,19,'init'" expected="delete/%s_9.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertDeleteWithoutShardingValue">
+    <sql id="delete_without_sharding_value">
         <sharding-rule>
             <data parameter="'init'" expected="delete/%s.xml" />
         </sharding-rule>
