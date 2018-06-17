@@ -17,44 +17,39 @@
 
 package io.shardingsphere.jdbc.orchestration.internal.yaml.converter;
 
-import io.shardingsphere.jdbc.orchestration.internal.yaml.representer.DataSourceRepresenter;
+import io.shardingsphere.proxy.yaml.YamlProxyConfiguration;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.yaml.snakeyaml.Yaml;
 
-import javax.sql.DataSource;
-import java.util.Map;
-
 /**
- * Data source converter.
+ * Proxy Config converter.
  *
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataSourceConverter {
+public final class ProxyConfigurationConverter {
     
     private static final Yaml yaml = new Yaml();
     
     /**
-     * Convert data source map to Yaml string.
+     * Convert yaml proxy configuration to yaml string.
      *
-     * @param dataSourceMap Data source map
+     * @param yamlProxyConfiguration Yaml proxy configuration
      * @return Yaml string
      */
-    public static String dataSourceMapToYaml(final Map<String, DataSource> dataSourceMap) {
-        Yaml yaml = new Yaml(new DataSourceRepresenter(dataSourceMap.entrySet().iterator().next().getValue().getClass()));
-        return yaml.dumpAsMap(dataSourceMap);
+    public static String proxyConfigToYaml(final YamlProxyConfiguration yamlProxyConfiguration) {
+        return yaml.dumpAsMap(yamlProxyConfiguration);
     }
     
     /**
      * Convert yaml to data source map.
      *
-     * @param dataSourceMapYamlString String in yaml.
-     * @return Data source Map.
+     * @param yamlProxyConfigYamlString String in yaml
+     * @return Yaml proxy configuration
      */
-    @SuppressWarnings("unchecked")
-    public static Map<String, DataSource> dataSourceMapFromYaml(final String dataSourceMapYamlString) {
-        return (Map<String, DataSource>) yaml.load(dataSourceMapYamlString);
+    public static YamlProxyConfiguration proxyConfigFromYaml(final String yamlProxyConfigYamlString) {
+        return yaml.loadAs(yamlProxyConfigYamlString, YamlProxyConfiguration.class);
     
     }
 }

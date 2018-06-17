@@ -27,6 +27,11 @@
             <version>${sharding-sphere.version}</version>
         </dependency>
         <dependency>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>sharding-proxy</artifactId>
+            <version>${sharding-sphere.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
