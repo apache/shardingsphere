@@ -1,6 +1,4 @@
 shardingRule:
-  defaultDataSourceName: nullable_0
-  defaultKeyGeneratorClassName: io.shardingsphere.dbtest.fixture.IncrementKeyGenerator
   tables:
     t_order:
       actualDataNodes: nullable_${0..9}.t_order
@@ -10,3 +8,5 @@ shardingRule:
           preciseAlgorithmClassName: io.shardingsphere.dbtest.fixture.SingleAlgorithm
   bindingTables:
     - t_order
+  defaultDataSourceName: nullable_0
+  defaultKeyGeneratorClassName: io.shardingsphere.dbtest.fixture.ConstantKeyGenerator
