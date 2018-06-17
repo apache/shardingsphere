@@ -15,15 +15,16 @@
  * </p>
  */
 
-package io.shardingsphere.core.yaml.proxy;
+package io.shardingsphere.proxy.yaml;
 
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.core.rule.MasterSlaveRule;
-import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.rule.ProxyAuthority;
-import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.core.rule.MasterSlaveRule;
+import io.shardingsphere.core.rule.ProxyAuthority;
+import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
+import io.shardingsphere.jdbc.orchestration.yaml.YamlOrchestrationConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 import org.yaml.snakeyaml.Yaml;
@@ -61,6 +62,8 @@ public final class YamlProxyConfiguration {
     private boolean withoutJdbc;
     
     private String transactionMode;
+    
+    private YamlOrchestrationConfiguration orchestration;
     
     /**
      * Unmarshal yaml sharding configuration from yaml file.
