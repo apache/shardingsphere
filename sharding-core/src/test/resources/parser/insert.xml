@@ -222,7 +222,7 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="assertInsertOnDuplicateKeyUpdate" parameters="1, 1, 'init'">
+    <parser-result sql-case-id="insert_on_duplicate_key_update" parameters="1, 1, 'init'">
         <tables>
             <table name="t_order" />
         </tables>
@@ -265,7 +265,7 @@
         </or-condition>
     </parser-result>
     
-    <!--<parser-result sql-case-id="assertInsertOnDuplicateKeyUpdateWithTableIdentifier" parameters="1, 1, 'init'">-->
+    <!--<parser-result sql-case-id="insert_on_duplicate_key_update_with_table_identifier" parameters="1, 1, 'init'">-->
         <!--<tables>-->
             <!--<table name="t_order" />-->
         <!--</tables>-->
@@ -385,8 +385,8 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="assertInsertWithJsonAndGeo" parameters="7, 200, 100, 200, '{&quot;rule&quot;:&quot;null&quot;}'">
-        <tables>assertInsertWithJsonAndGeo
+    <parser-result sql-case-id="insert_with_geography" parameters="7, 200, 100, 200, '{&quot;rule&quot;:&quot;null&quot;}'">
+        <tables>
             <table name="t_place" />
         </tables>
         <tokens>

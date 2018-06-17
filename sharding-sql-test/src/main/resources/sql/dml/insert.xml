@@ -17,7 +17,7 @@
     <sql-case id="insert_with_batch_and_with_generate_key_column" value="INSERT INTO t_order_item(item_id, order_id, user_id, status, creation_date) values (%s, %s, %s, 'insert', '2017-08-08'), (%s, %s, %s, 'insert', '2017-08-08')" />
     <sql-case id="insert_with_batch_and_without_generate_key_column" value="INSERT INTO t_order_item(order_id, user_id, status, creation_date) values (%s, %s, 'insert', '2017-08-08'), (%s, %s, 'insert', '2017-08-08')" />
     
-    <sql-case id="assertInsertOnDuplicateKeyUpdate" value="INSERT INTO t_order (order_id, user_id, status) VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE status = VALUES(status)" db-types="MySQL" />
-    <!--<sql-case id="assertInsertOnDuplicateKeyUpdateWithTableIdentifier" value="INSERT INTO t_order (t_order.order_id, t_order.user_id, t_order.status) VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE t_order.status = VALUES(t_order.status)" db-types="MySQL" />-->
-    <sql-case id="assertInsertWithJsonAndGeo" value="INSERT INTO t_place(user_new_id, guid, start_point,rule) VALUES (%s, %s, ST_GeographyFromText('SRID=4326;POINT('||%s||' '||%s||')'), %s::jsonb)" db-types="PostgreSQL" />
+    <sql-case id="insert_on_duplicate_key_update" value="INSERT INTO t_order (order_id, user_id, status) VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE status = VALUES(status)" db-types="MySQL" />
+    <!--<sql-case id="insert_on_duplicate_key_update_with_table_identifier" value="INSERT INTO t_order (t_order.order_id, t_order.user_id, t_order.status) VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE t_order.status = VALUES(t_order.status)" db-types="MySQL" />-->
+    <sql-case id="insert_with_geography" value="INSERT INTO t_place(user_new_id, guid, start_point,rule) VALUES (%s, %s, ST_GeographyFromText('SRID=4326;POINT('||%s||' '||%s||')'), %s::jsonb)" db-types="PostgreSQL" />
 </sql-cases>
