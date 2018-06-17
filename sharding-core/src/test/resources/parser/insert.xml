@@ -377,34 +377,6 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="assertInsertWithoutColumnsWithPartialPlaceholder" parameters="1, 1">
-        <tables>
-            <table name="t_order" />
-        </tables>
-        <tokens>
-            <table-token begin-position="12" original-literals="t_order" />
-            <insert-column-token begin-position="19" column-name="(" />
-            <items-token begin-position="19">
-                <items>
-                    <item>order_id</item>
-                    <item>user_id</item>
-                </items>
-            </items-token>
-            <insert-column-token begin-position="19" column-name=")" />
-            <insert-values-token begin-position="27" table-name="t_order"/>
-        </tokens>
-        <or-condition>
-            <and-condition>
-                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="0" literal="1" type="int" />
-                </condition>
-                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
-                    <value index="1" literal="1" type="int" />
-                </condition>
-            </and-condition>
-        </or-condition>
-    </parser-result>
-    
     <parser-result sql-case-id="assertInsertWithoutColumnsWithGenerateKeyColumn" parameters="10000, 1000, 10">
         <tables>
             <table name="t_order_item" />
