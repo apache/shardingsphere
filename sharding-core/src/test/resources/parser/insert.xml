@@ -88,7 +88,7 @@
         </or-condition>
     </parser-result>
 
-    <parser-result sql-case-id="assertInsertSetWithAllPlaceholders" parameters="1, 1, 'init'">
+    <parser-result sql-case-id="insert_set_with_all_placeholders" parameters="1, 1, 'init'">
         <tables>
             <table name="t_order" />
         </tables>
