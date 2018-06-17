@@ -191,7 +191,7 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="assertInsertWithTableIdentifier" parameters="1, 1, 'init'">
+    <parser-result sql-case-id="insert_with_all_placeholders_for_table_identifier" parameters="1, 1, 'init'">
         <tables>
             <table name="t_order" />
         </tables>

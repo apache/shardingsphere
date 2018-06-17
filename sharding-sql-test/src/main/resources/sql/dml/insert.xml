@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sql-cases>
     <sql-case id="insert_with_all_placeholders" value="INSERT INTO t_order (order_id, user_id, status) VALUES (%s, %s, %s)" />
+    <sql-case id="insert_with_all_placeholders_for_table_identifier" value="INSERT INTO t_order (t_order.order_id, t_order.user_id, t_order.status) VALUES (%s, %s, %s)" />
     <sql-case id="insert_set_with_all_placeholders" value="INSERT INTO t_order SET order_id = %s, user_id = %s, status = %s" db-types="MySQL" />
     <sql-case id="insert_with_partial_placeholders" value="INSERT INTO t_order (order_id, user_id, status) VALUES (%s, %s, 'insert')" />
     <sql-case id="insert_set_with_partial_placeholders" value="INSERT INTO t_order SET order_id = %s, user_id = %s, status = 'insert'" db-types="MySQL" />
@@ -9,9 +10,7 @@
     <sql-case id="insert_without_generate_key_column" value="INSERT INTO t_order_item(order_id, user_id, status, creation_date) values (%s, %s, 'insert', '2017-08-08')" />
     <sql-case id="insert_set_without_generate_key_column" value="INSERT INTO t_order_item SET order_id = %s, user_id = %s, status = 'insert', creation_date='2017-08-08'" db-types="MySQL" />
     
-    
     <sql-case id="assertInsertOnDuplicateKeyUpdate" value="INSERT INTO t_order (order_id, user_id, status) VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE status = VALUES(status)" db-types="MySQL" />
-    <sql-case id="assertInsertWithTableIdentifier" value="INSERT INTO t_order (t_order.order_id, t_order.user_id, t_order.status) VALUES (%s, %s, %s)" />
     <sql-case id="assertInsertSetWithTableIdentifier" value="INSERT INTO t_order SET t_order.order_id = %s, t_order.user_id = %s, t_order.status = %s" db-types="MySQL" />
     <!--<sql-case id="assertInsertOnDuplicateKeyUpdateWithTableIdentifier" value="INSERT INTO t_order (t_order.order_id, t_order.user_id, t_order.status) VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE t_order.status = VALUES(t_order.status)" db-types="MySQL" />-->
     <sql-case id="assertBatchInsertWithGenerateKeyColumn" value="INSERT INTO t_order_item(item_id, order_id, user_id, status) values (%s, %s, %s, 'insert'), (%s, %s, %s, 'insert')" />
