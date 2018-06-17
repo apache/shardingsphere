@@ -77,6 +77,7 @@ public final class SchemaEnvironmentManager {
                 RunScript.execute(connection, stringReader);
             } catch (final SQLException ex) {
                 // TODO schema maybe exist for oracle only
+                ex.printStackTrace();
             }
         }
     }
@@ -98,6 +99,7 @@ public final class SchemaEnvironmentManager {
                 RunScript.execute(connection, stringReader);
             } catch (final SQLException ex) {
                 // TODO schema maybe not exist for oracle only
+                ex.printStackTrace();
             }
         }
     }
@@ -112,7 +114,7 @@ public final class SchemaEnvironmentManager {
         if (DatabaseType.H2 == databaseType) {
             return Collections.emptyList();
         }
-        String sql = DatabaseType.Oracle == databaseType ? "CREATE SCHEMA %s" : "CREATE DATABASE IF NOT EXISTS %s";
+        String sql = DatabaseType.Oracle == databaseType ? "CREATE SCHEMA %s" : "CREATE DATABASE %s";
         Collection<String> result = new LinkedList<>();
         for (String each : databases) {
             result.add(String.format(sql, each));
@@ -154,6 +156,7 @@ public final class SchemaEnvironmentManager {
                 RunScript.execute(connection, stringReader);
             } catch (final SQLException ex) {
                 // TODO schema maybe not exist for oracle only
+                ex.printStackTrace();
             }
         }
     }

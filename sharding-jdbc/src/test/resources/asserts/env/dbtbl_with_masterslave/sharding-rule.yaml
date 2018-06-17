@@ -14,8 +14,6 @@ shardingRule:
           shardingColumn: order_id
           preciseAlgorithmClassName: io.shardingsphere.dbtest.fixture.PreciseModuloAlgorithm
           rangeAlgorithmClassName: io.shardingsphere.dbtest.fixture.RangeModuloAlgorithm
-      keyGeneratorColumnName: order_id
-      keyGeneratorClassName: io.shardingsphere.core.integrate.api.yaml.fixture.IncrementKeyGenerator
       logicIndex: t_order_index
     t_order_item:
       actualDataNodes: db_ms_${0..9}.t_order_item_${0..9}
@@ -29,11 +27,12 @@ shardingRule:
           shardingColumn: order_id
           preciseAlgorithmClassName: io.shardingsphere.dbtest.fixture.PreciseModuloAlgorithm
           rangeAlgorithmClassName: io.shardingsphere.dbtest.fixture.RangeModuloAlgorithm
+      keyGeneratorColumnName: item_id
+      keyGeneratorClassName: io.shardingsphere.dbtest.fixture.ConstantKeyGenerator
   bindingTables:
     - t_order,t_order_item
   defaultDataSourceName: db_ms_0
-  defaultKeyGeneratorClassName: io.shardingsphere.dbtest.fixture.IncrementKeyGenerator
-
+  
   masterSlaveRules:
     db_ms_0:
       masterDataSourceName: master_db_0

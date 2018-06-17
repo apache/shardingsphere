@@ -19,14 +19,10 @@ package io.shardingsphere.dbtest.fixture;
 
 import io.shardingsphere.core.keygen.KeyGenerator;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-public final class IncrementKeyGenerator implements KeyGenerator {
-    
-    private static final AtomicInteger SEQUENCE = new AtomicInteger(100);
+public final class ConstantKeyGenerator implements KeyGenerator {
     
     @Override
     public Number generateKey() {
-        return SEQUENCE.incrementAndGet();
+        return 1;
     }
 }
