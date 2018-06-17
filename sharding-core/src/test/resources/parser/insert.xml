@@ -318,7 +318,7 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="assertBatchInsertWithGenerateKeyColumn" parameters="10000, 1000, 10, 10010, 1001, 10">
+    <parser-result sql-case-id="insert_with_batch_and_with_generate_key_column" parameters="10000, 1000, 10, 10010, 1001, 10">
         <tables>
             <table name="t_order_item" />
         </tables>
