@@ -87,7 +87,7 @@
             </and-condition>
         </or-condition>
     </parser-result>
-
+    
     <parser-result sql-case-id="insert_set_with_all_placeholders" parameters="1, 1, 'init'">
         <tables>
             <table name="t_order" />
@@ -107,8 +107,8 @@
             </and-condition>
         </or-condition>
     </parser-result>
-
-    <parser-result sql-case-id="assertInsertSetWithPartialPlaceholder" parameters="1, 1">
+    
+    <parser-result sql-case-id="insert_set_with_partial_placeholders" parameters="1, 1">
         <tables>
             <table name="t_order" />
         </tables>
@@ -127,7 +127,7 @@
             </and-condition>
         </or-condition>
     </parser-result>
-
+    
     <parser-result sql-case-id="assertInsertSetWithGenerateKeyColumn" parameters="10000, 1000, 10">
         <tables>
             <table name="t_order_item" />
@@ -150,7 +150,7 @@
             </and-condition>
         </or-condition>
     </parser-result>
-
+    
     <parser-result sql-case-id="assertInsertSetWithoutGenerateKeyColumn" parameters="1000, 10">
         <tables>
             <table name="t_order_item" />
@@ -170,7 +170,7 @@
             </and-condition>
         </or-condition>
     </parser-result>
-
+    
     <parser-result sql-case-id="assertInsertOnDuplicateKeyUpdate" parameters="1, 1, 'init'">
         <tables>
             <table name="t_order" />
@@ -190,7 +190,7 @@
             </and-condition>
         </or-condition>
     </parser-result>
-
+    
     <parser-result sql-case-id="assertInsertWithTableIdentifier" parameters="1, 1, 'init'">
         <tables>
             <table name="t_order" />
@@ -213,7 +213,7 @@
             </and-condition>
         </or-condition>
     </parser-result>
-
+    
     <parser-result sql-case-id="assertInsertSetWithTableIdentifier" parameters="1, 1, 'init'">
         <tables>
             <table name="t_order" />
@@ -236,7 +236,7 @@
             </and-condition>
         </or-condition>
     </parser-result>
-
+    
     <!--<parser-result sql-case-id="assertInsertOnDuplicateKeyUpdateWithTableIdentifier" parameters="1, 1, 'init'">-->
         <!--<tables>-->
             <!--<table name="t_order" />-->
@@ -261,7 +261,7 @@
             <!--</and-condition>-->
         <!--</or-condition>-->
     <!--</parser-result>-->
-
+    
     <parser-result sql-case-id="assertBatchInsertWithGenerateKeyColumn" parameters="10000, 1000, 10, 10010, 1001, 10">
         <tables>
             <table name="t_order_item" />
@@ -295,7 +295,7 @@
             </and-condition>
         </or-condition>
     </parser-result>
-
+    
     <parser-result sql-case-id="assertBatchInsertWithoutGenerateKeyColumn" parameters="1000, 10, 1001, 10">
         <tables>
             <table name="t_order_item" />
@@ -376,7 +376,7 @@
             </and-condition>
         </or-condition>
     </parser-result>
-
+    
     <parser-result sql-case-id="assertInsertWithoutColumnsWithPartialPlaceholder" parameters="1, 1">
         <tables>
             <table name="t_order" />
@@ -404,7 +404,7 @@
             </and-condition>
         </or-condition>
     </parser-result>
-
+    
     <parser-result sql-case-id="assertInsertWithoutColumnsWithGenerateKeyColumn" parameters="10000, 1000, 10">
         <tables>
             <table name="t_order_item" />
@@ -438,7 +438,7 @@
             </and-condition>
         </or-condition>
     </parser-result>
-
+    
     <parser-result sql-case-id="assertInsertWithoutColumnsWithoutGenerateKeyColumn" parameters="1000, 10">
         <tables>
             <table name="t_order_item" />
@@ -469,7 +469,7 @@
             </and-condition>
         </or-condition>
     </parser-result>
-
+    
     <!-- // TODO
     <parser-result sql-case-id="assertInsertSelect" sql="INSERT INTO `order` ('order_id', 'state') (SELECT 1, 'RUNNING' FROM dual UNION ALL SELECT 2, 'RUNNING' FROM dual )"">
         <tables>
