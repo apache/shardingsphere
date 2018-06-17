@@ -18,12 +18,16 @@
 package io.shardingsphere.proxy.yaml;
 
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ProxyAuthority;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
+import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
+import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
+import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.jdbc.orchestration.yaml.YamlOrchestrationConfiguration;
 import lombok.Getter;
 import lombok.Setter;
@@ -114,4 +118,31 @@ public final class YamlProxyConfiguration {
         return null == masterSlaveRule.getMasterDataSourceName() ? new MasterSlaveRule(new MasterSlaveRuleConfiguration("", "", Arrays.asList(""), null))
                 : new MasterSlaveRule(masterSlaveRule.getMasterSlaveRuleConfiguration());
     }
+    
+    /**
+     * Get Orchestration configuration from yaml.
+     *
+     * @return Orchestration configuration
+     */
+    public OrchestrationConfiguration obtainOrchestrationConfiguration() {
+        return orchestration.getOrchestrationConfiguration();
+    }
+    
+    /**
+     * Judge whether to load configuration from registry center.
+     *
+     * @return load or not
+     */
+    public boolean isUsingRegistryCenter() {
+        return null != orchestration && shardingRule.getTables().isEmpty() && masterSlaveRule.getMasterDataSourceName().isEmpty();
+    }
+    
+    private void loadConfigFromRegistryCenter() {
+        OrchestrationFacade orchestrationFacade = new OrchestrationFacade(obtainOrchestrationConfiguration());
+        ConfigurationService configService = orchestrationFacade.getConfigService();
+        ShardingRuleConfiguration shardingRuleConfig = configService.loadShardingRuleConfiguration();
+        MasterSlaveRuleConfiguration masterSlaveRuleConfig = configService.loadMasterSlaveRuleConfiguration();
+        configService.loadDataSourceMap();
+    }
+    
 }

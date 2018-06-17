@@ -25,12 +25,13 @@ import io.shardingsphere.core.constant.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ProxyAuthority;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.proxy.yaml.YamlProxyConfiguration;
-import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.proxy.metadata.ProxyShardingMetaData;
+import io.shardingsphere.proxy.yaml.YamlProxyConfiguration;
 import lombok.Getter;
 
 import javax.sql.DataSource;
@@ -54,33 +55,37 @@ import java.util.concurrent.Executors;
 @Getter
 public final class RuleRegistry {
     
-    private static final int MAX_EXECUTOR_THREADS = Runtime.getRuntime().availableProcessors() * 2;
-    
     private static final RuleRegistry INSTANCE = new RuleRegistry();
     
-    private final boolean withoutJdbc;
-    
-    private final Map<String, DataSource> dataSourceMap;
-    
-    private Map<String, DataSourceParameter> dataSourceConfigurationMap;
-    
-    private final ShardingRule shardingRule;
-    
-    private final MasterSlaveRule masterSlaveRule;
-    
-    private final ShardingMetaData shardingMetaData;
-    
-    private final boolean isOnlyMasterSlave;
+    private static final int MAX_EXECUTOR_THREADS = Runtime.getRuntime().availableProcessors() * 2;
     
     private final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(MAX_EXECUTOR_THREADS));
     
-    private final String proxyMode;
+    private ShardingRule shardingRule;
     
-    private final boolean showSQL;
+    private MasterSlaveRule masterSlaveRule;
     
-    private final TransactionType transactionType;
+    private boolean isOnlyMasterSlave;
     
-    private final ProxyAuthority proxyAuthority;
+    private boolean withoutJdbc;
+    
+    private Map<String, DataSource> dataSourceMap;
+    
+    private Map<String, DataSourceParameter> dataSourceConfigurationMap;
+    
+    private ShardingMetaData shardingMetaData;
+    
+    private String proxyMode;
+    
+    private boolean showSQL;
+    
+    private TransactionType transactionType;
+    
+    private ProxyAuthority proxyAuthority;
+    
+    private OrchestrationFacade orchestrationFacade;
+    
+    
     
     private RuleRegistry() {
         YamlProxyConfiguration yamlProxyConfiguration;
@@ -89,18 +94,36 @@ public final class RuleRegistry {
         } catch (final IOException ex) {
             throw new ShardingException(ex);
         }
-        withoutJdbc = yamlProxyConfiguration.isWithoutJdbc();
+        if (yamlProxyConfiguration.isUsingRegistryCenter()) {
+            orchestrationFacade = new OrchestrationFacade(yamlProxyConfiguration.obtainOrchestrationConfiguration());
+            
+        }
+        
+        
+        
+        
+    }
+    
+    private void init() {
+    
+    
+    
+    
+    }
+    
+    private void init(final YamlProxyConfiguration yamlProxyConfiguration) {
+        shardingRule = yamlProxyConfiguration.obtainShardingRule(Collections.<String>emptyList());
+        masterSlaveRule = yamlProxyConfiguration.obtainMasterSlaveRule();
+        isOnlyMasterSlave = shardingRule.getTableRules().isEmpty() && !masterSlaveRule.getMasterDataSourceName().isEmpty();
         transactionType = TransactionType.findByValue(yamlProxyConfiguration.getTransactionMode());
         dataSourceMap = ProxyRawDataSourceFactory.create(transactionType, yamlProxyConfiguration);
+        withoutJdbc = yamlProxyConfiguration.isWithoutJdbc();
         dataSourceConfigurationMap = new HashMap<>(128, 1);
         for (Map.Entry<String, DataSourceParameter> entry : yamlProxyConfiguration.getDataSources().entrySet()) {
             if (withoutJdbc) {
                 dataSourceConfigurationMap.put(entry.getKey(), entry.getValue());
             }
         }
-        shardingRule = yamlProxyConfiguration.obtainShardingRule(Collections.<String>emptyList());
-        masterSlaveRule = yamlProxyConfiguration.obtainMasterSlaveRule();
-        isOnlyMasterSlave = shardingRule.getTableRules().isEmpty() && !masterSlaveRule.getMasterDataSourceName().isEmpty();
         Properties properties = yamlProxyConfiguration.getShardingRule().getProps();
         ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
         proxyMode = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_MODE);
