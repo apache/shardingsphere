@@ -1,21 +1,27 @@
 <integrate-test-cases>
    <dml-test-case sql-case-id="insert_with_all_placeholders">
-       <assertion sharding-rule-type="db" parameters="1:int, 1:int, insert:String" expected-update="1" expected-data-file="db/insert.xml" />
-       <assertion sharding-rule-type="tbl" parameters="1:int, 1:int, insert:String" expected-update="1" expected-data-file="tbl/insert.xml" />
-       <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1:int, 1:int, insert:String" expected-update="1" expected-data-file="dbtbl_with_masterslave/insert.xml" />
-       <assertion sharding-rule-type="masterslave" parameters="1:int, 1:int, insert:String" expected-update="1" expected-data-file="masterslave/insert.xml" />
+       <assertion sharding-rule-type="db" parameters="1:int, 1:int, insert:String" expected-update="1" expected-data-file="db/insert_for_order.xml" />
+       <assertion sharding-rule-type="tbl" parameters="1:int, 1:int, insert:String" expected-update="1" expected-data-file="tbl/insert_for_order.xml" />
+       <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1:int, 1:int, insert:String" expected-update="1" expected-data-file="dbtbl_with_masterslave/insert_for_order.xml" />
+       <assertion sharding-rule-type="masterslave" parameters="1:int, 1:int, insert:String" expected-update="1" expected-data-file="masterslave/insert_for_order.xml" />
     </dml-test-case>
     
     <dml-test-case sql-case-id="insert_with_partial_placeholders">
-        <assertion sharding-rule-type="db" parameters="1:int, 1:int" expected-update="1" expected-data-file="db/insert.xml" />
-        <assertion sharding-rule-type="tbl" parameters="1:int, 1:int" expected-update="1" expected-data-file="tbl/insert.xml" />
-        <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1:int, 1:int" expected-update="1" expected-data-file="dbtbl_with_masterslave/insert.xml" />
-        <assertion sharding-rule-type="masterslave" parameters="1:int, 1:int" expected-update="1" expected-data-file="masterslave/insert.xml" />
+        <assertion sharding-rule-type="db" parameters="1:int, 1:int" expected-update="1" expected-data-file="db/insert_for_order.xml" />
+        <assertion sharding-rule-type="tbl" parameters="1:int, 1:int" expected-update="1" expected-data-file="tbl/insert_for_order.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1:int, 1:int" expected-update="1" expected-data-file="dbtbl_with_masterslave/insert_for_order.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="1:int, 1:int" expected-update="1" expected-data-file="masterslave/insert_for_order.xml" />
+    </dml-test-case>
+
+    <dml-test-case sql-case-id="insert_with_generate_key_column">
+        <assertion sharding-rule-type="db" parameters="1:int, 1:int, 1:int" expected-update="1" expected-data-file="db/insert_for_order_item.xml" />
+        <assertion sharding-rule-type="tbl" parameters="1:int, 1:int, 1:int" expected-update="1" expected-data-file="tbl/insert_for_order_item.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1:int, 1:int, 1:int" expected-update="1" expected-data-file="dbtbl_with_masterslave/insert_for_order_item.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="1:int, 1:int, 1:int" expected-update="1" expected-data-file="masterslave/insert_for_order_item.xml" />
     </dml-test-case>
 
 
-
-
+    
     <dml-test-case sql-case-id="update_without_alias">
         <assertion sharding-rule-type="db" parameters="update:String, 1000:int, 10:int" expected-update="1" expected-data-file="db/update.xml" />
         <assertion sharding-rule-type="tbl" parameters="update:String, 1000:int, 10:int" expected-update="1" expected-data-file="tbl/update.xml" />

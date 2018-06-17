@@ -196,7 +196,6 @@ public final class SchemaEnvironmentManager {
                 RunScript.execute(connection, stringReader);
             } catch (final SQLException ex) {
                 // TODO schema maybe not exist for oracle only
-                ex.printStackTrace();
             }
         }
     }

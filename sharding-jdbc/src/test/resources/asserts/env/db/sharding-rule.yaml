@@ -9,13 +9,13 @@ shardingRule:
           rangeAlgorithmClassName: io.shardingsphere.dbtest.fixture.RangeModuloAlgorithm
     t_order_item:
       actualDataNodes: db_${0..9}.t_order_item
-      keyGeneratorColumnName: order_item_id
-      keyGeneratorClassName: io.shardingsphere.dbtest.fixture.DecrementKeyGenerator
       databaseStrategy:
         standard:
           shardingColumn: user_id
           preciseAlgorithmClassName: io.shardingsphere.dbtest.fixture.PreciseModuloAlgorithm
           rangeAlgorithmClassName: io.shardingsphere.dbtest.fixture.RangeModuloAlgorithm
+      keyGeneratorColumnName: item_id
+      keyGeneratorClassName: io.shardingsphere.dbtest.fixture.DecrementKeyGenerator
   bindingTables:
     - t_order,t_order_item
   defaultDataSourceName: db_0

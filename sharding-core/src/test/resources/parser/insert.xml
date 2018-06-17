@@ -40,13 +40,13 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="assertInsertWithGenerateKeyColumn" parameters="10000, 1000, 10">
+    <parser-result sql-case-id="insert_with_generate_key_column" parameters="10000, 1000, 10">
         <tables>
             <table name="t_order_item" />
         </tables>
         <tokens>
             <table-token begin-position="12" original-literals="t_order_item" />
-            <insert-values-token begin-position="68" table-name="t_order_item"/>
+            <insert-values-token begin-position="83" table-name="t_order_item"/>
         </tokens>
         <or-condition>
             <and-condition>
