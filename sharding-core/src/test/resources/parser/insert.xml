@@ -63,18 +63,18 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="assertInsertWithoutGenerateKeyColumn" parameters="1000, 10">
+    <parser-result sql-case-id="insert_without_generate_key_column" parameters="1000, 10">
         <tables>
             <table name="t_order_item" />
         </tables>
         <tokens>
             <table-token begin-position="12" original-literals="t_order_item" />
-            <items-token begin-position="50">
+            <items-token begin-position="65">
                 <items>
                     <item>item_id</item>
                 </items>
             </items-token>
-            <insert-values-token begin-position="59" table-name="t_order_item"/>
+            <insert-values-token begin-position="74" table-name="t_order_item"/>
         </tokens>
         <or-condition>
             <and-condition>
