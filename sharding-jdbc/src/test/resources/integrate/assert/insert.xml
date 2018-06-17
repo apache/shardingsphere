@@ -10,7 +10,7 @@
             <data parameter="1,1" expected="insert/%s_1.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertInsertWithoutColumnsWithAllPlaceholders">
+    <sql id="insert_without_columns_with_all_placeholders">
         <sharding-rule value="tbl">
             <data parameter="1,1,'insert'" expected="insert/%s_1.xml" />
             <data parameter="2,2,'insert'" expected="insert/%s_2.xml" />
