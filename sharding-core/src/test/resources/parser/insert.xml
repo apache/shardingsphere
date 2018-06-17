@@ -151,7 +151,7 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="assertInsertSetWithoutGenerateKeyColumn" parameters="1000, 10">
+    <parser-result sql-case-id="insert_set_without_generate_key_column" parameters="1000, 10">
         <tables>
             <table name="t_order_item" />
         </tables>
