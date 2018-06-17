@@ -405,7 +405,7 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="assertInsertWithoutColumnsWithGenerateKeyColumn" parameters="10000, 1000, 10">
+    <parser-result sql-case-id="insert_without_columns_and_with_generate_key_column" parameters="10000, 1000, 10">
         <tables>
             <table name="t_order_item" />
         </tables>

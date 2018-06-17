@@ -24,7 +24,7 @@
             <data parameter="10,10,'insert'" expected="insert/%s_0.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertInsertWithoutColumnsWithGenerateKeyColumn">
+    <sql id="insert_without_columns_and_with_generate_key_column">
         <sharding-rule value="tbl">
             <data parameter="1,1,1" expected="insert/%s_item_1.xml" />
             <data parameter="2,2,2" expected="insert/%s_item_2.xml" />
