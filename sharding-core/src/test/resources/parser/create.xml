@@ -54,7 +54,7 @@
         </tokens>
     </parser-result>
     
-    <parser-result sql-case-id="assertCreateIndex">
+    <parser-result sql-case-id="create_index">
         <tables>
             <table name="t_log" />
         </tables>

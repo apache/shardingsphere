@@ -41,10 +41,11 @@
         <assertion sharding-rule-type="masterslave" table="t_log" expected-data-file="create_table.xml" />
     </ddl-test-case>
     
-    <ddl-test-case sql-case-id="assertCreateIndex">
-        <assertion sharding-rule-type="db" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="assertCreateIndex.xml" />
-        <assertion sharding-rule-type="tbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="assertCreateIndex.xml" />
-        <assertion sharding-rule-type="dbtbl_with_masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="assertCreateIndex.xml" />
+    <ddl-test-case sql-case-id="create_index">
+        <assertion sharding-rule-type="db" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="create_index.xml" />
+        <assertion sharding-rule-type="tbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="create_index.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="create_index.xml" />
+        <assertion sharding-rule-type="masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="create_index.xml" />
     </ddl-test-case>
     
     <ddl-test-case sql-case-id="assertCreateUniqueIndex" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="assertCreateUniqueIndex.xml">
