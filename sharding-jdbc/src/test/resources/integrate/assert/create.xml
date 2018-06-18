@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
-    <sql id="assertCreateTable">
+    <sql id="create_table">
         <sharding-rule>
             <data expected="create/%s.xml" />
         </sharding-rule>
