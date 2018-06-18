@@ -20,10 +20,11 @@
         <assertion sharding-rule-type="masterslave" table="t_temp_log" expected-data-file="create_temporary_table.xml" />
     </ddl-test-case>
     
-    <ddl-test-case sql-case-id="assertCreateGlobalTemporaryTable" database-types="Oracle,PostgreSQL" >
-        <assertion sharding-rule-type="db" table="t_temp_log" expected-data-file="assertCreateTableTempLog.xml" />
-        <assertion sharding-rule-type="tbl" table="t_temp_log" expected-data-file="assertCreateTableTempLog.xml" />
-        <assertion sharding-rule-type="dbtbl_with_masterslave" table="t_temp_log" expected-data-file="assertCreateTableTempLog.xml" />
+    <ddl-test-case sql-case-id="create_global_temporary_table" database-types="Oracle,PostgreSQL" >
+        <assertion sharding-rule-type="db" table="t_temp_log" expected-data-file="create_temporary_table.xml" />
+        <assertion sharding-rule-type="tbl" table="t_temp_log" expected-data-file="create_temporary_table.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" table="t_temp_log" expected-data-file="create_temporary_table.xml" />
+        <assertion sharding-rule-type="masterslave" table="t_temp_log" expected-data-file="create_temporary_table.xml" />
     </ddl-test-case>
     
     <ddl-test-case sql-case-id="assertCreateLocalTempTable" database-types="PostgreSQL">

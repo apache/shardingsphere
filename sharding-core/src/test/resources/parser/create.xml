@@ -27,7 +27,7 @@
         </tokens>
     </parser-result>
     
-    <parser-result sql-case-id="assertCreateGlobalTemporaryTable">
+    <parser-result sql-case-id="create_global_temporary_table">
         <tables>
             <table name="t_temp_log" />
         </tables>

@@ -15,7 +15,7 @@
             <data expected="create/%s.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertCreateGlobalTemporaryTable">
+    <sql id="create_global_temporary_table">
         <sharding-rule>
             <data expected="create/%s.xml" />
         </sharding-rule>
