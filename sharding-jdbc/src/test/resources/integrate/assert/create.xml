@@ -10,7 +10,7 @@
             <data expected="create/%s.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertCreateTemporaryTable">
+    <sql id="create_temporary_table_if_not_exists">
         <sharding-rule>
             <data expected="create/%s.xml" />
         </sharding-rule>
