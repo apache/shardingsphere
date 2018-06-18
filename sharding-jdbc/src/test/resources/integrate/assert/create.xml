@@ -20,7 +20,7 @@
             <data expected="create/%s.xml" />
         </sharding-rule>
     </sql>
-    <sql id="create_local_temporary_table">
+    <sql id="create_local_temp_table">
         <sharding-rule>
             <data expected="create/%s.xml" />
         </sharding-rule>
