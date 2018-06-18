@@ -9,7 +9,7 @@
         </tokens>
     </parser-result>
     
-    <parser-result sql-case-id="assertAlterTableIfExistAndOnly">
+    <parser-result sql-case-id="alter_table_if_exists_only">
         <tables>
             <table name="t_log" />
         </tables>

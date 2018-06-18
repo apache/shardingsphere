@@ -6,9 +6,10 @@
         <assertion sharding-rule-type="masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="alter_table.xml" />
     </ddl-test-case>
     
-    <ddl-test-case sql-case-id="assertAlterTableIfExistAndOnly">
+    <ddl-test-case sql-case-id="alter_table_if_exists_only">
         <assertion sharding-rule-type="db" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="alter_table.xml" />
         <assertion sharding-rule-type="tbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="alter_table.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="alter_table.xml" />
+        <assertion sharding-rule-type="masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="alter_table.xml" />
     </ddl-test-case>
 </integrate-test-cases>

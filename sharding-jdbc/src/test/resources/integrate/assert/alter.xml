@@ -5,7 +5,7 @@
             <data expected="alter/%s.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertAlterTableIfExistAndOnly">
+    <sql id="alter_table_if_exists_only">
         <sharding-rule>
             <data expected="alter/%s.xml" />
         </sharding-rule>
