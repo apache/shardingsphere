@@ -7,5 +7,5 @@
     <sql-case id="create_local_temp_table" value="CREATE LOCAL TEMP TABLE t_temp_log(id int, status varchar(10))" db-types="PostgreSQL" />
     <sql-case id="create_unlogged_table" value="CREATE UNLOGGED TABLE t_log(id int, status varchar(10))" db-types="PostgreSQL" />
     <sql-case id="create_index" value="CREATE INDEX t_log_index ON t_log (id)" />
-    <sql-case id="assertCreateUniqueIndex" value="CREATE UNIQUE INDEX t_log_index ON t_log (id)" />
+    <sql-case id="create_unique_index" value="CREATE UNIQUE INDEX t_log_index ON t_log (id)" />
 </sql-cases>
