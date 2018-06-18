@@ -9,7 +9,7 @@
         </tokens>
     </parser-result>
     
-    <parser-result sql-case-id="assertCreateTableIfNotExist">
+    <parser-result sql-case-id="create_table_if_not_exists">
         <tables>
             <table name="t_log" />
         </tables>

@@ -6,10 +6,11 @@
         <assertion sharding-rule-type="masterslave" table="t_log" expected-data-file="create_table.xml" />
     </ddl-test-case>
     
-    <ddl-test-case sql-case-id="assertCreateTableIfNotExist">
-        <assertion sharding-rule-type="db" table="t_log" expected-data-file="assertCreateTable.xml" />
-        <assertion sharding-rule-type="tbl" table="t_log" expected-data-file="assertCreateTable.xml" />
-        <assertion sharding-rule-type="dbtbl_with_masterslave" table="t_log" expected-data-file="assertCreateTable.xml" />
+    <ddl-test-case sql-case-id="create_table_if_not_exists">
+        <assertion sharding-rule-type="db" table="t_log" expected-data-file="create_table.xml" />
+        <assertion sharding-rule-type="tbl" table="t_log" expected-data-file="create_table.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" table="t_log" expected-data-file="create_table.xml" />
+        <assertion sharding-rule-type="masterslave" table="t_log" expected-data-file="create_table.xml" />
     </ddl-test-case>
     
     <ddl-test-case sql-case-id="assertCreateTemporaryTable" database-types="MySQL,PostgreSQL">

@@ -5,7 +5,7 @@
             <data expected="create/%s.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertCreateTableIfNotExist">
+    <sql id="create_table_if_not_exists">
         <sharding-rule>
             <data expected="create/%s.xml" />
         </sharding-rule>
