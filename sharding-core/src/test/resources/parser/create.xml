@@ -45,7 +45,7 @@
         </tokens>
     </parser-result>
     
-    <parser-result sql-case-id="assertCreateUnloggedTable">
+    <parser-result sql-case-id="create_unlogged_table">
         <tables>
             <table name="t_log" />
         </tables>

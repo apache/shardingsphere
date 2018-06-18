@@ -25,7 +25,7 @@
             <data expected="create/%s.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertCreateUnloggedTable">
+    <sql id="create_unlogged_table">
         <sharding-rule>
             <data expected="create/%s.xml" />
         </sharding-rule>
