@@ -25,6 +25,7 @@ import io.shardingsphere.core.parsing.cache.ParsingResultCache;
 import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
+import io.shardingsphere.dbtest.cases.assertion.root.SQLValue;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.dbtest.env.IntegrateTestEnvironment;
@@ -45,9 +46,11 @@ import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -77,13 +80,13 @@ public abstract class BaseIntegrateTest {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     }
     
-    public BaseIntegrateTest(final String sqlCaseId, final String path, final IntegrateTestCaseAssertion assertion, 
-                             final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType, final int countInSameCase) throws IOException, JAXBException, SQLException {
+    public BaseIntegrateTest(final String sqlCaseId, final String path, final IntegrateTestCaseAssertion assertion, final DatabaseTypeEnvironment databaseTypeEnvironment, 
+                             final SQLCaseType caseType, final int countInSameCase) throws IOException, JAXBException, SQLException, ParseException {
         this.databaseTypeEnvironment = databaseTypeEnvironment;
         this.assertion = assertion;
         this.caseType = caseType;
         this.countInSameCase = countInSameCase;
-        sql = SQLCasesLoader.getInstance().getSupportedSQL(sqlCaseId);
+        sql = getSQL(sqlCaseId);
         expectedDataFile = path.substring(0, path.lastIndexOf(File.separator) + 1) + "dataset/" + assertion.getExpectedDataFile();
         if (databaseTypeEnvironment.isEnabled()) {
             dataSourceMap = createDataSourceMap(assertion);
@@ -92,6 +95,14 @@ public abstract class BaseIntegrateTest {
             dataSourceMap = null;
             dataSource = null;
         }
+    }
+    
+    private String getSQL(final String sqlCaseId) throws ParseException {
+        List<String> parameters = new LinkedList<>();
+        for (SQLValue each : assertion.getSQLValues()) {
+            parameters.add(each.toString());
+        }
+        return SQLCasesLoader.getInstance().getSupportedSQL(sqlCaseId, caseType, parameters);
     }
     
     private Map<String, DataSource> createDataSourceMap(final IntegrateTestCaseAssertion assertion) throws IOException, JAXBException {

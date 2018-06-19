@@ -61,6 +61,12 @@ public final class SQLValue {
     
     @Override
     public String toString() {
-        return value instanceof String ? "'" + value + "'" : value.toString();
+        if (value instanceof String) {
+            return "'" + value + "'";
+        }
+        if (value instanceof Date) {
+            return new SimpleDateFormat("yyyy-MM-dd").format(value);
+        }
+        return value.toString();
     }
 }
