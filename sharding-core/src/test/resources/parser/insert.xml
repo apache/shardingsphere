@@ -222,7 +222,7 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="assertInsertOnDuplicateKeyUpdate" parameters="1, 1, 'init'">
+    <parser-result sql-case-id="insert_on_duplicate_key_update" parameters="1, 1, 'init'">
         <tables>
             <table name="t_order" />
         </tables>
@@ -265,7 +265,7 @@
         </or-condition>
     </parser-result>
     
-    <!--<parser-result sql-case-id="assertInsertOnDuplicateKeyUpdateWithTableIdentifier" parameters="1, 1, 'init'">-->
+    <!--<parser-result sql-case-id="insert_on_duplicate_key_update_with_table_identifier" parameters="1, 1, 'init'">-->
         <!--<tables>-->
             <!--<table name="t_order" />-->
         <!--</tables>-->
@@ -290,13 +290,41 @@
         <!--</or-condition>-->
     <!--</parser-result>-->
     
-    <parser-result sql-case-id="assertBatchInsertWithGenerateKeyColumn" parameters="10000, 1000, 10, 10010, 1001, 10">
+    <parser-result sql-case-id="insert_with_batch" parameters="1000, 10, 'init', 1100, 11, 'init'">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+            <insert-values-token begin-position="55" table-name="t_order"/>
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="1000" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="10" type="int" />
+                </condition>
+            </and-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="3" literal="1100" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="4" literal="11" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+    
+    <parser-result sql-case-id="insert_with_batch_and_with_generate_key_column" parameters="10000, 1000, 10, 10010, 1001, 10">
         <tables>
             <table name="t_order_item" />
         </tables>
         <tokens>
             <table-token begin-position="12" original-literals="t_order_item" />
-            <insert-values-token begin-position="68" table-name="t_order_item"/>
+            <insert-values-token begin-position="83" table-name="t_order_item"/>
         </tokens>
         <or-condition>
             <and-condition>
@@ -324,18 +352,18 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="assertBatchInsertWithoutGenerateKeyColumn" parameters="1000, 10, 1001, 10">
+    <parser-result sql-case-id="insert_with_batch_and_without_generate_key_column" parameters="1000, 10, 1001, 10">
         <tables>
             <table name="t_order_item" />
         </tables>
         <tokens>
             <table-token begin-position="12" original-literals="t_order_item" />
-            <items-token begin-position="50">
+            <items-token begin-position="65">
                 <items>
                     <item>item_id</item>
                 </items>
             </items-token>
-            <insert-values-token begin-position="59" table-name="t_order_item"/>
+            <insert-values-token begin-position="74" table-name="t_order_item"/>
         </tokens>
         <or-condition>
             <and-condition>
@@ -357,8 +385,8 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="assertInsertWithJsonAndGeo" parameters="7, 200, 100, 200, '{&quot;rule&quot;:&quot;null&quot;}'">
-        <tables>assertInsertWithJsonAndGeo
+    <parser-result sql-case-id="insert_with_geography" parameters="7, 200, 100, 200, '{&quot;rule&quot;:&quot;null&quot;}'">
+        <tables>
             <table name="t_place" />
         </tables>
         <tokens>
@@ -377,7 +405,7 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="assertInsertWithoutColumnsWithGenerateKeyColumn" parameters="10000, 1000, 10">
+    <parser-result sql-case-id="insert_without_columns_and_with_generate_key_column" parameters="10000, 1000, 10">
         <tables>
             <table name="t_order_item" />
         </tables>
@@ -411,7 +439,7 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="assertInsertWithoutColumnsWithoutGenerateKeyColumn" parameters="1000, 10">
+    <parser-result sql-case-id="insert_without_columns_and_without_generate_key_column" parameters="1000, 10">
         <tables>
             <table name="t_order_item" />
         </tables>

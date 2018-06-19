@@ -57,11 +57,26 @@
         <assertion sharding-rule-type="masterslave" parameters="1:int, 1:int, 1:int" expected-update="1" expected-data-file="masterslave/insert_with_generate_key_column.xml" />
     </dml-test-case>
     
+    <dml-test-case sql-case-id="insert_without_columns_and_with_generate_key_column">
+        <assertion sharding-rule-type="db" parameters="1:int, 1:int, 1:int" expected-update="1" expected-data-file="db/insert_with_generate_key_column.xml" />
+        <assertion sharding-rule-type="tbl" parameters="1:int, 1:int, 1:int" expected-update="1" expected-data-file="tbl/insert_with_generate_key_column.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1:int, 1:int, 1:int" expected-update="1" expected-data-file="dbtbl_with_masterslave/insert_with_generate_key_column.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="1:int, 1:int, 1:int" expected-update="1" expected-data-file="masterslave/insert_with_generate_key_column.xml" />
+    </dml-test-case>
+    
     <dml-test-case sql-case-id="insert_set_with_generate_key_column">
         <assertion sharding-rule-type="db" parameters="1:int, 1:int, 1:int" expected-update="1" expected-data-file="db/insert_with_generate_key_column.xml" />
         <assertion sharding-rule-type="tbl" parameters="1:int, 1:int, 1:int" expected-update="1" expected-data-file="tbl/insert_with_generate_key_column.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1:int, 1:int, 1:int" expected-update="1" expected-data-file="dbtbl_with_masterslave/insert_with_generate_key_column.xml" />
         <assertion sharding-rule-type="masterslave" parameters="1:int, 1:int, 1:int" expected-update="1" expected-data-file="masterslave/insert_with_generate_key_column.xml" />
+    </dml-test-case>
+    
+    <dml-test-case sql-case-id="insert_without_columns_and_without_generate_key_column">
+        <assertion sharding-rule-type="db" parameters="1:int, 1:int" expected-update="1" expected-data-file="db/insert_with_generate_key_column.xml" />
+        <assertion sharding-rule-type="tbl" parameters="1:int, 1:int" expected-update="1" expected-data-file="tbl/insert_with_generate_key_column.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1:int, 1:int" expected-update="1" expected-data-file="dbtbl_with_masterslave/insert_with_generate_key_column.xml" />
+        <!-- TODO add gen column on create table -->
+        <!--<assertion sharding-rule-type="masterslave" parameters="1:int, 1:int" expected-update="1" expected-data-file="masterslave/insert_with_generate_key_column.xml" />-->
     </dml-test-case>
     
     <!-- TODO parse generator context for insert set -->
@@ -79,9 +94,27 @@
         <!--<assertion sharding-rule-type="masterslave" parameters="1:int, 1:int" expected-update="1" expected-data-file="masterslave/insert_without_generate_key_column.xml" />-->
     <!--</dml-test-case>-->
     
+    <dml-test-case sql-case-id="insert_with_batch">
+        <assertion sharding-rule-type="db" parameters="1:int, 1:int, insert:String, 2:int, 2:int, insert:String" expected-update="2" expected-data-file="db/batch_insert_for_order.xml" />
+        <assertion sharding-rule-type="tbl" parameters="1:int, 1:int, insert:String, 2:int, 2:int, insert:String" expected-update="2" expected-data-file="tbl/batch_insert_for_order.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1:int, 1:int, insert:String, 2:int, 2:int, insert:String" expected-update="2" expected-data-file="dbtbl_with_masterslave/batch_insert_for_order.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="1:int, 1:int, insert:String, 2:int, 2:int, insert:String" expected-update="2" expected-data-file="masterslave/batch_insert_for_order.xml" />
+    </dml-test-case>
     
+    <dml-test-case sql-case-id="insert_with_batch_and_with_generate_key_column">
+        <assertion sharding-rule-type="db" parameters="1:int, 1:int, 1:int, 2:int, 2:int, 2:int" expected-update="2" expected-data-file="db/batch_insert_with_generate_key_column.xml" />
+        <assertion sharding-rule-type="tbl" parameters="1:int, 1:int, 1:int, 2:int, 2:int, 2:int" expected-update="2" expected-data-file="tbl/batch_insert_with_generate_key_column.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1:int, 1:int, 1:int, 2:int, 2:int, 2:int" expected-update="2" expected-data-file="dbtbl_with_masterslave/batch_insert_with_generate_key_column.xml" />
+        <assertion sharding-rule-type="masterslave" parameters="1:int, 1:int, 1:int, 2:int, 2:int, 2:int" expected-update="2" expected-data-file="masterslave/batch_insert_with_generate_key_column.xml" />
+    </dml-test-case>
     
-    
+    <dml-test-case sql-case-id="insert_with_batch_and_without_generate_key_column">
+        <assertion sharding-rule-type="db" parameters="1:int, 1:int, 2:int, 2:int" expected-update="2" expected-data-file="db/batch_insert_without_generate_key_column.xml" />
+        <assertion sharding-rule-type="tbl" parameters="1:int, 1:int, 2:int, 2:int" expected-update="2" expected-data-file="tbl/batch_insert_without_generate_key_column.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1:int, 1:int, 2:int, 2:int" expected-update="2" expected-data-file="dbtbl_with_masterslave/batch_insert_without_generate_key_column.xml" />
+        <!-- TODO add gen column on create table -->
+        <!--<assertion sharding-rule-type="masterslave" parameters="1:int, 1:int, 2:int, 2:int" expected-update="2" expected-data-file="masterslave/batch_insert_without_generate_key_column.xml" />-->
+    </dml-test-case>
     
     <dml-test-case sql-case-id="update_without_alias">
         <assertion sharding-rule-type="db" parameters="update:String, 1000:int, 10:int" expected-update="1" expected-data-file="db/update.xml" />

@@ -42,7 +42,6 @@ public class Connection {
      * @param e e
      * @return need reset
      * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
      */
     public static boolean needReset(final KeeperException e) throws KeeperException {
         int code = e.code().intValue();

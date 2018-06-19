@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parser-result-sets>
-    <parser-result sql-case-id="assertDropTable">
+    <parser-result sql-case-id="drop_table">
         <tables>
             <table name="t_log" />
         </tables>
@@ -9,7 +9,7 @@
         </tokens>
     </parser-result>
     
-    <parser-result sql-case-id="assertDropTableIfExists">
+    <parser-result sql-case-id="drop_table_if_exists">
         <tables>
             <table name="t_log" />
         </tables>
@@ -18,7 +18,7 @@
         </tokens>
     </parser-result>
     
-    <parser-result sql-case-id="assertDropTemporaryTable">
+    <parser-result sql-case-id="drop_temporary_table_if_exists">
         <tables>
             <table name="t_temp_log" />
         </tables>
@@ -27,7 +27,7 @@
         </tokens>
     </parser-result>
     
-    <parser-result sql-case-id="assertDropTableRestrict">
+    <parser-result sql-case-id="drop_table_restrict">
         <tables>
             <table name="t_log" />
         </tables>
@@ -36,7 +36,7 @@
         </tokens>
     </parser-result>
     
-    <parser-result sql-case-id="assertDropTableCascade">
+    <parser-result sql-case-id="drop_table_cascade">
         <tables>
             <table name="t_log" />
         </tables>
@@ -45,7 +45,7 @@
         </tokens>
     </parser-result>
     
-    <parser-result sql-case-id="assertDropTableCascadeConstraintsAndPurge">
+    <parser-result sql-case-id="drop_table_cascade_constraints_and_purge">
         <tables>
             <table name="t_log" />
         </tables>
@@ -54,7 +54,7 @@
         </tokens>
     </parser-result>
     
-    <parser-result sql-case-id="assertDropIndex">
+    <parser-result sql-case-id="drop_index">
         <tables>
             <table name="t_log" />
         </tables>
@@ -64,13 +64,13 @@
         </tokens>
     </parser-result>
     
-    <parser-result sql-case-id="assertDropIndexWithoutOn">
+    <parser-result sql-case-id="drop_index_without_on">
         <tokens>
             <index-token begin-position="11" original-literals="t_log_index" table-name="" />
         </tokens>
     </parser-result>
     
-    <parser-result sql-case-id="assertDropIndexIfExists">
+    <parser-result sql-case-id="drop_index_if_exists">
         <tokens>
             <index-token begin-position="21" original-literals="t_order_index" table-name="" />
         </tokens>

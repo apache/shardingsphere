@@ -19,7 +19,6 @@ package io.shardingsphere.core;
 
 import io.shardingsphere.core.api.AllApiTests;
 import io.shardingsphere.core.executor.AllExecutorTests;
-import io.shardingsphere.core.integrate.api.yaml.AllYamlTests;
 import io.shardingsphere.core.jdbc.AllJDBCTests;
 import io.shardingsphere.core.util.AllUtilTests;
 import org.junit.runner.RunWith;
@@ -31,8 +30,7 @@ import org.junit.runners.Suite.SuiteClasses;
         AllApiTests.class,
         AllExecutorTests.class, 
         AllJDBCTests.class,
-        AllUtilTests.class,
-        AllYamlTests.class
+        AllUtilTests.class
     })
 public class AllUnitTests {
 }

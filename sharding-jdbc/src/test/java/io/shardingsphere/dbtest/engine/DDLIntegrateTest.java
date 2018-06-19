@@ -65,10 +65,13 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
     
     private final DDLIntegrateTestCaseAssertion assertion;
     
+    private final DatabaseType databaseType;
+    
     public DDLIntegrateTest(final String sqlCaseId, final String path, final DDLIntegrateTestCaseAssertion assertion,
                             final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType, final int countInSameCase) throws IOException, JAXBException, SQLException {
         super(sqlCaseId, path, assertion, databaseTypeEnvironment, caseType, countInSameCase);
         this.assertion = assertion;
+        databaseType = databaseTypeEnvironment.getDatabaseType();
     }
     
     @Parameters(name = "{0}[{5}] -> {2} -> {3} -> {4}")
@@ -144,6 +147,10 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
     }
     
     private void assertMetadata(final Connection connection) throws IOException, JAXBException, SQLException {
+        // TODO case for drop (table, index) and truncate, add assert later
+        if (null == assertion.getExpectedDataFile()) {
+            return;
+        }
         ExpectedMetadataRoot expected;
         try (FileReader reader = new FileReader(getExpectedDataFile())) {
             expected = (ExpectedMetadataRoot) JAXBContext.newInstance(ExpectedMetadataRoot.class).createUnmarshaller().unmarshal(reader);
@@ -162,7 +169,11 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
     private void assertMetadata(final List<ExpectedColumn> actual, final ExpectedColumn expect) {
         for (ExpectedColumn each : actual) {
             if (expect.getName().equals(each.getName())) {
-                assertThat(each.getType(), is(expect.getType()));
+                if (DatabaseType.MySQL == databaseType && "integer".equals(expect.getType())) {
+                    assertThat(each.getType(), is("int"));
+                } else {
+                    assertThat(each.getType(), is(expect.getType()));
+                }
             }
         }
     }
