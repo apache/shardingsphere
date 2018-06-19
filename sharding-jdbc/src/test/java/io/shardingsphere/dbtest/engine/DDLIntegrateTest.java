@@ -147,6 +147,10 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
     }
     
     private void assertMetadata(final Connection connection) throws IOException, JAXBException, SQLException {
+        // TODO case for drop, add assert later
+        if (null == assertion.getExpectedDataFile()) {
+            return;
+        }
         ExpectedMetadataRoot expected;
         try (FileReader reader = new FileReader(getExpectedDataFile())) {
             expected = (ExpectedMetadataRoot) JAXBContext.newInstance(ExpectedMetadataRoot.class).createUnmarshaller().unmarshal(reader);

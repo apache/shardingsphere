@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sql-cases>
-    <sql-case id="assertDropTable" value="DROP TABLE t_log" />
+    <sql-case id="drop_table" value="DROP TABLE t_log" />
     <sql-case id="assertDropTableIfExists" value="DROP TABLE IF EXISTS t_log" db-types="MySQL,PostgreSQL,SQLServer" />
     <sql-case id="assertDropTemporaryTable" value="DROP TEMPORARY TABLE IF EXISTS t_temp_log" db-types="MySQL" />
     <sql-case id="assertDropTableRestrict" value="DROP TABLE t_log RESTRICT" db-types="MySQL,PostgreSQL" />

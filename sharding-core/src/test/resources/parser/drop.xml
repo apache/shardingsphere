@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parser-result-sets>
-    <parser-result sql-case-id="assertDropTable">
+    <parser-result sql-case-id="drop_table">
         <tables>
             <table name="t_log" />
         </tables>
