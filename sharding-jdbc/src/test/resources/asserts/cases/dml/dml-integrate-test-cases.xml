@@ -123,7 +123,7 @@
         <assertion sharding-rule-type="masterslave" parameters="update:String, 1000:int, 10:int" expected-update="1" expected-data-file="masterslave/update.xml" />
     </dml-test-case>
     
-    <dml-test-case sql-case-id="update_with_alias" database-types="MySQL,H2">
+    <dml-test-case sql-case-id="update_with_alias">
         <assertion sharding-rule-type="db" parameters="update:String, 1000:int, 10:int" expected-update="1" expected-data-file="db/update.xml" />
         <assertion sharding-rule-type="tbl" parameters="update:String, 1000:int, 10:int" expected-update="1" expected-data-file="tbl/update.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="update:String, 1000:int, 10:int" expected-update="1" expected-data-file="dbtbl_with_masterslave/update.xml" />
