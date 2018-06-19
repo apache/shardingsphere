@@ -30,7 +30,7 @@
             <data expected="drop/%s.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertDropIndexWithoutOn">
+    <sql id="drop_index_without_on">
         <sharding-rule>
             <data expected="drop/%s.xml" />
         </sharding-rule>

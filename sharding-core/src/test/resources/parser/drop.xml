@@ -64,7 +64,7 @@
         </tokens>
     </parser-result>
     
-    <parser-result sql-case-id="assertDropIndexWithoutOn">
+    <parser-result sql-case-id="drop_index_without_on">
         <tokens>
             <index-token begin-position="11" original-literals="t_log_index" table-name="" />
         </tokens>
