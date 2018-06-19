@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
-    <sql id="assertTruncateTable">
+    <sql id="truncate_table">
         <sharding-rule>
             <data expected="truncate/%s.xml" />
         </sharding-rule>
