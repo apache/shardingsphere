@@ -97,10 +97,7 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
             if (null == integrateTestCase) {
                 continue;
             }
-            if (integrateTestCase.getDatabaseTypes().contains(databaseType)) {
-                result.addAll(getParameters(databaseType, caseType, integrateTestCase));
-            }
-            
+            result.addAll(getParameters(databaseType, caseType, integrateTestCase));
         }
         return result;
     }

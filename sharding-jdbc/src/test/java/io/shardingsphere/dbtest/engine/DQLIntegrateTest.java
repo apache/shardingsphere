@@ -99,16 +99,14 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
             if (null == integrateTestCase) {
                 continue;
             }
-            if (integrateTestCase.getDatabaseTypes().contains(databaseType)) {
-                result.addAll(getParameters(databaseType, caseType, integrateTestCase));
-            }
+            result.addAll(getParameters(databaseType, caseType, integrateTestCase));
         }
         return result;
     }
     
     @BeforeClass
     public static void insertData() throws IOException, JAXBException, SQLException, ParseException {
-        for (DatabaseType each : integrateTestCasesLoader.getDatabaseTypes()) {
+        for (DatabaseType each : DatabaseType.values()) {
             if (IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(each)) {
                 insertData(each);
             }
@@ -123,7 +121,7 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
     
     @AfterClass
     public static void clearData() throws IOException, JAXBException, SQLException {
-        for (DatabaseType each : integrateTestCasesLoader.getDatabaseTypes()) {
+        for (DatabaseType each : DatabaseType.values()) {
             if (IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(each)) {
                 clearData(each);
             }
