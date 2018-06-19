@@ -50,6 +50,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -67,8 +68,8 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
     
     private final DatabaseType databaseType;
     
-    public DDLIntegrateTest(final String sqlCaseId, final String path, final DDLIntegrateTestCaseAssertion assertion,
-                            final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType, final int countInSameCase) throws IOException, JAXBException, SQLException {
+    public DDLIntegrateTest(final String sqlCaseId, final String path, final DDLIntegrateTestCaseAssertion assertion, final DatabaseTypeEnvironment databaseTypeEnvironment, 
+                            final SQLCaseType caseType, final int countInSameCase) throws IOException, JAXBException, SQLException, ParseException {
         super(sqlCaseId, path, assertion, databaseTypeEnvironment, caseType, countInSameCase);
         this.assertion = assertion;
         databaseType = databaseTypeEnvironment.getDatabaseType();
@@ -81,7 +82,7 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
         Collection<Object[]> result = new LinkedList<>();
         for (Object[] each : sqlCasesLoader.getSupportedSQLTestParameters(Arrays.<Enum>asList(DatabaseType.values()), DatabaseType.class)) {
             String sqlCaseId = each[0].toString();
-            if (SQLType.DDL != new SQLJudgeEngine(sqlCasesLoader.getSupportedSQL(sqlCaseId)).judge().getType()) {
+            if (SQLType.DDL != new SQLJudgeEngine(sqlCasesLoader.getSupportedSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList())).judge().getType()) {
                 continue;
             }
             DatabaseType databaseType = (DatabaseType) each[1];
