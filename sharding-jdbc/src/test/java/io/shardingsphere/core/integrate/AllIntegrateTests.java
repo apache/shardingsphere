@@ -18,11 +18,6 @@
 package io.shardingsphere.core.integrate;
 
 import io.shardingsphere.core.integrate.api.AllAPIIntegrateTests;
-import io.shardingsphere.core.integrate.type.ms.MasterSlaveOnlyDMLAndDDLTest;
-import io.shardingsphere.core.integrate.type.sharding.ShardingDatabaseAndTableDMLAndDDLTest;
-import io.shardingsphere.core.integrate.type.sharding.ShardingDatabaseOnlyDMLAndDDLTest;
-import io.shardingsphere.core.integrate.type.sharding.ShardingMasterSlaveDMLAndDDLTest;
-import io.shardingsphere.core.integrate.type.sharding.ShardingTableOnlyDMLAndDDLTest;
 import io.shardingsphere.core.integrate.type.sharding.hint.AllHintDatabaseOnlyTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -30,11 +25,6 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        ShardingDatabaseOnlyDMLAndDDLTest.class, 
-        ShardingTableOnlyDMLAndDDLTest.class, 
-        ShardingMasterSlaveDMLAndDDLTest.class, 
-        MasterSlaveOnlyDMLAndDDLTest.class, 
-        ShardingDatabaseAndTableDMLAndDDLTest.class, 
         AllHintDatabaseOnlyTests.class, 
         AllAPIIntegrateTests.class
     })
