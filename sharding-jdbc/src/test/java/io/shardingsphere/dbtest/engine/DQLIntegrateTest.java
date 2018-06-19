@@ -18,6 +18,8 @@
 package io.shardingsphere.dbtest.engine;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.parsing.SQLJudgeEngine;
 import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCaseAssertion;
@@ -86,6 +88,9 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
         Collection<Object[]> result = new LinkedList<>();
         for (Object[] each : sqlCasesLoader.getSupportedSQLTestParameters(Arrays.<Enum>asList(DatabaseType.values()), DatabaseType.class)) {
             String sqlCaseId = each[0].toString();
+            if (SQLType.DQL != new SQLJudgeEngine(sqlCasesLoader.getSupportedSQL(sqlCaseId)).judge().getType()) {
+                continue;
+            }
             DatabaseType databaseType = (DatabaseType) each[1];
             SQLCaseType caseType = (SQLCaseType) each[2];
             DQLIntegrateTestCase integrateTestCase = integrateTestCasesLoader.getDQLIntegrateTestCase(sqlCaseId);
@@ -173,6 +178,75 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
     }
     
     @Test
+    public void assertExecuteQueryWithResultSetTypeAndResultSetConcurrency() throws JAXBException, IOException, SQLException, ParseException {
+        if (!getDatabaseTypeEnvironment().isEnabled()) {
+            return;
+        }
+        try (Connection connection = getDataSource().getConnection()) {
+            if (SQLCaseType.Literal == getCaseType()) {
+                assertExecuteQueryForStatementWithResultSetTypeAndResultSetConcurrency(connection);
+            } else {
+                assertExecuteQueryForPreparedStatementWithResultSetTypeAndResultSetConcurrency(connection);
+            }
+        }
+    }
+    
+    private void assertExecuteQueryForStatementWithResultSetTypeAndResultSetConcurrency(final Connection connection) throws SQLException, JAXBException, IOException, ParseException {
+        try (
+                Statement statement = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                ResultSet resultSet = statement.executeQuery(String.format(getSql(), assertion.getSQLValues().toArray()))) {
+            assertResultSet(resultSet);
+        }
+    }
+    
+    private void assertExecuteQueryForPreparedStatementWithResultSetTypeAndResultSetConcurrency(final Connection connection) throws SQLException, ParseException, JAXBException, IOException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getSql().replaceAll("%s", "?"), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
+            for (SQLValue each : assertion.getSQLValues()) {
+                preparedStatement.setObject(each.getIndex(), each.getValue());
+            }
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                assertResultSet(resultSet);
+            }
+        }
+    }
+    
+    @Test
+    public void assertExecuteQueryWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability() throws JAXBException, IOException, SQLException, ParseException {
+        if (!getDatabaseTypeEnvironment().isEnabled()) {
+            return;
+        }
+        try (Connection connection = getDataSource().getConnection()) {
+            if (SQLCaseType.Literal == getCaseType()) {
+                assertExecuteQueryForStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(connection);
+            } else {
+                assertExecuteQueryForPreparedStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(connection);
+            }
+        }
+    }
+    
+    private void assertExecuteQueryForStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(final Connection connection)
+            throws SQLException, JAXBException, IOException, ParseException {
+        try (
+                Statement statement = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
+                ResultSet resultSet = statement.executeQuery(String.format(getSql(), assertion.getSQLValues().toArray()))) {
+            assertResultSet(resultSet);
+        }
+    }
+    
+    private void assertExecuteQueryForPreparedStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(final Connection connection)
+            throws SQLException, ParseException, JAXBException, IOException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(
+                getSql().replaceAll("%s", "?"), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
+            for (SQLValue each : assertion.getSQLValues()) {
+                preparedStatement.setObject(each.getIndex(), each.getValue());
+            }
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                assertResultSet(resultSet);
+            }
+        }
+    }
+    
+    @Test
     public void assertExecute() throws JAXBException, IOException, SQLException, ParseException {
         if (!getDatabaseTypeEnvironment().isEnabled()) {
             return;
@@ -197,6 +271,79 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
     
     private void assertExecuteForPreparedStatement(final Connection connection) throws SQLException, ParseException, JAXBException, IOException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(getSql().replaceAll("%s", "?"))) {
+            for (SQLValue each : assertion.getSQLValues()) {
+                preparedStatement.setObject(each.getIndex(), each.getValue());
+            }
+            assertTrue("Not a DQL statement.", preparedStatement.execute());
+            try (ResultSet resultSet = preparedStatement.getResultSet()) {
+                assertResultSet(resultSet);
+            }
+        }
+    }
+    
+    @Test
+    public void assertExecuteWithResultSetTypeAndResultSetConcurrency() throws JAXBException, IOException, SQLException, ParseException {
+        if (!getDatabaseTypeEnvironment().isEnabled()) {
+            return;
+        }
+        try (Connection connection = getDataSource().getConnection()) {
+            if (SQLCaseType.Literal == getCaseType()) {
+                assertExecuteForStatementWithResultSetTypeAndResultSetConcurrency(connection);
+            } else {
+                assertExecuteForPreparedStatementWithResultSetTypeAndResultSetConcurrency(connection);
+            }
+        }
+    }
+    
+    private void assertExecuteForStatementWithResultSetTypeAndResultSetConcurrency(final Connection connection) throws SQLException, JAXBException, IOException, ParseException {
+        try (Statement statement = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
+            assertTrue("Not a DQL statement.", statement.execute(String.format(getSql(), assertion.getSQLValues().toArray())));
+            try (ResultSet resultSet = statement.getResultSet()) {
+                assertResultSet(resultSet);
+            }
+        }
+    }
+    
+    private void assertExecuteForPreparedStatementWithResultSetTypeAndResultSetConcurrency(final Connection connection) throws SQLException, ParseException, JAXBException, IOException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getSql().replaceAll("%s", "?"), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
+            for (SQLValue each : assertion.getSQLValues()) {
+                preparedStatement.setObject(each.getIndex(), each.getValue());
+            }
+            assertTrue("Not a DQL statement.", preparedStatement.execute());
+            try (ResultSet resultSet = preparedStatement.getResultSet()) {
+                assertResultSet(resultSet);
+            }
+        }
+    }
+    
+    @Test
+    public void assertExecuteWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability() throws JAXBException, IOException, SQLException, ParseException {
+        if (!getDatabaseTypeEnvironment().isEnabled()) {
+            return;
+        }
+        try (Connection connection = getDataSource().getConnection()) {
+            if (SQLCaseType.Literal == getCaseType()) {
+                assertExecuteForStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(connection);
+            } else {
+                assertExecuteForPreparedStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(connection);
+            }
+        }
+    }
+    
+    private void assertExecuteForStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(final Connection connection)
+            throws SQLException, JAXBException, IOException, ParseException {
+        try (Statement statement = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
+            assertTrue("Not a DQL statement.", statement.execute(String.format(getSql(), assertion.getSQLValues().toArray())));
+            try (ResultSet resultSet = statement.getResultSet()) {
+                assertResultSet(resultSet);
+            }
+        }
+    }
+    
+    private void assertExecuteForPreparedStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(final Connection connection)
+            throws SQLException, ParseException, JAXBException, IOException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(
+                getSql().replaceAll("%s", "?"), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
             for (SQLValue each : assertion.getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
             }
@@ -233,8 +380,8 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
             assertTrue("Size of actual result set is different with size of expected dat set rows.", count < expectedDatSetRows.size());
             for (String each : expectedDatSetRows.get(count).getValues()) {
                 if (Types.DATE == actualResultSet.getMetaData().getColumnType(index)) {
-                    assertThat(new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date(actualResultSet.getDate(index).getTime())), is(each));
-                    assertThat(new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date(actualResultSet.getDate(actualMetaData.getColumnLabel(index)).getTime())), is(each));
+                    assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actualResultSet.getDate(index)), is(each));
+                    assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actualResultSet.getDate(actualMetaData.getColumnLabel(index))), is(each));
                 } else {
                     assertThat(String.valueOf(actualResultSet.getObject(index)), is(each));
                     assertThat(String.valueOf(actualResultSet.getObject(actualMetaData.getColumnLabel(index))), is(each));

@@ -24,6 +24,7 @@ import lombok.Getter;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 @Getter
@@ -34,7 +35,7 @@ public final class DataSetsRoot {
     private List<DataSetMetadata> metadataList;
     
     @XmlElement(name = "dataset")
-    private List<DataSetRow> dataSetRows;
+    private List<DataSetRow> dataSetRows = new LinkedList<>();
     
     /**
      * Find data set meta data via data node.

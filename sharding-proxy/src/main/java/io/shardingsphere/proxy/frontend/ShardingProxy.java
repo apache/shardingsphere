@@ -32,12 +32,17 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.shardingsphere.proxy.backend.ShardingProxyClient;
+import io.shardingsphere.proxy.config.RuleRegistry;
+
+import java.net.MalformedURLException;
 
 /**
  * Sharding-Proxy.
  *
  * @author zhangliang
  * @author xiaoyu
+ * @author wangkai
  */
 public final class ShardingProxy {
     
@@ -53,10 +58,14 @@ public final class ShardingProxy {
      * Start Sharding-Proxy.
      *
      * @param port port
-     * @throws InterruptedException interrupted exception
+     * @throws InterruptedException  interrupted exception
+     * @throws MalformedURLException URL exception
      */
-    public void start(final int port) throws InterruptedException {
+    public void start(final int port) throws InterruptedException, MalformedURLException {
         try {
+            if (RuleRegistry.getInstance().isWithoutJdbc()) {
+                ShardingProxyClient.getInstance().start();
+            }
             ServerBootstrap bootstrap = new ServerBootstrap();
             bossGroup = createEventLoopGroup();
             if (bossGroup instanceof EpollEventLoopGroup) {
@@ -70,6 +79,9 @@ public final class ShardingProxy {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
             userGroup.shutdownGracefully();
+            if (RuleRegistry.getInstance().isWithoutJdbc()) {
+                ShardingProxyClient.getInstance().stop();
+            }
         }
     }
     
@@ -87,6 +99,7 @@ public final class ShardingProxy {
         bootstrap.group(bossGroup, workerGroup)
                 .channel(EpollServerSocketChannel.class)
                 .option(EpollChannelOption.SO_BACKLOG, 128)
+                .option(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(8 * 1024 * 1024, 16 * 1024 * 1024))
                 .option(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .childOption(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .handler(new LoggingHandler(LogLevel.INFO))

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parser-result-sets>
-    <parser-result sql-case-id="assertCreateTable">
+    <parser-result sql-case-id="create_table">
         <tables>
             <table name="t_log" />
         </tables>
@@ -9,7 +9,7 @@
         </tokens>
     </parser-result>
     
-    <parser-result sql-case-id="assertCreateTableIfNotExist">
+    <parser-result sql-case-id="create_table_if_not_exists">
         <tables>
             <table name="t_log" />
         </tables>
@@ -18,7 +18,7 @@
         </tokens>
     </parser-result>
     
-    <parser-result sql-case-id="assertCreateTemporaryTable">
+    <parser-result sql-case-id="create_temporary_table_if_not_exists">
         <tables>
             <table name="t_temp_log" />
         </tables>
@@ -27,7 +27,7 @@
         </tokens>
     </parser-result>
     
-    <parser-result sql-case-id="assertCreateGlobalTemporaryTable">
+    <parser-result sql-case-id="create_global_temporary_table">
         <tables>
             <table name="t_temp_log" />
         </tables>
@@ -36,7 +36,7 @@
         </tokens>
     </parser-result>
     
-    <parser-result sql-case-id="assertCreateLocalTempTable">
+    <parser-result sql-case-id="create_local_temp_table">
         <tables>
             <table name="t_temp_log" />
         </tables>
@@ -45,7 +45,7 @@
         </tokens>
     </parser-result>
     
-    <parser-result sql-case-id="assertCreateUnloggedTable">
+    <parser-result sql-case-id="create_unlogged_table">
         <tables>
             <table name="t_log" />
         </tables>
@@ -54,7 +54,7 @@
         </tokens>
     </parser-result>
     
-    <parser-result sql-case-id="assertCreateIndex">
+    <parser-result sql-case-id="create_index">
         <tables>
             <table name="t_log" />
         </tables>
@@ -64,7 +64,7 @@
         </tokens>
     </parser-result>
     
-    <parser-result sql-case-id="assertCreateUniqueIndex">
+    <parser-result sql-case-id="create_unique_index">
         <tables>
             <table name="t_log" />
         </tables>

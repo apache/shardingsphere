@@ -75,8 +75,7 @@ public final class StatementExecuteWorker implements Callable<CommandResponsePac
                 return executeQuery(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql);
             case DML:
             case DDL:
-                return RuleRegistry.getInstance().isOnlyMasterSlave() ? executeUpdate(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql)
-                    : executeUpdate(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql, sqlStatement);
+                return executeUpdate(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql, sqlStatement);
             default:
                 return executeCommon(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql);
         }
@@ -155,24 +154,6 @@ public final class StatementExecuteWorker implements Callable<CommandResponsePac
                 } catch (final SQLException ignore) {
                 }
             }
-        }
-    }
-    
-    private CommandResponsePackets executeUpdate(final DataSource dataSource, final String sql) {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            setJDBCPreparedStatementParameters(preparedStatement);
-            int affectedRows = preparedStatement.executeUpdate();
-            ResultSet resultSet = preparedStatement.getGeneratedKeys();
-            long lastInsertId = 0;
-            while (resultSet.next()) {
-                lastInsertId = resultSet.getLong(1);
-            }
-            return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
-        } catch (final SQLException ex) {
-            return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
-        } finally {
-            MasterVisitedManager.clear();
         }
     }
     

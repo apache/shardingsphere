@@ -53,13 +53,15 @@ public final class YamlProxyConfiguration {
     private Map<String, DataSourceParameter> dataSources = new HashMap<>();
     
     private YamlMasterSlaveRuleConfiguration masterSlaveRule = new YamlMasterSlaveRuleConfiguration();
-   
+    
     private YamlShardingRuleConfiguration shardingRule = new YamlShardingRuleConfiguration();
     
     private ProxyAuthority proxyAuthority = new ProxyAuthority();
     
+    private boolean withoutJdbc;
+    
     private String transactionMode;
-
+    
     /**
      * Unmarshal yaml sharding configuration from yaml file.
      * 
