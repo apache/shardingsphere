@@ -70,7 +70,7 @@
         </tokens>
     </parser-result>
     
-    <parser-result sql-case-id="assertDropIndexIfExists">
+    <parser-result sql-case-id="drop_index_if_exists">
         <tokens>
             <index-token begin-position="21" original-literals="t_order_index" table-name="" />
         </tokens>

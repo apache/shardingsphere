@@ -35,7 +35,7 @@
             <data expected="drop/%s.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertDropIndexIfExists">
+    <sql id="drop_index_if_exists">
         <sharding-rule>
             <data expected="drop/%s.xml" />
         </sharding-rule>
