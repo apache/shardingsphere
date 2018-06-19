@@ -10,7 +10,7 @@
             <data expected="drop/%s.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertDropTableRestrict">
+    <sql id="drop_table_restrict">
         <sharding-rule>
             <data expected="drop/%s.xml" />
         </sharding-rule>

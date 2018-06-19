@@ -27,7 +27,7 @@
         </tokens>
     </parser-result>
     
-    <parser-result sql-case-id="assertDropTableRestrict">
+    <parser-result sql-case-id="drop_table_restrict">
         <tables>
             <table name="t_log" />
         </tables>
