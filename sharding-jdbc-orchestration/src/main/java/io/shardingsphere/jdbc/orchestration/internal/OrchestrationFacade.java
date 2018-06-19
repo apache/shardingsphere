@@ -34,7 +34,6 @@ import io.shardingsphere.jdbc.orchestration.reg.etcd.EtcdRegistryCenter;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.NewZookeeperRegistryCenter;
 import io.shardingsphere.jdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import io.shardingsphere.jdbc.orchestration.reg.zookeeper.ZookeeperRegistryCenter;
-import io.shardingsphere.proxy.yaml.YamlProxyConfiguration;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -133,13 +132,13 @@ public final class OrchestrationFacade implements AutoCloseable {
     /**
      * Initialize for proxy orchestration.
      *
-     * @param yamlProxyConfiguration yaml proxy configuration
+     * @param orchestrationProxyConfiguration yaml proxy configuration
      */
-    public void init(final YamlProxyConfiguration yamlProxyConfiguration) {
-        configService.persistProxyConfiguration(yamlProxyConfiguration, isOverwrite);
+    public void init(final OrchestrationProxyConfiguration orchestrationProxyConfiguration) {
+        configService.persistProxyConfiguration(orchestrationProxyConfiguration, isOverwrite);
         instanceStateService.persistProxyInstanceOnline();
         dataSourceService.persistDataSourcesNode();
-        listenerManager.initProxyListeners(yamlProxyConfiguration);
+        listenerManager.initProxyListeners(orchestrationProxyConfiguration);
     }
     
     private void reviseShardingRuleConfigurationForMasterSlave(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig) {

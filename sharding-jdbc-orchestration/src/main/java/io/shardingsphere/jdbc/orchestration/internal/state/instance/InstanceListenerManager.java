@@ -21,6 +21,7 @@ import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.jdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
 import io.shardingsphere.jdbc.orchestration.internal.listener.ListenerManager;
@@ -29,7 +30,6 @@ import io.shardingsphere.jdbc.orchestration.internal.state.StateNodeStatus;
 import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.jdbc.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.jdbc.orchestration.reg.listener.EventListener;
-import io.shardingsphere.proxy.yaml.YamlProxyConfiguration;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -92,7 +92,7 @@ public final class InstanceListenerManager implements ListenerManager {
     }
     
     @Override
-    public void start(final YamlProxyConfiguration yamlProxyConfiguration) {
+    public void start(final OrchestrationProxyConfiguration orchestrationProxyConfiguration) {
         regCenter.watch(stateNode.getInstancesNodeFullPath(OrchestrationInstance.getInstance().getInstanceId()), new EventListener() {
             
             @Override
@@ -102,7 +102,7 @@ public final class InstanceListenerManager implements ListenerManager {
                     if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey()))) {
                         dataSourceParameterMap.clear();
                     }
-                    yamlProxyConfiguration.renew(dataSourceParameterMap, configService.loadProxyConfiguration());
+                    orchestrationProxyConfiguration.renew(dataSourceParameterMap, configService.loadProxyConfiguration());
                 }
             }
         });
