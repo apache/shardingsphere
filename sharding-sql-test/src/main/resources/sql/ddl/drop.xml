@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sql-cases>
     <sql-case id="drop_table" value="DROP TABLE t_log" />
-    <sql-case id="assertDropTableIfExists" value="DROP TABLE IF EXISTS t_log" db-types="MySQL,PostgreSQL,SQLServer" />
+    <sql-case id="drop_table_if_exists" value="DROP TABLE IF EXISTS t_log" db-types="MySQL,PostgreSQL,SQLServer" />
     <sql-case id="assertDropTemporaryTable" value="DROP TEMPORARY TABLE IF EXISTS t_temp_log" db-types="MySQL" />
     <sql-case id="assertDropTableRestrict" value="DROP TABLE t_log RESTRICT" db-types="MySQL,PostgreSQL" />
     <sql-case id="assertDropTableCascade" value="DROP TABLE t_log CASCADE" db-types="MySQL,PostgreSQL" />

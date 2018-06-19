@@ -5,7 +5,7 @@
             <data expected="drop/%s.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertDropTableIfExists">
+    <sql id="drop_table_if_exists">
         <sharding-rule>
             <data expected="drop/%s.xml" />
         </sharding-rule>

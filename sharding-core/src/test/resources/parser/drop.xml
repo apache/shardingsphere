@@ -9,7 +9,7 @@
         </tokens>
     </parser-result>
     
-    <parser-result sql-case-id="assertDropTableIfExists">
+    <parser-result sql-case-id="drop_table_if_exists">
         <tables>
             <table name="t_log" />
         </tables>
