@@ -67,8 +67,8 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
     
     private final DatabaseType databaseType;
     
-    public DDLIntegrateTest(final String sqlCaseId, final String path, final DDLIntegrateTestCaseAssertion assertion,
-                            final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType, final int countInSameCase) throws IOException, JAXBException, SQLException {
+    public DDLIntegrateTest(final String sqlCaseId, final String path, final DDLIntegrateTestCaseAssertion assertion, final DatabaseTypeEnvironment databaseTypeEnvironment, 
+                            final SQLCaseType caseType, final int countInSameCase) throws IOException, JAXBException, SQLException, ParseException {
         super(sqlCaseId, path, assertion, databaseTypeEnvironment, caseType, countInSameCase);
         this.assertion = assertion;
         databaseType = databaseTypeEnvironment.getDatabaseType();

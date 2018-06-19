@@ -201,14 +201,14 @@ public final class SQLCasesLoader {
     }
     
     private String getPlaceholderSQL(final String sql) {
-        return sql.replace("%s", "?").replace("%%", "%");
+        return sql.replace("%%", "%").replace("'%'", "'%%'");
     }
     
     private String getLiteralSQL(final String sql, final List<?> parameters) {
         if (null == parameters || parameters.isEmpty()) {
             return sql;
         }
-        return String.format(sql, parameters.toArray()).replace("%%", "%");
+        return String.format(sql.replace("?", "%s"), parameters.toArray()).replace("%%", "%").replace("'%'", "'%%'");
     }
     
     private String getSQLFromMap(final String id, final Map<String, SQLCase> sqlCaseMap) {
