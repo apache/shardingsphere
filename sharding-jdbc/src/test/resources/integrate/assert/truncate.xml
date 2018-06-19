@@ -5,7 +5,7 @@
             <data expected="truncate/%s.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertTruncateTableOnly">
+    <sql id="truncate_table_only">
         <sharding-rule>
             <data expected="truncate/%s.xml" />
         </sharding-rule>
