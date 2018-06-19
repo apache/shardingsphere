@@ -17,42 +17,43 @@
 
 package io.shardingsphere.jdbc.orchestration.internal.yaml.converter;
 
+import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.jdbc.orchestration.internal.yaml.representer.DefaultConfigurationRepresenter;
-import io.shardingsphere.jdbc.orchestration.internal.yaml.representer.ProxyConfigurationRepresenter;
-import io.shardingsphere.proxy.yaml.YamlProxyConfiguration;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.yaml.snakeyaml.Yaml;
 
+import java.util.Map;
+
 /**
- * Proxy Config converter.
+ * Data source parameter converter.
  *
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ProxyConfigurationConverter {
+public final class DataSourceParameterConverter {
     
     private static final Yaml yaml = new Yaml(new DefaultConfigurationRepresenter());
     
     /**
-     * Convert yaml proxy configuration to yaml string.
+     * Convert data source parameter map to Yaml string.
      *
-     * @param yamlProxyConfiguration Yaml proxy configuration
+     * @param dataSourceParameterMap Data source map
      * @return Yaml string
      */
-    public static String proxyConfigToYaml(final YamlProxyConfiguration yamlProxyConfiguration) {
-        Yaml yaml = new Yaml(new ProxyConfigurationRepresenter());
-        return yaml.dumpAsMap(yamlProxyConfiguration);
+    public static String dataSourceParameterMapToYaml(final Map<String, DataSourceParameter> dataSourceParameterMap) {
+        return yaml.dumpAsMap(dataSourceParameterMap);
     }
     
     /**
-     * Convert yaml to data source map.
+     * Convert yaml to data source parameter map.
      *
-     * @param yamlProxyConfigYamlString String in yaml
-     * @return Yaml proxy configuration
+     * @param dataSourceParameterMapYamlString String in yaml.
+     * @return Data source parameter Map.
      */
-    public static YamlProxyConfiguration proxyConfigFromYaml(final String yamlProxyConfigYamlString) {
-        return yaml.loadAs(yamlProxyConfigYamlString, YamlProxyConfiguration.class);
+    @SuppressWarnings("unchecked")
+    public static Map<String, DataSourceParameter> dataSourceParameterMapFromYaml(final String dataSourceParameterMapYamlString) {
+        return (Map<String, DataSourceParameter>) yaml.load(dataSourceParameterMapYamlString);
     
     }
 }
