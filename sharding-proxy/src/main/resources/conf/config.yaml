@@ -13,7 +13,7 @@
 
 #dataSources:
 #  ds_0:
-#    url: jdbc:mysql://127.0.0.1:3306/ds_0
+#    url: jdbc:mysql://127.0.0.1:3306/ds_0?serverTimezone=UTC&useSSL=false
 #    username: root
 #    password:
 #    autoCommit: true
@@ -22,7 +22,7 @@
 #    maxLifetime: 1800000
 #    maximumPoolSize: 65
 #  ds_1:
-#    url: jdbc:mysql://127.0.0.1:3306/ds_1
+#    url: jdbc:mysql://127.0.0.1:3306/ds_1?serverTimezone=UTC&useSSL=false
 #    username: root
 #    password:
 #    autoCommit: true
@@ -73,7 +73,7 @@
 
 #dataSources:
 #  ds_0:
-#    url: jdbc:mysql://127.0.0.1:3306/ds_0
+#    url: jdbc:mysql://127.0.0.1:3306/ds_0?serverTimezone=UTC&useSSL=false
 #    username: root
 #    password:
 #    autoCommit: true
@@ -82,7 +82,7 @@
 #    maxLifetime: 1800000
 #    maximumPoolSize: 65
 #  ds_1:
-#    url: jdbc:mysql://127.0.0.1:3306/ds_1
+#    url: jdbc:mysql://127.0.0.1:3306/ds_1?serverTimezone=UTC&useSSL=false
 #    username: root
 #    password:
 #    autoCommit: true

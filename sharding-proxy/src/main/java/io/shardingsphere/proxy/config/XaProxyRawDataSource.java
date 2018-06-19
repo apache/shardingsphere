@@ -42,7 +42,7 @@ public class XaProxyRawDataSource extends ProxyRawDataSource {
         final Map<String, DataSource> result = new HashMap<>(128, 1);
         AtomikosDataSourceBean dataSourceBean = new AtomikosDataSourceBean();
         dataSourceBean.setUniqueResourceName(key);
-        dataSourceBean.setXaDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource");
+        dataSourceBean.setXaDataSourceClassName("com.mysql.cj.jdbc.MysqlXADataSource");
         dataSourceBean.setMaxPoolSize(dataSourceParameter.getMaximumPoolSize());
         Properties xaProperties = new Properties();
         xaProperties.setProperty("user", dataSourceParameter.getUsername());

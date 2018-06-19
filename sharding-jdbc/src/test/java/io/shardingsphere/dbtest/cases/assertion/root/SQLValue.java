@@ -17,11 +17,11 @@
 
 package io.shardingsphere.dbtest.cases.assertion.root;
 
+import io.shardingsphere.dbtest.util.DateUtil;
 import lombok.Getter;
 
 import java.sql.Date;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 
 /**
  * SQL value.
@@ -54,7 +54,7 @@ public final class SQLValue {
             return Double.valueOf(value);
         }
         if ("datetime".equals(type)) {
-            return new Date(new SimpleDateFormat("yyyy-MM-dd").parse(value).getTime());
+            return new Date(DateUtil.parse(value).getTime());
         }
         throw new UnsupportedOperationException(String.format("Cannot support type: '%s'", type));
     }
