@@ -54,7 +54,7 @@
         </tokens>
     </parser-result>
     
-    <parser-result sql-case-id="assertDropIndex">
+    <parser-result sql-case-id="drop_index">
         <tables>
             <table name="t_log" />
         </tables>
