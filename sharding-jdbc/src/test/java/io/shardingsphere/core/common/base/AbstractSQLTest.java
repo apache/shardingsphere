@@ -22,8 +22,6 @@ import com.google.common.collect.Sets;
 import io.shardingsphere.core.common.env.DatabaseEnvironment;
 import io.shardingsphere.core.common.env.ShardingJdbcDatabaseTester;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.integrate.jaxb.helper.SQLAssertJAXBHelper;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
@@ -43,11 +41,9 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -81,10 +77,10 @@ public abstract class AbstractSQLTest {
                 }
             }
             if (initialized) {
-                createSchema(DatabaseType.H2);
+                createJdbcSchema(DatabaseType.H2);
             } else {
                 for (DatabaseType each : getDatabaseTypes()) {
-                    createSchema(each);
+                    createJdbcSchema(each);
                 }
             }
         } catch (final IOException ex) {
@@ -99,43 +95,6 @@ public abstract class AbstractSQLTest {
             }
         }
         throw new RuntimeException("Can't find database type of:" + databaseType);
-    }
-    
-    private static void createSchema(final DatabaseType dbType) {
-        createJdbcSchema(dbType);
-        createMasterSlaveOnlySchema(dbType);
-        createShardingSchema(dbType);
-    }
-    
-    private static void createShardingSchema(final DatabaseType dbType) {
-        try {
-            Connection conn;
-            for (int i = 0; i < 10; i++) {
-                for (String database : Arrays.asList("db", "dbtbl", "nullable", "master", "slave")) {
-                    conn = initialConnection(database + "_" + i, dbType);
-                    RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/" + database + ".sql")));
-                    conn.close();
-                }
-            }
-            conn = initialConnection("tbl", dbType);
-            RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/tbl.sql")));
-            conn.close();
-        } catch (final SQLException ex) {
-            ex.printStackTrace();
-        }
-    }
-    
-    private static void createMasterSlaveOnlySchema(final DatabaseType dbType) {
-        try {
-            Connection conn;
-            for (String database : Arrays.asList("master_only", "slave_only")) {
-                conn = initialConnection(database, dbType);
-                RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/" + database + ".sql")));
-                conn.close();
-            }
-        } catch (final SQLException ex) {
-            ex.printStackTrace();
-        }
     }
     
     private static void createJdbcSchema(final DatabaseType dbType) {
@@ -161,14 +120,6 @@ public abstract class AbstractSQLTest {
             return fileName;
         }
         return fileName.substring(0, fileName.lastIndexOf("."));
-    }
-    
-    protected static Collection<Object[]> dataParameters(final SQLType... sqlTypes) {
-        Collection<Object[]> result = new LinkedList<>();
-        for (SQLType each : sqlTypes) {
-            result.addAll(SQLAssertJAXBHelper.getDataParameters("integrate/assert", each));
-        }
-        return result;
     }
     
     private static BasicDataSource buildDataSource(final String dbName, final DatabaseType type) {

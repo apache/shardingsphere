@@ -1,0 +1,5 @@
+<datasets>
+    <columns values="item_id, order_id, user_id, status, creation_date" />
+    <dataset values="100002, 1000, 10, init_slave, 2017-08-08" />
+    <dataset values="100001, 1000, 10, init_slave, 2017-08-08" />
+</datasets>
