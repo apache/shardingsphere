@@ -15,18 +15,27 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing;
+package io.shardingsphere.core.routing.event;
 
-import io.shardingsphere.opentracing.config.ConfigurationLoaderTest;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+/**
+ * Event routing type.
+ *
+ * @author chenqingyang
+ */
+public enum EventRoutingType {
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-        ConfigurationLoaderTest.class,
-        ExecuteEventListenerTest.class,
-        SqlRoutingEventListenerTest.class,
-        ShardingJDBCTracerTest.class
-})
-public class AllTests {
+    /**
+     * Before SQL parse and route.
+     */
+    BEFORE_ROUTE,
+
+    /**
+     * SQL parse and route success.
+     */
+    ROUTE_SUCCESS,
+
+    /**
+     * SQL parse and route failure.
+     */
+    ROUTE_FAILURE
 }

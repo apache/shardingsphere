@@ -41,7 +41,10 @@ import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.routing.PreparedStatementRoutingEngine;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
+import io.shardingsphere.core.routing.event.EventRoutingType;
+import io.shardingsphere.core.routing.event.SqlRoutingEvent;
 import io.shardingsphere.core.routing.router.sharding.GeneratedKey;
+import io.shardingsphere.core.util.EventBusInstance;
 import lombok.AccessLevel;
 import lombok.Getter;
 
@@ -80,7 +83,9 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     private final List<BatchPreparedStatementUnit> batchStatementUnits = new LinkedList<>();
     
     private final Collection<PreparedStatement> routedStatements = new LinkedList<>();
-    
+
+    private final String sql;
+
     private int batchCount;
     
     @Getter(AccessLevel.NONE)
@@ -112,6 +117,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         this.resultSetType = resultSetType;
         this.resultSetConcurrency = resultSetConcurrency;
         this.resultSetHoldability = resultSetHoldability;
+        this.sql = sql;
         ShardingContext shardingContext = connection.getShardingContext();
         routingEngine = new PreparedStatementRoutingEngine(
                 sql, shardingContext.getShardingRule(), shardingContext.getShardingMetaData(), shardingContext.getDatabaseType(), shardingContext.isShowSQL());
@@ -167,7 +173,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     
     private Collection<PreparedStatementUnit> route() throws SQLException {
         Collection<PreparedStatementUnit> result = new LinkedList<>();
-        routeResult = routingEngine.route(getParameters());
+        sqlRoute();
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             PreparedStatement preparedStatement = generatePreparedStatement(each);
             routedStatements.add(preparedStatement);
@@ -182,7 +188,24 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         return returnGeneratedKeys ? connection.prepareStatement(sqlExecutionUnit.getSqlUnit().getSql(), Statement.RETURN_GENERATED_KEYS)
                 : connection.prepareStatement(sqlExecutionUnit.getSqlUnit().getSql(), resultSetType, resultSetConcurrency, resultSetHoldability);
     }
-    
+
+    private void sqlRoute() {
+        SqlRoutingEvent event = new SqlRoutingEvent(sql);
+        EventBusInstance.getInstance().post(event);
+        try {
+            routeResult = routingEngine.route(getParameters());
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            event.setException(ex);
+            event.setEventRoutingType(EventRoutingType.ROUTE_FAILURE);
+            EventBusInstance.getInstance().post(event);
+            throw ex;
+        }
+        event.setEventRoutingType(EventRoutingType.ROUTE_SUCCESS);
+        EventBusInstance.getInstance().post(event);
+    }
+
     @Override
     public void clearBatch() {
         currentResultSet = null;
@@ -207,7 +230,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     
     private List<BatchPreparedStatementUnit> routeBatch() throws SQLException {
         List<BatchPreparedStatementUnit> result = new ArrayList<>();
-        routeResult = routingEngine.route(getParameters());
+        sqlRoute();
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             BatchPreparedStatementUnit batchStatementUnit = getPreparedBatchStatement(each);
             replaySetParameter(batchStatementUnit.getStatement(), each.getSqlUnit().getParameterSets().get(0));
@@ -236,7 +259,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     @Override
     public int[] executeBatch() throws SQLException {
         try {
-            return new BatchPreparedStatementExecutor(getConnection().getShardingContext().getExecutorEngine(), 
+            return new BatchPreparedStatementExecutor(getConnection().getShardingContext().getExecutorEngine(),
                     getConnection().getShardingContext().getDatabaseType(), routeResult.getSqlStatement().getType(), batchStatementUnits, batchCount).executeBatch();
         } finally {
             clearBatch();

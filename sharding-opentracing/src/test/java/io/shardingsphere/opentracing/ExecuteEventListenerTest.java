@@ -27,6 +27,7 @@ import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.BaseStatementUnit;
 import io.shardingsphere.core.executor.ExecuteCallback;
 import io.shardingsphere.core.executor.ExecutorEngine;
+import io.shardingsphere.core.executor.type.batch.BatchPreparedStatementUnit;
 import io.shardingsphere.core.executor.type.statement.StatementUnit;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLUnit;
@@ -38,9 +39,11 @@ import org.junit.Test;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -95,7 +98,27 @@ public final class ExecuteEventListenerTest {
         when(stm2.getConnection()).thenReturn(mock(Connection.class));
         statementUnitList.add(new StatementUnit(new SQLExecutionUnit("ds_0", new SQLUnit("insert into ...", Collections.singletonList(Collections.<Object>singletonList(1)))), stm2));
         executorEngine.execute(SQLType.DML, statementUnitList, new ExecuteCallback<Integer>() {
-            
+
+            @Override
+            public Integer execute(final BaseStatementUnit baseStatementUnit) {
+                return 0;
+            }
+        });
+        assertThat(TRACER.finishedSpans().size(), is(3));
+    }
+
+    @Test
+    public void assertBatchPreparedStatement() throws Exception {
+        List<BatchPreparedStatementUnit> statementUnitList = new ArrayList<>(2);
+        List<List<Object>> parameterSets = Arrays.asList(Arrays.<Object>asList(1,2), Arrays.<Object>asList(3,4));
+        PreparedStatement pstm1 = mock(PreparedStatement.class);
+        when(pstm1.getConnection()).thenReturn(mock(Connection.class));
+        statementUnitList.add(new BatchPreparedStatementUnit(new SQLExecutionUnit("ds_0", new SQLUnit("insert into ...", parameterSets)), pstm1));
+        PreparedStatement pstm2 = mock(PreparedStatement.class);
+        when(pstm2.getConnection()).thenReturn(mock(Connection.class));
+        statementUnitList.add(new BatchPreparedStatementUnit(new SQLExecutionUnit("ds_1", new SQLUnit("insert into ...", parameterSets)), pstm2));
+        executorEngine.execute(SQLType.DML, statementUnitList, new ExecuteCallback<Integer>() {
+
             @Override
             public Integer execute(final BaseStatementUnit baseStatementUnit) {
                 return 0;

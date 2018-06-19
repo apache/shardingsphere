@@ -60,6 +60,7 @@ public final class ShardingJDBCTracer {
         }
         GlobalTracer.register(tracer);
         EventBusInstance.getInstance().register(new ExecuteEventListener());
+        EventBusInstance.getInstance().register(new SqlRoutingEventListener());
     }
     
     /**

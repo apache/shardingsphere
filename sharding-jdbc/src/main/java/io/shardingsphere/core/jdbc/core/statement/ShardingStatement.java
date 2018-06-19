@@ -37,7 +37,10 @@ import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.StatementRoutingEngine;
+import io.shardingsphere.core.routing.event.EventRoutingType;
+import io.shardingsphere.core.routing.event.SqlRoutingEvent;
 import io.shardingsphere.core.routing.router.sharding.GeneratedKey;
+import io.shardingsphere.core.util.EventBusInstance;
 import lombok.AccessLevel;
 import lombok.Getter;
 
@@ -203,8 +206,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
     
     private StatementExecutor generateExecutor(final String sql) throws SQLException {
         clearPrevious();
-        ShardingContext shardingContext = connection.getShardingContext();
-        routeResult = new StatementRoutingEngine(shardingContext.getShardingRule(), shardingContext.getShardingMetaData(), shardingContext.getDatabaseType(), shardingContext.isShowSQL()).route(sql);
+        sqlRoute(sql);
         Collection<StatementUnit> statementUnits = new LinkedList<>();
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             Statement statement = connection.getConnection(each.getDataSource()).createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
@@ -221,7 +223,27 @@ public class ShardingStatement extends AbstractStatementAdapter {
         }
         routedStatements.clear();
     }
-
+    
+    private void sqlRoute(final String sql) {
+        ShardingContext shardingContext = connection.getShardingContext();
+        SqlRoutingEvent event = new SqlRoutingEvent(sql);
+        EventBusInstance.getInstance().post(event);
+        try {
+            routeResult = new StatementRoutingEngine(shardingContext.getShardingRule(),
+                    shardingContext.getShardingMetaData(), shardingContext.getDatabaseType(), shardingContext.isShowSQL())
+                    .route(sql);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            event.setException(ex);
+            event.setEventRoutingType(EventRoutingType.ROUTE_FAILURE);
+            EventBusInstance.getInstance().post(event);
+            throw ex;
+        }
+        event.setEventRoutingType(EventRoutingType.ROUTE_SUCCESS);
+        EventBusInstance.getInstance().post(event);
+    }
+    
     @Override
     public ResultSet getGeneratedKeys() throws SQLException {
         Optional<GeneratedKey> generatedKey = getGeneratedKey();

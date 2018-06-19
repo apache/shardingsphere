@@ -15,18 +15,25 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing;
+package io.shardingsphere.opentracing.tag;
 
-import io.shardingsphere.opentracing.config.ConfigurationLoaderTest;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+/**
+ * @author chenqingyang
+ */
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-        ConfigurationLoaderTest.class,
-        ExecuteEventListenerTest.class,
-        SqlRoutingEventListenerTest.class,
-        ShardingJDBCTracerTest.class
-})
-public class AllTests {
+import io.opentracing.tag.StringTag;
+
+public final class LocalTags {
+
+    public static final String COMPONENT_NAME = "SHARDING-SPHERE";
+
+    /**
+     * DB_BIND_VARIABLES records the bind variables of sql statement.
+     */
+    public static final StringTag DB_BIND_VARIABLES = new StringTag("db.bind_vars");
+
+    private LocalTags() {
+
+    }
+
 }
