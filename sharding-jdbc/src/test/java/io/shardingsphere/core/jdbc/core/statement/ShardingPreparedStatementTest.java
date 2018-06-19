@@ -48,34 +48,6 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
     }
     
     @Test
-    public void assertExecuteQueryWithColumnIndexes() throws SQLException {
-        if (DatabaseType.PostgreSQL != getCurrentDatabaseType()) {
-            try (
-                    Connection connection = getShardingDataSource().getConnection();
-                    PreparedStatement preparedStatement = connection.prepareStatement(JDBCTestSQL.SELECT_COUNT_AS_ORDERS_COUNT_SQL, new int[]{1})) {
-                preparedStatement.setNull(1, java.sql.Types.VARCHAR);
-                ResultSet resultSet = preparedStatement.executeQuery();
-                assertTrue(resultSet.next());
-                assertThat(resultSet.getLong(1), is(0L));
-            }
-        }
-    }
-    
-    @Test
-    public void assertExecuteQueryWithColumnNames() throws SQLException {
-        if (DatabaseType.PostgreSQL != getCurrentDatabaseType()) {
-            try (
-                    Connection connection = getShardingDataSource().getConnection();
-                    PreparedStatement preparedStatement = connection.prepareStatement(JDBCTestSQL.SELECT_COUNT_AS_ORDERS_COUNT_SQL, new String[]{"orders_count"})) {
-                preparedStatement.setNull(1, java.sql.Types.VARCHAR);
-                ResultSet resultSet = preparedStatement.executeQuery();
-                assertTrue(resultSet.next());
-                assertThat(resultSet.getLong(1), is(0L));
-            }
-        }
-    }
-    
-    @Test
     public void assertAddBatch() throws SQLException {
         Object listener = new Object() {
             

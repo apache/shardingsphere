@@ -209,6 +209,36 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
     }
     
     @Test
+    public void assertExecuteUpdateWithColumnNames() throws JAXBException, IOException, SQLException, ParseException {
+        if (!getDatabaseTypeEnvironment().isEnabled()) {
+            return;
+        }
+        try (Connection connection = getDataSource().getConnection()) {
+            if (SQLCaseType.Literal == getCaseType()) {
+                assertExecuteUpdateForStatementWithColumnNames(connection);
+            } else {
+                assertExecuteUpdateForPreparedStatementWithColumnNames(connection);
+            }
+        }
+        assertDataSet();
+    }
+    
+    private void assertExecuteUpdateForStatementWithColumnNames(final Connection connection) throws SQLException, ParseException {
+        try (Statement statement = connection.createStatement()) {
+            assertThat(statement.executeUpdate(String.format(getSql(), assertion.getSQLValues().toArray()), new String[]{"TODO"}), is(assertion.getExpectedUpdate()));
+        }
+    }
+    
+    private void assertExecuteUpdateForPreparedStatementWithColumnNames(final Connection connection) throws SQLException, ParseException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getSql().replaceAll("%s", "?"), new String[]{"TODO"})) {
+            for (SQLValue each : assertion.getSQLValues()) {
+                preparedStatement.setObject(each.getIndex(), each.getValue());
+            }
+            assertThat(preparedStatement.executeUpdate(), is(assertion.getExpectedUpdate()));
+        }
+    }
+    
+    @Test
     public void assertExecute() throws JAXBException, IOException, SQLException, ParseException {
         if (!getDatabaseTypeEnvironment().isEnabled()) {
             return;
