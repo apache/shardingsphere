@@ -20,7 +20,9 @@ package io.shardingsphere.jdbc.orchestration.internal.config;
 import com.google.common.base.Strings;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.jdbc.orchestration.internal.yaml.converter.DataSourceConverter;
+import io.shardingsphere.jdbc.orchestration.internal.yaml.converter.DataSourceParameterConverter;
 import io.shardingsphere.jdbc.orchestration.internal.yaml.converter.MasterSlaveConfigurationConverter;
 import io.shardingsphere.jdbc.orchestration.internal.yaml.converter.ProxyConfigurationConverter;
 import io.shardingsphere.jdbc.orchestration.internal.yaml.converter.ShardingConfigurationConverter;
@@ -36,6 +38,7 @@ import java.util.Properties;
  * 
  * @author caohao
  * @author zhangliang
+ * @author panjuan
  */
 public final class ConfigurationService {
     
@@ -104,6 +107,12 @@ public final class ConfigurationService {
     private void persistDataSourceConfiguration(final Map<String, DataSource> dataSourceMap, final boolean isOverwrite) {
         if (isOverwrite || !hasDataSourceConfiguration()) {
             regCenter.persist(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH), DataSourceConverter.dataSourceMapToYaml(dataSourceMap));
+        }
+    }
+    
+    private void persistDataSourceParameterConfiguration(final Map<String, DataSourceParameter> dataSourceParameterMap, final boolean isOverwrite) {
+        if (isOverwrite || !hasDataSourceConfiguration()) {
+            regCenter.persist(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH), DataSourceParameterConverter.dataSourceParameterMapToYaml(dataSourceParameterMap));
         }
     }
     
@@ -177,13 +186,18 @@ public final class ConfigurationService {
      * @param isOverwrite is overwrite registry center's configuration
      */
     public void persistProxyConfiguration(final YamlProxyConfiguration yamlProxyConfiguration, final boolean isOverwrite) {
-        if (isOverwrite || !hasProxyConfig()) {
-            regCenter.persist(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_CONFIG_MAP_NODE_PATH), ProxyConfigurationConverter.proxyConfigToYaml(yamlProxyConfiguration));
-        }
+        persistDataSourceParameterConfiguration(yamlProxyConfiguration.getDataSources(), isOverwrite);
+        persistProxyRuleConfiguration(yamlProxyConfiguration, isOverwrite);
     }
     
     private boolean hasProxyConfig() {
-        return regCenter.isExisted(configNode.getFullPath(ConfigurationNode.PROXY_NODE_PATH));
+        return regCenter.isExisted(configNode.getFullPath(ConfigurationNode.PROXY_RULE_NODE_PATH));
+    }
+    
+    private void persistProxyRuleConfiguration(final YamlProxyConfiguration yamlProxyConfiguration, final boolean isOverwrite) {
+        if (isOverwrite || !hasProxyConfig()) {
+            regCenter.persist(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_CONFIG_MAP_NODE_PATH), ProxyConfigurationConverter.proxyConfigToYaml(yamlProxyConfiguration));
+        }
     }
     
     /**
@@ -193,6 +207,15 @@ public final class ConfigurationService {
      */
     public Map<String, DataSource> loadDataSourceMap() {
         return DataSourceConverter.dataSourceMapFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH)));
+    }
+    
+    /**
+     * Load data source parameter.
+     *
+     * @return data source parameter map
+     */
+    public Map<String, DataSourceParameter> loadDataSourceParameter() {
+        return DataSourceParameterConverter.dataSourceParameterMapFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH)));
     }
     
     /**
@@ -241,5 +264,14 @@ public final class ConfigurationService {
     @SuppressWarnings("unchecked")
     public Map<String, Object> loadMasterSlaveConfigMap() {
         return MasterSlaveConfigurationConverter.configMapFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_CONFIG_MAP_NODE_PATH)));
+    }
+    
+    /**
+     * Load proxy configuration.
+     *
+     * @return proxy configuration
+     */
+    public YamlProxyConfiguration loadProxyConfiguration() {
+        return ProxyConfigurationConverter.proxyConfigFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.PROXY_NODE_PATH)));
     }
 }
