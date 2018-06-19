@@ -110,6 +110,9 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
     private CommandResponsePackets executeForMasterSlave() throws SQLException {
         MasterSlaveRouter masterSlaveRouter = new MasterSlaveRouter(RuleRegistry.getInstance().getMasterSlaveRule());
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
+        if (SQLType.DDL.equals(sqlStatement.getType()) && RuleRegistry.isXaTransaction()) {
+            throw new SQLException("DDL command can't not execute in xa transaction mode.");
+        }
         String dataSourceName = masterSlaveRouter.route(sqlStatement.getType()).iterator().next();
         List<CommandResponsePackets> packets = new CopyOnWriteArrayList<>();
         ExecutorService executorService = RuleRegistry.getInstance().getExecutorService();
@@ -125,6 +128,9 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
         SQLRouteResult routeResult = routingEngine.route(sql);
         if (routeResult.getExecutionUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+        }
+        if (SQLType.DDL.equals(routeResult.getSqlStatement().getType()) && RuleRegistry.isXaTransaction()) {
+            throw new SQLException("DDL command can't not execute in xa transaction mode.");
         }
         List<CommandResponsePackets> packets = new CopyOnWriteArrayList<>();
         ExecutorService executorService = RuleRegistry.getInstance().getExecutorService();
