@@ -36,7 +36,7 @@
         </tokens>
     </parser-result>
     
-    <parser-result sql-case-id="assertDropTableCascade">
+    <parser-result sql-case-id="drop_table_cascade">
         <tables>
             <table name="t_log" />
         </tables>

@@ -15,7 +15,7 @@
             <data expected="drop/%s.xml" />
         </sharding-rule>
     </sql>
-    <sql id="assertDropTableCascade">
+    <sql id="drop_table_cascade">
         <sharding-rule>
             <data expected="drop/%s.xml" />
         </sharding-rule>
