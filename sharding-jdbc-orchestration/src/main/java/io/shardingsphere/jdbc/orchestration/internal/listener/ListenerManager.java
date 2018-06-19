@@ -19,11 +19,13 @@ package io.shardingsphere.jdbc.orchestration.internal.listener;
 
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingsphere.proxy.yaml.YamlProxyConfiguration;
 
 /**
  * Registry center's listener manager.
  *
  * @author caohao
+ * @author panjuan
  */
 public interface ListenerManager {
     
@@ -41,4 +43,12 @@ public interface ListenerManager {
      * @param masterSlaveDataSource master-slave datasource
      */
     void start(MasterSlaveDataSource masterSlaveDataSource);
+    
+    
+    /**
+     * Start proxy datasource change listener.
+     *
+     * @param yamlProxyConfiguration proxy datasource
+     */
+    void start(YamlProxyConfiguration yamlProxyConfiguration);
 }

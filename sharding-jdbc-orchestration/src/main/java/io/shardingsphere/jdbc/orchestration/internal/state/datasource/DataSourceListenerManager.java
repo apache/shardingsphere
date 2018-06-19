@@ -28,6 +28,7 @@ import io.shardingsphere.jdbc.orchestration.internal.state.StateNode;
 import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.jdbc.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.jdbc.orchestration.reg.listener.EventListener;
+import io.shardingsphere.proxy.yaml.YamlProxyConfiguration;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -81,6 +82,23 @@ public final class DataSourceListenerManager implements ListenerManager {
                         throw new ShardingException("No available slave datasource, can't apply the configuration!");
                     } 
                     masterSlaveDataSource.renew(dataSourceService.getAvailableDataSources(), masterSlaveRuleConfiguration);
+                }
+            }
+        });
+    }
+    
+    @Override
+    public void start(final YamlProxyConfiguration yamlProxyConfiguration) {
+        regCenter.watch(stateNode.getDataSourcesNodeFullPath(), new EventListener() {
+            
+            @Override
+            public void onChange(final DataChangedEvent event) {
+                if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
+                    YamlProxyConfiguration yamlProxyConfiguration = dataSourceService.getAvailableYamlProxyConfiguration();
+                    if (yamlProxyConfiguration.getShardingRule().getTables().isEmpty() && yamlProxyConfiguration.getMasterSlaveRule().getSlaveDataSourceNames().isEmpty()) {
+                        throw new ShardingException("No available slave datasource, can't apply the configuration!");
+                    }
+                    yamlProxyConfiguration.renew(dataSourceService.getAvailableDataSourceParameters(), yamlProxyConfiguration);
                 }
             }
         });

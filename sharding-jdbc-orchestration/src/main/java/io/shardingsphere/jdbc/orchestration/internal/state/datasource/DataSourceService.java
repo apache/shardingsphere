@@ -19,10 +19,13 @@ package io.shardingsphere.jdbc.orchestration.internal.state.datasource;
 
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.jdbc.orchestration.internal.state.StateNode;
 import io.shardingsphere.jdbc.orchestration.internal.state.StateNodeStatus;
 import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
+import io.shardingsphere.proxy.yaml.YamlProxyConfiguration;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -72,6 +75,20 @@ public final class DataSourceService {
     }
     
     /**
+     * Get available data source parameters.
+     *
+     * @return available data source parameters
+     */
+    public Map<String, DataSourceParameter> getAvailableDataSourceParameters() {
+        Map<String, DataSourceParameter> result = configService.loadDataSourceParameter();
+        Collection<String> disabledDataSourceNames = getDisabledDataSourceNames();
+        for (String each : disabledDataSourceNames) {
+            result.remove(each);
+        }
+        return result;
+    }
+    
+    /**
      * Get available sharding rule configuration.
      *
      * @return available sharding rule configuration
@@ -99,6 +116,28 @@ public final class DataSourceService {
             result.getSlaveDataSourceNames().remove(each);
         }
         return result;
+    }
+    
+    /**
+     *  Get available proxy rule configuration.
+     *
+     * @return available yaml proxy configuration
+     */
+    public YamlProxyConfiguration getAvailableYamlProxyConfiguration() {
+        YamlProxyConfiguration result = configService.loadProxyConfiguration();
+        Collection<String> disabledDataSourceNames = getDisabledDataSourceNames();
+        for (String each : disabledDataSourceNames) {
+            result.getMasterSlaveRule().getSlaveDataSourceNames().remove(each);
+            removeDisabledDataSourceNames(each, result.getShardingRule().getMasterSlaveRules());
+        }
+        return result;
+    }
+    
+    private void removeDisabledDataSourceNames(final String disabledDataSourceName,
+                                               final Map<String, YamlMasterSlaveRuleConfiguration> masterSlaveRules) {
+        for (Map.Entry<String, YamlMasterSlaveRuleConfiguration> each : masterSlaveRules.entrySet()) {
+            each.getValue().getSlaveDataSourceNames().remove(disabledDataSourceName);
+        }
     }
     
     private Collection<String> getDisabledDataSourceNames() {

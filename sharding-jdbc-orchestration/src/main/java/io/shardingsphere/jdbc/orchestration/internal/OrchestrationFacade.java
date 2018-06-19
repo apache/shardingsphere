@@ -139,6 +139,7 @@ public final class OrchestrationFacade implements AutoCloseable {
         configService.persistProxyConfiguration(yamlProxyConfiguration, isOverwrite);
         instanceStateService.persistProxyInstanceOnline();
         dataSourceService.persistDataSourcesNode();
+        listenerManager.initProxyListeners(yamlProxyConfiguration);
     }
     
     private void reviseShardingRuleConfigurationForMasterSlave(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig) {
