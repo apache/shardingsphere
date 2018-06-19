@@ -17,7 +17,7 @@
 
 package io.shardingsphere.jdbc.orchestration.internal.json;
 
-import com.mysql.cj.jdbc.Driver;
+import com.mysql.jdbc.Driver;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.Test;
 
@@ -31,7 +31,7 @@ import static org.junit.Assert.assertThat;
 public final class DataSourceJsonConverterTest {
     
     private final String dataSourceMapJson = "[{\"shardingJdbcDataSourceName\":\"ds_jdbc_1\",\"shardingJdbcDataSourceClazz\":\"org.apache.commons.dbcp2.BasicDataSource\","
-            + "\"abandonedUsageTracking\":\"false\",\"cacheState\":\"true\",\"defaultTransactionIsolation\":\"-1\",\"driverClassName\":\"com.mysql.cj.jdbc.Driver\","
+            + "\"abandonedUsageTracking\":\"false\",\"cacheState\":\"true\",\"defaultTransactionIsolation\":\"-1\",\"driverClassName\":\"com.mysql.jdbc.Driver\","
             + "\"enableAutoCommitOnReturn\":\"true\",\"evictionPolicyClassName\":\"org.apache.commons.pool2.impl.DefaultEvictionPolicy\",\"fastFailValidation\":\"false\","
             + "\"initialSize\":\"0\",\"lifo\":\"true\",\"logAbandoned\":\"false\",\"logExpiredConnections\":\"true\",\"maxConnLifetimeMillis\":\"-1\",\"maxIdle\":\"8\","
             + "\"maxOpenPreparedStatements\":\"-1\",\"maxTotal\":\"8\",\"maxWaitMillis\":\"-1\",\"minEvictableIdleTimeMillis\":\"1800000\",\"minIdle\":\"0\",\"numTestsPerEvictionRun\":\"3\","
@@ -39,7 +39,7 @@ public final class DataSourceJsonConverterTest {
             + "\"softMinEvictableIdleTimeMillis\":\"-1\",\"testOnBorrow\":\"true\",\"testOnCreate\":\"false\",\"testOnReturn\":\"false\",\"testWhileIdle\":\"false\","
             + "\"timeBetweenEvictionRunsMillis\":\"-1\",\"url\":\"jdbc:mysql://localhost:3306/ds_jdbc_1?serverTimezone\\u003dUTC\\u0026useSSL\\u003dfalse\",\"username\":\"root\",\"validationQueryTimeout\":\"-1\"},"
             + "{\"shardingJdbcDataSourceName\":\"ds_jdbc_0\",\"shardingJdbcDataSourceClazz\":\"org.apache.commons.dbcp2.BasicDataSource\",\"abandonedUsageTracking\":\"false\","
-            + "\"cacheState\":\"true\",\"defaultTransactionIsolation\":\"-1\",\"driverClassName\":\"com.mysql.cj.jdbc.Driver\",\"enableAutoCommitOnReturn\":\"true\","
+            + "\"cacheState\":\"true\",\"defaultTransactionIsolation\":\"-1\",\"driverClassName\":\"com.mysql.jdbc.Driver\",\"enableAutoCommitOnReturn\":\"true\","
             + "\"evictionPolicyClassName\":\"org.apache.commons.pool2.impl.DefaultEvictionPolicy\",\"fastFailValidation\":\"false\",\"initialSize\":\"0\",\"lifo\":\"true\","
             + "\"logAbandoned\":\"false\",\"logExpiredConnections\":\"true\",\"maxConnLifetimeMillis\":\"-1\",\"maxIdle\":\"8\",\"maxOpenPreparedStatements\":\"-1\",\"maxTotal\":\"8\","
             + "\"maxWaitMillis\":\"-1\",\"minEvictableIdleTimeMillis\":\"1800000\",\"minIdle\":\"0\",\"numTestsPerEvictionRun\":\"3\",\"password\":\"\",\"removeAbandonedOnBorrow\":\"false\","

@@ -47,7 +47,7 @@ public final class ShardingJdbcDatabaseTester extends JdbcDatabaseTester {
             case "org.h2.Driver":
                 dbConfig.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new H2DataTypeFactory());
                 break;
-            case "com.mysql.cj.jdbc.Driver":
+            case "com.mysql.jdbc.Driver":
                 dbConfig.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new MySqlDataTypeFactory());
                 break;
             case "org.postgresql.Driver":
