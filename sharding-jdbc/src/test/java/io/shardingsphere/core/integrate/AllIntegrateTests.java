@@ -18,14 +18,12 @@
 package io.shardingsphere.core.integrate;
 
 import io.shardingsphere.core.integrate.api.AllAPIIntegrateTests;
-import io.shardingsphere.core.integrate.type.sharding.hint.AllHintDatabaseOnlyTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        AllHintDatabaseOnlyTests.class, 
         AllAPIIntegrateTests.class
     })
 public class AllIntegrateTests {
