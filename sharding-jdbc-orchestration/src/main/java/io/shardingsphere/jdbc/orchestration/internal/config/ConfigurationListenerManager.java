@@ -20,12 +20,12 @@ package io.shardingsphere.jdbc.orchestration.internal.config;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingsphere.jdbc.orchestration.internal.state.datasource.DataSourceService;
 import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.jdbc.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.jdbc.orchestration.reg.listener.EventListener;
-import io.shardingsphere.proxy.yaml.YamlProxyConfiguration;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -94,19 +94,19 @@ public final class ConfigurationListenerManager implements ListenerManager {
     }
     
     @Override
-    public void start(final YamlProxyConfiguration yamlProxyConfiguration) {
-        start(ConfigurationNode.DATA_SOURCE_NODE_PATH, yamlProxyConfiguration);
-        start(ConfigurationNode.PROXY_RULE_NODE_PATH, yamlProxyConfiguration);
+    public void start(final OrchestrationProxyConfiguration orchestrationProxyConfiguration) {
+        start(ConfigurationNode.DATA_SOURCE_NODE_PATH, orchestrationProxyConfiguration);
+        start(ConfigurationNode.PROXY_RULE_NODE_PATH, orchestrationProxyConfiguration);
     }
     
-    private void start(final String node, final YamlProxyConfiguration yamlProxyConfiguration) {
+    private void start(final String node, final OrchestrationProxyConfiguration orchestrationProxyConfiguration) {
         String cachePath = configNode.getFullPath(node);
         regCenter.watch(cachePath, new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    yamlProxyConfiguration.renew(dataSourceService.getAvailableDataSourceParameters(), dataSourceService.getAvailableYamlProxyConfiguration());
+                    orchestrationProxyConfiguration.renew(dataSourceService.getAvailableDataSourceParameters(), dataSourceService.getAvailableYamlProxyConfiguration());
                 }
             }
         });

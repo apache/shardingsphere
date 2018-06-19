@@ -17,9 +17,9 @@
 
 package io.shardingsphere.jdbc.orchestration.internal.yaml.converter;
 
+import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.yaml.representer.DefaultConfigurationRepresenter;
 import io.shardingsphere.jdbc.orchestration.internal.yaml.representer.ProxyConfigurationRepresenter;
-import io.shardingsphere.proxy.yaml.YamlProxyConfiguration;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.yaml.snakeyaml.Yaml;
@@ -37,12 +37,12 @@ public final class ProxyConfigurationConverter {
     /**
      * Convert yaml proxy configuration to yaml string.
      *
-     * @param yamlProxyConfiguration Yaml proxy configuration
+     * @param orchestrationProxyConfiguration Yaml proxy configuration
      * @return Yaml string
      */
-    public static String proxyConfigToYaml(final YamlProxyConfiguration yamlProxyConfiguration) {
+    public static String proxyConfigToYaml(final OrchestrationProxyConfiguration orchestrationProxyConfiguration) {
         Yaml yaml = new Yaml(new ProxyConfigurationRepresenter());
-        return yaml.dumpAsMap(yamlProxyConfiguration);
+        return yaml.dumpAsMap(orchestrationProxyConfiguration);
     }
     
     /**
@@ -51,8 +51,8 @@ public final class ProxyConfigurationConverter {
      * @param yamlProxyConfigYamlString String in yaml
      * @return Yaml proxy configuration
      */
-    public static YamlProxyConfiguration proxyConfigFromYaml(final String yamlProxyConfigYamlString) {
-        return yaml.loadAs(yamlProxyConfigYamlString, YamlProxyConfiguration.class);
+    public static OrchestrationProxyConfiguration proxyConfigFromYaml(final String yamlProxyConfigYamlString) {
+        return yaml.loadAs(yamlProxyConfigYamlString, OrchestrationProxyConfiguration.class);
     
     }
 }

@@ -21,11 +21,11 @@ import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
+import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.jdbc.orchestration.internal.state.StateNode;
 import io.shardingsphere.jdbc.orchestration.internal.state.StateNodeStatus;
 import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
-import io.shardingsphere.proxy.yaml.YamlProxyConfiguration;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -123,8 +123,8 @@ public final class DataSourceService {
      *
      * @return available yaml proxy configuration
      */
-    public YamlProxyConfiguration getAvailableYamlProxyConfiguration() {
-        YamlProxyConfiguration result = configService.loadProxyConfiguration();
+    public OrchestrationProxyConfiguration getAvailableYamlProxyConfiguration() {
+        OrchestrationProxyConfiguration result = configService.loadProxyConfiguration();
         Collection<String> disabledDataSourceNames = getDisabledDataSourceNames();
         for (String each : disabledDataSourceNames) {
             result.getMasterSlaveRule().getSlaveDataSourceNames().remove(each);
