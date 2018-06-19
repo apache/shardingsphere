@@ -73,6 +73,8 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
     
     private List<ResultSet> resultSets;
     
+    private List<ResultList> resultLists;
+    
     private MergedResult mergedResult;
     
     private int currentSequenceId;
@@ -91,6 +93,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
         this.sql = sql;
         connections = new CopyOnWriteArrayList<>();
         resultSets = new CopyOnWriteArrayList<>();
+        resultLists = new CopyOnWriteArrayList<>();
         isMerged = false;
         hasMoreResultValueFlag = true;
         this.databaseType = databaseType;
@@ -186,7 +189,13 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
         List<QueryResult> queryResults = new ArrayList<>(packets.size());
         for (int i = 0; i < packets.size(); i++) {
             // TODO replace to a common PacketQueryResult
-            queryResults.add(new MySQLPacketQueryResult(packets.get(i), resultSets.get(i)));
+            MySQLPacketQueryResult mySQLPacketQueryResult = new MySQLPacketQueryResult(packets.get(i));
+            if (ProxyMode.MEMORY_STRICTLY == ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode())) {
+                mySQLPacketQueryResult.setResultSet(resultSets.get(i));
+            } else {
+                mySQLPacketQueryResult.setResultList(resultLists.get(i));
+            }
+            queryResults.add(mySQLPacketQueryResult);
         }
         try {
             mergedResult = MergeEngineFactory.newInstance(RuleRegistry.getInstance().getShardingRule(), queryResults, sqlStatement).merge();
