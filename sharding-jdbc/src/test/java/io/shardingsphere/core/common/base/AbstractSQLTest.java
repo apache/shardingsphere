@@ -22,8 +22,6 @@ import com.google.common.collect.Sets;
 import io.shardingsphere.core.common.env.DatabaseEnvironment;
 import io.shardingsphere.core.common.env.ShardingJdbcDatabaseTester;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.integrate.jaxb.helper.SQLAssertJAXBHelper;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
@@ -47,7 +45,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -161,14 +158,6 @@ public abstract class AbstractSQLTest {
             return fileName;
         }
         return fileName.substring(0, fileName.lastIndexOf("."));
-    }
-    
-    protected static Collection<Object[]> dataParameters(final SQLType... sqlTypes) {
-        Collection<Object[]> result = new LinkedList<>();
-        for (SQLType each : sqlTypes) {
-            result.addAll(SQLAssertJAXBHelper.getDataParameters("integrate/assert", each));
-        }
-        return result;
     }
     
     private static BasicDataSource buildDataSource(final String dbName, final DatabaseType type) {
