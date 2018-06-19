@@ -132,41 +132,6 @@ public final class SQLCasesLoader {
     
     /**
      * Get supported SQL.
-     * 
-     * @param sqlCaseId SQL case ID
-     * @return SQL
-     */
-    public String getSupportedSQL(final String sqlCaseId) {
-        return getSQLFromMap(sqlCaseId, supportedSQLCaseMap);
-    }
-    
-    /**
-     * Get supported SQL with literal.
-     * 
-     * @param sqlCaseId SQL case ID
-     * @param parameters SQL parameters
-     * @return SQL
-     */
-    public String getSupportedLiteralSQL(final String sqlCaseId, final List<?> parameters) {
-        String sql = getSQLFromMap(sqlCaseId, supportedSQLCaseMap);
-        if (null == parameters || parameters.isEmpty()) {
-            return sql;
-        }
-        return String.format(sql, parameters.toArray()).replace("%%", "%");
-    }
-    
-    /**
-     * Get supported SQL with placeholder.
-     * 
-     * @param sqlCaseId SQL case ID
-     * @return SQL
-     */
-    public String getSupportedPlaceholderSQL(final String sqlCaseId) {
-        return getSQLFromMap(sqlCaseId, supportedSQLCaseMap).replace("%s", "?").replace("%%", "%");
-    }
-    
-    /**
-     * Get supported SQL.
      *
      * @param sqlCaseId SQL case ID
      * @param sqlCaseType SQL case type
@@ -200,6 +165,12 @@ public final class SQLCasesLoader {
         }
     }
     
+    private String getSQLFromMap(final String id, final Map<String, SQLCase> sqlCaseMap) {
+        Preconditions.checkState(sqlCaseMap.containsKey(id), "Can't find SQL of id: " + id);
+        SQLCase statement = sqlCaseMap.get(id);
+        return statement.getValue();
+    }
+    
     private String getPlaceholderSQL(final String sql) {
         return sql.replace("%%", "%").replace("'%'", "'%%'");
     }
@@ -209,12 +180,6 @@ public final class SQLCasesLoader {
             return sql;
         }
         return String.format(sql.replace("?", "%s"), parameters.toArray()).replace("%%", "%").replace("'%'", "'%%'");
-    }
-    
-    private String getSQLFromMap(final String id, final Map<String, SQLCase> sqlCaseMap) {
-        Preconditions.checkState(sqlCaseMap.containsKey(id), "Can't find SQL of id: " + id);
-        SQLCase statement = sqlCaseMap.get(id);
-        return statement.getValue();
     }
     
     /**
@@ -277,17 +242,6 @@ public final class SQLCasesLoader {
             result.add(Enum.valueOf(enumType, each));
         }
         return result;
-    }
-    
-    /**
-     * Get database types.
-     *
-     * @param sqlCaseId SQL case ID
-     * @return database types
-     */
-    public String getDatabaseTypes(final String sqlCaseId) {
-        Preconditions.checkState(supportedSQLCaseMap.containsKey(sqlCaseId), "Can't find SQL of id: " + sqlCaseId);
-        return supportedSQLCaseMap.get(sqlCaseId).getDatabaseTypes();
     }
     
     /**
