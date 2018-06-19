@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core;
 
-import io.shardingsphere.core.integrate.AllIntegrateTests;
+import io.shardingsphere.dbtest.AllIntegrateTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -25,8 +25,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         AllUnitTests.class,
-        AllIntegrateTests.class,
-        io.shardingsphere.dbtest.AllIntegrateTests.class
+        AllIntegrateTests.class
     })
 public class AllTests {
 }
