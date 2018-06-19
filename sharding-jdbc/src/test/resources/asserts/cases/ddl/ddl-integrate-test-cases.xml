@@ -103,5 +103,11 @@
         <assertion sharding-rule-type="dbtbl_with_masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
         <assertion sharding-rule-type="masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
     </ddl-test-case>
-    
+
+    <ddl-test-case sql-case-id="drop_table_cascade_constraints_and_purge">
+        <assertion sharding-rule-type="db" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
+        <assertion sharding-rule-type="tbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
+        <assertion sharding-rule-type="masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
+    </ddl-test-case>
 </integrate-test-cases>

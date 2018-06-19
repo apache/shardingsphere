@@ -45,7 +45,7 @@
         </tokens>
     </parser-result>
     
-    <parser-result sql-case-id="assertDropTableCascadeConstraintsAndPurge">
+    <parser-result sql-case-id="drop_table_cascade_constraints_and_purge">
         <tables>
             <table name="t_log" />
         </tables>
