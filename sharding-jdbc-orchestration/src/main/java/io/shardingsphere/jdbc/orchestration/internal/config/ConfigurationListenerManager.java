@@ -25,6 +25,7 @@ import io.shardingsphere.jdbc.orchestration.internal.state.datasource.DataSource
 import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.jdbc.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.jdbc.orchestration.reg.listener.EventListener;
+import io.shardingsphere.proxy.yaml.YamlProxyConfiguration;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -87,6 +88,25 @@ public final class ConfigurationListenerManager implements ListenerManager {
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
                     masterSlaveDataSource.renew(dataSourceService.getAvailableDataSources(), dataSourceService.getAvailableMasterSlaveRuleConfiguration());
+                }
+            }
+        });
+    }
+    
+    @Override
+    public void start(final YamlProxyConfiguration yamlProxyConfiguration) {
+        start(ConfigurationNode.DATA_SOURCE_NODE_PATH, yamlProxyConfiguration);
+        start(ConfigurationNode.PROXY_RULE_NODE_PATH, yamlProxyConfiguration);
+    }
+    
+    private void start(final String node, final YamlProxyConfiguration yamlProxyConfiguration) {
+        String cachePath = configNode.getFullPath(node);
+        regCenter.watch(cachePath, new EventListener() {
+            
+            @Override
+            public void onChange(final DataChangedEvent event) {
+                if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
+                    yamlProxyConfiguration.renew(dataSourceService.getAvailableDataSourceParameters(), dataSourceService.getAvailableYamlProxyConfiguration());
                 }
             }
         });
