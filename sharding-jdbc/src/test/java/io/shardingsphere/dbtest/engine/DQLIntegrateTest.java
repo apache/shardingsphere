@@ -281,6 +281,79 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
         }
     }
     
+    @Test
+    public void assertExecuteWithResultSetTypeAndResultSetConcurrency() throws JAXBException, IOException, SQLException, ParseException {
+        if (!getDatabaseTypeEnvironment().isEnabled()) {
+            return;
+        }
+        try (Connection connection = getDataSource().getConnection()) {
+            if (SQLCaseType.Literal == getCaseType()) {
+                assertExecuteForStatementWithResultSetTypeAndResultSetConcurrency(connection);
+            } else {
+                assertExecuteForPreparedStatementWithResultSetTypeAndResultSetConcurrency(connection);
+            }
+        }
+    }
+    
+    private void assertExecuteForStatementWithResultSetTypeAndResultSetConcurrency(final Connection connection) throws SQLException, JAXBException, IOException, ParseException {
+        try (Statement statement = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
+            assertTrue("Not a DQL statement.", statement.execute(String.format(getSql(), assertion.getSQLValues().toArray())));
+            try (ResultSet resultSet = statement.getResultSet()) {
+                assertResultSet(resultSet);
+            }
+        }
+    }
+    
+    private void assertExecuteForPreparedStatementWithResultSetTypeAndResultSetConcurrency(final Connection connection) throws SQLException, ParseException, JAXBException, IOException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getSql().replaceAll("%s", "?"), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
+            for (SQLValue each : assertion.getSQLValues()) {
+                preparedStatement.setObject(each.getIndex(), each.getValue());
+            }
+            assertTrue("Not a DQL statement.", preparedStatement.execute());
+            try (ResultSet resultSet = preparedStatement.getResultSet()) {
+                assertResultSet(resultSet);
+            }
+        }
+    }
+    
+    @Test
+    public void assertExecuteWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability() throws JAXBException, IOException, SQLException, ParseException {
+        if (!getDatabaseTypeEnvironment().isEnabled()) {
+            return;
+        }
+        try (Connection connection = getDataSource().getConnection()) {
+            if (SQLCaseType.Literal == getCaseType()) {
+                assertExecuteForStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(connection);
+            } else {
+                assertExecuteForPreparedStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(connection);
+            }
+        }
+    }
+    
+    private void assertExecuteForStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(final Connection connection)
+            throws SQLException, JAXBException, IOException, ParseException {
+        try (Statement statement = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
+            assertTrue("Not a DQL statement.", statement.execute(String.format(getSql(), assertion.getSQLValues().toArray())));
+            try (ResultSet resultSet = statement.getResultSet()) {
+                assertResultSet(resultSet);
+            }
+        }
+    }
+    
+    private void assertExecuteForPreparedStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(final Connection connection)
+            throws SQLException, ParseException, JAXBException, IOException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(
+                getSql().replaceAll("%s", "?"), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
+            for (SQLValue each : assertion.getSQLValues()) {
+                preparedStatement.setObject(each.getIndex(), each.getValue());
+            }
+            assertTrue("Not a DQL statement.", preparedStatement.execute());
+            try (ResultSet resultSet = preparedStatement.getResultSet()) {
+                assertResultSet(resultSet);
+            }
+        }
+    }
+    
     private void assertResultSet(final ResultSet resultSet) throws SQLException, JAXBException, IOException {
         ExpectedDataSetsRoot expected;
         try (FileReader reader = new FileReader(getExpectedDataFile())) {
