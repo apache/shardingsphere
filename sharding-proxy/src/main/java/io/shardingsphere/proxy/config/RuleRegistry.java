@@ -53,7 +53,7 @@ import java.util.concurrent.Executors;
  * @author wangkai
  */
 @Getter
-public final class RuleRegistry {
+public final class RuleRegistry implements AutoCloseable {
     
     private static final RuleRegistry INSTANCE = new RuleRegistry();
     
@@ -85,33 +85,23 @@ public final class RuleRegistry {
     
     private OrchestrationFacade orchestrationFacade;
     
-    
-    
     private RuleRegistry() {
         YamlProxyConfiguration yamlProxyConfiguration;
         try {
             yamlProxyConfiguration = YamlProxyConfiguration.unmarshal(new File(getClass().getResource("/conf/config.yaml").getFile()));
+            yamlProxyConfiguration.init();
         } catch (final IOException ex) {
             throw new ShardingException(ex);
         }
-        if (yamlProxyConfiguration.isUsingRegistryCenter()) {
-            orchestrationFacade = new OrchestrationFacade(yamlProxyConfiguration.obtainOrchestrationConfiguration());
-            
-        }
-        
-        
-        
-        
+        init(yamlProxyConfiguration);
     }
     
-    private void init() {
-    
-    
-    
-    
-    }
-    
-    private void init(final YamlProxyConfiguration yamlProxyConfiguration) {
+    /**
+     * Initialize rule registry.
+     *
+     * @param yamlProxyConfiguration yaml proxy configuration
+     */
+    public void init(final YamlProxyConfiguration yamlProxyConfiguration) {
         shardingRule = yamlProxyConfiguration.obtainShardingRule(Collections.<String>emptyList());
         masterSlaveRule = yamlProxyConfiguration.obtainMasterSlaveRule();
         isOnlyMasterSlave = shardingRule.getTableRules().isEmpty() && !masterSlaveRule.getMasterDataSourceName().isEmpty();
@@ -134,6 +124,8 @@ public final class RuleRegistry {
         }
         proxyAuthority = yamlProxyConfiguration.getProxyAuthority();
         Preconditions.checkNotNull(proxyAuthority.getUsername(), "Invalid configuration for proxyAuthority.");
+        orchestrationFacade = yamlProxyConfiguration.obtainOrchestrationConfigurationOptional().isPresent()
+                ? new OrchestrationFacade(yamlProxyConfiguration.obtainOrchestrationConfigurationOptional().get()) : null;
     }
     
     /**
@@ -152,5 +144,12 @@ public final class RuleRegistry {
      */
     public static boolean isXaTransaction() {
         return TransactionType.XA.equals(RuleRegistry.getInstance().getTransactionType());
+    }
+    
+    @Override
+    public void close() {
+        if (null != orchestrationFacade) {
+            orchestrationFacade.close();
+        }
     }
 }

@@ -17,8 +17,8 @@
 
 package io.shardingsphere.proxy.yaml;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ProxyAuthority;
@@ -27,8 +27,8 @@ import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
 import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
-import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.jdbc.orchestration.yaml.YamlOrchestrationConfiguration;
+import io.shardingsphere.proxy.config.RuleRegistry;
 import lombok.Getter;
 import lombok.Setter;
 import org.yaml.snakeyaml.Yaml;
@@ -100,6 +100,42 @@ public final class YamlProxyConfiguration {
     }
     
     /**
+     * Initialize yaml proxy configuration.
+     *
+     */
+    public void init() {
+        if (isUsingRegistryCenter()) {
+            initFromRegistryCenter();
+        }
+    }
+    
+    private void initFromRegistryCenter() {
+        OrchestrationFacade orchestrationFacade = new OrchestrationFacade(obtainOrchestrationConfigurationOptional().get());
+        renew(orchestrationFacade.getConfigService().loadDataSourceParameter(), orchestrationFacade.getConfigService().loadProxyConfiguration());
+    }
+    
+    private boolean isUsingRegistryCenter() {
+        return null != orchestration && shardingRule.getTables().isEmpty() && masterSlaveRule.getMasterDataSourceName().isEmpty();
+    }
+    
+    /**
+     * Renew yaml proxy configuration.
+     *
+     * @param dataSources data sources
+     * @param yamlProxyConfiguration yaml proxy configuration
+     */
+    public void renew(final Map<String, DataSourceParameter> dataSources, final YamlProxyConfiguration yamlProxyConfiguration) {
+        setDataSources(dataSources);
+        setMasterSlaveRule(yamlProxyConfiguration.getMasterSlaveRule());
+        setShardingRule(yamlProxyConfiguration.getShardingRule());
+        setProxyAuthority(yamlProxyConfiguration.getProxyAuthority());
+        setWithoutJdbc(yamlProxyConfiguration.isWithoutJdbc());
+        setTransactionMode(yamlProxyConfiguration.getTransactionMode());
+        setOrchestration(yamlProxyConfiguration.getOrchestration());
+        RuleRegistry.getInstance().init(this);
+    }
+    
+    /**
      * Get sharding rule from yaml.
      *
      * @param dataSourceNames data source names
@@ -124,25 +160,7 @@ public final class YamlProxyConfiguration {
      *
      * @return Orchestration configuration
      */
-    public OrchestrationConfiguration obtainOrchestrationConfiguration() {
-        return orchestration.getOrchestrationConfiguration();
+    public Optional<OrchestrationConfiguration> obtainOrchestrationConfigurationOptional() {
+        return isUsingRegistryCenter() ? Optional.fromNullable(orchestration.getOrchestrationConfiguration()) : Optional.<OrchestrationConfiguration>absent();
     }
-    
-    /**
-     * Judge whether to load configuration from registry center.
-     *
-     * @return load or not
-     */
-    public boolean isUsingRegistryCenter() {
-        return null != orchestration && shardingRule.getTables().isEmpty() && masterSlaveRule.getMasterDataSourceName().isEmpty();
-    }
-    
-    private void loadConfigFromRegistryCenter() {
-        OrchestrationFacade orchestrationFacade = new OrchestrationFacade(obtainOrchestrationConfiguration());
-        ConfigurationService configService = orchestrationFacade.getConfigService();
-        ShardingRuleConfiguration shardingRuleConfig = configService.loadShardingRuleConfiguration();
-        MasterSlaveRuleConfiguration masterSlaveRuleConfig = configService.loadMasterSlaveRuleConfiguration();
-        configService.loadDataSourceMap();
-    }
-    
 }
