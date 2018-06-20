@@ -54,8 +54,6 @@ import java.util.concurrent.Executors;
 @Getter
 public final class RuleRegistry {
     
-    private static final int MAX_EXECUTOR_THREADS = Runtime.getRuntime().availableProcessors() * 2;
-    
     private static final RuleRegistry INSTANCE = new RuleRegistry();
     
     private final boolean withoutJdbc;
@@ -72,9 +70,11 @@ public final class RuleRegistry {
     
     private final boolean isOnlyMasterSlave;
     
-    private final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(MAX_EXECUTOR_THREADS));
+    private final ListeningExecutorService executorService;
     
     private final String proxyMode;
+    
+    private final int maxWorkingThreads;
     
     private final boolean showSQL;
     
@@ -104,6 +104,8 @@ public final class RuleRegistry {
         Properties properties = yamlProxyConfiguration.getShardingRule().getProps();
         ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
         proxyMode = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_MODE);
+        maxWorkingThreads = yamlProxyConfiguration.getMaxWorkingThreads();
+        executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(maxWorkingThreads));
         showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         shardingMetaData = new ProxyShardingMetaData(executorService, dataSourceMap);
         if (!isOnlyMasterSlave) {

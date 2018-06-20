@@ -13,28 +13,28 @@
         <assertion sharding-rule-type="masterslave" table="t_log" expected-data-file="create_table.xml" />
     </ddl-test-case>
     
-    <ddl-test-case sql-case-id="create_temporary_table_if_not_exists" database-types="MySQL,PostgreSQL">
+    <ddl-test-case sql-case-id="create_temporary_table_if_not_exists">
         <assertion sharding-rule-type="db" table="t_temp_log" expected-data-file="create_temporary_table.xml" />
         <assertion sharding-rule-type="tbl" table="t_temp_log" expected-data-file="create_temporary_table.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" table="t_temp_log" expected-data-file="create_temporary_table.xml" />
         <assertion sharding-rule-type="masterslave" table="t_temp_log" expected-data-file="create_temporary_table.xml" />
     </ddl-test-case>
     
-    <ddl-test-case sql-case-id="create_global_temporary_table" database-types="Oracle,PostgreSQL" >
+    <ddl-test-case sql-case-id="create_global_temporary_table">
         <assertion sharding-rule-type="db" table="t_temp_log" expected-data-file="create_temporary_table.xml" />
         <assertion sharding-rule-type="tbl" table="t_temp_log" expected-data-file="create_temporary_table.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" table="t_temp_log" expected-data-file="create_temporary_table.xml" />
         <assertion sharding-rule-type="masterslave" table="t_temp_log" expected-data-file="create_temporary_table.xml" />
     </ddl-test-case>
     
-    <ddl-test-case sql-case-id="create_local_temp_table" database-types="PostgreSQL">
+    <ddl-test-case sql-case-id="create_local_temp_table">
         <assertion sharding-rule-type="db" table="t_log" expected-data-file="create_table.xml" />
         <assertion sharding-rule-type="tbl" table="t_log" expected-data-file="create_table.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" table="t_log" expected-data-file="create_table.xml" />
         <assertion sharding-rule-type="masterslave" table="t_log" expected-data-file="create_table.xml" />
     </ddl-test-case>
     
-    <ddl-test-case sql-case-id="create_unlogged_table" database-types="PostgreSQL">
+    <ddl-test-case sql-case-id="create_unlogged_table">
         <assertion sharding-rule-type="db" table="t_log" expected-data-file="create_table.xml" />
         <assertion sharding-rule-type="tbl" table="t_log" expected-data-file="create_table.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" table="t_log" expected-data-file="create_table.xml" />
