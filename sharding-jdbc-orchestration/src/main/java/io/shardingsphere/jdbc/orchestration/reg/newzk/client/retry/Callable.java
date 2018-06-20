@@ -80,8 +80,6 @@ public abstract class Callable<T> {
             delayPolicyExecutor.next();
             if (Connection.needReset(e)) {
                 provider.resetConnection();
-            } else {
-                throw e;
             }
             execDelay();
         } catch (InterruptedException e) {
