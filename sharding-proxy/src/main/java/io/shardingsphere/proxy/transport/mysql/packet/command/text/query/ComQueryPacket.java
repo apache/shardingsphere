@@ -43,6 +43,7 @@ import java.sql.SQLException;
  *
  * @author zhangliang
  * @author linjiaqi
+ * @author zhaojun
  */
 @Slf4j
 public final class ComQueryPacket extends CommandPacket implements CommandPacketRebuilder {
