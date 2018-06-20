@@ -169,6 +169,8 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
             if (expect.getName().equals(each.getName())) {
                 if (DatabaseType.MySQL == databaseType && "integer".equals(expect.getType())) {
                     assertThat(each.getType(), is("int"));
+                } else if (DatabaseType.PostgreSQL == databaseType && "integer".equals(expect.getType())) {
+                    assertThat(each.getType(), is("int4"));
                 } else {
                     assertThat(each.getType(), is(expect.getType()));
                 }
