@@ -24,10 +24,10 @@ import io.shardingsphere.dbtest.env.IntegrateTestEnvironment;
 import io.shardingsphere.dbtest.env.datasource.DataSourceUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.h2.tools.RunScript;
 
+import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.FileReader;
@@ -70,8 +70,8 @@ public final class SchemaEnvironmentManager {
     public static void createDatabase(final String shardingRuleType) throws IOException, JAXBException {
         SchemaEnvironment databaseInitialization = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(shardingRuleType));
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
+            DataSource dataSource = DataSourceUtil.createDataSource(each, null);
             try (
-                    BasicDataSource dataSource = (BasicDataSource) DataSourceUtil.createDataSource(each, null);
                     Connection connection = dataSource.getConnection();
                     StringReader stringReader = new StringReader(Joiner.on(";\n").skipNulls().join(generateCreateDatabaseSQLs(each, databaseInitialization.getDatabases())))) {
                 RunScript.execute(connection, stringReader);
@@ -91,8 +91,8 @@ public final class SchemaEnvironmentManager {
     public static void dropDatabase(final String shardingRuleType) throws IOException, JAXBException {
         SchemaEnvironment databaseInitialization = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(shardingRuleType));
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
+            DataSource dataSource = DataSourceUtil.createDataSource(each, null);
             try (
-                    BasicDataSource dataSource = (BasicDataSource) DataSourceUtil.createDataSource(each, null);
                     Connection connection = dataSource.getConnection();
                     StringReader stringReader = new StringReader(Joiner.on(";\n").skipNulls().join(generateDropDatabaseSQLs(each, databaseInitialization.getDatabases())))) {
                 RunScript.execute(connection, stringReader);
@@ -148,8 +148,8 @@ public final class SchemaEnvironmentManager {
     
     private static void createTable(final SchemaEnvironment databaseEnvironmentSchema, final DatabaseType databaseType) {
         for (String each : databaseEnvironmentSchema.getDatabases()) {
-            try (BasicDataSource dataSource = (BasicDataSource) DataSourceUtil.createDataSource(databaseType, each);
-                 Connection connection = dataSource.getConnection();
+            DataSource dataSource = DataSourceUtil.createDataSource(databaseType, each);
+            try (Connection connection = dataSource.getConnection();
                  StringReader stringReader = new StringReader(StringUtils.join(getTableCreateSQLs(databaseEnvironmentSchema.getTableCreateSQLs(), databaseType), ";\n"))) {
                 RunScript.execute(connection, stringReader);
             } catch (final SQLException ex) {
@@ -187,8 +187,8 @@ public final class SchemaEnvironmentManager {
     
     private static void dropTable(final SchemaEnvironment databaseEnvironmentSchema, final DatabaseType databaseType) {
         for (String each : databaseEnvironmentSchema.getDatabases()) {
-            try (BasicDataSource dataSource = (BasicDataSource) DataSourceUtil.createDataSource(databaseType, each);
-                 Connection connection = dataSource.getConnection();
+            DataSource dataSource = DataSourceUtil.createDataSource(databaseType, each);
+            try (Connection connection = dataSource.getConnection();
                  StringReader stringReader = new StringReader(StringUtils.join(getTableDropSQLs(databaseEnvironmentSchema.getTableDropSQLs(), databaseType), ";\n"))) {
                 RunScript.execute(connection, stringReader);
             } catch (final SQLException ex) {
