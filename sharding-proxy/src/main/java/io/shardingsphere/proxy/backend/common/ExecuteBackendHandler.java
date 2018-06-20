@@ -107,12 +107,11 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
         if (SQLType.DDL.equals(routeResult.getSqlStatement().getType()) && RuleRegistry.isXaTransaction()) {
             throw new SQLException("DDL command can't not execute in xa transaction mode.");
         }
-        
         ExecutorService executorService = RuleRegistry.getInstance().getExecutorService();
         List<Future<CommandResponsePackets>> futureList = new ArrayList<>(1024);
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             Statement statement = prepareResource(each.getDataSource(), each.getSqlUnit().getSql(), routeResult.getSqlStatement());
-            futureList.add(executorService.submit(getSubmitTask(statement, routeResult.getSqlStatement(), each.getSqlUnit().getSql())));
+            futureList.add(executorService.submit(newSubmitTask(statement, routeResult.getSqlStatement(), each.getSqlUnit().getSql())));
         }
         List<CommandResponsePackets> packets = buildCommandResponsePackets(futureList);
         CommandResponsePackets result = merge(routeResult.getSqlStatement(), packets);
@@ -136,11 +135,11 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
     
     protected abstract Statement prepareResource(String dataSourceName, String unitSql, SQLStatement sqlStatement) throws SQLException;
     
-    protected abstract Callable<CommandResponsePackets> getSubmitTask(Statement statement, SQLStatement sqlStatement, String unitSql);
+    protected abstract Callable<CommandResponsePackets> newSubmitTask(Statement statement, SQLStatement sqlStatement, String unitSql);
     
-    private List<CommandResponsePackets> buildCommandResponsePackets(final List<Future<CommandResponsePackets>> resultList) {
+    private List<CommandResponsePackets> buildCommandResponsePackets(final List<Future<CommandResponsePackets>> futureList) {
         List<CommandResponsePackets> result = new ArrayList<>();
-        for (Future<CommandResponsePackets> each : resultList) {
+        for (Future<CommandResponsePackets> each : futureList) {
             try {
                 result.add(each.get());
                 

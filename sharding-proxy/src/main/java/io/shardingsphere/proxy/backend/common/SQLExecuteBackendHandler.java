@@ -71,7 +71,7 @@ public final class SQLExecuteBackendHandler extends ExecuteBackendHandler implem
     }
     
     @Override
-    protected Callable<CommandResponsePackets> getSubmitTask(final Statement statement, final SQLStatement sqlStatement, final String unitSql) {
+    protected Callable<CommandResponsePackets> newSubmitTask(final Statement statement, final SQLStatement sqlStatement, final String unitSql) {
         return new SQLExecuteWorker(this, sqlStatement, statement, unitSql);
     }
     
