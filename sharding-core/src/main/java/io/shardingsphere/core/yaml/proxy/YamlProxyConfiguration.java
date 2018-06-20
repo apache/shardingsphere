@@ -62,6 +62,8 @@ public final class YamlProxyConfiguration {
     
     private String transactionMode;
     
+    private int maxWorkingThreads;
+    
     /**
      * Unmarshal yaml sharding configuration from yaml file.
      * 

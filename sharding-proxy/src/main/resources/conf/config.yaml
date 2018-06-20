@@ -68,6 +68,8 @@
 #  username: root
 #  password: root
 
+#maxWorkingThreads: 200
+
 
 # The example of master-slave rule.
 
