@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parser-result-sets>
-    <parser-result sql-case-id="assertAlterTable">
+    <parser-result sql-case-id="alter_table">
         <tables>
             <table name="t_log" />
         </tables>
@@ -9,7 +9,7 @@
         </tokens>
     </parser-result>
     
-    <parser-result sql-case-id="assertAlterTableIfExistAndOnly">
+    <parser-result sql-case-id="alter_table_if_exists_only">
         <tables>
             <table name="t_log" />
         </tables>

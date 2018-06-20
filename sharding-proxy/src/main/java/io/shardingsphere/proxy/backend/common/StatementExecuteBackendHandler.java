@@ -18,168 +18,68 @@
 package io.shardingsphere.proxy.backend.common;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.merger.MergeEngineFactory;
-import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.QueryResult;
-import io.shardingsphere.core.parsing.SQLJudgeEngine;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.routing.PreparedStatementRoutingEngine;
-import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
-import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingsphere.proxy.backend.mysql.MySQLPacketStatementExecuteQueryResult;
 import io.shardingsphere.proxy.backend.resource.ProxyJDBCResourceFactory;
 import io.shardingsphere.proxy.backend.resource.ProxyPrepareJDBCResource;
 import io.shardingsphere.proxy.config.RuleRegistry;
-import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
-import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.PreparedStatementRegistry;
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute.BinaryResultSetRowPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute.PreparedStatementParameter;
-import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import lombok.Getter;
-import lombok.Setter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 
 /**
  * Statement execute backend handler.
  *
  * @author zhangyonglun
+ * @author zhaojun
  */
-@Getter
-@Setter
-public final class StatementExecuteBackendHandler implements BackendHandler {
-    
-    private static final Integer FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
+public final class StatementExecuteBackendHandler extends ExecuteBackendHandler implements BackendHandler {
     
     private final List<PreparedStatementParameter> preparedStatementParameters;
     
-    private MergedResult mergedResult;
-    
-    private int currentSequenceId;
-    
-    private int columnCount;
-    
+    @Getter
     private final List<ColumnType> columnTypes;
     
-    private boolean isMerged;
-    
-    private boolean hasMoreResultValueFlag;
-    
-    private final DatabaseType databaseType;
-    
-    private final boolean showSQL;
-    
-    private final String sql;
-    
-    private final ProxyPrepareJDBCResource proxyPrepareJDBCResource;
-    
-    public StatementExecuteBackendHandler(final List<PreparedStatementParameter> preparedStatementParameters, final int statementId, final DatabaseType databaseType, final boolean showSQL) {
+    public StatementExecuteBackendHandler(final List<PreparedStatementParameter> preparedStatementParameters, final int statementId,
+                                          final DatabaseType databaseType, final boolean showSQL) {
+        super(PreparedStatementRegistry.getInstance().getSQL(statementId), databaseType, showSQL);
+        super.setJdbcResource(ProxyJDBCResourceFactory.newPrepareResource());
         this.preparedStatementParameters = preparedStatementParameters;
         columnTypes = new CopyOnWriteArrayList<>();
-        isMerged = false;
-        hasMoreResultValueFlag = true;
-        this.databaseType = databaseType;
-        this.showSQL = showSQL;
-        sql = PreparedStatementRegistry.getInstance().getSQL(statementId);
-        proxyPrepareJDBCResource = ProxyJDBCResourceFactory.newPrepareResource();
     }
     
     @Override
-    public CommandResponsePackets execute() {
-        try {
-            if (RuleRegistry.getInstance().isOnlyMasterSlave()) {
-                return executeForMasterSlave();
-            } else {
-                return executeForSharding();
-            }
-        } catch (final Exception ex) {
-            return new CommandResponsePackets(new ErrPacket(1, 0, "", "", ex.getMessage()));
-        }
+    protected SQLRouteResult doSqlShardingRoute() {
+        PreparedStatementRoutingEngine routingEngine = new PreparedStatementRoutingEngine(getSql(),
+                RuleRegistry.getInstance().getShardingRule(), RuleRegistry.getInstance().getShardingMetaData(), getDatabaseType(), isShowSQL());
+        return routingEngine.route(getComStmtExecuteParameters());
     }
     
-    private CommandResponsePackets executeForMasterSlave() throws SQLException {
-        MasterSlaveRouter masterSlaveRouter = new MasterSlaveRouter(RuleRegistry.getInstance().getMasterSlaveRule());
-        SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
-        if (SQLType.DDL.equals(sqlStatement.getType()) && RuleRegistry.isXaTransaction()) {
-            throw new SQLException("DDL command can't not execute in xa transaction mode.");
-        }
-        String dataSourceName = masterSlaveRouter.route(sqlStatement.getType()).iterator().next();
-        List<CommandResponsePackets> packets = new CopyOnWriteArrayList<>();
-        ExecutorService executorService = RuleRegistry.getInstance().getExecutorService();
-        List<Future<CommandResponsePackets>> resultList = new ArrayList<>(1024);
-        PreparedStatement preparedStatement = prepareResource(dataSourceName, sql, sqlStatement);
-        resultList.add(executorService.submit(new StatementExecuteWorker(this, sqlStatement, preparedStatement)));
-        getCommandResponsePackets(resultList, packets);
-        return merge(sqlStatement, packets);
-    }
-    
-    private CommandResponsePackets executeForSharding() throws SQLException {
-        PreparedStatementRoutingEngine routingEngine = new PreparedStatementRoutingEngine(sql,
-            RuleRegistry.getInstance().getShardingRule(), RuleRegistry.getInstance().getShardingMetaData(), databaseType, showSQL);
-        // TODO support null value parameter
-        SQLRouteResult routeResult = routingEngine.route(getComStmtExecuteParameters());
-        if (routeResult.getExecutionUnits().isEmpty()) {
-            return new CommandResponsePackets(new OKPacket(1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
-        }
-        if (SQLType.DDL.equals(routeResult.getSqlStatement().getType()) && RuleRegistry.isXaTransaction()) {
-            throw new SQLException("DDL command can't not execute in xa transaction mode.");
-        }
-        List<CommandResponsePackets> packets = new CopyOnWriteArrayList<>();
-        ExecutorService executorService = RuleRegistry.getInstance().getExecutorService();
-        List<Future<CommandResponsePackets>> resultList = new ArrayList<>(1024);
-        for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
-            PreparedStatement preparedStatement = prepareResource(each.getDataSource(), each.getSqlUnit().getSql(), routeResult.getSqlStatement());
-            resultList.add(executorService.submit(new StatementExecuteWorker(this, routeResult.getSqlStatement(), preparedStatement)));
-        }
-        getCommandResponsePackets(resultList, packets);
-        CommandResponsePackets result = merge(routeResult.getSqlStatement(), packets);
-        ProxyShardingRefreshHandler.build(routeResult).execute();
-        return result;
-    }
-    
-    private PreparedStatement prepareResource(final String dataSourceName, final String unitSql, final SQLStatement sqlStatement) throws SQLException {
-        DataSource dataSource = RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName);
-        Connection connection = dataSource.getConnection();
-        PreparedStatement statement = sqlStatement instanceof InsertStatement
-                ? connection.prepareStatement(unitSql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(unitSql);
-        proxyPrepareJDBCResource.addConnection(connection);
-        proxyPrepareJDBCResource.addPrepareStatemnt(statement);
-        return statement;
-    }
-    
-    private void getCommandResponsePackets(final List<Future<CommandResponsePackets>> resultList, final List<CommandResponsePackets> packets) {
-        for (Future<CommandResponsePackets> each : resultList) {
-            try {
-                packets.add(each.get());
-            } catch (final InterruptedException | ExecutionException ex) {
-                throw new ShardingException(ex.getMessage(), ex);
-            }
-        }
-    }
-    
-    List<Object> getComStmtExecuteParameters() {
+    /**
+     * Get PreparedStatement Parameter values.
+     *
+     * @return parameter value list
+     */
+    public List<Object> getComStmtExecuteParameters() {
         List<Object> result = new ArrayList<>(32);
         for (PreparedStatementParameter each : preparedStatementParameters) {
             result.add(each.getValue());
@@ -187,101 +87,30 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
         return result;
     }
     
-    private CommandResponsePackets merge(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets) {
-        CommandResponsePackets headPackets = new CommandResponsePackets();
-        for (CommandResponsePackets each : packets) {
-            headPackets.addPacket(each.getHeadPacket());
-        }
-        for (DatabaseProtocolPacket each : headPackets.getDatabaseProtocolPackets()) {
-            if (each instanceof ErrPacket) {
-                return new CommandResponsePackets(each);
-            }
-        }
-        if (SQLType.DML == sqlStatement.getType()) {
-            return mergeDML(headPackets);
-        }
-        if (SQLType.DQL == sqlStatement.getType() || SQLType.DAL == sqlStatement.getType()) {
-            return mergeDQLorDAL(sqlStatement, packets);
-        }
-        return packets.get(0);
+    @Override
+    protected Callable<CommandResponsePackets> newSubmitTask(final Statement statement, final SQLStatement sqlStatement, final String unitSql) {
+        return new StatementExecuteWorker(this, sqlStatement, (PreparedStatement) statement);
     }
     
-    private CommandResponsePackets mergeDML(final CommandResponsePackets firstPackets) {
-        int affectedRows = 0;
-        for (DatabaseProtocolPacket each : firstPackets.getDatabaseProtocolPackets()) {
-            if (each instanceof OKPacket) {
-                OKPacket okPacket = (OKPacket) each;
-                affectedRows += okPacket.getAffectedRows();
-            }
-        }
-        return new CommandResponsePackets(new OKPacket(1, affectedRows, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+    @Override
+    protected PreparedStatement prepareResource(final String dataSourceName, final String unitSql, final SQLStatement sqlStatement) throws SQLException {
+        DataSource dataSource = RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName);
+        Connection connection = dataSource.getConnection();
+        PreparedStatement statement = sqlStatement instanceof InsertStatement
+                ? connection.prepareStatement(unitSql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(unitSql);
+        ProxyPrepareJDBCResource prepareProxyJDBCResource = (ProxyPrepareJDBCResource) getJdbcResource();
+        prepareProxyJDBCResource.addConnection(connection);
+        prepareProxyJDBCResource.addPrepareStatemnt(statement);
+        return statement;
     }
     
-    private CommandResponsePackets mergeDQLorDAL(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets) {
-        List<QueryResult> queryResults = new ArrayList<>(packets.size());
-        for (int i = 0; i < packets.size(); i++) {
-            // TODO replace to a common PacketQueryResult
-            queryResults.add(new MySQLPacketStatementExecuteQueryResult(packets.get(i), proxyPrepareJDBCResource.getResultSets().get(i), columnTypes));
-        }
-        try {
-            mergedResult = MergeEngineFactory.newInstance(RuleRegistry.getInstance().getShardingRule(), queryResults, sqlStatement).merge();
-            isMerged = true;
-        } catch (final SQLException ex) {
-            return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
-        }
-        return buildPackets(packets);
+    @Override
+    protected QueryResult newQueryResult(final CommandResponsePackets packet, final ResultSet resultSet) {
+        return new MySQLPacketStatementExecuteQueryResult(packet, resultSet, columnTypes);
     }
     
-    private CommandResponsePackets buildPackets(final List<CommandResponsePackets> packets) {
-        CommandResponsePackets result = new CommandResponsePackets();
-        Iterator<DatabaseProtocolPacket> databaseProtocolPacketsSampling = packets.iterator().next().getDatabaseProtocolPackets().iterator();
-        FieldCountPacket fieldCountPacketSampling = (FieldCountPacket) databaseProtocolPacketsSampling.next();
-        result.addPacket(fieldCountPacketSampling);
-        ++currentSequenceId;
-        for (int i = 0; i < columnCount; i++) {
-            result.addPacket(databaseProtocolPacketsSampling.next());
-            ++currentSequenceId;
-        }
-        result.addPacket(databaseProtocolPacketsSampling.next());
-        ++currentSequenceId;
-        return result;
-    }
-    
-    /**
-     * Has more Result value.
-     *
-     * @return has more result value
-     * @throws SQLException sql exception
-     */
-    public boolean hasMoreResultValue() throws SQLException {
-        if (!isMerged || !hasMoreResultValueFlag) {
-            proxyPrepareJDBCResource.clear();
-            return false;
-        }
-        if (!mergedResult.next()) {
-            hasMoreResultValueFlag = false;
-            proxyPrepareJDBCResource.clear();
-        }
-        return true;
-    }
-    
-    /**
-     * Get result value.
-     *
-     * @return database protocol packet
-     */
-    public DatabaseProtocolPacket getResultValue() {
-        if (!hasMoreResultValueFlag) {
-            return new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
-        }
-        try {
-            List<Object> data = new ArrayList<>(columnCount);
-            for (int i = 1; i <= columnCount; i++) {
-                data.add(mergedResult.getValue(i, Object.class));
-            }
-            return new BinaryResultSetRowPacket(++currentSequenceId, columnCount, data, columnTypes);
-        } catch (final SQLException ex) {
-            return new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage());
-        }
+    @Override
+    protected DatabaseProtocolPacket newDatabaseProtocolPacket(final int sequenceId, final List<Object> data) {
+        return new BinaryResultSetRowPacket(sequenceId, getColumnCount(), data, columnTypes);
     }
 }

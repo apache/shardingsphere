@@ -21,6 +21,7 @@ import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
 import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingsphere.core.parsing.cache.ParsingResultCache;
 import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
@@ -48,6 +49,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.TimeZone;
 
 @RunWith(Parameterized.class)
 @Getter(AccessLevel.PROTECTED)
@@ -70,6 +72,10 @@ public abstract class BaseIntegrateTest {
     private final Map<String, DataSource> dataSourceMap;
     
     private final DataSource dataSource;
+    
+    static {
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+    }
     
     public BaseIntegrateTest(final String sqlCaseId, final String path, final IntegrateTestCaseAssertion assertion, 
                              final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType, final int countInSameCase) throws IOException, JAXBException, SQLException {
@@ -143,9 +149,10 @@ public abstract class BaseIntegrateTest {
     }
     
     @After
-    public void closeShardingDataSource() {
+    public void tearDown() {
         if (dataSource instanceof ShardingDataSource) {
             ((ShardingDataSource) dataSource).close();
         }
+        ParsingResultCache.getInstance().clear();
     }
 }

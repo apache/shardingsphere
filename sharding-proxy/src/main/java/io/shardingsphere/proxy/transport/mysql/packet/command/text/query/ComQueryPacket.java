@@ -33,6 +33,8 @@ import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.transaction.Status;
+import javax.transaction.SystemException;
 import java.sql.SQLException;
 
 /**
@@ -41,6 +43,7 @@ import java.sql.SQLException;
  *
  * @author zhangliang
  * @author linjiaqi
+ * @author zhaojun
  */
 @Slf4j
 public final class ComQueryPacket extends CommandPacket implements CommandPacketRebuilder {
@@ -171,7 +174,7 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
         return "COMMIT".equalsIgnoreCase(sql);
     }
     
-    private boolean isXaRollback() {
-        return "ROLLBACK".equalsIgnoreCase(sql);
+    private boolean isXaRollback() throws SystemException {
+        return "ROLLBACK".equalsIgnoreCase(sql) && Status.STATUS_NO_TRANSACTION != AtomikosUserTransaction.getInstance().getStatus();
     }
 }
