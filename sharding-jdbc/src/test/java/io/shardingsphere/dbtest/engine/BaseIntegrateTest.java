@@ -60,6 +60,8 @@ public abstract class BaseIntegrateTest {
     
     private static IntegrateTestCasesLoader integrateTestCasesLoader = IntegrateTestCasesLoader.getInstance();
     
+    private static Map<String, Map<String, DataSource>> dataSourceMapWithShardingRuleType = new HashMap<>();
+    
     private final DatabaseTypeEnvironment databaseTypeEnvironment;
     
     private final IntegrateTestCaseAssertion assertion;
@@ -106,11 +108,15 @@ public abstract class BaseIntegrateTest {
     }
     
     private Map<String, DataSource> createDataSourceMap(final IntegrateTestCaseAssertion assertion) throws IOException, JAXBException {
+        if (dataSourceMapWithShardingRuleType.containsKey(assertion.getShardingRuleType())) {
+            return dataSourceMapWithShardingRuleType.get(assertion.getShardingRuleType());
+        }
         Collection<String> dataSourceNames = SchemaEnvironmentManager.getDataSourceNames(assertion.getShardingRuleType());
         Map<String, DataSource> result = new HashMap<>(dataSourceNames.size(), 1);
         for (String each : dataSourceNames) {
             result.put(each, DataSourceUtil.createDataSource(databaseTypeEnvironment.getDatabaseType(), each));
         }
+        dataSourceMapWithShardingRuleType.put(assertion.getShardingRuleType(), result);
         return result;
     }
     
