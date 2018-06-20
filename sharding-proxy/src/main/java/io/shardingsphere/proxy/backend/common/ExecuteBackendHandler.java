@@ -27,6 +27,7 @@ import io.shardingsphere.core.parsing.SQLJudgeEngine;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
+import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingsphere.proxy.backend.resource.BaseJDBCResource;
 import io.shardingsphere.proxy.config.RuleRegistry;
@@ -45,10 +46,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -92,50 +93,42 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
     @Override
     public CommandResponsePackets execute() {
         try {
-            if (RuleRegistry.getInstance().isOnlyMasterSlave()) {
-                return executeForMasterSlave();
-            } else {
-                return executeForSharding();
-            }
+            SQLRouteResult sqlRouteResult = RuleRegistry.getInstance().isOnlyMasterSlave() ? doMasterSlaveRoute() : doSqlShardingRoute();
+            return doExecuteInternal(sqlRouteResult);
         } catch (final Exception ex) {
             return new CommandResponsePackets(new ErrPacket(1, 0, "", "", "" + ex.getMessage()));
         }
     }
     
-    private CommandResponsePackets executeForMasterSlave() throws SQLException {
-        MasterSlaveRouter masterSlaveRouter = new MasterSlaveRouter(RuleRegistry.getInstance().getMasterSlaveRule());
-        SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
-        if (SQLType.DDL.equals(sqlStatement.getType()) && RuleRegistry.isXaTransaction()) {
-            throw new SQLException("DDL command can't not execute in xa transaction mode.");
-        }
-        String dataSourceName = masterSlaveRouter.route(sqlStatement.getType()).iterator().next();
-        List<CommandResponsePackets> packets = new CopyOnWriteArrayList<>();
-        ExecutorService executorService = RuleRegistry.getInstance().getExecutorService();
-        List<Future<CommandResponsePackets>> resultList = new ArrayList<>(1024);
-        Statement statement = prepareResource(dataSourceName, sql, sqlStatement);
-        resultList.add(executorService.submit(getSubmitTask(statement, sqlStatement, sql)));
-        getCommandResponsePackets(resultList, packets);
-        return merge(sqlStatement, packets);
-    }
-    
-    private CommandResponsePackets executeForSharding() throws SQLException {
-        SQLRouteResult routeResult = doSqlShardingRoute();
+    private CommandResponsePackets doExecuteInternal(final SQLRouteResult routeResult) throws SQLException {
         if (routeResult.getExecutionUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
         }
         if (SQLType.DDL.equals(routeResult.getSqlStatement().getType()) && RuleRegistry.isXaTransaction()) {
             throw new SQLException("DDL command can't not execute in xa transaction mode.");
         }
-        List<CommandResponsePackets> packets = new CopyOnWriteArrayList<>();
+        
         ExecutorService executorService = RuleRegistry.getInstance().getExecutorService();
-        List<Future<CommandResponsePackets>> resultList = new ArrayList<>(1024);
+        List<Future<CommandResponsePackets>> futureList = new ArrayList<>(1024);
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             Statement statement = prepareResource(each.getDataSource(), each.getSqlUnit().getSql(), routeResult.getSqlStatement());
-            resultList.add(executorService.submit(getSubmitTask(statement, routeResult.getSqlStatement(), each.getSqlUnit().getSql())));
+            futureList.add(executorService.submit(getSubmitTask(statement, routeResult.getSqlStatement(), each.getSqlUnit().getSql())));
         }
-        getCommandResponsePackets(resultList, packets);
+        List<CommandResponsePackets> packets = buildCommandResponsePackets(futureList);
         CommandResponsePackets result = merge(routeResult.getSqlStatement(), packets);
-        ProxyShardingRefreshHandler.build(routeResult).execute();
+        if (!RuleRegistry.getInstance().isOnlyMasterSlave()) {
+            ProxyShardingRefreshHandler.build(routeResult).execute();
+        }
+        return result;
+    }
+    
+    private SQLRouteResult doMasterSlaveRoute() {
+        MasterSlaveRouter masterSlaveRouter = new MasterSlaveRouter(RuleRegistry.getInstance().getMasterSlaveRule());
+        SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
+        SQLRouteResult result = new SQLRouteResult(sqlStatement, null);
+        String dataSourceName = masterSlaveRouter.route(sqlStatement.getType()).iterator().next();
+        SQLUnit sqlUnit = new SQLUnit(sql, Collections.<List<Object>>emptyList());
+        result.getExecutionUnits().add(new SQLExecutionUnit(dataSourceName, sqlUnit));
         return result;
     }
     
@@ -145,14 +138,17 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
     
     protected abstract Callable<CommandResponsePackets> getSubmitTask(Statement statement, SQLStatement sqlStatement, String unitSql);
     
-    private void getCommandResponsePackets(final List<Future<CommandResponsePackets>> resultList, final List<CommandResponsePackets> packets) {
+    private List<CommandResponsePackets> buildCommandResponsePackets(final List<Future<CommandResponsePackets>> resultList) {
+        List<CommandResponsePackets> result = new ArrayList<>();
         for (Future<CommandResponsePackets> each : resultList) {
             try {
-                packets.add(each.get());
+                result.add(each.get());
+                
             } catch (final InterruptedException | ExecutionException ex) {
                 throw new ShardingException(ex.getMessage(), ex);
             }
         }
+        return result;
     }
     
     private CommandResponsePackets merge(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets) {
@@ -258,5 +254,4 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
     }
     
     protected abstract DatabaseProtocolPacket newDatabaseProtocolPacket(int sequenceId, List<Object> data);
-    
 }
