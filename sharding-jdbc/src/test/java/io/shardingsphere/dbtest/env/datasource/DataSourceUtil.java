@@ -94,6 +94,7 @@ public final class DataSourceUtil {
         result.setUsername(databaseEnvironment.getUsername());
         result.setPassword(databaseEnvironment.getPassword());
         result.setMaximumPoolSize(1);
+        result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         result.setConnectionTestQuery("SELECT 1");
         if (DatabaseType.Oracle == databaseType) {
             result.setConnectionInitSql("ALTER SESSION SET CURRENT_SCHEMA = " + dataSourceName);
