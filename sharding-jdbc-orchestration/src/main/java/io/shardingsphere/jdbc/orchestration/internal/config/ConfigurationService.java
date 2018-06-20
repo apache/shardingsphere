@@ -272,6 +272,6 @@ public final class ConfigurationService {
      * @return proxy configuration
      */
     public OrchestrationProxyConfiguration loadProxyConfiguration() {
-        return ProxyConfigurationConverter.proxyConfigFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.PROXY_NODE_PATH)));
+        return ProxyConfigurationConverter.proxyConfigFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.PROXY_RULE_NODE_PATH)));
     }
 }

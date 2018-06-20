@@ -53,6 +53,5 @@ public final class ProxyConfigurationConverter {
      */
     public static OrchestrationProxyConfiguration proxyConfigFromYaml(final String yamlProxyConfigYamlString) {
         return yaml.loadAs(yamlProxyConfigYamlString, OrchestrationProxyConfiguration.class);
-    
     }
 }
