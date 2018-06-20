@@ -63,18 +63,18 @@ public abstract class OrchestrationProxyConfiguration {
      *
      */
     public void init() {
-        if (isUsingRegistryCenter()) {
-            initFromRegistryCenter();
+        if (isLoadingFromRegistry()) {
+            loadFromRegistryCenter();
         }
     }
     
-    private void initFromRegistryCenter() {
+    private void loadFromRegistryCenter() {
         OrchestrationFacade orchestrationFacade = new OrchestrationFacade(obtainOrchestrationConfigurationOptional().get());
         renew(orchestrationFacade.getConfigService().loadDataSourceParameter(), orchestrationFacade.getConfigService().loadProxyConfiguration());
     }
     
-    private boolean isUsingRegistryCenter() {
-        return null != orchestration && shardingRule.getTables().isEmpty() && masterSlaveRule.getMasterDataSourceName().isEmpty();
+    private boolean isLoadingFromRegistry() {
+        return null != orchestration && shardingRule.getTables().isEmpty() && null == masterSlaveRule.getMasterDataSourceName();
     }
     
     /**
@@ -111,6 +111,6 @@ public abstract class OrchestrationProxyConfiguration {
      * @return Orchestration configuration
      */
     public Optional<OrchestrationConfiguration> obtainOrchestrationConfigurationOptional() {
-        return isUsingRegistryCenter() ? Optional.fromNullable(orchestration.getOrchestrationConfiguration()) : Optional.<OrchestrationConfiguration>absent();
+        return null != orchestration ? Optional.fromNullable(orchestration.getOrchestrationConfiguration()) : Optional.<OrchestrationConfiguration>absent();
     }
 }

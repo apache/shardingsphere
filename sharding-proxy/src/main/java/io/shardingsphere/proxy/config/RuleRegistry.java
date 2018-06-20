@@ -17,6 +17,7 @@
 
 package io.shardingsphere.proxy.config;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -29,6 +30,7 @@ import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ProxyAuthority;
 import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.proxy.metadata.ProxyShardingMetaData;
 import io.shardingsphere.proxy.yaml.YamlProxyConfiguration;
@@ -55,9 +57,9 @@ import java.util.concurrent.Executors;
 @Getter
 public final class RuleRegistry implements AutoCloseable {
     
-    private static final RuleRegistry INSTANCE = new RuleRegistry();
-    
     private static final int MAX_EXECUTOR_THREADS = Runtime.getRuntime().availableProcessors() * 2;
+    
+    private static final RuleRegistry INSTANCE = new RuleRegistry();
     
     private final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(MAX_EXECUTOR_THREADS));
     
@@ -102,11 +104,11 @@ public final class RuleRegistry implements AutoCloseable {
      * @param yamlProxyConfiguration yaml proxy configuration
      */
     public void init(final YamlProxyConfiguration yamlProxyConfiguration) {
+        transactionType = TransactionType.findByValue(yamlProxyConfiguration.getTransactionMode());
+        dataSourceMap = ProxyRawDataSourceFactory.create(transactionType, yamlProxyConfiguration);
         shardingRule = yamlProxyConfiguration.obtainShardingRule(Collections.<String>emptyList());
         masterSlaveRule = yamlProxyConfiguration.obtainMasterSlaveRule();
         isOnlyMasterSlave = shardingRule.getTableRules().isEmpty() && !masterSlaveRule.getMasterDataSourceName().isEmpty();
-        transactionType = TransactionType.findByValue(yamlProxyConfiguration.getTransactionMode());
-        dataSourceMap = ProxyRawDataSourceFactory.create(transactionType, yamlProxyConfiguration);
         withoutJdbc = yamlProxyConfiguration.isWithoutJdbc();
         dataSourceConfigurationMap = new HashMap<>(128, 1);
         for (Map.Entry<String, DataSourceParameter> entry : yamlProxyConfiguration.getDataSources().entrySet()) {
@@ -124,8 +126,17 @@ public final class RuleRegistry implements AutoCloseable {
         }
         proxyAuthority = yamlProxyConfiguration.getProxyAuthority();
         Preconditions.checkNotNull(proxyAuthority.getUsername(), "Invalid configuration for proxyAuthority.");
-        orchestrationFacade = yamlProxyConfiguration.obtainOrchestrationConfigurationOptional().isPresent()
-                ? new OrchestrationFacade(yamlProxyConfiguration.obtainOrchestrationConfigurationOptional().get()) : null;
+        assignOrchestrationFacade(yamlProxyConfiguration);
+    }
+    
+    private void assignOrchestrationFacade(final YamlProxyConfiguration yamlProxyConfiguration) {
+        Optional<OrchestrationConfiguration> configOptional = yamlProxyConfiguration.obtainOrchestrationConfigurationOptional();
+        if (configOptional.isPresent()) {
+            orchestrationFacade = new OrchestrationFacade(configOptional.get());
+            orchestrationFacade.init(yamlProxyConfiguration);
+        } else {
+            orchestrationFacade = null;
+        }
     }
     
     /**

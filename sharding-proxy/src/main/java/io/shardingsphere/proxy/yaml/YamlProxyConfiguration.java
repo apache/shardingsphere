@@ -18,11 +18,7 @@
 package io.shardingsphere.proxy.yaml;
 
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.core.rule.ProxyAuthority;
-import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
-import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
-import io.shardingsphere.jdbc.orchestration.yaml.YamlOrchestrationConfiguration;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,7 +31,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -47,20 +42,6 @@ import java.util.Map;
 @Getter
 @Setter
 public final class YamlProxyConfiguration extends OrchestrationProxyConfiguration {
-    
-    private Map<String, DataSourceParameter> dataSources = new HashMap<>();
-    
-    private YamlMasterSlaveRuleConfiguration masterSlaveRule = new YamlMasterSlaveRuleConfiguration();
-    
-    private YamlShardingRuleConfiguration shardingRule = new YamlShardingRuleConfiguration();
-    
-    private ProxyAuthority proxyAuthority = new ProxyAuthority();
-    
-    private boolean withoutJdbc;
-    
-    private String transactionMode;
-    
-    private YamlOrchestrationConfiguration orchestration;
     
     /**
      * Unmarshal yaml sharding configuration from yaml file.
@@ -100,7 +81,6 @@ public final class YamlProxyConfiguration extends OrchestrationProxyConfiguratio
         setProxyAuthority(orchestrationProxyConfiguration.getProxyAuthority());
         setWithoutJdbc(orchestrationProxyConfiguration.isWithoutJdbc());
         setTransactionMode(orchestrationProxyConfiguration.getTransactionMode());
-        setOrchestration(orchestrationProxyConfiguration.getOrchestration());
         RuleRegistry.getInstance().init(this);
     }
 }

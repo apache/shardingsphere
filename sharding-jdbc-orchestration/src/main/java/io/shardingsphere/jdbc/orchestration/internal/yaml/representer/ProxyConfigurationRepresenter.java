@@ -40,7 +40,7 @@ public class ProxyConfigurationRepresenter extends Representer {
     private static Collection<String> eliminatedPropertyNames;
     
     static {
-        eliminatedPropertyNames = new HashSet<String>() { { add("dataSources");} }; }
+        eliminatedPropertyNames = new HashSet<String>() {{ add("dataSources"); add("orchestration"); } }; }
         
     public ProxyConfigurationRepresenter() {
         super();
