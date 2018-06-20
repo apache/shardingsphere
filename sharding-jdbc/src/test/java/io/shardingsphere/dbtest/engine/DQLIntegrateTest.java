@@ -367,7 +367,7 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
         assertThat(actualMetaData.getColumnCount(), is(expectedColumnNames.size()));
         int index = 1;
         for (String each : expectedColumnNames) {
-            assertThat(actualMetaData.getColumnLabel(index++), is(each));
+            assertThat(actualMetaData.getColumnLabel(index++).toLowerCase(), is(each.toLowerCase()));
         }
     }
     
