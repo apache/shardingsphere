@@ -74,7 +74,7 @@ public abstract class OrchestrationProxyConfiguration {
     }
     
     private boolean isLoadingFromRegistry() {
-        return null != orchestration && shardingRule.getTables().isEmpty() && null == masterSlaveRule.getMasterDataSourceName();
+        return null != getOrchestration() && shardingRule.getTables().isEmpty() && null == masterSlaveRule.getMasterDataSourceName();
     }
     
     /**
@@ -111,6 +111,6 @@ public abstract class OrchestrationProxyConfiguration {
      * @return Orchestration configuration
      */
     public Optional<OrchestrationConfiguration> obtainOrchestrationConfigurationOptional() {
-        return null != orchestration ? Optional.fromNullable(orchestration.getOrchestrationConfiguration()) : Optional.<OrchestrationConfiguration>absent();
+        return null != getOrchestration() ? Optional.fromNullable(orchestration.getOrchestrationConfiguration()) : Optional.<OrchestrationConfiguration>absent();
     }
 }
