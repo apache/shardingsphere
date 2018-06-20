@@ -42,10 +42,9 @@ public class Connection {
      * @param e e
      * @return need retry
      * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
      */
     public static boolean needRetry(final KeeperException e) throws KeeperException {
-        return EXCEPTION_RESETS.containsKey(e);
+        return EXCEPTION_RESETS.containsKey(e.code().intValue());
     }
     
     /**
@@ -54,7 +53,6 @@ public class Connection {
      * @param e e
      * @return need reset
      * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
      */
     public static boolean needReset(final KeeperException e) throws KeeperException {
         int code = e.code().intValue();
