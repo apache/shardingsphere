@@ -51,7 +51,7 @@ public final class DatabaseEnvironment {
             case H2:
                 return "org.h2.Driver";
             case MySQL:
-                return "com.mysql.cj.jdbc.Driver";
+                return "com.mysql.jdbc.Driver";
             case PostgreSQL:
                 return "org.postgresql.Driver";
             case SQLServer:
