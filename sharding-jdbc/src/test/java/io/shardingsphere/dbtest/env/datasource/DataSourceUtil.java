@@ -22,11 +22,15 @@ import com.zaxxer.hikari.HikariDataSource;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.dbtest.env.IntegrateTestEnvironment;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import javax.sql.DataSource;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Data source utility.
@@ -38,6 +42,8 @@ public final class DataSourceUtil {
     
     private static DataSourcePoolType dataSourcePoolType = DataSourcePoolType.HikariCP;
     
+    private static Map<DataSourceCacheKey, DataSource> cache = new HashMap<>();
+    
     /**
      * Create data source.
      * 
@@ -46,14 +52,23 @@ public final class DataSourceUtil {
      * @return data source
      */
     public static DataSource createDataSource(final DatabaseType databaseType, final String dataSourceName) {
+        DataSourceCacheKey dataSourceCacheKey = new DataSourceCacheKey(databaseType, dataSourceName);
+        if (cache.containsKey(dataSourceCacheKey)) {
+            return cache.get(dataSourceCacheKey);
+        }
+        DataSource result;
         switch (dataSourcePoolType) {
             case DBCP:
-                return createDBCP(databaseType, dataSourceName);
+                result = createDBCP(databaseType, dataSourceName);
+                break;
             case HikariCP:
-                return createHikariCP(databaseType, dataSourceName);
+                result = createHikariCP(databaseType, dataSourceName);
+                break;
             default:
                 throw new UnsupportedOperationException(dataSourcePoolType.name());
         }
+        cache.put(dataSourceCacheKey, result);
+        return result;
     }
     
     private static DataSource createDBCP(final DatabaseType databaseType, final String dataSourceName) {
@@ -84,5 +99,14 @@ public final class DataSourceUtil {
             result.setConnectionInitSql("ALTER SESSION SET CURRENT_SCHEMA = " + dataSourceName);
         }
         return new HikariDataSource(result);
+    }
+    
+    @RequiredArgsConstructor
+    @EqualsAndHashCode
+    static class DataSourceCacheKey {
+        
+        private final DatabaseType databaseType;
+        
+        private final String dataSourceName;
     }
 }
