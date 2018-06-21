@@ -95,11 +95,10 @@ public abstract class ExecuteWorker implements Callable<CommandResponsePackets> 
     
     protected abstract CommandResponsePackets executeCommon() throws SQLException;
     
-    protected CommandResponsePackets getQueryDatabaseProtocolPackets() throws SQLException {
+    protected CommandResponsePackets getQueryDatabaseProtocolPackets(final ResultSet resultSet) throws SQLException {
         CommandResponsePackets result = new CommandResponsePackets();
         int currentSequenceId = 0;
-        int lastResultSetIndex = executeBackendHandler.getJdbcResource().getResultSets().size() - 1;
-        ResultSetMetaData resultSetMetaData = executeBackendHandler.getJdbcResource().getResultSets().get(lastResultSetIndex).getMetaData();
+        ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         int columnCount = resultSetMetaData.getColumnCount();
         executeBackendHandler.setColumnCount(columnCount);
         if (0 == columnCount) {

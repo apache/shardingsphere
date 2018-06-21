@@ -32,7 +32,6 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextRes
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
@@ -76,8 +75,14 @@ public final class SQLExecuteBackendHandler extends ExecuteBackendHandler implem
     }
     
     @Override
-    protected QueryResult newQueryResult(final CommandResponsePackets packet, final ResultSet resultSet) {
-        return new MySQLPacketQueryResult(packet, resultSet);
+    protected QueryResult newQueryResult(final CommandResponsePackets packet, final int index) {
+        MySQLPacketQueryResult mySQLPacketQueryResult = new MySQLPacketQueryResult(packet);
+        if (ProxyMode.MEMORY_STRICTLY == ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode())) {
+            mySQLPacketQueryResult.setResultSet(getJdbcResource().getResultSets().get(index));
+        } else {
+            mySQLPacketQueryResult.setResultList(getResultLists().get(index));
+        }
+        return mySQLPacketQueryResult;
     }
     
     @Override
