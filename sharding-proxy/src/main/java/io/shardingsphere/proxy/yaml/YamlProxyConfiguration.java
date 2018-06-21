@@ -123,6 +123,7 @@ public final class YamlProxyConfiguration extends OrchestrationProxyConfiguratio
         setProxyAuthority(orchestrationProxyConfiguration.getProxyAuthority());
         setWithoutJdbc(orchestrationProxyConfiguration.isWithoutJdbc());
         setTransactionMode(orchestrationProxyConfiguration.getTransactionMode());
+        setMaxWorkingThreads(orchestrationProxyConfiguration.getMaxWorkingThreads());
     }
     
     /**
