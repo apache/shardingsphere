@@ -22,7 +22,10 @@ import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingsphere.jdbc.orchestration.internal.state.StateNode;
 import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
@@ -36,6 +39,7 @@ import java.util.Map;
  * Data source listener manager.
  *
  * @author caohao
+ * @author panjuan
  */
 public final class DataSourceListenerManager implements ListenerManager {
     
@@ -81,6 +85,23 @@ public final class DataSourceListenerManager implements ListenerManager {
                         throw new ShardingException("No available slave datasource, can't apply the configuration!");
                     } 
                     masterSlaveDataSource.renew(dataSourceService.getAvailableDataSources(), masterSlaveRuleConfiguration);
+                }
+            }
+        });
+    }
+    
+    @Override
+    public void start() {
+        regCenter.watch(stateNode.getDataSourcesNodeFullPath(), new EventListener() {
+            
+            @Override
+            public void onChange(final DataChangedEvent event) {
+                if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
+                    OrchestrationProxyConfiguration availableYamlProxyConfiguration = dataSourceService.getAvailableYamlProxyConfiguration();
+                    if (availableYamlProxyConfiguration.getShardingRule().getTables().isEmpty() && availableYamlProxyConfiguration.getMasterSlaveRule().getSlaveDataSourceNames().isEmpty()) {
+                        throw new ShardingException("No available slave datasource, can't apply the configuration!");
+                    }
+                    ProxyEventBusInstance.getInstance().post(new ProxyEventBusEvent(dataSourceService.getAvailableDataSourceParameters(), availableYamlProxyConfiguration));
                 }
             }
         });
