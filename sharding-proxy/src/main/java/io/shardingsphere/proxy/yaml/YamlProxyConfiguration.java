@@ -92,7 +92,6 @@ public final class YamlProxyConfiguration extends OrchestrationProxyConfiguratio
         if (isInitFromRegistry()) {
             initFromRegistryCenter();
         }
-        System.out.println("register");
         ProxyEventBusInstance.getInstance().register(new YamlProxyConfiguration());
     }
     
