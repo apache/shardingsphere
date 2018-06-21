@@ -81,7 +81,7 @@ public interface IClient extends IAction, IGroupAction {
      *
      * @return ZKTransaction
      */
-   ZKTransaction transaction();
+    ZKTransaction transaction();
     /*
     void createNamespace();
     void deleteNamespace();
