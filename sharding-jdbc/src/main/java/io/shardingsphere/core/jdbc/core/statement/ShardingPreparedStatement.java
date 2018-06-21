@@ -33,7 +33,10 @@ import io.shardingsphere.core.jdbc.metadata.dialect.JDBCShardingRefreshHandler;
 import io.shardingsphere.core.merger.JDBCQueryResult;
 import io.shardingsphere.core.merger.MergeEngine;
 import io.shardingsphere.core.merger.MergeEngineFactory;
+import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.QueryResult;
+import io.shardingsphere.core.merger.event.EventMergeType;
+import io.shardingsphere.core.merger.event.ResultSetMergeEvent;
 import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
@@ -135,7 +138,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
                 queryResults.add(new JDBCQueryResult(each));
             }
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getShardingContext().getShardingRule(), queryResults, routeResult.getSqlStatement());
-            result = new ShardingResultSet(resultSets, mergeEngine.merge(), this);
+            result = new ShardingResultSet(resultSets, merge(mergeEngine), this);
         } finally {
             clearBatch();
         }
@@ -303,8 +306,26 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         }
         if (routeResult.getSqlStatement() instanceof SelectStatement || routeResult.getSqlStatement() instanceof DALStatement) {
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getShardingContext().getShardingRule(), queryResults, routeResult.getSqlStatement());
-            currentResultSet = new ShardingResultSet(resultSets, mergeEngine.merge(), this);
+            currentResultSet = new ShardingResultSet(resultSets, merge(mergeEngine), this);
         }
         return currentResultSet;
+    }
+    
+    private MergedResult merge(final MergeEngine mergeEngine) throws SQLException {
+        ResultSetMergeEvent event = new ResultSetMergeEvent();
+        try {
+            EventBusInstance.getInstance().post(event);
+            MergedResult result = mergeEngine.merge();
+            event.setEventMergeType(EventMergeType.MERGE_SUCCESS);
+            EventBusInstance.getInstance().post(event);
+            return result;
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            event.setException(ex);
+            event.setEventMergeType(EventMergeType.MERGE_FAILURE);
+            EventBusInstance.getInstance().post(event);
+            throw ex;
+        }
     }
 }
