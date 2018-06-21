@@ -18,6 +18,8 @@
 package io.shardingsphere.core.jdbc.core.datasource;
 
 import io.shardingsphere.core.api.ConfigMapContext;
+import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.ShardingProperties;
 import io.shardingsphere.core.constant.ShardingPropertiesConstant;
 import io.shardingsphere.core.exception.ShardingException;
@@ -27,19 +29,24 @@ import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.jdbc.metadata.JDBCShardingMetaData;
 import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Database that support sharding.
- * 
+ *
  * @author zhangliang
+ * @author zhaojun
  */
 public class ShardingDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
     
@@ -104,5 +111,39 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     @Override
     public void close() {
         executorEngine.close();
+    }
+    
+    protected static Map<String, DataSource> getRawDataSourceMap(final Map<String, DataSource> dataSourceMap) {
+        Map<String, DataSource> result = new LinkedHashMap<>();
+        if (null == dataSourceMap) {
+            return result;
+        }
+        for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            String dataSourceName = entry.getKey();
+            DataSource dataSource = entry.getValue();
+            if (dataSource instanceof MasterSlaveDataSource) {
+                result.putAll(((MasterSlaveDataSource) dataSource).getAllDataSources());
+            } else {
+                result.put(dataSourceName, dataSource);
+            }
+        }
+        return result;
+    }
+    
+    protected static ShardingRuleConfiguration getShardingRuleConfiguration(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig) {
+        Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigs = new LinkedList<>();
+        if (null == dataSourceMap || !shardingRuleConfig.getMasterSlaveRuleConfigs().isEmpty()) {
+            return shardingRuleConfig;
+        }
+        for (DataSource each : dataSourceMap.values()) {
+            if (!(each instanceof MasterSlaveDataSource)) {
+                continue;
+            }
+            MasterSlaveRule masterSlaveRule = ((MasterSlaveDataSource) each).getMasterSlaveRule();
+            masterSlaveRuleConfigs.add(new MasterSlaveRuleConfiguration(
+                    masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames(), masterSlaveRule.getLoadBalanceAlgorithm()));
+        }
+        shardingRuleConfig.setMasterSlaveRuleConfigs(masterSlaveRuleConfigs);
+        return shardingRuleConfig;
     }
 }

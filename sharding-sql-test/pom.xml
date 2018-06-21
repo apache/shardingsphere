@@ -6,7 +6,7 @@
     <parent>
         <artifactId>sharding-sphere</artifactId>
         <groupId>io.shardingsphere</groupId>
-        <version>3.0.0.M1</version>
+        <version>3.0.0.M2-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-sql-test</artifactId>
     <name>${project.artifactId}</name>

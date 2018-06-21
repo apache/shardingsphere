@@ -105,6 +105,7 @@ public enum DefaultKeyword implements Keyword {
     INSERT,
     INTO,
     VALUES,
+    DUPLICATE,
     
     /*
     Update

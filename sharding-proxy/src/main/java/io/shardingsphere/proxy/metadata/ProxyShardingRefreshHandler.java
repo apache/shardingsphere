@@ -37,7 +37,7 @@ public final class ProxyShardingRefreshHandler extends AbstractRefreshHandler {
     private ProxyShardingRefreshHandler(final SQLRouteResult routeResult, final ShardingMetaData shardingMetaData, final ShardingRule shardingRule) {
         super(routeResult, shardingMetaData, shardingRule);
     }
-
+    
     @Override
     public void execute() {
         if (getRouteResult().canRefreshMetaData()) {
@@ -50,7 +50,7 @@ public final class ProxyShardingRefreshHandler extends AbstractRefreshHandler {
             }
         }
     }
-
+    
     /**
      * create new instance of {@code ProxyShardingRefreshHandler}.
      *

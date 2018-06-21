@@ -23,6 +23,7 @@ import io.shardingsphere.core.api.algorithm.sharding.ListShardingValue;
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;
 import io.shardingsphere.core.optimizer.insert.InsertOptimizeEngine;
 import io.shardingsphere.core.optimizer.insert.InsertShardingCondition;
+import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.parser.context.condition.AndCondition;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
 import io.shardingsphere.core.parsing.parser.context.condition.Condition;
@@ -75,8 +76,8 @@ public final class InsertOptimizeEngineTest {
         AndCondition andCondition2 = new AndCondition();
         andCondition2.getConditions().add(new Condition(new Column("user_id", "t_order"), new SQLPlaceholderExpression(2)));
         insertStatement.getConditions().getOrCondition().getAndConditions().add(andCondition2);
-        insertStatement.getInsertValues().getInsertValues().add(new InsertValue("(?, ?)", 2));
-        insertStatement.getInsertValues().getInsertValues().add(new InsertValue("(?, ?)", 2));
+        insertStatement.getInsertValues().getInsertValues().add(new InsertValue(DefaultKeyword.VALUES, "(?, ?)", 2));
+        insertStatement.getInsertValues().getInsertValues().add(new InsertValue(DefaultKeyword.VALUES, "(?, ?)", 2));
         parameters = new ArrayList<>(4);
         parameters.add(10);
         parameters.add("init");

@@ -48,7 +48,7 @@ public final class MySQLPacketPayload {
      * @return 1 byte fixed length integer
      */
     public int readInt1() {
-        return byteBuf.readByte();
+        return byteBuf.readByte() & 0xff;
     }
     
     /**
@@ -68,7 +68,7 @@ public final class MySQLPacketPayload {
      * @return 2 byte fixed length integer
      */
     public int readInt2() {
-        return byteBuf.readShortLE();
+        return byteBuf.readShortLE() & 0xffff;
     }
     
     /**
@@ -88,7 +88,7 @@ public final class MySQLPacketPayload {
      * @return 3 byte fixed length integer
      */
     public int readInt3() {
-        return byteBuf.readMediumLE();
+        return byteBuf.readMediumLE() & 0xffffff;
     }
     
     /**
@@ -171,7 +171,7 @@ public final class MySQLPacketPayload {
      * @return length encoded integer
      */
     public long readIntLenenc() {
-        int firstByte = byteBuf.readByte();
+        int firstByte = readInt1();
         if (firstByte <= 0xfb) {
             return firstByte;
         }
@@ -195,12 +195,12 @@ public final class MySQLPacketPayload {
             byteBuf.writeByte((int) value);
             return;
         }
-        if (value >= 251 && value < Math.pow(2, 16)) {
+        if (value < Math.pow(2, 16)) {
             byteBuf.writeByte(0xfc);
             byteBuf.writeShortLE((int) value);
             return;
         }
-        if (value <= Math.pow(2, 16) && value < Math.pow(2, 24)) {
+        if (value < Math.pow(2, 24)) {
             byteBuf.writeByte(0xfd);
             byteBuf.writeInt((int) value);
             return;
