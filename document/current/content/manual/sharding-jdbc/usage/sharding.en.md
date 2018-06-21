@@ -28,27 +28,27 @@ To configure by JAVA codes:
     // Configure first data source
     BasicDataSource dataSource1 = new BasicDataSource();
     dataSource1.setDriverClassName("com.mysql.jdbc.Driver");
-    dataSource1.setUrl("jdbc:mysql://localhost:3306/ds_0");
+    dataSource1.setUrl("jdbc:mysql://localhost:3306/ds0");
     dataSource1.setUsername("root");
     dataSource1.setPassword("");
-    dataSourceMap.put("ds_0", dataSource1);
+    dataSourceMap.put("ds0", dataSource1);
     
     // Configure second data source
     BasicDataSource dataSource2 = new BasicDataSource();
     dataSource2.setDriverClassName("com.mysql.jdbc.Driver");
-    dataSource2.setUrl("jdbc:mysql://localhost:3306/ds_1");
+    dataSource2.setUrl("jdbc:mysql://localhost:3306/ds1");
     dataSource2.setUsername("root");
     dataSource2.setPassword("");
-    dataSourceMap.put("ds_1", dataSource2);
+    dataSourceMap.put("ds1", dataSource2);
     
     // Configure table rule for Order
     TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
     orderTableRuleConfig.setLogicTable("t_order");
-    orderTableRuleConfig.setActualDataNodes("ds_${0..1}.t_order_${0..1}");
+    orderTableRuleConfig.setActualDataNodes("ds${0..1}.t_order${0..1}");
     
     // Configure strategies for database + table sharding 
-    orderTableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds_${user_id % 2}"));
-    orderTableRuleConfig.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order_${order_id % 2}"));
+    orderTableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds${user_id % 2}"));
+    orderTableRuleConfig.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order${order_id % 2}"));
     
     // Configure sharding rule
     ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
@@ -67,38 +67,38 @@ To configure by yaml, similar with the configuration method of java codes:
 
 ```yaml
 dataSources:
-  ds_0: !!org.apache.commons.dbcp.BasicDataSource
+  ds0: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_0
+    url: jdbc:mysql://localhost:3306/ds0
     username: root
     password: 
-  ds_1: !!org.apache.commons.dbcp.BasicDataSource
+  ds1: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_1
+    url: jdbc:mysql://localhost:3306/ds1
     username: root
     password: 
 
 tables:
   t_order: 
-    actualDataNodes: ds_${0..1}.t_order_${0..1}
+    actualDataNodes: ds${0..1}.t_order${0..1}
     databaseStrategy: 
       inline:
         shardingColumn: user_id
-        algorithmInlineExpression: ds_$_${user_id % 2}
+        algorithmInlineExpression: ds${user_id % 2}
     tableStrategy: 
       inline:
         shardingColumn: order_id
-        algorithmInlineExpression: t_order_${order_id % 2}
+        algorithmInlineExpression: t_order${order_id % 2}
   t_order_item: 
-    actualDataNodes: ds_${0..1}.t_order_item_${0..1}
+    actualDataNodes: ds${0..1}.t_order_item${0..1}
     databaseStrategy: 
       inline:
         shardingColumn: user_id
-        algorithmInlineExpression: ds_$_${user_id % 2}
+        algorithmInlineExpression: ds${user_id % 2}
     tableStrategy: 
       inline:
         shardingColumn: order_id
-        algorithmInlineExpression: t_order_item_${order_id % 2}
+        algorithmInlineExpression: t_order_item${order_id % 2}
 ```
 
 ```java
@@ -150,30 +150,30 @@ try (
 ### Configure sharding rule with spring boot
 
 ```properties
-sharding.jdbc.datasource.names=ds_0,ds_1
+sharding.jdbc.datasource.names=ds0,ds1
 
-sharding.jdbc.datasource.ds_0.type=org.apache.commons.dbcp2.BasicDataSource
-sharding.jdbc.datasource.ds_0.driver-class-name=com.mysql.jdbc.Driver
-sharding.jdbc.datasource.ds_0.url=jdbc:mysql://localhost:3306/ds_0
-sharding.jdbc.datasource.ds_0.username=root
-sharding.jdbc.datasource.ds_0.password=
+sharding.jdbc.datasource.ds0.type=org.apache.commons.dbcp2.BasicDataSource
+sharding.jdbc.datasource.ds0.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds0.url=jdbc:mysql://localhost:3306/ds0
+sharding.jdbc.datasource.ds0.username=root
+sharding.jdbc.datasource.ds0.password=
 
-sharding.jdbc.datasource.ds_1.type=org.apache.commons.dbcp2.BasicDataSource
-sharding.jdbc.datasource.ds_1.driver-class-name=com.mysql.jdbc.Driver
-sharding.jdbc.datasource.ds_1.url=jdbc:mysql://localhost:3306/ds_1
-sharding.jdbc.datasource.ds_1.username=root
-sharding.jdbc.datasource.ds_1.password=
+sharding.jdbc.datasource.ds1.type=org.apache.commons.dbcp2.BasicDataSource
+sharding.jdbc.datasource.ds1.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds1.url=jdbc:mysql://localhost:3306/ds1
+sharding.jdbc.datasource.ds1.username=root
+sharding.jdbc.datasource.ds1.password=
 
 sharding.jdbc.config.sharding.default-database-strategy.inline.sharding-column=user_id
-sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-expression=ds_$->{user_id % 2}
+sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-expression=ds$->{user_id % 2}
 
-sharding.jdbc.config.sharding.tables.t_order.actual-data-nodes=ds_$->{0..1}.t_order_$->{0..1}
+sharding.jdbc.config.sharding.tables.t_order.actual-data-nodes=ds$->{0..1}.t_order$->{0..1}
 sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id
-sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order_$->{order_id % 2}
+sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order$->{order_id % 2}
 
-sharding.jdbc.config.sharding.tables.t_order_item.actual-data-nodes=ds_$->{0..1}.t_order_item_$->{0..1}
+sharding.jdbc.config.sharding.tables.t_order_item.actual-data-nodes=ds$->{0..1}.t_order_item$->{0..1}
 sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id
-sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item_$->{order_id % 2}
+sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item$->{order_id % 2}
 ```
 
 ### Configure sharding rule with spring namespace
@@ -188,28 +188,28 @@ sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.algorith
                         http://shardingsphere.io/schema/shardingsphere/sharding 
                         http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd 
                         ">
-    <bean id="ds_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="ds0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds_0" />
+        <property name="url" value="jdbc:mysql://localhost:3306/ds0" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
-    <bean id="ds_1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="ds1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds_1" />
+        <property name="url" value="jdbc:mysql://localhost:3306/ds1" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
     
-    <sharding:inline-strategy id="databaseStrategy" sharding-column="user_id" algorithm-expression="ds_$->{user_id % 2}" />
-    <sharding:inline-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-expression="t_order_$->{order_id % 2}" />
-    <sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-expression="t_order_item_$->{order_id % 2}" />
+    <sharding:inline-strategy id="databaseStrategy" sharding-column="user_id" algorithm-expression="ds$->{user_id % 2}" />
+    <sharding:inline-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-expression="t_order$->{order_id % 2}" />
+    <sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-expression="t_order_item$->{order_id % 2}" />
     
     <sharding:data-source id="shardingDataSource">
-        <sharding:sharding-rule data-source-names="ds_0,ds_1">
+        <sharding:sharding-rule data-source-names="ds0,ds1">
             <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" actual-data-nodes="ds_$->{0..1}.t_order_$->{0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" />
-                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="ds_$->{0..1}.t_order_item_$->{0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" />
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="ds$->{0..1}.t_order$->{0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" />
+                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="ds$->{0..1}.t_order_item$->{0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" />
             </sharding:table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>

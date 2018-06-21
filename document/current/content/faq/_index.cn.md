@@ -51,7 +51,7 @@ PS:sourceforge网站需要翻墙访问。
 SQLServer和PostgreSQL获取不加别名的聚合列会改名。例如，如下SQL：
 
 ```sql
-SELECT SUM(num), SUM(num2) FROM table_xxx;
+SELECT SUM(num), SUM(num2) FROM tablexxx;
 ```
 
 SQLServer获取到的列为空字符串和(2)，PostgreSQL获取到的列为空sum和sum(2)。这将导致Sharding-Sphere在结果归并时无法找到相应的列而出错。
@@ -59,7 +59,7 @@ SQLServer获取到的列为空字符串和(2)，PostgreSQL获取到的列为空s
 正确的SQL写法应为：
 
 ```sql
-SELECT SUM(num) AS sum_num, SUM(num2) AS sum_num2 FROM table_xxx;
+SELECT SUM(num) AS sum_num, SUM(num2) AS sum_num2 FROM tablexxx;
 ```
 
 #### 6. 如果SQL在Sharding-Sphere中执行不正确，该如何调试？

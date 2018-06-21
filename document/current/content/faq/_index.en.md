@@ -51,7 +51,7 @@ The answer is:
 SQLServer and PostgreSQL will rename the aggregate column without an alias. For example, the following SQL:
 
 ```sql
-SELECT SUM(num), SUM(num2) FROM table_xxx;
+SELECT SUM(num), SUM(num2) FROM tablexxx;
 ```
 
 SQLServer gets the column of empty string and (2), and PostgreSQL gets the columns of empty sum and sum(2), which will cause Sharding-Sphere to fail to find the corresponding column when the result is merged.
@@ -59,7 +59,7 @@ SQLServer gets the column of empty string and (2), and PostgreSQL gets the colum
 The correct SQL is：
 
 ```sql
-SELECT SUM(num) AS sum_num, SUM(num2) AS sum_num2 FROM table_xxx;
+SELECT SUM(num) AS sum_num, SUM(num2) AS sum_num2 FROM tablexxx;
 ```
 
 #### 6. How to debug SQL if it is not executed correctly in Sharding-Sphere？

@@ -20,19 +20,19 @@ Use `${ expression }` or`$->{ expression }` on your configuration. It can suppor
 
 `${begin..end}` means range 
 
-`${[unit_1, unit_2, unit_x]}` means enumeration
+`${[unit1, unit2, unit_x]}` means enumeration
 
 If there are more than one inline expression continuously, it means all expression will cartesian each other.
 For example:
 
 ```groovy
-${['online', 'offline']}_table_${1..3}
+${['online', 'offline']}_table${1..3}
 ```
 
 Will be：
 
 ```
-online_table_1, online_table_2, online_table_3, offline_table_1, offline_table_2, offline_table_3
+online_table1, online_table2, online_table3, offline_table1, offline_table2, offline_table3
 ```
 
 ### Data Node Configuration
@@ -41,47 +41,47 @@ For uniform distribution, database schema are:
 
 ```
 db0
-  ├── t_order_0 
-  └── t_order_1 
+  ├── t_order0 
+  └── t_order1 
 db1
-  ├── t_order_0 
-  └── t_order_1
+  ├── t_order0 
+  └── t_order1
 ```
 
 Use inline expression can simplify to: 
 
 ```
-db${0..1}.t_order_${0..1}
+db${0..1}.t_order${0..1}
 ```
 
 Or
 
 ```
-db$->{0..1}.t_order_$->{0..1}
+db$->{0..1}.t_order$->{0..1}
 ```
 
 For user-defined distribution, database schema are: 
 
 ```
 db0
-  ├── t_order_0 
-  └── t_order_1 
+  ├── t_order0 
+  └── t_order1 
 db1
-  ├── t_order_2
-  ├── t_order_3
-  └── t_order_4
+  ├── t_order2
+  ├── t_order3
+  └── t_order4
 ```
 
 Use inline expression can simplify to: 
 
 ```
-db0.t_order_${0..1},db1.t_order_${2..4}
+db0.t_order${0..1},db1.t_order${2..4}
 ```
 
 Or
 
 ```
-db0.t_order_$->{0..1},db1.t_order_$->{2..4}
+db0.t_order$->{0..1},db1.t_order$->{2..4}
 ```
 
 ### Sharding Algorithm Configuration
@@ -89,14 +89,14 @@ db0.t_order_$->{0..1},db1.t_order_$->{2..4}
 For algorithm use single sharding column and use `=` or `IN` in SQL only, can use inline expression to instead of java class. 
 
 Inline expression is a segment of `groovy` codes. It should return actual data source name or table names during run algorithm.
-For example, sharding for 10 data source by mantissa of id, if mantissa is zero should route to ds_0, if mantissa is one should route to ds_1, and so on, inline expression should be:
+For example, sharding for 10 data source by mantissa of id, if mantissa is zero should route to ds0, if mantissa is one should route to ds1, and so on, inline expression should be:
 
 ```groovy 
-ds_${id % 10}
+ds${id % 10}
 ```
 
 Or
 
 ```groovy 
-ds_$->{id % 10}
+ds$->{id % 10}
 ```

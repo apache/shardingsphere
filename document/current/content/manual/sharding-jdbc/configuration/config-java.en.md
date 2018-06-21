@@ -14,7 +14,7 @@ weight = 1
          shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
          shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
          shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
-         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds_${user_id % 2}"));
+         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds${user_id % 2}"));
          shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new ModuloShardingTableAlgorithm()));
          return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig);
      }
@@ -22,7 +22,7 @@ weight = 1
      TableRuleConfiguration getOrderTableRuleConfiguration() {
          TableRuleConfiguration result = new TableRuleConfiguration();
          result.setLogicTable("t_order");
-         result.setActualDataNodes("ds_${0..1}.t_order_${0..1}");
+         result.setActualDataNodes("ds${0..1}.t_order${0..1}");
          result.setKeyGeneratorColumnName("order_id");
          return result;
      }
@@ -30,14 +30,14 @@ weight = 1
      TableRuleConfiguration getOrderItemTableRuleConfiguration() {
          TableRuleConfiguration result = new TableRuleConfiguration();
          result.setLogicTable("t_order_item");
-         result.setActualDataNodes("ds_${0..1}.t_order_item_${0..1}");
+         result.setActualDataNodes("ds${0..1}.t_order_item${0..1}");
          return result;
      }
      
      Map<String, DataSource> createDataSourceMap() {
          Map<String, DataSource> result = new HashMap<>();
-         result.put("ds_0", DataSourceUtil.createDataSource("ds_0"));
-         result.put("ds_1", DataSourceUtil.createDataSource("ds_1"));
+         result.put("ds0", DataSourceUtil.createDataSource("ds0"));
+         result.put("ds1", DataSourceUtil.createDataSource("ds1"));
          return result;
      }
 ```
@@ -49,15 +49,15 @@ weight = 1
          MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration();
          masterSlaveRuleConfig.setName("ds_master_slave");
          masterSlaveRuleConfig.setMasterDataSourceName("ds_master");
-         masterSlaveRuleConfig.setSlaveDataSourceNames(Arrays.asList("ds_slave_0", "ds_slave_1"));
+         masterSlaveRuleConfig.setSlaveDataSourceNames(Arrays.asList("ds_slave0", "ds_slave1"));
          return MasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig);
      }
      
      Map<String, DataSource> createDataSourceMap() {
          Map<String, DataSource> result = new HashMap<>();
          result.put("ds_master", DataSourceUtil.createDataSource("ds_master"));
-         result.put("ds_slave_0", DataSourceUtil.createDataSource("ds_slave_0"));
-         result.put("ds_slave_1", DataSourceUtil.createDataSource("ds_slave_1"));
+         result.put("ds_slave0", DataSourceUtil.createDataSource("ds_slave0"));
+         result.put("ds_slave1", DataSourceUtil.createDataSource("ds_slave1"));
          return result;
      }
 ```
@@ -79,7 +79,7 @@ weight = 1
     TableRuleConfiguration getOrderTableRuleConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration();
         result.setLogicTable("t_order");
-        result.setActualDataNodes("ds_${0..1}.t_order_${[0, 1]}");
+        result.setActualDataNodes("ds${0..1}.t_order${[0, 1]}");
         result.setKeyGeneratorColumnName("order_id");
         return result;
     }
@@ -87,42 +87,42 @@ weight = 1
     TableRuleConfiguration getOrderItemTableRuleConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration();
         result.setLogicTable("t_order_item");
-        result.setActualDataNodes("ds_${0..1}.t_order_item_${[0, 1]}");
+        result.setActualDataNodes("ds${0..1}.t_order_item${[0, 1]}");
         return result;
     }
     
     List<MasterSlaveRuleConfiguration> getMasterSlaveRuleConfigurations() {
         MasterSlaveRuleConfiguration masterSlaveRuleConfig1 = new MasterSlaveRuleConfiguration();
-        masterSlaveRuleConfig1.setName("ds_0");
-        masterSlaveRuleConfig1.setMasterDataSourceName("ds_master_0");
-        masterSlaveRuleConfig1.setSlaveDataSourceNames(Arrays.asList("ds_master_0_slave_0", "ds_master_0_slave_1"));
+        masterSlaveRuleConfig1.setName("ds0");
+        masterSlaveRuleConfig1.setMasterDataSourceName("ds_master0");
+        masterSlaveRuleConfig1.setSlaveDataSourceNames(Arrays.asList("ds_master0_slave0", "ds_master0_slave1"));
         
         MasterSlaveRuleConfiguration masterSlaveRuleConfig2 = new MasterSlaveRuleConfiguration();
-        masterSlaveRuleConfig2.setName("ds_1");
-        masterSlaveRuleConfig2.setMasterDataSourceName("ds_master_1");
-        masterSlaveRuleConfig2.setSlaveDataSourceNames(Arrays.asList("ds_master_1_slave_0", "ds_master_1_slave_1"));
+        masterSlaveRuleConfig2.setName("ds1");
+        masterSlaveRuleConfig2.setMasterDataSourceName("ds_master1");
+        masterSlaveRuleConfig2.setSlaveDataSourceNames(Arrays.asList("ds_master1_slave0", "ds_master1_slave1"));
         return Lists.newArrayList(masterSlaveRuleConfig1, masterSlaveRuleConfig2);
     }
     
     Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new HashMap<>();
         
-        result.put("ds_master_0", DataSourceUtil.createDataSource("ds_master_0"));
-        result.put("ds_master_0_slave_0", DataSourceUtil.createDataSource("ds_master_0_slave_0"));
-        result.put("ds_master_0_slave_1", DataSourceUtil.createDataSource("ds_master_0_slave_1"));
-        result.put("ds_master_1", DataSourceUtil.createDataSource("ds_master_1"));
-        result.put("ds_master_1_slave_0", DataSourceUtil.createDataSource("ds_master_1_slave_0"));
-        result.put("ds_master_1_slave_1", DataSourceUtil.createDataSource("ds_master_1_slave_1"));
+        result.put("ds_master0", DataSourceUtil.createDataSource("ds_master0"));
+        result.put("ds_master0_slave0", DataSourceUtil.createDataSource("ds_master0_slave0"));
+        result.put("ds_master0_slave1", DataSourceUtil.createDataSource("ds_master0_slave1"));
+        result.put("ds_master1", DataSourceUtil.createDataSource("ds_master1"));
+        result.put("ds_master1_slave0", DataSourceUtil.createDataSource("ds_master1_slave0"));
+        result.put("ds_master1_slave1", DataSourceUtil.createDataSource("ds_master1_slave1"));
         
         MasterSlaveRuleConfiguration masterSlaveRuleConfig1 = new MasterSlaveRuleConfiguration();
-        masterSlaveRuleConfig1.setName("ds_0");
-        masterSlaveRuleConfig1.setMasterDataSourceName("ds_master_0");
-        masterSlaveRuleConfig1.setSlaveDataSourceNames(Arrays.asList("ds_master_0_slave_0", "ds_master_0_slave_1"));
+        masterSlaveRuleConfig1.setName("ds0");
+        masterSlaveRuleConfig1.setMasterDataSourceName("ds_master0");
+        masterSlaveRuleConfig1.setSlaveDataSourceNames(Arrays.asList("ds_master0_slave0", "ds_master0_slave1"));
         
         MasterSlaveRuleConfiguration masterSlaveRuleConfig2 = new MasterSlaveRuleConfiguration();
-        masterSlaveRuleConfig2.setName("ds_1");
-        masterSlaveRuleConfig2.setMasterDataSourceName("ds_master_1");
-        masterSlaveRuleConfig2.setSlaveDataSourceNames(Arrays.asList("ds_master_1_slave_0", "ds_master_1_slave_1"));
+        masterSlaveRuleConfig2.setName("ds1");
+        masterSlaveRuleConfig2.setMasterDataSourceName("ds_master1");
+        masterSlaveRuleConfig2.setSlaveDataSourceNames(Arrays.asList("ds_master1_slave0", "ds_master1_slave1"));
         
         return result;
     }
@@ -187,7 +187,7 @@ weight = 1
 | *Name*                             | *DataType*                    | *Description*                                                                                                                                                                                         |
 | ---------------------------------- | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | logicTable                         | String                        | Name of logic table                                                                                                                                                                                   |
-| actualDataNodes (?)                | String                        | Describe data source names and actual tables, delimiter as point, multiple data nodes split by comma, support inline expression. Absent means sharding databases only. Example: ds${0..7}.tbl_${0..7} |
+| actualDataNodes (?)                | String                        | Describe data source names and actual tables, delimiter as point, multiple data nodes split by comma, support inline expression. Absent means sharding databases only. Example: ds${0..7}.tbl${0..7} |
 | databaseShardingStrategyConfig (?) | ShardingStrategyConfiguration | Databases sharding strategy, use default databases sharding strategy if absent                                                                                                                        |
 | tableShardingStrategyConfig (?)    | ShardingStrategyConfiguration | Tables sharding strategy, use default databases sharding strategy if absent                                                                                                                           |
 | logicIndex (?)                     | String                        | Name if logic index. If use *DROP INDEX XXX* SQL in Oracle/PostgreSQL, This property needs to be set for finding the actual tables                                                                    |

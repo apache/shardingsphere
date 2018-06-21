@@ -10,32 +10,32 @@ weight = 2
 
 ```yaml
 dataSources:
-  ds_0: !!org.apache.commons.dbcp.BasicDataSource
+  ds0: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_0
+    url: jdbc:mysql://localhost:3306/ds0
     username: root
     password: 
-  ds_1: !!org.apache.commons.dbcp.BasicDataSource
+  ds1: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_1
+    url: jdbc:mysql://localhost:3306/ds1
     username: root
     password: 
 
 shardingRule:  
   tables:
     t_order: 
-      actualDataNodes: ds_${0..1}.t_order_${0..1}
+      actualDataNodes: ds${0..1}.t_order${0..1}
       tableStrategy: 
         inline:
           shardingColumn: order_id
-          algorithmExpression: t_order_${order_id % 2}
+          algorithmExpression: t_order${order_id % 2}
       keyGeneratorColumnName: order_id
     t_order_item:
-      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
+      actualDataNodes: ds${0..1}.t_order_item${0..1}
       tableStrategy:
         inline:
           shardingColumn: order_id
-          algorithmExpression: t_order_item_${order_id % 2}  
+          algorithmExpression: t_order_item${order_id % 2}  
   
   bindingTables:
     - t_order,t_order_item
@@ -43,7 +43,7 @@ shardingRule:
   defaultDatabaseStrategy:
     inline:
       shardingColumn: user_id
-      algorithmExpression: ds_${user_id % 2}
+      algorithmExpression: ds${user_id % 2}
   
   defaultTableStrategy:
     none:
@@ -62,14 +62,14 @@ dataSources:
     url: jdbc:mysql://localhost:3306/ds_master
     username: root
     password: 
-  ds_slave_0: !!org.apache.commons.dbcp.BasicDataSource
+  ds_slave0: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_slave_0
+    url: jdbc:mysql://localhost:3306/ds_slave0
     username: root
     password: 
-  ds_slave_1: !!org.apache.commons.dbcp.BasicDataSource
+  ds_slave1: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_slave_1
+    url: jdbc:mysql://localhost:3306/ds_slave1
     username: root
     password: 
 
@@ -77,60 +77,60 @@ masterSlaveRule:
   name: ds_ms
   masterDataSourceName: ds_master
   slaveDataSourceNames: 
-    - ds_slave_0
-    - ds_slave_1
+    - ds_slave0
+    - ds_slave1
 ```
 
 ### 数据分片 + 读写分离
 
 ```yaml
 dataSources:
-  ds_0: !!org.apache.commons.dbcp.BasicDataSource
+  ds0: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_0
+    url: jdbc:mysql://localhost:3306/ds0
     username: root
     password: 
-  ds_0_slave_0: !!org.apache.commons.dbcp.BasicDataSource
+  ds0_slave0: !!org.apache.commons.dbcp.BasicDataSource
       driverClassName: com.mysql.jdbc.Driver
-      url: jdbc:mysql://localhost:3306/ds_0_slave_0
+      url: jdbc:mysql://localhost:3306/ds0_slave0
       username: root
       password: 
-  ds_0_slave_1: !!org.apache.commons.dbcp.BasicDataSource
+  ds0_slave1: !!org.apache.commons.dbcp.BasicDataSource
       driverClassName: com.mysql.jdbc.Driver
-      url: jdbc:mysql://localhost:3306/ds_0_slave_1
+      url: jdbc:mysql://localhost:3306/ds0_slave1
       username: root
       password: 
-  ds_1: !!org.apache.commons.dbcp.BasicDataSource
+  ds1: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_1
+    url: jdbc:mysql://localhost:3306/ds1
     username: root
     password: 
-  ds_1_slave_0: !!org.apache.commons.dbcp.BasicDataSource
+  ds1_slave0: !!org.apache.commons.dbcp.BasicDataSource
         driverClassName: com.mysql.jdbc.Driver
-        url: jdbc:mysql://localhost:3306/ds_1_slave_0
+        url: jdbc:mysql://localhost:3306/ds1_slave0
         username: root
         password: 
-  ds_1_slave_1: !!org.apache.commons.dbcp.BasicDataSource
+  ds1_slave1: !!org.apache.commons.dbcp.BasicDataSource
         driverClassName: com.mysql.jdbc.Driver
-        url: jdbc:mysql://localhost:3306/ds_1_slave_1
+        url: jdbc:mysql://localhost:3306/ds1_slave1
         username: root
         password: 
 
 shardingRule:  
   tables:
     t_order: 
-      actualDataNodes: ds_${0..1}.t_order_${0..1}
+      actualDataNodes: ds${0..1}.t_order${0..1}
       tableStrategy: 
         inline:
           shardingColumn: order_id
-          algorithmExpression: t_order_${order_id % 2}
+          algorithmExpression: t_order${order_id % 2}
       keyGeneratorColumnName: order_id
     t_order_item:
-      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
+      actualDataNodes: ds${0..1}.t_order_item${0..1}
       tableStrategy:
         inline:
           shardingColumn: order_id
-          algorithmExpression: t_order_item_${order_id % 2}  
+          algorithmExpression: t_order_item${order_id % 2}  
   
   bindingTables:
     - t_order,t_order_item
@@ -138,26 +138,26 @@ shardingRule:
   defaultDatabaseStrategy:
     inline:
       shardingColumn: user_id
-      algorithmExpression: ds_${user_id % 2}
+      algorithmExpression: ds${user_id % 2}
   
   defaultTableStrategy:
     none:
   defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
   
   masterSlaveRules:
-      ms_ds_0:
-        masterDataSourceName: ds_0
+      ms_ds0:
+        masterDataSourceName: ds0
         slaveDataSourceNames:
-          - ds_0_slave_0
-          - ds_0_slave_1
+          - ds0_slave0
+          - ds0_slave1
         loadBalanceAlgorithmType: ROUND_ROBIN
         configMap:
           master-slave-key0: master-slave-value0
-      ms_ds_1:
-        masterDataSourceName: ds_1
+      ms_ds1:
+        masterDataSourceName: ds1
         slaveDataSourceNames: 
-          - ds_1_slave_0
-          - ds_1_slave_1
+          - ds1_slave0
+          - ds1_slave1
         loadBalanceAlgorithmType: ROUND_ROBIN
         configMap:
           master-slave-key1: master-slave-value1
@@ -232,8 +232,8 @@ shardingRule:
         
       logicIndex: #逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表
   bindingTables: #绑定表规则列表
-  - <logic_table_name_1, logic_table_name_2, ...> 
-  - <logic_table_name_3, logic_table_name_4, ...>
+  - <logic_table_name1, logic_table_name2, ...> 
+  - <logic_table_name3, logic_table_name4, ...>
   - <logic_table_name_x, logic_table_name_y, ...>
   
   defaultDataSourceName: #未配置分片规则的表将通过默认数据源定位  
@@ -271,8 +271,8 @@ masterSlaveRule:
   name: #读写分离数据源名称
   masterDataSourceName: #主库数据源名称
   slaveDataSourceNames: #从库数据源名称列表
-    - <data_source_name_1>
-    - <data_source_name_2>
+    - <data_source_name1>
+    - <data_source_name2>
     - <data_source_name_x>
   loadBalanceAlgorithmClassName: #从库负载均衡算法类名称。该类需实现MasterSlaveLoadBalanceAlgorithm接口且提供无参数构造器
   loadBalanceAlgorithmType: #从库负载均衡算法类型，可选值：ROUND_ROBIN，RANDOM。若`loadBalanceAlgorithmClassName`存在则忽略该配置
@@ -331,14 +331,14 @@ orchestration:
 ```yaml
 #目标数据库的数据源
 targetDataSource:
-  ds_0: !!org.apache.commons.dbcp.BasicDataSource
+  ds0: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_0
+    url: jdbc:mysql://localhost:3306/ds0
     username: root
     password:
-  ds_1: !!org.apache.commons.dbcp.BasicDataSource
+  ds1: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_1
+    url: jdbc:mysql://localhost:3306/ds1
     username: root
     password:
 

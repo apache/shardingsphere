@@ -42,7 +42,7 @@ Support `=`, `IN` and `BETWEEN AND` in SQL with multiple sharding columns. Becau
 
 - Inline sharding strategy
 
-Use groovy expression, supporting  `=` and `IN` sharding in SQL, for single sharding column only. For simple sharding algorithm, use inline expression it best practice to avoid java codes. For example: `t_user_${u_id % 8}` means table t_user sharding by u_id, the result of table appendix is u_id mod 8, name of actual tables are from `t_user_0` to `t_user_7`.
+Use groovy expression, supporting  `=` and `IN` sharding in SQL, for single sharding column only. For simple sharding algorithm, use inline expression it best practice to avoid java codes. For example: `t_user${u_id % 8}` means table t_user sharding by u_id, the result of table appendix is u_id mod 8, name of actual tables are from `t_user0` to `t_user7`.
 
 - Hint sharding strategy
 

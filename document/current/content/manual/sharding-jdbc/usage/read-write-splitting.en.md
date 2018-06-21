@@ -33,21 +33,21 @@ weight = 2
     // Configure first slave data source
     BasicDataSource slaveDataSource1 = new BasicDataSource();
     slaveDataSource1.setDriverClassName("com.mysql.jdbc.Driver");
-    slaveDataSource1.setUrl("jdbc:mysql://localhost:3306/ds_slave_0");
+    slaveDataSource1.setUrl("jdbc:mysql://localhost:3306/ds_slave0");
     slaveDataSource1.setUsername("root");
     slaveDataSource1.setPassword("");
-    dataSourceMap.put("ds_slave_0", slaveDataSource1);
+    dataSourceMap.put("ds_slave0", slaveDataSource1);
     
     // Configure second slave data source
     BasicDataSource slaveDataSource2 = new BasicDataSource();
     slaveDataSource2.setDriverClassName("com.mysql.jdbc.Driver");
-    slaveDataSource2.setUrl("jdbc:mysql://localhost:3306/ds_slave_1");
+    slaveDataSource2.setUrl("jdbc:mysql://localhost:3306/ds_slave1");
     slaveDataSource2.setUsername("root");
     slaveDataSource2.setPassword("");
-    dataSourceMap.put("ds_slave_1", slaveDataSource2);
+    dataSourceMap.put("ds_slave1", slaveDataSource2);
     
     // Configure read-write splitting rule
-    MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration("ds_master_slave", "ds_master", Arrays.asList("ds_slave_0", "ds_slave_1"));
+    MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration("ds_master_slave", "ds_master", Arrays.asList("ds_slave0", "ds_slave1"));
     
     // Get data source
     DataSource dataSource = MasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig, new HashMap<String, Object>());
@@ -64,21 +64,21 @@ dataSources:
     url: jdbc:mysql://localhost:3306/ds_master
     username: root
     password: 
-  ds_slave_0: !!org.apache.commons.dbcp.BasicDataSource
+  ds_slave0: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_slave_0
+    url: jdbc:mysql://localhost:3306/ds_slave0
     username: root
     password:
-  ds_slave_1: !!org.apache.commons.dbcp.BasicDataSource
+  ds_slave1: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_slave_1
+    url: jdbc:mysql://localhost:3306/ds_slave1
     username: root
     password: 
 
 masterSlaveRule:
   name: ds_ms
   masterDataSourceName: ds_master
-  slaveDataSourceNames: [ds_slave_0, ds_slave_1]
+  slaveDataSourceNames: [ds_slave0, ds_slave1]
 ```
 
 ```java
@@ -130,7 +130,7 @@ try (
 ### Configure read-write splitting rule with spring boot
 
 ```properties
-sharding.jdbc.datasource.names=ds_master,ds_slave_0,ds_slave_1
+sharding.jdbc.datasource.names=ds_master,ds_slave0,ds_slave1
 
 sharding.jdbc.datasource.ds_master.type=org.apache.commons.dbcp.BasicDataSource
 sharding.jdbc.datasource.ds_master.driver-class-name=com.mysql.jdbc.Driver
@@ -138,21 +138,21 @@ sharding.jdbc.datasource.ds_master.url=jdbc:mysql://localhost:3306/ds_master
 sharding.jdbc.datasource.ds_master.username=root
 sharding.jdbc.datasource.ds_master.password=
 
-sharding.jdbc.datasource.ds_slave_0.type=org.apache.commons.dbcp.BasicDataSource
-sharding.jdbc.datasource.ds_slave_0.driver-class-name=com.mysql.jdbc.Driver
-sharding.jdbc.datasource.ds_slave_0.url=jdbc:mysql://localhost:3306/ds_slave_0
-sharding.jdbc.datasource.ds_slave_0.username=root
-sharding.jdbc.datasource.ds_slave_0.password=
+sharding.jdbc.datasource.ds_slave0.type=org.apache.commons.dbcp.BasicDataSource
+sharding.jdbc.datasource.ds_slave0.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_slave0.url=jdbc:mysql://localhost:3306/ds_slave0
+sharding.jdbc.datasource.ds_slave0.username=root
+sharding.jdbc.datasource.ds_slave0.password=
 
-sharding.jdbc.datasource.ds_slave_1.type=org.apache.commons.dbcp.BasicDataSource
-sharding.jdbc.datasource.ds_slave_1.driver-class-name=com.mysql.jdbc.Driver
-sharding.jdbc.datasource.ds_slave_1.url=jdbc:mysql://localhost:3306/ds_slave_1
-sharding.jdbc.datasource.ds_slave_1.username=root
-sharding.jdbc.datasource.ds_slave_1.password=
+sharding.jdbc.datasource.ds_slave1.type=org.apache.commons.dbcp.BasicDataSource
+sharding.jdbc.datasource.ds_slave1.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_slave1.url=jdbc:mysql://localhost:3306/ds_slave1
+sharding.jdbc.datasource.ds_slave1.username=root
+sharding.jdbc.datasource.ds_slave1.password=
 
 sharding.jdbc.config.masterslave.name=ds_ms
 sharding.jdbc.config.masterslave.master-data-source-name=ds_master
-sharding.jdbc.config.masterslave.slave-data-source-names=ds_slave_0,ds_slave_1
+sharding.jdbc.config.masterslave.slave-data-source-names=ds_slave0,ds_slave1
 ```
 
 ### Configure read-write splitting rule with spring namespace
@@ -173,20 +173,20 @@ sharding.jdbc.config.masterslave.slave-data-source-names=ds_slave_0,ds_slave_1
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
-    <bean id="ds_slave_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="ds_slave0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds_slave_0" />
+        <property name="url" value="jdbc:mysql://localhost:3306/ds_slave0" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
-    <bean id="ds_slave_1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="ds_slave1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds_slave_1" />
+        <property name="url" value="jdbc:mysql://localhost:3306/ds_slave1" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
     
-    <master-slave:data-source id="masterSlaveDataSource" master-data-source-name="ds_master" slave-data-source-names="ds_slave_0, ds_slave_1" />
+    <master-slave:data-source id="masterSlaveDataSource" master-data-source-name="ds_master" slave-data-source-names="ds_slave0, ds_slave1" />
 </beans>
 ```
 

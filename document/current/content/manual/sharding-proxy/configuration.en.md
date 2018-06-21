@@ -11,8 +11,8 @@ weight = 2
 
 ```yaml
 dataSources:
-  ds_0: 
-    url: jdbc:mysql://localhost:3306/ds_0
+  ds0: 
+    url: jdbc:mysql://localhost:3306/ds0
     username: root
     password: 
     autoCommit: true
@@ -21,8 +21,8 @@ dataSources:
     maxLifetime: 1800000
     maximumPoolSize: 65
     
-  ds_1:
-    url: jdbc:mysql://localhost:3306/ds_1
+  ds1:
+    url: jdbc:mysql://localhost:3306/ds1
     username: root
     password: 
     autoCommit: true
@@ -34,18 +34,18 @@ dataSources:
 shardingRule:  
   tables:
     t_order: 
-      actualDataNodes: ds_${0..1}.t_order_${0..1}
+      actualDataNodes: ds${0..1}.t_order${0..1}
       tableStrategy: 
         inline:
           shardingColumn: order_id
-          algorithmExpression: t_order_${order_id % 2}
+          algorithmExpression: t_order${order_id % 2}
       keyGeneratorColumnName: order_id
     t_order_item:
-      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
+      actualDataNodes: ds${0..1}.t_order_item${0..1}
       tableStrategy:
         inline:
           shardingColumn: order_id
-          algorithmExpression: t_order_item_${order_id % 2}  
+          algorithmExpression: t_order_item${order_id % 2}  
   
   bindingTables:
     - t_order,t_order_item
@@ -53,7 +53,7 @@ shardingRule:
   defaultDatabaseStrategy:
     inline:
       shardingColumn: user_id
-      algorithmExpression: ds_${user_id % 2}
+      algorithmExpression: ds${user_id % 2}
   
   defaultTableStrategy:
     none:
@@ -82,8 +82,8 @@ dataSources:
     maxLifetime: 1800000
     maximumPoolSize: 65
     
-  ds_slave_0:
-    url: jdbc:mysql://localhost:3306/ds_slave_0
+  ds_slave0:
+    url: jdbc:mysql://localhost:3306/ds_slave0
     username: root
     password:
     autoCommit: true
@@ -92,9 +92,9 @@ dataSources:
     maxLifetime: 1800000
     maximumPoolSize: 65 
     
-  ds_slave_1: !!org.apache.commons.dbcp.BasicDataSource
+  ds_slave1: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_slave_1
+    url: jdbc:mysql://localhost:3306/ds_slave1
     username: root
     password:
     autoCommit: true
@@ -107,8 +107,8 @@ masterSlaveRule:
   name: ds_ms
   masterDataSourceName: ds_master
   slaveDataSourceNames: 
-    - ds_slave_0
-    - ds_slave_1
+    - ds_slave0
+    - ds_slave1
     
 proxyAuthority:
   username: root
@@ -119,9 +119,9 @@ proxyAuthority:
 
 ```yaml
 dataSources:
-  ds_0: !!org.apache.commons.dbcp.BasicDataSource
+  ds0: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_0
+    url: jdbc:mysql://localhost:3306/ds0
     username: root
     password:
     autoCommit: true
@@ -130,9 +130,9 @@ dataSources:
     maxLifetime: 1800000
     maximumPoolSize: 65 
     
-  ds_0_slave_0: !!org.apache.commons.dbcp.BasicDataSource
+  ds0_slave0: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_0_slave_0
+    url: jdbc:mysql://localhost:3306/ds0_slave0
     username: root
     password: 
     autoCommit: true
@@ -141,9 +141,9 @@ dataSources:
     maxLifetime: 1800000
     maximumPoolSize: 65
           
-  ds_0_slave_1: !!org.apache.commons.dbcp.BasicDataSource
+  ds0_slave1: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_0_slave_1
+    url: jdbc:mysql://localhost:3306/ds0_slave1
     username: root
     password:
     autoCommit: true
@@ -152,9 +152,9 @@ dataSources:
     maxLifetime: 1800000
     maximumPoolSize: 65
            
-  ds_1: !!org.apache.commons.dbcp.BasicDataSource
+  ds1: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_1
+    url: jdbc:mysql://localhost:3306/ds1
     username: root
     password: 
     autoCommit: true
@@ -163,9 +163,9 @@ dataSources:
     maxLifetime: 1800000
     maximumPoolSize: 65
       
-  ds_1_slave_0: !!org.apache.commons.dbcp.BasicDataSource
+  ds1_slave0: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_1_slave_0
+    url: jdbc:mysql://localhost:3306/ds1_slave0
     username: root
     password: 
     autoCommit: true
@@ -174,9 +174,9 @@ dataSources:
     maxLifetime: 1800000
     maximumPoolSize: 65
             
-  ds_1_slave_1: !!org.apache.commons.dbcp.BasicDataSource
+  ds1_slave1: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_1_slave_1
+    url: jdbc:mysql://localhost:3306/ds1_slave1
     username: root
     password:
     autoCommit: true
@@ -188,18 +188,18 @@ dataSources:
 shardingRule:  
   tables:
     t_order: 
-      actualDataNodes: ds_${0..1}.t_order_${0..1}
+      actualDataNodes: ds${0..1}.t_order${0..1}
       tableStrategy: 
         inline:
           shardingColumn: order_id
-          algorithmExpression: t_order_${order_id % 2}
+          algorithmExpression: t_order${order_id % 2}
       keyGeneratorColumnName: order_id
     t_order_item:
-      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
+      actualDataNodes: ds${0..1}.t_order_item${0..1}
       tableStrategy:
         inline:
           shardingColumn: order_id
-          algorithmExpression: t_order_item_${order_id % 2}  
+          algorithmExpression: t_order_item${order_id % 2}  
   
   bindingTables:
     - t_order,t_order_item
@@ -207,26 +207,26 @@ shardingRule:
   defaultDatabaseStrategy:
     inline:
       shardingColumn: user_id
-      algorithmExpression: ds_${user_id % 2}
+      algorithmExpression: ds${user_id % 2}
   
   defaultTableStrategy:
     none:
   defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
   
   masterSlaveRules:
-      ms_ds_0:
-        masterDataSourceName: ds_0
+      ms_ds0:
+        masterDataSourceName: ds0
         slaveDataSourceNames:
-          - ds_0_slave_0
-          - ds_0_slave_1
+          - ds0_slave0
+          - ds0_slave1
         loadBalanceAlgorithmType: ROUND_ROBIN
         configMap:
           master-slave-key0: master-slave-value0
-      ms_ds_1:
-        masterDataSourceName: ds_1
+      ms_ds1:
+        masterDataSourceName: ds1
         slaveDataSourceNames: 
-          - ds_1_slave_0
-          - ds_1_slave_1
+          - ds1_slave0
+          - ds1_slave1
         loadBalanceAlgorithmType: ROUND_ROBIN
         configMap:
           master-slave-key1: master-slave-value1

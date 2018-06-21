@@ -26,17 +26,17 @@ Tables are evenly distributed in each data source, for example:
 
 ```
 db0
-  ├── t_order_0 
-  └── t_order_1 
+  ├── t_order0 
+  └── t_order1 
 db1
-  ├── t_order_0 
-  └── t_order_1
+  ├── t_order0 
+  └── t_order1
 ```
 
 Then, configuration of data nodes are: 
 
 ```
-db0.t_order_0, db0.t_order_1, db1.t_order_0, db1.t_order_1
+db0.t_order0, db0.t_order1, db1.t_order0, db1.t_order1
 ```
 
 - User-defined Distribution
@@ -45,18 +45,18 @@ Tables are distributed by user defined in each data source, for example:
 
 ```
 db0
-  ├── t_order_0 
-  └── t_order_1 
+  ├── t_order0 
+  └── t_order1 
 db1
-  ├── t_order_2
-  ├── t_order_3
-  └── t_order_4
+  ├── t_order2
+  ├── t_order3
+  └── t_order4
 ```
 
 Then, configuration of data nodes are: 
 
 ```
-db0.t_order_0, db0.t_order_1, db1.t_order_2, db1.t_order_3, db1.t_order_4
+db0.t_order0, db0.t_order1, db1.t_order2, db1.t_order3, db1.t_order4
 ```
 
 ## Sharding Strategies Configurations

@@ -19,8 +19,8 @@ instances
     ├──your_instance_ip_b@-@your_instance_pid_y
     ├──....
 datasources
-    ├──ds_0
-    ├──ds_1
+    ├──ds0
+    ├──ds1
     ├──....
 ```
 

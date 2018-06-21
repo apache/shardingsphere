@@ -48,16 +48,16 @@ weight = 4
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" p:entityManagerFactory-ref="entityManagerFactory" />
     <tx:annotation-driven />
     
-    <bean id="ds_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="ds0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds_0" />
+        <property name="url" value="jdbc:mysql://localhost:3306/ds0" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
     
-    <bean id="ds_1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="ds1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds_1" />
+        <property name="url" value="jdbc:mysql://localhost:3306/ds1" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
@@ -69,10 +69,10 @@ weight = 4
     <sharding:standard-strategy id="tableShardingStrategy" sharding-column="order_id" precise-algorithm-ref="preciseModuloTableShardingAlgorithm" />
     
     <sharding:data-source id="shardingDataSource">
-        <sharding:sharding-rule data-source-names="ds_0,ds_1">
+        <sharding:sharding-rule data-source-names="ds0,ds1">
             <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" actual-data-nodes="ds_$->{0..1}.t_order_$->{0..1}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" generate-key-column-name="order_id" />
-                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="ds_$->{0..1}.t_order_item_$->{0..1}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" generate-key-column-name="order_item_id" />
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="ds$->{0..1}.t_order$->{0..1}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" generate-key-column-name="order_id" />
+                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="ds$->{0..1}.t_order_item$->{0..1}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" generate-key-column-name="order_item_id" />
             </sharding:table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>
@@ -124,23 +124,23 @@ weight = 4
         <property name="password" value="" />
     </bean>
     
-    <bean id="ds_slave_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="ds_slave0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds_slave_0" />
+        <property name="url" value="jdbc:mysql://localhost:3306/ds_slave0" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
     
-    <bean id="ds_slave_1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="ds_slave1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds_slave_1" />
+        <property name="url" value="jdbc:mysql://localhost:3306/ds_slave1" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
     
     <bean id="randomStrategy" class="io.shardingsphere.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
     
-    <master-slave:data-source id="masterSlaveDataSource" master-data-source-name="ds_master" slave-data-source-names="ds_slave_0, ds_slave_1" strategy-ref="randomStrategy" />
+    <master-slave:data-source id="masterSlaveDataSource" master-data-source-name="ds_master" slave-data-source-names="ds_slave0, ds_slave1" strategy-ref="randomStrategy" />
 </beans>
 ```
 
@@ -185,62 +185,62 @@ weight = 4
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" p:entityManagerFactory-ref="entityManagerFactory" />
     <tx:annotation-driven />
     
-    <bean id="ds_master_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="ds_master0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds_master_0" />
+        <property name="url" value="jdbc:mysql://localhost:3306/ds_master0" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
 
-    <bean id="ds_master_0_slave_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="ds_master0_slave0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds_master_0_slave_0" />
+        <property name="url" value="jdbc:mysql://localhost:3306/ds_master0_slave0" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
 
-    <bean id="ds_master_0_slave_1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="ds_master0_slave1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds_master_0_slave_1" />
+        <property name="url" value="jdbc:mysql://localhost:3306/ds_master0_slave1" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
 
-    <bean id="ds_master_1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="ds_master1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds_master_1" />
+        <property name="url" value="jdbc:mysql://localhost:3306/ds_master1" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
 
-    <bean id="ds_master_1_slave_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="ds_master1_slave0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds_master_1_slave_0" />
+        <property name="url" value="jdbc:mysql://localhost:3306/ds_master1_slave0" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
 
-    <bean id="ds_master_1_slave_1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="ds_master1_slave1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds_master_1_slave_1" />
+        <property name="url" value="jdbc:mysql://localhost:3306/ds_master1_slave1" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
 
     <bean id="randomStrategy" class="io.shardingsphere.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
 
-    <master-slave:data-source id="ds_ms_0" master-data-source-name="ds_master_0" slave-data-source-names="ds_master_0_slave_0, ds_master_0_slave_1" strategy-ref="randomStrategy" />
-    <master-slave:data-source id="ds_ms_1" master-data-source-name="ds_master_1" slave-data-source-names="ds_master_1_slave_0, ds_master_1_slave_1" strategy-ref="randomStrategy" />
+    <master-slave:data-source id="ds_ms0" master-data-source-name="ds_master0" slave-data-source-names="ds_master0_slave0, ds_master0_slave1" strategy-ref="randomStrategy" />
+    <master-slave:data-source id="ds_ms1" master-data-source-name="ds_master1" slave-data-source-names="ds_master1_slave0, ds_master1_slave1" strategy-ref="randomStrategy" />
 
-    <sharding:inline-strategy id="databaseStrategy" sharding-column="user_id" algorithm-expression="ds_ms_$->{user_id % 2}" />
-    <sharding:inline-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-expression="t_order_$->{order_id % 2}" />
-    <sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-expression="t_order_item_$->{order_id % 2}" />
+    <sharding:inline-strategy id="databaseStrategy" sharding-column="user_id" algorithm-expression="ds_ms$->{user_id % 2}" />
+    <sharding:inline-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-expression="t_order$->{order_id % 2}" />
+    <sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-expression="t_order_item$->{order_id % 2}" />
 
     <sharding:data-source id="shardingDataSource">
-        <sharding:sharding-rule data-source-names="ds_ms_0,ds_ms_1">
+        <sharding:sharding-rule data-source-names="ds_ms0,ds_ms1">
             <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" actual-data-nodes="ds_ms_$->{0..1}.t_order_$->{0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" generate-key-column-name="order_id" />
-                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="ds_ms_$->{0..1}.t_order_item_$->{0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" generate-key-column-name="order_item_id" />
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="ds_ms$->{0..1}.t_order$->{0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" generate-key-column-name="order_id" />
+                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="ds_ms$->{0..1}.t_order_item$->{0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" generate-key-column-name="order_item_id" />
             </sharding:table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>

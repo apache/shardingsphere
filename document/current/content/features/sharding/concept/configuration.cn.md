@@ -26,17 +26,17 @@ weight = 3
 
 ```
 db0
-  ├── t_order_0 
-  └── t_order_1 
+  ├── t_order0 
+  └── t_order1 
 db1
-  ├── t_order_0 
-  └── t_order_1
+  ├── t_order0 
+  └── t_order1
 ```
 
 那么数据节点的配置如下：
 
 ```
-db0.t_order_0, db0.t_order_1, db1.t_order_0, db1.t_order_1
+db0.t_order0, db0.t_order1, db1.t_order0, db1.t_order1
 ```
 
 - 自定义分布
@@ -45,18 +45,18 @@ db0.t_order_0, db0.t_order_1, db1.t_order_0, db1.t_order_1
 
 ```
 db0
-  ├── t_order_0 
-  └── t_order_1 
+  ├── t_order0 
+  └── t_order1 
 db1
-  ├── t_order_2
-  ├── t_order_3
-  └── t_order_4
+  ├── t_order2
+  ├── t_order3
+  └── t_order4
 ```
 
 那么数据节点的配置如下：
 
 ```
-db0.t_order_0, db0.t_order_1, db1.t_order_2, db1.t_order_3, db1.t_order_4
+db0.t_order0, db0.t_order1, db1.t_order2, db1.t_order3, db1.t_order4
 ```
 
 ## 分片策略配置

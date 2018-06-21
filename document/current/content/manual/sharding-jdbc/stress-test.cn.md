@@ -278,7 +278,7 @@ RT展示
 主表结构如下：
 
 ```sql
-CREATE TABLE `order_0` (
+CREATE TABLE `order0` (
   `id` bigint(50) NOT NULL AUTO_INCREMENT,
   `order_id` varchar(50) NOT NULL,
   `order_type` int(11) DEFAULT NULL,
@@ -306,7 +306,7 @@ CREATE TABLE `order_0` (
 子表结构如下：
 
 ```sql
-CREATE TABLE `ordert_0` (
+CREATE TABLE `ordert0` (
   `idm` bigint(50) NOT NULL,
   `id` int(10) DEFAULT NULL,
   `order_idm` varchar(50) DEFAULT NULL,
@@ -322,19 +322,19 @@ JDBC 插入
 
 ```sql
 insert 
-into order_?(order_id,order_type,cust_id,cust_type,cust_email,payment_method_type,payment_provider_id,shipping_method_type,packing_type,preferred_shipping_time_type,receiver_name,receiver_address,receiver_country_id,receiver_province_id,receiver_city_id,receiver_zip,receiver_tel,receiver_mobile_tel,cust_message) VALUES (?, 0, 10, 1, 'dtest002@dangdang.com', 1, 6, 1, 0, 3, 'ttt ttt', 'beijingshijinganzhongxin', 9000, 111, 1, '100011', '51236117', ' ', ' ');
+into order?(order_id,order_type,cust_id,cust_type,cust_email,payment_method_type,payment_provider_id,shipping_method_type,packing_type,preferred_shipping_time_type,receiver_name,receiver_address,receiver_country_id,receiver_province_id,receiver_city_id,receiver_zip,receiver_tel,receiver_mobile_tel,cust_message) VALUES (?, 0, 10, 1, 'dtest002@dangdang.com', 1, 6, 1, 0, 3, 'ttt ttt', 'beijingshijinganzhongxin', 9000, 111, 1, '100011', '51236117', ' ', ' ');
 ```
 
 JDBC 查询
 
 ```sql
-select a.id,order_id,order_type,cust_id,cust_type,cust_email,payment_method_type,payment_provider_id,shipping_method_type,packing_type,preferred_shipping_time_type,receiver_name,receiver_address,receiver_country_id,receiver_province_id,receiver_city_id,receiver_zip,receiver_tel,receiver_mobile_tel,cust_message from order_? a,ordert_? b where a.id=? and a.id%100=b.idm%100;
+select a.id,order_id,order_type,cust_id,cust_type,cust_email,payment_method_type,payment_provider_id,shipping_method_type,packing_type,preferred_shipping_time_type,receiver_name,receiver_address,receiver_country_id,receiver_province_id,receiver_city_id,receiver_zip,receiver_tel,receiver_mobile_tel,cust_message from order? a,ordert? b where a.id=? and a.id%100=b.idm%100;
 ```
 
 JDBC 更新
 
 ```sql
-Update order_? SET order_id=?,order_type=0,cust_id=10,cust_type=1,cust_email='dtest002@dangdang.com' where id=?;
+Update order? SET order_id=?,order_type=0,cust_id=10,cust_type=1,cust_email='dtest002@dangdang.com' where id=?;
 ```
 
 Sharding-JDBC 插入

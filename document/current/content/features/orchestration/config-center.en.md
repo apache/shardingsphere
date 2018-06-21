@@ -72,7 +72,7 @@ The configuration of Sharding, including the configs of  Sharding and Read-write
     "tableRuleConfigs": [
         {
             "logicTable": "t_order", 
-            "actualDataNodes": "demo_ds.t_order_${0..1}", 
+            "actualDataNodes": "demo_ds.t_order${0..1}", 
             "databaseShardingStrategyConfig": { }, 
             "tableShardingStrategyConfig": {
                 "type": "STANDARD", 
@@ -84,7 +84,7 @@ The configuration of Sharding, including the configs of  Sharding and Read-write
         }, 
         {
             "logicTable": "t_order_item", 
-            "actualDataNodes": "demo_ds.t_order_item_${0..1}", 
+            "actualDataNodes": "demo_ds.t_order_item${0..1}", 
             "databaseShardingStrategyConfig": { }, 
             "tableShardingStrategyConfig": {
                 "type": "STANDARD", 
@@ -134,8 +134,8 @@ The configuration for using Read-write splitting standalone.
     "name": "ds_ms", 
     "masterDataSourceName": "ds_master", 
     "slaveDataSourceNames": [
-        "ds_slave_0", 
-        "ds_slave_1"
+        "ds_slave0", 
+        "ds_slave1"
     ], 
     "loadBalanceAlgorithmType": "ROUND_ROBIN"
 }

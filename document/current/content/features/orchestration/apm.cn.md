@@ -27,7 +27,7 @@ weight = 4
 
 ### 应用架构
 
-该应用是一个`SpringBoot`应用，使用`Sharding-Sphere`访问两个数据库`ds_0`和`ds_1`，且每个数据库中有两个分表。
+该应用是一个`SpringBoot`应用，使用`Sharding-Sphere`访问两个数据库`ds0`和`ds1`，且每个数据库中有两个分表。
 
 ### 拓扑图展示
 

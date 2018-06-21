@@ -27,7 +27,7 @@ If user want to use other APM systems which support [OpenTracing] (http://opentr
 
 ### Application schema
 
-The application is a ` SpringBoot ` application, using ` Sharding-Sphere ` to access two databases of `ds_0` and `ds_1`, each owns two tables in database.
+The application is a ` SpringBoot ` application, using ` Sharding-Sphere ` to access two databases of `ds0` and `ds1`, each owns two tables in database.
 
 ### Topology diagram
 
