@@ -42,7 +42,7 @@ public class ProxyPrepareJDBCResource extends BaseJDBCResource {
      *
      * @param preparedStatement prepare statement
      */
-    public void addPrepareStatemnt(final PreparedStatement preparedStatement) {
+    public void addPrepareStatement(final PreparedStatement preparedStatement) {
         preparedStatements.add(preparedStatement);
     }
     

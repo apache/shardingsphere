@@ -18,10 +18,9 @@
 package io.shardingsphere.dbtest.cases.assertion;
 
 import com.google.common.base.Preconditions;
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.dbtest.cases.assertion.ddl.DDLIntegrateTestCase;
-import io.shardingsphere.dbtest.cases.assertion.dml.DMLIntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.ddl.DDLIntegrateTestCases;
+import io.shardingsphere.dbtest.cases.assertion.dml.DMLIntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.dml.DMLIntegrateTestCases;
 import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCases;
@@ -68,9 +67,6 @@ public final class IntegrateTestCasesLoader {
     @Getter
     private final Collection<String> shardingRuleTypes;
     
-    @Getter
-    private final Collection<DatabaseType> databaseTypes;
-    
     private final Map<String, IntegrateTestCase> dqlIntegrateTestCaseMap;
     
     private final Map<String, IntegrateTestCase> dmlIntegrateTestCaseMap;
@@ -79,7 +75,6 @@ public final class IntegrateTestCasesLoader {
     
     private IntegrateTestCasesLoader() {
         shardingRuleTypes = new HashSet<>();
-        databaseTypes = new HashSet<>();
         try {
             dqlIntegrateTestCaseMap = loadIntegrateTestCases(DQL_INTEGRATE_TEST_CASES_FILE_PREFIX);
             dmlIntegrateTestCaseMap = loadIntegrateTestCases(DML_INTEGRATE_TEST_CASES_FILE_PREFIX);
@@ -120,7 +115,6 @@ public final class IntegrateTestCasesLoader {
             result.put(each.getSqlCaseId(), each);
             each.setPath(file);
             shardingRuleTypes.addAll(each.getShardingRuleTypes());
-            databaseTypes.addAll(each.getDatabaseTypes());
         }
         return result;
     }

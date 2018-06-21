@@ -17,14 +17,12 @@
 
 package io.shardingsphere.proxy.backend.common;
 
-import com.sun.rowset.CachedRowSetImpl;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 
-import javax.sql.rowset.CachedRowSet;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -51,18 +49,24 @@ public final class StatementExecuteWorker extends ExecuteWorker implements Calla
     protected CommandResponsePackets executeQueryWithStreamResultSet() throws SQLException {
         preparedStatement.setFetchSize(FETCH_ONE_ROW_A_TIME);
         setJDBCPreparedStatementParameters(preparedStatement);
-        getExecuteBackendHandler().getJdbcResource().getResultSets().add(preparedStatement.executeQuery());
-        return getQueryDatabaseProtocolPackets();
+        ResultSet resultSet = preparedStatement.executeQuery();
+        getExecuteBackendHandler().getJdbcResource().getResultSets().add(resultSet);
+        return getQueryDatabaseProtocolPackets(resultSet);
     }
     
     @Override
     protected CommandResponsePackets executeQueryWithNonStreamResultSet() throws SQLException {
         setJDBCPreparedStatementParameters(preparedStatement);
         ResultSet resultSet = preparedStatement.executeQuery();
-        CachedRowSet cachedRowSet = new CachedRowSetImpl();
-        cachedRowSet.populate(resultSet);
-        getExecuteBackendHandler().getJdbcResource().getResultSets().add(cachedRowSet);
-        return getQueryDatabaseProtocolPackets();
+        ResultList resultList = new ResultList();
+        while (resultSet.next()) {
+            for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
+                resultList.add(resultSet.getObject(i));
+            }
+        }
+        resultList.setIterator(resultList.getResultList().iterator());
+        getExecuteBackendHandler().getResultLists().add(resultList);
+        return getQueryDatabaseProtocolPackets(resultSet);
     }
     
     @Override

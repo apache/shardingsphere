@@ -42,7 +42,6 @@ import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -50,6 +49,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -81,6 +81,8 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
     
     @Setter
     private BaseJDBCResource jdbcResource;
+    
+    private final List<ResultList> resultLists = new CopyOnWriteArrayList<>();
     
     public ExecuteBackendHandler(final String sql, final DatabaseType databaseType, final boolean showSQL) {
         this.sql = sql;
@@ -185,8 +187,7 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
     private CommandResponsePackets mergeDQLorDAL(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets) {
         List<QueryResult> queryResults = new ArrayList<>(packets.size());
         for (int i = 0; i < packets.size(); i++) {
-            // TODO replace to a common PacketQueryResult
-            queryResults.add(newQueryResult(packets.get(i), jdbcResource.getResultSets().get(i)));
+            queryResults.add(newQueryResult(packets.get(i), i));
         }
         try {
             mergedResult = MergeEngineFactory.newInstance(RuleRegistry.getInstance().getShardingRule(), queryResults, sqlStatement).merge();
@@ -197,7 +198,7 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
         return buildPackets(packets);
     }
     
-    protected abstract QueryResult newQueryResult(CommandResponsePackets packet, ResultSet resultSet);
+    protected abstract QueryResult newQueryResult(CommandResponsePackets packet, int index);
     
     private CommandResponsePackets buildPackets(final List<CommandResponsePackets> packets) {
         CommandResponsePackets result = new CommandResponsePackets();

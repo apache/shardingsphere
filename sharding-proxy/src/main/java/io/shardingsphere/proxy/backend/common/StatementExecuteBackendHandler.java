@@ -38,7 +38,6 @@ import lombok.Getter;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -100,13 +99,19 @@ public final class StatementExecuteBackendHandler extends ExecuteBackendHandler 
                 ? connection.prepareStatement(unitSql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(unitSql);
         ProxyPrepareJDBCResource prepareProxyJDBCResource = (ProxyPrepareJDBCResource) getJdbcResource();
         prepareProxyJDBCResource.addConnection(connection);
-        prepareProxyJDBCResource.addPrepareStatemnt(statement);
+        prepareProxyJDBCResource.addPrepareStatement(statement);
         return statement;
     }
     
     @Override
-    protected QueryResult newQueryResult(final CommandResponsePackets packet, final ResultSet resultSet) {
-        return new MySQLPacketStatementExecuteQueryResult(packet, resultSet, columnTypes);
+    protected QueryResult newQueryResult(final CommandResponsePackets packet, final int index) {
+        MySQLPacketStatementExecuteQueryResult mySQLPacketStatementExecuteQueryResult = new MySQLPacketStatementExecuteQueryResult(packet, columnTypes);
+        if (ProxyMode.MEMORY_STRICTLY == ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode())) {
+            mySQLPacketStatementExecuteQueryResult.setResultSet(getJdbcResource().getResultSets().get(index));
+        } else {
+            mySQLPacketStatementExecuteQueryResult.setResultList(getResultLists().get(index));
+        }
+        return mySQLPacketStatementExecuteQueryResult;
     }
     
     @Override
