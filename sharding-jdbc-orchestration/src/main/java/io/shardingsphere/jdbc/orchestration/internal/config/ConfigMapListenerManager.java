@@ -20,7 +20,6 @@ package io.shardingsphere.jdbc.orchestration.internal.config;
 import io.shardingsphere.core.api.ConfigMapContext;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.jdbc.orchestration.reg.listener.DataChangedEvent;
@@ -30,6 +29,7 @@ import io.shardingsphere.jdbc.orchestration.reg.listener.EventListener;
  * Config map listener manager.
  *
  * @author caohao
+ * @author panjuan
  */
 public final class ConfigMapListenerManager implements ListenerManager {
     
@@ -76,6 +76,6 @@ public final class ConfigMapListenerManager implements ListenerManager {
     }
     
     @Override
-    public void start(final OrchestrationProxyConfiguration orchestrationProxyConfiguration) {
+    public void start() {
     }
 }

@@ -19,7 +19,6 @@ package io.shardingsphere.jdbc.orchestration.internal.listener;
 
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigMapListenerManager;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationListenerManager;
 import io.shardingsphere.jdbc.orchestration.internal.state.datasource.DataSourceListenerManager;
@@ -30,6 +29,7 @@ import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
  * Registry center's listener factory.
  *
  * @author caohao
+ * @author panjuan
  */
 public final class ListenerFactory {
     
@@ -75,12 +75,11 @@ public final class ListenerFactory {
     /**
      * Initialize listeners for proxy yaml configuration.
      *
-     * @param orchestrationProxyConfiguration yaml proxy configuration
      */
-    public void initProxyListeners(final OrchestrationProxyConfiguration orchestrationProxyConfiguration) {
-        configurationListenerManager.start(orchestrationProxyConfiguration);
-        instanceListenerManager.start(orchestrationProxyConfiguration);
-        dataSourceListenerManager.start(orchestrationProxyConfiguration);
-        configMapListenerManager.start(orchestrationProxyConfiguration);
+    public void initProxyListeners() {
+        configurationListenerManager.start();
+        instanceListenerManager.start();
+        dataSourceListenerManager.start();
+        configMapListenerManager.start();
     }
 }

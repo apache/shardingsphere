@@ -24,6 +24,8 @@ import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingsphere.jdbc.orchestration.internal.state.StateNode;
 import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
@@ -37,6 +39,7 @@ import java.util.Map;
  * Data source listener manager.
  *
  * @author caohao
+ * @author panjuan
  */
 public final class DataSourceListenerManager implements ListenerManager {
     
@@ -88,7 +91,7 @@ public final class DataSourceListenerManager implements ListenerManager {
     }
     
     @Override
-    public void start(final OrchestrationProxyConfiguration orchestrationProxyConfiguration) {
+    public void start() {
         regCenter.watch(stateNode.getDataSourcesNodeFullPath(), new EventListener() {
             
             @Override
@@ -98,7 +101,7 @@ public final class DataSourceListenerManager implements ListenerManager {
                     if (availableYamlProxyConfiguration.getShardingRule().getTables().isEmpty() && availableYamlProxyConfiguration.getMasterSlaveRule().getSlaveDataSourceNames().isEmpty()) {
                         throw new ShardingException("No available slave datasource, can't apply the configuration!");
                     }
-                    orchestrationProxyConfiguration.renew(dataSourceService.getAvailableDataSourceParameters(), availableYamlProxyConfiguration);
+                    ProxyEventBusInstance.getInstance().post(new ProxyEventBusEvent(dataSourceService.getAvailableDataSourceParameters(), availableYamlProxyConfiguration));
                 }
             }
         });

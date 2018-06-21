@@ -20,7 +20,8 @@ package io.shardingsphere.jdbc.orchestration.internal.config;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingsphere.jdbc.orchestration.internal.state.datasource.DataSourceService;
 import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
@@ -34,6 +35,7 @@ import java.util.Map;
  * Configuration listener manager.
  *
  * @author caohao
+ * @author panjuan
  */
 public final class ConfigurationListenerManager implements ListenerManager {
     
@@ -94,19 +96,19 @@ public final class ConfigurationListenerManager implements ListenerManager {
     }
     
     @Override
-    public void start(final OrchestrationProxyConfiguration orchestrationProxyConfiguration) {
-        start(ConfigurationNode.DATA_SOURCE_NODE_PATH, orchestrationProxyConfiguration);
-        start(ConfigurationNode.PROXY_RULE_NODE_PATH, orchestrationProxyConfiguration);
+    public void start() {
+        start(ConfigurationNode.DATA_SOURCE_NODE_PATH);
+        start(ConfigurationNode.PROXY_RULE_NODE_PATH);
     }
     
-    private void start(final String node, final OrchestrationProxyConfiguration orchestrationProxyConfiguration) {
+    private void start(final String node) {
         String cachePath = configNode.getFullPath(node);
         regCenter.watch(cachePath, new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    orchestrationProxyConfiguration.renew(dataSourceService.getAvailableDataSourceParameters(), dataSourceService.getAvailableYamlProxyConfiguration());
+                    ProxyEventBusInstance.getInstance().post(new ProxyEventBusEvent(dataSourceService.getAvailableDataSourceParameters(), dataSourceService.getAvailableYamlProxyConfiguration()));
                 }
             }
         });

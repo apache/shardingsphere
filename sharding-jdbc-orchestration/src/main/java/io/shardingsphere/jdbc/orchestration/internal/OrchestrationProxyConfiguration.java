@@ -17,21 +17,14 @@
 
 package io.shardingsphere.jdbc.orchestration.internal;
 
-import com.google.common.base.Optional;
-import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ProxyAuthority;
-import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
-import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingsphere.jdbc.orchestration.yaml.YamlOrchestrationConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,7 +35,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public abstract class OrchestrationProxyConfiguration {
+public class OrchestrationProxyConfiguration {
     
     private Map<String, DataSourceParameter> dataSources = new HashMap<>();
     
@@ -57,60 +50,4 @@ public abstract class OrchestrationProxyConfiguration {
     private String transactionMode;
     
     private YamlOrchestrationConfiguration orchestration;
-    
-    /**
-     * Initialize yaml proxy configuration.
-     *
-     */
-    public void init() {
-        if (isLoadingFromRegistry()) {
-            loadFromRegistryCenter();
-        }
-    }
-    
-    private void loadFromRegistryCenter() {
-        OrchestrationFacade orchestrationFacade = new OrchestrationFacade(obtainOrchestrationConfigurationOptional().get());
-        renew(orchestrationFacade.getConfigService().loadDataSourceParameter(), orchestrationFacade.getConfigService().loadProxyConfiguration());
-    }
-    
-    private boolean isLoadingFromRegistry() {
-        return null != getOrchestration() && shardingRule.getTables().isEmpty() && null == masterSlaveRule.getMasterDataSourceName();
-    }
-    
-    /**
-     * Renew orchestration proxy configuration.
-     *
-     * @param dataSources data sources
-     * @param orchestrationProxyConfiguration orchestration proxy configuration
-     */
-    public abstract void renew(Map<String, DataSourceParameter> dataSources, OrchestrationProxyConfiguration orchestrationProxyConfiguration);
-    
-    /**
-     * Get sharding rule from yaml.
-     *
-     * @param dataSourceNames data source names
-     * @return sharding rule from yaml
-     */
-    public ShardingRule obtainShardingRule(final Collection<String> dataSourceNames) {
-        return new ShardingRule(shardingRule.getShardingRuleConfiguration(), dataSourceNames.isEmpty() ? dataSources.keySet() : dataSourceNames);
-    }
-    
-    /**
-     * Get master slave rule from yaml.
-     *
-     * @return master slave rule.
-     */
-    public MasterSlaveRule obtainMasterSlaveRule() {
-        return null == masterSlaveRule.getMasterDataSourceName() ? new MasterSlaveRule(new MasterSlaveRuleConfiguration("", "", Arrays.asList(""), null))
-                : new MasterSlaveRule(masterSlaveRule.getMasterSlaveRuleConfiguration());
-    }
-    
-    /**
-     * Get Orchestration configuration from yaml.
-     *
-     * @return Orchestration configuration
-     */
-    public Optional<OrchestrationConfiguration> obtainOrchestrationConfigurationOptional() {
-        return null != getOrchestration() ? Optional.fromNullable(orchestration.getOrchestrationConfiguration()) : Optional.<OrchestrationConfiguration>absent();
-    }
 }

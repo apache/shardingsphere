@@ -48,6 +48,7 @@ import java.util.Properties;
  *
  * @author zhangliang
  * @author caohao
+ * @author panjuan
  */
 @Slf4j
 public final class OrchestrationFacade implements AutoCloseable {
@@ -138,7 +139,7 @@ public final class OrchestrationFacade implements AutoCloseable {
         configService.persistProxyConfiguration(orchestrationProxyConfiguration, isOverwrite);
         instanceStateService.persistProxyInstanceOnline();
         dataSourceService.persistDataSourcesNode();
-        listenerManager.initProxyListeners(orchestrationProxyConfiguration);
+        listenerManager.initProxyListeners();
     }
     
     private void reviseShardingRuleConfigurationForMasterSlave(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig) {

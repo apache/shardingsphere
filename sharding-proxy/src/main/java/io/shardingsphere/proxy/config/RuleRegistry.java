@@ -24,7 +24,6 @@ import com.google.common.util.concurrent.MoreExecutors;
 import io.shardingsphere.core.constant.ShardingProperties;
 import io.shardingsphere.core.constant.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.TransactionType;
-import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
@@ -35,10 +34,9 @@ import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.proxy.metadata.ProxyShardingMetaData;
 import io.shardingsphere.proxy.yaml.YamlProxyConfiguration;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.sql.DataSource;
-import java.io.File;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,6 +52,7 @@ import java.util.concurrent.Executors;
  * @author zhaojun
  * @author wangkai
  */
+@NoArgsConstructor
 @Getter
 public final class RuleRegistry implements AutoCloseable {
     
@@ -86,17 +85,6 @@ public final class RuleRegistry implements AutoCloseable {
     private ProxyAuthority proxyAuthority;
     
     private OrchestrationFacade orchestrationFacade;
-    
-    private RuleRegistry() {
-        YamlProxyConfiguration yamlProxyConfiguration;
-        try {
-            yamlProxyConfiguration = YamlProxyConfiguration.unmarshal(new File(getClass().getResource("/conf/config.yaml").getFile()));
-            yamlProxyConfiguration.init();
-        } catch (final IOException ex) {
-            throw new ShardingException(ex);
-        }
-        init(yamlProxyConfiguration);
-    }
     
     /**
      * Initialize rule registry.
