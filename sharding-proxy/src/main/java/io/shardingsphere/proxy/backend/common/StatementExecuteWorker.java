@@ -17,7 +17,6 @@
 
 package io.shardingsphere.proxy.backend.common;
 
-import com.sun.rowset.CachedRowSetImpl;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
@@ -34,7 +33,6 @@ import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import lombok.AllArgsConstructor;
 
 import javax.sql.DataSource;
-import javax.sql.rowset.CachedRowSet;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -104,8 +102,9 @@ public final class StatementExecuteWorker implements Callable<CommandResponsePac
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setFetchSize(FETCH_ONE_ROW_A_TIME);
             setJDBCPreparedStatementParameters(preparedStatement);
-            statementExecuteBackendHandler.getResultSets().add(preparedStatement.executeQuery());
-            return getQueryDatabaseProtocolPackets();
+            ResultSet resultSet = preparedStatement.executeQuery();
+            statementExecuteBackendHandler.getResultSets().add(resultSet);
+            return getQueryDatabaseProtocolPackets(resultSet);
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
         }
@@ -118,10 +117,15 @@ public final class StatementExecuteWorker implements Callable<CommandResponsePac
         ) {
             setJDBCPreparedStatementParameters(preparedStatement);
             ResultSet resultSet = preparedStatement.executeQuery();
-            CachedRowSet cachedRowSet = new CachedRowSetImpl();
-            cachedRowSet.populate(resultSet);
-            statementExecuteBackendHandler.getResultSets().add(cachedRowSet);
-            return getQueryDatabaseProtocolPackets();
+            ResultList resultList = new ResultList();
+            while (resultSet.next()) {
+                for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
+                    resultList.add(resultSet.getObject(i));
+                }
+            }
+            resultList.setIterator(resultList.getResultList().iterator());
+            statementExecuteBackendHandler.getResultLists().add(resultList);
+            return getQueryDatabaseProtocolPackets(resultSet);
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
         }
@@ -175,10 +179,10 @@ public final class StatementExecuteWorker implements Callable<CommandResponsePac
         }
     }
     
-    private CommandResponsePackets getQueryDatabaseProtocolPackets() throws SQLException {
+    private CommandResponsePackets getQueryDatabaseProtocolPackets(final ResultSet resultSet) throws SQLException {
         CommandResponsePackets result = new CommandResponsePackets();
         int currentSequenceId = 0;
-        ResultSetMetaData resultSetMetaData = statementExecuteBackendHandler.getResultSets().get(statementExecuteBackendHandler.getResultSets().size() - 1).getMetaData();
+        ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         int columnCount = resultSetMetaData.getColumnCount();
         statementExecuteBackendHandler.setColumnCount(columnCount);
         if (0 == columnCount) {

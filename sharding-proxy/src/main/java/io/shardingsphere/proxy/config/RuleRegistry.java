@@ -56,11 +56,7 @@ import java.util.concurrent.Executors;
 @Getter
 public final class RuleRegistry implements AutoCloseable {
     
-    private static final int MAX_EXECUTOR_THREADS = Runtime.getRuntime().availableProcessors() * 2;
-    
     private static final RuleRegistry INSTANCE = new RuleRegistry();
-    
-    private final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(MAX_EXECUTOR_THREADS));
     
     private ShardingRule shardingRule;
     
@@ -74,7 +70,11 @@ public final class RuleRegistry implements AutoCloseable {
     
     private Map<String, DataSourceParameter> dataSourceConfigurationMap;
     
-    private ShardingMetaData shardingMetaData;
+    private ShardingMetaData shardingMetaData; 
+
+    private int maxWorkingThreads;
+    
+    private ListeningExecutorService executorService;
     
     private String proxyMode;
     
@@ -107,6 +107,8 @@ public final class RuleRegistry implements AutoCloseable {
         Properties properties = yamlProxyConfiguration.getShardingRule().getProps();
         ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
         proxyMode = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_MODE);
+        maxWorkingThreads = yamlProxyConfiguration.getMaxWorkingThreads();
+        executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(maxWorkingThreads));
         showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         shardingMetaData = new ProxyShardingMetaData(executorService, dataSourceMap);
         if (!isOnlyMasterSlave) {
