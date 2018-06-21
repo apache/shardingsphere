@@ -22,12 +22,13 @@ import io.opentracing.util.GlobalTracer;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.opentracing.config.ConfigurationLoader;
+import io.shardingsphere.opentracing.sampling.SamplingService;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
  * A container of tracer object.
- * 
+ *
  * @author gaohongtao
  * @author wangkai
  */
@@ -41,9 +42,11 @@ public final class ShardingJDBCTracer {
         if (GlobalTracer.isRegistered()) {
             return;
         }
-        String tracerClassName = new ConfigurationLoader().getTracerClassName();
+        ConfigurationLoader configuration = new ConfigurationLoader();
+        String tracerClassName = configuration.getTracerClassName();
+        int sampleNumPM = configuration.getSampleNumPM();
         try {
-            init((Tracer) Class.forName(tracerClassName).newInstance());
+            init((Tracer) Class.forName(tracerClassName).newInstance(), sampleNumPM);
         } catch (final InstantiationException | IllegalAccessException | ClassNotFoundException ex) {
             throw new ShardingException("Parse tracer class name", ex);
         }
@@ -55,10 +58,21 @@ public final class ShardingJDBCTracer {
      * @param tracer that is delegated
      */
     public static void init(final Tracer tracer) {
+        init(tracer, 0);
+    }
+    
+    /**
+     * Initialize tracer from another one.
+     *
+     * @param tracer      that is delegated
+     * @param sampleNumPM sampling num in one minutes
+     */
+    public static void init(final Tracer tracer, final int sampleNumPM) {
         if (GlobalTracer.isRegistered()) {
             return;
         }
         GlobalTracer.register(tracer);
+        SamplingService.getInstance().init(sampleNumPM);
         EventBusInstance.getInstance().register(new ExecuteEventListener());
         EventBusInstance.getInstance().register(new SqlRoutingEventListener());
         EventBusInstance.getInstance().register(new MergeEventListener());
@@ -66,7 +80,7 @@ public final class ShardingJDBCTracer {
     
     /**
      * Get the tracer from container.
-     * 
+     *
      * @return tracer
      */
     public static Tracer get() {

@@ -24,6 +24,7 @@ import io.opentracing.Tracer;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.merger.event.ResultSetMergeEvent;
+import io.shardingsphere.opentracing.sampling.SamplingService;
 import io.shardingsphere.opentracing.tag.LocalTags;
 
 import java.util.HashMap;
@@ -48,6 +49,9 @@ public final class MergeEventListener {
     @Subscribe
     @AllowConcurrentEvents
     public void listenResultSetMergeEvent(final ResultSetMergeEvent event) {
+        if (!SamplingService.getInstance().trySampling()) {
+            return;
+        }
         Tracer tracer = ShardingJDBCTracer.get();
         ActiveSpan activeSpan;
         switch (event.getEventMergeType()) {

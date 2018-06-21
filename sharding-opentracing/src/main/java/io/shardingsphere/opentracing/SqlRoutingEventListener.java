@@ -24,6 +24,7 @@ import io.opentracing.Tracer;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.routing.event.SqlRoutingEvent;
+import io.shardingsphere.opentracing.sampling.SamplingService;
 import io.shardingsphere.opentracing.tag.LocalTags;
 
 import java.util.HashMap;
@@ -39,7 +40,7 @@ public final class SqlRoutingEventListener {
     private static final String OPER_NAME_PREFIX = "/SHARDING-SPHERE/ROUTING/";
     
     private final ThreadLocal<ActiveSpan> spanContainer = new ThreadLocal<>();
-
+    
     /**
      * listen sql routing event.
      *
@@ -48,6 +49,9 @@ public final class SqlRoutingEventListener {
     @Subscribe
     @AllowConcurrentEvents
     public void listenSqlRoutingEvent(final SqlRoutingEvent event) {
+        if (!SamplingService.getInstance().trySampling()) {
+            return;
+        }
         Tracer tracer = ShardingJDBCTracer.get();
         ActiveSpan activeSpan;
         switch (event.getEventRoutingType()) {
@@ -73,12 +77,12 @@ public final class SqlRoutingEventListener {
                 throw new ShardingException("Unsupported event type");
         }
     }
-
+    
     private void deactivate() {
         spanContainer.get().deactivate();
         spanContainer.remove();
     }
-
+    
     private Map<String, ?> log(final Throwable t) {
         Map<String, String> result = new HashMap<>(3);
         result.put("event", "error");

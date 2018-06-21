@@ -30,6 +30,7 @@ import io.shardingsphere.core.executor.event.DMLExecutionEvent;
 import io.shardingsphere.core.executor.event.DQLExecutionEvent;
 import io.shardingsphere.core.executor.event.OverallExecutionEvent;
 import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
+import io.shardingsphere.opentracing.sampling.SamplingService;
 import io.shardingsphere.opentracing.tag.LocalTags;
 import java.util.HashMap;
 import java.util.Map;
@@ -61,6 +62,9 @@ public final class ExecuteEventListener {
     @Subscribe
     @AllowConcurrentEvents
     public void listenOverall(final OverallExecutionEvent event) {
+        if (!SamplingService.getInstance().trySampling()) {
+            return;
+        }
         Tracer tracer = ShardingJDBCTracer.get();
         ActiveSpan activeSpan;
         switch (event.getEventExecutionType()) {
@@ -95,6 +99,7 @@ public final class ExecuteEventListener {
     private void deactivate() {
         trunkContainer.get().deactivate();
         trunkContainer.remove();
+        SamplingService.getInstance().samplingAdd();
     }
     
     /**
@@ -120,6 +125,9 @@ public final class ExecuteEventListener {
     }
     
     private void handle(final AbstractSQLExecutionEvent event, final String operation) {
+        if (!SamplingService.getInstance().trySampling()) {
+            return;
+        }
         Tracer tracer = ShardingJDBCTracer.get();
         switch (event.getEventExecutionType()) {
             case BEFORE_EXECUTE:
