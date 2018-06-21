@@ -63,6 +63,8 @@ shardingRule:
     proxy.mode: CONNECTION_STRICTLY
     sql.show: false
     
+maxWorkingThreads: 200
+
 proxyAuthority:
   username: root
   password:
@@ -109,7 +111,9 @@ masterSlaveRule:
   slaveDataSourceNames: 
     - ds_slave_0
     - ds_slave_1
-    
+
+maxWorkingThreads: 200
+
 proxyAuthority:
   username: root
   password:
@@ -235,6 +239,8 @@ shardingRule:
     proxy.mode: CONNECTION_STRICTLY
     sql.show: false
     
+maxWorkingThreads: 200
+   
 proxyAuthority:
   username: root
   password:
@@ -312,6 +318,15 @@ masterSlaveRule: #省略读写分离配置，与Sharding-JDBC配置一致
 proxyAuthority:
    username: root
    password:
+```
+
+### 连接池设置
+
+用于设置连接池工作线程个数。
+
+```yaml
+maxWorkingThreads: 200
+
 ```
 
 ### 使用Zookeeper的数据治理

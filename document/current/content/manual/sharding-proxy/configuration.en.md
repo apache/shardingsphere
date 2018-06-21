@@ -313,6 +313,14 @@ proxyAuthority:
    password:
 ```
 
+### ThreadPool
+
+To config the number of workding threads in thread pool.
+
+```yaml
+maxWorkingThreads: 200
+
+```
 
 ### Orchestration by Zookeeper
 
