@@ -49,5 +49,7 @@ public class OrchestrationProxyConfiguration {
     
     private String transactionMode;
     
+    private int maxWorkingThreads;
+    
     private YamlOrchestrationConfiguration orchestration;
 }
