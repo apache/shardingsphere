@@ -22,6 +22,18 @@ chapter = true
 * [京东商城俄文站](https://www.jd.ru/)
 * [京东商城海外站](https://www.joybuy.com/)
 
+## 互联网金融
+
+* [小牛在线](https://www.xiaoniu88.com/)
+* [华夏信财](https://www.huaxiafinance.com/)
+* [你我金融](https://www.niiwoo.com/)
+* [海尔消费金融](https://www.haiercash.com/)
+* [我爱卡](http://www.51credit.com/)
+* [随手记](https://www.sui.com/)
+* [美利金融](https://www.mljr.com/)
+* [团贷网](https://www.tuandai.com/)
+* [京东金融](http://jr.jd.com/)
+
 ## 信息资讯
 
 * [搜狐资讯](http://ss.sohu.com/)
@@ -37,18 +49,6 @@ chapter = true
 * [PP停车](https://660pp.com)
 * [中策车空间](http://www.zcckj.com/)
 * [首汽约车](http://www.01zhuanche.com/)
-
-## 互联网金融
-
-* [小牛在线](https://www.xiaoniu88.com/)
-* [华夏信财](https://www.huaxiafinance.com/)
-* [你我金融](https://www.niiwoo.com/)
-* [海尔消费金融](https://www.haiercash.com/)
-* [我爱卡](http://www.51credit.com/)
-* [随手记](https://www.sui.com/)
-* [美利金融](https://www.mljr.com/)
-* [团贷网](https://www.tuandai.com/)
-* [京东金融](http://jr.jd.com/)
 
 ## 社交平台
 

@@ -22,6 +22,18 @@ Organizations using Sharding in chronological order.
 * [JD.ru](https://www.jd.ru/)
 * [Joybuy](https://www.joybuy.com/)
 
+## FinTech
+
+* [xiaoniu88](https://www.xiaoniu88.com/)
+* [HUAXIA FINANCE](https://www.huaxiafinance.com/)
+* [niiwoo](https://www.niiwoo.com/)
+* [haier cash](https://www.haiercash.com/)
+* [51credit](http://www.51credit.com/)
+* [sui](https://www.sui.com/)
+* [mljr](https://www.mljr.com/)
+* [tuandai](https://www.tuandai.com/)
+* [JD Finance](http://jr.jd.com/)
+
 ## Information
 
 * [sohu](http://ss.sohu.com/)
@@ -37,18 +49,6 @@ Organizations using Sharding in chronological order.
 * [ChinaRoad](https://660pp.com)
 * [Zhong Ce Auto Space](http://www.zcckj.com/)
 * [Shouqi](http://www.01zhuanche.com/)
-
-## FinTech
-
-* [xiaoniu88](https://www.xiaoniu88.com/)
-* [HUAXIA FINANCE](https://www.huaxiafinance.com/)
-* [niiwoo](https://www.niiwoo.com/)
-* [haier cash](https://www.haiercash.com/)
-* [51credit](http://www.51credit.com/)
-* [sui](https://www.sui.com/)
-* [mljr](https://www.mljr.com/)
-* [tuandai](https://www.tuandai.com/)
-* [JD Finance](http://jr.jd.com/)
 
 ## SNS
 
