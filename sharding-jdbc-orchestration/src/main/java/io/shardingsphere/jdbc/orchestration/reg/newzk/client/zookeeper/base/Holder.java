@@ -38,7 +38,7 @@ import java.util.concurrent.CountDownLatch;
 public class Holder {
     private static final Logger LOGGER = LoggerFactory.getLogger(Holder.class);
     
-    private static final CountDownLatch CONNECTED = new CountDownLatch(1);
+    private final CountDownLatch connectLatch = new CountDownLatch(1);
     
     @Getter(value = AccessLevel.PROTECTED)
     private final BaseContext context;
@@ -66,7 +66,7 @@ public class Holder {
             zooKeeper.addAuthInfo(context.getScheme(), context.getAuth());
             LOGGER.debug("Holder scheme:{},auth:{}", context.getScheme(), context.getAuth());
         }
-        CONNECTED.await();
+        connectLatch.await();
     }
     
     private Watcher startWatcher() {
@@ -93,7 +93,7 @@ public class Holder {
         LOGGER.debug("BaseClient process event:{}", event.toString());
         if (Watcher.Event.EventType.None == event.getType()) {
             if (Watcher.Event.KeeperState.SyncConnected == event.getState()) {
-                CONNECTED.countDown();
+                connectLatch.countDown();
                 connected = true;
                 LOGGER.debug("BaseClient startWatcher SyncConnected");
                 return;
