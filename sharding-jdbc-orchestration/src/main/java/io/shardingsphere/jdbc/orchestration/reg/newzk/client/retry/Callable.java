@@ -15,11 +15,10 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section;
+package io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayPolicyExecutor;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayRetryPolicy;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Connection;
 import lombok.Setter;
 import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
@@ -81,8 +80,6 @@ public abstract class Callable<T> {
             delayPolicyExecutor.next();
             if (Connection.needReset(e)) {
                 provider.resetConnection();
-            } else {
-                throw e;
             }
             execDelay();
         } catch (InterruptedException e) {

@@ -29,6 +29,7 @@ import io.shardingsphere.jdbc.orchestration.reg.listener.EventListener;
  * Config map listener manager.
  *
  * @author caohao
+ * @author panjuan
  */
 public final class ConfigMapListenerManager implements ListenerManager {
     
@@ -72,5 +73,9 @@ public final class ConfigMapListenerManager implements ListenerManager {
                 }
             }
         });
+    }
+    
+    @Override
+    public void start() {
     }
 }

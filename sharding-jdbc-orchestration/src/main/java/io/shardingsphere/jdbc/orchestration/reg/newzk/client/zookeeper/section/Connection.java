@@ -37,6 +37,17 @@ public class Connection {
     }
     
     /**
+     * need retry.
+     *
+     * @param e e
+     * @return need retry
+     * @throws KeeperException Zookeeper Exception
+     */
+    public static boolean needRetry(final KeeperException e) throws KeeperException {
+        return EXCEPTION_RESETS.containsKey(e.code().intValue());
+    }
+    
+    /**
      * need reset.
      *
      * @param e e

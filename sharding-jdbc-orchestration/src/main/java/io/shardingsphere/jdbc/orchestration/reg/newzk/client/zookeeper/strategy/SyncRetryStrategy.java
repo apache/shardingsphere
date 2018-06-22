@@ -19,7 +19,7 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayRetryPolicy;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Callable;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.Callable;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.zookeeper.CreateMode;

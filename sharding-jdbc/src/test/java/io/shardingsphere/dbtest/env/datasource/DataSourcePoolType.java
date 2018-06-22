@@ -15,17 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.internal.json.fixture;
+package io.shardingsphere.dbtest.env.datasource;
 
-import io.shardingsphere.core.api.algorithm.sharding.ShardingValue;
-import io.shardingsphere.core.api.algorithm.sharding.hint.HintShardingAlgorithm;
-
-import java.util.Collection;
-
-public final class TestHintShardingAlgorithm implements HintShardingAlgorithm {
+/**
+ * Data source pool type.
+ * 
+ * @author zhangliang 
+ */
+public enum DataSourcePoolType {
     
-    @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final ShardingValue shardingValue) {
-        return null;
-    }
+    DBCP, HikariCP
 }

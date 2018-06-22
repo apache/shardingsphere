@@ -15,17 +15,27 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.internal.json.fixture;
+package io.shardingsphere.jdbc.orchestration.internal.eventbus;
 
-import io.shardingsphere.core.api.algorithm.sharding.ShardingValue;
-import io.shardingsphere.core.api.algorithm.sharding.complex.ComplexKeysShardingAlgorithm;
+import com.google.common.eventbus.EventBus;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-import java.util.Collection;
-
-public final class TestComplexKeysShardingAlgorithm implements ComplexKeysShardingAlgorithm {
+/**
+ * Proxy event bus instance.
+ *
+ * @author panjuan
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class ProxyEventBusInstance {
+    private static final EventBus INSTANCE = new EventBus();
     
-    @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
-        return null;
+    /**
+     * Get event bus instance.
+     *
+     * @return event bus instance
+     */
+    public static EventBus getInstance() {
+        return INSTANCE;
     }
 }

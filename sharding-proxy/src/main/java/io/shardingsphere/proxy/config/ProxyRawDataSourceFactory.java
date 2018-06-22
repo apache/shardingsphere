@@ -18,7 +18,7 @@
 package io.shardingsphere.proxy.config;
 
 import io.shardingsphere.core.constant.TransactionType;
-import io.shardingsphere.core.yaml.proxy.YamlProxyConfiguration;
+import io.shardingsphere.proxy.yaml.YamlProxyConfiguration;
 
 import javax.sql.DataSource;
 import java.util.Map;

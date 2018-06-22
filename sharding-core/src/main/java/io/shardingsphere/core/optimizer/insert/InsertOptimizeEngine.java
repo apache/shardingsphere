@@ -81,13 +81,13 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
                 Number currentGeneratedKey = generatedKeys.next();
                 if (0 == parameters.size()) {
                     if (DefaultKeyword.VALUES.equals(insertValue.getType())) {
-                        expression = insertValue.getExpression().substring(0, insertValue.getExpression().length() - 1) + ", " + currentGeneratedKey.toString() + ")";
+                        expression = insertValue.getExpression().substring(0, insertValue.getExpression().lastIndexOf(")")) + ", " + currentGeneratedKey.toString() + ")";
                     } else {
                         expression = generateKeyColumn.get().getName() + " = " + currentGeneratedKey + ", " + insertValue.getExpression();
                     }
                 } else {
                     if (DefaultKeyword.VALUES.equals(insertValue.getType())) {
-                        expression = insertValue.getExpression().substring(0, insertValue.getExpression().length() - 1) + ", ?)";
+                        expression = insertValue.getExpression().substring(0, insertValue.getExpression().lastIndexOf(")")) + ", ?)";
                         currentParameters.add(currentGeneratedKey);
                     } else {
                         expression = generateKeyColumn.get().getName() + " = ?, " + insertValue.getExpression();
