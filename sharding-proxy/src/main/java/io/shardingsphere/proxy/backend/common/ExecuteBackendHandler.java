@@ -32,6 +32,7 @@ import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingsphere.proxy.backend.resource.BaseJDBCResource;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;
+import io.shardingsphere.proxy.transaction.AtomikosUserTransaction;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
@@ -42,6 +43,8 @@ import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.transaction.Status;
+import javax.transaction.SystemException;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -102,11 +105,11 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
         }
     }
     
-    private CommandResponsePackets doExecuteInternal(final SQLRouteResult routeResult) throws SQLException {
+    private CommandResponsePackets doExecuteInternal(final SQLRouteResult routeResult) throws SQLException, SystemException {
         if (routeResult.getExecutionUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
         }
-        if (SQLType.DDL.equals(routeResult.getSqlStatement().getType()) && RuleRegistry.isXaTransaction()) {
+        if (isXaDDL(routeResult)) {
             throw new SQLException("DDL command can't not execute in xa transaction mode.");
         }
         ExecutorService executorService = RuleRegistry.getInstance().getExecutorService();
@@ -121,6 +124,12 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
             ProxyShardingRefreshHandler.build(routeResult).execute();
         }
         return result;
+    }
+    
+    private boolean isXaDDL(SQLRouteResult routeResult) throws SystemException {
+        return RuleRegistry.isXaTransaction() &&
+                SQLType.DDL.equals(routeResult.getSqlStatement().getType()) &&
+                Status.STATUS_NO_TRANSACTION != AtomikosUserTransaction.getInstance().getStatus();
     }
     
     private SQLRouteResult doMasterSlaveRoute() {
@@ -144,7 +153,6 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
         for (Future<CommandResponsePackets> each : futureList) {
             try {
                 result.add(each.get());
-                
             } catch (final InterruptedException | ExecutionException ex) {
                 throw new ShardingException(ex.getMessage(), ex);
             }
