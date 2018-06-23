@@ -23,7 +23,7 @@ import lombok.Getter;
 
 /**
  * Config loader.
- * 
+ *
  * @author gaohongtao
  * @author wangkai
  */
@@ -34,9 +34,17 @@ public final class ConfigurationLoader {
     @Getter
     private final String tracerClassName;
     
+    @Getter
+    private final int sampleNumPM;
+    
     public ConfigurationLoader() {
         String tracerClassName = null;
+        int maxSampleNum = 0;
         for (ConfigurationParser each : PARSERS) {
+            Optional<String> sampleNumPMOptional = each.parse("tracer.sampleNumPM");
+            if (sampleNumPMOptional.isPresent()) {
+                maxSampleNum = Integer.parseInt(sampleNumPMOptional.get());
+            }
             Optional<String> tracerClassOptional = each.parse("tracer.class");
             if (tracerClassOptional.isPresent()) {
                 tracerClassName = tracerClassOptional.get();
@@ -45,5 +53,6 @@ public final class ConfigurationLoader {
         }
         Preconditions.checkNotNull(tracerClassName);
         this.tracerClassName = tracerClassName;
+        this.sampleNumPM = maxSampleNum;
     }
 }

@@ -17,6 +17,7 @@
 
 package io.shardingsphere.opentracing;
 
+import com.google.common.base.Joiner;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import io.opentracing.ActiveSpan;
@@ -29,6 +30,8 @@ import io.shardingsphere.core.executor.event.DMLExecutionEvent;
 import io.shardingsphere.core.executor.event.DQLExecutionEvent;
 import io.shardingsphere.core.executor.event.OverallExecutionEvent;
 import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
+import io.shardingsphere.opentracing.sampling.SamplingService;
+import io.shardingsphere.opentracing.tag.LocalTags;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,7 +45,9 @@ import java.util.Map;
 public final class ExecuteEventListener {
     
     private static final String SNAPSHOT_DATA_KEY = "OPENTRACING_SNAPSHOT_DATA";
-    
+
+    private static final String OPER_NAME_PREFIX = "/SHARDING-SPHERE/EXECUTE/";
+
     private final ThreadLocal<ActiveSpan> trunkContainer = new ThreadLocal<>();
     
     private final ThreadLocal<Span> branchContainer = new ThreadLocal<>();
@@ -57,11 +62,14 @@ public final class ExecuteEventListener {
     @Subscribe
     @AllowConcurrentEvents
     public void listenOverall(final OverallExecutionEvent event) {
+        if (!SamplingService.getInstance().trySampling()) {
+            return;
+        }
         Tracer tracer = ShardingJDBCTracer.get();
         ActiveSpan activeSpan;
         switch (event.getEventExecutionType()) {
             case BEFORE_EXECUTE:
-                activeSpan = tracer.buildSpan("/SJDBC/TRUNK/" + event.getSqlType().name()).withTag(Tags.COMPONENT.getKey(), "ShardingJDBC")
+                activeSpan = tracer.buildSpan(OPER_NAME_PREFIX + event.getSqlType().name()).withTag(Tags.COMPONENT.getKey(), LocalTags.COMPONENT_NAME)
                         .startActive();
                 trunkContainer.set(activeSpan);
                 if (isParallelExecute(event)) {
@@ -91,6 +99,7 @@ public final class ExecuteEventListener {
     private void deactivate() {
         trunkContainer.get().deactivate();
         trunkContainer.remove();
+        SamplingService.getInstance().samplingAdd();
     }
     
     /**
@@ -116,16 +125,27 @@ public final class ExecuteEventListener {
     }
     
     private void handle(final AbstractSQLExecutionEvent event, final String operation) {
+        if (!SamplingService.getInstance().trySampling()) {
+            return;
+        }
         Tracer tracer = ShardingJDBCTracer.get();
         switch (event.getEventExecutionType()) {
             case BEFORE_EXECUTE:
-                if (ExecutorDataMap.getDataMap().containsKey(SNAPSHOT_DATA_KEY) && !isCurrentMainThread()) {
+                if (ExecutorDataMap.getDataMap().containsKey(SNAPSHOT_DATA_KEY) && !isCurrentMainThread() && branchContainer.get() == null) {
                     trunkInBranchContainer.set(((ActiveSpan.Continuation) ExecutorDataMap.getDataMap().get(SNAPSHOT_DATA_KEY)).activate());
                 }
-                branchContainer.set(tracer.buildSpan("/SJDBC/BRANCH/" + operation).withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
-                        .withTag(Tags.PEER_HOSTNAME.getKey(), event.getDataSource()).withTag(Tags.COMPONENT.getKey(), "ShardingJDBC")
-                        .withTag(Tags.DB_INSTANCE.getKey(), event.getDataSource()).withTag(Tags.DB_TYPE.getKey(), "sql")
-                        .withTag(Tags.DB_STATEMENT.getKey(), event.getSqlUnit().getSql()).startManual());
+
+                String params = "";
+                if (!event.getParameters().isEmpty()) {
+                    params = Joiner.on(",").join(event.getParameters());
+                }
+                if (branchContainer.get() == null) {
+                    branchContainer.set(tracer.buildSpan(OPER_NAME_PREFIX + operation).withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
+                            .withTag(Tags.PEER_HOSTNAME.getKey(), event.getDataSource()).withTag(Tags.COMPONENT.getKey(), LocalTags.COMPONENT_NAME)
+                            .withTag(Tags.DB_INSTANCE.getKey(), event.getDataSource()).withTag(Tags.DB_TYPE.getKey(), "sql")
+                            .withTag(LocalTags.DB_BIND_VARIABLES.getKey(), params)
+                            .withTag(Tags.DB_STATEMENT.getKey(), event.getSqlUnit().getSql()).startManual());
+                }
                 break;
             case EXECUTE_FAILURE:
                 Span span = branchContainer.get();
@@ -148,13 +168,15 @@ public final class ExecuteEventListener {
     }
     
     private void finish() {
-        branchContainer.get().finish();
-        branchContainer.remove();
-        if (null == trunkInBranchContainer.get()) {
-            return;
+        if (branchContainer.get() != null) {
+            branchContainer.get().finish();
+            branchContainer.remove();
+            if (null == trunkInBranchContainer.get()) {
+                return;
+            }
+            trunkInBranchContainer.get().deactivate();
+            trunkInBranchContainer.remove();
         }
-        trunkInBranchContainer.get().deactivate();
-        trunkInBranchContainer.remove();
     }
     
     private Map<String, ?> log(final Throwable t) {

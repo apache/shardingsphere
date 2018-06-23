@@ -15,21 +15,28 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing;
+package io.shardingsphere.core.merger.event;
 
-import io.shardingsphere.opentracing.config.ConfigurationLoaderTest;
-import io.shardingsphere.opentracing.sampling.SamplingServiceTest;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import com.google.common.base.Optional;
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-        ConfigurationLoaderTest.class,
-        SamplingServiceTest.class,
-        ExecuteEventListenerTest.class,
-        SqlRoutingEventListenerTest.class,
-        MergeEventListenerTest.class,
-        ShardingJDBCTracerTest.class
-})
-public class AllTests {
+/**
+ * Result set merge event.
+ * 
+ * @author chenqingyang
+ */
+public class ResultSetMergeEvent extends AbstractMergeEvent {
+    
+    
+    /**
+     * Get exception.
+     *
+     * @return exception
+     */
+    public Optional<Exception> getException() {
+        Optional<? extends Exception> ex = super.getException();
+        if (ex.isPresent()) {
+            return Optional.of(ex.get());
+        }
+        return Optional.absent();
+    }
 }

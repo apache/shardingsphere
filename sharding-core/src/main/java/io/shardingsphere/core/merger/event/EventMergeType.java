@@ -15,21 +15,27 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing;
+package io.shardingsphere.core.merger.event;
 
-import io.shardingsphere.opentracing.config.ConfigurationLoaderTest;
-import io.shardingsphere.opentracing.sampling.SamplingServiceTest;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+/**
+ * Event merge type.
+ *
+ * @author chenqingyang
+ */
+public enum EventMergeType {
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-        ConfigurationLoaderTest.class,
-        SamplingServiceTest.class,
-        ExecuteEventListenerTest.class,
-        SqlRoutingEventListenerTest.class,
-        MergeEventListenerTest.class,
-        ShardingJDBCTracerTest.class
-})
-public class AllTests {
+    /**
+     * Before result set merge.
+     */
+    BEFORE_MERGE,
+
+    /**
+     * result set merge success.
+     */
+    MERGE_SUCCESS,
+
+    /**
+     * result set merge failure.
+     */
+    MERGE_FAILURE
 }
