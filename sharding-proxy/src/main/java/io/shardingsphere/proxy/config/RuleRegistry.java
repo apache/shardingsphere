@@ -17,25 +17,28 @@
 
 package io.shardingsphere.proxy.config;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import io.shardingsphere.core.constant.ShardingProperties;
 import io.shardingsphere.core.constant.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.TransactionType;
-import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ProxyAuthority;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.yaml.proxy.YamlProxyConfiguration;
+import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
+import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.proxy.metadata.ProxyShardingMetaData;
+import io.shardingsphere.proxy.yaml.YamlProxyConfiguration;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.sql.DataSource;
-import java.io.File;
-import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executors;
@@ -47,49 +50,65 @@ import java.util.concurrent.Executors;
  * @author zhangyonglun
  * @author panjuan
  * @author zhaojun
+ * @author wangkai
  */
+@NoArgsConstructor
 @Getter
-public final class RuleRegistry {
-
-    private static final int MAX_EXECUTOR_THREADS = Runtime.getRuntime().availableProcessors() * 2;
-
+public final class RuleRegistry implements AutoCloseable {
+    
     private static final RuleRegistry INSTANCE = new RuleRegistry();
+    
+    private ShardingRule shardingRule;
+    
+    private MasterSlaveRule masterSlaveRule;
+    
+    private boolean isOnlyMasterSlave;
+    
+    private boolean withoutJdbc;
+    
+    private Map<String, DataSource> dataSourceMap;
+    
+    private Map<String, DataSourceParameter> dataSourceConfigurationMap;
+    
+    private ShardingMetaData shardingMetaData; 
 
-    private final Map<String, DataSource> dataSourceMap;
-
-    private final ShardingRule shardingRule;
-
-    private final MasterSlaveRule masterSlaveRule;
-
-    private final ShardingMetaData shardingMetaData;
-
-    private final boolean isOnlyMasterSlave;
-
-    private final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(MAX_EXECUTOR_THREADS));
-
-    private final String proxyMode;
-
-    private final boolean showSQL;
-
-    private final TransactionType transactionType;
-
-    private final ProxyAuthority proxyAuthority;
-
-    private RuleRegistry() {
-        YamlProxyConfiguration yamlProxyConfiguration;
-        try {
-            yamlProxyConfiguration = YamlProxyConfiguration.unmarshal(new File(getClass().getResource("/conf/config.yaml").getFile()));
-        } catch (final IOException ex) {
-            throw new ShardingException(ex);
-        }
+    private int maxWorkingThreads;
+    
+    private ListeningExecutorService executorService;
+    
+    private String proxyMode;
+    
+    private boolean showSQL;
+    
+    private TransactionType transactionType;
+    
+    private ProxyAuthority proxyAuthority;
+    
+    private OrchestrationFacade orchestrationFacade;
+    
+    /**
+     * Initialize rule registry.
+     *
+     * @param yamlProxyConfiguration yaml proxy configuration
+     */
+    public void init(final YamlProxyConfiguration yamlProxyConfiguration) {
         transactionType = TransactionType.findByValue(yamlProxyConfiguration.getTransactionMode());
         dataSourceMap = ProxyRawDataSourceFactory.create(transactionType, yamlProxyConfiguration);
         shardingRule = yamlProxyConfiguration.obtainShardingRule(Collections.<String>emptyList());
         masterSlaveRule = yamlProxyConfiguration.obtainMasterSlaveRule();
         isOnlyMasterSlave = shardingRule.getTableRules().isEmpty() && !masterSlaveRule.getMasterDataSourceName().isEmpty();
+        withoutJdbc = yamlProxyConfiguration.isWithoutJdbc();
+        dataSourceConfigurationMap = new HashMap<>(128, 1);
+        for (Map.Entry<String, DataSourceParameter> entry : yamlProxyConfiguration.getDataSources().entrySet()) {
+            if (withoutJdbc) {
+                dataSourceConfigurationMap.put(entry.getKey(), entry.getValue());
+            }
+        }
         Properties properties = yamlProxyConfiguration.getShardingRule().getProps();
         ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
         proxyMode = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_MODE);
+        maxWorkingThreads = yamlProxyConfiguration.getMaxWorkingThreads();
+        executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(maxWorkingThreads));
         showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         shardingMetaData = new ProxyShardingMetaData(executorService, dataSourceMap);
         if (!isOnlyMasterSlave) {
@@ -97,6 +116,17 @@ public final class RuleRegistry {
         }
         proxyAuthority = yamlProxyConfiguration.getProxyAuthority();
         Preconditions.checkNotNull(proxyAuthority.getUsername(), "Invalid configuration for proxyAuthority.");
+        assignOrchestrationFacade(yamlProxyConfiguration);
+    }
+    
+    private void assignOrchestrationFacade(final YamlProxyConfiguration yamlProxyConfiguration) {
+        Optional<OrchestrationConfiguration> configOptional = yamlProxyConfiguration.obtainOrchestrationConfigurationOptional();
+        if (configOptional.isPresent()) {
+            orchestrationFacade = new OrchestrationFacade(configOptional.get());
+            orchestrationFacade.init(yamlProxyConfiguration);
+        } else {
+            orchestrationFacade = null;
+        }
     }
     
     /**
@@ -115,5 +145,12 @@ public final class RuleRegistry {
      */
     public static boolean isXaTransaction() {
         return TransactionType.XA.equals(RuleRegistry.getInstance().getTransactionType());
+    }
+    
+    @Override
+    public void close() {
+        if (null != orchestrationFacade) {
+            orchestrationFacade.close();
+        }
     }
 }

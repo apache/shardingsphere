@@ -17,7 +17,6 @@
 
 package io.shardingsphere.proxy.backend.common;
 
-import com.sun.rowset.CachedRowSetImpl;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
@@ -34,7 +33,6 @@ import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import lombok.AllArgsConstructor;
 
 import javax.sql.DataSource;
-import javax.sql.rowset.CachedRowSet;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -74,8 +72,7 @@ public final class SQLExecuteWorker implements Callable<CommandResponsePackets> 
                 return executeQuery(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql);
             case DML:
             case DDL:
-                return RuleRegistry.getInstance().isOnlyMasterSlave() ? executeUpdate(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql)
-                    : executeUpdate(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql, sqlStatement);
+                return executeUpdate(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql, sqlStatement);
             default:
                 return executeCommon(RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName), sql);
         }
@@ -97,8 +94,9 @@ public final class SQLExecuteWorker implements Callable<CommandResponsePackets> 
             sqlExecuteBackendHandler.getConnections().add(connection);
             Statement statement = connection.createStatement();
             statement.setFetchSize(FETCH_ONE_ROW_A_TIME);
-            sqlExecuteBackendHandler.getResultSets().add(statement.executeQuery(sql));
-            return getQueryDatabaseProtocolPackets();
+            ResultSet resultSet = statement.executeQuery(sql);
+            sqlExecuteBackendHandler.getResultSets().add(resultSet);
+            return getQueryDatabaseProtocolPackets(resultSet);
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
         }
@@ -110,10 +108,15 @@ public final class SQLExecuteWorker implements Callable<CommandResponsePackets> 
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql)
         ) {
-            CachedRowSet cachedRowSet = new CachedRowSetImpl();
-            cachedRowSet.populate(resultSet);
-            sqlExecuteBackendHandler.getResultSets().add(cachedRowSet);
-            return getQueryDatabaseProtocolPackets();
+            ResultList resultList = new ResultList();
+            while (resultSet.next()) {
+                for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
+                    resultList.add(resultSet.getObject(i));
+                }
+            }
+            resultList.setIterator(resultList.getResultList().iterator());
+            sqlExecuteBackendHandler.getResultLists().add(resultList);
+            return getQueryDatabaseProtocolPackets(resultSet);
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
         }
@@ -130,23 +133,6 @@ public final class SQLExecuteWorker implements Callable<CommandResponsePackets> 
                 lastInsertId = getGeneratedKey(statement);
             } else {
                 affectedRows = statement.executeUpdate(sql);
-            }
-            return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
-        } catch (final SQLException ex) {
-            return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
-        } finally {
-            MasterVisitedManager.clear();
-        }
-    }
-    
-    private CommandResponsePackets executeUpdate(final DataSource dataSource, final String sql) {
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
-            int affectedRows = statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
-            ResultSet resultSet = statement.getGeneratedKeys();
-            long lastInsertId = 0;
-            while (resultSet.next()) {
-                lastInsertId = resultSet.getLong(1);
             }
             return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
         } catch (final SQLException ex) {
@@ -173,10 +159,10 @@ public final class SQLExecuteWorker implements Callable<CommandResponsePackets> 
         }
     }
     
-    private CommandResponsePackets getQueryDatabaseProtocolPackets() throws SQLException {
+    private CommandResponsePackets getQueryDatabaseProtocolPackets(final ResultSet resultSet) throws SQLException {
         CommandResponsePackets result = new CommandResponsePackets();
         int currentSequenceId = 0;
-        ResultSetMetaData resultSetMetaData = sqlExecuteBackendHandler.getResultSets().get(sqlExecuteBackendHandler.getResultSets().size() - 1).getMetaData();
+        ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         int columnCount = resultSetMetaData.getColumnCount();
         sqlExecuteBackendHandler.setColumnCount(columnCount);
         if (0 == columnCount) {

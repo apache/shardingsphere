@@ -29,6 +29,7 @@ import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
  * Registry center's listener factory.
  *
  * @author caohao
+ * @author panjuan
  */
 public final class ListenerFactory {
     
@@ -69,5 +70,16 @@ public final class ListenerFactory {
         instanceListenerManager.start(masterSlaveDataSource);
         dataSourceListenerManager.start(masterSlaveDataSource);
         configMapListenerManager.start(masterSlaveDataSource);
+    }
+    
+    /**
+     * Initialize listeners for proxy yaml configuration.
+     *
+     */
+    public void initProxyListeners() {
+        configurationListenerManager.start();
+        instanceListenerManager.start();
+        dataSourceListenerManager.start();
+        configMapListenerManager.start();
     }
 }

@@ -34,6 +34,7 @@ import java.util.Date;
  * 
  * @author zhangliang
  * @author zhangyonglun
+ * @author wangkai
  */
 @RequiredArgsConstructor
 @Getter
@@ -284,6 +285,16 @@ public final class MySQLPacketPayload {
      */
     public void writeStringFix(final String value) {
         byteBuf.writeBytes(value.getBytes());
+    }
+    
+    /**
+     * Write variable length bytes to byte buffers.
+     * @see <a href="https://dev.mysql.com/doc/internals/en/secure-password-authentication.html#packet-Authentication::Native41">Native41</a>
+     *
+     * @param value fixed length bytes
+     */
+    public void writeBytes(final byte[] value) {
+        byteBuf.writeBytes(value);
     }
     
     /**

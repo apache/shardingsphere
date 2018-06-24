@@ -18,12 +18,16 @@
 package io.shardingsphere.proxy.backend.mysql;
 
 import io.shardingsphere.core.merger.QueryResult;
+import io.shardingsphere.proxy.backend.common.ProxyMode;
+import io.shardingsphere.proxy.backend.common.ResultList;
+import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextResultSetRowPacket;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.io.InputStream;
 import java.sql.ResultSet;
@@ -41,6 +45,7 @@ import java.util.Map;
  * @author zhangliang
  */
 @RequiredArgsConstructor
+@Setter
 public final class MySQLPacketQueryResult implements QueryResult {
     
     private final int columnCount;
@@ -49,13 +54,15 @@ public final class MySQLPacketQueryResult implements QueryResult {
     
     private final Map<String, Integer> columnLabelAndIndexMap;
     
-    private final ResultSet resultSet;
+    private ResultSet resultSet;
+    
+    private ResultList resultList;
     
     private int currentSequenceId;
     
     private TextResultSetRowPacket currentRow;
     
-    public MySQLPacketQueryResult(final CommandResponsePackets packets, final ResultSet resultSet) {
+    public MySQLPacketQueryResult(final CommandResponsePackets packets) {
         Iterator<DatabaseProtocolPacket> packetIterator = packets.getDatabaseProtocolPackets().iterator();
         columnCount = ((FieldCountPacket) packetIterator.next()).getColumnCount();
         columnIndexAndLabelMap = new HashMap<>(columnCount, 1);
@@ -66,11 +73,18 @@ public final class MySQLPacketQueryResult implements QueryResult {
             columnLabelAndIndexMap.put(columnDefinition41Packet.getName(), i);
         }
         packetIterator.next();
-        this.resultSet = resultSet;
     }
     
     @Override
     public boolean next() throws SQLException {
+        if (ProxyMode.MEMORY_STRICTLY == ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode())) {
+            return nextForStreamResultSet();
+        } else {
+            return nextForNoneStreamResultList();
+        }
+    }
+    
+    private boolean nextForStreamResultSet() throws SQLException {
         if (resultSet.next()) {
             List<Object> data = new ArrayList<>(columnCount);
             for (int i = 1; i <= columnCount; i++) {
@@ -80,6 +94,20 @@ public final class MySQLPacketQueryResult implements QueryResult {
             return true;
         }
         return false;
+    }
+    
+    private boolean nextForNoneStreamResultList() {
+        if (!resultList.hasNext()) {
+            return false;
+        }
+        List<Object> data = new ArrayList<>(columnCount);
+        for (int i = 1; i <= columnCount; i++) {
+            if (resultList.hasNext()) {
+                data.add(resultList.next());
+            }
+        }
+        currentRow = new TextResultSetRowPacket(++currentSequenceId, data);
+        return true;
     }
     
     @Override

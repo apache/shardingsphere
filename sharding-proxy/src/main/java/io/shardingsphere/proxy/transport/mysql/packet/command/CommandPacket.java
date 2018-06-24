@@ -24,6 +24,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
  * Command packet.
  *
  * @author zhangliang
+ * @author wangkai
  */
 public abstract class CommandPacket extends MySQLPacket {
     

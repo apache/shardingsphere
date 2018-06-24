@@ -67,7 +67,7 @@ public final class ShardingMetaDataHandler {
             return resultSet.next();
         }
     }
-
+    
     private List<ColumnMetaData> getExistColumnMeta(final Statement statement) throws SQLException {
         List<ColumnMetaData> result = new LinkedList<>();
         statement.executeQuery(String.format("desc %s;", getActualTableName()));

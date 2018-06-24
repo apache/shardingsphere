@@ -18,6 +18,9 @@
 package io.shardingsphere.proxy.backend.mysql;
 
 import io.shardingsphere.core.merger.QueryResult;
+import io.shardingsphere.proxy.backend.common.ProxyMode;
+import io.shardingsphere.proxy.backend.common.ResultList;
+import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
@@ -25,6 +28,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute.
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.io.InputStream;
 import java.sql.ResultSet;
@@ -42,6 +46,7 @@ import java.util.Map;
  * @author zhangyonglun
  */
 @RequiredArgsConstructor
+@Setter
 public final class MySQLPacketStatementExecuteQueryResult implements QueryResult {
     
     private final int columnCount;
@@ -52,13 +57,15 @@ public final class MySQLPacketStatementExecuteQueryResult implements QueryResult
     
     private final Map<String, Integer> columnLabelAndIndexMap;
     
-    private final ResultSet resultSet;
+    private ResultSet resultSet;
+    
+    private ResultList resultList;
     
     private int currentSequenceId;
     
     private BinaryResultSetRowPacket currentRow;
     
-    public MySQLPacketStatementExecuteQueryResult(final CommandResponsePackets packets, final ResultSet resultSet, final List<ColumnType> columnTypes) {
+    public MySQLPacketStatementExecuteQueryResult(final CommandResponsePackets packets, final List<ColumnType> columnTypes) {
         Iterator<DatabaseProtocolPacket> packetIterator = packets.getDatabaseProtocolPackets().iterator();
         columnCount = ((FieldCountPacket) packetIterator.next()).getColumnCount();
         columnIndexAndLabelMap = new HashMap<>(columnCount, 1);
@@ -68,12 +75,19 @@ public final class MySQLPacketStatementExecuteQueryResult implements QueryResult
             columnIndexAndLabelMap.put(i, columnDefinition41Packet.getName());
             columnLabelAndIndexMap.put(columnDefinition41Packet.getName(), i);
         }
-        this.resultSet = resultSet;
         this.columnTypes = columnTypes;
     }
     
     @Override
     public boolean next() throws SQLException {
+        if (ProxyMode.MEMORY_STRICTLY == ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode())) {
+            return nextForStreamResultSet();
+        } else {
+            return nextForNoneStreamResultList();
+        }
+    }
+    
+    private boolean nextForStreamResultSet() throws SQLException {
         if (resultSet.next()) {
             List<Object> data = new ArrayList<>(columnCount);
             for (int i = 1; i <= columnCount; i++) {
@@ -83,6 +97,20 @@ public final class MySQLPacketStatementExecuteQueryResult implements QueryResult
             return true;
         }
         return false;
+    }
+    
+    private boolean nextForNoneStreamResultList() {
+        if (!resultList.hasNext()) {
+            return false;
+        }
+        List<Object> data = new ArrayList<>(columnCount);
+        for (int i = 1; i <= columnCount; i++) {
+            if (resultList.hasNext()) {
+                data.add(resultList.next());
+            }
+        }
+        currentRow = new BinaryResultSetRowPacket(++currentSequenceId, columnCount, data, columnTypes);
+        return true;
     }
     
     @Override

@@ -17,6 +17,8 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.handshake;
 
+import com.google.common.base.Preconditions;
+
 import io.shardingsphere.proxy.transport.mysql.constant.CapabilityFlag;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerInfo;
 import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
@@ -30,6 +32,7 @@ import lombok.Getter;
  * @see <a href="https://dev.mysql.com/doc/internals/en/connection-phase-packets.html#packet-Protocol::Handshake">Handshake</a>
  * 
  * @author zhangliang
+ * @author linjiaqi
  */
 @Getter
 public class HandshakePacket extends MySQLPacket {
@@ -54,6 +57,22 @@ public class HandshakePacket extends MySQLPacket {
         super(0);
         this.connectionId = connectionId;
         this.authPluginData = authPluginData;
+    }
+    
+    public HandshakePacket(final MySQLPacketPayload mysqlPacketPayload) {
+        super(mysqlPacketPayload.readInt1());
+        Preconditions.checkArgument(protocolVersion == mysqlPacketPayload.readInt1());
+        mysqlPacketPayload.readStringNul();
+        connectionId = mysqlPacketPayload.readInt4();
+        byte[] authPluginDataPart1 = mysqlPacketPayload.readStringNul().getBytes();
+        mysqlPacketPayload.readInt2();
+        mysqlPacketPayload.readInt1();
+        Preconditions.checkArgument(statusFlag.getValue() == mysqlPacketPayload.readInt2());
+        mysqlPacketPayload.readInt2();
+        mysqlPacketPayload.readInt1();
+        mysqlPacketPayload.skipReserved(10);
+        byte[] authPluginDataPart2 = mysqlPacketPayload.readStringNul().getBytes();
+        authPluginData = new AuthPluginData(authPluginDataPart1, authPluginDataPart2);
     }
     
     @Override

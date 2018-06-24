@@ -2,12 +2,12 @@
 targetDataSource:
   ds_trans_0: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_trans_0
+    url: jdbc:mysql://localhost:3306/ds_trans_0?serverTimezone=UTC&useSSL=false
     username: root
     password:
   ds_trans_1: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_trans_1
+    url: jdbc:mysql://localhost:3306/ds_trans_1?serverTimezone=UTC&useSSL=false
     username: root
     password:
 
@@ -15,7 +15,7 @@ targetDataSource:
 transactionLogDataSource:
   ds_trans: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/trans_log
+    url: jdbc:mysql://localhost:3306/trans_log?serverTimezone=UTC&useSSL=false
     username: root
     password:
 

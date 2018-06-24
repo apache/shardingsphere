@@ -19,6 +19,8 @@ package io.shardingsphere.dbtest.engine;
 
 import com.google.common.base.Strings;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.parsing.SQLJudgeEngine;
 import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.cases.assertion.ddl.DDLIntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.ddl.DDLIntegrateTestCaseAssertion;
@@ -48,6 +50,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -63,10 +66,13 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
     
     private final DDLIntegrateTestCaseAssertion assertion;
     
-    public DDLIntegrateTest(final String sqlCaseId, final String path, final DDLIntegrateTestCaseAssertion assertion,
-                            final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType, final int countInSameCase) throws IOException, JAXBException, SQLException {
+    private final DatabaseType databaseType;
+    
+    public DDLIntegrateTest(final String sqlCaseId, final String path, final DDLIntegrateTestCaseAssertion assertion, final DatabaseTypeEnvironment databaseTypeEnvironment, 
+                            final SQLCaseType caseType, final int countInSameCase) throws IOException, JAXBException, SQLException, ParseException {
         super(sqlCaseId, path, assertion, databaseTypeEnvironment, caseType, countInSameCase);
         this.assertion = assertion;
+        databaseType = databaseTypeEnvironment.getDatabaseType();
     }
     
     @Parameters(name = "{0}[{5}] -> {2} -> {3} -> {4}")
@@ -76,6 +82,9 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
         Collection<Object[]> result = new LinkedList<>();
         for (Object[] each : sqlCasesLoader.getSupportedSQLTestParameters(Arrays.<Enum>asList(DatabaseType.values()), DatabaseType.class)) {
             String sqlCaseId = each[0].toString();
+            if (SQLType.DDL != new SQLJudgeEngine(sqlCasesLoader.getSupportedSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList())).judge().getType()) {
+                continue;
+            }
             DatabaseType databaseType = (DatabaseType) each[1];
             SQLCaseType caseType = (SQLCaseType) each[2];
             DDLIntegrateTestCase integrateTestCase = integrateTestCasesLoader.getDDLIntegrateTestCase(sqlCaseId);
@@ -83,10 +92,7 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
             if (null == integrateTestCase) {
                 continue;
             }
-            if (integrateTestCase.getDatabaseTypes().contains(databaseType)) {
-                result.addAll(getParameters(databaseType, caseType, integrateTestCase));
-            }
-            
+            result.addAll(getParameters(databaseType, caseType, integrateTestCase));
         }
         return result;
     }
@@ -139,6 +145,10 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
     }
     
     private void assertMetadata(final Connection connection) throws IOException, JAXBException, SQLException {
+        // TODO case for drop (table, index) and truncate, add assert later
+        if (null == assertion.getExpectedDataFile()) {
+            return;
+        }
         ExpectedMetadataRoot expected;
         try (FileReader reader = new FileReader(getExpectedDataFile())) {
             expected = (ExpectedMetadataRoot) JAXBContext.newInstance(ExpectedMetadataRoot.class).createUnmarshaller().unmarshal(reader);
@@ -157,7 +167,13 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
     private void assertMetadata(final List<ExpectedColumn> actual, final ExpectedColumn expect) {
         for (ExpectedColumn each : actual) {
             if (expect.getName().equals(each.getName())) {
-                assertThat(each.getType(), is(expect.getType()));
+                if (DatabaseType.MySQL == databaseType && "integer".equals(expect.getType())) {
+                    assertThat(each.getType(), is("int"));
+                } else if (DatabaseType.PostgreSQL == databaseType && "integer".equals(expect.getType())) {
+                    assertThat(each.getType(), is("int4"));
+                } else {
+                    assertThat(each.getType(), is(expect.getType()));
+                }
             }
         }
     }

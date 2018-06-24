@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sqls>
-    <sql id="assertSelectInWithNullParameter">
-        <sharding-rule value="nullable">
-            <data parameter="1,null" expected="select_nullable/SelectWithNullParameter.xml" />
-        </sharding-rule>
-    </sql>
-</sqls>

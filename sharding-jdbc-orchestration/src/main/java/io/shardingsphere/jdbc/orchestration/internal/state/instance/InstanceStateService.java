@@ -51,4 +51,11 @@ public final class InstanceStateService {
     public void persistMasterSlaveInstanceOnline() {
         regCenter.persistEphemeral(stateNode.getInstancesNodeFullPath(instance.getInstanceId()), "");
     }
+    
+    /**
+     * Persist proxy instance online.
+     */
+    public void persistProxyInstanceOnline() {
+        regCenter.persistEphemeral(stateNode.getInstancesNodeFullPath(instance.getInstanceId()), "");
+    }
 }

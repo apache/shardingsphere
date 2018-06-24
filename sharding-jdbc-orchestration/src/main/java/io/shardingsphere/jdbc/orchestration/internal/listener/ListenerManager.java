@@ -24,6 +24,7 @@ import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
  * Registry center's listener manager.
  *
  * @author caohao
+ * @author panjuan
  */
 public interface ListenerManager {
     
@@ -41,4 +42,11 @@ public interface ListenerManager {
      * @param masterSlaveDataSource master-slave datasource
      */
     void start(MasterSlaveDataSource masterSlaveDataSource);
+    
+    
+    /**
+     * Start proxy configuration change listener.
+     *
+     */
+    void start();
 }

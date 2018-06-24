@@ -17,13 +17,21 @@
 
 package io.shardingsphere.proxy;
 
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.frontend.ShardingProxy;
+import io.shardingsphere.proxy.yaml.YamlProxyConfiguration;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
 
 /**
  * Sharding-Proxy Bootstrap.
  *
  * @author zhangliang
+ * @author wangkai
+ * @author panjuan
  */
 public final class Bootstrap {
     
@@ -34,8 +42,9 @@ public final class Bootstrap {
      * 
      * @param args startup arguments
      * @throws InterruptedException interrupted exception
+     * @throws MalformedURLException URL exception
      */
-    public static void main(final String[] args) throws InterruptedException {
+    public static void main(final String[] args) throws InterruptedException, MalformedURLException {
         initializeRuleRegistry();
         new ShardingProxy().start(getPort(args));
     }
@@ -52,6 +61,13 @@ public final class Bootstrap {
     }
     
     private static void initializeRuleRegistry() {
-        RuleRegistry.getInstance();
+        YamlProxyConfiguration yamlProxyConfiguration;
+        try {
+            yamlProxyConfiguration = YamlProxyConfiguration.unmarshal(new File(Bootstrap.class.getResource("/conf/config.yaml").getFile()));
+            yamlProxyConfiguration.init();
+        } catch (final IOException ex) {
+            throw new ShardingException(ex);
+        }
+        RuleRegistry.getInstance().init(yamlProxyConfiguration);
     }
 }

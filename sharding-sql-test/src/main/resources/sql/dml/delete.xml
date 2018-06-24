@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sql-cases>
-    <sql-case id="assertDeleteWithShardingValue" value="DELETE FROM t_order WHERE order_id = %s AND user_id = %s AND status=%s" />
-    <sql-case id="assertDeleteWithoutShardingValue" value="DELETE FROM t_order WHERE status=%s" />
+    <sql-case id="delete_with_sharding_value" value="DELETE FROM t_order WHERE order_id = ? AND user_id = ? AND status=?" />
+    <sql-case id="delete_without_sharding_value" value="DELETE FROM t_order WHERE status=?" />
 </sql-cases>

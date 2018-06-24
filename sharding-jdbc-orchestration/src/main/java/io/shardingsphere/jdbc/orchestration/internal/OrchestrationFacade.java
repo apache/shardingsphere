@@ -31,6 +31,7 @@ import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.jdbc.orchestration.reg.etcd.EtcdConfiguration;
 import io.shardingsphere.jdbc.orchestration.reg.etcd.EtcdRegistryCenter;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.NewZookeeperRegistryCenter;
 import io.shardingsphere.jdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import io.shardingsphere.jdbc.orchestration.reg.zookeeper.ZookeeperRegistryCenter;
 import lombok.Getter;
@@ -47,6 +48,7 @@ import java.util.Properties;
  *
  * @author zhangliang
  * @author caohao
+ * @author panjuan
  */
 @Slf4j
 public final class OrchestrationFacade implements AutoCloseable {
@@ -76,12 +78,20 @@ public final class OrchestrationFacade implements AutoCloseable {
     private RegistryCenter createRegistryCenter(final RegistryCenterConfiguration regCenterConfig) {
         Preconditions.checkNotNull(regCenterConfig, "Registry center configuration cannot be null.");
         if (regCenterConfig instanceof ZookeeperConfiguration) {
-            return new ZookeeperRegistryCenter((ZookeeperConfiguration) regCenterConfig);
+            return getZookeeperRegistryCenter((ZookeeperConfiguration) regCenterConfig);
         }
         if (regCenterConfig instanceof EtcdConfiguration) {
             return new EtcdRegistryCenter((EtcdConfiguration) regCenterConfig);
         }
         throw new UnsupportedOperationException(regCenterConfig.getClass().getName());
+    }
+    
+    private RegistryCenter getZookeeperRegistryCenter(final ZookeeperConfiguration regCenterConfig) {
+        if (regCenterConfig.isUseNative()) {
+            return new NewZookeeperRegistryCenter(regCenterConfig);
+        } else {
+            return new ZookeeperRegistryCenter(regCenterConfig);
+        }
     }
     
     /**
@@ -118,6 +128,18 @@ public final class OrchestrationFacade implements AutoCloseable {
         instanceStateService.persistMasterSlaveInstanceOnline();
         dataSourceService.persistDataSourcesNode();
         listenerManager.initMasterSlaveListeners(masterSlaveDataSource);
+    }
+    
+    /**
+     * Initialize for proxy orchestration.
+     *
+     * @param orchestrationProxyConfiguration yaml proxy configuration
+     */
+    public void init(final OrchestrationProxyConfiguration orchestrationProxyConfiguration) {
+        configService.persistProxyConfiguration(orchestrationProxyConfiguration, isOverwrite);
+        instanceStateService.persistProxyInstanceOnline();
+        dataSourceService.persistDataSourcesNode();
+        listenerManager.initProxyListeners();
     }
     
     private void reviseShardingRuleConfigurationForMasterSlave(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig) {

@@ -17,6 +17,17 @@
 
 package io.shardingsphere.proxy.backend.common;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.exception.ShardingException;
@@ -44,22 +55,13 @@ import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-
 /**
  * SQL execute backend handler.
  *
  * @author zhangliang
  * @author panjuan
+ * @author wangkai
+ * @author linjiaqi
  */
 @Getter
 @Setter
@@ -70,6 +72,8 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
     private List<Connection> connections;
     
     private List<ResultSet> resultSets;
+    
+    private List<ResultList> resultLists;
     
     private MergedResult mergedResult;
     
@@ -89,6 +93,7 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
         this.sql = sql;
         connections = new CopyOnWriteArrayList<>();
         resultSets = new CopyOnWriteArrayList<>();
+        resultLists = new CopyOnWriteArrayList<>();
         isMerged = false;
         hasMoreResultValueFlag = true;
         this.databaseType = databaseType;
@@ -141,9 +146,6 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
     private void getCommandResponsePackets(final List<Future<CommandResponsePackets>> resultList, final List<CommandResponsePackets> packets) {
         for (Future<CommandResponsePackets> each : resultList) {
             try {
-                while (!each.isDone()) {
-                    continue;
-                }
                 packets.add(each.get());
             } catch (final InterruptedException | ExecutionException ex) {
                 throw new ShardingException(ex.getMessage(), ex);
@@ -187,7 +189,13 @@ public final class SQLExecuteBackendHandler implements BackendHandler {
         List<QueryResult> queryResults = new ArrayList<>(packets.size());
         for (int i = 0; i < packets.size(); i++) {
             // TODO replace to a common PacketQueryResult
-            queryResults.add(new MySQLPacketQueryResult(packets.get(i), resultSets.get(i)));
+            MySQLPacketQueryResult mySQLPacketQueryResult = new MySQLPacketQueryResult(packets.get(i));
+            if (ProxyMode.MEMORY_STRICTLY == ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode())) {
+                mySQLPacketQueryResult.setResultSet(resultSets.get(i));
+            } else {
+                mySQLPacketQueryResult.setResultList(resultLists.get(i));
+            }
+            queryResults.add(mySQLPacketQueryResult);
         }
         try {
             mergedResult = MergeEngineFactory.newInstance(RuleRegistry.getInstance().getShardingRule(), queryResults, sqlStatement).merge();
