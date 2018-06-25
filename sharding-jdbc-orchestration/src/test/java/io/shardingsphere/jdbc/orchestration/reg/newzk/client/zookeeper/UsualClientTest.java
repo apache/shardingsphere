@@ -36,62 +36,62 @@ public class UsualClientTest extends BaseClientTest {
     }
     
     @Test
-    public void createRoot() throws KeeperException, InterruptedException {
+    public void assertCreateRoot() throws KeeperException, InterruptedException {
         super.createRoot(testClient);
     }
     
     @Test
-    public void createChild() throws KeeperException, InterruptedException {
+    public void assertCreateChild() throws KeeperException, InterruptedException {
         super.createChild(testClient);
     }
     
     @Test
-    public void deleteBranch() throws KeeperException, InterruptedException {
+    public void assertDeleteBranch() throws KeeperException, InterruptedException {
         super.deleteBranch(testClient);
     }
     
     @Test
-    public void isExisted() throws KeeperException, InterruptedException {
+    public void assertExisted() throws KeeperException, InterruptedException {
         super.isExisted(testClient);
     }
     
     @Test
-    public void get() throws KeeperException, InterruptedException {
+    public void assertGet() throws KeeperException, InterruptedException {
         super.get(testClient);
     }
     
     @Test
-    public void asynGet() throws KeeperException, InterruptedException {
+    public void assertAsynGet() throws KeeperException, InterruptedException {
         super.asynGet(testClient);
     }
     
     @Test
-    public void getChildrenKeys() throws KeeperException, InterruptedException {
+    public void assertGetChildrenKeys() throws KeeperException, InterruptedException {
         super.getChildrenKeys(testClient);
     }
     
     @Test
-    public void persist() throws KeeperException, InterruptedException {
+    public void assertPersist() throws KeeperException, InterruptedException {
         super.persist(testClient);
     }
     
     @Test
-    public void persistEphemeral() throws KeeperException, InterruptedException {
+    public void assertPersistEphemeral() throws KeeperException, InterruptedException {
         super.persistEphemeral(testClient);
     }
     
     @Test
-    public void delAllChildren() throws KeeperException, InterruptedException {
+    public void assertDelAllChildren() throws KeeperException, InterruptedException {
         super.delAllChildren(testClient);
     }
     
     @Test
-    public void watch() throws KeeperException, InterruptedException {
+    public void assertWatch() throws KeeperException, InterruptedException {
         super.watch(testClient);
     }
     
     @Test
-    public void close() throws Exception {
+    public void assertClose() throws Exception {
         super.close(testClient);
     }
 }

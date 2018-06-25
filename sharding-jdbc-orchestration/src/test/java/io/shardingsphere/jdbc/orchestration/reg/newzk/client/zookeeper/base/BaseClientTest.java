@@ -47,12 +47,17 @@ import java.util.concurrent.CountDownLatch;
  */
 public abstract class BaseClientTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseClient.class);
-    public static final String AUTH = "digest";
-    public static final String SERVERS = "192.168.2.44:2181";
-    public static final int SESSION_TIMEOUT = 200000;//ms
-    public static final String ROOT = "test";
+    
+    protected static final String AUTH = "digest";
+    
+    protected static final String SERVERS = "192.168.2.44:2181";
+    
+    protected static final int SESSION_TIMEOUT = 200000;//ms
+    
+    protected static final String ROOT = "test";
     
     protected IClient testClient = null;
+    
     protected ZooKeeper zooKeeper;
     
     @Before
@@ -76,7 +81,7 @@ public abstract class BaseClientTest {
     }
     
     @Test
-    public void deleteRoot() throws KeeperException, InterruptedException {
+    public void assertDeleteRoot() throws KeeperException, InterruptedException {
         ((BaseClient)testClient).createNamespace();
         deleteRoot(testClient);
         assert getZooKeeper(testClient).exists(Constants.PATH_SEPARATOR + ROOT, false) == null;
