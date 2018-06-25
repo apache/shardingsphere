@@ -107,12 +107,18 @@ public abstract class ExecuteWorker implements Callable<CommandResponsePackets> 
         }
         result.addPacket(new FieldCountPacket(++currentSequenceId, columnCount));
         for (int i = 1; i <= columnCount; i++) {
+            setColumnType(ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(i)));
             result.addPacket(new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData.getSchemaName(i), resultSetMetaData.getTableName(i),
                     resultSetMetaData.getTableName(i), resultSetMetaData.getColumnLabel(i), resultSetMetaData.getColumnName(i),
                     resultSetMetaData.getColumnDisplaySize(i), ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(i)), 0));
+            
         }
         result.addPacket(new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
         return result;
+    }
+    
+    protected void setColumnType(final ColumnType columnType) {
+        return;
     }
     
     protected CommandResponsePackets getCommonDatabaseProtocolPackets(final ResultSet resultSet) throws SQLException {

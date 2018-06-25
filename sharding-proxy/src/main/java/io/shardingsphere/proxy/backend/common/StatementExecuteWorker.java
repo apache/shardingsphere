@@ -19,6 +19,7 @@ package io.shardingsphere.proxy.backend.common;
 
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
+import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
@@ -67,6 +68,11 @@ public final class StatementExecuteWorker extends ExecuteWorker implements Calla
         resultList.setIterator(resultList.getResultList().iterator());
         getExecuteBackendHandler().getResultLists().add(resultList);
         return getQueryDatabaseProtocolPackets(resultSet);
+    }
+    
+    @Override
+    protected void setColumnType(final ColumnType columnType) {
+        ((StatementExecuteBackendHandler) getExecuteBackendHandler()).getColumnTypes().add(columnType);
     }
     
     @Override
