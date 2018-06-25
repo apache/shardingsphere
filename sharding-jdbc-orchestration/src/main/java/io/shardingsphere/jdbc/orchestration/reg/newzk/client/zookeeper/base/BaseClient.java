@@ -73,7 +73,13 @@ public abstract class BaseClient implements IClient {
     }
     
     @Override
-    public synchronized boolean blockUntilConnected(final int wait, final TimeUnit units) throws InterruptedException {
+    public synchronized boolean start(final int wait, final TimeUnit units) throws InterruptedException, IOException {
+        holder = new Holder(getContext());
+        holder.start(wait, units);
+        return holder.isConnected();
+    }
+    
+    private synchronized boolean blockUntilConnected(final int wait, final TimeUnit units) throws InterruptedException {
         long maxWait = units != null ? TimeUnit.MILLISECONDS.convert(wait, units) : 0;
 
         while (!holder.isConnected()) {
@@ -90,7 +96,9 @@ public abstract class BaseClient implements IClient {
     public void close() {
         context.close();
         try {
-            this.deleteNamespace();
+            if (rootExist) {
+                this.deleteNamespace();
+            }
             // CHECKSTYLE:OFF
         } catch (Exception e) {
             // CHECKSTYLE:ON

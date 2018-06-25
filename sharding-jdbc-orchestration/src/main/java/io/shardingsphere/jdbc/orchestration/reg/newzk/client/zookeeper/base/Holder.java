@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /*
  * zookeeper connection holder
@@ -60,13 +61,22 @@ public class Holder {
      * @throws InterruptedException InterruptedException
      */
     public void start() throws IOException, InterruptedException {
+        initZookeeper();
+        connectLatch.await();
+    }
+    
+    protected void start(final int wait, final TimeUnit units) throws IOException, InterruptedException {
+        initZookeeper();
+        connectLatch.await(wait, units);
+    }
+    
+    protected void initZookeeper() throws IOException {
         LOGGER.debug("Holder servers:{},sessionTimeOut:{}", context.getServers(), context.getSessionTimeOut());
         zooKeeper = new ZooKeeper(context.getServers(), context.getSessionTimeOut(), startWatcher());
         if (!io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.StringUtil.isNullOrBlank(context.getScheme())) {
             zooKeeper.addAuthInfo(context.getScheme(), context.getAuth());
             LOGGER.debug("Holder scheme:{},auth:{}", context.getScheme(), context.getAuth());
         }
-        connectLatch.await();
     }
     
     private Watcher startWatcher() {
