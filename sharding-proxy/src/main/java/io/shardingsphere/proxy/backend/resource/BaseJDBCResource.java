@@ -79,13 +79,5 @@ public abstract class BaseJDBCResource {
                 each.close();
             }
         }
-        clearStatement();
     }
-    
-    /**
-     * clear statement resource.
-     *
-     * @throws SQLException SQLException
-     */
-    public abstract void clearStatement() throws SQLException;
 }
