@@ -82,7 +82,7 @@ public final class MergeEventListenerTest {
         dataSourceMap.put("ds_1", null);
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, dataSourceMap.keySet());
         shardingContext = new ShardingContext(dataSourceMap, shardingRule, DatabaseType.MySQL, null, null, true);
-        mergeEngine = new DALMergeEngine(null, null, new ShowDatabasesStatement());
+        mergeEngine = new DALMergeEngine(null, null, new ShowDatabasesStatement(), null);
     }
     
     @Test
@@ -107,7 +107,7 @@ public final class MergeEventListenerTest {
     @Test
     public void assertException() {
         try {
-            MergeEngine errorMergeEngine = new DALMergeEngine(null, null, new ShowColumnsStatement());
+            MergeEngine errorMergeEngine = new DALMergeEngine(null, null, new ShowColumnsStatement(), null);
             ShardingStatement statement = new ShardingStatement(new ShardingConnection(shardingContext));
             Method mergeMethod = ShardingStatement.class.getDeclaredMethod("merge", MergeEngine.class);
             mergeMethod.setAccessible(true);
