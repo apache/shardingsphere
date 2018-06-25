@@ -50,7 +50,7 @@ public final class StatementExecuteWorker extends ExecuteWorker implements Calla
         preparedStatement.setFetchSize(FETCH_ONE_ROW_A_TIME);
         setJDBCPreparedStatementParameters(preparedStatement);
         ResultSet resultSet = preparedStatement.executeQuery();
-        getExecuteBackendHandler().getJdbcResource().getResultSets().add(resultSet);
+        getExecuteBackendHandler().getJdbcResource().addResultSet(resultSet);
         return getQueryDatabaseProtocolPackets(resultSet);
     }
     

@@ -48,10 +48,6 @@ public class ProxyPrepareJDBCResource extends BaseJDBCResource {
     
     @Override
     public void clearStatement() throws SQLException {
-        if (null != preparedStatements) {
-            for (PreparedStatement each : preparedStatements) {
-                each.close();
-            }
-        }
+        return;
     }
 }
