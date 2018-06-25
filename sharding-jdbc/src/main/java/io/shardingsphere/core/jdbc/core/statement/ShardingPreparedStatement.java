@@ -137,7 +137,8 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             for (ResultSet each : resultSets) {
                 queryResults.add(new JDBCQueryResult(each));
             }
-            MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getShardingContext().getShardingRule(), queryResults, routeResult.getSqlStatement());
+            MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getShardingContext().getShardingRule(),
+                    queryResults, routeResult.getSqlStatement(), connection.getShardingContext().getShardingMetaData());
             result = new ShardingResultSet(resultSets, merge(mergeEngine), this);
         } finally {
             clearBatch();
@@ -305,7 +306,8 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             queryResults.add(new JDBCQueryResult(resultSet));
         }
         if (routeResult.getSqlStatement() instanceof SelectStatement || routeResult.getSqlStatement() instanceof DALStatement) {
-            MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getShardingContext().getShardingRule(), queryResults, routeResult.getSqlStatement());
+            MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getShardingContext().getShardingRule(), queryResults,
+                    routeResult.getSqlStatement(), connection.getShardingContext().getShardingMetaData());
             currentResultSet = new ShardingResultSet(resultSets, merge(mergeEngine), this);
         }
         return currentResultSet;
