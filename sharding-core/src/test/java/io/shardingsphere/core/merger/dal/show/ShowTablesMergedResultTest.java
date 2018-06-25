@@ -98,8 +98,7 @@ public final class ShowTablesMergedResultTest {
     @Test
     public void assertNextForActualTableNameNotInTableRule() throws SQLException {
         when(resultSet.getObject(1)).thenReturn("table_3");
-        System.out.println(shardingMetaData.getTableMetaDataMap());
         ShowTablesMergedResult showTablesMergedResult = new ShowTablesMergedResult(shardingRule, queryResults, shardingMetaData);
-        assertFalse(showTablesMergedResult.next());
+        assertTrue(showTablesMergedResult.next());
     }
 }
