@@ -62,6 +62,7 @@ import java.util.concurrent.Future;
  * Statement execute backend handler.
  *
  * @author zhangyonglun
+ * @author panjuan
  */
 @Getter
 @Setter
@@ -214,7 +215,8 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
             queryResults.add(mySQLPacketStatementExecuteQueryResult);
         }
         try {
-            mergedResult = MergeEngineFactory.newInstance(RuleRegistry.getInstance().getShardingRule(), queryResults, sqlStatement).merge();
+            mergedResult = MergeEngineFactory.newInstance(RuleRegistry.getInstance().getShardingRule(), queryResults,
+                    sqlStatement, RuleRegistry.getInstance().getShardingMetaData()).merge();
             isMerged = true;
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
