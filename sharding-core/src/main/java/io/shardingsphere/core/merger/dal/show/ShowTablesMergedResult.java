@@ -74,6 +74,8 @@ public final class ShowTablesMergedResult extends MemoryMergedResult {
                 if (!tableRule.isPresent()) {
                     if (shardingMetaData.getTableMetaDataMap().keySet().contains(actualTableName)) {
                         result.add(memoryResultSetRow);
+                    } else if (!shardingMetaData.isSupportedDatabaseType()) {
+                        result.add(memoryResultSetRow);
                     }
                 } else if (tableNames.add(tableRule.get().getLogicTable())) {
                     memoryResultSetRow.setCell(1, tableRule.get().getLogicTable());
