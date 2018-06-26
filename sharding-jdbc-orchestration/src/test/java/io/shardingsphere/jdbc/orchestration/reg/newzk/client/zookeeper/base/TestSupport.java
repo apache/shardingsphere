@@ -23,7 +23,7 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 public class TestSupport {
     public static final String AUTH = "digest";
     
-    public static final String SERVERS = "192.168.2.44:2181";
+    public static final String SERVERS = "localhost:3181";
     
     public static final int SESSION_TIMEOUT = 200000;//ms
     
