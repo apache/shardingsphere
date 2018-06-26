@@ -22,6 +22,7 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.ClientFactory;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
+import io.shardingsphere.jdbc.orchestration.util.EmbedTestingServer;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -46,7 +47,6 @@ import java.util.concurrent.CountDownLatch;
 /**
  * Created by aaa
  */
-@Ignore
 public abstract class BaseClientTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseClient.class);
     
@@ -64,6 +64,7 @@ public abstract class BaseClientTest {
     
     @Before
     public void start() throws IOException, InterruptedException {
+        EmbedTestingServer.start();
         ClientFactory creator = new ClientFactory();
         testClient = createClient(creator);
         getZooKeeper(testClient);

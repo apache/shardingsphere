@@ -29,7 +29,6 @@ import java.io.IOException;
 /**
  * Created by aaa
  */
-@Ignore
 public class UsualClientTest extends BaseClientTest {
     
     @Override
