@@ -21,6 +21,7 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
@@ -48,6 +49,7 @@ public class Holder {
     private ZooKeeper zooKeeper;
     
     @Getter
+    @Setter(value = AccessLevel.PROTECTED)
     private boolean connected;
     
     Holder(final BaseContext context) {
@@ -99,7 +101,7 @@ public class Holder {
         };
     }
     
-    private void processConnection(final WatchedEvent event) {
+    protected void processConnection(final WatchedEvent event) {
         LOGGER.debug("BaseClient process event:{}", event.toString());
         if (Watcher.Event.EventType.None == event.getType()) {
             if (Watcher.Event.KeeperState.SyncConnected == event.getState()) {

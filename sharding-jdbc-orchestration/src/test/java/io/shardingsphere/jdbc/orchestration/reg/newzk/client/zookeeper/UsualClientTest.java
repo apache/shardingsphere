@@ -19,6 +19,7 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseClientTest;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.TestSupport;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
 import org.junit.Ignore;
@@ -33,7 +34,8 @@ public class UsualClientTest extends BaseClientTest {
     
     @Override
     protected IClient createClient(final ClientFactory creator) throws IOException, InterruptedException {
-        return creator.setClientNamespace(ROOT).authorization(AUTH, AUTH.getBytes(), ZooDefs.Ids.CREATOR_ALL_ACL).newClient(SERVERS, SESSION_TIMEOUT).start();
+        return creator.setClientNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes(), ZooDefs.Ids.CREATOR_ALL_ACL)
+                .newClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).start();
     }
     
     @Test

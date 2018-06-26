@@ -55,7 +55,7 @@ public class UsualClient extends BaseClient {
     @Getter
     private IExecStrategy strategy;
     
-    UsualClient(final BaseContext context) {
+    protected UsualClient(final BaseContext context) {
         super(context);
     }
 

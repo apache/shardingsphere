@@ -53,6 +53,7 @@ public abstract class BaseClient implements IClient {
     private boolean rootExist;
     
     @Getter(value = AccessLevel.PROTECTED)
+    @Setter(value = AccessLevel.PROTECTED)
     private Holder holder;
     
     @Setter(value = AccessLevel.PROTECTED)
