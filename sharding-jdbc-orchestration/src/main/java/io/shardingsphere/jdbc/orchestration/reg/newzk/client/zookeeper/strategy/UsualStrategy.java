@@ -173,8 +173,8 @@ public class UsualStrategy extends BaseStrategy {
             this.deleteOnlyCurrent(path);
             this.deleteRecursively(superPath);
         } catch (KeeperException.NotEmptyException e) {
-            LOGGER.warn("deleteRecursively exist children:{},e:{}", path, e.getMessage());
-            LOGGER.info("deleteRecursively {} exist other children:{}", path, this.getChildren(path));
+            LOGGER.info("deleteRecursively exist children:{},e:{}", path, e.getMessage());
+            LOGGER.debug("deleteRecursively {} exist other children:{}", path, this.getChildren(path));
         }
     }
 }
