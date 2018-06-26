@@ -31,6 +31,7 @@ import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,12 +46,13 @@ import java.util.concurrent.CountDownLatch;
 /**
  * Created by aaa
  */
+@Ignore
 public abstract class BaseClientTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseClient.class);
     
     protected static final String AUTH = "digest";
     
-    protected static final String SERVERS = "192.168.2.44:2181";
+    protected static final String SERVERS = "localhost:3181";
     
     protected static final int SESSION_TIMEOUT = 200000;//ms
     
