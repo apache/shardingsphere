@@ -190,13 +190,15 @@ public final class StatementExecuteWorker implements Callable<CommandResponsePac
             return result;
         }
         result.addPacket(new FieldCountPacket(++currentSequenceId, columnCount));
+        List<ColumnType> columnTypes = new ArrayList<>(128);
         for (int i = 1; i <= columnCount; i++) {
             ColumnType columnType = ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(i));
             ColumnDefinition41Packet columnDefinition41Packet = new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData.getSchemaName(i), resultSetMetaData.getTableName(i),
                 resultSetMetaData.getTableName(i), resultSetMetaData.getColumnLabel(i), resultSetMetaData.getColumnName(i), resultSetMetaData.getColumnDisplaySize(i), columnType, 0);
             result.addPacket(columnDefinition41Packet);
-            statementExecuteBackendHandler.getColumnTypes().add(columnType);
+            columnTypes.add(columnType);
         }
+        statementExecuteBackendHandler.setColumnTypes(columnTypes);
         result.addPacket(new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
         return result;
     }
@@ -211,20 +213,22 @@ public final class StatementExecuteWorker implements Callable<CommandResponsePac
             return result;
         }
         result.addPacket(new FieldCountPacket(++currentSequenceId, columnCount));
+        List<ColumnType> columnTypes = new ArrayList<>(128);
         for (int i = 1; i <= columnCount; i++) {
             ColumnType columnType = ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(i));
             ColumnDefinition41Packet columnDefinition41Packet = new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData.getSchemaName(i), resultSetMetaData.getTableName(i),
                 resultSetMetaData.getTableName(i), resultSetMetaData.getColumnLabel(i), resultSetMetaData.getColumnName(i), resultSetMetaData.getColumnDisplaySize(i), columnType, 0);
             result.addPacket(columnDefinition41Packet);
-            statementExecuteBackendHandler.getColumnTypes().add(columnType);
+            columnTypes.add(columnType);
         }
+        statementExecuteBackendHandler.setColumnTypes(columnTypes);
         result.addPacket(new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
         while (resultSet.next()) {
             List<Object> data = new ArrayList<>(columnCount);
             for (int i = 1; i <= columnCount; i++) {
                 data.add(resultSet.getObject(i));
             }
-            result.addPacket(new BinaryResultSetRowPacket(++currentSequenceId, columnCount, data, statementExecuteBackendHandler.getColumnTypes()));
+            result.addPacket(new BinaryResultSetRowPacket(++currentSequenceId, columnCount, data, columnTypes));
         }
         result.addPacket(new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
         return result;

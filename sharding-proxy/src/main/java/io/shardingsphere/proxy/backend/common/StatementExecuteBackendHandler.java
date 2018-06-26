@@ -84,7 +84,7 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
     
     private int columnCount;
     
-    private final List<ColumnType> columnTypes;
+    private List<ColumnType> columnTypes;
     
     private boolean isMerged;
     
@@ -101,7 +101,6 @@ public final class StatementExecuteBackendHandler implements BackendHandler {
         connections = new CopyOnWriteArrayList<>();
         resultSets = new CopyOnWriteArrayList<>();
         resultLists = new CopyOnWriteArrayList<>();
-        columnTypes = new CopyOnWriteArrayList<>();
         isMerged = false;
         hasMoreResultValueFlag = true;
         this.databaseType = databaseType;
