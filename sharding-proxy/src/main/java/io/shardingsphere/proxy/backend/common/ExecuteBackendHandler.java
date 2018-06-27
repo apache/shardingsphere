@@ -126,10 +126,10 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
         return result;
     }
     
-    private boolean isXaDDL(SQLRouteResult routeResult) throws SystemException {
-        return RuleRegistry.isXaTransaction() &&
-                SQLType.DDL.equals(routeResult.getSqlStatement().getType()) &&
-                Status.STATUS_NO_TRANSACTION != AtomikosUserTransaction.getInstance().getStatus();
+    private boolean isXaDDL(final SQLRouteResult routeResult) throws SystemException {
+        return RuleRegistry.isXaTransaction()
+                && SQLType.DDL.equals(routeResult.getSqlStatement().getType())
+                && Status.STATUS_NO_TRANSACTION != AtomikosUserTransaction.getInstance().getStatus();
     }
     
     private SQLRouteResult doMasterSlaveRoute() {
@@ -198,7 +198,8 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
             queryResults.add(newQueryResult(packets.get(i), i));
         }
         try {
-            mergedResult = MergeEngineFactory.newInstance(RuleRegistry.getInstance().getShardingRule(), queryResults, sqlStatement).merge();
+            mergedResult = MergeEngineFactory.newInstance(RuleRegistry.getInstance().getShardingRule(),
+                    queryResults, sqlStatement, RuleRegistry.getInstance().getShardingMetaData()).merge();
             isMerged = true;
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
