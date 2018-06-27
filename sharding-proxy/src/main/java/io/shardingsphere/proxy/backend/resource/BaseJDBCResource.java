@@ -70,13 +70,18 @@ public abstract class BaseJDBCResource {
     public void clear() throws SQLException {
         if (null != connections) {
             for (Connection each : connections) {
-                each.close();
+                if (!each.isClosed()) {
+                    each.close();
+                }
+                
             }
         }
         if (null != resultSets) {
             for (ResultSet each : resultSets) {
+                if (!each.isClosed()) {
+                    each.close();
+                }
                 MasterVisitedManager.clear();
-                each.close();
             }
         }
     }

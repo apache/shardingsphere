@@ -236,7 +236,6 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
         }
         if (!mergedResult.next()) {
             hasMoreResultValueFlag = false;
-            jdbcResource.clear();
         }
         return true;
     }
