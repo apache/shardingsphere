@@ -19,6 +19,7 @@ package io.shardingsphere.core.merger;
 
 import io.shardingsphere.core.merger.dal.DALMergeEngine;
 import io.shardingsphere.core.merger.dql.DQLMergeEngine;
+import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
@@ -33,6 +34,7 @@ import java.util.List;
  * Result merge engine factory.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MergeEngineFactory {
@@ -43,15 +45,17 @@ public final class MergeEngineFactory {
      * @param shardingRule sharding rule
      * @param queryResults query results
      * @param sqlStatement SQL statement
+     * @param shardingMetaData sharding meta Data
      * @return merge engine instance
      * @throws SQLException SQL exception
      */
-    public static MergeEngine newInstance(final ShardingRule shardingRule, final List<QueryResult> queryResults, final SQLStatement sqlStatement) throws SQLException {
+    public static MergeEngine newInstance(final ShardingRule shardingRule, final List<QueryResult> queryResults,
+                                          final SQLStatement sqlStatement, final ShardingMetaData shardingMetaData) throws SQLException {
         if (sqlStatement instanceof SelectStatement) {
             return new DQLMergeEngine(queryResults, (SelectStatement) sqlStatement);
         } 
         if (sqlStatement instanceof DALStatement) {
-            return new DALMergeEngine(shardingRule, queryResults, (DALStatement) sqlStatement);
+            return new DALMergeEngine(shardingRule, queryResults, (DALStatement) sqlStatement, shardingMetaData);
         }
         throw new UnsupportedOperationException(String.format("Cannot support type '%s'", sqlStatement.getType()));
     }

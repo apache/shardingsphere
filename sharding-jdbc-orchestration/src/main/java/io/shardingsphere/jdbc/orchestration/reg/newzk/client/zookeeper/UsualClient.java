@@ -53,9 +53,9 @@ public class UsualClient extends BaseClient {
     private final boolean watched = true;
     
     @Getter
-    private io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IExecStrategy strategy;
+    private IExecStrategy strategy;
     
-    UsualClient(final BaseContext context) {
+    protected UsualClient(final BaseContext context) {
         super(context);
     }
 
