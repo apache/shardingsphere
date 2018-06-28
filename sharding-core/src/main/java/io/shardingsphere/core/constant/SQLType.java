@@ -55,5 +55,10 @@ public enum SQLType {
     /**
      * Database administrator Language.
      */
-    DAL
+    DAL,
+    
+    /**
+     * Database control Language.
+     */
+    DCL
 }
