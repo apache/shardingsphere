@@ -21,7 +21,7 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.election.LeaderElection;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.ZKTransaction;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.zookeeper.AsyncCallback;
@@ -141,7 +141,7 @@ public class BaseProvider implements IProvider {
     }
     
     @Override
-    public void createInTransaction(final String key, final String value, final CreateMode createMode, final ZKTransaction transaction) throws KeeperException, InterruptedException {
+    public void createInTransaction(final String key, final String value, final CreateMode createMode, final BaseTransaction transaction) throws KeeperException, InterruptedException {
         transaction.create(key, value.getBytes(Constants.UTF_8), authorities, createMode);
     }
     

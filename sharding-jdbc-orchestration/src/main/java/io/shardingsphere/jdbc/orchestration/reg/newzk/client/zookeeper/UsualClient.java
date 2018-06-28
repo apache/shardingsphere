@@ -28,6 +28,7 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.ContentionStrategy;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.SyncRetryStrategy;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.UsualStrategy;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.ZKTransaction;
 import lombok.Getter;
 import org.apache.zookeeper.AsyncCallback;
@@ -191,7 +192,7 @@ public class UsualClient extends BaseClient {
     }
     
     @Override
-    public ZKTransaction transaction() {
-        return new ZKTransaction(getRootNode(), getHolder());
+    public BaseTransaction transaction() {
+        return new BaseTransaction();
     }
 }
