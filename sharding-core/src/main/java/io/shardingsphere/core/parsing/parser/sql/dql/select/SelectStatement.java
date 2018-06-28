@@ -108,9 +108,9 @@ public final class SelectStatement extends DQLStatement {
     }
     
     /**
-     * Get start select items.
+     * Get star select items.
      *
-     * @return start select items.
+     * @return star select items
      */
     public List<StarSelectItem> getStarSelectItems() {
         List<StarSelectItem> result = new LinkedList<>();
