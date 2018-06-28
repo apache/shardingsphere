@@ -22,9 +22,9 @@ import io.shardingsphere.core.parsing.parser.sql.AbstractSQLStatement;
 import lombok.ToString;
 
 /**
- * DDL statement.
+ * DCL statement.
  *
- * @author zhangliang
+ * @author panjuan
  */
 @ToString(callSuper = true)
 public final class DCLStatement extends AbstractSQLStatement {
