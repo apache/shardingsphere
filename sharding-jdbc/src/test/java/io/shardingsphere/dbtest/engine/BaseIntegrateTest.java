@@ -87,7 +87,7 @@ public abstract class BaseIntegrateTest {
         this.caseType = caseType;
         this.countInSameCase = countInSameCase;
         sql = getSQL(sqlCaseId);
-        expectedDataFile = getExpectedDataFile(path, databaseTypeEnvironment.getDatabaseType(), assertion.getExpectedDataFile());
+        expectedDataFile = null == assertion.getExpectedDataFile() ? null : getExpectedDataFile(path, databaseTypeEnvironment.getDatabaseType(), assertion.getExpectedDataFile());
         if (databaseTypeEnvironment.isEnabled()) {
             dataSourceMap = createDataSourceMap(assertion);
             dataSource = createDataSource(dataSourceMap);
