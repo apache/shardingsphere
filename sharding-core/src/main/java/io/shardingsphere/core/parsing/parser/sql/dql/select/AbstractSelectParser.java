@@ -210,7 +210,7 @@ public abstract class AbstractSelectParser implements SQLParser {
                 return true;
             }
             Optional<TableMetaData> tableMetaData = table.isPresent() ? Optional.fromNullable(shardingMetaData.getTableMetaDataMap().get(table.get().getName())) : Optional.<TableMetaData>absent();
-            if (tableMetaData.isPresent() && tableMetaData.get().getAllColumnNames().contains(orderItem.getName().get())) {
+            if (tableMetaData.isPresent() && tableMetaData.get().getAllColumnNames().contains(orderItem.getName().get().toLowerCase())) {
                 return true;
             }
         }
