@@ -95,8 +95,10 @@ public final class StatementExecuteBackendHandler extends ExecuteBackendHandler 
     protected PreparedStatement prepareResource(final String dataSourceName, final String unitSql, final SQLStatement sqlStatement) throws SQLException {
         DataSource dataSource = RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName);
         Connection connection = dataSource.getConnection();
-        PreparedStatement statement = sqlStatement instanceof InsertStatement
-                ? connection.prepareStatement(unitSql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(unitSql);
+        PreparedStatement statement = sqlStatement instanceof InsertStatement ? connection.prepareStatement(unitSql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(unitSql);
+        for (int i = 0; i < preparedStatementParameters.size(); i++) {
+            statement.setObject(i + 1, preparedStatementParameters.get(i).getValue());
+        }
         ProxyPrepareJDBCResource prepareProxyJDBCResource = (ProxyPrepareJDBCResource) getJdbcResource();
         prepareProxyJDBCResource.addConnection(connection);
         prepareProxyJDBCResource.addPrepareStatement(statement);
