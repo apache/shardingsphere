@@ -87,7 +87,7 @@ public abstract class BaseIntegrateTest {
         this.caseType = caseType;
         this.countInSameCase = countInSameCase;
         sql = getSQL(sqlCaseId);
-        expectedDataFile = path.substring(0, path.lastIndexOf(File.separator) + 1) + "dataset/" + assertion.getExpectedDataFile();
+        expectedDataFile = getExpectedDataFile(path, databaseTypeEnvironment.getDatabaseType(), assertion.getExpectedDataFile());
         if (databaseTypeEnvironment.isEnabled()) {
             dataSourceMap = createDataSourceMap(assertion);
             dataSource = createDataSource(dataSourceMap);
@@ -103,6 +103,17 @@ public abstract class BaseIntegrateTest {
             parameters.add(each.toString());
         }
         return SQLCasesLoader.getInstance().getSupportedSQL(sqlCaseId, caseType, parameters);
+    }
+    
+    private String getExpectedDataFile(final String path, final DatabaseType databaseType, final String expectedDataFile) {
+        String pathPrefix = path.substring(0, path.lastIndexOf(File.separator));
+        String expectedDataFilePath = expectedDataFile.substring(0, expectedDataFile.lastIndexOf(File.separator));
+        String expectedDataFileName = expectedDataFile.substring(expectedDataFile.lastIndexOf(File.separator));
+        String expectedDataFileWithDatabaseType = String.format("%s/dataset/%s/%s/%s", pathPrefix, expectedDataFilePath, databaseType.toString().toLowerCase(), expectedDataFileName);
+        if (new File(expectedDataFileWithDatabaseType).exists()) {
+            return expectedDataFileWithDatabaseType;
+        }
+        return String.format("%s/dataset/%s", pathPrefix, expectedDataFile);
     }
     
     private Map<String, DataSource> createDataSourceMap(final IntegrateTestCaseAssertion assertion) throws IOException, JAXBException {
