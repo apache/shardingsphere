@@ -28,6 +28,7 @@ import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedExce
 import io.shardingsphere.core.parsing.parser.sql.dal.describe.DescribeParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dal.show.ShowParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dal.use.UseParserFactory;
+import io.shardingsphere.core.parsing.parser.sql.dcl.create.CreateUserParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.ddl.alter.AlterParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.CreateParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.ddl.drop.DropParserFactory;
@@ -76,6 +77,12 @@ public final class SQLParserFactory {
         if (isDAL(tokenType)) {
             return getDALParser(dbType, (Keyword) tokenType, shardingRule, lexerEngine);
         }
+        if (isDCL(tokenType)) {
+            return getDCLParser(dbType, tokenType, shardingRule, lexerEngine);
+        }
+        if (isDDLOrDCL(tokenType)) {
+            return getDDLParserOrDCLParser(dbType, tokenType, lexerEngine.preReadNextToken().getType(), shardingRule, lexerEngine);
+        }
         throw new SQLParsingUnsupportedException(tokenType);
     }
     
@@ -88,7 +95,7 @@ public final class SQLParserFactory {
     }
     
     private static boolean isDDL(final TokenType tokenType) {
-        return DefaultKeyword.CREATE == tokenType || DefaultKeyword.ALTER == tokenType || DefaultKeyword.DROP == tokenType || DefaultKeyword.TRUNCATE == tokenType;
+        return DefaultKeyword.TRUNCATE == tokenType;
     }
     
     private static boolean isTCL(final TokenType tokenType) {
@@ -98,6 +105,14 @@ public final class SQLParserFactory {
     
     private static boolean isDAL(final TokenType tokenType) {
         return DefaultKeyword.USE == tokenType || DefaultKeyword.DESC == tokenType || MySQLKeyword.DESCRIBE == tokenType || MySQLKeyword.SHOW == tokenType;
+    }
+    
+    private static boolean isDCL(final TokenType tokenType) {
+        return DefaultKeyword.GRANT == tokenType || DefaultKeyword.REVOKE == tokenType || DefaultKeyword.RENAME == tokenType;
+    }
+    
+    private static boolean isDDLOrDCL(final TokenType tokenType) {
+        return DefaultKeyword.CREATE == tokenType || DefaultKeyword.ALTER == tokenType || DefaultKeyword.DROP == tokenType;
     }
     
     private static SQLParser getDQLParser(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingMetaData shardingMetaData) {
@@ -148,5 +163,22 @@ public final class SQLParserFactory {
             return ShowParserFactory.newInstance(dbType, shardingRule, lexerEngine);
         }
         throw new SQLParsingUnsupportedException(tokenType);
+    }
+    
+    private static SQLParser getDCLParser(final DatabaseType dbType, final TokenType tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        switch ((DefaultKeyword) tokenType) {
+            case CREATE:
+                return CreateUserParserFactory.newInstance(dbType, shardingRule, lexerEngine);
+            default:
+                throw new SQLParsingUnsupportedException(tokenType);
+        }
+    }
+    
+    private static SQLParser getDDLParserOrDCLParser(final DatabaseType dbType,
+                                                     final TokenType tokenType, final TokenType aidedTokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        if (DefaultKeyword.USER == aidedTokenType) {
+            return getDCLParser(dbType, tokenType, shardingRule, lexerEngine);
+        }
+        return getDDLParser(dbType, tokenType, shardingRule, lexerEngine);
     }
 }
