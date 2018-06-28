@@ -42,6 +42,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.transaction.Status;
 import javax.transaction.SystemException;
@@ -63,6 +64,7 @@ import java.util.concurrent.Future;
  * @author zhaojun
  */
 @Getter
+@Slf4j
 public abstract class ExecuteBackendHandler implements BackendHandler {
     
     private final String sql;
@@ -101,6 +103,7 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
             SQLRouteResult sqlRouteResult = RuleRegistry.getInstance().isOnlyMasterSlave() ? doMasterSlaveRoute() : doSqlShardingRoute();
             return doExecuteInternal(sqlRouteResult);
         } catch (final Exception ex) {
+            log.error("ExecuteBackendHandler", ex);
             return new CommandResponsePackets(new ErrPacket(1, 0, "", "", "" + ex.getMessage()));
         }
     }
