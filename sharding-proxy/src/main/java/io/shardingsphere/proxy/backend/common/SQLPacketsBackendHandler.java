@@ -46,6 +46,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.proxy.util.MySQLResultCache;
 import io.shardingsphere.proxy.util.SynchronizedFuture;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
@@ -64,6 +65,7 @@ import java.util.concurrent.TimeoutException;
  * @author panjuan
  */
 @Slf4j
+@Getter
 public final class SQLPacketsBackendHandler implements BackendHandler {
     private static final int CONNECT_TIMEOUT = 30;
     
