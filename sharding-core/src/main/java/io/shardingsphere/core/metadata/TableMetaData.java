@@ -24,7 +24,8 @@ import lombok.ToString;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Table metadata.
@@ -49,10 +50,10 @@ public final class TableMetaData {
      * @return column name list.
      */
     public Collection<String> getAllColumnNames() {
-        List<String> columnNames = new LinkedList<>();
+        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         for (ColumnMetaData each : columnMetaData) {
-            columnNames.add(each.getColumnName());
+            result.add(each.getColumnName());
         }
-        return columnNames;
+        return result;
     }
 }

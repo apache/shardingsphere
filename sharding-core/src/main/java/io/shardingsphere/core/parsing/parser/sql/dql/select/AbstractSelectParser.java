@@ -40,7 +40,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -201,14 +200,17 @@ public abstract class AbstractSelectParser implements SQLParser {
             if (!each.getOwner().isPresent()) {
                 return true;
             }
-            Optional<Table> tableOptionalOfStarSelectItem = tables.find(each.getOwner().get());
-            if (orderItem.getOwner().isPresent() && tables.find(orderItem.getOwner().get()).equals(tableOptionalOfStarSelectItem)) {
+            
+            if (!each.getOwner().get().equalsIgnoreCase(orderItem.getOwner().get())) {
+                continue;
+            }
+            
+            Optional<Table> table = tables.find(each.getOwner().get());
+            if (orderItem.getOwner().isPresent() && tables.find(orderItem.getOwner().get()).equals(table)) {
                 return true;
             }
-            Optional<TableMetaData> tableMetaDataOptional = tableOptionalOfStarSelectItem.isPresent()
-                    ? Optional.fromNullable(shardingMetaData.getTableMetaDataMap().get(tableOptionalOfStarSelectItem.get().getName())) : Optional.<TableMetaData>absent();
-            Collection<String> columnNames = tableMetaDataOptional.isPresent() ? tableMetaDataOptional.get().getAllColumnNames() : new LinkedList<String>();
-            if (columnNames.contains(orderItem.getName().get().toUpperCase()) || columnNames.contains(orderItem.getName().get().toLowerCase())) {
+            Optional<TableMetaData> tableMetaData = table.isPresent() ? Optional.fromNullable(shardingMetaData.getTableMetaDataMap().get(table.get().getName())) : Optional.<TableMetaData>absent();
+            if (tableMetaData.isPresent() && tableMetaData.get().getAllColumnNames().contains(orderItem.getName().get())) {
                 return true;
             }
         }
