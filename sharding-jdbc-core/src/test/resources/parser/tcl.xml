@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<asserts>
-    <assert id="setAutoCommit" />
-    <assert id="commit" value="COMMIT" />
-    <assert id="rollback" value="ROLLBACK" />
-    <assert id="savepoint" value="SAVEPOINT" />
-    <assert id="begin" value="BEGIN" />
-</asserts>

@@ -1,35 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:sharding="http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding"
+    xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/orchestration/sharding"
     xmlns="http://www.springframework.org/schema/beans"
     xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd
-                        http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding 
-                        http://shardingjdbc.io/schema/shardingjdbc/orchestration/sharding/sharding.xsd 
+                        http://shardingsphere.io/schema/shardingsphere/orchestration/sharding 
+                        http://shardingsphere.io/schema/shardingsphere/orchestration/sharding/sharding.xsd 
                         ">
     <import resource="regCenter.xml" />
     <import resource="datasource/dataSource.xml" />
     
-    <sharding:standard-strategy id="standardStrategy" sharding-column="user_id" 
-        precise-algorithm-class="io.shardingjdbc.orchestration.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
+    <bean id="preciseModuloDatabaseShardingAlgorithm" class="io.shardingsphere.jdbc.orchestration.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
+    <bean id="preciseModuloTableShardingAlgorithm" class="io.shardingsphere.jdbc.orchestration.spring.algorithm.PreciseModuloTableShardingAlgorithm" />
+    <bean id="rangeModuloTableShardingAlgorithm" class="io.shardingsphere.jdbc.orchestration.spring.algorithm.RangeModuloTableShardingAlgorithm" />
+    <bean id="defaultComplexKeysShardingAlgorithm" class="io.shardingsphere.jdbc.orchestration.spring.algorithm.DefaultComplexKeysShardingAlgorithm" />
+    <bean id="defaultHintShardingAlgorithm" class="io.shardingsphere.jdbc.orchestration.spring.algorithm.DefaultHintShardingAlgorithm" />
     
-    <sharding:standard-strategy id="rangeStandardStrategy" sharding-column="order_id" 
-        precise-algorithm-class="io.shardingjdbc.orchestration.spring.algorithm.PreciseModuloTableShardingAlgorithm" 
-        range-algorithm-class="io.shardingjdbc.orchestration.spring.algorithm.RangeModuloTableShardingAlgorithm"/>
+    <bean id="keyGenerator" class="io.shardingsphere.jdbc.orchestration.spring.fixture.IncrementKeyGenerator" />
     
-    <sharding:complex-strategy id="complexStrategy" sharding-columns="order_id,user_id" 
-        algorithm-class="io.shardingjdbc.orchestration.spring.algorithm.DefaultComplexKeysShardingAlgorithm"/>
-    
+    <sharding:standard-strategy id="standardStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
+    <sharding:standard-strategy id="rangeStandardStrategy" sharding-column="order_id" precise-algorithm-ref="preciseModuloTableShardingAlgorithm" range-algorithm-ref="rangeModuloTableShardingAlgorithm" />
+    <sharding:complex-strategy id="complexStrategy" sharding-columns="order_id,user_id" algorithm-ref="defaultComplexKeysShardingAlgorithm" />
     <sharding:inline-strategy id="inlineStrategy" sharding-column="order_id" algorithm-expression="t_order_${order_id % 4}" />
-    
-    <sharding:hint-strategy id="hintStrategy" algorithm-class="io.shardingjdbc.orchestration.spring.algorithm.DefaultHintShardingAlgorithm" />
-    
+    <sharding:hint-strategy id="hintStrategy" algorithm-ref="defaultHintShardingAlgorithm" />
     <sharding:none-strategy id="noneStrategy" />
     
     <sharding:data-source id="tableRuleWithAttributesDataSource" registry-center-ref="regCenter">
         <sharding:sharding-rule data-source-names="dbtbl_0,dbtbl_1">
             <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" generate-key-column="order_id" column-key-generator-class="io.shardingjdbc.orchestration.spring.fixture.IncrementKeyGenerator" />
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" generate-key-column-name="order_id" key-generator-ref="keyGenerator" />
             </sharding:table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>
@@ -48,7 +47,7 @@
             default-data-source-name="dbtbl_0" 
             default-database-strategy-ref="standardStrategy" 
             default-table-strategy-ref="inlineStrategy" 
-            key-generator-class="io.shardingjdbc.orchestration.spring.fixture.IncrementKeyGenerator">
+            default-key-generator-ref="keyGenerator">
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" />
             </sharding:table-rules>

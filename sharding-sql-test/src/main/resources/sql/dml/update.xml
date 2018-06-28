@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql-cases>
+    <sql-case id="assertUpdateWithAlias" value="UPDATE t_order AS o SET o.status = %s WHERE o.order_id = %s AND o.user_id = %s" db-types="MySQL,H2" />
+    <sql-case id="assertUpdateWithoutAlias" value="UPDATE t_order SET status = %s WHERE order_id = %s AND user_id = %s" />
+    <sql-case id="assertUpdateWithJsonAndGeo" value="UPDATE t_place SET start_time = %s, status = 0, start_point = ST_GeographyFromText('SRID=4326;POINT('||%s||' '||%s||')'), rule = %s::jsonb, discount_type = %s, order_type = %s WHERE user_new_id = %s AND guid = %s" db-types="PostgreSQL" />
+</sql-cases>

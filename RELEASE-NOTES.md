@@ -1,336 +1,376 @@
+## 3.0.0
+
+### Milestones
+
+1. Sharding-Proxy launch. Support the use of Sharding-Sphere in the form of database to support for MySQL CLI and GUI client
+
+### New Features
+
+1. [ISSUE #290](https://github.com/sharding-sphere/sharding-sphere/issues/290) Support batch INSERT statements
+1. [ISSUE #501](https://github.com/sharding-sphere/sharding-sphere/issues/501) Support OR statement
+
+### Enhancements
+
+1. [ISSUE #608](https://github.com/sharding-sphere/sharding-sphere/issues/608) Support the USE statement of MySQL
+1. [ISSUE #609](https://github.com/sharding-sphere/sharding-sphere/issues/609) Support the SHOW statement of MySQL
+1. [ISSUE #610](https://github.com/sharding-sphere/sharding-sphere/issues/610) Optimize the DQL that does not contain a table name
+1. [ISSUE #611](https://github.com/sharding-sphere/sharding-sphere/issues/611) Support the DESC statement of MySQL
+1. [ISSUE #652](https://github.com/sharding-sphere/sharding-sphere/issues/652) Support Spring Boot Starter 2.x
+1. [ISSUE #701](https://github.com/sharding-sphere/sharding-sphere/issues/701) Support caching parsing results of SQL to improve performance
+1. [ISSUE #702](https://github.com/sharding-sphere/sharding-sphere/issues/702) Support $->{..} as mark for inline expression 
+1. [ISSUE #719](https://github.com/sharding-sphere/sharding-sphere/issues/719) Support Spring bean namespace to inject key generator objects
+1. [ISSUE #720](https://github.com/sharding-sphere/sharding-sphere/issues/720) Support Spring bean namespace to inject sharding algorithm objects
+1. [ISSUE #773](https://github.com/sharding-sphere/sharding-sphere/issues/773) Support sharding and autoincrement primary key of INSERT statements without column names
+
+### Bug Fixes
+
+1. [ISSUE #628](https://github.com/sharding-sphere/sharding-sphere/issues/628) Support data type jsonb for PostgreSQL
+1. [ISSUE #629](https://github.com/sharding-sphere/sharding-sphere/issues/629) Support transaction isolation on JDBC
+1. [ISSUE #646](https://github.com/sharding-sphere/sharding-sphere/issues/646) When aliases in SELECT ITEMS correspond to the real column names of GROUP BY or ORDER BY, there is no need to add columns
+1. [ISSUE #735](https://github.com/sharding-sphere/sharding-sphere/issues/735) Unexpected slave datasource routing result when using Round-robin load-balance algorithm in Mybatis
+1. [ISSUE #806](https://github.com/sharding-sphere/sharding-sphere/issues/806) SQL parse error with `NOT IN`
+1. [ISSUE #827](https://github.com/sharding-sphere/sharding-sphere/issues/827) Fix endless loop for bad SQL like `SELECT * FROM table WHERE id IN ()`
+
 ## 2.0.3
 
-### 功能提升
-1. [ISSUE #600](https://github.com/shardingjdbc/sharding-jdbc/issues/600) 支持TCL
+### Enhancements
 
-### 缺陷修正
-1. [ISSUE #522](https://github.com/shardingjdbc/sharding-jdbc/issues/522) 读写分离Slave库不需要执行DDL语句
-1. [ISSUE #540](https://github.com/shardingjdbc/sharding-jdbc/issues/540) 梳理并支持别名为关键字SQL
-1. [ISSUE #577](https://github.com/shardingjdbc/sharding-jdbc/issues/577) 支持YAML配置换行
+1. [ISSUE #600](https://github.com/sharding-sphere/sharding-sphere/issues/600) Support TCL
+
+### Bug Fixes
+
+1. [ISSUE #522](https://github.com/sharding-sphere/sharding-sphere/issues/522) The slave database does not need to execute the DDL statement for read-write separation 
+1. [ISSUE #540](https://github.com/sharding-sphere/sharding-sphere/issues/540) Support SQLs that the alias is the keyword
+1. [ISSUE #577](https://github.com/sharding-sphere/sharding-sphere/issues/577) Support newline for YAML configuration
 
 ## 2.0.2
 
-### 功能提升
-1. [ISSUE #475](https://github.com/shardingjdbc/sharding-jdbc/issues/475) 支持CREATE INDEX
-1. [ISSUE #525](https://github.com/shardingjdbc/sharding-jdbc/issues/525) 支持DROP INDEX
+### Enhancements
 
-### 缺陷修正
-1. [ISSUE #520](https://github.com/shardingjdbc/sharding-jdbc/issues/520) 引入分表后，唯一键冲突时异常类型不再是DuplicateKeyException
-1. [ISSUE #521](https://github.com/shardingjdbc/sharding-jdbc/issues/521) YAML文件中ShardingProperties设置无效
-1. [ISSUE #529](https://github.com/shardingjdbc/sharding-jdbc/issues/529) 表名大写无法查询
-1. [ISSUE #541](https://github.com/shardingjdbc/sharding-jdbc/issues/541) 无法解析IS NOT NULL
-1. [ISSUE #557](https://github.com/shardingjdbc/sharding-jdbc/issues/557) GroupBy和OrderBy仅别名不一致问题应使用流式归并
-1. [ISSUE #559](https://github.com/shardingjdbc/sharding-jdbc/issues/559) 支持解析以负号和小数点开头的数字(如:-.12)
-1. [ISSUE #567](https://github.com/shardingjdbc/sharding-jdbc/issues/567) MySQL补列时增加转义符以防止使用关键字作为列名或别名导致错误
+1. [ISSUE #475](https://github.com/sharding-sphere/sharding-sphere/issues/475) Support CREATE INDEX
+1. [ISSUE #525](https://github.com/sharding-sphere/sharding-sphere/issues/525) Support DROP INDEX
+
+### Bug Fixes
+
+1. [ISSUE #520](https://github.com/sharding-sphere/sharding-sphere/issues/520) When the partition table is introduced, the exception type is no longer DuplicateKeyException when the unique key conflict occurs
+1. [ISSUE #521](https://github.com/sharding-sphere/sharding-sphere/issues/521) ShardingProperties is invalid in YAML configuration
+1. [ISSUE #529](https://github.com/sharding-sphere/sharding-sphere/issues/529) Table name capitalization cannot be queried
+1. [ISSUE #541](https://github.com/sharding-sphere/sharding-sphere/issues/541) Can't parse IS NOT NULL
+1. [ISSUE #557](https://github.com/sharding-sphere/sharding-sphere/issues/557) When GroupBy and OrderBy aliases are inconsistent, stream merging should be used
+1. [ISSUE #559](https://github.com/sharding-sphere/sharding-sphere/issues/559) Support parsing numbers beginning with minus and decimal (e.g. -.12).
+1. [ISSUE #567](https://github.com/sharding-sphere/sharding-sphere/issues/567) MySQL adds an escape character when columns are added to prevent errors caused by using keywords as column names or aliases
 
 ## 2.0.1
 
-### 功能提升
-1. [ISSUE #489](https://github.com/shardingjdbc/sharding-jdbc/issues/489) SpringName使用RuntimeBeanReference防止创建InnerBean
-1. [ISSUE #496](https://github.com/shardingjdbc/sharding-jdbc/issues/496) 分片配置中逻辑表名可以大小写不敏感
-1. [ISSUE #497](https://github.com/shardingjdbc/sharding-jdbc/issues/497) 注册中心优雅关闭
+### Enhancements
 
-### 缺陷修正
-1. [ISSUE #490](https://github.com/shardingjdbc/sharding-jdbc/issues/490) Oracle使用rownum大于等于或小于等于分页结果不正确
-1. [ISSUE #491](https://github.com/shardingjdbc/sharding-jdbc/issues/491) 通过ResultSet.getStatement().getConnection().close()无法释放连接
+1. [ISSUE #489](https://github.com/sharding-sphere/sharding-sphere/issues/489) SpringName uses RuntimeBeanReference to prevent the creation of InnerBean
+1. [ISSUE #496](https://github.com/sharding-sphere/sharding-sphere/issues/496) Logical table names in sharding configuration can be case sensitive
+1. [ISSUE #497](https://github.com/sharding-sphere/sharding-sphere/issues/497) The registry center closes gracefully
+
+### Bug Fixes
+
+1. [ISSUE #490](https://github.com/sharding-sphere/sharding-sphere/issues/490) Oracle using rownum greater than or equal to or less than or equal to the result of paging is incorrect
+1. [ISSUE #491](https://github.com/sharding-sphere/sharding-sphere/issues/491) Can't close connection by ResultSet.getStatement().getConnection().close()
 
 ## 2.0.0
 
-### 里程碑
+### Milestones
 
-1. API调整. 全新的Maven坐标名称, 包名称和spring命名空间名称. 简化和提升API配置, inline表达式全配置支持
-1. 提供sharding-jdbc的spring-boot-starter
-1. 配置动态化. 可以通过zookeeper和etcd作为注册中心动态修改数据源以及分片配置
-1. 数据治理. 熔断数据库访问程序对数据库的访问和禁用从库的访问
-1. ConfigMap支持. 可以在分片和读写分离策略中获取预定义的元数据
-1. 跟踪系统支持. 可以通过sky-walking等基于Opentracing协议的APM系统中查看sharding-jdbc的调用链
+1. API adjust. Brand new Maven coordinate name, package name and spring namespace name. Simplify and enhance API configuration, inline expression full configuration support
+1. Support spring-boot-starter of sharding-jdbc
+1. Dynamic configuration. Zookeeper and etcd can be used as registry to dynamically modify data sources and sharding configurations
+1. Data governance. Fusing database access procedures to access databases and disable access to slave databases
+1. ConfigMap support. Predefined metadata can be obtained in the sharding and read-write separation strategy
+1. Tracking system support. You can view the invocation chain of sharding-jdbc through sky-walking and other Opentracing based APM systems
 
-### 功能提升
+### Enhancements
 
-1. [ISSUE #386](https://github.com/shardingjdbc/sharding-jdbc/issues/386) 支持SELECT 1这种不包含表名称的SQL
-1. [ISSUE #407](https://github.com/shardingjdbc/sharding-jdbc/issues/407) sharding-jdbc的spring-boot-starter兼容使用减号和驼峰两种方式进行属性配置
-1. [ISSUE #424](https://github.com/shardingjdbc/sharding-jdbc/issues/424) 提供SQL总体执行情况事件
+1. [ISSUE #386](https://github.com/sharding-sphere/sharding-sphere/issues/386) Support for SELECT 1, a SQL that does not contain table names
+1. [ISSUE #407](https://github.com/sharding-sphere/sharding-sphere/issues/407) Sharding-jdbc's spring-boot-starter compatibility uses two ways of attribute configuration: minus sign and hump
+1. [ISSUE #424](https://github.com/sharding-sphere/sharding-sphere/issues/424) Providing SQL overall execution events
 
-### 缺陷修正
+### Bug Fixes
 
-1. [ISSUE #387](https://github.com/shardingjdbc/sharding-jdbc/issues/387) 当函数 + 列名中存在'`'防止关键字时处理出错
-1. [ISSUE #394](https://github.com/shardingjdbc/sharding-jdbc/issues/394) 无法单独close statement
-1. [ISSUE #398](https://github.com/shardingjdbc/sharding-jdbc/issues/398) 使用Hint路由屏蔽表和列名称的大小写区别
-1. [ISSUE #404](https://github.com/shardingjdbc/sharding-jdbc/issues/404) sharding-jdbc的spring-boot-starter不支持HikariDataSource
-1. [ISSUE #419](https://github.com/shardingjdbc/sharding-jdbc/issues/419) SQL改写时, 未判断别名是否为关键字未加转义符导致了SQL异常
-1. [ISSUE #436](https://github.com/shardingjdbc/sharding-jdbc/issues/436) 读写分离多从库配置RoundRobin算法并使用MyBatis时，只能路由到同一从库
-1. [ISSUE #452](https://github.com/shardingjdbc/sharding-jdbc/issues/452) DDL语句分片至多个表会造成连接泄漏的问题
-1. [ISSUE #453](https://github.com/shardingjdbc/sharding-jdbc/issues/453) 编排治理数据源配置name与Druid数据源name冲突
-1. [ISSUE #464](https://github.com/shardingjdbc/sharding-jdbc/issues/464) SQL如果varchar类型由于没有匹配单引号并未关闭, 而恰好sql中的下一个varchar又是汉字的错误SQL, 将导致CPU使用增高
-1. [ISSUE #472](https://github.com/shardingjdbc/sharding-jdbc/issues/472) Connection执行createStatement之前, 先调用getMetaData再setAutoCommit无法对之后创建的数据库真实连接生效
+1. [ISSUE #387](https://github.com/sharding-sphere/sharding-sphere/issues/387) Prevent errors from keywords process when '`' exists in function + column name
+1. [ISSUE #394](https://github.com/sharding-sphere/sharding-sphere/issues/394) Can't only close statement
+1. [ISSUE #398](https://github.com/sharding-sphere/sharding-sphere/issues/398) Use Hint routing to shield case sensitivity 
+1. [ISSUE #404](https://github.com/sharding-sphere/sharding-sphere/issues/404) Sharding-jdbc's spring-boot-starter does not support HikariDataSource
+1. [ISSUE #419](https://github.com/sharding-sphere/sharding-sphere/issues/419) When SQL is rewritten, it does not determine whether alias is a keyword without the escape character, which results in SQL exception
+1. [ISSUE #436](https://github.com/sharding-sphere/sharding-sphere/issues/436) Read-write separation, when the RoundRobin algorithm is configured from the database and MyBatis is used, it can only be routed to the same slave library
+1. [ISSUE #452](https://github.com/sharding-sphere/sharding-sphere/issues/452) Sharding of DDL statements to more than one table causes a connection leak
+1. [ISSUE #453](https://github.com/sharding-sphere/sharding-sphere/issues/453) Orchestration datasource name is conflict with Druid datasource name
+1. [ISSUE #464](https://github.com/sharding-sphere/sharding-sphere/issues/464) SQL if the varchar type is not closed due to the absence of matching single quotes, and the next varchar in SQL is the wrong SQL of Chinese characters, it will lead to higher use of CPU
+1. [ISSUE #472](https://github.com/sharding-sphere/sharding-sphere/issues/472) Before Connection executes createStatement, it calls getMetaData first and then setAutoCommit can not take effective connection to the database that was created later
 
 ## 1.5.4.1
 
-### 缺陷修正
+### Bug Fixes
 
-1. [ISSUE #382](https://github.com/shardingjdbc/sharding-jdbc/issues/382) 使用完全未配置分片策略的表无法完成查询
+1. [ISSUE #382](https://github.com/sharding-sphere/sharding-sphere/issues/382) The query cannot be completed without sharding rule
 
 ## 1.5.4
 
-### 缺陷修正
+### Bug Fixes
 
-1. [ISSUE #356](https://github.com/shardingjdbc/sharding-jdbc/issues/356) 在SQL的Where条件中兼容不是分片列的REGEXP操作符
-1. [ISSUE #362](https://github.com/shardingjdbc/sharding-jdbc/issues/362) 读写分离使用PreparedStatement并未调用setParameter方法导致出错
-1. [ISSUE #370](https://github.com/shardingjdbc/sharding-jdbc/issues/370) 使用原生自增主键调用getGeneratedKeys出错
-1. [ISSUE #375](https://github.com/shardingjdbc/sharding-jdbc/issues/375) 路由至单节点的分页第二页以后的查询取不到数据
-1. [ISSUE #379](https://github.com/shardingjdbc/sharding-jdbc/issues/379) 使用Mybatis时框架调用Connection.getMetaData()时释放连接不正确
+1. [ISSUE #356](https://github.com/sharding-sphere/sharding-sphere/issues/356) In the Where condition of SQL, the REGEXP operator is compatible with non sharding columns
+1. [ISSUE #362](https://github.com/sharding-sphere/sharding-sphere/issues/362) Read-write separation using PreparedStatement does not invoke the setParameter method to cause errors
+1. [ISSUE #370](https://github.com/sharding-sphere/sharding-sphere/issues/370) Error in calling getGeneratedKeys using native self increment primary key
+1. [ISSUE #375](https://github.com/sharding-sphere/sharding-sphere/issues/375) Data can not be obtained after paging second pages route to a single node
+1. [ISSUE #379](https://github.com/sharding-sphere/sharding-sphere/issues/379) When Mybatis is used to call Connection.getMetaData (), the connection is not close correct
 
 ## 1.5.3
 
-### 功能提升
+### Enhancements
 
-1. [ISSUE #98](https://github.com/shardingjdbc/sharding-jdbc/issues/98) 读写分离负载均衡策略支持配置
-1. [ISSUE #196](https://github.com/shardingjdbc/sharding-jdbc/issues/196) 读写分离与分库分表配置独立
+1. [ISSUE #98](https://github.com/sharding-sphere/sharding-sphere/issues/98) Read-write separation load balancing strategy support configuration
+1. [ISSUE #196](https://github.com/sharding-sphere/sharding-sphere/issues/196) Read-write separation and sharding configuration independence
 
-### 缺陷修正
+### Bug Fixes
 
-1. [ISSUE #349](https://github.com/shardingjdbc/sharding-jdbc/issues/349) ResultSet.wasNull功能不正确导致DB中的数字类型空值取出为零
-1. [ISSUE #351](https://github.com/shardingjdbc/sharding-jdbc/issues/351) 包含在默认数据源但不在TableRule配置的表无法正确执行
-1. [ISSUE #353](https://github.com/shardingjdbc/sharding-jdbc/issues/353) 在SQL的Where条件中兼容不是分片列的!=, !> 和 !< 操作符
-1. [ISSUE #354](https://github.com/shardingjdbc/sharding-jdbc/issues/354) 在SQL的Where条件中兼容不是分片列的NOT操作符
+1. [ISSUE #349](https://github.com/sharding-sphere/sharding-sphere/issues/349) Incorrect function of ResultSet.wasNull causes null numeric type in DB to zero
+1. [ISSUE #351](https://github.com/sharding-sphere/sharding-sphere/issues/351) Tables that are included in the default data source but not in TableRule configuration are not properly executed
+1. [ISSUE #353](https://github.com/sharding-sphere/sharding-sphere/issues/353) In the Where condition of SQL, it is compatible with non sharding columns !=, !> and !< operator
+1. [ISSUE #354](https://github.com/sharding-sphere/sharding-sphere/issues/354) In the Where condition of SQL, NOT operators are compatible with non-sharding columns
 
 ## 1.5.2
 
-### 里程碑
+### Milestones
 
-1. 质量保障的测试引擎，每条SQL可以运行60个不同维度的测试用例
+1. The test engine of quality assurance, each SQL can run 60 test cases of different dimensions
 
-### 功能提升
+### Enhancements
 
-1. [ISSUE #335](https://github.com/shardingjdbc/sharding-jdbc/issues/335) 支持GROUP BY + 自定义函数的SQL
-1. [ISSUE #341](https://github.com/shardingjdbc/sharding-jdbc/issues/341) 支持Oracle中的ORDER BY xxx NULLS FIRST | LAST 语句
+1. [ISSUE #335](https://github.com/sharding-sphere/sharding-sphere/issues/335) Support the GROUP BY + custom function SQL
+1. [ISSUE #341](https://github.com/sharding-sphere/sharding-sphere/issues/341) Support ORDER BY xxx NULLS FIRST | LAST statement of Oracle
 
-### 缺陷修正
+### Bug Fixes
 
-1. [ISSUE #334](https://github.com/shardingjdbc/sharding-jdbc/issues/334) 解析有函数的ORDER BY会将后面的ASC, DESC解析到OrderItem的name属性中
-1. [ISSUE #335](https://github.com/shardingjdbc/sharding-jdbc/issues/339) 使用表全名关联的JOIN解析不正确
-1. [ISSUE #346](https://github.com/shardingjdbc/sharding-jdbc/issues/346) DDL语句 DROP TABLE IF EXISTS USER 解析表明错误
+1. [ISSUE #334](https://github.com/sharding-sphere/sharding-sphere/issues/334) Parsing ORDER BY with functions will resolve the following ASC and DESC to the name attribute of OrderItem
+1. [ISSUE #335](https://github.com/sharding-sphere/sharding-sphere/issues/339) JOIN parsing is incorrect using the full name association of the table
+1. [ISSUE #346](https://github.com/sharding-sphere/sharding-sphere/issues/346) Parsing table name error of DDL statement DROP TABLE IF EXISTS USER
 
 ## 1.5.1
 
-### 新功能
+### New Features
 
-1. [ISSUE #314](https://github.com/shardingjdbc/sharding-jdbc/issues/314) 支持DDL类型的SQL
+1. [ISSUE #314](https://github.com/sharding-sphere/sharding-sphere/issues/314) Support DDL type SQL
 
-### 功能调整
+### Changes
 
-1. [ISSUE #327](https://github.com/shardingjdbc/sharding-jdbc/issues/327) 默认关闭sql.show配置
+1. [ISSUE #327](https://github.com/sharding-sphere/sharding-sphere/issues/327) Close sql.show configuration by default
 
-### 缺陷修正
+### Bug Fixes
 
-1. [ISSUE #308](https://github.com/shardingjdbc/sharding-jdbc/issues/308) 数据库原生的自增GeneratedKey的返回无效
-1. [ISSUE #309](https://github.com/shardingjdbc/sharding-jdbc/issues/310) 子查询中的ORDER BY和GROUP BY不列入解析上下文
-1. [ISSUE #313](https://github.com/shardingjdbc/sharding-jdbc/issues/313) 支持<>操作符
-1. [ISSUE #317](https://github.com/shardingjdbc/sharding-jdbc/issues/317) LIMIT参数不能是Long类型
-1. [ISSUE #320](https://github.com/shardingjdbc/sharding-jdbc/issues/320) GROUP BY + LIMIT的SQL改写错误
-1. [ISSUE #323](https://github.com/shardingjdbc/sharding-jdbc/issues/323) 解析ORDER BY + 聚合表达式错误
+1. [ISSUE #308](https://github.com/sharding-sphere/sharding-sphere/issues/308) Invalid return of database native GeneratedKey
+1. [ISSUE #309](https://github.com/sharding-sphere/sharding-sphere/issues/310) ORDER BY and GROUP BY in sub-queries are not included in the analytic context
+1. [ISSUE #313](https://github.com/sharding-sphere/sharding-sphere/issues/313) Support <> operator
+1. [ISSUE #317](https://github.com/sharding-sphere/sharding-sphere/issues/317) Parameter of LIMIT can not be type of Long
+1. [ISSUE #320](https://github.com/sharding-sphere/sharding-sphere/issues/320) SQL rewriting error of GROUP BY + LIMIT
+1. [ISSUE #323](https://github.com/sharding-sphere/sharding-sphere/issues/323) Parsing ORDER BY + Aggregation Expression error
 
 ## 1.5.0
 
-### 里程碑
+### Milestones
 
-1. 全新的SQL解析模块，去掉对Druid的依赖。仅解析分片上下文，对于SQL采用"半理解"理念，进一步提升性能和兼容性，并降低代码复杂度
-1. 全新的SQL改写模块，增加优化性改写模块
-1. 全新的SQL归并模块，重构为流式、内存以及装饰者3种归并引擎
+1. The new SQL parsing module removes the dependence on Druid. We only need to parse the sharding context, and adopt a "semi understanding" concept for SQL to further improve performance and compatibility, and reduce code complexity
+1. The new SQL rewrite module adds an optimized rewrite module
+1. The new SQL merge module is rebuilt into 3 merging engines: streaming, memory and decorator
 
-### 新功能
+### New Features
 
-1. 增加对Oracle，SQLServer和PostgreSQL的支持
-1. 非功能型子查询支持
+1. Support Oracle, SQLServer and PostgreSQL
+1. Non functional sub-query support
 
-### 功能提升
+### Enhancements
 
-1. [ISSUE #256](https://github.com/shardingjdbc/sharding-jdbc/issues/256) 可配置显示分片执行SQL日志
-1. [ISSUE #291](https://github.com/shardingjdbc/sharding-jdbc/issues/291) 用流式方式处理仅包含GroupBy的SQL
+1. [ISSUE #256](https://github.com/sharding-sphere/sharding-sphere/issues/256) Configurable display sharding execute to SQL log
+1. [ISSUE #291](https://github.com/sharding-sphere/sharding-sphere/issues/291) Processing SQL use stream mode that contains only GroupBy
 
-### 功能调整
+### Changes
 
-1. 简化分布式自增序列。将每个表支持多自增序列简化为单表仅支持单一的分布式自增序列，并不再支持通过环境变量设置workerID。
-1. 去掉对OR的支持
+1. Simplify the distributed self increasing sequence. Each table is supported by simplifying a multiple self increasing sequence to a single table supporting only a single distributed self increasing sequence, and no longer supporting workerID settings through environment variables
+1. Remove support for OR
 
-### 缺陷修正
+### Bug Fixes
 
-1. [ISSUE #239](https://github.com/shardingjdbc/sharding-jdbc/issues/239) LIMIT路由至多查询结果集，若只有一个不为空的结果集，分页结果不正确
-1. [ISSUE #263](https://github.com/shardingjdbc/sharding-jdbc/issues/263) 分片列和逻辑表配置可忽略大小写
-1. [ISSUE #292](https://github.com/shardingjdbc/sharding-jdbc/issues/292) 内存方式处理GROUP BY语句如有分页信息则需改写
-1. [ISSUE #295](https://github.com/shardingjdbc/sharding-jdbc/issues/295) LIMIT 0的情况并未按照分页限制条件过滤结果集
+1. [ISSUE #239](https://github.com/sharding-sphere/sharding-sphere/issues/239) LIMIT routes to multiple query result sets. If there is only one result set that is not empty, the result of paging is incorrect
+1. [ISSUE #263](https://github.com/sharding-sphere/sharding-sphere/issues/263) Sharding and logical table configuration can be case insensitive
+1. [ISSUE #292](https://github.com/sharding-sphere/sharding-sphere/issues/292) When the memory mode handles GROUP BY statement, if there is paging information, it needs to be rewritten
+1. [ISSUE #295](https://github.com/sharding-sphere/sharding-sphere/issues/295) LIMIT 0 does not filter the result set according to paging restrictions
 
 ## 1.4.2
 
-### 功能提升
+### Enhancements
 
-1. [ISSUE #219](https://github.com/shardingjdbc/sharding-jdbc/issues/219) 线程性能优化
-1. [ISSUE #215](https://github.com/shardingjdbc/sharding-jdbc/issues/215) 流式排序的聚集结果集 StreamingOrderByReducerResultSet性能优化
-1. [ISSUE #161](https://github.com/shardingjdbc/sharding-jdbc/issues/161) 结果集归并的时候可以采用堆排序来提升性能
+1. [ISSUE #219](https://github.com/sharding-sphere/sharding-sphere/issues/219) Thread performance optimization
+1. [ISSUE #215](https://github.com/sharding-sphere/sharding-sphere/issues/215) Aggregated result set of stream sort StreamingOrderByReducerResultSet performance optimization
+1. [ISSUE #161](https://github.com/sharding-sphere/sharding-sphere/issues/161) When the result sets are merged, heap sort can be used to improve performance
 
-### 缺陷修正
+### Bug Fixes
 
-1. [ISSUE #212](https://github.com/shardingjdbc/sharding-jdbc/issues/212) 对去缺少数据源规则给出更有意义的提示
-1. [ISSUE #214](https://github.com/shardingjdbc/sharding-jdbc/issues/214) where中 table_name.column_name in (?,?)无法解析表达式
-1. [ISSUE #180](https://github.com/shardingjdbc/sharding-jdbc/issues/180) 批量执行Update返回值不准确
-1. [ISSUE #225](https://github.com/shardingjdbc/sharding-jdbc/issues/225) 自动生成Id最后一位不归零
+1. [ISSUE #212](https://github.com/sharding-sphere/sharding-sphere/issues/212) More meaningful hints for missing data source rules
+1. [ISSUE #214](https://github.com/sharding-sphere/sharding-sphere/issues/214) table_name.column_name in (?,?) in WHERE can't parser expression
+1. [ISSUE #180](https://github.com/sharding-sphere/sharding-sphere/issues/180) Batch execution of Update return inaccuracy
+1. [ISSUE #225](https://github.com/sharding-sphere/sharding-sphere/issues/225) The last character of automatic generation of Id is not 0
 
 ## 1.4.1
 
-### 功能提升
+### Enhancements
 
-1. [ISSUE #191](https://github.com/shardingjdbc/sharding-jdbc/issues/191) 根据主机的IP生成workerId的KeyGenerator实现
-1. [ISSUE #192](https://github.com/shardingjdbc/sharding-jdbc/issues/192) 根据HOSTNAME的数字尾缀获取workerId的KeyGenerator
-1. [ISSUE #210](https://github.com/shardingjdbc/sharding-jdbc/issues/210) 路由到单库单表移除补充的SQL语句片段
+1. [ISSUE #191](https://github.com/sharding-sphere/sharding-sphere/issues/191) Generating KeyGenerator of workerId based on IP of host
+1. [ISSUE #192](https://github.com/sharding-sphere/sharding-sphere/issues/192) Get workerId's KeyGenerator based on HOSTNAME's digital suffix
+1. [ISSUE #210](https://github.com/sharding-sphere/sharding-sphere/issues/210) Routing to single library and single table to remove supplementary SQL statement fragments
 
-### 缺陷修正
+### Bug Fixes
 
-1. [ISSUE #194](https://github.com/shardingjdbc/sharding-jdbc/issues/194) jdbc接口中资源释放错误
-1. [ISSUE #199](https://github.com/shardingjdbc/sharding-jdbc/issues/199) 分表且复用PreparedStatement对象造成数据路由错误
-1. [ISSUE #201](https://github.com/shardingjdbc/sharding-jdbc/issues/201) 批量操作执行前事件发送缺失
-1. [ISSUE #203](https://github.com/shardingjdbc/sharding-jdbc/issues/203) 合并batch操作发送的事件
-1. [ISSUE #209](https://github.com/shardingjdbc/sharding-jdbc/issues/209) limit并行异常
+1. [ISSUE #194](https://github.com/sharding-sphere/sharding-sphere/issues/194) Some component exceptions in the close method of Connection, Statement, ResultSet and other interfaces cause the close method of another component to be not invoked
+1. [ISSUE #199](https://github.com/sharding-sphere/sharding-sphere/issues/199) Sharding and reuse PreparedStatement object cause route error
+1. [ISSUE #201](https://github.com/sharding-sphere/sharding-sphere/issues/201) Event transmission missing before batch operation execution 
+1. [ISSUE #203](https://github.com/sharding-sphere/sharding-sphere/issues/203) Merge events sent by the batch operation
+1. [ISSUE #209](https://github.com/sharding-sphere/sharding-sphere/issues/209) Parallel execution of multiple limit queries leads to IndexOutOfBoundsException
 
 ## 1.4.0
 
-### 功能提升
+### Enhancements
 
-自动生成键实现，包含
+Automatic generation key implementation, including
 
-1. [ISSUE #162](https://github.com/shardingjdbc/sharding-jdbc/issues/162) 分布式主键算法实现
-1. [ISSUE #163](https://github.com/shardingjdbc/sharding-jdbc/issues/163) 获取自增序列jdbc接口实现
-1. [ISSUE #171](https://github.com/shardingjdbc/sharding-jdbc/issues/171) sharding-jdbc-core配合自动生成序列改造
-1. [ISSUE #172](https://github.com/shardingjdbc/sharding-jdbc/issues/172) YAML与Spring的配置方式增加对于自增序列的支持
+1. [ISSUE #162](https://github.com/sharding-sphere/sharding-sphere/issues/162) Implementation of distributed primary key algorithm
+1. [ISSUE #163](https://github.com/sharding-sphere/sharding-sphere/issues/163) Acquisition of a self increasing sequence of JDBC interfaces
+1. [ISSUE #171](https://github.com/sharding-sphere/sharding-sphere/issues/171) Sharding-jdbc-core coordination automatic generation sequence transformation
+1. [ISSUE #172](https://github.com/sharding-sphere/sharding-sphere/issues/172) The configuration of YAML and Spring supports the self increasing sequence
 
-### 缺陷修正
+### Bug Fixes
 
-1. [ISSUE #176](https://github.com/shardingjdbc/sharding-jdbc/issues/176) AbstractMemoryResultSet对SQL的wasNull实现有问题
+1. [ISSUE #176](https://github.com/sharding-sphere/sharding-sphere/issues/176) The wasNull flag of AbstractMemoryResultSet is not reset in time
 
 ## 1.3.3
 
-### 功能提升
+### Enhancements
 
-1. [ISSUE #59](https://github.com/shardingjdbc/sharding-jdbc/issues/59) PreparedStatement设置参数时可以根据参数类型调用正确的底层set方法
+1. [ISSUE #59](https://github.com/sharding-sphere/sharding-sphere/issues/59) PreparedStatement can call the correct underlying set method according to the parameter type when setting parameters
 
-### 缺陷修正
+### Bug Fixes
 
-1. [ISSUE #149](https://github.com/shardingjdbc/sharding-jdbc/issues/149) INSERT IGNORE INTO时如果数据重了忽略时返回的成-1了，应该返回0 
-1. [ISSUE #118](https://github.com/shardingjdbc/sharding-jdbc/issues/118) 同一个线程内先执行DQL后执行DML，DML操作在从库上执行
-1. [ISSUE #122](https://github.com/shardingjdbc/sharding-jdbc/issues/122) bed的fail重试问题
-1. [ISSUE #152](https://github.com/shardingjdbc/sharding-jdbc/issues/152) 可能同一个connection多线程导致问题
-1. [ISSUE #150](https://github.com/shardingjdbc/sharding-jdbc/issues/150) 与最新SQLServer jdbc驱动兼容问题
-1. [ISSUE #166](https://github.com/shardingjdbc/sharding-jdbc/issues/166) druid数据源stat过滤器多线程报错
+1. [ISSUE #149](https://github.com/sharding-sphere/sharding-sphere/issues/149) When INSERT IGNORE INTO, if the data is duplicated, the value returned to -1 when ignored, and it should be returned to 0
+1. [ISSUE #118](https://github.com/sharding-sphere/sharding-sphere/issues/118) In the same thread, DQL is executed first, then DML is executed, and DML operation is executed from the slave database
+1. [ISSUE #122](https://github.com/sharding-sphere/sharding-sphere/issues/122) In cases where connections are not available (such as network interruption), transactions should be interrupted rather than retry
+1. [ISSUE #152](https://github.com/sharding-sphere/sharding-sphere/issues/152) PreparedStatement's cache causes an array out of bound
+1. [ISSUE #150](https://github.com/sharding-sphere/sharding-sphere/issues/150) With the latest SQLServer jdbc driver compatibility problem, Product Name should be changed from SQLServer to Microsoft SQL Server
+1. [ISSUE #166](https://github.com/sharding-sphere/sharding-sphere/issues/166) Druid data source stat filter multi-thread error reporting should be added to database connection level synchronization
 
 ## 1.3.2
 
-### 功能提升
+### Enhancements
 
-1. [ISSUE #79](https://github.com/shardingjdbc/sharding-jdbc/issues/79) 关于MySQL 分页limit
+1. [ISSUE #79](https://github.com/sharding-sphere/sharding-sphere/issues/79) Optimizes limit for only one target table, does not modify limit offset
 
-### 缺陷修正
+### Bug Fixes
 
-1. [ISSUE #36](https://github.com/shardingjdbc/sharding-jdbc/issues/36) ShardingPreparedStatement无法反复设置参数
-1. [ISSUE #114](https://github.com/shardingjdbc/sharding-jdbc/issues/114) ShardingPreparedStatement执行批处理任务时,反复解析sql导致oom
-1. [ISSUE #33](https://github.com/shardingjdbc/sharding-jdbc/issues/33) Limit支持问题
-1. [ISSUE #124](https://github.com/shardingjdbc/sharding-jdbc/issues/124) com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractStatementAdapter.getUpdateCount返回值不符合JDBC规范
-1. [ISSUE #141](https://github.com/shardingjdbc/sharding-jdbc/issues/141) 多线程执行器参数设置失效
+1. [ISSUE #36](https://github.com/sharding-sphere/sharding-sphere/issues/36) ShardingPreparedStatement cannot set parameters repeatedly
+1. [ISSUE #114](https://github.com/sharding-sphere/sharding-sphere/issues/114) When ShardingPreparedStatement performs batch tasks, it repeatedly analyzes SQL and leads to OOM
+1. [ISSUE #33](https://github.com/sharding-sphere/sharding-sphere/issues/33) According to the MySQL document, queries similar to limit 100 and -1 format are not supported
+1. [ISSUE #124](https://github.com/sharding-sphere/sharding-sphere/issues/124) The return value of com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractStatementAdapter.getUpdateCount does not conform to the JDBC specification
+1. [ISSUE #141](https://github.com/sharding-sphere/sharding-sphere/issues/141) Multi-thread executor parameter setting failure
 
 
 ## 1.3.1
 
-### 功能提升
+### Enhancements
 
-1. [ISSUE #91](https://github.com/shardingjdbc/sharding-jdbc/issues/91) 开放对Statement.getGeneratedKeys的支持，可返回原生的数据库自增主键
-1. [ISSUE #92](https://github.com/shardingjdbc/sharding-jdbc/issues/92) 查询类DQL语句事件发送
+1. [ISSUE #91](https://github.com/sharding-sphere/sharding-sphere/issues/91) Open support for Statement.getGeneratedKeys can return the original database self increase primary key
+1. [ISSUE #92](https://github.com/sharding-sphere/sharding-sphere/issues/92) Query DQL statement event sending
 
-### 缺陷修正
+### Bug Fixes
 
-1. [ISSUE #89](https://github.com/shardingjdbc/sharding-jdbc/issues/89) 读写分离和分片的hint一起使用导致冲突
-1. [ISSUE #95](https://github.com/shardingjdbc/sharding-jdbc/issues/95) 同一线程内写入操作后的读操作均从主库读取改为同一线程且同一连接内
+1. [ISSUE #89](https://github.com/sharding-sphere/sharding-sphere/issues/89) Use read-write separation with sharding hint leads to conflict
+1. [ISSUE #95](https://github.com/sharding-sphere/sharding-sphere/issues/95) Write operations in the same thread are read from the master database changed to the same thread and within the same connection
 
 ## 1.3.0
 
-### 新功能
+### New Features
 
-1. [ISSUE #85](https://github.com/shardingjdbc/sharding-jdbc/issues/85) 读写分离
+1. [ISSUE #85](https://github.com/sharding-sphere/sharding-sphere/issues/85) Read-write separation
 
-### 功能提升
+### Enhancements
 
-1. [ISSUE #82](https://github.com/shardingjdbc/sharding-jdbc/issues/82) TableRule可传入dataSourceName属性，用于指定该TableRule对应的数据源
-1. [ISSUE #88](https://github.com/shardingjdbc/sharding-jdbc/issues/88) 放开对其他数据库的限制，可支持标准SQL, 对个性化分页等语句不支持
+1. [ISSUE #82](https://github.com/sharding-sphere/sharding-sphere/issues/82) TableRule can import the dataSourceName attribute to specify the data source corresponding to the TableRule
+1. [ISSUE #88](https://github.com/sharding-sphere/sharding-sphere/issues/88) Release restrictions on other databases, support standard SQL, do not support personalized paging statements
 
-### 缺陷修正
+### Bug Fixes
 
-1. [ISSUE #81](https://github.com/shardingjdbc/sharding-jdbc/issues/81) 关联表查询使用or查询条件解析结果异常
+1. [ISSUE #81](https://github.com/sharding-sphere/sharding-sphere/issues/81) Associative table query uses OR query condition to resolve the result exceptions
 
 ## 1.2.1
 
-### 结构调整
+### Refactor
 
-1. [ISSUE #60](https://github.com/shardingjdbc/sharding-jdbc/issues/60) API调整，抽离ShardingDataSource，使用工厂代替
-1. [ISSUE #76](https://github.com/shardingjdbc/sharding-jdbc/issues/76) ShardingRule和TableRule调整为Builder模式
-1. [ISSUE #77](https://github.com/shardingjdbc/sharding-jdbc/issues/77) ShardingRule和TableRule调整为Builder模式
+1. [ISSUE #60](https://github.com/sharding-sphere/sharding-sphere/issues/60) API adjust, remove ShardingDataSource, use factory instead
+1. [ISSUE #76](https://github.com/sharding-sphere/sharding-sphere/issues/76) ShardingRule and TableRule change to Builder pattern
+1. [ISSUE #77](https://github.com/sharding-sphere/sharding-sphere/issues/77) ShardingRule and TableRule change to Builder pattern
 
-### 功能提升
+### Enhancements
 
-1. [ISSUE #61](https://github.com/shardingjdbc/sharding-jdbc/issues/61) 在ShardingValue类中加入逻辑表名
-1. [ISSUE #66](https://github.com/shardingjdbc/sharding-jdbc/issues/66) 在JDBC层的Statement增加对get/set MaxFieldSize，MaxRows和QueryTimeout的支持
-1. [ISSUE #72](https://github.com/shardingjdbc/sharding-jdbc/issues/72) 对于select union all形式的批量插入支持
-1. [ISSUE #78](https://github.com/shardingjdbc/sharding-jdbc/issues/78) 简化只分库配置，无需配置逻辑表和真实表对应关系
-1. [ISSUE #80](https://github.com/shardingjdbc/sharding-jdbc/issues/80) 简化包含不分片库表的配置，可指定默认数据源，不分片无需配置TableRule
+1. [ISSUE #61](https://github.com/sharding-sphere/sharding-sphere/issues/61) Add the logical table name to the ShardingValue class
+1. [ISSUE #66](https://github.com/sharding-sphere/sharding-sphere/issues/66) Statement on the JDBC tier supports get/set MaxFieldSize, MaxRows and QueryTimeout
+1. [ISSUE #72](https://github.com/sharding-sphere/sharding-sphere/issues/72) Batch inserts supporting select union all
+1. [ISSUE #78](https://github.com/sharding-sphere/sharding-sphere/issues/78) Simplifying sharding only configuration, without configuring logical table and real table correspondence
+1. [ISSUE #80](https://github.com/sharding-sphere/sharding-sphere/issues/80) Simplifying the configuration that does not sharding, specifying the default data source, do not need configure TableRule
 
-### 缺陷修正
+### Bug Fixes
 
-1. [ISSUE #63](https://github.com/shardingjdbc/sharding-jdbc/issues/63) ORDER BY与GROUP BY衍生列未添加表名或表别名
-1. [ISSUE #65](https://github.com/shardingjdbc/sharding-jdbc/issues/65) 解析条件上下文性能提升
-1. [ISSUE #67](https://github.com/shardingjdbc/sharding-jdbc/issues/67) 分片路由到多表时柔性事务日志无法删除
-1. [ISSUE #71](https://github.com/shardingjdbc/sharding-jdbc/issues/71) 路由单分片LIMIT的OFFSET计算错误
-1. [ISSUE #75](https://github.com/shardingjdbc/sharding-jdbc/issues/75) MemoryTransactionLogStorage重试次数更新并发问题
+1. [ISSUE #63](https://github.com/sharding-sphere/sharding-sphere/issues/63) No table name or table alias is added to the ORDER BY and GROUP BY derivation columns
+1. [ISSUE #65](https://github.com/sharding-sphere/sharding-sphere/issues/65) Performance enhancement for parsing condition context
+1. [ISSUE #67](https://github.com/sharding-sphere/sharding-sphere/issues/67) The soft transaction log cannot be deleted when routed to multiple tables
+1. [ISSUE #71](https://github.com/sharding-sphere/sharding-sphere/issues/71) Routing single sharding key by OFFSET of LIMIT error
+1. [ISSUE #75](https://github.com/sharding-sphere/sharding-sphere/issues/75) MemoryTransactionLogStorage retry times update concurrency problem
 
 ## 1.2.0
 
-### 新功能
+### New Features
 
-1. [ISSUE #53](https://github.com/shardingjdbc/sharding-jdbc/issues/53) 动态表配置
-1. [ISSUE #58](https://github.com/shardingjdbc/sharding-jdbc/issues/58) 柔性事务：最大努力送达型初始版本
+1. [ISSUE #53](https://github.com/sharding-sphere/sharding-sphere/issues/53) The relationship between the real table and the logical table is not configured, and the real table is dynamically calculated by the sharding algorithm
+1. [ISSUE #58](https://github.com/sharding-sphere/sharding-sphere/issues/58) Soft transaction: the initial version of the best effort type
 
-### 结构调整
+### Refactor
 
-1. [ISSUE #49](https://github.com/shardingjdbc/sharding-jdbc/issues/49) 调整属性配置
-1. [ISSUE #51](https://github.com/shardingjdbc/sharding-jdbc/issues/51) 重构Hint接口
+1. [ISSUE #49](https://github.com/sharding-sphere/sharding-sphere/issues/49) Adjust the property configuration
+1. [ISSUE #51](https://github.com/sharding-sphere/sharding-sphere/issues/51) Refactor of Hint interface
 
-### 缺陷修正
+### Bug Fixes
 
-1. [ISSUE #43](https://github.com/shardingjdbc/sharding-jdbc/issues/43) yaml文件中包含中文，且操作系统模式不是utf-8编码导致的yaml不能解析
-1. [ISSUE #48](https://github.com/shardingjdbc/sharding-jdbc/issues/48) yaml文件读取后未关闭
-1. [ISSUE #57](https://github.com/shardingjdbc/sharding-jdbc/issues/57) SQL解析子查询改进
+1. [ISSUE #43](https://github.com/sharding-sphere/sharding-sphere/issues/43) The yaml file contains Chinese, and the operating system mode is not UTF-8 encoding, resulting in yaml can not be parsed
+1. [ISSUE #48](https://github.com/sharding-sphere/sharding-sphere/issues/48) Yaml file is not closed after reading
+1. [ISSUE #57](https://github.com/sharding-sphere/sharding-sphere/issues/57) At the analytic level, we can identify sub queries to ensure that the behavior of supplementary columns can be accurately positioned
 
 ## 1.1.0
 
-### 新功能
+### New Features
 
-1. [ISSUE #40](https://github.com/shardingjdbc/sharding-jdbc/issues/40) 支持YAML文件配置
-1. [ISSUE #41](https://github.com/shardingjdbc/sharding-jdbc/issues/41) 支持Spring命名空间配置
-1. [ISSUE #42](https://github.com/shardingjdbc/sharding-jdbc/issues/42) 支持inline表达式配置
+1. [ISSUE #40](https://github.com/sharding-sphere/sharding-sphere/issues/40) Support YAML configuration
+1. [ISSUE #41](https://github.com/sharding-sphere/sharding-sphere/issues/41) Support Spring namespace configuration
+1. [ISSUE #42](https://github.com/sharding-sphere/sharding-sphere/issues/42) Support inline expression configuration
 
-### 缺陷修正
+### Bug Fixes
 
-1. [ISSUE #25](https://github.com/shardingjdbc/sharding-jdbc/issues/25) OR表达式下会出现重复结果问题
+1. [ISSUE #25](https://github.com/sharding-sphere/sharding-sphere/issues/25) The problem of repeated results will appear under the OR expression
 
 ## 1.0.1
 
-### 功能提升
+### Enhancements
 
-1. [ISSUE #39](https://github.com/shardingjdbc/sharding-jdbc/issues/39) 增加使用暗示(Hint)方式注册分片键值的方式进行SQL路由的功能
+1. [ISSUE #39](https://github.com/sharding-sphere/sharding-sphere/issues/39) Support the use of Hint method to register the key value to SQL routing
 
-### 缺陷修正
+### Bug Fixes
 
-1. [ISSUE #11](https://github.com/shardingjdbc/sharding-jdbc/issues/11) count函数在某些情况下返回不正确
-1. [ISSUE #13](https://github.com/shardingjdbc/sharding-jdbc/issues/13) Insert 语句 没有写列名 进行了全路由
-1. [ISSUE #16](https://github.com/shardingjdbc/sharding-jdbc/issues/16) 改造多线程执行模型
-1. [ISSUE #18](https://github.com/shardingjdbc/sharding-jdbc/issues/18) 查询Count时，使用getObject()取数会报异常
-1. [ISSUE #19](https://github.com/shardingjdbc/sharding-jdbc/issues/19) sum和avg函数，不加别名不执行merger，加了空指针异常
-1. [ISSUE #38](https://github.com/shardingjdbc/sharding-jdbc/issues/38) JPA与Sharding-JDBC的兼容问题。JPA会自动增加SELECT的列别名，导致ORDER BY只能通过别名，而非列名称获取ResultSet的数据
+1. [ISSUE #11](https://github.com/sharding-sphere/sharding-sphere/issues/11) The count function returns incorrectly without aliases
+1. [ISSUE #13](https://github.com/sharding-sphere/sharding-sphere/issues/13) The Insert statement does not write column names or write column names but column names do not contain sharding fields, occur broadcast route
+1. [ISSUE #16](https://github.com/sharding-sphere/sharding-sphere/issues/16) For now a new connection pool is executed every time SQL is executed. Instead, each ShardingDataSource object should be changed to share a pool
+1. [ISSUE #18](https://github.com/sharding-sphere/sharding-sphere/issues/18) When query Count, getObject() throws Exception: Unsupported data type: Object
+1. [ISSUE #19](https://github.com/sharding-sphere/sharding-sphere/issues/19) In SUM and AVG functions, merger is not executed if aliases are not added, and null pointer exception fired if aliases are added
+1. [ISSUE #38](https://github.com/sharding-sphere/sharding-sphere/issues/38) The compatibility between JPA and Sharding-JDBC. JPA automatically add the column aliases of SELECT, resulting in ORDER BY obtaining ResultSet data only by aliases rather than column names
 
 ## 1.0.0
-1. 初始版本
+
+1. Initial version

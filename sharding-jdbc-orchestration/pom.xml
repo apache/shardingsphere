@@ -3,23 +3,23 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>io.shardingjdbc</groupId>
-        <artifactId>sharding-jdbc</artifactId>
-        <version>2.0.3</version>
+        <groupId>io.shardingsphere</groupId>
+        <artifactId>sharding-sphere</artifactId>
+        <version>3.0.0.M1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>sharding-jdbc-orchestration</artifactId>
     <name>${project.artifactId}</name>
     
     <properties>
-        <sharding-jdbc.version>2.0.3</sharding-jdbc.version>
+        <sharding-sphere.version>3.0.0.M1</sharding-sphere.version>
     </properties>
     
     <dependencies>
         <dependency>
-            <groupId>io.shardingjdbc</groupId>
-            <artifactId>sharding-jdbc-core</artifactId>
-            <version>${sharding-jdbc.version}</version>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>sharding-jdbc</artifactId>
+            <version>${sharding-sphere.version}</version>
         </dependency>
         
         <dependency>
@@ -80,8 +80,8 @@
             <artifactId>h2</artifactId>
         </dependency>
         <dependency>
-            <groupId>commons-dbcp</groupId>
-            <artifactId>commons-dbcp</artifactId>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-dbcp2</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-pool</groupId>
@@ -94,6 +94,10 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
         </dependency>
     </dependencies>
 </project>
