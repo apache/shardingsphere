@@ -107,11 +107,13 @@ public abstract class BaseIntegrateTest {
     
     private String getExpectedDataFile(final String path, final DatabaseType databaseType, final String expectedDataFile) {
         String pathPrefix = path.substring(0, path.lastIndexOf(File.separator));
-        String expectedDataFilePath = expectedDataFile.substring(0, expectedDataFile.lastIndexOf(File.separator));
-        String expectedDataFileName = expectedDataFile.substring(expectedDataFile.lastIndexOf(File.separator));
-        String expectedDataFileWithDatabaseType = String.format("%s/dataset/%s/%s/%s", pathPrefix, expectedDataFilePath, databaseType.toString().toLowerCase(), expectedDataFileName);
-        if (new File(expectedDataFileWithDatabaseType).exists()) {
-            return expectedDataFileWithDatabaseType;
+        if (expectedDataFile.contains(File.separator)) {
+            String expectedDataFilePath = expectedDataFile.substring(0, expectedDataFile.lastIndexOf(File.separator));
+            String expectedDataFileName = expectedDataFile.substring(expectedDataFile.lastIndexOf(File.separator));
+            String expectedDataFileWithDatabaseType = String.format("%s/dataset/%s/%s/%s", pathPrefix, expectedDataFilePath, databaseType.toString().toLowerCase(), expectedDataFileName);
+            if (new File(expectedDataFileWithDatabaseType).exists()) {
+                return expectedDataFileWithDatabaseType;
+            }
         }
         return String.format("%s/dataset/%s", pathPrefix, expectedDataFile);
     }
