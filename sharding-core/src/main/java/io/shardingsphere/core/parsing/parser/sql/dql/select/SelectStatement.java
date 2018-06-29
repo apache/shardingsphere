@@ -34,6 +34,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -112,12 +113,11 @@ public final class SelectStatement extends DQLStatement {
      *
      * @return star select items
      */
-    public List<StarSelectItem> getStarSelectItems() {
-        List<StarSelectItem> result = new LinkedList<>();
+    public Collection<StarSelectItem> getStarSelectItems() {
+        Collection<StarSelectItem> result = new LinkedList<>();
         for (SelectItem each : items) {
             if (each instanceof StarSelectItem) {
-                StarSelectItem starSelectItem = (StarSelectItem) each;
-                result.add(starSelectItem);
+                result.add((StarSelectItem) each);
             }
         }
         return result;

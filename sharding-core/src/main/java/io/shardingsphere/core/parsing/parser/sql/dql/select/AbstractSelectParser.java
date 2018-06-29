@@ -31,7 +31,6 @@ import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelec
 import io.shardingsphere.core.parsing.parser.context.selectitem.SelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.StarSelectItem;
 import io.shardingsphere.core.parsing.parser.context.table.Table;
-import io.shardingsphere.core.parsing.parser.context.table.Tables;
 import io.shardingsphere.core.parsing.parser.sql.SQLParser;
 import io.shardingsphere.core.parsing.parser.token.ItemsToken;
 import io.shardingsphere.core.parsing.parser.token.OrderByToken;
@@ -169,7 +168,7 @@ public abstract class AbstractSelectParser implements SQLParser {
     private void appendDerivedOrderColumns(final ItemsToken itemsToken, final List<OrderItem> orderItems, final String aliasPattern, final SelectStatement selectStatement) {
         int derivedColumnOffset = 0;
         for (OrderItem each : orderItems) {
-            if (!isContainsItem(each, selectStatement)) {
+            if (!isContainsItem(selectStatement, each)) {
                 String alias = String.format(aliasPattern, derivedColumnOffset++);
                 each.setAlias(Optional.of(alias));
                 itemsToken.getItems().add(each.getQualifiedName().get() + " AS " + alias + " ");
@@ -177,44 +176,56 @@ public abstract class AbstractSelectParser implements SQLParser {
         }
     }
     
-    private boolean isContainsItem(final OrderItem orderItem, final SelectStatement selectStatement) {
-        if (-1 != orderItem.getIndex()) {
-            return true;
-        }
-        if (!selectStatement.getStarSelectItems().isEmpty()) {
-            return isContainsItemInStarSelectItem(selectStatement.getStarSelectItems(), orderItem, selectStatement.getTables());
-        }
-        for (SelectItem each : selectStatement.getItems()) {
-            if (each.getAlias().isPresent() && orderItem.getAlias().isPresent() && each.getAlias().get().equalsIgnoreCase(orderItem.getAlias().get())) {
+    private boolean isContainsItem(final SelectStatement selectStatement, final OrderItem orderItem) {
+        return orderItem.isIndex() || isContainsItemInStarSelectItems(selectStatement, orderItem) || isContainsItemInSelectItems(selectStatement, orderItem);
+    }
+    
+    private boolean isContainsItemInStarSelectItems(final SelectStatement selectStatement, final OrderItem orderItem) {
+        for (StarSelectItem each : selectStatement.getStarSelectItems()) {
+            if (!each.getOwner().isPresent()) {
                 return true;
             }
-            if (!each.getAlias().isPresent() && orderItem.getQualifiedName().isPresent() && each.getExpression().equalsIgnoreCase(orderItem.getQualifiedName().get())) {
+            if (orderItem.getOwner().isPresent() && !each.getOwner().get().equalsIgnoreCase(orderItem.getOwner().get())) {
+                continue;
+            }
+            Optional<Table> table = selectStatement.getTables().find(each.getOwner().get());
+            if (!table.isPresent()) {
+                continue;
+            }
+            if (isSameOwner(table.get(), selectStatement, orderItem)) {
+                return true;
+            }
+            if (!shardingMetaData.getTableMetaDataMap().containsKey(table.get().getName())) {
+                continue;
+            }
+            TableMetaData tableMetaData = shardingMetaData.getTableMetaDataMap().get(table.get().getName());
+            if (orderItem.getName().isPresent() && tableMetaData.getAllColumnNames().contains(orderItem.getName().get().toLowerCase())) {
                 return true;
             }
         }
         return false;
     }
     
-    private boolean isContainsItemInStarSelectItem(final List<StarSelectItem> starSelectItems, final OrderItem orderItem, final Tables tables) {
-        for (StarSelectItem each : starSelectItems) {
-            if (!each.getOwner().isPresent()) {
-                return true;
-            }
-            
-            if (!each.getOwner().get().equalsIgnoreCase(orderItem.getOwner().get())) {
-                continue;
-            }
-            
-            Optional<Table> table = tables.find(each.getOwner().get());
-            if (orderItem.getOwner().isPresent() && tables.find(orderItem.getOwner().get()).equals(table)) {
-                return true;
-            }
-            Optional<TableMetaData> tableMetaData = table.isPresent() ? Optional.fromNullable(shardingMetaData.getTableMetaDataMap().get(table.get().getName())) : Optional.<TableMetaData>absent();
-            if (tableMetaData.isPresent() && tableMetaData.get().getAllColumnNames().contains(orderItem.getName().get().toLowerCase())) {
+    private boolean isSameOwner(final Table table, final SelectStatement selectStatement, final OrderItem orderItem) {
+        Optional<Table> orderItemOwner = selectStatement.getTables().find(orderItem.getOwner().get());
+        return orderItem.getOwner().isPresent() && orderItemOwner.isPresent() && orderItemOwner.get().equals(table);
+    }
+    
+    private boolean isContainsItemInSelectItems(final SelectStatement selectStatement, final OrderItem orderItem) {
+        for (SelectItem each : selectStatement.getItems()) {
+            if (isSameAlias(each, orderItem) || isSameQualifiedName(each, orderItem)) {
                 return true;
             }
         }
         return false;
+    }
+    
+    private boolean isSameAlias(final SelectItem selectItem, final OrderItem orderItem) {
+        return selectItem.getAlias().isPresent() && orderItem.getAlias().isPresent() && selectItem.getAlias().get().equalsIgnoreCase(orderItem.getAlias().get());
+    }
+    
+    private boolean isSameQualifiedName(final SelectItem selectItem, final OrderItem orderItem) {
+        return !selectItem.getAlias().isPresent() && orderItem.getQualifiedName().isPresent() && selectItem.getExpression().equalsIgnoreCase(orderItem.getQualifiedName().get());
     }
     
     private void appendDerivedOrderBy(final SelectStatement selectStatement) {
