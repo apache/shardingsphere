@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.dcl.create;
+package io.shardingsphere.core.parsing.parser.sql.dcl.alter;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
@@ -24,22 +24,22 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Create user parser factory.
+ * Alter user parser factory.
  *
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CreateUserParserFactory {
+public final class AlterUserParserFactory {
     
     /**
-     * Create user parser instance.
+     * Alter user parser instance.
      *
      * @param dbType database type
      * @param shardingRule databases and tables sharding rule
      * @param lexerEngine lexical analysis engine.
-     * @return create user parser instance
+     * @return alter user parser instance
      */
-    public static CreateUserParser newInstance(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        return new CreateUserParser(lexerEngine);
+    public static AlterUserParser newInstance(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        return new AlterUserParser(lexerEngine);
     }
 }
