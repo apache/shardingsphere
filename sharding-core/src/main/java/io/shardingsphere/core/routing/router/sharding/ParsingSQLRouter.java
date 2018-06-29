@@ -30,6 +30,7 @@ import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTablesS
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
+import io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
@@ -114,7 +115,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
             routingEngine = new IgnoreRoutingEngine();
         } else if (sqlStatement instanceof DDLStatement) {
             routingEngine = new TableBroadcastRoutingEngine(shardingRule, sqlStatement);
-        } else if (sqlStatement instanceof ShowDatabasesStatement || sqlStatement instanceof ShowTablesStatement) {
+        } else if (sqlStatement instanceof ShowDatabasesStatement || sqlStatement instanceof ShowTablesStatement || sqlStatement instanceof DCLStatement) {
             routingEngine = new DatabaseBroadcastRoutingEngine(shardingRule);
         } else if (shardingConditions.isAlwaysFalse()) {
             routingEngine = new UnicastRoutingEngine(shardingRule, tableNames);
