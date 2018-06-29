@@ -1,3 +1,0 @@
-tables:
-  config:
-    actualTables: config_${0..1}

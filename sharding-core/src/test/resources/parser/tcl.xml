@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parser-result-sets>
+    <parser-result sql-case-id="setAutoCommit" />
+    <parser-result sql-case-id="commit" value="COMMIT" />
+    <parser-result sql-case-id="rollback" value="ROLLBACK" />
+    <parser-result sql-case-id="savepoint" value="SAVEPOINT" />
+    <parser-result sql-case-id="begin" value="BEGIN" />
+</parser-result-sets>

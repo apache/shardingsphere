@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sqls>
-    <sql id="assertSelectStartWithInOracleSQL" value="SELECT * FROM t_order_item  START WITH order_id = %s CONNECT BY NOCYCLE PRIOR item_id=item_id-1" type="Oracle"/>
-    <sql id="assertSelectModelInOracleSQL" value="SELECT order_id_value,order_item_id_value FROM (select 1001 as order_id_value, 100001 as order_item_id_value from dual) MODEL RETURN UPDATED ROWS DIMENSION BY(order_item_id_value) MEASURES(order_id_value) RULES(order_id_value[1] = 10001)" type="Oracle"/>
-</sqls>

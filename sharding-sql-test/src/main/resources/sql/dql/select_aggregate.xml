@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql-cases>
+    <sql-case id="assertSelectSum" value="SELECT SUM(user_id) AS user_id_sum FROM t_order" />
+    <sql-case id="assertSelectCount" value="SELECT COUNT(*) AS orders_count FROM t_order" />
+    <sql-case id="assertSelectMax" value="SELECT MAX(user_id) AS max_user_id FROM t_order" />
+    <sql-case id="assertSelectMin" value="SELECT MIN(user_id) AS min_user_id FROM t_order" />
+    <sql-case id="assertSelectAvg" value="SELECT AVG(user_id) AS user_id_avg FROM t_order" />
+    <sql-case id="assertSelectCountForSpecialSymbol" value="SELECT COUNT(`order_id`) AS orders_count FROM t_order" db-types="MySQL" />
+</sql-cases>

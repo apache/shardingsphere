@@ -1,3 +1,0 @@
-baseurl = "http://dangdangdotcom.github.io/sharding-jdbc/"
-canonifyurls = true
-theme = "hugo-theme-learn"

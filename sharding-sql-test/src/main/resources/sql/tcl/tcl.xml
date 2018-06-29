@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql-cases>
+    <sql-case id="setAutoCommit" value="SET AUTOCOMMIT=1" />
+    <sql-case id="commit" value="COMMIT" />
+    <sql-case id="rollback" value="ROLLBACK" />
+    <sql-case id="savepoint" value="SAVEPOINT" />
+    <sql-case id="begin" value="BEGIN" />
+</sql-cases>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql-cases>
+    <sql-case id="assertInsertWithAllPlaceholders" value="INSERT INTO t_order (order_id, user_id, status) VALUES (%s, %s, %s)" />
+    <sql-case id="assertInsertWithPartialPlaceholder" value="INSERT INTO t_order (order_id, user_id, status) VALUES (%s, %s, 'insert')" />
+
+    <sql-case id="assertInsertWithGenerateKeyColumn" value="INSERT INTO t_order_item(item_id, order_id, user_id, status) values(%s, %s, %s, 'insert')" />
+    <sql-case id="assertInsertWithoutGenerateKeyColumn" value="INSERT INTO t_order_item(order_id, user_id, status) values(%s, %s, 'insert')" />
+
+
+   <!-- <sql-case id="assertInsertWithPartialPlaceholders" value="INSERT INTO t_order (order_id, user_id, status) VALUES (#s, #s, %s)"/>-->
+
+    <sql-case id="assertInsertWithGenerateKeyColumn" value="INSERT INTO t_order_item(item_id, order_id, user_id, status) values (%s, %s, %s, 'insert')" />
+    <sql-case id="assertInsertWithoutGenerateKeyColumn" value="INSERT INTO t_order_item(order_id, user_id, status) values (%s, %s, 'insert')" />
+    <sql-case id="assertBatchInsertWithGenerateKeyColumn" value="INSERT INTO t_order_item(item_id, order_id, user_id, status) values (%s, %s, %s, 'insert'), (%s, %s, %s, 'insert')" />
+    <sql-case id="assertBatchInsertWithoutGenerateKeyColumn" value="INSERT INTO t_order_item(order_id, user_id, status) values (%s, %s, 'insert'), (%s, %s, 'insert')" />
+
+    <sql-case id="assertInsertWithJsonAndGeo" value="INSERT INTO t_place(user_new_id, guid, start_point,rule) VALUES (%s, %s, ST_GeographyFromText('SRID=4326;POINT('||%s||' '||%s||')'), %s::jsonb)" db-types="PostgreSQL" />
+    <sql-case id="assertInsertWithoutColumnsWithAllPlaceholders" value="INSERT INTO t_order VALUES (%s, %s, %s)" />
+    <sql-case id="assertInsertWithoutColumnsWithPartialPlaceholder" value="INSERT INTO t_order VALUES (%s, %s, 'insert')" />
+    <sql-case id="assertInsertWithoutColumnsWithGenerateKeyColumn" value="INSERT INTO t_order_item values(%s, %s, %s, 'insert', '2020-09-09')" />
+    <sql-case id="assertInsertWithoutColumnsWithoutGenerateKeyColumn" value="INSERT INTO t_order_item values(%s, %s, 'insert', '2020-09-09')" />
+
+</sql-cases>

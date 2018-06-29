@@ -1,141 +1,97 @@
-# Sharding-JDBC - JDBC driver for shard databases and tables 
+# [Sharding-Sphere - Distributed database middleware ecosphere](http://shardingsphere.io/)
 
-# [中文主页](http://dangdangdotcom.github.io/sharding-jdbc)
+[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
+[![Gitter](https://badges.gitter.im/shardingsphere/shardingsphere.svg)](https://gitter.im/shardingsphere/Lobby)
+[![GitHub release](https://img.shields.io/github/release/sharding-sphere/sharding-sphere.svg)](https://github.com/sharding-sphere/sharding-sphere/releases)
 
-[![Build Status](https://secure.travis-ci.org/dangdangdotcom/sharding-jdbc.png?branch=master)](https://travis-ci.org/dangdangdotcom/sharding-jdbc)
-[![Maven Status](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc)
-[![Coverage Status](https://coveralls.io/repos/dangdangdotcom/sharding-jdbc/badge.svg?branch=master&service=github)](https://coveralls.io/github/dangdangdotcom/sharding-jdbc?branch=master)
-[![GitHub release](https://img.shields.io/github/release/dangdangdotcom/sharding-jdbc.svg)](https://github.com/dangdangdotcom/sharding-jdbc/releases)
-[![Hex.pm](http://dangdangdotcom.github.io/sharding-jdbc/img/license.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
+[![Build Status](https://api.travis-ci.org/sharding-sphere/sharding-sphere.png?branch=master)](https://travis-ci.org/sharding-sphere/sharding-sphere)
+[![Coverage Status](https://codecov.io/github/sharding-sphere/sharding-sphere/coverage.svg?branch=master)](https://codecov.io/github/sharding-sphere/sharding-sphere?branch=master)
+[![OpenTracing-1.0 Badge](https://img.shields.io/badge/OpenTracing--1.0-enabled-blue.svg)](http://opentracing.io)
+[![Skywalking Tracing](https://img.shields.io/badge/Skywalking%20Tracing-enable-brightgreen.svg)](https://github.com/OpenSkywalking/skywalking)
 
-# Overview
+## Document
 
-Sharding-JDBC is a JDBC extension, provides distributed features such as sharding, read/write splitting and BASE transaction.
+[![EN doc](https://img.shields.io/badge/document-English-blue.svg)](http://shardingsphere.io/document/en/)
+[![Roadmap](https://img.shields.io/badge/roadmap-English-blue.svg)](ROADMAP.md)
 
-# Features
+[![CN doc](https://img.shields.io/badge/文档-中文版-blue.svg)](http://shardingsphere.io/document/cn/)
 
-## 1. Sharding
-* Aggregation functions, group by, order by and limit SQL supported in distributed database.
-* Join (inner/outer) query supported.
+## Overview
+
+Sharding-Sphere is an open-sourced distributed database middleware solution suite, which is composite by Sharding-JDBC, Sharding-Proxy and Sharding-Sidecar. Those 3 projects provide consistent features which include data sharding, read-write splitting, orchestration and B.A.S.E transaction. They can suitable for various scenario.
+
+Sharding-Sphere is a Relational Database Middleware which reuse capacity of original databases (such as: compute, storage), but make best simplicity and efficiency on distribute environment. Sharding-Sphere do not want implement a new database.
+It can cooperate with NoSQL and NewSQL. NoSQL and NewSQL are good exploration for technology, they are care about what’s going to change. There is another theory which is care about what’s not going to change. Relational Database still is the biggest percentage of market share, it is difficult to estimate trendy in future. So we are focus about how to enhance with Relational Database now.
+
+![Sharding-Sphere Score](http://ovfotjrsi.bkt.clouddn.com/sphere_scope_en.png)
+
+### Sharding-JDBC
+
+[![Maven Status](https://maven-badges.herokuapp.com/maven-central/io.shardingjdbc/sharding-jdbc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.shardingjdbc/sharding-jdbc)
+
+Use JDBC connect databases without redirect cost for java application, best performance for production.
+
+* ORM compatible. JPA, Hibernate, Mybatis, Spring JDBC Template or JDBC supported.
+* Connection-pool compatible. DBCP, C3P0, BoneCP, Druid supported.
+* Multi SQL-based databases compatible. Any Database supported theoretically. Support MySQL, Oracle, SQLServer and PostgreSQL right now.
+
+![Sharding-JDBC Architecture](http://ovfotjrsi.bkt.clouddn.com/sharding-jdbc-brief.png)
+
+### Sharding-Proxy
+
+[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://github.com/sharding-sphere/sharding-sphere-doc/raw/master/dist/sharding-proxy-3.0.0.M1.tar.gz)
+
+It is a database proxy. Deploy as a stateless server, support MySQL protocol for now.
+
+* Use standard MySQL protocol, application do not care about whether proxy or real MySQL.
+* Any MySQL command line and UI workbench supported in theoretically. MySQL Workbench are fully compatible right now.
+
+![Sharding-Proxy Architecture](http://ovfotjrsi.bkt.clouddn.com/sharding-proxy-brief_v2.png)
+
+### Sharding-Sidecar(TBD)
+
+It can mesh interactions between applications and databases, must run in Kubernetes or Mesos environment.
+It is a centre-less solution, can support any languages, we call it as `Database Mesh`.
+
+Database Mesh is focused on how to connect the distributed data-access-layer and databases together. It pays more attention on interaction, which means the messy interaction among the applications and databases will be effectively orchestrate. By using Database Mesh, applications and databases will form a large grid system, and they just need to be put into the right position on grid system accordingly.
+
+![Sharding-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sharding-sidecar-brief.png)
+
+|                        | *Sharding-JDBC* | *Sharding-Proxy* | *Sharding-Sidecar* |
+| ---------------------- | --------------- | ---------------- | ------------------ |
+| Database               | Any             | MySQL            | MySQL              |
+| Connections Cost       | More            | Less             | More               |
+| Heterogeneous Language | Java Only       | Any              | Any                |
+| Performance            | Low loss        | High loss        | Low loss           |
+| Centre-less            | Yes             | No               | No                 |
+| Static Entry           | No              | Yes              | No                 |
+
+## Features
+
+### Data sharding
+
+* Both databases and tables sharding.
+* Aggregation functions, GROUP BY, ORDER BY, LIMIT, OR, and JOIN DQL supported.
+* DML, DDL, TCL and database administrator command supported.
 * Sharding operator `=`, `BETWEEN` and `IN` supported.
-* Sharding algorithm customization supported.
-* Hint supported.
+* Sharding algorithm customization and inline expression supported.
+* Force route by hint.
+* Distributed sequence.
 
-## 2. Read/Write Splitting
-* Same transaction data concurrency guarantee.
-* Hint supported.
+### Read-write splitting
 
-## 3. BASE Transaction
+* Multiple slaves replica. 
+* Data consistency guarantee in same thread.
+* Mix read-write splitting and data sharding.
+* Force route by hint.
+
+### BASE Transaction
+
 * Best efforts delivery transaction.
 * Try confirm cancel transaction (TBD).
 
-## 4. Compatibility
-* ORM self-adapting. JPA, Hibernate, Mybatis, Spring JDBC Template or JDBC supported.
-* Connection-pool self-adapting. DBCP, C3P0, BoneCP, Druid supported.
-* Any Database supported theoretically. Support MySQL, Oracle, SQLServer and PostgreSQL.
+### Orchestration
 
-## 5. Configuration
-* Java config
-* Spring namespace
-* YAML
-* Inline expression
-
-## 6. ID Generation
-* Distributed Unique Time-Sequence Generation
-
-# Architecture
-
-![Architecture](http://dangdangdotcom.github.io/sharding-jdbc/img/architecture_en.png)
-
-# [Release Notes](https://github.com/dangdangdotcom/sharding-jdbc/releases)
-
-# [Roadmap](ROADMAP.md)
-
-# Quick Start
-
-## Add maven dependency
-
-```xml
-<!-- import sharding-jdbc core -->
-<dependency>
-    <groupId>com.dangdang</groupId>
-    <artifactId>sharding-jdbc-core</artifactId>
-    <version>${latest.release.version}</version>
-</dependency>
-
-<!-- import other module if need -->
-```
-
-## Rule configuration
-
-```java
-ShardingRule shardingRule = ShardingRule.builder()
-        .dataSourceRule(dataSourceRule)
-        .tableRules(tableRuleList)
-        .databaseShardingStrategy(new DatabaseShardingStrategy("sharding_column", new XXXShardingAlgorithm()))
-        .tableShardingStrategy(new TableShardingStrategy("sharding_column", new XXXShardingAlgorithm())))
-        .build();
-```
-
-## Use raw JDBC API
-
-```java
-DataSource dataSource = ShardingDataSourceFactory.createDataSource(shardingRule);
-String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
-try (
-        Connection conn = dataSource.getConnection();
-        PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
-    preparedStatement.setInt(1, 10);
-    preparedStatement.setInt(2, 1001);
-    try (ResultSet rs = preparedStatement.executeQuery()) {
-        while(rs.next()) {
-            System.out.println(rs.getInt(1));
-            System.out.println(rs.getInt(2));
-        }
-    }
-}
-```
-
-## Use spring namespace
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xmlns:context="http://www.springframework.org/schema/context"
-    xmlns:rdb="http://www.dangdang.com/schema/ddframe/rdb" 
-    xsi:schemaLocation="http://www.springframework.org/schema/beans 
-                        http://www.springframework.org/schema/beans/spring-beans.xsd
-                        http://www.springframework.org/schema/context 
-                        http://www.springframework.org/schema/context/spring-context.xsd 
-                        http://www.dangdang.com/schema/ddframe/rdb 
-                        http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd 
-                        ">
-    <context:property-placeholder location="classpath:conf/rdb/conf.properties" ignore-unresolvable="true"/>
-    
-    <bean id="dbtbl_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost:3306/dbtbl_0"/>
-        <property name="username" value="root"/>
-        <property name="password" value=""/>
-    </bean>
-    <bean id="dbtbl_1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost:3306/dbtbl_1"/>
-        <property name="username" value="root"/>
-        <property name="password" value=""/>
-    </bean>
-
-    <rdb:strategy id="orderTableStrategy" sharding-columns="order_id" algorithm-expression="t_order_${order_id.longValue() % 4}"/>
-    <rdb:strategy id="orderItemTableStrategy" sharding-columns="order_id" algorithm-expression="t_order_item_${order_id.longValue() % 4}"/>
-    <rdb:data-source id="shardingDataSource">
-        <rdb:sharding-rule data-sources="dbtbl_0,dbtbl_1">
-            <rdb:table-rules>
-                <rdb:table-rule logic-table="t_order" actual-tables="t_order_${0..3}" table-strategy="orderTableStrategy"/>
-                <rdb:table-rule logic-table="t_order_item" actual-tables="t_order_item_${0..3}" table-strategy="orderItemTableStrategy"/>
-            </rdb:table-rules>
-            <rdb:default-database-strategy sharding-columns="none" algorithm-class="com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm"/>
-        </rdb:sharding-rule>
-    </rdb:data-source>
-</beans>
-```
+* Configuration center, can refresh dynamically.
+* Circuit breaker.
+* Open tracing supported.
