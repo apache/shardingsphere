@@ -141,11 +141,6 @@ public class BaseProvider implements IProvider {
     }
     
     @Override
-    public void createInTransaction(final String key, final String value, final CreateMode createMode, final BaseTransaction transaction) throws KeeperException, InterruptedException {
-        transaction.create(key, value.getBytes(Constants.UTF_8), authorities, createMode);
-    }
-    
-    @Override
     public void resetConnection() {
         try {
             holder.reset();
@@ -154,5 +149,10 @@ public class BaseProvider implements IProvider {
             // CHECKSTYLE:ON
             LOGGER.error("resetConnection Exception:{}", e.getMessage(), e);
         }
+    }
+    
+    @Override
+    public BaseTransaction transaction() {
+        return new BaseTransaction();
     }
 }

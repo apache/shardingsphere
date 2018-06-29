@@ -19,6 +19,7 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IExecStrategy;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
 import lombok.Getter;
 import org.apache.zookeeper.KeeperException;
 
@@ -37,5 +38,10 @@ public abstract class BaseStrategy implements IExecStrategy {
     @Override
     public String getDataString(final String key) throws KeeperException, InterruptedException {
         return new String(getData(key));
+    }
+    
+    @Override
+    public BaseTransaction transaction() {
+        return provider.transaction();
     }
 }

@@ -73,7 +73,7 @@ public class TransactionContendStrategy extends ContentionStrategy {
 
     private void createBegin(final String key, final String value, final CreateMode createMode, final ZKTransaction transaction) throws KeeperException, InterruptedException {
         if (key.indexOf(Constants.PATH_SEPARATOR) < -1) {
-            ((ITransactionProvider)getProvider()).createInTransaction(key, value, createMode, transaction);
+            ((ITransactionProvider) getProvider()).createInTransaction(key, value, createMode, transaction);
             return;
         }
         List<String> nodes = getProvider().getNecessaryPaths(key);
@@ -84,9 +84,9 @@ public class TransactionContendStrategy extends ContentionStrategy {
             }
             LOGGER.debug("node not exist and create:", nodes.get(i));
             if (i == nodes.size() - 1) {
-                ((ITransactionProvider)getProvider()).createInTransaction(nodes.get(i), value, createMode, transaction);
+                ((ITransactionProvider) getProvider()).createInTransaction(nodes.get(i), value, createMode, transaction);
             } else {
-                ((ITransactionProvider)getProvider()).createInTransaction(nodes.get(i), Constants.NOTHING_VALUE, createMode, transaction);
+                ((ITransactionProvider) getProvider()).createInTransaction(nodes.get(i), Constants.NOTHING_VALUE, createMode, transaction);
             }
         }
     }

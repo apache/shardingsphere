@@ -17,6 +17,8 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.action;
 
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
+
 /*
  * @author lidongbo
  */
@@ -28,4 +30,11 @@ public interface IExecStrategy extends IAction, IGroupAction {
      * @return IProvider
      */
     IProvider getProvider();
+    
+    /**
+     * create transaction.
+     *
+     * @return BaseTransaction
+     */
+    BaseTransaction transaction();
 }

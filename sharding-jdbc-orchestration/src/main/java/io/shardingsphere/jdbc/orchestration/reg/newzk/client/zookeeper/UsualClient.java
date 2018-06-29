@@ -17,21 +17,9 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper;
 
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IExecStrategy;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseContext;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseProvider;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.provider.TransactionProvider;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ClientContext;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.AsyncRetryStrategy;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.ContentionStrategy;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.SyncRetryStrategy;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.UsualStrategy;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.ZKTransaction;
-import lombok.Getter;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -39,11 +27,7 @@ import org.apache.zookeeper.Watcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicReference;
 
 /*
  * @author lidongbo
@@ -51,93 +35,38 @@ import java.util.concurrent.atomic.AtomicReference;
 public class UsualClient extends BaseClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(UsualClient.class);
     
-    private final Map<StrategyType, IExecStrategy> strategies = new ConcurrentHashMap<>();
-    
-    private final AtomicReference<IProvider> provider = new AtomicReference<>();
-    
-    private final boolean watched = true;
-    
-    @Getter
-    private IExecStrategy strategy;
-    
     protected UsualClient(final BaseContext context) {
         super(context);
-    }
-
-    @Override
-    public void start() throws IOException, InterruptedException {
-        super.start();
-        provider.set(new TransactionProvider(getRootNode(), getHolder(), watched, getAuthorities()));
-        useExecStrategy(StrategyType.USUAL);
-    }
-    
-    @Override
-    public void close() {
-        this.strategies.clear();
-        super.close();
-    }
-    
-    @Override
-    public synchronized void useExecStrategy(final StrategyType strategyType) {
-        LOGGER.debug("useExecStrategy:{}", strategyType);
-        if (strategies.containsKey(strategyType)) {
-            strategy = strategies.get(strategyType);
-            return;
-        }
-        
-        if (provider.get() == null) {
-            throw new IllegalAccessError("The client has not been started yet.");
-        }
-        
-        switch (strategyType) {
-            case USUAL:
-                strategy = new UsualStrategy(provider.get());
-                break;
-            case CONTEND:
-                strategy = new ContentionStrategy(provider.get());
-                break;
-            case SYNC_RETRY:
-                strategy = new SyncRetryStrategy(provider.get(), ((ClientContext) getContext()).getDelayRetryPolicy());
-                break;
-            case ASYNC_RETRY:
-                strategy = new AsyncRetryStrategy(provider.get(), ((ClientContext) getContext()).getDelayRetryPolicy());
-                break;
-            default:
-                strategy = new UsualStrategy(provider.get());
-                break;
-        }
-        
-        strategies.put(strategyType, strategy);
     }
     
     @Override
     public String getDataString(final String key) throws KeeperException, InterruptedException {
-        return strategy.getDataString(key);
+        return getStrategy().getDataString(key);
     }
     
     @Override
     public byte[] getData(final String key) throws KeeperException, InterruptedException {
-        return strategy.getData(key);
+        return getStrategy().getData(key);
     }
     
     @Override
     public void getData(final String key, final AsyncCallback.DataCallback callback, final Object ctx) throws KeeperException, InterruptedException {
-        strategy.getData(key, callback, ctx);
+        getStrategy().getData(key, callback, ctx);
     }
     
     @Override
     public boolean checkExists(final String key) throws KeeperException, InterruptedException {
-        return strategy.checkExists(key);
+        return getStrategy().checkExists(key);
     }
     
     @Override
     public boolean checkExists(final String key, final Watcher watcher) throws KeeperException, InterruptedException {
-        return strategy.checkExists(key, watcher);
+        return getStrategy().checkExists(key, watcher);
     }
     
     @Override
     public List<String> getChildren(final String key) throws KeeperException, InterruptedException {
-        return strategy.getChildren(key);
+        return getStrategy().getChildren(key);
     }
     
     @Override
@@ -146,7 +75,7 @@ public class UsualClient extends BaseClient {
         if (getRootNode().equals(key)) {
             return;
         }
-        strategy.createCurrentOnly(key, value, createMode);
+        getStrategy().createCurrentOnly(key, value, createMode);
     }
     
     @Override
@@ -155,12 +84,12 @@ public class UsualClient extends BaseClient {
         if (getRootNode().equals(key)) {
             return;
         }
-        strategy.createAllNeedPath(key, value, createMode);
+        getStrategy().createAllNeedPath(key, value, createMode);
     }
     
     @Override
     public void update(final String key, final String value) throws KeeperException, InterruptedException {
-        strategy.update(key, value);
+        getStrategy().update(key, value);
     }
     
     @Override
@@ -169,7 +98,7 @@ public class UsualClient extends BaseClient {
             deleteNamespace();
             return;
         }
-        strategy.deleteOnlyCurrent(key);
+        getStrategy().deleteOnlyCurrent(key);
     }
     
     @Override
@@ -178,12 +107,12 @@ public class UsualClient extends BaseClient {
             deleteNamespace();
             return;
         }
-        strategy.deleteOnlyCurrent(key, callback, ctx);
+        getStrategy().deleteOnlyCurrent(key, callback, ctx);
     }
     
     @Override
     public void deleteAllChildren(final String key) throws KeeperException, InterruptedException {
-        strategy.deleteAllChildren(key);
+        getStrategy().deleteAllChildren(key);
         if (getRootNode().equals(key)) {
             setRootExist(false);
             LOGGER.debug("deleteAllChildren delete root:{}", getRootNode());
@@ -192,8 +121,8 @@ public class UsualClient extends BaseClient {
     
     @Override
     public void deleteCurrentBranch(final String key) throws KeeperException, InterruptedException {
-        strategy.deleteCurrentBranch(key);
-        if (!strategy.checkExists(getRootNode())) {
+        getStrategy().deleteCurrentBranch(key);
+        if (!getStrategy().checkExists(getRootNode())) {
             setRootExist(false);
             LOGGER.debug("deleteCurrentBranch delete root:{}", getRootNode());
         }
@@ -201,6 +130,6 @@ public class UsualClient extends BaseClient {
     
     @Override
     public BaseTransaction transaction() {
-        return strategy.transaction();
+        return getStrategy().transaction();
     }
 }
