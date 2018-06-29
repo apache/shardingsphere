@@ -22,6 +22,7 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseContext;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseProvider;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.provider.TransactionProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ClientContext;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.AsyncRetryStrategy;
@@ -42,6 +43,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 /*
  * @author lidongbo
@@ -50,6 +52,8 @@ public class UsualClient extends BaseClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(UsualClient.class);
     
     private final Map<StrategyType, IExecStrategy> strategies = new ConcurrentHashMap<>();
+    
+    private final AtomicReference<IProvider> provider = new AtomicReference<>();
     
     private final boolean watched = true;
     
@@ -63,6 +67,7 @@ public class UsualClient extends BaseClient {
     @Override
     public void start() throws IOException, InterruptedException {
         super.start();
+        provider.set(new TransactionProvider(getRootNode(), getHolder(), watched, getAuthorities()));
         useExecStrategy(StrategyType.USUAL);
     }
     
@@ -80,22 +85,25 @@ public class UsualClient extends BaseClient {
             return;
         }
         
-        IProvider provider = new BaseProvider(getRootNode(), getHolder(), watched, getAuthorities());
+        if (provider.get() == null) {
+            throw new IllegalAccessError("The client has not been started yet.");
+        }
+        
         switch (strategyType) {
             case USUAL:
-                strategy = new UsualStrategy(provider);
+                strategy = new UsualStrategy(provider.get());
                 break;
             case CONTEND:
-                strategy = new ContentionStrategy(provider);
+                strategy = new ContentionStrategy(provider.get());
                 break;
             case SYNC_RETRY:
-                strategy = new SyncRetryStrategy(provider, ((ClientContext) getContext()).getDelayRetryPolicy());
+                strategy = new SyncRetryStrategy(provider.get(), ((ClientContext) getContext()).getDelayRetryPolicy());
                 break;
             case ASYNC_RETRY:
-                strategy = new AsyncRetryStrategy(provider, ((ClientContext) getContext()).getDelayRetryPolicy());
+                strategy = new AsyncRetryStrategy(provider.get(), ((ClientContext) getContext()).getDelayRetryPolicy());
                 break;
             default:
-                strategy = new UsualStrategy(provider);
+                strategy = new UsualStrategy(provider.get());
                 break;
         }
         
@@ -193,6 +201,6 @@ public class UsualClient extends BaseClient {
     
     @Override
     public BaseTransaction transaction() {
-        return new BaseTransaction();
+        return strategy.transaction();
     }
 }
