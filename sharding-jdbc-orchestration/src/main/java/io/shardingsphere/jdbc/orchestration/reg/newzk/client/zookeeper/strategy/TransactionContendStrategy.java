@@ -40,7 +40,7 @@ import java.util.Stack;
 public class TransactionContendStrategy extends ContentionStrategy {
     private static final Logger LOGGER = LoggerFactory.getLogger(TransactionContendStrategy.class);
     
-    public TransactionContendStrategy(final IProvider provider) {
+    public TransactionContendStrategy(final ITransactionProvider provider) {
         super(provider);
     }
     

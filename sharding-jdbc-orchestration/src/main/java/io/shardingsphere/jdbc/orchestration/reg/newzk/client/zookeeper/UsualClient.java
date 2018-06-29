@@ -19,6 +19,7 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IExecStrategy;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.ITransactionProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseContext;
@@ -28,6 +29,7 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.S
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.AsyncRetryStrategy;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.ContentionStrategy;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.SyncRetryStrategy;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.TransactionContendStrategy;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.UsualStrategy;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
 import lombok.Getter;
@@ -71,13 +73,16 @@ public class UsualClient extends BaseClient {
             return;
         }
         
-        IProvider provider = new TransactionProvider(getRootNode(), getHolder(), Constants.WATCHED, getAuthorities());
+        ITransactionProvider provider = new TransactionProvider(getRootNode(), getHolder(), Constants.WATCHED, getAuthorities());
         switch (strategyType) {
             case USUAL:
                 strategy = new UsualStrategy(provider);
                 break;
             case CONTEND:
                 strategy = new ContentionStrategy(provider);
+                break;
+            case TRANSACTION_CONTEND:
+                strategy = new TransactionContendStrategy(provider);
                 break;
             case SYNC_RETRY:
                 strategy = new SyncRetryStrategy(provider, ((ClientContext) getContext()).getDelayRetryPolicy());
