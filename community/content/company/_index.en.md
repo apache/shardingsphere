@@ -21,6 +21,7 @@ Organizations using Sharding in chronological order.
 * [yiwugou](http://www.yiwugou.com/)
 * [JD.ru](https://www.jd.ru/)
 * [Joybuy](https://www.joybuy.com/)
+* [imrfresh](https://www.imrfresh.com/)
 
 ## FinTech
 

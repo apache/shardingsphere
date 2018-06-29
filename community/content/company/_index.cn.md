@@ -21,6 +21,7 @@ chapter = true
 * [义乌购](http://www.yiwugou.com/)
 * [京东商城俄文站](https://www.jd.ru/)
 * [京东商城海外站](https://www.joybuy.com/)
+* [每日优鲜便利购](https://www.imrfresh.com/)
 
 ## 互联网金融
 
