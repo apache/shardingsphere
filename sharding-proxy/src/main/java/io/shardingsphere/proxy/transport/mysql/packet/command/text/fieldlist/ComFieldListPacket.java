@@ -31,6 +31,8 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePac
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ComQueryPacket;
 import lombok.extern.slf4j.Slf4j;
 
+import java.sql.SQLException;
+
 /**
  * COM_FIELD_LIST command packet.
  *
@@ -46,6 +48,10 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
     private final String table;
     
     private final String fieldWildcard;
+    
+    private SQLExecuteBackendHandler sqlExecuteBackendHandler;
+    
+    private SQLPacketsBackendHandler sqlPacketsBackendHandler;
     
     public ComFieldListPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload mysqlPacketPayload) {
         super(sequenceId);
@@ -75,20 +81,34 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
         String sql = String.format("SHOW COLUMNS FROM %s FROM %s", table, ShardingConstant.LOGIC_SCHEMA_NAME);
         // TODO use common database type
         if (RuleRegistry.getInstance().isWithoutJdbc()) {
-            return new SQLPacketsBackendHandler(this, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL()).execute();
+            sqlPacketsBackendHandler = new SQLPacketsBackendHandler(this, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
+            return sqlPacketsBackendHandler.execute();
         } else {
-            return new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL()).execute();
+            sqlExecuteBackendHandler = new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
+            return sqlExecuteBackendHandler.execute();
         }
     }
     
     @Override
     public boolean hasMoreResultValue() {
-        return false;
+        try {
+            if (RuleRegistry.getInstance().isWithoutJdbc()) {
+                return sqlPacketsBackendHandler.hasMoreResultValue();
+            } else {
+                return sqlExecuteBackendHandler.hasMoreResultValue();
+            }
+        } catch (final SQLException ex) {
+            return false;
+        }
     }
     
     @Override
     public DatabaseProtocolPacket getResultValue() {
-        return null;
+        if (RuleRegistry.getInstance().isWithoutJdbc()) {
+            return sqlPacketsBackendHandler.getResultValue();
+        } else {
+            return sqlExecuteBackendHandler.getResultValue();
+        }
     }
     
     @Override

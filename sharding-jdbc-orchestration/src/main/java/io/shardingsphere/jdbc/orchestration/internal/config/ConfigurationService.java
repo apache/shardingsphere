@@ -20,10 +20,13 @@ package io.shardingsphere.jdbc.orchestration.internal.config;
 import com.google.common.base.Strings;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.jdbc.orchestration.internal.json.DataSourceJsonConverter;
-import io.shardingsphere.jdbc.orchestration.internal.json.GsonFactory;
-import io.shardingsphere.jdbc.orchestration.internal.json.MasterSlaveRuleConfigurationConverter;
-import io.shardingsphere.jdbc.orchestration.internal.json.ShardingRuleConfigurationConverter;
+import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
+import io.shardingsphere.jdbc.orchestration.internal.yaml.converter.DataSourceConverter;
+import io.shardingsphere.jdbc.orchestration.internal.yaml.converter.DataSourceParameterConverter;
+import io.shardingsphere.jdbc.orchestration.internal.yaml.converter.MasterSlaveConfigurationConverter;
+import io.shardingsphere.jdbc.orchestration.internal.yaml.converter.ProxyConfigurationConverter;
+import io.shardingsphere.jdbc.orchestration.internal.yaml.converter.ShardingConfigurationConverter;
 import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
 
 import javax.sql.DataSource;
@@ -35,6 +38,7 @@ import java.util.Properties;
  * 
  * @author caohao
  * @author zhangliang
+ * @author panjuan
  */
 public final class ConfigurationService {
     
@@ -102,25 +106,31 @@ public final class ConfigurationService {
     
     private void persistDataSourceConfiguration(final Map<String, DataSource> dataSourceMap, final boolean isOverwrite) {
         if (isOverwrite || !hasDataSourceConfiguration()) {
-            regCenter.persist(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH), DataSourceJsonConverter.toJson(dataSourceMap));
+            regCenter.persist(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH), DataSourceConverter.dataSourceMapToYaml(dataSourceMap));
+        }
+    }
+    
+    private void persistDataSourceParameterConfiguration(final Map<String, DataSourceParameter> dataSourceParameterMap, final boolean isOverwrite) {
+        if (isOverwrite || !hasDataSourceConfiguration()) {
+            regCenter.persist(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH), DataSourceParameterConverter.dataSourceParameterMapToYaml(dataSourceParameterMap));
         }
     }
     
     private void persistShardingRuleConfiguration(final ShardingRuleConfiguration shardingRuleConfig, final boolean isOverwrite) {
         if (isOverwrite || !hasShardingRuleConfiguration()) {
-            regCenter.persist(configNode.getFullPath(ConfigurationNode.SHARDING_RULE_NODE_PATH), ShardingRuleConfigurationConverter.toJson(shardingRuleConfig));
+            regCenter.persist(configNode.getFullPath(ConfigurationNode.SHARDING_RULE_NODE_PATH), ShardingConfigurationConverter.shardingRuleConfigToYaml(shardingRuleConfig));
         }
     }
     
     private void persistShardingConfigMap(final Map<String, Object> configMap, final boolean isOverwrite) {
         if (isOverwrite || !hasShardingConfigMap()) {
-            regCenter.persist(configNode.getFullPath(ConfigurationNode.SHARDING_CONFIG_MAP_NODE_PATH), GsonFactory.getGson().toJson(configMap));
+            regCenter.persist(configNode.getFullPath(ConfigurationNode.SHARDING_CONFIG_MAP_NODE_PATH), ShardingConfigurationConverter.configMapToYaml(configMap));
         }
     }
     
     private void persistShardingProperties(final Properties props, final boolean isOverwrite) {
         if (isOverwrite || !hasShardingProperties()) {
-            regCenter.persist(configNode.getFullPath(ConfigurationNode.SHARDING_PROPS_NODE_PATH), GsonFactory.getGson().toJson(props));
+            regCenter.persist(configNode.getFullPath(ConfigurationNode.SHARDING_PROPS_NODE_PATH), ShardingConfigurationConverter.propertiesToYaml(props));
         }
     }
     
@@ -159,13 +169,34 @@ public final class ConfigurationService {
     
     private void persistMasterSlaveRuleConfiguration(final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isOverwrite) {
         if (isOverwrite || !hasMasterSlaveRuleConfiguration()) {
-            regCenter.persist(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH), MasterSlaveRuleConfigurationConverter.toJson(masterSlaveRuleConfig));
+            regCenter.persist(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH), MasterSlaveConfigurationConverter.masterSlaveRuleConfigToYaml(masterSlaveRuleConfig));
         }
     }
     
     private void persistMasterSlaveConfigMap(final Map<String, Object> configMap, final boolean isOverwrite) {
         if (isOverwrite || !hasMasterSlaveConfigMap()) {
-            regCenter.persist(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_CONFIG_MAP_NODE_PATH), GsonFactory.getGson().toJson(configMap));
+            regCenter.persist(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_CONFIG_MAP_NODE_PATH), MasterSlaveConfigurationConverter.configMapToYaml(configMap));
+        }
+    }
+    
+    /**
+     * Persist proxy configuration.
+     *
+     * @param orchestrationProxyConfiguration orchestration proxy configuration
+     * @param isOverwrite is overwrite registry center's configuration
+     */
+    public void persistProxyConfiguration(final OrchestrationProxyConfiguration orchestrationProxyConfiguration, final boolean isOverwrite) {
+        persistDataSourceParameterConfiguration(orchestrationProxyConfiguration.getDataSources(), isOverwrite);
+        persistProxyRuleConfiguration(orchestrationProxyConfiguration, isOverwrite);
+    }
+    
+    private boolean hasProxyConfig() {
+        return regCenter.isExisted(configNode.getFullPath(ConfigurationNode.PROXY_RULE_NODE_PATH));
+    }
+    
+    private void persistProxyRuleConfiguration(final OrchestrationProxyConfiguration orchestrationProxyConfiguration, final boolean isOverwrite) {
+        if (isOverwrite || !hasProxyConfig()) {
+            regCenter.persist(configNode.getFullPath(ConfigurationNode.PROXY_RULE_NODE_PATH), ProxyConfigurationConverter.proxyConfigToYaml(orchestrationProxyConfiguration));
         }
     }
     
@@ -175,7 +206,16 @@ public final class ConfigurationService {
      * @return data source configuration map
      */
     public Map<String, DataSource> loadDataSourceMap() {
-        return DataSourceJsonConverter.fromJson(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH)));
+        return DataSourceConverter.dataSourceMapFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH)));
+    }
+    
+    /**
+     * Load data source parameter.
+     *
+     * @return data source parameter map
+     */
+    public Map<String, DataSourceParameter> loadDataSourceParameter() {
+        return DataSourceParameterConverter.dataSourceParameterMapFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH)));
     }
     
     /**
@@ -184,7 +224,7 @@ public final class ConfigurationService {
      * @return sharding rule configuration
      */
     public ShardingRuleConfiguration loadShardingRuleConfiguration() {
-        return ShardingRuleConfigurationConverter.fromJson(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.SHARDING_RULE_NODE_PATH)));
+        return ShardingConfigurationConverter.shardingRuleConfigFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.SHARDING_RULE_NODE_PATH)));
     }
     
     /**
@@ -194,7 +234,7 @@ public final class ConfigurationService {
      */
     @SuppressWarnings("unchecked")
     public Map<String, Object> loadShardingConfigMap() {
-        return GsonFactory.getGson().fromJson(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.SHARDING_CONFIG_MAP_NODE_PATH)), Map.class);
+        return ShardingConfigurationConverter.configMapFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.SHARDING_CONFIG_MAP_NODE_PATH)));
     }
     
     /**
@@ -204,7 +244,7 @@ public final class ConfigurationService {
      */
     public Properties loadShardingProperties() {
         String data = regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.SHARDING_PROPS_NODE_PATH));
-        return Strings.isNullOrEmpty(data) ? new Properties() : GsonFactory.getGson().fromJson(data, Properties.class);
+        return Strings.isNullOrEmpty(data) ? new Properties() : ShardingConfigurationConverter.propertiesFromYaml(data);
     }
     
     /**
@@ -213,7 +253,7 @@ public final class ConfigurationService {
      * @return master-slave rule configuration
      */
     public MasterSlaveRuleConfiguration loadMasterSlaveRuleConfiguration() {
-        return MasterSlaveRuleConfigurationConverter.fromJson(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH)));
+        return MasterSlaveConfigurationConverter.masterSlaveRuleConfigFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH)));
     }
     
     /**
@@ -223,6 +263,15 @@ public final class ConfigurationService {
      */
     @SuppressWarnings("unchecked")
     public Map<String, Object> loadMasterSlaveConfigMap() {
-        return GsonFactory.getGson().fromJson(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_CONFIG_MAP_NODE_PATH)), Map.class);
+        return MasterSlaveConfigurationConverter.configMapFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_CONFIG_MAP_NODE_PATH)));
+    }
+    
+    /**
+     * Load proxy configuration.
+     *
+     * @return proxy configuration
+     */
+    public OrchestrationProxyConfiguration loadProxyConfiguration() {
+        return ProxyConfigurationConverter.proxyConfigFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.PROXY_RULE_NODE_PATH)));
     }
 }

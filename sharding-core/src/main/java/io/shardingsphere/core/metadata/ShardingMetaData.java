@@ -168,4 +168,18 @@ public abstract class ShardingMetaData {
         return String.format("Cannot get uniformed table structure for %s. The different metadata of actual tables is as follows:\n%s\n%s.",
                 logicTableName, oldTableMetaData.toString(), newTableMetaData.toString());
     }
+    
+    /**
+     * Judge whether this databaseType is supported.
+     *
+     * @return supported or not
+     */
+    public boolean isSupportedDatabaseType() {
+        for (TableMetaData each : tableMetaDataMap.values()) {
+            if (each.getColumnMetaData().isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

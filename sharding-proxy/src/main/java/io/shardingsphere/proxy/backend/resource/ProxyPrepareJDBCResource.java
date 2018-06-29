@@ -20,7 +20,6 @@ package io.shardingsphere.proxy.backend.resource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -44,14 +43,5 @@ public class ProxyPrepareJDBCResource extends BaseJDBCResource {
      */
     public void addPrepareStatement(final PreparedStatement preparedStatement) {
         preparedStatements.add(preparedStatement);
-    }
-    
-    @Override
-    public void clearStatement() throws SQLException {
-        if (null != preparedStatements) {
-            for (PreparedStatement each : preparedStatements) {
-                each.close();
-            }
-        }
     }
 }

@@ -87,7 +87,7 @@ public final class PathTree {
             return;
         }
         try {
-            if (status == status.RELEASE) {
+            if (status == PathStatus.RELEASE) {
                 LOGGER.debug("loading status:{}", status);
                 this.setStatus(PathStatus.CHANGING);
         
@@ -339,7 +339,7 @@ public final class PathTree {
             LOGGER.debug("cache put:{},value:{}", path, value);
             PathUtils.validatePath(path);
             LOGGER.debug("put status:{}", status);
-            if (status == status.RELEASE) {
+            if (status == PathStatus.RELEASE) {
                 if (path.equals(rootNode.get().getKey())) {
                     rootNode.set(new PathNode(rootNode.get().getKey(), value.getBytes(Constants.UTF_8)));
                     return;

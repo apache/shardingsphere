@@ -19,8 +19,11 @@ package io.shardingsphere.jdbc.orchestration.internal.state.instance;
 
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
 import io.shardingsphere.jdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingsphere.jdbc.orchestration.internal.state.StateNode;
@@ -36,6 +39,7 @@ import java.util.Map;
  * Instance listener manager.
  *
  * @author caohao
+ * @author panjuan
  */
 public final class InstanceListenerManager implements ListenerManager {
     
@@ -84,6 +88,23 @@ public final class InstanceListenerManager implements ListenerManager {
                         }
                     }
                     masterSlaveDataSource.renew(dataSourceMap, configService.loadMasterSlaveRuleConfiguration());
+                }
+            }
+        });
+    }
+    
+    @Override
+    public void start() {
+        regCenter.watch(stateNode.getInstancesNodeFullPath(OrchestrationInstance.getInstance().getInstanceId()), new EventListener() {
+            
+            @Override
+            public void onChange(final DataChangedEvent event) {
+                if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
+                    Map<String, DataSourceParameter> dataSourceParameterMap = configService.loadDataSourceParameter();
+                    if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey()))) {
+                        dataSourceParameterMap.clear();
+                    }
+                    ProxyEventBusInstance.getInstance().post(new ProxyEventBusEvent(dataSourceParameterMap, configService.loadProxyConfiguration()));
                 }
             }
         });

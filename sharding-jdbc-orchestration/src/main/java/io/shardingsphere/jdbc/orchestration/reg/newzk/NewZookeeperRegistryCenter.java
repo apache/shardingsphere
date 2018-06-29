@@ -32,7 +32,6 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.L
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
 import io.shardingsphere.jdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.ZooDefs;
 
@@ -74,12 +73,7 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
     private IClient initClient(final ClientFactory creator, final ZookeeperConfiguration zkConfig) {
         IClient newClient = null;
         try {
-            newClient = creator.start();
-            // block, slowly
-            if (!newClient.blockUntilConnected(zkConfig.getMaxSleepTimeMilliseconds() * zkConfig.getMaxRetries(), TimeUnit.MILLISECONDS)) {
-                newClient.close();
-                throw new KeeperException.OperationTimeoutException();
-            }
+            newClient = creator.start(zkConfig.getMaxSleepTimeMilliseconds() * zkConfig.getMaxRetries(), TimeUnit.MILLISECONDS);
             newClient.useExecStrategy(StrategyType.SYNC_RETRY);
             // CHECKSTYLE:OFF
         } catch (Exception e) {

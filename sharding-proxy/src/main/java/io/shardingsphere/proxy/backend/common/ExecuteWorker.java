@@ -31,6 +31,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -47,6 +48,7 @@ import java.util.concurrent.Callable;
  */
 @AllArgsConstructor
 @Getter
+@Slf4j
 public abstract class ExecuteWorker implements Callable<CommandResponsePackets> {
     
     private final ExecuteBackendHandler executeBackendHandler;
@@ -58,6 +60,7 @@ public abstract class ExecuteWorker implements Callable<CommandResponsePackets> 
         try {
             return execute();
         } catch (SQLException ex) {
+            log.error("ExecuteWorker", ex);
             return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
         } finally {
             MasterVisitedManager.clear();
@@ -107,12 +110,17 @@ public abstract class ExecuteWorker implements Callable<CommandResponsePackets> 
         }
         result.addPacket(new FieldCountPacket(++currentSequenceId, columnCount));
         for (int i = 1; i <= columnCount; i++) {
+            setColumnType(ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(i)));
             result.addPacket(new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData.getSchemaName(i), resultSetMetaData.getTableName(i),
                     resultSetMetaData.getTableName(i), resultSetMetaData.getColumnLabel(i), resultSetMetaData.getColumnName(i),
                     resultSetMetaData.getColumnDisplaySize(i), ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(i)), 0));
         }
         result.addPacket(new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
         return result;
+    }
+    
+    protected void setColumnType(final ColumnType columnType) {
+        return;
     }
     
     protected CommandResponsePackets getCommonDatabaseProtocolPackets(final ResultSet resultSet) throws SQLException {

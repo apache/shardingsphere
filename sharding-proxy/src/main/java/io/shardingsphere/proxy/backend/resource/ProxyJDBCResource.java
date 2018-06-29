@@ -19,7 +19,6 @@ package io.shardingsphere.proxy.backend.resource;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
@@ -44,14 +43,5 @@ public class ProxyJDBCResource extends BaseJDBCResource {
      */
     public void addStatement(final Statement statement) {
         statements.add(statement);
-    }
-    
-    @Override
-    public void clearStatement() throws SQLException {
-        if (null != statements) {
-            for (Statement each : statements) {
-                each.close();
-            }
-        }
     }
 }

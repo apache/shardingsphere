@@ -19,6 +19,7 @@ package io.shardingsphere.proxy.backend.common;
 
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
+import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
@@ -48,15 +49,13 @@ public final class StatementExecuteWorker extends ExecuteWorker implements Calla
     @Override
     protected CommandResponsePackets executeQueryWithStreamResultSet() throws SQLException {
         preparedStatement.setFetchSize(FETCH_ONE_ROW_A_TIME);
-        setJDBCPreparedStatementParameters(preparedStatement);
         ResultSet resultSet = preparedStatement.executeQuery();
-        getExecuteBackendHandler().getJdbcResource().getResultSets().add(resultSet);
+        getExecuteBackendHandler().getJdbcResource().addResultSet(resultSet);
         return getQueryDatabaseProtocolPackets(resultSet);
     }
     
     @Override
     protected CommandResponsePackets executeQueryWithNonStreamResultSet() throws SQLException {
-        setJDBCPreparedStatementParameters(preparedStatement);
         ResultSet resultSet = preparedStatement.executeQuery();
         ResultList resultList = new ResultList();
         while (resultSet.next()) {
@@ -70,11 +69,14 @@ public final class StatementExecuteWorker extends ExecuteWorker implements Calla
     }
     
     @Override
+    protected void setColumnType(final ColumnType columnType) {
+        ((StatementExecuteBackendHandler) getExecuteBackendHandler()).getColumnTypes().add(columnType);
+    }
+    
+    @Override
     protected CommandResponsePackets executeUpdate() throws SQLException {
-        PreparedStatement preparedStatement = null;
         int affectedRows;
         long lastInsertId = 0;
-        setJDBCPreparedStatementParameters(preparedStatement);
         if (getSqlStatement() instanceof InsertStatement) {
             affectedRows = preparedStatement.executeUpdate();
             lastInsertId = getGeneratedKey(preparedStatement);
@@ -86,19 +88,11 @@ public final class StatementExecuteWorker extends ExecuteWorker implements Calla
     
     @Override
     protected CommandResponsePackets executeCommon() throws SQLException {
-        setJDBCPreparedStatementParameters(preparedStatement);
         boolean hasResultSet = preparedStatement.execute();
         if (hasResultSet) {
             return getCommonDatabaseProtocolPackets(preparedStatement.getResultSet());
         } else {
             return new CommandResponsePackets(new OKPacket(1, preparedStatement.getUpdateCount(), 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
-        }
-    }
-    
-    private void setJDBCPreparedStatementParameters(final PreparedStatement preparedStatement) throws SQLException {
-        StatementExecuteBackendHandler statementExecuteBackendHandler = (StatementExecuteBackendHandler) getExecuteBackendHandler();
-        for (int i = 0; i < statementExecuteBackendHandler.getComStmtExecuteParameters().size(); i++) {
-            preparedStatement.setObject(i + 1, statementExecuteBackendHandler.getComStmtExecuteParameters().get(i));
         }
     }
 }

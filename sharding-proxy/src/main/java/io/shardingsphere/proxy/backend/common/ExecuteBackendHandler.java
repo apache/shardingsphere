@@ -32,6 +32,7 @@ import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingsphere.proxy.backend.resource.BaseJDBCResource;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;
+import io.shardingsphere.proxy.transaction.AtomikosUserTransaction;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
@@ -41,7 +42,10 @@ import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
+import javax.transaction.Status;
+import javax.transaction.SystemException;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -60,6 +64,7 @@ import java.util.concurrent.Future;
  * @author zhaojun
  */
 @Getter
+@Slf4j
 public abstract class ExecuteBackendHandler implements BackendHandler {
     
     private final String sql;
@@ -98,15 +103,16 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
             SQLRouteResult sqlRouteResult = RuleRegistry.getInstance().isOnlyMasterSlave() ? doMasterSlaveRoute() : doSqlShardingRoute();
             return doExecuteInternal(sqlRouteResult);
         } catch (final Exception ex) {
+            log.error("ExecuteBackendHandler", ex);
             return new CommandResponsePackets(new ErrPacket(1, 0, "", "", "" + ex.getMessage()));
         }
     }
     
-    private CommandResponsePackets doExecuteInternal(final SQLRouteResult routeResult) throws SQLException {
+    private CommandResponsePackets doExecuteInternal(final SQLRouteResult routeResult) throws SQLException, SystemException {
         if (routeResult.getExecutionUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
         }
-        if (SQLType.DDL.equals(routeResult.getSqlStatement().getType()) && RuleRegistry.isXaTransaction()) {
+        if (isXaDDL(routeResult)) {
             throw new SQLException("DDL command can't not execute in xa transaction mode.");
         }
         ExecutorService executorService = RuleRegistry.getInstance().getExecutorService();
@@ -121,6 +127,12 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
             ProxyShardingRefreshHandler.build(routeResult).execute();
         }
         return result;
+    }
+    
+    private boolean isXaDDL(final SQLRouteResult routeResult) throws SystemException {
+        return RuleRegistry.isXaTransaction()
+                && SQLType.DDL.equals(routeResult.getSqlStatement().getType())
+                && Status.STATUS_NO_TRANSACTION != AtomikosUserTransaction.getInstance().getStatus();
     }
     
     private SQLRouteResult doMasterSlaveRoute() {
@@ -144,7 +156,6 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
         for (Future<CommandResponsePackets> each : futureList) {
             try {
                 result.add(each.get());
-                
             } catch (final InterruptedException | ExecutionException ex) {
                 throw new ShardingException(ex.getMessage(), ex);
             }
@@ -190,7 +201,8 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
             queryResults.add(newQueryResult(packets.get(i), i));
         }
         try {
-            mergedResult = MergeEngineFactory.newInstance(RuleRegistry.getInstance().getShardingRule(), queryResults, sqlStatement).merge();
+            mergedResult = MergeEngineFactory.newInstance(RuleRegistry.getInstance().getShardingRule(),
+                    queryResults, sqlStatement, RuleRegistry.getInstance().getShardingMetaData()).merge();
             isMerged = true;
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
@@ -228,7 +240,6 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
         }
         if (!mergedResult.next()) {
             hasMoreResultValueFlag = false;
-            jdbcResource.clear();
         }
         return true;
     }
