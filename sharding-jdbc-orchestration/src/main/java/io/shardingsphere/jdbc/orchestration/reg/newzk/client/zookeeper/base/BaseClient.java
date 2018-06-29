@@ -18,20 +18,12 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IExecStrategy;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.StringUtil;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.provider.TransactionProvider;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ClientContext;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.WatcherCreator;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.AsyncRetryStrategy;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.ContentionStrategy;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.SyncRetryStrategy;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.UsualStrategy;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -44,8 +36,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /*
@@ -53,8 +43,6 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class BaseClient implements IClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseClient.class);
-    
-    private final Map<StrategyType, IExecStrategy> strategies = new ConcurrentHashMap<>();
     
     @Getter(value = AccessLevel.PROTECTED)
     private List<ACL> authorities;
@@ -73,9 +61,6 @@ public abstract class BaseClient implements IClient {
     
     @Getter(value = AccessLevel.PROTECTED)
     private BaseContext context;
-    
-    @Getter
-    private IExecStrategy strategy;
     
     protected BaseClient(final BaseContext context) {
         this.context = context;
@@ -100,38 +85,7 @@ public abstract class BaseClient implements IClient {
     }
     
     @Override
-    public synchronized void useExecStrategy(final StrategyType strategyType) {
-        LOGGER.debug("useExecStrategy:{}", strategyType);
-        if (strategies.containsKey(strategyType)) {
-            strategy = strategies.get(strategyType);
-            return;
-        }
-        
-        IProvider provider = new TransactionProvider(getRootNode(), getHolder(), Constants.WATCHED, getAuthorities());
-        switch (strategyType) {
-            case USUAL:
-                strategy = new UsualStrategy(provider);
-                break;
-            case CONTEND:
-                strategy = new ContentionStrategy(provider);
-                break;
-            case SYNC_RETRY:
-                strategy = new SyncRetryStrategy(provider, ((ClientContext) getContext()).getDelayRetryPolicy());
-                break;
-            case ASYNC_RETRY:
-                strategy = new AsyncRetryStrategy(provider, ((ClientContext) getContext()).getDelayRetryPolicy());
-                break;
-            default:
-                strategy = new UsualStrategy(provider);
-                break;
-        }
-        
-        strategies.put(strategyType, strategy);
-    }
-    
-    @Override
     public void close() {
-        this.strategies.clear();
         context.close();
         try {
             if (rootExist) {
@@ -209,7 +163,7 @@ public abstract class BaseClient implements IClient {
             LOGGER.info("delete root :{}", e.getMessage());
         }
         rootExist = false;
-        LOGGER.debug("delete root:{},rootExist:{}", rootNode, rootExist);
+        LOGGER.debug("delete root:{}", rootNode);
     }
     
     void setAuthorities(final String scheme, final byte[] auth, final List<ACL> authorities) {
