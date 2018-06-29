@@ -37,7 +37,7 @@ public class CreateUserParser implements SQLParser {
     @Override
     public DCLStatement parse() {
         lexerEngine.nextToken();
-        if (lexerEngine.skipIfEqual(DefaultKeyword.USER)) {
+        if (lexerEngine.skipIfEqual(DefaultKeyword.USER) || lexerEngine.skipIfEqual(DefaultKeyword.ROLE)) {
             return new DCLStatement();
         } else {
             throw new SQLParsingException("Only can support CREATE USER grammar.");
