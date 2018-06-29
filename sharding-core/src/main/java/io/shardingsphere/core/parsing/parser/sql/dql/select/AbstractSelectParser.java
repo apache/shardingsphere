@@ -168,7 +168,7 @@ public abstract class AbstractSelectParser implements SQLParser {
     private void appendDerivedOrderColumns(final ItemsToken itemsToken, final List<OrderItem> orderItems, final String aliasPattern, final SelectStatement selectStatement) {
         int derivedColumnOffset = 0;
         for (OrderItem each : orderItems) {
-            if (!isContainsItem(selectStatement, each)) {
+            if (!containsItem(selectStatement, each)) {
                 String alias = String.format(aliasPattern, derivedColumnOffset++);
                 each.setAlias(Optional.of(alias));
                 itemsToken.getItems().add(each.getQualifiedName().get() + " AS " + alias + " ");
@@ -176,23 +176,23 @@ public abstract class AbstractSelectParser implements SQLParser {
         }
     }
     
-    private boolean isContainsItem(final SelectStatement selectStatement, final OrderItem orderItem) {
-        return orderItem.isIndex() || isContainsItemInStarSelectItems(selectStatement, orderItem) || isContainsItemInSelectItems(selectStatement, orderItem);
+    private boolean containsItem(final SelectStatement selectStatement, final OrderItem orderItem) {
+        return orderItem.isIndex() || containsItemInStarSelectItems(selectStatement, orderItem) || containsItemInSelectItems(selectStatement, orderItem);
     }
     
-    private boolean isContainsItemInStarSelectItems(final SelectStatement selectStatement, final OrderItem orderItem) {
+    private boolean containsItemInStarSelectItems(final SelectStatement selectStatement, final OrderItem orderItem) {
         return selectStatement.hasUnqualifiedStarSelectItem() 
-                || isContainsItemWithOwnerInStarSelectItems(selectStatement, orderItem) || isContainsItemWithoutOwnerInStarSelectItems(selectStatement, orderItem);
+                || containsItemWithOwnerInStarSelectItems(selectStatement, orderItem) || containsItemWithoutOwnerInStarSelectItems(selectStatement, orderItem);
     }
     
-    private boolean isContainsItemWithOwnerInStarSelectItems(final SelectStatement selectStatement, final OrderItem orderItem) {
+    private boolean containsItemWithOwnerInStarSelectItems(final SelectStatement selectStatement, final OrderItem orderItem) {
         return orderItem.getOwner().isPresent() && selectStatement.findStarSelectItem(orderItem.getOwner().get()).isPresent();
     }
     
-    private boolean isContainsItemWithoutOwnerInStarSelectItems(final SelectStatement selectStatement, final OrderItem orderItem) {
+    private boolean containsItemWithoutOwnerInStarSelectItems(final SelectStatement selectStatement, final OrderItem orderItem) {
         if (!orderItem.getOwner().isPresent()) {
             for (StarSelectItem each : selectStatement.getQualifiedStarSelectItems()) {
-                if (isContainsItemWithoutOwnerInStarSelectItem(selectStatement, each, orderItem)) {
+                if (isSameSelectItem(selectStatement, each, orderItem)) {
                     return true;
                 }
             }
@@ -200,14 +200,14 @@ public abstract class AbstractSelectParser implements SQLParser {
         return false;
     }
     
-    private boolean isContainsItemWithoutOwnerInStarSelectItem(final SelectStatement selectStatement, final StarSelectItem starSelectItem, final OrderItem orderItem) {
+    private boolean isSameSelectItem(final SelectStatement selectStatement, final StarSelectItem starSelectItem, final OrderItem orderItem) {
         Preconditions.checkState(starSelectItem.getOwner().isPresent());
         Preconditions.checkState(orderItem.getName().isPresent());
         Optional<Table> table = selectStatement.getTables().find(starSelectItem.getOwner().get());
         return table.isPresent() && shardingMetaData.hasColumn(table.get().getName(), orderItem.getName().get());
     }
     
-    private boolean isContainsItemInSelectItems(final SelectStatement selectStatement, final OrderItem orderItem) {
+    private boolean containsItemInSelectItems(final SelectStatement selectStatement, final OrderItem orderItem) {
         for (SelectItem each : selectStatement.getItems()) {
             if (isSameAlias(each, orderItem) || isSameQualifiedName(each, orderItem)) {
                 return true;
