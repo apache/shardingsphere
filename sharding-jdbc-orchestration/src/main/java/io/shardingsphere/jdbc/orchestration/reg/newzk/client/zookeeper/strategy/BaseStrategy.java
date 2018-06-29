@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
+package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IExecStrategy;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;

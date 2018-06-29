@@ -19,7 +19,6 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.provider
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.ITransactionProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.Holder;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.ZKTransaction;
