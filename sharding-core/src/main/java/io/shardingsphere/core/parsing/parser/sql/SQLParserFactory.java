@@ -185,7 +185,7 @@ public final class SQLParserFactory {
     
     private static SQLParser getDDLParserOrDCLParser(final DatabaseType dbType,
                                                      final TokenType tokenType, final TokenType aidedTokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        if (DefaultKeyword.USER == aidedTokenType) {
+        if (DefaultKeyword.USER == aidedTokenType || DefaultKeyword.ROLE == aidedTokenType) {
             return getDCLParser(dbType, tokenType, shardingRule, lexerEngine);
         }
         return getDDLParser(dbType, tokenType, shardingRule, lexerEngine);
