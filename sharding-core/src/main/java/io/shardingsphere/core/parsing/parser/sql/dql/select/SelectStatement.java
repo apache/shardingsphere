@@ -110,11 +110,11 @@ public final class SelectStatement extends DQLStatement {
     }
     
     /**
-     * Judge has star select item without owner.
+     * Judge has unqualified star select item.
      * 
      * @return star select item without owner
      */
-    public boolean hasStarSelectItemWithoutOwner() {
+    public boolean hasUnqualifiedStarSelectItem() {
         for (SelectItem each : items) {
             if (each instanceof StarSelectItem && !((StarSelectItem) each).getOwner().isPresent()) {
                 return true;
@@ -124,11 +124,11 @@ public final class SelectStatement extends DQLStatement {
     }
     
     /**
-     * Get star select items with owner.
+     * Get qualified star select items.
      *
-     * @return star select items with owner.
+     * @return qualified star select items
      */
-    public Collection<StarSelectItem> getStarSelectItemsWithOwner() {
+    public Collection<StarSelectItem> getQualifiedStarSelectItems() {
         Collection<StarSelectItem> result = new LinkedList<>();
         for (SelectItem each : items) {
             if (each instanceof StarSelectItem && ((StarSelectItem) each).getOwner().isPresent()) {
@@ -139,14 +139,14 @@ public final class SelectStatement extends DQLStatement {
     }
     
     /**
-     * Find star select item via owner.
+     * Find star select item via table name or alias.
      *
-     * @param owner owner
-     * @return star select item via owner
+     * @param tableNameOrAlias table name or alias
+     * @return star select item via table name or alias
      */
-    public Optional<StarSelectItem> findStarSelectItem(final String owner) {
-        Optional<Table> ownerTable = getTables().find(owner);
-        if (!ownerTable.isPresent()) {
+    public Optional<StarSelectItem> findStarSelectItem(final String tableNameOrAlias) {
+        Optional<Table> table = getTables().find(tableNameOrAlias);
+        if (!table.isPresent()) {
             return Optional.absent();
         }
         for (SelectItem each : items) {
@@ -154,7 +154,7 @@ public final class SelectStatement extends DQLStatement {
                 continue;
             }
             StarSelectItem starSelectItem = (StarSelectItem) each;
-            if (starSelectItem.getOwner().isPresent() && getTables().find(starSelectItem.getOwner().get()).equals(ownerTable)) {
+            if (starSelectItem.getOwner().isPresent() && getTables().find(starSelectItem.getOwner().get()).equals(table)) {
                 return Optional.of(starSelectItem);
             }
         }

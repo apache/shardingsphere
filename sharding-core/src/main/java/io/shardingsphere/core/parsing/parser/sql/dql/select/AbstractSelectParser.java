@@ -181,25 +181,30 @@ public abstract class AbstractSelectParser implements SQLParser {
     }
     
     private boolean isContainsItemInStarSelectItems(final SelectStatement selectStatement, final OrderItem orderItem) {
-        if (selectStatement.hasStarSelectItemWithoutOwner()) {
-            return true;
-        }
-        if (orderItem.getOwner().isPresent()) {
-            return selectStatement.findStarSelectItem(orderItem.getOwner().get()).isPresent();
-        }
-        return isContainsItemInStarSelectItemsWithoutOrderItemOwner(selectStatement, orderItem);
+        return selectStatement.hasUnqualifiedStarSelectItem() 
+                || isContainsItemWithOwnerInStarSelectItems(selectStatement, orderItem) || isContainsItemWithoutOwnerInStarSelectItems(selectStatement, orderItem);
     }
     
-    private boolean isContainsItemInStarSelectItemsWithoutOrderItemOwner(final SelectStatement selectStatement, final OrderItem orderItem) {
-        Preconditions.checkState(orderItem.getName().isPresent(), String.format("There is not index in this order item, must have name. Order item: %s", orderItem));
-        for (StarSelectItem each : selectStatement.getStarSelectItemsWithOwner()) {
-            Preconditions.checkState(each.getOwner().isPresent());
-            Optional<Table> table = selectStatement.getTables().find(each.getOwner().get());
-            if (table.isPresent() && shardingMetaData.hasColumn(table.get().getName(), orderItem.getName().get())) {
-                return true;
+    private boolean isContainsItemWithOwnerInStarSelectItems(final SelectStatement selectStatement, final OrderItem orderItem) {
+        return orderItem.getOwner().isPresent() && selectStatement.findStarSelectItem(orderItem.getOwner().get()).isPresent();
+    }
+    
+    private boolean isContainsItemWithoutOwnerInStarSelectItems(final SelectStatement selectStatement, final OrderItem orderItem) {
+        if (!orderItem.getOwner().isPresent()) {
+            for (StarSelectItem each : selectStatement.getQualifiedStarSelectItems()) {
+                if (isContainsItemWithoutOwnerInStarSelectItem(selectStatement, each, orderItem)) {
+                    return true;
+                }
             }
         }
         return false;
+    }
+    
+    private boolean isContainsItemWithoutOwnerInStarSelectItem(final SelectStatement selectStatement, final StarSelectItem starSelectItem, final OrderItem orderItem) {
+        Preconditions.checkState(starSelectItem.getOwner().isPresent());
+        Preconditions.checkState(orderItem.getName().isPresent());
+        Optional<Table> table = selectStatement.getTables().find(starSelectItem.getOwner().get());
+        return table.isPresent() && shardingMetaData.hasColumn(table.get().getName(), orderItem.getName().get());
     }
     
     private boolean isContainsItemInSelectItems(final SelectStatement selectStatement, final OrderItem orderItem) {
