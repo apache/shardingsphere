@@ -195,12 +195,8 @@ public abstract class AbstractSelectParser implements SQLParser {
         for (StarSelectItem each : selectStatement.getStarSelectItemsWithOwner()) {
             Preconditions.checkState(each.getOwner().isPresent());
             Optional<Table> table = selectStatement.getTables().find(each.getOwner().get());
-            if (table.isPresent()) {
-                String tableName = table.get().getName();
-                if (shardingMetaData.getTableMetaDataMap().containsKey(tableName)
-                        && shardingMetaData.getTableMetaDataMap().get(tableName).getAllColumnNames().contains(orderItem.getName().get().toLowerCase())) {
-                    return true;
-                }
+            if (table.isPresent() && shardingMetaData.hasColumn(table.get().getName(), orderItem.getName().get())) {
+                return true;
             }
         }
         return false;
