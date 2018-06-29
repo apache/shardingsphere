@@ -24,6 +24,7 @@ import io.shardingsphere.core.parsing.parser.context.limit.Limit;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.SelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.StarSelectItem;
+import io.shardingsphere.core.parsing.parser.context.table.Table;
 import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
 import io.shardingsphere.core.parsing.parser.token.OffsetToken;
 import io.shardingsphere.core.parsing.parser.token.RowCountToken;
@@ -109,18 +110,55 @@ public final class SelectStatement extends DQLStatement {
     }
     
     /**
-     * Get star select items.
-     *
-     * @return star select items
+     * Judge has star select item without owner.
+     * 
+     * @return star select item without owner
      */
-    public Collection<StarSelectItem> getStarSelectItems() {
+    public boolean hasStarSelectItemWithoutOwner() {
+        for (SelectItem each : items) {
+            if (each instanceof StarSelectItem && !((StarSelectItem) each).getOwner().isPresent()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Get star select items with owner.
+     *
+     * @return star select items with owner.
+     */
+    public Collection<StarSelectItem> getStarSelectItemsWithOwner() {
         Collection<StarSelectItem> result = new LinkedList<>();
         for (SelectItem each : items) {
-            if (each instanceof StarSelectItem) {
+            if (each instanceof StarSelectItem && ((StarSelectItem) each).getOwner().isPresent()) {
                 result.add((StarSelectItem) each);
             }
         }
         return result;
+    }
+    
+    /**
+     * Find star select item via owner.
+     *
+     * @param owner owner
+     * @return star select item via owner
+     */
+    public Optional<StarSelectItem> findStarSelectItem(final String owner) {
+        Optional<Table> ownerTable = getTables().find(owner);
+        if (!ownerTable.isPresent()) {
+            return Optional.absent();
+        }
+        for (SelectItem each : items) {
+            if (!(each instanceof StarSelectItem)) {
+                continue;
+            }
+            StarSelectItem starSelectItem = (StarSelectItem) each;
+            if (starSelectItem.getOwner().isPresent() && getTables().find(starSelectItem.getOwner().get()).equals(ownerTable)) {
+                return Optional.of(starSelectItem);
+            }
+        }
+        return Optional.absent();
     }
     
     /**

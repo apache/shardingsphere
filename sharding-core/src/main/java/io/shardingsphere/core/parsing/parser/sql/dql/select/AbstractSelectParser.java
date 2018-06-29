@@ -18,9 +18,9 @@
 package io.shardingsphere.core.parsing.parser.sql.dql.select;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.metadata.TableMetaData;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.Assist;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
@@ -181,34 +181,29 @@ public abstract class AbstractSelectParser implements SQLParser {
     }
     
     private boolean isContainsItemInStarSelectItems(final SelectStatement selectStatement, final OrderItem orderItem) {
-        for (StarSelectItem each : selectStatement.getStarSelectItems()) {
-            if (!each.getOwner().isPresent()) {
-                return true;
-            }
-            if (orderItem.getOwner().isPresent() && !each.getOwner().get().equalsIgnoreCase(orderItem.getOwner().get())) {
-                continue;
-            }
+        if (selectStatement.hasStarSelectItemWithoutOwner()) {
+            return true;
+        }
+        if (orderItem.getOwner().isPresent()) {
+            return selectStatement.findStarSelectItem(orderItem.getOwner().get()).isPresent();
+        }
+        return isContainsItemInStarSelectItemsWithoutOrderItemOwner(selectStatement, orderItem);
+    }
+    
+    private boolean isContainsItemInStarSelectItemsWithoutOrderItemOwner(final SelectStatement selectStatement, final OrderItem orderItem) {
+        Preconditions.checkState(orderItem.getName().isPresent(), String.format("There is not index in this order item, must have name. Order item: %s", orderItem));
+        for (StarSelectItem each : selectStatement.getStarSelectItemsWithOwner()) {
+            Preconditions.checkState(each.getOwner().isPresent());
             Optional<Table> table = selectStatement.getTables().find(each.getOwner().get());
-            if (!table.isPresent()) {
-                continue;
-            }
-            if (isSameOwner(table.get(), selectStatement, orderItem)) {
-                return true;
-            }
-            if (!shardingMetaData.getTableMetaDataMap().containsKey(table.get().getName())) {
-                continue;
-            }
-            TableMetaData tableMetaData = shardingMetaData.getTableMetaDataMap().get(table.get().getName());
-            if (orderItem.getName().isPresent() && tableMetaData.getAllColumnNames().contains(orderItem.getName().get().toLowerCase())) {
-                return true;
+            if (table.isPresent()) {
+                String tableName = table.get().getName();
+                if (shardingMetaData.getTableMetaDataMap().containsKey(tableName)
+                        && shardingMetaData.getTableMetaDataMap().get(tableName).getAllColumnNames().contains(orderItem.getName().get().toLowerCase())) {
+                    return true;
+                }
             }
         }
         return false;
-    }
-    
-    private boolean isSameOwner(final Table table, final SelectStatement selectStatement, final OrderItem orderItem) {
-        Optional<Table> orderItemOwner = selectStatement.getTables().find(orderItem.getOwner().get());
-        return orderItem.getOwner().isPresent() && orderItemOwner.isPresent() && orderItemOwner.get().equals(table);
     }
     
     private boolean isContainsItemInSelectItems(final SelectStatement selectStatement, final OrderItem orderItem) {
