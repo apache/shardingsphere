@@ -18,23 +18,22 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.action;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
+import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.KeeperException;
 
 /*
  * @author lidongbo
  */
-public interface IExecStrategy extends IAction, IGroupAction {
-    
+public interface ITransactionProvider extends IProvider {
     /**
-     * get provider.
+     * only create target node in transaction.
      *
-     * @return IProvider
+     * @param key key
+     * @param value value
+     * @param createMode createMode
+     * @param transaction transaction
+     * @throws KeeperException Zookeeper Exception
+     * @throws InterruptedException InterruptedException
      */
-    IProvider getProvider();
-    
-    /**
-     * create transaction.
-     *
-     * @return BaseTransaction
-     */
-    BaseTransaction transaction();
+    void createInTransaction(String key, String value, CreateMode createMode, BaseTransaction transaction) throws KeeperException, InterruptedException;
 }

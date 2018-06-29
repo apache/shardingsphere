@@ -22,6 +22,7 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.StringUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.WatcherCreator;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -43,8 +44,6 @@ import java.util.concurrent.TimeUnit;
 public abstract class BaseClient implements IClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseClient.class);
     
-    private final int circleWait = 30;
-    
     @Getter(value = AccessLevel.PROTECTED)
     private List<ACL> authorities;
     
@@ -60,7 +59,7 @@ public abstract class BaseClient implements IClient {
     @Getter(value = AccessLevel.PROTECTED)
     private String rootNode = "/InitValue";
     
-    @Getter
+    @Getter(value = AccessLevel.PROTECTED)
     private BaseContext context;
     
     protected BaseClient(final BaseContext context) {
@@ -69,28 +68,20 @@ public abstract class BaseClient implements IClient {
     
     @Override
     public void start() throws IOException, InterruptedException {
-        holder = new Holder(getContext());
+        prepareStart();
         holder.start();
     }
     
     @Override
     public synchronized boolean start(final int wait, final TimeUnit units) throws InterruptedException, IOException {
-        holder = new Holder(getContext());
+        prepareStart();
         holder.start(wait, units);
         return holder.isConnected();
     }
     
-    private synchronized boolean blockUntilConnected(final int wait, final TimeUnit units) throws InterruptedException {
-        long maxWait = units != null ? TimeUnit.MILLISECONDS.convert(wait, units) : 0;
-
-        while (!holder.isConnected()) {
-            long waitTime = maxWait - circleWait;
-            if (waitTime <= 0) {
-                return holder.isConnected();
-            }
-            wait(circleWait);
-        }
-        return true;
+    private void prepareStart() {
+        holder = new Holder(getContext());
+        useExecStrategy(StrategyType.USUAL);
     }
     
     @Override
@@ -130,7 +121,6 @@ public abstract class BaseClient implements IClient {
         if (StringUtil.isNullOrBlank(key)) {
             throw new IllegalArgumentException("key should not be blank");
         }
-//        String path = PathUtil.getRealPath(rootNode, key);
         if (context.getWatchers().containsKey(key)) {
             context.getWatchers().remove(key);
             LOGGER.debug("unregisterWatch:{}", key);
@@ -141,7 +131,7 @@ public abstract class BaseClient implements IClient {
         createNamespace(Constants.NOTHING_DATA);
     }
     
-    protected void createNamespace(final byte[] date) throws KeeperException, InterruptedException {
+    private void createNamespace(final byte[] date) throws KeeperException, InterruptedException {
         if (rootExist) {
             LOGGER.debug("root exist");
             return;
@@ -173,7 +163,7 @@ public abstract class BaseClient implements IClient {
             LOGGER.info("delete root :{}", e.getMessage());
         }
         rootExist = false;
-        LOGGER.debug("delete root:{},rootExist:{}", rootNode, rootExist);
+        LOGGER.debug("delete root:{}", rootNode);
     }
     
     void setAuthorities(final String scheme, final byte[] auth, final List<ACL> authorities) {
