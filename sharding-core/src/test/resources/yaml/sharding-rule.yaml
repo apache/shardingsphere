@@ -63,7 +63,7 @@ shardingRule:
           algorithmExpression: t_order_${order_id % 2}
       keyGeneratorColumnName: order_id
       keyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
-      logicIndex: order_index
+      logicIndex: t_order_index
     t_order_item:
       actualDataNodes: ds_${0..1}.t_order_item_${0..1}
       tableStrategy:
