@@ -145,7 +145,7 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
     }
     
     private void assertMetadata(final Connection connection) throws IOException, JAXBException, SQLException {
-        // TODO case for drop (table, index) and truncate, add assert later
+        // TODO case for drop (index) and truncate, add assert later
         if (null == assertion.getExpectedDataFile()) {
             return;
         }
