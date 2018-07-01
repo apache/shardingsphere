@@ -154,7 +154,7 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
             expected = (ExpectedMetadataRoot) JAXBContext.newInstance(ExpectedMetadataRoot.class).createUnmarshaller().unmarshal(reader);
         }
         String tableName = assertion.getTable();
-        List<ExpectedColumn> actualColumns = getExpectedColumns(connection, tableName);
+        List<ExpectedColumn> actualColumns = getActualColumns(connection, tableName);
         assertMetadata(actualColumns, expected.find(tableName));
     }
     
@@ -178,8 +178,12 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
         }
     }
     
-    private List<ExpectedColumn> getExpectedColumns(final Connection connection, final String tableName) throws SQLException {
+    private List<ExpectedColumn> getActualColumns(final Connection connection, final String tableName) throws SQLException {
         DatabaseMetaData metaData = connection.getMetaData();
+        boolean isTableExisted = metaData.getTables(null, null, tableName, new String[] {"TABLE"}).next();
+        if (!isTableExisted) {
+            return Collections.emptyList();
+        }
         try (ResultSet resultSet = metaData.getColumns(null, null, tableName, null)) {
             List<ExpectedColumn> result = new LinkedList<>();
             while (resultSet.next()) {
