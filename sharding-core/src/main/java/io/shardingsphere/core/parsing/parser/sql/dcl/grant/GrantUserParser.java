@@ -20,6 +20,7 @@ package io.shardingsphere.core.parsing.parser.sql.dcl.grant;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.parser.clause.TableReferencesClauseParser;
+import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.GrantStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLParser;
 import io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
@@ -43,7 +44,7 @@ public class GrantUserParser implements SQLParser {
     @Override
     public DCLStatement parse() {
         lexerEngine.nextToken();
-        DCLStatement result = new DCLStatement();
+        GrantStatement result = new GrantStatement();
         lexerEngine.skipUntil(DefaultKeyword.ON);
         if (!lexerEngine.isEnd()) {
             lexerEngine.nextToken();

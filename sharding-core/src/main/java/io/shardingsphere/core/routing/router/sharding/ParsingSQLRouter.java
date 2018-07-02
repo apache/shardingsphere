@@ -25,6 +25,8 @@ import io.shardingsphere.core.optimizer.condition.ShardingConditions;
 import io.shardingsphere.core.parsing.SQLParsingEngine;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
 import io.shardingsphere.core.parsing.parser.context.condition.GeneratedKeyCondition;
+import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.GrantStatement;
+import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.RevokeStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTablesStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
@@ -113,7 +115,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
         RoutingEngine routingEngine;
         if (sqlStatement instanceof UseStatement) {
             routingEngine = new IgnoreRoutingEngine();
-        } else if (sqlStatement instanceof DDLStatement) {
+        } else if (sqlStatement instanceof DDLStatement || sqlStatement instanceof GrantStatement || sqlStatement instanceof RevokeStatement) {
             routingEngine = new TableBroadcastRoutingEngine(shardingRule, sqlStatement);
         } else if (sqlStatement instanceof ShowDatabasesStatement || sqlStatement instanceof ShowTablesStatement || sqlStatement instanceof DCLStatement) {
             routingEngine = new DatabaseBroadcastRoutingEngine(shardingRule);
