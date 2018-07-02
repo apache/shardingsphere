@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.dcl.grant;
+package io.shardingsphere.core.parsing.parser.sql.dcl.revoke;
 
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
@@ -25,17 +25,17 @@ import io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Grant user parser.
+ * Revoke user parser.
  *
  * @author panjuan
  */
-public class GrantUserParser implements SQLParser {
+public class RevokeUserParser implements SQLParser {
     
     private final LexerEngine lexerEngine;
     
     private final TableReferencesClauseParser tableReferencesClauseParser;
     
-    public GrantUserParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public RevokeUserParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         this.lexerEngine = lexerEngine;
         tableReferencesClauseParser = new TableReferencesClauseParser(shardingRule, lexerEngine);
     }

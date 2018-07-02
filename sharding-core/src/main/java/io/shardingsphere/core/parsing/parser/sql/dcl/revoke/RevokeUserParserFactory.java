@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.dcl.grant;
+package io.shardingsphere.core.parsing.parser.sql.dcl.revoke;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
@@ -24,22 +24,22 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Grant user parser factory.
+ * Revoke user parser factory.
  *
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class GrantUserParserFactory {
+public final class RevokeUserParserFactory {
     
     /**
-     * Grant user parser instance.
+     * Revoke user parser instance.
      *
      * @param dbType database type
      * @param shardingRule databases and tables sharding rule
      * @param lexerEngine lexical analysis engine.
-     * @return grant user parser instance
+     * @return revoke user parser instance
      */
-    public static GrantUserParser newInstance(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        return new GrantUserParser(shardingRule, lexerEngine);
+    public static RevokeUserParser newInstance(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        return new RevokeUserParser(shardingRule, lexerEngine);
     }
 }
