@@ -31,6 +31,7 @@ import io.shardingsphere.core.parsing.parser.sql.dal.use.UseParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dcl.alter.AlterUserParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dcl.create.CreateUserParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dcl.drop.DropUserParserFactory;
+import io.shardingsphere.core.parsing.parser.sql.dcl.grant.GrantUserParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dcl.rename.RenameUserParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.ddl.alter.AlterParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.CreateParserFactory;
@@ -178,6 +179,8 @@ public final class SQLParserFactory {
                 return DropUserParserFactory.newInstance(dbType, shardingRule, lexerEngine);
             case RENAME:
                 return RenameUserParserFactory.newInstance(dbType, shardingRule, lexerEngine);
+            case GRANT:
+                return GrantUserParserFactory.newInstance(dbType, shardingRule, lexerEngine);
             default:
                 throw new SQLParsingUnsupportedException(tokenType);
         }
