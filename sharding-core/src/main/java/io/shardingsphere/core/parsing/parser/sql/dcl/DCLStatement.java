@@ -18,6 +18,7 @@
 package io.shardingsphere.core.parsing.parser.sql.dcl;
 
 import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.parser.sql.AbstractSQLStatement;
 import lombok.ToString;
 
@@ -31,5 +32,14 @@ public class DCLStatement extends AbstractSQLStatement {
     
     public DCLStatement() {
         super(SQLType.DCL);
+    }
+    
+    /**
+     * Judge whether contain star for table.
+     *
+     * @return contain star or not.
+     */
+    public boolean containStarTable() {
+        return !getTables().isEmpty() && getTables().getSingleTableName().equals(Symbol.STAR.getLiterals());
     }
 }
