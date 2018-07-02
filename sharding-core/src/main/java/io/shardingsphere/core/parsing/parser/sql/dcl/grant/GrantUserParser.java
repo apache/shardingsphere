@@ -44,12 +44,12 @@ public class GrantUserParser implements SQLParser {
     @Override
     public DCLStatement parse() {
         lexerEngine.nextToken();
-        GrantStatement result = new GrantStatement();
+        DCLStatement result = new DCLStatement();
         lexerEngine.skipUntil(DefaultKeyword.ON);
         if (!lexerEngine.isEnd()) {
             lexerEngine.nextToken();
             tableReferencesClauseParser.parseSingleTableWithoutAlias(result);
         }
-        return result;
+        return result.containStarTable() ? result : (GrantStatement) result;
     }
 }

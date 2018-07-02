@@ -44,12 +44,12 @@ public class RevokeUserParser implements SQLParser {
     @Override
     public DCLStatement parse() {
         lexerEngine.nextToken();
-        RevokeStatement result = new RevokeStatement();
+        DCLStatement result = new DCLStatement();
         lexerEngine.skipUntil(DefaultKeyword.ON);
         if (!lexerEngine.isEnd()) {
             lexerEngine.nextToken();
             tableReferencesClauseParser.parseSingleTableWithoutAlias(result);
         }
-        return result;
+        return result.containStarTable() ? result : (RevokeStatement) result;
     }
 }
