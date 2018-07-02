@@ -15,21 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.dcl;
+package io.shardingsphere.core.parsing.parser.dialect.mysql.statement;
 
-import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.parsing.parser.sql.AbstractSQLStatement;
-import lombok.ToString;
+import io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement;
 
 /**
- * DCL statement.
+ * Revoke statement.
  *
  * @author panjuan
  */
-@ToString(callSuper = true)
-public class DCLStatement extends AbstractSQLStatement {
-    
-    public DCLStatement() {
-        super(SQLType.DCL);
-    }
+public class RevokeStatement extends DCLStatement {
 }
