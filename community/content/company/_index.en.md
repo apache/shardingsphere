@@ -94,6 +94,7 @@ Organizations using Sharding in chronological order.
 * [biechipang](http://www.biechipang.net/)
 * [youxuan](http://www.youx.mobi/)
 * [huochebang](http://www.huochebang.com/)
+* [rabbitpre](http://www.rabbitpre.com/)
 
 ## Express
 
