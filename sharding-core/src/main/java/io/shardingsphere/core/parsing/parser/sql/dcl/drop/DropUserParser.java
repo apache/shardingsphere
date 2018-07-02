@@ -37,7 +37,7 @@ public class DropUserParser implements SQLParser {
     @Override
     public DCLStatement parse() {
         lexerEngine.nextToken();
-        if (lexerEngine.skipIfEqual(DefaultKeyword.USER) || lexerEngine.skipIfEqual(DefaultKeyword.ROLE)) {
+        if (lexerEngine.skipIfEqual(DefaultKeyword.USER) || lexerEngine.skipIfEqual(DefaultKeyword.ROLE) || lexerEngine.skipIfEqual(DefaultKeyword.LOGIN)) {
             return new DCLStatement();
         } else {
             throw new SQLParsingException("Only can support DROP USER grammar.");

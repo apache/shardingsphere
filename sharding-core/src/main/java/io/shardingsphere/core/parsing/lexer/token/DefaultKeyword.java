@@ -87,6 +87,7 @@ public enum DefaultKeyword implements Keyword {
     VALIDATE,
     USER,
     ROLE,
+    LOGIN,
     IDENTIFIED,
     
     /*
