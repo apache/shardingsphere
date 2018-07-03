@@ -40,7 +40,7 @@ public class DropUserParser implements SQLParser {
         if (lexerEngine.skipIfEqual(DefaultKeyword.USER) || lexerEngine.skipIfEqual(DefaultKeyword.ROLE) || lexerEngine.skipIfEqual(DefaultKeyword.LOGIN)) {
             return new DCLStatement();
         } else {
-            throw new SQLParsingException("Only can support DROP USER grammar.");
+            throw new SQLParsingException("Can't support other DROP grammar unless DROP USER, DROP ROLE, DROP LOGIN.");
         }
     }
 }

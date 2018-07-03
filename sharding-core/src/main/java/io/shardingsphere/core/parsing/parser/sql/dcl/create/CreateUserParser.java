@@ -40,7 +40,7 @@ public class CreateUserParser implements SQLParser {
         if (lexerEngine.skipIfEqual(DefaultKeyword.USER) || lexerEngine.skipIfEqual(DefaultKeyword.ROLE) || lexerEngine.skipIfEqual(DefaultKeyword.LOGIN)) {
             return new DCLStatement();
         } else {
-            throw new SQLParsingException("Only can support CREATE USER grammar.");
+            throw new SQLParsingException("Can't support other CREATE grammar unless CREATE USER, CREATE ROLE, CREATE LOGIN.");
         }
     }
 }

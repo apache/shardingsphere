@@ -40,7 +40,7 @@ public class AlterUserParser implements SQLParser {
         if (lexerEngine.skipIfEqual(DefaultKeyword.USER) || lexerEngine.skipIfEqual(DefaultKeyword.ROLE) || lexerEngine.skipIfEqual(DefaultKeyword.LOGIN)) {
             return new DCLStatement();
         } else {
-            throw new SQLParsingException("Only can support ALTER USER grammar.");
+            throw new SQLParsingException("Can't support other ALTER grammar unless ALTER USER, ALTER ROLE, ALTER LOGIN.");
         }
     }
 }

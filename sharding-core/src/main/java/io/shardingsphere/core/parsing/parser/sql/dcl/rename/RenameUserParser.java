@@ -40,7 +40,7 @@ public class RenameUserParser implements SQLParser {
         if (lexerEngine.skipIfEqual(DefaultKeyword.USER)) {
             return new DCLStatement();
         } else {
-            throw new SQLParsingException("Only can support RENAME USER grammar.");
+            throw new SQLParsingException("Can't support other CREATE grammar unless RENAME USER.");
         }
     }
 }

@@ -34,6 +34,7 @@ import io.shardingsphere.core.parsing.parser.sql.dcl.deny.DenyUserParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dcl.drop.DropUserParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dcl.grant.GrantUserParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dcl.rename.RenameUserParserFactory;
+import io.shardingsphere.core.parsing.parser.sql.dcl.revoke.RevokeUserParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.ddl.alter.AlterParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.CreateParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.ddl.drop.DropParserFactory;
@@ -182,6 +183,8 @@ public final class SQLParserFactory {
                 return RenameUserParserFactory.newInstance(dbType, shardingRule, lexerEngine);
             case GRANT:
                 return GrantUserParserFactory.newInstance(dbType, shardingRule, lexerEngine);
+            case REVOKE:
+                return RevokeUserParserFactory.newInstance(dbType, shardingRule, lexerEngine);
             case DENY:
                 return DenyUserParserFactory.newInstance(dbType, shardingRule, lexerEngine);
             default:
