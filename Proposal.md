@@ -1,40 +1,46 @@
-# Sharding Proposal
+# Sharding-Sphere Proposal
 
 ## Abstract
 
-Sharding is a distributed database middleware, focus on data sharding, read-write splitting, BASE transaction and database orchestration. It provides maximum compatibilities for applications by JDBC driver or database protocols proxy.
+Sharding-Sphere is a ecosystem of transport distributed database middleware, focus on data sharding, distribute transaction and database orchestration. It provides maximum compatibilities for applications by JDBC driver or database protocols proxy.
 
 ## Proposal
 
-Sharding has good community in China, it has many end users, including [companies and organizations](http://shardingsphere.io/community/en/company/). 
+Sharding-Sphere has good community in China, it has many end users, including [companies and organizations](http://shardingsphere.io/community/en/company/). 
 
-We want to bring Sharding into Apache Software Foundation in order to build a global, diverse and stronger open source community.
+We want to bring Sharding-Sphere into Apache Software Foundation in order to build a global, diverse and stronger open source community.
 
-Dangdang submits this proposal to donate Sharding's source codes and all related documentations to the Apache Software Foundation. The codes are already under Apache License Version 2.0.
+Dangdang submits this proposal to donate Sharding-Sphere's source codes and all related documentations to the Apache Software Foundation. The codes are already under Apache License Version 2.0.
 
-* Code base: https://github.com/shardingsphere
+* Code base: https://github.com/sharding-sphere/sharding-sphere
 
 * Web site: http://shardingsphere.io/
 
-* Documentations: http://shardingsphere.io/document/en/
+* Documentations: http://shardingsphere.io/document/current/en/
 
 * Community: http://shardingsphere.io/community/en/
 
 ## Background
 
-Sharding started in Open Source on GitHub at year 2016. Because of data growth quickly on internet company, relational database can not afford any more, but developer and DBA still want use it to persist core data. Sharding is beginning with a JDBC driver to sharding data only (name as Sharding-JDBC) at Dangdang internal framework. It offers data sharding, read-write splitting, BASE transaction and database orchestration right now. Besides JDBC, proxy with database protocol is also supported, and sidecar feature is in our roadmap.
+Sharding-Sphere started in Open Source on GitHub at year 2016. Because of data growth quickly on internet company, relational database can not afford any more, but developers and DBAs still want use it to persist core data. Sharding-Sphere is beginning with a JDBC driver to sharding data only (name as Sharding-JDBC) at Dangdang internal framework. It offers data sharding, distribute transaction and database orchestration right now. Besides JDBC, proxy with database protocol is also supported. Sharding-sidecar and elastic data migration are in roadmap.
 
 Sharding-JDBC has won [TOP 20 most popular open source projects in China 2016](http://www.oschina.net/project/top_cn_2016). 
 
-Because in our roadmap, it should not base on JDBC only, proxy and sidecar features are not JDBC based, we want to rename it to **Sharding** after it accepted by Apache Software Foundation.
+Because in roadmap, it should not base on JDBC only, proxy and sidecar are not JDBC based, we have already rename it to **Sharding-Sphere** by a [public vote](https://github.com/sharding-sphere/sharding-sphere/issues/788).
 
 ## Rationale
 
-Relational database still plays a very important role on current application system. The maturity of production and surrounding ecosystem, friendliness of data query, the mastery degree of developers and DBAs, it cannot be completely replaced with NoSQL or NewSQL in the near future.
+Relational database still plays a very important role on current application system. The maturity of production and surrounding ecosystem, friendliness of data query, the mastery degree of developers and DBAs, it cannot be completely replaced with NoSQL in the near future.
 But current relational database cannot support cloud native very well and unfriendliness for distributed system. 
 
-The final proposal of Sharding is let user use distributed databases as a single database. Sharding uses mesher to manage the databases scattered around the system. 
-The interaction among the applications and the databases, which is concentrated in the mesher, is as complex and orderly as a cobweb. As the point, the concept of Database Mesh is similar with Service Mesh. 
+The final proposal of Sharding-Sphere is let user use distributed databases as a single database. Sharding-Sphere manage the databases scattered around the system. 
+There are 3 sub-project in Sharding-Sphere, they are Sharding-JDBC, Sharding-Proxy and Sharding-Sidecar(TODO).
+
+Sharding-JDBC uses JDBC to connect databases without redirect cost for java application, best performance for production.
+
+Sharding-Proxy is a transport database middleware, is deployed as a stateless server, and supports MySQL protocol now. There are 3 types of NewSQL in the paper [What’s Really New with NewSQL?](https://db.cs.cmu.edu/papers/2016/pavlo-newsql-sigmodrec2016.pdf), Sharding-Proxy is a `Transparent Sharding Middleware`.
+
+Sharding-Sidecar is a new concept, just like `data panel` in service mesh. The interaction among the applications and the databases, which is concentrated in the mesher, is as complex and orderly as a cobweb. As the point, the concept of Database Mesh is similar with Service Mesh. 
 The attention of Database Mesh focuses on how to connect the distributed data-access-layer and databases together. And it pays more attention to the interaction, which means the messy interaction among the applications and databases will be effectively organized. 
 By using Database Mesh, applications and databases will form a large grid system, and they just need to be put into the right position on grid system accordingly, for they are all be governed by mesher.
 
@@ -84,7 +90,7 @@ The core developers are a diverse group of experienced open source developers an
 
 ### Orphaned products
 
-Two development teams in JingDong and Dangdang will continue to work on Sharding 100% of the time for the foreseeable future with others from the growing community as well. And Sharding is widely used in China by many [companies and organizations](http://shardingsphere.io/community/en/03-company/). So the risk of Sharding becoming orphaned is low.
+Two development teams in JingDong and Dangdang will continue to work on Sharding-Sphere 100% of the time for the foreseeable future with others from the growing community as well. And Sharding-Sphere is widely used in China by many [companies and organizations](http://shardingsphere.io/community/en/03-company/). So the risk of Sharding-Sphere becoming orphaned is low.
 
 ### Inexperience with Open Source
 
@@ -96,19 +102,19 @@ The current core developers work across a variety of organizations including Jin
 
 ### Reliance on Salaried Developers
 
-Two of the core developers are paid by their employer to contribute to the Sharding project. We expect that Sharding development will continue with salaried developers, and are committed to growing the community to include non-salaried developers as well.
+Two of the core developers are paid by their employer to contribute to the Sharding-Sphere project. We expect that Sharding-Sphere development will continue with salaried developers, and are committed to growing the community to include non-salaried developers as well.
 
 ### Relationships with Other Apache Products
 
-Sharding team worked with the SkyWalking team to introduce an automatic prober of Sharding to send performance data to SkyWalking. Zookeeper is integrated as one of the service registration/discovery mechanisms.
+Sharding-Sphere team worked with the SkyWalking team to introduce an automatic prober of Sharding-Sphere to send performance data to SkyWalking. Zookeeper is integrated as one of the service registration/discovery mechanisms.
 
 ### A Excessive Fascination with the Apache Brand
 
-The Sharding community acknowledges the value and recognition that the Apache brand would bring to the Sharding project. However, our primary interest is in the community building process and long-term stability that the Apache Software Foundation provides for its projects.
+The Sharding-Sphere community acknowledges the value and recognition that the Apache brand would bring to the Sharding-Sphere project. However, our primary interest is in the community building process and long-term stability that the Apache Software Foundation provides for its projects.
 
 ## Documentation
 
-A complete set of Sharding documentations is provided on shardingsphere.io in both English and Simplified Chinese.
+A complete set of Sharding-Sphere documentations is provided on shardingsphere.io in both English and Simplified Chinese.
 
 * [English](http://shardingsphere.io/document/en/)
 
