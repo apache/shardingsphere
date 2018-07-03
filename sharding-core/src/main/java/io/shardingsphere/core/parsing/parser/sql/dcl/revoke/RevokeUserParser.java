@@ -20,7 +20,6 @@ package io.shardingsphere.core.parsing.parser.sql.dcl.revoke;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.parser.clause.TableReferencesClauseParser;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.RevokeStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLParser;
 import io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
@@ -50,6 +49,6 @@ public class RevokeUserParser implements SQLParser {
             lexerEngine.nextToken();
             tableReferencesClauseParser.parseSingleTableWithoutAlias(result);
         }
-        return result.containStarTable() ? result : (RevokeStatement) result;
+        return result;
     }
 }
