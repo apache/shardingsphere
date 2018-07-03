@@ -39,7 +39,7 @@ public class DCLStatement extends AbstractSQLStatement {
      *
      * @return contain star or not.
      */
-    public boolean containStarTable() {
-        return !getTables().isEmpty() && getTables().getSingleTableName().equals(Symbol.STAR.getLiterals());
+    public boolean isGrantForSingleTable() {
+        return !getTables().isEmpty() && !getTables().getSingleTableName().equals(Symbol.STAR.getLiterals());
     }
 }
