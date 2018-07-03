@@ -30,6 +30,7 @@ import io.shardingsphere.core.parsing.parser.sql.dal.show.ShowParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dal.use.UseParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dcl.alter.AlterUserParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dcl.create.CreateUserParserFactory;
+import io.shardingsphere.core.parsing.parser.sql.dcl.deny.DenyUserParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dcl.drop.DropUserParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dcl.grant.GrantUserParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dcl.rename.RenameUserParserFactory;
@@ -112,7 +113,7 @@ public final class SQLParserFactory {
     }
     
     private static boolean isDCL(final TokenType tokenType) {
-        return DefaultKeyword.GRANT == tokenType || DefaultKeyword.REVOKE == tokenType || DefaultKeyword.RENAME == tokenType;
+        return DefaultKeyword.GRANT == tokenType || DefaultKeyword.REVOKE == tokenType || DefaultKeyword.RENAME == tokenType || DefaultKeyword.DENY == tokenType;
     }
     
     private static boolean isDDLOrDCL(final TokenType tokenType) {
@@ -181,6 +182,8 @@ public final class SQLParserFactory {
                 return RenameUserParserFactory.newInstance(dbType, shardingRule, lexerEngine);
             case GRANT:
                 return GrantUserParserFactory.newInstance(dbType, shardingRule, lexerEngine);
+            case DENY:
+                return DenyUserParserFactory.newInstance(dbType, shardingRule, lexerEngine);
             default:
                 throw new SQLParsingUnsupportedException(tokenType);
         }

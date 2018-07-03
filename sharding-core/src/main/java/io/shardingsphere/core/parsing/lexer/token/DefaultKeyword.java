@@ -88,6 +88,7 @@ public enum DefaultKeyword implements Keyword {
     USER,
     ROLE,
     LOGIN,
+    DENY,
     IDENTIFIED,
     
     /*
