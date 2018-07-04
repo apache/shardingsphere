@@ -44,12 +44,12 @@ public class PathUtil {
             throw new IllegalArgumentException("path should have content!");
         }
         String rootPath = root;
-        if (!root.startsWith(Constants.PATH_SEPARATOR)) {
-            rootPath = Constants.PATH_SEPARATOR + root;
+        if (!root.startsWith(ZookeeperConstants.PATH_SEPARATOR)) {
+            rootPath = ZookeeperConstants.PATH_SEPARATOR + root;
         }
         String subPath = path;
-        if (!path.startsWith(Constants.PATH_SEPARATOR)) {
-            subPath = Constants.PATH_SEPARATOR + path;
+        if (!path.startsWith(ZookeeperConstants.PATH_SEPARATOR)) {
+            subPath = ZookeeperConstants.PATH_SEPARATOR + path;
         }
         if (!subPath.startsWith(rootPath)) {
             return rootPath + subPath;
@@ -68,11 +68,11 @@ public class PathUtil {
         String realPath = adjustPath(root, path);
         Stack<String> pathStack = new Stack<>();
         int index = 1;
-        int position = realPath.indexOf(Constants.PATH_SEPARATOR, index);
+        int position = realPath.indexOf(ZookeeperConstants.PATH_SEPARATOR, index);
         do {
             pathStack.push(realPath.substring(0, position));
             index = position + 1;
-            position = realPath.indexOf(Constants.PATH_SEPARATOR, index);
+            position = realPath.indexOf(ZookeeperConstants.PATH_SEPARATOR, index);
         }
         while (position > -1);
         pathStack.push(realPath);
@@ -90,12 +90,12 @@ public class PathUtil {
         String realPath = adjustPath(root, path);
         List<String> paths = new ArrayList<>();
         int index = 1;
-        int position = realPath.indexOf(Constants.PATH_SEPARATOR, index);
+        int position = realPath.indexOf(ZookeeperConstants.PATH_SEPARATOR, index);
     
         do {
             paths.add(realPath.substring(0, position));
             index = position + 1;
-            position = realPath.indexOf(Constants.PATH_SEPARATOR, index);
+            position = realPath.indexOf(ZookeeperConstants.PATH_SEPARATOR, index);
         }
         while (position > -1);
         paths.add(realPath);
@@ -112,11 +112,11 @@ public class PathUtil {
         String realPath = checkPath(path);
         List<String> paths = new ArrayList<>();
         char[] chars = realPath.toCharArray();
-        StringBuilder builder = new StringBuilder(Constants.PATH_SEPARATOR);
+        StringBuilder builder = new StringBuilder(ZookeeperConstants.PATH_SEPARATOR);
         for (int i = 1; i < chars.length; i++) {
-            if (chars[i] == Constants.PATH_SEPARATOR.charAt(0)) {
+            if (chars[i] == ZookeeperConstants.PATH_SEPARATOR.charAt(0)) {
                 paths.add(builder.toString());
-                builder = new StringBuilder(Constants.PATH_SEPARATOR);
+                builder = new StringBuilder(ZookeeperConstants.PATH_SEPARATOR);
                 continue;
             }
             builder.append(chars[i]);
@@ -143,11 +143,11 @@ public class PathUtil {
         }
         String path = key;
         if (path.charAt(0) != 47 || path.charAt(path.length() - 1) == 47) {
-            path = Constants.PATH_SEPARATOR + path;
+            path = ZookeeperConstants.PATH_SEPARATOR + path;
         }
     
         if (path.charAt(path.length() - 1) == 47) {
-            path = Constants.PATH_SEPARATOR + path;
+            path = ZookeeperConstants.PATH_SEPARATOR + path;
         }
 
         char previous = 47;

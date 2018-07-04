@@ -18,7 +18,7 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
@@ -88,7 +88,7 @@ public class UsualStrategy extends BaseStrategy {
     
     @Override
     public void createAllNeedPath(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
-        if (key.indexOf(Constants.PATH_SEPARATOR) < -1) {
+        if (key.indexOf(ZookeeperConstants.PATH_SEPARATOR) < -1) {
             this.createCurrentOnly(key, value, createMode);
             return;
         }
@@ -98,7 +98,7 @@ public class UsualStrategy extends BaseStrategy {
                 if (i == nodes.size() - 1) {
                     this.createCurrentOnly(nodes.get(i), value, createMode);
                 } else {
-                    this.createCurrentOnly(nodes.get(i), Constants.NOTHING_VALUE, CreateMode.PERSISTENT);
+                    this.createCurrentOnly(nodes.get(i), ZookeeperConstants.NOTHING_VALUE, CreateMode.PERSISTENT);
                 }
                 LOGGER.debug("node not exist and create:", nodes.get(i));
             } catch (KeeperException.NodeExistsException e) {
@@ -143,13 +143,13 @@ public class UsualStrategy extends BaseStrategy {
     @Override
     public void deleteCurrentBranch(final String key) throws KeeperException, InterruptedException {
         LOGGER.debug("deleteCurrentBranch:{}", key);
-        if (key.indexOf(Constants.PATH_SEPARATOR) < -1) {
+        if (key.indexOf(ZookeeperConstants.PATH_SEPARATOR) < -1) {
             this.deleteOnlyCurrent(key);
             return;
         }
         String path = getProvider().getRealPath(key);
         this.deleteChildren(path, true);
-        String superPath = path.substring(0, path.lastIndexOf(Constants.PATH_SEPARATOR));
+        String superPath = path.substring(0, path.lastIndexOf(ZookeeperConstants.PATH_SEPARATOR));
         try {
             this.deleteRecursively(superPath);
         } catch (KeeperException.NotEmptyException e) {
@@ -161,7 +161,7 @@ public class UsualStrategy extends BaseStrategy {
     
     private void deleteRecursively(final String path) throws KeeperException, InterruptedException {
         LOGGER.debug("deleteRecursively:{}", path);
-        int index = path.lastIndexOf(Constants.PATH_SEPARATOR);
+        int index = path.lastIndexOf(ZookeeperConstants.PATH_SEPARATOR);
         if (index == 0) {
             this.deleteOnlyCurrent(path);
             return;

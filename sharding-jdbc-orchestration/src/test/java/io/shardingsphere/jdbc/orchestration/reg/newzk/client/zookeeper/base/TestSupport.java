@@ -18,6 +18,7 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
 public class TestSupport {
+    
     public static final String AUTH = "digest";
     
     public static final String SERVERS = "localhost:3181";

@@ -24,7 +24,8 @@ import java.nio.charset.Charset;
  *
  * @author lidongbo
  */
-public final class Constants {
+public final class ZookeeperConstants {
+    
     public static final int VERSION = -1;
     
     public static final int WAIT = 60 * 1000;

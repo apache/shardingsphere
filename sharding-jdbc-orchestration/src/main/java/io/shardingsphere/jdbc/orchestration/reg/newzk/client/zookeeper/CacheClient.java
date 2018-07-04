@@ -19,7 +19,7 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.CacheStrategy;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.PathTree;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseContext;
 import org.apache.zookeeper.AsyncCallback;
@@ -70,7 +70,7 @@ public final class CacheClient extends UsualClient {
                 return;
             case ALL:
                 pathTree = loadPathTree();
-                pathTree.refreshPeriodic(Constants.THREAD_PERIOD);
+                pathTree.refreshPeriodic(ZookeeperConstants.THREAD_PERIOD);
                 return;
             case NONE:
             default:

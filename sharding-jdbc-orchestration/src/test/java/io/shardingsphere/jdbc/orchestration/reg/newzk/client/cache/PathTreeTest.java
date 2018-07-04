@@ -27,6 +27,7 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -73,6 +74,7 @@ public class PathTreeTest extends BaseTest {
         }
     }
     
+    @Ignore
     @Test
     public void assertWatch() throws KeeperException, InterruptedException {
         final String keyB = "a/b/bb";

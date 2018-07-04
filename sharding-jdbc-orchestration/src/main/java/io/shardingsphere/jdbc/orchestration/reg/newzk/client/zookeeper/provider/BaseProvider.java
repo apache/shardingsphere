@@ -19,7 +19,7 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.provider
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.election.LeaderElection;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.Holder;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
@@ -93,25 +93,25 @@ public class BaseProvider implements IProvider {
     
     @Override
     public void create(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
-        holder.getZooKeeper().create(key, value.getBytes(Constants.UTF_8), authorities, createMode);
+        holder.getZooKeeper().create(key, value.getBytes(ZookeeperConstants.UTF_8), authorities, createMode);
         LOGGER.debug("BaseProvider createCurrentOnly:{}", key);
 //        create(key, value, createMode, new AtomicInteger());
     }
 
     @Override
     public void update(final String key, final String value) throws KeeperException, InterruptedException {
-        holder.getZooKeeper().setData(key, value.getBytes(Constants.UTF_8), Constants.VERSION);
+        holder.getZooKeeper().setData(key, value.getBytes(ZookeeperConstants.UTF_8), ZookeeperConstants.VERSION);
     }
     
     @Override
     public void delete(final String key) throws KeeperException, InterruptedException {
-        holder.getZooKeeper().delete(key, Constants.VERSION);
+        holder.getZooKeeper().delete(key, ZookeeperConstants.VERSION);
         LOGGER.debug("BaseProvider deleteOnlyCurrent:{}", key);
     }
     
     @Override
     public void delete(final String key, final AsyncCallback.VoidCallback callback, final Object ctx) throws KeeperException, InterruptedException {
-        holder.getZooKeeper().delete(key, Constants.VERSION, callback, ctx);
+        holder.getZooKeeper().delete(key, ZookeeperConstants.VERSION, callback, ctx);
         LOGGER.debug("BaseProvider deleteOnlyCurrent:{},ctx:{}", key, ctx);
     }
 

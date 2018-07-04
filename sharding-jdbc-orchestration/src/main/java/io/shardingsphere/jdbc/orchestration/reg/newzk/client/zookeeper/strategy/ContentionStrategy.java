@@ -20,7 +20,7 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.Callback;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.election.LeaderElection;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
@@ -169,7 +169,7 @@ public class ContentionStrategy extends UsualStrategy {
     }
     
     private void createBegin(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
-        if (key.indexOf(Constants.PATH_SEPARATOR) < -1) {
+        if (key.indexOf(ZookeeperConstants.PATH_SEPARATOR) < -1) {
             getProvider().create(key, value, createMode);
             return;
         }
@@ -183,7 +183,7 @@ public class ContentionStrategy extends UsualStrategy {
             if (i == nodes.size() - 1) {
                 getProvider().create(nodes.get(i), value, createMode);
             } else {
-                getProvider().create(nodes.get(i), Constants.NOTHING_VALUE, createMode);
+                getProvider().create(nodes.get(i), ZookeeperConstants.NOTHING_VALUE, createMode);
             }
         }
     }

@@ -17,7 +17,7 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction;
 
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.Holder;
 import org.apache.zookeeper.CreateMode;
@@ -56,7 +56,7 @@ public class ZKTransaction extends BaseTransaction {
     
     @Override
     public ZKTransaction delete(final String path) {
-        return delete(path, Constants.VERSION);
+        return delete(path, ZookeeperConstants.VERSION);
     }
     
     @Override
@@ -68,7 +68,7 @@ public class ZKTransaction extends BaseTransaction {
     
     @Override
     public ZKTransaction check(final String path) {
-        return check(path, Constants.VERSION);
+        return check(path, ZookeeperConstants.VERSION);
     }
     
     @Override
@@ -80,7 +80,7 @@ public class ZKTransaction extends BaseTransaction {
     
     @Override
     public ZKTransaction setData(final String path, final byte[] data) {
-        return setData(path, data, Constants.VERSION);
+        return setData(path, data, ZookeeperConstants.VERSION);
     }
     
     @Override

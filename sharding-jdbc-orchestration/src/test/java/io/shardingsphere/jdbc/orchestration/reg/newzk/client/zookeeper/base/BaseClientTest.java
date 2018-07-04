@@ -18,7 +18,7 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.ClientFactory;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
@@ -32,7 +32,6 @@ import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,14 +75,14 @@ public abstract class BaseClientTest extends BaseTest {
     public void assertDeleteRoot() throws KeeperException, InterruptedException {
         ((BaseClient)testClient).createNamespace();
         deleteRoot(testClient);
-        assert getZooKeeper(testClient).exists(Constants.PATH_SEPARATOR + TestSupport.ROOT, false) == null;
+        assert getZooKeeper(testClient).exists(ZookeeperConstants.PATH_SEPARATOR + TestSupport.ROOT, false) == null;
     }
     
     protected void createRoot(IClient client) throws KeeperException, InterruptedException {
         ((BaseClient)client).createNamespace();
-        assert getZooKeeper(client).exists(Constants.PATH_SEPARATOR + TestSupport.ROOT, false) != null;
+        assert getZooKeeper(client).exists(ZookeeperConstants.PATH_SEPARATOR + TestSupport.ROOT, false) != null;
         ((BaseClient)client).deleteNamespace();
-        assert getZooKeeper(client).exists(Constants.PATH_SEPARATOR + TestSupport.ROOT, false) == null;
+        assert getZooKeeper(client).exists(ZookeeperConstants.PATH_SEPARATOR + TestSupport.ROOT, false) == null;
     }
     
     protected void createChild(IClient client) throws KeeperException, InterruptedException {
@@ -188,7 +187,7 @@ public abstract class BaseClientTest extends BaseTest {
     
     private void updateWithCheck(String key, String value, IClient client) throws KeeperException, InterruptedException {
         client.update(key, value);
-//        client.transaction().check(key, Constants.VERSION).setData(key, value.getBytes(Constants.UTF_8), Constants.VERSION).commit();
+//        client.transaction().check(key, ZookeeperConstants.VERSION).setData(key, value.getBytes(ZookeeperConstants.UTF_8), ZookeeperConstants.VERSION).commit();
     }
     
     protected void persistEphemeral(IClient client) throws KeeperException, InterruptedException {

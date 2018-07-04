@@ -17,7 +17,7 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache;
 
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -50,7 +50,7 @@ public class PathNode {
     private byte[] value;
     
     PathNode(final String key) {
-        this(key, Constants.RELEASE_VALUE);
+        this(key, ZookeeperConstants.RELEASE_VALUE);
     }
     
     PathNode(final String key, final byte[] value) {
@@ -99,7 +99,7 @@ public class PathNode {
         if (iterator.hasNext()) {
             node.set(iterator, value);
         } else {
-            node.setValue(value.getBytes(Constants.UTF_8));
+            node.setValue(value.getBytes(ZookeeperConstants.UTF_8));
         }
         return node;
     }

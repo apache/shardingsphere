@@ -18,7 +18,7 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.election;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.WatcherCreator;
@@ -42,14 +42,14 @@ public abstract class LeaderElection {
     private int retryCount;
     
     public LeaderElection() {
-        retryCount = Constants.NODE_ELECTION_RETRY;
+        retryCount = ZookeeperConstants.NODE_ELECTION_RETRY;
     }
 
     private boolean contend(final String node, final IProvider provider, final Listener listener) throws KeeperException, InterruptedException {
         boolean success = false;
         try {
             // todo EPHEMERAL_SEQUENTIAL check index value
-            provider.create(node, Constants.CLIENT_ID, CreateMode.EPHEMERAL);
+            provider.create(node, ZookeeperConstants.CLIENT_ID, CreateMode.EPHEMERAL);
             success = true;
         } catch (KeeperException.NodeExistsException e) {
             LOGGER.info("contend not success");
@@ -70,7 +70,7 @@ public abstract class LeaderElection {
     public void executeContention(final String nodeBeContend, final IProvider provider) throws KeeperException, InterruptedException {
         boolean canBegin;
         final String realNode = provider.getRealPath(nodeBeContend);
-        final String contendNode = PathUtil.getRealPath(realNode, Constants.CHANGING_KEY);
+        final String contendNode = PathUtil.getRealPath(realNode, ZookeeperConstants.CHANGING_KEY);
         canBegin = this.contend(contendNode, provider, new Listener(contendNode) {
             @Override
             public void process(final WatchedEvent event) {

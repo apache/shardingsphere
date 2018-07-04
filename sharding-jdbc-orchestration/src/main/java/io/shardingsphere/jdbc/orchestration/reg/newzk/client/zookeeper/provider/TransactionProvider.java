@@ -18,7 +18,7 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.provider;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.ITransactionProvider;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.Holder;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.ZKTransaction;
@@ -38,7 +38,7 @@ public class TransactionProvider extends BaseProvider implements ITransactionPro
     
     @Override
     public void createInTransaction(final String key, final String value, final CreateMode createMode, final BaseTransaction transaction) throws KeeperException, InterruptedException {
-        transaction.create(key, value.getBytes(Constants.UTF_8), getAuthorities(), createMode);
+        transaction.create(key, value.getBytes(ZookeeperConstants.UTF_8), getAuthorities(), createMode);
     }
     
     @Override

@@ -20,7 +20,7 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.Callback;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.ITransactionProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.election.LeaderElection;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.provider.BaseProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.ZKTransaction;
@@ -71,7 +71,7 @@ public class TransactionContendStrategy extends ContentionStrategy {
     }
 
     private void createBegin(final String key, final String value, final CreateMode createMode, final ZKTransaction transaction) throws KeeperException, InterruptedException {
-        if (key.indexOf(Constants.PATH_SEPARATOR) < -1) {
+        if (key.indexOf(ZookeeperConstants.PATH_SEPARATOR) < -1) {
             ((ITransactionProvider) getProvider()).createInTransaction(key, value, createMode, transaction);
             return;
         }
@@ -85,7 +85,7 @@ public class TransactionContendStrategy extends ContentionStrategy {
             if (i == nodes.size() - 1) {
                 ((ITransactionProvider) getProvider()).createInTransaction(nodes.get(i), value, createMode, transaction);
             } else {
-                ((ITransactionProvider) getProvider()).createInTransaction(nodes.get(i), Constants.NOTHING_VALUE, createMode, transaction);
+                ((ITransactionProvider) getProvider()).createInTransaction(nodes.get(i), ZookeeperConstants.NOTHING_VALUE, createMode, transaction);
             }
         }
     }
@@ -115,7 +115,7 @@ public class TransactionContendStrategy extends ContentionStrategy {
             deleteChildren(child, true, transaction);
         }
         if (deleteCurrentNode) {
-            transaction.delete(key, Constants.VERSION);
+            transaction.delete(key, ZookeeperConstants.VERSION);
         }
     }
     
@@ -148,7 +148,7 @@ public class TransactionContendStrategy extends ContentionStrategy {
                 }
             }
             if (getProvider().exists(node) && canDelete) {
-                transaction.delete(node, Constants.VERSION);
+                transaction.delete(node, ZookeeperConstants.VERSION);
             }
             prePath = node;
         }

@@ -19,7 +19,7 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IExecStrategy;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.ITransactionProvider;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseContext;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.provider.TransactionProvider;
@@ -72,7 +72,7 @@ public class UsualClient extends BaseClient {
             return;
         }
         
-        ITransactionProvider provider = new TransactionProvider(getRootNode(), getHolder(), Constants.WATCHED, getAuthorities());
+        ITransactionProvider provider = new TransactionProvider(getRootNode(), getHolder(), ZookeeperConstants.WATCHED, getAuthorities());
         switch (strategyType) {
             case USUAL:
                 strategy = new UsualStrategy(provider);

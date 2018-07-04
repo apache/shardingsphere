@@ -19,7 +19,7 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.UsualClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
@@ -93,7 +93,7 @@ public final class PathTree {
         
                 PathNode newRoot = new PathNode(rootNode.get().getKey());
                 List<String> children = provider.getChildren(rootNode.get().getKey());
-                children.remove(PathUtil.getRealPath(rootNode.get().getKey(), Constants.CHANGING_KEY));
+                children.remove(PathUtil.getRealPath(rootNode.get().getKey(), ZookeeperConstants.CHANGING_KEY));
                 this.attechIntoNode(children, newRoot);
                 rootNode.set(newRoot);
         
@@ -149,7 +149,7 @@ public final class PathTree {
             }
             long threadPeriod = period;
             if (threadPeriod < 1) {
-                threadPeriod = Constants.THREAD_PERIOD;
+                threadPeriod = ZookeeperConstants.THREAD_PERIOD;
             }
             LOGGER.debug("refreshPeriodic:{}", period);
             cacheService = Executors.newSingleThreadScheduledExecutor();
@@ -167,7 +167,7 @@ public final class PathTree {
                         }
                     }
                 }
-            }, Constants.THREAD_INITIAL_DELAY, threadPeriod, TimeUnit.MILLISECONDS);
+            }, ZookeeperConstants.THREAD_INITIAL_DELAY, threadPeriod, TimeUnit.MILLISECONDS);
             executorStart = true;
             Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
                 @Override
@@ -237,7 +237,7 @@ public final class PathTree {
     
     private void processNodeChange(final String path) {
         try {
-            String value = Constants.NOTHING_VALUE;
+            String value = ZookeeperConstants.NOTHING_VALUE;
             if (!path.equals(getRootNode().getKey())) {
                 value = provider.getDataString(path);
             }
@@ -341,7 +341,7 @@ public final class PathTree {
             LOGGER.debug("put status:{}", status);
             if (status == PathStatus.RELEASE) {
                 if (path.equals(rootNode.get().getKey())) {
-                    rootNode.set(new PathNode(rootNode.get().getKey(), value.getBytes(Constants.UTF_8)));
+                    rootNode.set(new PathNode(rootNode.get().getKey(), value.getBytes(ZookeeperConstants.UTF_8)));
                     return;
                 }
                 this.setStatus(PathStatus.CHANGING);
@@ -375,6 +375,9 @@ public final class PathTree {
         }
         try {
             PathNode node = get(path);
+            if (node == null) {
+                return;
+            }
             node.getChildren().remove(path);
             LOGGER.debug("PathTree end delete:{}", path);
         } finally {

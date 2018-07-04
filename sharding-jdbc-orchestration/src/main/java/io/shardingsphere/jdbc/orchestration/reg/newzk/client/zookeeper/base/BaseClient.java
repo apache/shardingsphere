@@ -18,7 +18,7 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.StringUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
@@ -57,7 +57,7 @@ public abstract class BaseClient implements IClient {
     
     @Setter(value = AccessLevel.PROTECTED)
     @Getter(value = AccessLevel.PROTECTED)
-    private String rootNode = Constants.ROOT_INIT_PATH;
+    private String rootNode = ZookeeperConstants.ROOT_INIT_PATH;
     
     @Getter(value = AccessLevel.PROTECTED)
     private BaseContext context;
@@ -128,7 +128,7 @@ public abstract class BaseClient implements IClient {
     }
     
     protected void createNamespace() throws KeeperException, InterruptedException {
-        createNamespace(Constants.NOTHING_DATA);
+        createNamespace(ZookeeperConstants.NOTHING_DATA);
     }
     
     private void createNamespace(final byte[] date) throws KeeperException, InterruptedException {
@@ -158,7 +158,7 @@ public abstract class BaseClient implements IClient {
     
     protected void deleteNamespace() throws KeeperException, InterruptedException {
         try {
-            holder.getZooKeeper().delete(rootNode, Constants.VERSION);
+            holder.getZooKeeper().delete(rootNode, ZookeeperConstants.VERSION);
         } catch (KeeperException.NodeExistsException | KeeperException.NotEmptyException e) {
             LOGGER.info("delete root :{}", e.getMessage());
         }

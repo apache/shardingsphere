@@ -19,7 +19,7 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayRetryPolicy;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseClientFactory;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ClientContext;
@@ -50,7 +50,7 @@ public class ClientFactory extends BaseClientFactory {
     public ClientFactory newClient(final String servers, final int sessionTimeoutMilliseconds) {
         int wait = sessionTimeoutMilliseconds;
         if (sessionTimeoutMilliseconds == 0) {
-            wait = Constants.WAIT;
+            wait = ZookeeperConstants.WAIT;
         }
         setContext(new ClientContext(servers, wait));
         setClient(new UsualClient(getContext()));

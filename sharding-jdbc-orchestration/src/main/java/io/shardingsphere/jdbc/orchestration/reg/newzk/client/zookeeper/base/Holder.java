@@ -17,7 +17,7 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -87,7 +87,7 @@ public class Holder {
                 processConnection(event);
                 if (context.getGlobalListener() != null) {
                     context.getGlobalListener().process(event);
-                    LOGGER.debug("Holder {} process", Constants.GLOBAL_LISTENER_KEY);
+                    LOGGER.debug("Holder {} process", ZookeeperConstants.GLOBAL_LISTENER_KEY);
                 }
                 if (!context.getWatchers().isEmpty()) {
                     // todo filter event type or path
