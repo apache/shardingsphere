@@ -27,9 +27,6 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-/*
- * @author lidongbo
- */
 public class UsualClientTest extends BaseClientTest {
     
     @Override

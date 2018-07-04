@@ -95,7 +95,6 @@ public class UsualStrategy extends BaseStrategy {
         List<String> nodes = getProvider().getNecessaryPaths(key);
         for (int i = 0; i < nodes.size(); i++) {
             try {
-//                this.deleteAllChildren(nodes.get(i));
                 if (i == nodes.size() - 1) {
                     this.createCurrentOnly(nodes.get(i), value, createMode);
                 } else {

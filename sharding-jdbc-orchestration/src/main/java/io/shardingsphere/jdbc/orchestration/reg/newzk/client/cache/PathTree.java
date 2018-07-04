@@ -310,7 +310,6 @@ public final class PathTree {
     
     private PathNode get(final String path) {
         LOGGER.debug("PathTree get:{}", path);
-//        PathUtils.validatePath(path);
         String realPath = provider.getRealPath(path);
         if (realPath.equals(rootNode.get().getKey())) {
             return rootNode.get();
@@ -375,8 +374,6 @@ public final class PathTree {
             return;
         }
         try {
-            PathUtils.validatePath(path);
-//            String prxpath = path.substring(0, path.lastIndexOf(Constants.PATH_SEPARATOR));
             PathNode node = get(path);
             node.getChildren().remove(path);
             LOGGER.debug("PathTree end delete:{}", path);

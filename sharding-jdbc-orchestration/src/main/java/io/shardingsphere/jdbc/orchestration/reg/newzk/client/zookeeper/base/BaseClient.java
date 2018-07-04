@@ -57,7 +57,7 @@ public abstract class BaseClient implements IClient {
     
     @Setter(value = AccessLevel.PROTECTED)
     @Getter(value = AccessLevel.PROTECTED)
-    private String rootNode = "/InitValue";
+    private String rootNode = Constants.ROOT_INIT_PATH;
     
     @Getter(value = AccessLevel.PROTECTED)
     private BaseContext context;

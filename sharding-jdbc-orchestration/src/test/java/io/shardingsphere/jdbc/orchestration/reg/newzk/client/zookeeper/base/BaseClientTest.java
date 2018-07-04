@@ -44,10 +44,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-/*
- * @author lidongbo
- */
-public abstract class BaseClientTest {
+public abstract class BaseClientTest extends BaseTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseClient.class);
     
     protected IClient testClient = null;
@@ -80,14 +77,6 @@ public abstract class BaseClientTest {
         ((BaseClient)testClient).createNamespace();
         deleteRoot(testClient);
         assert getZooKeeper(testClient).exists(Constants.PATH_SEPARATOR + TestSupport.ROOT, false) == null;
-    }
-    
-    protected void createRootOnly(IClient client) throws KeeperException, InterruptedException {
-        ((BaseClient)client).createNamespace();
-    }
-    
-    protected void deleteRoot(IClient client) throws KeeperException, InterruptedException {
-        ((BaseClient)client).deleteNamespace();
     }
     
     protected void createRoot(IClient client) throws KeeperException, InterruptedException {
@@ -206,7 +195,6 @@ public abstract class BaseClientTest {
         String key = "a/b/bb";
         String value = "b1b";
         client.createAllNeedPath(key, value, CreateMode.PERSISTENT);
-//        assert getZooKeeper(client).exists(PathUtil.getRealPath(ROOT, key), null).getEphemeralOwner() == 0;
         Stat stat = new Stat();
         getZooKeeper(client).getData(PathUtil.getRealPath(TestSupport.ROOT, key), false, stat);
         assert  stat.getEphemeralOwner() == 0;
@@ -215,7 +203,7 @@ public abstract class BaseClientTest {
         assert !isExisted(key, client);
         client.createAllNeedPath(key, value, CreateMode.EPHEMERAL);
         
-        assert getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, key), null).getEphemeralOwner() != 0; // Ephemeral node connection session id
+        assert getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, key), null).getEphemeralOwner() != 0;
         client.deleteCurrentBranch(key);
     }
     
@@ -224,7 +212,7 @@ public abstract class BaseClientTest {
         client.createAllNeedPath(key, "bb", CreateMode.PERSISTENT);
         key = "a/c/cc";
         client.createAllNeedPath(key, "cc", CreateMode.PERSISTENT);
-        LOGGER.debug("getNumChildren:" + getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, "a"), null).getNumChildren()); // nearest children count
+        LOGGER.debug("getNumChildren:" + getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, "a"), null).getNumChildren());
         assert getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, key), false) != null;
         client.deleteAllChildren("a");
         assert getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, key), false) == null;

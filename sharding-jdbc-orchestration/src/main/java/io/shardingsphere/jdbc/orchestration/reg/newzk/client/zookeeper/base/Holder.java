@@ -87,14 +87,13 @@ public class Holder {
                 processConnection(event);
                 if (context.getGlobalListener() != null) {
                     context.getGlobalListener().process(event);
-                    LOGGER.debug("BaseClient {} process", Constants.GLOBAL_LISTENER_KEY);
+                    LOGGER.debug("Holder {} process", Constants.GLOBAL_LISTENER_KEY);
                 }
                 if (!context.getWatchers().isEmpty()) {
+                    // todo filter event type or path
                     for (Listener listener : context.getWatchers().values()) {
-                        if (listener.getPath() == null || listener.getPath().equals(event.getPath())) {
-                            LOGGER.debug("listener process:{}, listener:{}", listener.getPath(), listener.getKey());
-                            listener.process(event);
-                        }
+                        LOGGER.debug("listener process:{}, listener:{}", listener.getPath(), listener.getKey());
+                        listener.process(event);
                     }
                 }
             }

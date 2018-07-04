@@ -39,6 +39,8 @@ public final class Constants {
     
     public static final String GLOBAL_LISTENER_KEY = "globalListener";
     
+    public static final String ROOT_INIT_PATH = "/InitValue";
+    
     public static final byte[] CHANGING_VALUE = new byte[]{'c'};
     
     public static final byte[] RELEASE_VALUE = new byte[]{'r'};
