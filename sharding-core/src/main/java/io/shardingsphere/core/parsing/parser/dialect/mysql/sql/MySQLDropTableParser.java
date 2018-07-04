@@ -15,26 +15,32 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.dialect.oracle.sql;
+package io.shardingsphere.core.parsing.parser.dialect.mysql.sql;
 
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
+import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
-import io.shardingsphere.core.parsing.parser.sql.ddl.drop.AbstractDropParser;
+import io.shardingsphere.core.parsing.parser.sql.ddl.drop.table.AbstractDropTableParser;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Drop parser for Oracle.
+ * Drop parser for MySQL.
  *
  * @author zhangliang
  */
-public final class OracleDropParser extends AbstractDropParser {
+public final class MySQLDropTableParser extends AbstractDropTableParser {
     
-    public OracleDropParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public MySQLDropTableParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine);
     }
     
     @Override
+    protected Keyword[] getSkippedKeywordsBetweenDropAndTable() {
+        return new Keyword[] {DefaultKeyword.TEMPORARY};
+    }
+    
+    @Override
     protected Keyword[] getSkippedKeywordsBetweenDropTableAndTableName() {
-        return new Keyword[] {};
+        return new Keyword[] {DefaultKeyword.IF, DefaultKeyword.EXISTS};
     }
 }

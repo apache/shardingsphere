@@ -15,14 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.ddl.drop;
+package io.shardingsphere.core.parsing.parser.sql.ddl.drop.table;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.sql.MySQLDropParser;
-import io.shardingsphere.core.parsing.parser.dialect.oracle.sql.OracleDropParser;
-import io.shardingsphere.core.parsing.parser.dialect.postgresql.sql.PostgreSQLDropParser;
-import io.shardingsphere.core.parsing.parser.dialect.sqlserver.sql.SQLServerDropParser;
+import io.shardingsphere.core.parsing.parser.dialect.mysql.sql.MySQLDropTableParser;
+import io.shardingsphere.core.parsing.parser.dialect.oracle.sql.OracleDropTableParser;
+import io.shardingsphere.core.parsing.parser.dialect.postgresql.sql.PostgreSQLDropTableParser;
+import io.shardingsphere.core.parsing.parser.dialect.sqlserver.sql.SQLServerDropTableParser;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -33,7 +33,7 @@ import lombok.NoArgsConstructor;
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DropParserFactory {
+public final class DropTableParserFactory {
     
     /**
      * Create drop parser instance.
@@ -43,17 +43,17 @@ public final class DropParserFactory {
      * @param lexerEngine lexical analysis engine.
      * @return drop parser instance
      */
-    public static AbstractDropParser newInstance(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public static AbstractDropTableParser newInstance(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         switch (dbType) {
             case H2:
             case MySQL:
-                return new MySQLDropParser(shardingRule, lexerEngine);
+                return new MySQLDropTableParser(shardingRule, lexerEngine);
             case Oracle:
-                return new OracleDropParser(shardingRule, lexerEngine);
+                return new OracleDropTableParser(shardingRule, lexerEngine);
             case SQLServer:
-                return new SQLServerDropParser(shardingRule, lexerEngine);
+                return new SQLServerDropTableParser(shardingRule, lexerEngine);
             case PostgreSQL:
-                return new PostgreSQLDropParser(shardingRule, lexerEngine);
+                return new PostgreSQLDropTableParser(shardingRule, lexerEngine);
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support database [%s].", dbType));
         }

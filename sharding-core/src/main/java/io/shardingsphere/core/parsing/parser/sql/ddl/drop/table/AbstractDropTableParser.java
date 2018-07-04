@@ -15,17 +15,15 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.ddl.drop;
+package io.shardingsphere.core.parsing.parser.sql.ddl.drop.table;
 
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
-import io.shardingsphere.core.parsing.lexer.token.Token;
 import io.shardingsphere.core.parsing.parser.clause.TableReferencesClauseParser;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingException;
 import io.shardingsphere.core.parsing.parser.sql.SQLParser;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
-import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -36,7 +34,7 @@ import lombok.Getter;
  * @author zhangliang
  */
 @Getter(AccessLevel.PROTECTED)
-public abstract class AbstractDropParser implements SQLParser {
+public abstract class AbstractDropTableParser implements SQLParser {
     
     private final ShardingRule shardingRule;
     
@@ -44,7 +42,7 @@ public abstract class AbstractDropParser implements SQLParser {
     
     private final TableReferencesClauseParser tableReferencesClauseParser;
     
-    public AbstractDropParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public AbstractDropTableParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         this.shardingRule = shardingRule;
         this.lexerEngine = lexerEngine;
         tableReferencesClauseParser = new TableReferencesClauseParser(shardingRule, lexerEngine);
@@ -54,37 +52,17 @@ public abstract class AbstractDropParser implements SQLParser {
     public DDLStatement parse() {
         lexerEngine.skipAll(getSkippedKeywordsBetweenDropAndTable());
         DDLStatement result = new DDLStatement();
-        if (lexerEngine.skipIfEqual(DefaultKeyword.INDEX)) {
-            lexerEngine.skipAll(getSkippedKeywordsBetweenDropIndexAndIndexName());
-            parseIndex(result);
-        } else if (lexerEngine.skipIfEqual(DefaultKeyword.TABLE)) {
+        if (lexerEngine.skipIfEqual(DefaultKeyword.TABLE)) {
             lexerEngine.skipAll(getSkippedKeywordsBetweenDropTableAndTableName());
             tableReferencesClauseParser.parseSingleTableWithoutAlias(result);
         } else {
-            throw new SQLParsingException("Can't support other DROP grammar unless DROP TABLE, DROP INDEX.");
+            throw new SQLParsingException("Can't support other DROP grammar unless DROP TABLE.");
         }
         return result;
     }
     
     protected Keyword[] getSkippedKeywordsBetweenDropAndTable() {
         return new Keyword[0];
-    }
-    
-    protected Keyword[] getSkippedKeywordsBetweenDropIndexAndIndexName() {
-        return new Keyword[] {};
-    }
-    
-    private void parseIndex(final DDLStatement ddlStatement) {
-        Token currentToken = lexerEngine.getCurrentToken();
-        int beginPosition = currentToken.getEndPosition() - currentToken.getLiterals().length();
-        String literals = currentToken.getLiterals();
-        lexerEngine.skipUntil(DefaultKeyword.ON);
-        if (lexerEngine.skipIfEqual(DefaultKeyword.ON)) {
-            tableReferencesClauseParser.parseSingleTableWithoutAlias(ddlStatement);
-            ddlStatement.getSqlTokens().add(new IndexToken(beginPosition, literals, ddlStatement.getTables().getSingleTableName()));
-        } else {
-            ddlStatement.getSqlTokens().add(new IndexToken(beginPosition, literals, ""));
-        }
     }
     
     protected abstract Keyword[] getSkippedKeywordsBetweenDropTableAndTableName();

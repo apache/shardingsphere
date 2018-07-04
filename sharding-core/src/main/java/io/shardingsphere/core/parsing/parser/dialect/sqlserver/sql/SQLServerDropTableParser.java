@@ -20,7 +20,7 @@ package io.shardingsphere.core.parsing.parser.dialect.sqlserver.sql;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
-import io.shardingsphere.core.parsing.parser.sql.ddl.drop.AbstractDropParser;
+import io.shardingsphere.core.parsing.parser.sql.ddl.drop.table.AbstractDropTableParser;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -28,9 +28,9 @@ import io.shardingsphere.core.rule.ShardingRule;
  *
  * @author zhangliang
  */
-public final class SQLServerDropParser extends AbstractDropParser {
+public final class SQLServerDropTableParser extends AbstractDropTableParser {
     
-    public SQLServerDropParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public SQLServerDropTableParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine);
     }
     

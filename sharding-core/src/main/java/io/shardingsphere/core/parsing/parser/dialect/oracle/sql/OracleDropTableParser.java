@@ -15,31 +15,26 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.dialect.postgresql.sql;
+package io.shardingsphere.core.parsing.parser.dialect.oracle.sql;
 
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
-import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
-import io.shardingsphere.core.parsing.parser.sql.ddl.drop.AbstractDropParser;
+import io.shardingsphere.core.parsing.parser.sql.ddl.drop.table.AbstractDropTableParser;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Drop parser for PostgreSQL.
+ * Drop parser for Oracle.
  *
  * @author zhangliang
  */
-public final class PostgreSQLDropParser extends AbstractDropParser {
+public final class OracleDropTableParser extends AbstractDropTableParser {
     
-    public PostgreSQLDropParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public OracleDropTableParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine);
-    }
-    
-    protected Keyword[] getSkippedKeywordsBetweenDropIndexAndIndexName() {
-        return new Keyword[] {DefaultKeyword.IF, DefaultKeyword.EXISTS};
     }
     
     @Override
     protected Keyword[] getSkippedKeywordsBetweenDropTableAndTableName() {
-        return new Keyword[] {DefaultKeyword.IF, DefaultKeyword.EXISTS};
+        return new Keyword[] {};
     }
 }
