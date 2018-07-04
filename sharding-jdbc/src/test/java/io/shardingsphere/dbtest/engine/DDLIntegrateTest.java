@@ -200,7 +200,7 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
         try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DROP TABLE %s", assertion.getTable()))) {
             preparedStatement.executeUpdate();
             // CHECKSTYLE: OFF
-        } catch (final SQLException ex) {
+        } catch (final SQLException ignored) {
             // CHECKSTYLE: ON
         }
     }
