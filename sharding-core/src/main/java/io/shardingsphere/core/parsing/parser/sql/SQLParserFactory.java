@@ -186,11 +186,17 @@ public final class SQLParserFactory {
     private static SQLParser getDDLParserOrDCLParser(final DatabaseType dbType,
                                                      final TokenType tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         lexerEngine.nextToken();
-        if (DefaultKeyword.TRUNCATE == tokenType || DefaultKeyword.INDEX == lexerEngine.getCurrentToken().getType()
-                || DefaultKeyword.TABLE == lexerEngine.getCurrentToken().getType()) {
+        if (DefaultKeyword.TRUNCATE == tokenType) {
             return getDDLParser(dbType, tokenType, shardingRule, lexerEngine);
-        } else {
+        }
+        if (DefaultKeyword.RENAME == tokenType || DefaultKeyword.GRANT == tokenType || DefaultKeyword.REVOKE == tokenType || DefaultKeyword.DENY == tokenType) {
             return getDCLParser(dbType, tokenType, shardingRule, lexerEngine);
         }
+        if (DefaultKeyword.USER == lexerEngine.getCurrentToken().getType() || DefaultKeyword.ROLE == lexerEngine.getCurrentToken().getType()
+                || DefaultKeyword.LOGIN == lexerEngine.getCurrentToken().getType()) {
+            return getDCLParser(dbType, tokenType, shardingRule, lexerEngine);
+        }
+        return getDDLParser(dbType, tokenType, shardingRule, lexerEngine);
+        
     }
 }
