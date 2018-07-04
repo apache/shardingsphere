@@ -48,6 +48,9 @@ import io.shardingsphere.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 /**
  * SQL parser factory.
  *
@@ -74,20 +77,14 @@ public final class SQLParserFactory {
         if (isDML(tokenType)) {
             return getDMLParser(dbType, tokenType, shardingRule, lexerEngine, shardingMetaData);
         }
-        if (isDDL(tokenType)) {
-            return getDDLParser(dbType, tokenType, shardingRule, lexerEngine);
-        }
         if (isTCL(tokenType)) {
             return getTCLParser(dbType, shardingRule, lexerEngine);
         }
         if (isDAL(tokenType)) {
             return getDALParser(dbType, (Keyword) tokenType, shardingRule, lexerEngine);
         }
-        if (isDCL(tokenType)) {
-            return getDCLParser(dbType, tokenType, shardingRule, lexerEngine);
-        }
         if (isDDLOrDCL(tokenType)) {
-            return getDDLParserOrDCLParser(dbType, tokenType, lexerEngine.preReadNextToken().getType(), shardingRule, lexerEngine);
+            return getDDLParserOrDCLParser(dbType, tokenType, shardingRule, lexerEngine);
         }
         throw new SQLParsingUnsupportedException(tokenType);
     }
@@ -100,10 +97,6 @@ public final class SQLParserFactory {
         return DefaultKeyword.INSERT == tokenType || DefaultKeyword.UPDATE == tokenType || DefaultKeyword.DELETE == tokenType;
     }
     
-    private static boolean isDDL(final TokenType tokenType) {
-        return DefaultKeyword.TRUNCATE == tokenType;
-    }
-    
     private static boolean isTCL(final TokenType tokenType) {
         return DefaultKeyword.SET == tokenType || DefaultKeyword.COMMIT == tokenType || DefaultKeyword.ROLLBACK == tokenType
                 || DefaultKeyword.SAVEPOINT == tokenType || DefaultKeyword.BEGIN == tokenType;
@@ -113,12 +106,10 @@ public final class SQLParserFactory {
         return DefaultKeyword.USE == tokenType || DefaultKeyword.DESC == tokenType || MySQLKeyword.DESCRIBE == tokenType || MySQLKeyword.SHOW == tokenType;
     }
     
-    private static boolean isDCL(final TokenType tokenType) {
-        return DefaultKeyword.GRANT == tokenType || DefaultKeyword.REVOKE == tokenType || DefaultKeyword.RENAME == tokenType || DefaultKeyword.DENY == tokenType;
-    }
-    
     private static boolean isDDLOrDCL(final TokenType tokenType) {
-        return DefaultKeyword.CREATE == tokenType || DefaultKeyword.ALTER == tokenType || DefaultKeyword.DROP == tokenType;
+        Collection<DefaultKeyword> tokens = Arrays.asList(DefaultKeyword.CREATE, DefaultKeyword.ALTER, DefaultKeyword.DROP,
+                DefaultKeyword.TRUNCATE, DefaultKeyword.GRANT, DefaultKeyword.REVOKE, DefaultKeyword.RENAME, DefaultKeyword.DENY);
+        return tokens.contains(tokenType);
     }
     
     private static SQLParser getDQLParser(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingMetaData shardingMetaData) {
@@ -193,10 +184,13 @@ public final class SQLParserFactory {
     }
     
     private static SQLParser getDDLParserOrDCLParser(final DatabaseType dbType,
-                                                     final TokenType tokenType, final TokenType aidedTokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        if (DefaultKeyword.USER == aidedTokenType || DefaultKeyword.ROLE == aidedTokenType || DefaultKeyword.LOGIN == aidedTokenType) {
+                                                     final TokenType tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        lexerEngine.nextToken();
+        if (DefaultKeyword.TRUNCATE == tokenType || DefaultKeyword.INDEX == lexerEngine.getCurrentToken().getType()
+                || DefaultKeyword.TABLE == lexerEngine.getCurrentToken().getType()) {
+            return getDDLParser(dbType, tokenType, shardingRule, lexerEngine);
+        } else {
             return getDCLParser(dbType, tokenType, shardingRule, lexerEngine);
         }
-        return getDDLParser(dbType, tokenType, shardingRule, lexerEngine);
     }
 }
