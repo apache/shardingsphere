@@ -92,8 +92,10 @@ public class Holder {
                 if (!context.getWatchers().isEmpty()) {
                     // todo filter event type or path
                     for (Listener listener : context.getWatchers().values()) {
-                        LOGGER.debug("listener process:{}, listener:{}", listener.getPath(), listener.getKey());
-                        listener.process(event);
+                        if (listener.getPath() == null || listener.getPath().equals(event.getPath())) {
+                            LOGGER.debug("listener process:{}, listener:{}", listener.getPath(), listener.getKey());
+                            listener.process(event);
+                        }
                     }
                 }
             }
