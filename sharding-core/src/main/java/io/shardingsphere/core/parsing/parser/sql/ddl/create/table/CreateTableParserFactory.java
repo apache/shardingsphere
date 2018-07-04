@@ -15,14 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.ddl.create;
+package io.shardingsphere.core.parsing.parser.sql.ddl.create.table;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.sql.MySQLCreateParser;
-import io.shardingsphere.core.parsing.parser.dialect.oracle.sql.OracleCreateParser;
-import io.shardingsphere.core.parsing.parser.dialect.postgresql.sql.PostgreSQLCreateParser;
-import io.shardingsphere.core.parsing.parser.dialect.sqlserver.sql.SQLServerCreateParser;
+import io.shardingsphere.core.parsing.parser.dialect.mysql.sql.MySQLCreateTableParser;
+import io.shardingsphere.core.parsing.parser.dialect.oracle.sql.OracleCreateTableParser;
+import io.shardingsphere.core.parsing.parser.dialect.postgresql.sql.PostgreSQLCreateTableParser;
+import io.shardingsphere.core.parsing.parser.dialect.sqlserver.sql.SQLServerCreateTableParser;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -33,7 +33,7 @@ import lombok.NoArgsConstructor;
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CreateParserFactory {
+public final class CreateTableParserFactory {
     
     /**
      * Create create parser instance.
@@ -43,17 +43,17 @@ public final class CreateParserFactory {
      * @param lexerEngine lexical analysis engine.
      * @return create parser instance
      */
-    public static AbstractCreateParser newInstance(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public static AbstractCreateTableParser newInstance(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         switch (dbType) {
             case H2:
             case MySQL:
-                return new MySQLCreateParser(shardingRule, lexerEngine);
+                return new MySQLCreateTableParser(shardingRule, lexerEngine);
             case Oracle:
-                return new OracleCreateParser(shardingRule, lexerEngine);
+                return new OracleCreateTableParser(shardingRule, lexerEngine);
             case SQLServer:
-                return new SQLServerCreateParser(shardingRule, lexerEngine);
+                return new SQLServerCreateTableParser(shardingRule, lexerEngine);
             case PostgreSQL:
-                return new PostgreSQLCreateParser(shardingRule, lexerEngine);
+                return new PostgreSQLCreateTableParser(shardingRule, lexerEngine);
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support database [%s].", dbType));
         }

@@ -15,37 +15,38 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.dialect.sqlserver.sql;
+package io.shardingsphere.core.parsing.parser.dialect.postgresql.sql;
 
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
+import io.shardingsphere.core.parsing.lexer.dialect.postgresql.PostgreSQLKeyword;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
-import io.shardingsphere.core.parsing.parser.sql.ddl.create.AbstractCreateParser;
+import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.AbstractCreateTableParser;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Create parser for SQLServer.
+ * Create parser for PostgreSQL.
  *
  * @author zhangliang
  */
-public final class SQLServerCreateParser extends AbstractCreateParser {
+public final class PostgreSQLCreateTableParser extends AbstractCreateTableParser {
     
-    public SQLServerCreateParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public PostgreSQLCreateTableParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine);
     }
-    
+
     @Override
     protected Keyword[] getSkippedKeywordsBetweenCreateAndKeyword() {
-        return new Keyword[] {};
+        return new Keyword[] {DefaultKeyword.GLOBAL, DefaultKeyword.LOCAL, DefaultKeyword.TEMPORARY, DefaultKeyword.TEMP, PostgreSQLKeyword.UNLOGGED};
     }
     
     @Override
     protected Keyword[] getSkippedKeywordsBetweenCreateTableAndTableName() {
-        return new Keyword[] {};
+        return new Keyword[] {DefaultKeyword.IF, DefaultKeyword.NOT, DefaultKeyword.EXISTS};
     }
     
     @Override
     protected Keyword[] getSkippedKeywordsBetweenCreateIndexAndKeyword() {
-        return new Keyword[] {DefaultKeyword.UNIQUE, DefaultKeyword.FULLTEXT};
+        return new Keyword[] {DefaultKeyword.UNIQUE};
     }
 }

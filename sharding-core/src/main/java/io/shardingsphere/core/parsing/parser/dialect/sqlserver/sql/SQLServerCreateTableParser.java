@@ -15,43 +15,37 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.dialect.postgresql.sql;
+package io.shardingsphere.core.parsing.parser.dialect.sqlserver.sql;
 
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
-import io.shardingsphere.core.parsing.lexer.dialect.postgresql.PostgreSQLKeyword;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
-import io.shardingsphere.core.parsing.parser.sql.ddl.create.AbstractCreateParser;
+import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.AbstractCreateTableParser;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Create parser for PostgreSQL.
+ * Create parser for SQLServer.
  *
  * @author zhangliang
  */
-public final class PostgreSQLCreateParser extends AbstractCreateParser {
+public final class SQLServerCreateTableParser extends AbstractCreateTableParser {
     
-    public PostgreSQLCreateParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public SQLServerCreateTableParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine);
     }
     
     @Override
-    protected Keyword[] getSkippedKeywordsBetweenCreateIndexAndIndexName() {
-        return new Keyword[] {DefaultKeyword.IF, DefaultKeyword.NOT, DefaultKeyword.EXISTS};
-    }
-    
-    @Override
     protected Keyword[] getSkippedKeywordsBetweenCreateAndKeyword() {
-        return new Keyword[] {DefaultKeyword.GLOBAL, DefaultKeyword.LOCAL, DefaultKeyword.TEMPORARY, DefaultKeyword.TEMP, PostgreSQLKeyword.UNLOGGED};
+        return new Keyword[] {};
     }
     
     @Override
     protected Keyword[] getSkippedKeywordsBetweenCreateTableAndTableName() {
-        return new Keyword[] {DefaultKeyword.IF, DefaultKeyword.NOT, DefaultKeyword.EXISTS};
+        return new Keyword[] {};
     }
     
     @Override
     protected Keyword[] getSkippedKeywordsBetweenCreateIndexAndKeyword() {
-        return new Keyword[] {DefaultKeyword.UNIQUE};
+        return new Keyword[] {DefaultKeyword.UNIQUE, DefaultKeyword.FULLTEXT};
     }
 }

@@ -15,17 +15,15 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.ddl.create;
+package io.shardingsphere.core.parsing.parser.sql.ddl.create.table;
 
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
-import io.shardingsphere.core.parsing.lexer.token.Token;
 import io.shardingsphere.core.parsing.parser.clause.TableReferencesClauseParser;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingException;
 import io.shardingsphere.core.parsing.parser.sql.SQLParser;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
-import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -36,7 +34,7 @@ import lombok.Getter;
  * @author zhangliang
  */
 @Getter(AccessLevel.PROTECTED)
-public abstract class AbstractCreateParser implements SQLParser {
+public abstract class AbstractCreateTableParser implements SQLParser {
     
     private final ShardingRule shardingRule;
     
@@ -44,7 +42,7 @@ public abstract class AbstractCreateParser implements SQLParser {
     
     private final TableReferencesClauseParser tableReferencesClauseParser;
     
-    public AbstractCreateParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public AbstractCreateTableParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         this.shardingRule = shardingRule;
         this.lexerEngine = lexerEngine;
         tableReferencesClauseParser = new TableReferencesClauseParser(shardingRule, lexerEngine);
@@ -55,13 +53,10 @@ public abstract class AbstractCreateParser implements SQLParser {
         lexerEngine.skipAll(getSkippedKeywordsBetweenCreateIndexAndKeyword());
         lexerEngine.skipAll(getSkippedKeywordsBetweenCreateAndKeyword());
         DDLStatement result = new DDLStatement();
-        if (lexerEngine.skipIfEqual(DefaultKeyword.INDEX)) {
-            lexerEngine.skipAll(getSkippedKeywordsBetweenCreateIndexAndIndexName());
-            parseIndex(result);
-        } else if (lexerEngine.skipIfEqual(DefaultKeyword.TABLE)) {
+        if (lexerEngine.skipIfEqual(DefaultKeyword.TABLE)) {
             lexerEngine.skipAll(getSkippedKeywordsBetweenCreateTableAndTableName());
         } else {
-            throw new SQLParsingException("Can't support other CREATE grammar unless CREATE TABLE, CREATE INDEX.");
+            throw new SQLParsingException("Can't support other CREATE grammar unless CREATE TABLE.");
         }
         tableReferencesClauseParser.parseSingleTableWithoutAlias(result);
         return result;
@@ -70,20 +65,6 @@ public abstract class AbstractCreateParser implements SQLParser {
     protected abstract Keyword[] getSkippedKeywordsBetweenCreateIndexAndKeyword();
     
     protected abstract Keyword[] getSkippedKeywordsBetweenCreateAndKeyword();
-    
-    protected Keyword[] getSkippedKeywordsBetweenCreateIndexAndIndexName() {
-        return new Keyword[] {};
-    }
-    
-    private void parseIndex(final DDLStatement ddlStatement) {
-        Token currentToken = lexerEngine.getCurrentToken();
-        int beginPosition = currentToken.getEndPosition() - currentToken.getLiterals().length();
-        String literals = currentToken.getLiterals();
-        lexerEngine.skipUntil(DefaultKeyword.ON);
-        lexerEngine.nextToken();
-        String tableName = lexerEngine.getCurrentToken().getLiterals();
-        ddlStatement.getSqlTokens().add(new IndexToken(beginPosition, literals, tableName));
-    }
     
     protected abstract Keyword[] getSkippedKeywordsBetweenCreateTableAndTableName();
 }

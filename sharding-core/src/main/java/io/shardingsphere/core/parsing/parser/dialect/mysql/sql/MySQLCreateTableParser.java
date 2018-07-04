@@ -21,7 +21,7 @@ import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.dialect.mysql.MySQLKeyword;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
-import io.shardingsphere.core.parsing.parser.sql.ddl.create.AbstractCreateParser;
+import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.AbstractCreateTableParser;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -29,9 +29,9 @@ import io.shardingsphere.core.rule.ShardingRule;
  *
  * @author zhangliang
  */
-public final class MySQLCreateParser extends AbstractCreateParser {
+public final class MySQLCreateTableParser extends AbstractCreateTableParser {
     
-    public MySQLCreateParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public MySQLCreateTableParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine);
     }
     
