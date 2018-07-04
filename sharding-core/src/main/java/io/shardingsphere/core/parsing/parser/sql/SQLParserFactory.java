@@ -85,8 +85,12 @@ public final class SQLParserFactory {
         if (isDAL(tokenType)) {
             return getDALParser(dbType, (Keyword) tokenType, shardingRule, lexerEngine);
         }
-        if (isDDLOrDCL(tokenType)) {
-            return getDDLParserOrDCLParser(dbType, tokenType, shardingRule, lexerEngine);
+        lexerEngine.nextToken();
+        if (isDCL(tokenType, lexerEngine)) {
+            return getDCLParser(dbType, tokenType, shardingRule, lexerEngine);
+        }
+        if (isDDL(tokenType, lexerEngine)) {
+            return getDDLParser(dbType, tokenType, shardingRule, lexerEngine);
         }
         throw new SQLParsingUnsupportedException(tokenType);
     }
@@ -108,10 +112,17 @@ public final class SQLParserFactory {
         return DefaultKeyword.USE == tokenType || DefaultKeyword.DESC == tokenType || MySQLKeyword.DESCRIBE == tokenType || MySQLKeyword.SHOW == tokenType;
     }
     
-    private static boolean isDDLOrDCL(final TokenType tokenType) {
-        Collection<DefaultKeyword> tokens = Arrays.asList(DefaultKeyword.CREATE, DefaultKeyword.ALTER, DefaultKeyword.DROP,
-                DefaultKeyword.TRUNCATE, DefaultKeyword.GRANT, DefaultKeyword.REVOKE, DefaultKeyword.RENAME, DefaultKeyword.DENY);
-        return tokens.contains(tokenType);
+    private static boolean isDDL(final TokenType tokenType, final LexerEngine lexerEngine) {
+        Collection<DefaultKeyword> primaryTokens = Arrays.asList(DefaultKeyword.CREATE, DefaultKeyword.ALTER, DefaultKeyword.DROP, DefaultKeyword.TRUNCATE);
+        Collection<DefaultKeyword> secondaryTokens = Arrays.asList(DefaultKeyword.LOGIN, DefaultKeyword.USER, DefaultKeyword.ROLE);
+        return primaryTokens.contains(tokenType) && !secondaryTokens.contains(lexerEngine.getCurrentToken().getType());
+    }
+    
+    private static boolean isDCL(final TokenType tokenType, final LexerEngine lexerEngine) {
+        Collection<DefaultKeyword> primaryTokens = Arrays.asList(DefaultKeyword.CREATE, DefaultKeyword.ALTER, DefaultKeyword.DROP,
+                DefaultKeyword.GRANT, DefaultKeyword.REVOKE, DefaultKeyword.RENAME, DefaultKeyword.DENY);
+        Collection<DefaultKeyword> secondaryTokens = Arrays.asList(DefaultKeyword.LOGIN, DefaultKeyword.USER, DefaultKeyword.ROLE);
+        return primaryTokens.contains(tokenType) && secondaryTokens.contains(lexerEngine.getCurrentToken().getType());
     }
     
     private static SQLParser getDQLParser(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingMetaData shardingMetaData) {
@@ -203,21 +214,5 @@ public final class SQLParserFactory {
             default:
                 throw new SQLParsingUnsupportedException(tokenType);
         }
-    }
-    
-    private static SQLParser getDDLParserOrDCLParser(final DatabaseType dbType,
-                                                     final TokenType tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        lexerEngine.nextToken();
-        if (DefaultKeyword.TRUNCATE == tokenType) {
-            return getDDLParser(dbType, tokenType, shardingRule, lexerEngine);
-        }
-        if (DefaultKeyword.RENAME == tokenType || DefaultKeyword.GRANT == tokenType || DefaultKeyword.REVOKE == tokenType || DefaultKeyword.DENY == tokenType) {
-            return getDCLParser(dbType, tokenType, shardingRule, lexerEngine);
-        }
-        if (DefaultKeyword.USER == lexerEngine.getCurrentToken().getType() || DefaultKeyword.ROLE == lexerEngine.getCurrentToken().getType()
-                || DefaultKeyword.LOGIN == lexerEngine.getCurrentToken().getType()) {
-            return getDCLParser(dbType, tokenType, shardingRule, lexerEngine);
-        }
-        return getDDLParser(dbType, tokenType, shardingRule, lexerEngine);
     }
 }
