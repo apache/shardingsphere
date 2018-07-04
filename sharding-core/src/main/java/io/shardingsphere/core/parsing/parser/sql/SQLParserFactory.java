@@ -35,10 +35,12 @@ import io.shardingsphere.core.parsing.parser.sql.dcl.drop.DropUserParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dcl.grant.GrantUserParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dcl.rename.RenameUserParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dcl.revoke.RevokeUserParserFactory;
-import io.shardingsphere.core.parsing.parser.sql.ddl.alter.AlterParserFactory;
-import io.shardingsphere.core.parsing.parser.sql.ddl.create.CreateParserFactory;
-import io.shardingsphere.core.parsing.parser.sql.ddl.drop.DropParserFactory;
-import io.shardingsphere.core.parsing.parser.sql.ddl.truncate.TruncateParserFactory;
+import io.shardingsphere.core.parsing.parser.sql.ddl.alter.table.AlterTableParserFactory;
+import io.shardingsphere.core.parsing.parser.sql.ddl.create.index.CreateIndexParserFactory;
+import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableParserFactory;
+import io.shardingsphere.core.parsing.parser.sql.ddl.drop.index.DropIndexParserFactory;
+import io.shardingsphere.core.parsing.parser.sql.ddl.drop.table.DropTableParserFactory;
+import io.shardingsphere.core.parsing.parser.sql.ddl.truncate.table.TruncateTableParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dml.delete.DeleteParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dml.update.UpdateParserFactory;
@@ -131,15 +133,35 @@ public final class SQLParserFactory {
     }
     
     private static SQLParser getDDLParser(final DatabaseType dbType, final TokenType tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        lexerEngine.skipUntil(DefaultKeyword.INDEX, DefaultKeyword.TABLE);
+        if (lexerEngine.isEnd()) {
+            throw new SQLParsingUnsupportedException(tokenType);
+        }
+        return DefaultKeyword.TABLE == lexerEngine.getCurrentToken().getType() ? getTableDDLParser(dbType, tokenType, shardingRule, lexerEngine)
+                : getIndexDDLParser(dbType, tokenType, shardingRule, lexerEngine);
+    }
+    
+    private static SQLParser getTableDDLParser(final DatabaseType dbType, final TokenType tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         switch ((DefaultKeyword) tokenType) {
             case CREATE:
-                return CreateParserFactory.newInstance(dbType, shardingRule, lexerEngine);
+                return CreateTableParserFactory.newInstance(dbType, shardingRule, lexerEngine);
             case ALTER:
-                return AlterParserFactory.newInstance(dbType, shardingRule, lexerEngine);
+                return AlterTableParserFactory.newInstance(dbType, shardingRule, lexerEngine);
             case DROP:
-                return DropParserFactory.newInstance(dbType, shardingRule, lexerEngine);
+                return DropTableParserFactory.newInstance(dbType, shardingRule, lexerEngine);
             case TRUNCATE:
-                return TruncateParserFactory.newInstance(dbType, shardingRule, lexerEngine);
+                return TruncateTableParserFactory.newInstance(dbType, shardingRule, lexerEngine);
+            default:
+                throw new SQLParsingUnsupportedException(tokenType);
+        }
+    }
+    
+    private static SQLParser getIndexDDLParser(final DatabaseType dbType, final TokenType tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        switch ((DefaultKeyword) tokenType) {
+            case CREATE:
+                return CreateIndexParserFactory.newInstance(dbType, shardingRule, lexerEngine);
+            case DROP:
+                return DropIndexParserFactory.newInstance(dbType, shardingRule, lexerEngine);
             default:
                 throw new SQLParsingUnsupportedException(tokenType);
         }
