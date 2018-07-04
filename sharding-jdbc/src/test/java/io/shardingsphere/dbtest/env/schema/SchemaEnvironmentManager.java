@@ -189,18 +189,11 @@ public final class SchemaEnvironmentManager {
         for (String each : databaseEnvironmentSchema.getDatabases()) {
             DataSource dataSource = DataSourceUtil.createDataSource(databaseType, each);
             try (Connection connection = dataSource.getConnection();
-                 StringReader stringReader = new StringReader(StringUtils.join(getTableDropSQLs(databaseEnvironmentSchema.getTableDropSQLs(), databaseType), ";\n"))) {
+                 StringReader stringReader = new StringReader(StringUtils.join(databaseEnvironmentSchema.getTableDropSQLs(), ";\n"))) {
                 RunScript.execute(connection, stringReader);
             } catch (final SQLException ex) {
                 // TODO schema maybe not exist for oracle only
             }
         }
-    }
-    
-    private static List<String> getTableDropSQLs(final List<String> tableDropSQLs, final DatabaseType databaseType) {
-        if (DatabaseType.H2 == databaseType) {
-            return tableDropSQLs;
-        }
-        return new LinkedList<>();
     }
 }
