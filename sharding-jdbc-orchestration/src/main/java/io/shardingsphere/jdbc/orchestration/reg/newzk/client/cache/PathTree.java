@@ -67,7 +67,7 @@ public final class PathTree {
     private boolean closed;
     
     public PathTree(final String root, final IClient client) {
-        this.rootNode.set(new PathNode(root));
+        this.rootNode.set(new PathNode(PathUtil.checkPath(root)));
         this.status = PathStatus.RELEASE;
         this.client = client;
         // todo It looks unpleasant
@@ -124,7 +124,7 @@ public final class PathTree {
             return;
         }
         for (String child : children) {
-            String childPath = PathUtil.getRealPath(pathNode.getKey(), child);
+            String childPath = PathUtil.getRealPath(pathNode.getPath(), child);
             PathNode current = new PathNode(PathUtil.checkPath(child), provider.getData(childPath));
             pathNode.attachChild(current);
             List<String> subs = provider.getChildren(childPath);
@@ -310,16 +310,17 @@ public final class PathTree {
     
     private PathNode get(final String path) {
         LOGGER.debug("PathTree get:{}", path);
-        PathUtils.validatePath(path);
-        if (path.equals(rootNode.get().getKey())) {
+//        PathUtils.validatePath(path);
+        String realPath = provider.getRealPath(path);
+        if (realPath.equals(rootNode.get().getKey())) {
             return rootNode.get();
         }
         // todo iterator -> token
-        Iterator<String> iterator = keyIterator(path);
+        Iterator<String> iterator = keyIterator(realPath);
         if (iterator.hasNext()) {
             return rootNode.get().get(iterator);
         }
-        LOGGER.debug("{} not exist", path);
+        LOGGER.debug("{} not exist", realPath);
         return null;
     }
     

@@ -18,6 +18,8 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
@@ -38,9 +40,13 @@ public class PathNode {
     private final Map<String, PathNode> children = new ConcurrentHashMap<>();
 
     private final String nodeKey;
+    
+    @Getter(value = AccessLevel.PACKAGE)
+    @Setter(value = AccessLevel.PACKAGE)
+    private String path;
 
-    @Getter
-    @Setter
+    @Getter(value = AccessLevel.PACKAGE)
+    @Setter(value = AccessLevel.PACKAGE)
     private byte[] value;
     
     PathNode(final String key) {
@@ -50,6 +56,7 @@ public class PathNode {
     PathNode(final String key, final byte[] value) {
         this.nodeKey = key;
         this.value = value;
+        this.path = key;
     }
     
     /**
@@ -77,6 +84,7 @@ public class PathNode {
      */
     public void attachChild(final PathNode node) {
         this.children.put(node.nodeKey, node);
+        node.setPath(PathUtil.getRealPath(path, node.getKey()));
     }
     
     PathNode set(final Iterator<String> iterator, final String value) {
