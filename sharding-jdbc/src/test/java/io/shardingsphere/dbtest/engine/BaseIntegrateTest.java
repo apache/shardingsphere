@@ -150,7 +150,7 @@ public abstract class BaseIntegrateTest {
     }
     
     @BeforeClass
-    public static void createDatabasesAndTables() throws JAXBException, IOException {
+    public static void createDatabasesAndTables() throws JAXBException, IOException, SQLException {
         for (String each : integrateTestCasesLoader.getShardingRuleTypes()) {
             SchemaEnvironmentManager.dropDatabase(each);
         }

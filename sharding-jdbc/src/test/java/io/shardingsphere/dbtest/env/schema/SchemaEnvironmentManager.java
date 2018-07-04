@@ -66,8 +66,9 @@ public final class SchemaEnvironmentManager {
      * @param shardingRuleType sharding rule type
      * @throws IOException IO exception
      * @throws JAXBException JAXB exception
+     * @throws SQLException SQL exception
      */
-    public static void createDatabase(final String shardingRuleType) throws IOException, JAXBException {
+    public static void createDatabase(final String shardingRuleType) throws IOException, JAXBException, SQLException {
         SchemaEnvironment databaseInitialization = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(shardingRuleType));
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
             DataSource dataSource = DataSourceUtil.createDataSource(each, null);
@@ -75,8 +76,6 @@ public final class SchemaEnvironmentManager {
                     Connection connection = dataSource.getConnection();
                     StringReader stringReader = new StringReader(Joiner.on(";\n").skipNulls().join(generateCreateDatabaseSQLs(each, databaseInitialization.getDatabases())))) {
                 RunScript.execute(connection, stringReader);
-            } catch (final SQLException ex) {
-                // TODO database maybe existed
             }
         }
     }
@@ -138,22 +137,21 @@ public final class SchemaEnvironmentManager {
      * @param shardingRuleType sharding rule type
      * @throws JAXBException JAXB exception
      * @throws IOException IO exception
+     * @throws SQLException SQL exception
      */
-    public static void createTable(final String shardingRuleType) throws JAXBException, IOException {
+    public static void createTable(final String shardingRuleType) throws JAXBException, IOException, SQLException {
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
             SchemaEnvironment databaseEnvironmentSchema = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(shardingRuleType));
             createTable(databaseEnvironmentSchema, each);
         }
     }
     
-    private static void createTable(final SchemaEnvironment databaseEnvironmentSchema, final DatabaseType databaseType) {
+    private static void createTable(final SchemaEnvironment databaseEnvironmentSchema, final DatabaseType databaseType) throws SQLException {
         for (String each : databaseEnvironmentSchema.getDatabases()) {
             DataSource dataSource = DataSourceUtil.createDataSource(databaseType, each);
             try (Connection connection = dataSource.getConnection();
                  StringReader stringReader = new StringReader(StringUtils.join(databaseEnvironmentSchema.getTableCreateSQLs(), ";\n"))) {
                 RunScript.execute(connection, stringReader);
-            } catch (final SQLException ex) {
-                // TODO table maybe existed
             }
         }
     }
