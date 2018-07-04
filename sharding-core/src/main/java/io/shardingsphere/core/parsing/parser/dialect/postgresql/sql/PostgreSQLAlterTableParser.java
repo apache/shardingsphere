@@ -28,6 +28,7 @@ import io.shardingsphere.core.rule.ShardingRule;
  * Alter parser for PostgreSQL.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public final class PostgreSQLAlterTableParser extends AbstractAlterTableParser {
     

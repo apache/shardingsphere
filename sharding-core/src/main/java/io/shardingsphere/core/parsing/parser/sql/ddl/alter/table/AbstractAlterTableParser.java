@@ -31,6 +31,7 @@ import lombok.Getter;
  * Alter parser.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractAlterTableParser implements SQLParser {

@@ -25,6 +25,7 @@ import io.shardingsphere.core.rule.ShardingRule;
  * Alter parser for Oracle.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public final class OracleAlterTableParser extends AbstractAlterTableParser {
     

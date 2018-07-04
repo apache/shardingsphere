@@ -27,6 +27,7 @@ import io.shardingsphere.core.rule.ShardingRule;
  * Drop parser for MySQL.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public final class MySQLDropTableParser extends AbstractDropTableParser {
     

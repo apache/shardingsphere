@@ -34,6 +34,7 @@ import lombok.Getter;
  * Create parser.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractCreateIndexParser implements SQLParser {

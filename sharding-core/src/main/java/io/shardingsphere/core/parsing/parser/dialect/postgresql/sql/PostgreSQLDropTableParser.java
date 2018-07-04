@@ -27,6 +27,7 @@ import io.shardingsphere.core.rule.ShardingRule;
  * Drop parser for PostgreSQL.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public final class PostgreSQLDropTableParser extends AbstractDropTableParser {
     

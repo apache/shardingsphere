@@ -25,6 +25,7 @@ import io.shardingsphere.core.rule.ShardingRule;
  * Truncate parser for SQLServer.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public final class SQLServerTruncateTableParser extends AbstractTruncateTableParser {
     

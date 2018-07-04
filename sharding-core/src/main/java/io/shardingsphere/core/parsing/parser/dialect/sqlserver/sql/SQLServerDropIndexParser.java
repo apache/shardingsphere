@@ -25,6 +25,7 @@ import io.shardingsphere.core.rule.ShardingRule;
  * Drop parser for SQLServer.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public final class SQLServerDropIndexParser extends AbstractDropIndexParser {
     

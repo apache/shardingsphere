@@ -25,6 +25,7 @@ import io.shardingsphere.core.rule.ShardingRule;
  * Truncate parser for MySQL.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public final class MySQLTruncateTableParser extends AbstractTruncateTableParser {
     

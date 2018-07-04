@@ -27,6 +27,7 @@ import io.shardingsphere.core.rule.ShardingRule;
  * Truncate parser for PostgreSQL.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public final class PostgreSQLTruncateTableParser extends AbstractTruncateTableParser {
     

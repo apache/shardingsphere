@@ -28,6 +28,7 @@ import io.shardingsphere.core.rule.ShardingRule;
  * Create parser for MySQL.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public final class MySQLCreateIndexParser extends AbstractCreateIndexParser {
     

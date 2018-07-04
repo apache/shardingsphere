@@ -31,6 +31,7 @@ import lombok.Getter;
  * Truncate parser.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractTruncateTableParser implements SQLParser {

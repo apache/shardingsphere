@@ -32,6 +32,7 @@ import lombok.Getter;
  * Drop parser.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractDropTableParser implements SQLParser {

@@ -25,6 +25,7 @@ import io.shardingsphere.core.rule.ShardingRule;
  * Alter parser for MySQL.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public final class MySQLAlterTableParser extends AbstractAlterTableParser {
     

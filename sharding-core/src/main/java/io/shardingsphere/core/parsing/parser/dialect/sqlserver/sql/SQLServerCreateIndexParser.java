@@ -27,6 +27,7 @@ import io.shardingsphere.core.rule.ShardingRule;
  * Create parser for SQLServer.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public final class SQLServerCreateIndexParser extends AbstractCreateIndexParser {
     

@@ -27,6 +27,7 @@ import io.shardingsphere.core.rule.ShardingRule;
  * Create parser for Oracle.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public final class OracleCreateTableParser extends AbstractCreateTableParser {
     

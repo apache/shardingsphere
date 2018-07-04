@@ -25,6 +25,7 @@ import io.shardingsphere.core.rule.ShardingRule;
  * Truncate parser for Oracle.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public final class OracleTruncateTableParser extends AbstractTruncateTableParser {
     

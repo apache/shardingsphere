@@ -28,6 +28,7 @@ import io.shardingsphere.core.rule.ShardingRule;
  * Create parser for PostgreSQL.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public final class PostgreSQLCreateIndexParser extends AbstractCreateIndexParser {
     

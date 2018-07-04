@@ -25,6 +25,7 @@ import io.shardingsphere.core.rule.ShardingRule;
  * Alter parser for SQLServer.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public final class SQLServerAlterTableParser extends AbstractAlterTableParser {
     

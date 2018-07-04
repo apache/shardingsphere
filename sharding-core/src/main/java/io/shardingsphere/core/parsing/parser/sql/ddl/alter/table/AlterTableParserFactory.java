@@ -31,6 +31,7 @@ import lombok.NoArgsConstructor;
  * Alter parser factory.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AlterTableParserFactory {
