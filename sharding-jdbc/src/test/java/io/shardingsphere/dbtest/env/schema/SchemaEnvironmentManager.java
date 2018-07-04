@@ -76,7 +76,7 @@ public final class SchemaEnvironmentManager {
                     StringReader stringReader = new StringReader(Joiner.on(";\n").skipNulls().join(generateCreateDatabaseSQLs(each, databaseInitialization.getDatabases())))) {
                 RunScript.execute(connection, stringReader);
             } catch (final SQLException ex) {
-                // TODO schema maybe exist for oracle only
+                // TODO database maybe existed
             }
         }
     }
@@ -97,7 +97,7 @@ public final class SchemaEnvironmentManager {
                     StringReader stringReader = new StringReader(Joiner.on(";\n").skipNulls().join(generateDropDatabaseSQLs(each, databaseInitialization.getDatabases())))) {
                 RunScript.execute(connection, stringReader);
             } catch (final SQLException ex) {
-                // TODO schema maybe not exist for oracle only
+                // TODO database maybe not exist
             }
         }
     }
@@ -150,25 +150,12 @@ public final class SchemaEnvironmentManager {
         for (String each : databaseEnvironmentSchema.getDatabases()) {
             DataSource dataSource = DataSourceUtil.createDataSource(databaseType, each);
             try (Connection connection = dataSource.getConnection();
-                 StringReader stringReader = new StringReader(StringUtils.join(getTableCreateSQLs(databaseEnvironmentSchema.getTableCreateSQLs(), databaseType), ";\n"))) {
+                 StringReader stringReader = new StringReader(StringUtils.join(databaseEnvironmentSchema.getTableCreateSQLs(), ";\n"))) {
                 RunScript.execute(connection, stringReader);
             } catch (final SQLException ex) {
-                // TODO schema maybe not exist for oracle only
+                // TODO table maybe existed
             }
         }
-    }
-    
-    private static List<String> getTableCreateSQLs(final List<String> tableCreateSQLs, final DatabaseType databaseType) {
-        if (DatabaseType.H2 != databaseType) {
-            return tableCreateSQLs;
-        }
-        List<String> result = new LinkedList<>();
-        for (String each : tableCreateSQLs) {
-            if (!each.startsWith("CREATE INDEX")) {
-                result.add(each);
-            }
-        }
-        return result;
     }
     
     /**
@@ -192,7 +179,7 @@ public final class SchemaEnvironmentManager {
                  StringReader stringReader = new StringReader(StringUtils.join(databaseEnvironmentSchema.getTableDropSQLs(), ";\n"))) {
                 RunScript.execute(connection, stringReader);
             } catch (final SQLException ex) {
-                // TODO schema maybe not exist for oracle only
+                // TODO table maybe not exist
             }
         }
     }
