@@ -36,7 +36,6 @@ public class RenameUserParser implements SQLParser {
     
     @Override
     public DCLStatement parse() {
-        lexerEngine.nextToken();
         if (lexerEngine.skipIfEqual(DefaultKeyword.USER)) {
             return new DCLStatement();
         } else {

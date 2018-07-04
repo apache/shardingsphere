@@ -42,7 +42,6 @@ public class RevokeUserParser implements SQLParser {
     
     @Override
     public DCLStatement parse() {
-        lexerEngine.nextToken();
         DCLStatement result = new DCLStatement();
         lexerEngine.skipUntil(DefaultKeyword.ON);
         if (!lexerEngine.isEnd()) {
