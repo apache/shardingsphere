@@ -30,7 +30,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 /*
- * Created by aaa
+* @author lidongbo
  */
 public class StartWaitTest {
     @Before

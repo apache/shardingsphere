@@ -18,7 +18,7 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
 /*
- * Created by aaa
+* @author lidongbo
  */
 public class TestSupport {
     public static final String AUTH = "digest";

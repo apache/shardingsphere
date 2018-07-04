@@ -27,8 +27,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-/**
- * Created by aaa
+/*
+ * @author lidongbo
  */
 public class UsualClientTest extends BaseClientTest {
     

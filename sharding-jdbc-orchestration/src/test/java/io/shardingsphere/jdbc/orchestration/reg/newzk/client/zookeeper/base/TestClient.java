@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 /*
- * Created by aaa
+* @author lidongbo
  */
 public class TestClient extends UsualClient {
     TestClient(BaseContext context) {

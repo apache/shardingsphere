@@ -44,8 +44,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-/**
- * Created by aaa
+/*
+ * @author lidongbo
  */
 public abstract class BaseClientTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseClient.class);

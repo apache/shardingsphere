@@ -1,20 +1,20 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.ClientFactory;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.TestSupport;
 import io.shardingsphere.jdbc.orchestration.util.EmbedTestingServer;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
 
-/**
- * Created by aaa
+/*
+ * @author lidongbo
  */
 public class PathTreeTest {
     private PathTree pathTree;
@@ -30,6 +30,12 @@ public class PathTreeTest {
         pathTree = new PathTree(TestSupport.ROOT, testClient);
     }
     
+    @After
+    public void stop() throws InterruptedException {
+        pathTree.close();
+        testClient.close();
+    }
+    
     @Test
     public void assertLoad() throws KeeperException, InterruptedException {
         final String keyB = "a/b/bb";
@@ -43,7 +49,6 @@ public class PathTreeTest {
         
         try {
             pathTree.load();
-            pathTree.watch();
     
             assert valueB.equals(new String(pathTree.getValue(keyB)));
             assert valueC.equals(new String(pathTree.getValue(keyC)));
