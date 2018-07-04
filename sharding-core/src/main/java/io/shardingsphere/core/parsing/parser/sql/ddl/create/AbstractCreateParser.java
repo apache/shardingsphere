@@ -52,7 +52,6 @@ public abstract class AbstractCreateParser implements SQLParser {
     
     @Override
     public DDLStatement parse() {
-        lexerEngine.nextToken();
         lexerEngine.skipAll(getSkippedKeywordsBetweenCreateIndexAndKeyword());
         lexerEngine.skipAll(getSkippedKeywordsBetweenCreateAndKeyword());
         DDLStatement result = new DDLStatement();

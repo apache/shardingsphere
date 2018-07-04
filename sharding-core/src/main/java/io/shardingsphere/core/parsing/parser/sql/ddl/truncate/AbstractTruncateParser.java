@@ -49,7 +49,6 @@ public abstract class AbstractTruncateParser implements SQLParser {
     
     @Override
     public DDLStatement parse() {
-        lexerEngine.nextToken();
         lexerEngine.skipIfEqual(DefaultKeyword.TABLE);
         lexerEngine.skipAll(getSkippedKeywordsBetweenTruncateTableAndTableName());
         DDLStatement result = new DDLStatement();
