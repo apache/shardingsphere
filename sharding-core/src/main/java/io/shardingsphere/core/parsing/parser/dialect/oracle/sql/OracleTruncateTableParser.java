@@ -15,20 +15,20 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.dialect.sqlserver.sql;
+package io.shardingsphere.core.parsing.parser.dialect.oracle.sql;
 
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
-import io.shardingsphere.core.parsing.parser.sql.ddl.truncate.AbstractTruncateParser;
+import io.shardingsphere.core.parsing.parser.sql.ddl.truncate.table.AbstractTruncateTableParser;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Truncate parser for SQLServer.
+ * Truncate parser for Oracle.
  *
  * @author zhangliang
  */
-public final class SQLServerTruncateParser extends AbstractTruncateParser {
+public final class OracleTruncateTableParser extends AbstractTruncateTableParser {
     
-    public SQLServerTruncateParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public OracleTruncateTableParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine);
     }
 }

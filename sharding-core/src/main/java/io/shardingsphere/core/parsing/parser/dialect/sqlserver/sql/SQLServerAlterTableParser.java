@@ -18,7 +18,7 @@
 package io.shardingsphere.core.parsing.parser.dialect.sqlserver.sql;
 
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
-import io.shardingsphere.core.parsing.parser.sql.ddl.alter.AbstractAlterParser;
+import io.shardingsphere.core.parsing.parser.sql.ddl.alter.table.AbstractAlterTableParser;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -26,9 +26,9 @@ import io.shardingsphere.core.rule.ShardingRule;
  *
  * @author zhangliang
  */
-public final class SQLServerAlterParser extends AbstractAlterParser {
+public final class SQLServerAlterTableParser extends AbstractAlterTableParser {
     
-    public SQLServerAlterParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public SQLServerAlterTableParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine);
     }
 }

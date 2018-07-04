@@ -15,45 +15,45 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.ddl.alter;
+package io.shardingsphere.core.parsing.parser.sql.ddl.truncate.table;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.sql.MySQLAlterParser;
-import io.shardingsphere.core.parsing.parser.dialect.oracle.sql.OracleAlterParser;
-import io.shardingsphere.core.parsing.parser.dialect.postgresql.sql.PostgreSQLAlterParser;
-import io.shardingsphere.core.parsing.parser.dialect.sqlserver.sql.SQLServerAlterParser;
+import io.shardingsphere.core.parsing.parser.dialect.mysql.sql.MySQLTruncateTableParser;
+import io.shardingsphere.core.parsing.parser.dialect.oracle.sql.OracleTruncateTableParser;
+import io.shardingsphere.core.parsing.parser.dialect.postgresql.sql.PostgreSQLTruncateTableParser;
+import io.shardingsphere.core.parsing.parser.dialect.sqlserver.sql.SQLServerTruncateTableParser;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Alter parser factory.
+ * Truncate parser factory.
  *
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AlterParserFactory {
+public final class TruncateTableParserFactory {
     
     /**
-     * Create alter parser instance.
+     * Create truncate parser instance.
      *
      * @param dbType database type
      * @param shardingRule databases and tables sharding rule
      * @param lexerEngine lexical analysis engine.
-     * @return alter parser instance
+     * @return truncate parser instance
      */
-    public static AbstractAlterParser newInstance(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public static AbstractTruncateTableParser newInstance(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         switch (dbType) {
             case H2:
             case MySQL:
-                return new MySQLAlterParser(shardingRule, lexerEngine);
+                return new MySQLTruncateTableParser(shardingRule, lexerEngine);
             case Oracle:
-                return new OracleAlterParser(shardingRule, lexerEngine);
+                return new OracleTruncateTableParser(shardingRule, lexerEngine);
             case SQLServer:
-                return new SQLServerAlterParser(shardingRule, lexerEngine);
+                return new SQLServerTruncateTableParser(shardingRule, lexerEngine);
             case PostgreSQL:
-                return new PostgreSQLAlterParser(shardingRule, lexerEngine);
+                return new PostgreSQLTruncateTableParser(shardingRule, lexerEngine);
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support database [%s].", dbType));
         }

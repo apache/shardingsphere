@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.ddl.alter;
+package io.shardingsphere.core.parsing.parser.sql.ddl.truncate.table;
 
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
@@ -28,12 +28,12 @@ import lombok.AccessLevel;
 import lombok.Getter;
 
 /**
- * Alter parser.
+ * Truncate parser.
  *
  * @author zhangliang
  */
 @Getter(AccessLevel.PROTECTED)
-public abstract class AbstractAlterParser implements SQLParser { 
+public abstract class AbstractTruncateTableParser implements SQLParser {
     
     private final ShardingRule shardingRule;
     
@@ -41,7 +41,7 @@ public abstract class AbstractAlterParser implements SQLParser {
     
     private final TableReferencesClauseParser tableReferencesClauseParser;
     
-    public AbstractAlterParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public AbstractTruncateTableParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         this.shardingRule = shardingRule;
         this.lexerEngine = lexerEngine;
         tableReferencesClauseParser = new TableReferencesClauseParser(shardingRule, lexerEngine);
@@ -49,14 +49,14 @@ public abstract class AbstractAlterParser implements SQLParser {
     
     @Override
     public DDLStatement parse() {
-        lexerEngine.unsupportedIfNotSkip(DefaultKeyword.TABLE);
-        lexerEngine.skipAll(getSkippedKeywordsBetweenAlterTableAndTableName());
+        lexerEngine.skipIfEqual(DefaultKeyword.TABLE);
+        lexerEngine.skipAll(getSkippedKeywordsBetweenTruncateTableAndTableName());
         DDLStatement result = new DDLStatement();
         tableReferencesClauseParser.parseSingleTableWithoutAlias(result);
         return result;
     }
     
-    protected Keyword[] getSkippedKeywordsBetweenAlterTableAndTableName() {
+    protected Keyword[] getSkippedKeywordsBetweenTruncateTableAndTableName() {
         return new Keyword[0];
     }
 }

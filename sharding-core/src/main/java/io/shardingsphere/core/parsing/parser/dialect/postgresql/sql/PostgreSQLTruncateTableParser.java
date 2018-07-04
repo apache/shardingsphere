@@ -15,20 +15,27 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.dialect.mysql.sql;
+package io.shardingsphere.core.parsing.parser.dialect.postgresql.sql;
 
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
-import io.shardingsphere.core.parsing.parser.sql.ddl.truncate.AbstractTruncateParser;
+import io.shardingsphere.core.parsing.lexer.dialect.postgresql.PostgreSQLKeyword;
+import io.shardingsphere.core.parsing.lexer.token.Keyword;
+import io.shardingsphere.core.parsing.parser.sql.ddl.truncate.table.AbstractTruncateTableParser;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Truncate parser for MySQL.
+ * Truncate parser for PostgreSQL.
  *
  * @author zhangliang
  */
-public final class MySQLTruncateParser extends AbstractTruncateParser {
+public final class PostgreSQLTruncateTableParser extends AbstractTruncateTableParser {
     
-    public MySQLTruncateParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public PostgreSQLTruncateTableParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine);
+    }
+    
+    @Override
+    protected Keyword[] getSkippedKeywordsBetweenTruncateTableAndTableName() {
+        return new Keyword[] {PostgreSQLKeyword.ONLY};
     }
 }

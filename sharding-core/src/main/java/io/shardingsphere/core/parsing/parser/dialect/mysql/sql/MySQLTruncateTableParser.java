@@ -15,20 +15,20 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.dialect.oracle.sql;
+package io.shardingsphere.core.parsing.parser.dialect.mysql.sql;
 
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
-import io.shardingsphere.core.parsing.parser.sql.ddl.alter.AbstractAlterParser;
+import io.shardingsphere.core.parsing.parser.sql.ddl.truncate.table.AbstractTruncateTableParser;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Alter parser for Oracle.
+ * Truncate parser for MySQL.
  *
  * @author zhangliang
  */
-public final class OracleAlterParser extends AbstractAlterParser {
+public final class MySQLTruncateTableParser extends AbstractTruncateTableParser {
     
-    public OracleAlterParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public MySQLTruncateTableParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine);
     }
 }
