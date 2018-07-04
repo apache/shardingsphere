@@ -197,6 +197,5 @@ public final class SQLParserFactory {
             return getDCLParser(dbType, tokenType, shardingRule, lexerEngine);
         }
         return getDDLParser(dbType, tokenType, shardingRule, lexerEngine);
-        
     }
 }
