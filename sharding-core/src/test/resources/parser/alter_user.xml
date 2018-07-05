@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parser-result-sets>
+    <parser-result sql-case-id="alter_user_identified_oracle" />
+    <parser-result sql-case-id="alter_user_identified_mysql" />
+    <parser-result sql-case-id="alter_user_account" />
+    <parser-result sql-case-id="alter_login_name" />
+    <parser-result sql-case-id="alter_login_passwd" />
+    <parser-result sql-case-id="alter_user_name_mssql" />
+    <parser-result sql-case-id="alter_user_name_psql" />
+    <parser-result sql-case-id="alter_user_passwd_mssql" />
+    <parser-result sql-case-id="alter_user_passwd_psql" />
+    <parser-result sql-case-id="alter_role_add_member" />
+    <parser-result sql-case-id="alter_role_drop_member" />
+</parser-result-sets>
