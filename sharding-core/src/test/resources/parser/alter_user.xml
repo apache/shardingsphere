@@ -9,6 +9,7 @@
     <parser-result sql-case-id="alter_user_name_psql" />
     <parser-result sql-case-id="alter_user_passwd_mssql" />
     <parser-result sql-case-id="alter_user_passwd_psql" />
+    <parser-result sql-case-id="alter_user_passwd_h2" />
     <parser-result sql-case-id="alter_role_add_member" />
     <parser-result sql-case-id="alter_role_drop_member" />
 </parser-result-sets>
