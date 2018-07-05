@@ -48,7 +48,7 @@ Sharding-Sidecar是一个新概念，就像Service Mesh中的数据面板一样�
 
 ### Community
 
-目前我们在京东和当当分别为Sharding-Sphere设立了开发团队。中国电信、搜狐公司以及数人云都表示对此项目感兴趣，我们希望通过走Apache这条路，从而邀请所有贡献代码的优秀人才，扩大贡献者的圈子。现在，我们使用github作为代码托管，利用gitter进行社区通信。
+目前我们在京东和当当分别为Sharding-Sphere设立了开发团队。甜橙金融、搜狐公司以及数人云都表示对此项目感兴趣，我们希望通过走Apache这条路，从而邀请所有贡献代码的优秀人才，扩大贡献者的圈子。现在，我们使用github作为代码托管，利用gitter进行社区通信。
 
 ### **Core** Developers
 
