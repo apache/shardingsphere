@@ -209,10 +209,10 @@ Slack [https://sharding.slack.com](https://sharding.slack.com/)
 
 ## Affiliations
 
-- Jingdong: Liang Zhang, Yonglun Zhang, Juan Pan, Jun Zhao, Ling Yue
-- Dangdang: Hao Cao, Kai Wang, Jiaqi Lin
-- Orange Finance: QingYang Chen
-- Individuals: Sheng Wu, Hongtao Gao, Guangyun Li, ZeJian Liu, Xiaoguang Ma
+- 京东: Liang Zhang, Yonglun Zhang, Juan Pan, Jun Zhao, Ling Yue
+- 当当: Hao Cao, Kai Wang, Jiaqi Lin
+- 甜橙金融: QingYang Chen
+- 个人开发者: Sheng Wu, Hongtao Gao, Guangyun Li, ZeJian Liu, Xiaoguang Ma
 
 ## Sponsors
 
