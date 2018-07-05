@@ -35,7 +35,7 @@ import java.util.List;
  * @author lidongbo
  */
 public class ClientFactory extends BaseClientFactory {
-    //    private static final String CLIENT_EXCLUSIVE_NODE = "ZKC";
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(ClientFactory.class);
     
     private DelayRetryPolicy delayRetryPolicy;
