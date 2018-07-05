@@ -5,9 +5,9 @@
     <sql-case id="create_user_identified_by_mysql" value="CREATE USER 'user_dev'@'localhost' identified by 'passwd_dev'" db-types="MySQL" />
     <sql-case id="create_user_identified_by_oracle" value="CREATE USER user_dev identified by passwd_dev" db-types="Oracle" />
     <sql-case id="create_user_identified_by_mssql" value="CREATE USER user_dev FOR LOGIN login_dev" db-types="SQLServer" />
-    <sql-case id="create_user_password_psql" value="CREATE USER user_dev PASSWORD passwd_dev" db-types="PostgreSQL" />
+    <sql-case id="create_user_password_psql" value="CREATE USER user_dev PASSWORD passwd_dev" db-types="PostgreSQL,H2" />
     <sql-case id="create_login" value="CREATE LOGIN login_dev WITH PASSWORD = 'passwd_dev'" db-types="SQLServer" />
-    <sql-case id="create_role" value="CREATE ROLE role_dev" db-types="SQLServer,Oracle,PostgreSQL" />
+    <sql-case id="create_role" value="CREATE ROLE role_dev" db-types="SQLServer,Oracle,PostgreSQL,H2" />
     <sql-case id="create_role_identified_by" value="CREATE ROLE role_dev identified by dev_passwd" db-types="Oracle" />
     <sql-case id="create_role_password" value="CREATE ROLE role_dev PASSWORD passwd_dev" db-types="PostgreSQL" />
 </sql-cases>
