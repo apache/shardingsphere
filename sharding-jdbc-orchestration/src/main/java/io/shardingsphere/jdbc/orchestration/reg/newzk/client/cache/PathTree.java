@@ -17,6 +17,10 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache;
 
+import io.shardingsphere.core.parsing.lexer.Lexer;
+import io.shardingsphere.core.parsing.lexer.LexerEngine;
+import io.shardingsphere.core.parsing.lexer.analyzer.Dictionary;
+import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
@@ -98,7 +102,6 @@ public final class PathTree {
                 rootNode.set(newRoot);
         
                 this.setStatus(PathStatus.RELEASE);
-//                watch();
                 LOGGER.debug("loading release:{}", status);
             } else {
                 LOGGER.info("loading but cache status not release");
@@ -314,7 +317,7 @@ public final class PathTree {
         if (realPath.equals(rootNode.get().getKey())) {
             return rootNode.get();
         }
-        // todo iterator -> token
+        // todo iterator -> token LexerEngine
         Iterator<String> iterator = keyIterator(realPath);
         if (iterator.hasNext()) {
             return rootNode.get().get(iterator);
@@ -373,12 +376,21 @@ public final class PathTree {
         if (closed) {
             return;
         }
+        
         try {
-            PathNode node = get(path);
-            if (node == null) {
+            if (rootNode.get().getChildren().containsKey(PathUtil.checkPath(path))) {
+                rootNode.get().getChildren().remove(PathUtil.checkPath(path));
                 return;
             }
-            node.getChildren().remove(path);
+    
+            final LexerEngine lexerEngine = new LexerEngine(new Lexer(path, new Dictionary()));
+            lexerEngine.nextToken();
+            lexerEngine.skipIfEqual(Symbol.SLASH);
+            if (rootNode.get().getKey().equals(PathUtil.checkPath(lexerEngine.getCurrentToken().getLiterals()))) {
+                lexerEngine.nextToken();
+                lexerEngine.skipIfEqual(Symbol.SLASH);
+            }
+            rootNode.get().delete(lexerEngine.getCurrentToken().getLiterals(), lexerEngine);
             LOGGER.debug("PathTree end delete:{}", path);
         } finally {
             lock.unlock();

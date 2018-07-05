@@ -17,6 +17,9 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache;
 
+import io.shardingsphere.core.parsing.lexer.LexerEngine;
+import io.shardingsphere.core.parsing.lexer.token.Assist;
+import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import lombok.AccessLevel;
@@ -116,5 +119,19 @@ public class PathNode {
             return node.get(iterator);
         }
         return node;
+    }
+    
+    void delete(final String path, final LexerEngine lexerEngine) {
+        if (lexerEngine.getCurrentToken().getType().equals(Assist.END)) {
+            children.remove(path);
+        }
+        if (children.containsKey(path)) {
+            PathNode node = children.get(path);
+            lexerEngine.nextToken();
+            lexerEngine.skipIfEqual(Symbol.SLASH);
+            node.delete(lexerEngine.getCurrentToken().getLiterals(), lexerEngine);
+        } else {
+            return;
+        }
     }
 }
