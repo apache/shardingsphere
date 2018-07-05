@@ -19,33 +19,36 @@ Sharding-Sphere在中国的社区较为成熟和活跃，拥有大量用户，�
 
 ## Background
 
-2016年，Sharding-Sphere在GitHub上开源。由于互联网公司的数据迅速增长，关系型数据库难以支撑如此庞大的数据，但开发人员和DBA仍然希望使用关系型数据库来保存核心数据。 Sharding-Sphere一开始仅仅是当当内部用于数据分片的JDBC driver（原名Sharding-JDBC），目前提供数据分片、分布式事务和数据库治理的功能。 <u>除JDBC之外，还支持具有数据库协议的代理。</u> <u>（Besides JDBC, proxy with database protocol is also supported. ）</u>我们的蓝图中还包括Sharding-sidecar和弹性数据迁移。
+由于互联网公司的数据迅速增长，关系型数据库难以支撑如此庞大的数据，但开发人员和DBA仍然希望使用关系型数据库来保存核心数据。
 
-Sharding-JDBC 入选“2016年度最受欢迎中国开源软件”前20名。
+2016年，Sharding-Sphere在GitHub上开源。Sharding-Sphere一开始仅仅是当当内部用于数据分片的JDBC驱动程序增强版（原名Sharding-JDBC），目前提供数据分片、分布式事务和数据库治理的功能。
+除JDBC模式之外，目前又提供了实现MySQL数据库协议的代理模式。我们的蓝图中还包括sidecar模式以及弹性扩缩功能。
 
-我们的蓝图不仅仅是以JDBC为基础，proxy和sidecar都不是基于JDBC的，因此我们通过公投，将其重命名为Sharding-Sphere。
+由于对项目范围的扩展，我们在实现JDBC接口的同时，也另外提供了代理和sidecar两种模式。因此通过公投，我们将其重命名为Sharding-Sphere，意为分片生态圈，而Sharding-JDBC，Sharding-Proxy和Sharding-Sidecar将作为它的子项目存在。
+
+Sharding-Sphere的前身——Sharding-JDBC在开源当年即入选“2016年度最受欢迎中国开源软件”前20名。
 
 ## Rationale
 
-关系型数据库在当前的应用系统中仍然起着非常重要的作用。 产品和周围生态系统的成熟度，数据查询的友好性，开发人员和DBA对其掌握的程度，这些都不是NoSQL能轻易完全取代的。 但是当前的关系型数据库不能很好地支持云原生，并且对分布式系统也很不友好。
+关系型数据库在当前的应用系统中仍然起着非常重要的作用。产品和周围生态系统的成熟度，数据查询的友好性，开发人员和DBA对其掌握的程度，这些都不是NoSQL能轻易完全取代的。但是当前的关系型数据库不能很好地支持云原生，并且对分布式系统也很不友好。
 
-Sharding-Sphere的最终方案是让用户像使用单个数据库一样使用分布式数据库。 Sharding-Sphere管理着分散在系统中的各个数据库。 Sharding-Sphere有3个子项目，分别是Sharding-JDBC，Sharding-Proxy和Sharding-Sidecar（研发中）。
+Sharding-Sphere的最终方案是让用户像使用单个数据库一样使用分布式数据库。Sharding-Sphere管理着分散在系统中的各个数据库。Sharding-Sphere有3个子项目，分别是Sharding-JDBC，Sharding-Proxy和Sharding-Sidecar（研发中）。
 
-Sharding-JDBC使用JDBC连接数据库，<u>无需间接消费Java应用程序（without redirect cost for java application）</u>，实现产品的最佳性能。
+Sharding-JDBC使用JDBC连接数据库，由Java应用直接连接数据库，无额外消耗，性能最高。
 
-Sharding-Proxy是一种传输式数据库中间件，部署为无状态服务器，目前支持MySQL协议。 在文章 “ [What’s Really New with NewSQL?](https://db.cs.cmu.edu/papers/2016/pavlo-newsql-sigmodrec2016.pdf)” 中，有3种类型的NewSQL，Sharding-Proxy是一种透明的分片中间件。
+Sharding-Proxy是数据库中间件，部署为无状态服务器，目前支持MySQL协议。在文章“ [What’s Really New with NewSQL?](https://db.cs.cmu.edu/papers/2016/pavlo-newsql-sigmodrec2016.pdf)” 中，有3种类型的NewSQL，Sharding-Proxy是其中的透明化分片中间件。
 
-Sharding-Sidecar是一个新概念，就像service mesh里的 data panel 一样。 应用程序和数据库之间的交互集中在啮合层，它们像蜘蛛网一样复杂而有序。Database Mesh的概念与Service Mesh类似，其关注点在于如何将分布式数据访问层和数据库连接在一起。 它更注重交互，这意味着应用与数据库之间杂乱无章的交互会得到有效的梳理。使用Database Mesh，应用和数据库会形成一个巨大的网格体系，应用和数据库只需在网格体系中对号入座即可，它们都是被啮合层所治理的对象。
+Sharding-Sidecar是一个新概念，就像Service Mesh中的数据面板一样。应用程序和数据库之间的交互集中在啮合层，它们像蜘蛛网一样复杂而有序。Database Mesh的概念与Service Mesh类似，其关注点在于如何将分布式数据访问层和数据库连接在一起。 它更注重交互，这意味着应用与数据库之间杂乱无章的交互会得到有效的梳理。使用Database Mesh，应用和数据库会形成一个巨大的网格体系，应用和数据库只需在网格体系中对号入座即可，它们都是被啮合层所治理的对象。
 
 ## Current Status
 
 ### Meritocracy
 
-该项目于2015年在当当网孵化，2016年在GitHub开源。2017年，京东认可其价值，并决定支持此项目。 我们成立了PMC团队和 committer team。 该项目有来自许多公司的贡献者和用户。 现有PMC成员指导并审查新的贡献者， 在合适的时机，PMC会进行投票决定新的贡献者是否可以成为PMC和committer team中的一员。点击这里查看详细信息。 我们欢迎并高度重视新的贡献。
+该项目于2015年在当当网孵化，2016年在GitHub开源。2017年，京东认可其价值，并决定支持此项目。 我们成立了PMC团队和committer团队。该项目由来自许多公司的贡献者和用户。现有PMC成员指导并审查新的贡献者，在合适的时机，PMC会进行投票决定新的贡献者是否可以成为PMC和committer团队中的一员。点击这里查看详细信息。我们欢迎并高度重视新的贡献。
 
 ### Community
 
-目前我们在京东和当当分别为Sharding-Sphere设立了开发团队。 中国电信、搜狐公司、DataMan以及Enniu都表示对此项目感兴趣，我们希望通过走Apache这条路，从而邀请所有贡献代码的优秀人才，扩大贡献者的圈子。 现在，我们使用github作为代码托管，利用gitter进行社区通信。
+目前我们在京东和当当分别为Sharding-Sphere设立了开发团队。中国电信、搜狐公司以及数人云都表示对此项目感兴趣，我们希望通过走Apache这条路，从而邀请所有贡献代码的优秀人才，扩大贡献者的圈子。现在，我们使用github作为代码托管，利用gitter进行社区通信。
 
 ### **Core** Developers
 
