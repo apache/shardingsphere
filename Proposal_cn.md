@@ -60,30 +60,34 @@ Sharding-Sidecar是一个新概念，就像Service Mesh中的数据面板一样�
 - 曹昊, Hao Cao, Senior Architect, Dangdang
 - 吴晟, Sheng Wu, APM and tracing expert, Apache SkyWalking(incubator) creator & PMC member
 - 高洪涛, Hongtao Gao, Database and APM expert, Apache SkyWalking(incubator) PMC member
+- 史海峰, Haifeng Shi, @PegasusS Ex-Director, ele.me
 
 #### Committer members
 
+- 张永伦, Yonglun Zhang, @tuohai666 Senior engineer, Jingdong
+- 潘娟, Juan Pan, @tristaZero Senior DBA, Jingdong
+- 王凯, Kai Wang, @oracle219 Architect, Dangdang
+- 林嘉琦, Jiaqi Lin, @chidaodezhongsheng Engineer, Dangdang
+- 赵俊, Jun Zhao, @cherrylzhao Senior engineer, Jingdong
+- 岳令, Ling Yue, @ling.yue QA Engineer, Dangdang
 - 李广云, Guangyun Li, Java Expert, Antfin
-- 王文斌, Wenbin Wang, Technical manager, Kangda
-- 朱政科, Zhengke Zhu, Senior engineer, Hangzhou Enniu Network Technology Company Limited
 - 马晓光, Xiaoguang Ma, Senior engineer, huimai365
 - 刘泽剑, ZeJian Liu, IT Manager, ZeDaYiSheng
-- 张永伦, Yonglun Zhang, Senior engineer, Jingdong
-- 潘娟, Juan Pan, Senior DBA, Jingdong
+- 陈清阳, QingYang Chen, @beckhampu Senior engineer, Orange Finance
 
 ## Known Risks
 
 ### Orphaned products
 
-未来，京东和当当两个开发团队连同不断壮大的社区贡献者将继续全力以赴更新维护Sharding-Sphere， 并且Sharding-Sphere在中国已被许多公司和组织广泛应用。 因此，Sharding-Sphere成为“孤儿产品”的风险很低。
+未来，京东和当当两个开发团队连同不断壮大的社区贡献者将继续全力以赴更新维护Sharding-Sphere，并且Sharding-Sphere在中国已被许多公司和组织广泛应用。因此，Sharding-Sphere成为“孤儿产品”的风险很低。
 
 ### Inexperience with Open Source
 
-Sharding-Sphere目前的核心开发人员所在公司开发或贡献过许多开源项目，包括Apache SkyWalking（孵化中），Apache Dubbo（孵化器），CNCF OpenTracing，Elastic-Job等。 因此，缺乏开源软件经验和开源流程经验的风险较低。
+Sharding-Sphere目前的核心开发人员所在公司开发或贡献过许多开源项目，包括Apache SkyWalking（孵化中），Apache Dubbo（孵化器），CNCF OpenTracing，Elastic-Job等。因此，缺乏开源软件经验和开源流程经验的风险较低。
 
 ### Homogenous Developers
 
-目前的核心开发人员遍布各大公司，包括京东、当当，也包括一些个人开发人员。鉴于中国电信、搜狐、DataMan和Enniu也对Sharding-Sphere感兴趣，我们准备鼓励大家为Sharding-Sphere贡献代码，邀请他们一起开发。
+目前的核心开发人员遍布各大公司，包括京东、当当，也包括一些个人开发人员。鉴于中国电信、搜狐和数人云也对Sharding-Sphere感兴趣，我们准备鼓励大家为Sharding-Sphere贡献代码，邀请他们一起开发。
 
 ### Reliance on Salaried Developers
 
@@ -91,11 +95,15 @@ Sharding-Sphere目前的核心开发人员所在公司开发或贡献过许多�
 
 ### Relationships with Other Apache Products
 
-Sharding-Sphere团队与SkyWalking团队合作，将Sharding-Sphere的一款自动探测器引入到SkyWalking，为其发送性能数据。<u>Zookeeper是其服务注册/发现机制之一</u>。
+Sharding-Sphere团队与Apache SkyWalking团队合作，将Sharding-Sphere的自动探针引入到SkyWalking，为其发送APM数据。
+
+Sharding-Sphere团队与Apache ServiceComb团队合作，将ServiceComb提供的Saga作为分布式事务处理引擎之一。
+
+Sharding-Sphere采用Apache Zookeeper作为注册中心。
 
 ### A Excessive Fascination with the Apache Brand
 
-Sharding-Sphere社区承认Apache品牌会使Sharding-Sphere项目的价值和认可度大大提升。 但是，我们主要关注Apache Software Foundation为其项目所搭建的社区以及社区发展的长期稳定性。
+Sharding-Sphere社区承认Apache品牌会使Sharding-Sphere项目的价值和认可度大大提升。但是，我们主要关注Apache Software Foundation为其项目所搭建的社区以及社区发展的长期稳定性。
 
 ## Documentation
 
@@ -106,12 +114,11 @@ Sharding-Sphere社区承认Apache品牌会使Sharding-Sphere项目的价值和�
 
 ## Initial Source
 
-本项目包含四个不同的代码库，分别是：Core, Opentracing adapter, example and document。下面是现有的四个git存储库。
+本项目包含三个不同的代码库，分别是：核心代码，使用示例和文档。下面是现有的三个git存储库。
 
-- <https://github.com/shardingsphere/sharding-jdbc>
-- <https://github.com/shardingsphere/sharding-jdbc-opentracing>
-- <https://github.com/shardingsphere/sharding-jdbc-example>
-- <https://github.com/shardingsphere/sharding-jdbc-doc>
+- <https://github.com/sharding-sphere/sharding-sphere>
+- <https://github.com/sharding-sphere/sharding-sphere-example>
+- <https://github.com/sharding-sphere/sharding-sphere-doc>
 
 ## Source and Intellectual Property Submission Plan
 
@@ -119,9 +126,11 @@ Sharding-Sphere社区承认Apache品牌会使Sharding-Sphere项目的价值和�
 
 ## External Dependencies
 
-使用Apache Maven管理所有依赖项，不需要将任何外部库打包成源发布。 大多数依赖项都具有Apache兼容许可证。 但是mysql和dbunit使用GPL-2.0和LGPL-2.1。
+使用Apache Maven管理所有依赖项，不需要将任何外部库打包成源发布。大多数依赖项都具有Apache兼容许可证。但是mysql和dbunit使用GPL-2.0和LGPL-2.1。
 
-将来我们会删除dbunit和mysql依赖项。 Dbunit仅在测试用例运行期间对数据集进行初始化。MySQL JDBC driver利用MySQL Proxy连接MySQL，之后我们会仅使用MySQL协议格式，利用socket来连接MySQL，所以也不再需要MySQL JDBC driver。
+将来我们会删除dbunit和mysql依赖项。
+Dbunit仅在测试用例运行期间对数据集进行初始化，我们将使用其他方式初始化测试数据。
+Sharding-Proxy目前使用MySQL JDBC驱动连接MySQL，之后我们会自行实现MySQL协议格式，利用socket来连接MySQL，所以也不再需要MySQL JDBC驱动。
 
 | *Dependency*                        | *License*       |
 | ----------------------------------- | --------------- |
@@ -157,17 +166,15 @@ Sharding-Sphere社区承认Apache品牌会使Sharding-Sphere项目的价值和�
 
 ### Git Repositories
 
-<https://github.com/shardingsphere/sharding-jdbc.git>
+<https://github.com/sharding-sphere/sharding-sphere.git>
 
-<https://github.com/shardingsphere/sharding-jdbc-opentracing.git>
+<https://github.com/sharding-sphere/sharding-sphere-example.git>
 
-<https://github.com/shardingsphere/sharding-jdbc-example.git>
-
-<https://github.com/shardingsphere/sharding-jdbc-doc.git>
+<https://github.com/sharding-sphere/sharding-sphere-doc.git>
 
 ### Issue Tracking
 
-<https://github.com/shardingsphere/sharding-jdbc/issues>
+<https://github.com/sharding-sphere/sharding-sphere/issues>
 
 ### Continuous Integration tool
 
@@ -179,7 +186,7 @@ Travis
 
 ### Communication
 
-Gitter <https://gitter.im/Sharding-JDBC/shardingsphere>
+Gitter <https://gitter.im/shardingsphere/Lobby>
 
 Slack [https://sharding.slack.com](https://sharding.slack.com/)
 
@@ -189,20 +196,23 @@ Slack [https://sharding.slack.com](https://sharding.slack.com/)
 - 曹昊, Hao Cao,
 - 吴晟, Sheng Wu, [wusheng@apache.org](mailto:wusheng@apache.org)
 - 高洪涛, Hongtao Gao, [hanahmily@apache.org](mailto:hanahmily@apache.org)
-- 李广云, Guangyun Li,
-- 王文斌, Wenbin Wang,
-- 朱政科, Zhengke Zhu,
-- 马晓光, Xiaoguang Ma,
-- 刘泽剑, ZeJian Liu,
-- 张永伦, Yonglun Zhang,
-- 潘娟, Juan Pan,
+- 张永伦, Yonglun Zhang
+- 潘娟, Juan Pan
+- 王凯, Kai Wang
+- 林嘉琦, Jiaqi Lin
+- 赵俊, Jun Zhao
+- 岳令, Ling Yue
+- 李广云, Guangyun Li
+- 马晓光, Xiaoguang Ma
+- 刘泽剑, ZeJian Liu
+- 陈清阳, QingYang Chen
 
 ## Affiliations
 
-- Jingdong: Liang Zhang, Yonglun Zhang, Juan Pan
-- Dangdang: Hao Cao
-- Enniu: Zhengke Zhu
-- Individuals: Sheng Wu, Hongtao Gao, Guangyun Li, Wenbin Wang, ZeJian Liu, Xiaoguang Ma
+- Jingdong: Liang Zhang, Yonglun Zhang, Juan Pan, Jun Zhao, Ling Yue
+- Dangdang: Hao Cao, Kai Wang, Jiaqi Lin
+- Orange Finance: QingYang Chen
+- Individuals: Sheng Wu, Hongtao Gao, Guangyun Li, ZeJian Liu, Xiaoguang Ma
 
 ## Sponsors
 
