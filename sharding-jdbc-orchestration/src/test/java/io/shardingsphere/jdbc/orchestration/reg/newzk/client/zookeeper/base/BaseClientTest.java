@@ -187,7 +187,6 @@ public abstract class BaseClientTest extends BaseTest {
     
     private void updateWithCheck(String key, String value, IClient client) throws KeeperException, InterruptedException {
         client.update(key, value);
-//        client.transaction().check(key, ZookeeperConstants.VERSION).setData(key, value.getBytes(ZookeeperConstants.UTF_8), ZookeeperConstants.VERSION).commit();
     }
     
     protected void persistEphemeral(IClient client) throws KeeperException, InterruptedException {

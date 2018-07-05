@@ -27,6 +27,7 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.PathTree;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayRetryPolicy;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.StringUtil;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.ClientFactory;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
@@ -167,7 +168,7 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
     @Override
     public void update(final String key, final String value) {
         try {
-            client.transaction().check(key, -1).setData(key, value.getBytes(Charsets.UTF_8)).commit();
+            client.transaction().check(key, ZookeeperConstants.VERSION).setData(key, value.getBytes(ZookeeperConstants.UTF_8), ZookeeperConstants.VERSION).commit();
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON

@@ -95,7 +95,6 @@ public class BaseProvider implements IProvider {
     public void create(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
         holder.getZooKeeper().create(key, value.getBytes(ZookeeperConstants.UTF_8), authorities, createMode);
         LOGGER.debug("BaseProvider createCurrentOnly:{}", key);
-//        create(key, value, createMode, new AtomicInteger());
     }
 
     @Override
