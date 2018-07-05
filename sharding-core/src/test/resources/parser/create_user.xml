@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parser-result-sets>
-    <parser-result sql-case-id="create_user_mysql"/>
-    <parser-result sql-case-id="create_user_psql" />
-    <parser-result sql-case-id="create_user_identified_by_mysql"/>
-    <parser-result sql-case-id="create_user_identified_by_oracle"/>
-    <parser-result sql-case-id="create_user_identified_by_mssql"/>
-    <parser-result sql-case-id="create_user_password_psql"/>
-    <parser-result sql-case-id="create_login"/>
-    <parser-result sql-case-id="create_role"/>
-    <parser-result sql-case-id="create_role_identified_by"/>
-    <parser-result sql-case-id="create_role_password"/>
+    <parser-result sql-case-id="create_user_mysql" />
+    <parser-result sql-case-id="create_user_psql"  />
+    <parser-result sql-case-id="create_user_identified_by_mysql" />
+    <parser-result sql-case-id="create_user_identified_by_oracle" />
+    <parser-result sql-case-id="create_user_identified_by_mssql" />
+    <parser-result sql-case-id="create_user_password_psql" />
+    <parser-result sql-case-id="create_login" />
+    <parser-result sql-case-id="create_role" />
+    <parser-result sql-case-id="create_role_identified_by" />
+    <parser-result sql-case-id="create_role_password" />
 </parser-result-sets>
