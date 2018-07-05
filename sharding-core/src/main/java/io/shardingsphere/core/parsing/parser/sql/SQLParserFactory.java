@@ -119,9 +119,12 @@ public final class SQLParserFactory {
     }
     
     private static boolean isDCL(final TokenType tokenType, final LexerEngine lexerEngine) {
-        Collection<DefaultKeyword> primaryTokens = Arrays.asList(DefaultKeyword.CREATE, DefaultKeyword.ALTER, DefaultKeyword.DROP,
-                DefaultKeyword.GRANT, DefaultKeyword.REVOKE, DefaultKeyword.RENAME, DefaultKeyword.DENY);
+        Collection<DefaultKeyword> primaryTokens = Arrays.asList(DefaultKeyword.GRANT, DefaultKeyword.REVOKE, DefaultKeyword.DENY);
         Collection<DefaultKeyword> secondaryTokens = Arrays.asList(DefaultKeyword.LOGIN, DefaultKeyword.USER, DefaultKeyword.ROLE);
+        if (primaryTokens.contains(tokenType)) {
+            return true;
+        }
+        primaryTokens = Arrays.asList(DefaultKeyword.CREATE, DefaultKeyword.ALTER, DefaultKeyword.DROP, DefaultKeyword.RENAME);
         return primaryTokens.contains(tokenType) && secondaryTokens.contains(lexerEngine.getCurrentToken().getType());
     }
     
