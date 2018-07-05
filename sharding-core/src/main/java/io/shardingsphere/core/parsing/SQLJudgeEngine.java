@@ -48,6 +48,7 @@ import java.util.Collection;
  * SQL judge engine.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 public final class SQLJudgeEngine {
