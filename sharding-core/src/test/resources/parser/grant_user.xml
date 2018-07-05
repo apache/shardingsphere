@@ -31,7 +31,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="16" original-literals="t_order" />
+            <table-token begin-position="24" original-literals="t_order" />
         </tokens>
     </parser-result>
 </parser-result-sets>
