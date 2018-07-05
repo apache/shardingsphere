@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parser-result-sets>
+    <parser-result sql-case-id="revoke_user">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="25" original-literals="t_order" />
+        </tokens>
+    </parser-result>
+    <parser-result sql-case-id="revoke_role" />
+    <parser-result sql-case-id="revoke_user_oracle" />
+    <parser-result sql-case-id="revoke_user_on_db_mysql">
+        <tables>
+            <table name="*" />
+        </tables>
+        <tokens>
+            <table-token begin-position="25" original-literals="*" />
+        </tokens>
+    </parser-result>
+    <parser-result sql-case-id="revoke_user_on_table_mysql">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="25" original-literals="t_order" />
+        </tokens>
+    </parser-result>
+    <parser-result sql-case-id="revoke_user_mysql" />
+</parser-result-sets>
