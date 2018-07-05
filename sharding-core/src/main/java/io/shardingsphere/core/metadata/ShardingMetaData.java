@@ -182,4 +182,15 @@ public abstract class ShardingMetaData {
         }
         return true;
     }
+    
+    /**
+     * Judge has column from table meta data or not.
+     * 
+     * @param tableName table name
+     * @param column column
+     * @return has column from table meta data or not
+     */
+    public boolean hasColumn(final String tableName, final String column) {
+        return tableMetaDataMap.containsKey(tableName) && tableMetaDataMap.get(tableName).getAllColumnNames().contains(column.toLowerCase());
+    }
 }

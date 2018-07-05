@@ -67,15 +67,9 @@
 #proxyAuthority:
 #  username: root
 #  password: root
-#
+
 #maxWorkingThreads: 200
-#
-#orchestration:
-#  name: demo_yaml_proxy
-#  overwrite: true
-#  zookeeper:
-#    namespace: orchestration-yaml-demo
-#    serverLists: localhost:2181
+
 
 # The example of master-slave rule.
 
@@ -107,12 +101,3 @@
 #proxyAuthority:
 #  username: root
 #  password: root
-#
-#maxWorkingThreads: 200
-#
-#orchestration:
-#  name: demo_yaml_proxy
-#  overwrite: true
-#  zookeeper:
-#    namespace: orchestration-yaml-demo
-#    serverLists: localhost:2181

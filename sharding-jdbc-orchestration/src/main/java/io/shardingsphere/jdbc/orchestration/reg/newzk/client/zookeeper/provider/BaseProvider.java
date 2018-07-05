@@ -15,13 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
+package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.provider;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.election.LeaderElection;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.ZKTransaction;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.Holder;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.zookeeper.AsyncCallback;
@@ -141,11 +142,6 @@ public class BaseProvider implements IProvider {
     }
     
     @Override
-    public void createInTransaction(final String key, final String value, final CreateMode createMode, final ZKTransaction transaction) throws KeeperException, InterruptedException {
-        transaction.create(key, value.getBytes(Constants.UTF_8), authorities, createMode);
-    }
-    
-    @Override
     public void resetConnection() {
         try {
             holder.reset();
@@ -154,5 +150,10 @@ public class BaseProvider implements IProvider {
             // CHECKSTYLE:ON
             LOGGER.error("resetConnection Exception:{}", e.getMessage(), e);
         }
+    }
+    
+    @Override
+    public BaseTransaction transaction() {
+        return new BaseTransaction();
     }
 }

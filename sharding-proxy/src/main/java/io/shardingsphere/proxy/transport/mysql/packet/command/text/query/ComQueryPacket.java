@@ -17,21 +17,25 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command.text.query;
 
-import java.sql.SQLException;
-
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.proxy.backend.common.SQLExecuteBackendHandler;
 import io.shardingsphere.proxy.backend.common.SQLPacketsBackendHandler;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transaction.AtomikosUserTransaction;
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
+import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import lombok.extern.slf4j.Slf4j;
+
+import javax.transaction.Status;
+import javax.transaction.SystemException;
+import java.sql.SQLException;
 
 /**
  * COM_QUERY command packet.
@@ -39,6 +43,7 @@ import lombok.extern.slf4j.Slf4j;
  *
  * @author zhangliang
  * @author linjiaqi
+ * @author zhaojun
  */
 @Slf4j
 public final class ComQueryPacket extends CommandPacket implements CommandPacketRebuilder {
@@ -82,7 +87,9 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
     public CommandResponsePackets execute() {
         log.debug("COM_QUERY received for Sharding-Proxy: {}", sql);
         try {
-            doTransactionIntercept();
+            if (doTransactionIntercept()) {
+                return new CommandResponsePackets(new OKPacket(1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+            }
         } catch (final Exception ex) {
             return new CommandResponsePackets(new ErrPacket(1, 0, "", "", "" + ex.getMessage()));
         }
@@ -143,16 +150,20 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
         return new ComQueryPacket((int) params[0], (int) params[1], (String) params[2]);
     }
     
-    private void doTransactionIntercept() throws Exception {
+    private boolean doTransactionIntercept() throws Exception {
         if (RuleRegistry.isXaTransaction()) {
             if (isXaBegin()) {
                 AtomikosUserTransaction.getInstance().begin();
+                return true;
             } else if (isXaCommit()) {
                 AtomikosUserTransaction.getInstance().commit();
+                return true;
             } else if (isXaRollback()) {
                 AtomikosUserTransaction.getInstance().rollback();
+                return true;
             }
         }
+        return false;
     }
     
     private boolean isXaBegin() {
@@ -163,7 +174,7 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
         return "COMMIT".equalsIgnoreCase(sql);
     }
     
-    private boolean isXaRollback() {
-        return "ROLLBACK".equalsIgnoreCase(sql);
+    private boolean isXaRollback() throws SystemException {
+        return "ROLLBACK".equalsIgnoreCase(sql) && Status.STATUS_NO_TRANSACTION != AtomikosUserTransaction.getInstance().getStatus();
     }
 }

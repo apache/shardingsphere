@@ -18,11 +18,11 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.Callback;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.ITransactionProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.election.LeaderElection;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseProvider;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.provider.BaseProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.ZKTransaction;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -39,7 +39,7 @@ import java.util.Stack;
 public class TransactionContendStrategy extends ContentionStrategy {
     private static final Logger LOGGER = LoggerFactory.getLogger(TransactionContendStrategy.class);
     
-    public TransactionContendStrategy(final IProvider provider) {
+    public TransactionContendStrategy(final ITransactionProvider provider) {
         super(provider);
     }
     
@@ -72,7 +72,7 @@ public class TransactionContendStrategy extends ContentionStrategy {
 
     private void createBegin(final String key, final String value, final CreateMode createMode, final ZKTransaction transaction) throws KeeperException, InterruptedException {
         if (key.indexOf(Constants.PATH_SEPARATOR) < -1) {
-            getProvider().createInTransaction(key, value, createMode, transaction);
+            ((ITransactionProvider) getProvider()).createInTransaction(key, value, createMode, transaction);
             return;
         }
         List<String> nodes = getProvider().getNecessaryPaths(key);
@@ -83,9 +83,9 @@ public class TransactionContendStrategy extends ContentionStrategy {
             }
             LOGGER.debug("node not exist and create:", nodes.get(i));
             if (i == nodes.size() - 1) {
-                getProvider().createInTransaction(nodes.get(i), value, createMode, transaction);
+                ((ITransactionProvider) getProvider()).createInTransaction(nodes.get(i), value, createMode, transaction);
             } else {
-                getProvider().createInTransaction(nodes.get(i), Constants.NOTHING_VALUE, createMode, transaction);
+                ((ITransactionProvider) getProvider()).createInTransaction(nodes.get(i), Constants.NOTHING_VALUE, createMode, transaction);
             }
         }
     }

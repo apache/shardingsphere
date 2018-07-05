@@ -28,10 +28,10 @@
     </ddl-test-case>
     
     <ddl-test-case sql-case-id="create_local_temp_table">
-        <assertion sharding-rule-type="db" table="t_log" expected-data-file="create_table.xml" />
-        <assertion sharding-rule-type="tbl" table="t_log" expected-data-file="create_table.xml" />
-        <assertion sharding-rule-type="dbtbl_with_masterslave" table="t_log" expected-data-file="create_table.xml" />
-        <assertion sharding-rule-type="masterslave" table="t_log" expected-data-file="create_table.xml" />
+        <assertion sharding-rule-type="db" table="t_temp_log" expected-data-file="create_temporary_table.xml" />
+        <assertion sharding-rule-type="tbl" table="t_temp_log" expected-data-file="create_temporary_table.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" table="t_temp_log" expected-data-file="create_temporary_table.xml" />
+        <assertion sharding-rule-type="masterslave" table="t_temp_log" expected-data-file="create_temporary_table.xml" />
     </ddl-test-case>
     
     <ddl-test-case sql-case-id="create_unlogged_table">
@@ -70,45 +70,45 @@
     </ddl-test-case>
     
     <ddl-test-case sql-case-id="drop_table">
-        <assertion sharding-rule-type="db" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
-        <assertion sharding-rule-type="tbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
-        <assertion sharding-rule-type="dbtbl_with_masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
-        <assertion sharding-rule-type="masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
+        <assertion sharding-rule-type="db" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />
+        <assertion sharding-rule-type="tbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />
+        <assertion sharding-rule-type="masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />
     </ddl-test-case>
     
     <ddl-test-case sql-case-id="drop_table_if_exists">
-        <assertion sharding-rule-type="db" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
-        <assertion sharding-rule-type="tbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
-        <assertion sharding-rule-type="dbtbl_with_masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
-        <assertion sharding-rule-type="masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
+        <assertion sharding-rule-type="db" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />
+        <assertion sharding-rule-type="tbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />
+        <assertion sharding-rule-type="masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />
     </ddl-test-case>
     
     <ddl-test-case sql-case-id="drop_temporary_table_if_exists">
-        <assertion sharding-rule-type="db" init-sql="CREATE TABLE t_temp_log(id int, status varchar(10))" table="t_temp_log" />
-        <assertion sharding-rule-type="tbl" init-sql="CREATE TABLE t_temp_log(id int, status varchar(10))" table="t_temp_log" />
-        <assertion sharding-rule-type="dbtbl_with_masterslave" init-sql="CREATE TABLE t_temp_log(id int, status varchar(10))" table="t_temp_log" />
-        <assertion sharding-rule-type="masterslave" init-sql="CREATE TABLE t_temp_log(id int, status varchar(10))" table="t_temp_log" />
+        <assertion sharding-rule-type="db" init-sql="CREATE TABLE t_temp_log(id int, status varchar(10))" table="t_temp_log" expected-data-file="empty_temp_log.xml" />
+        <assertion sharding-rule-type="tbl" init-sql="CREATE TABLE t_temp_log(id int, status varchar(10))" table="t_temp_log" expected-data-file="empty_temp_log.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" init-sql="CREATE TABLE t_temp_log(id int, status varchar(10))" table="t_temp_log" expected-data-file="empty_temp_log.xml" />
+        <assertion sharding-rule-type="masterslave" init-sql="CREATE TABLE t_temp_log(id int, status varchar(10))" table="t_temp_log" expected-data-file="empty_temp_log.xml" />
     </ddl-test-case>
     
     <ddl-test-case sql-case-id="drop_table_restrict">
-        <assertion sharding-rule-type="db" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
-        <assertion sharding-rule-type="tbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
-        <assertion sharding-rule-type="dbtbl_with_masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
-        <assertion sharding-rule-type="masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
+        <assertion sharding-rule-type="db" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />
+        <assertion sharding-rule-type="tbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />
+        <assertion sharding-rule-type="masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />
     </ddl-test-case>
     
     <ddl-test-case sql-case-id="drop_table_cascade">
-        <assertion sharding-rule-type="db" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
-        <assertion sharding-rule-type="tbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
-        <assertion sharding-rule-type="dbtbl_with_masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
-        <assertion sharding-rule-type="masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
+        <assertion sharding-rule-type="db" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />
+        <assertion sharding-rule-type="tbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />
+        <assertion sharding-rule-type="masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />
     </ddl-test-case>
     
     <ddl-test-case sql-case-id="drop_table_cascade_constraints_and_purge">
-        <assertion sharding-rule-type="db" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
-        <assertion sharding-rule-type="tbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
-        <assertion sharding-rule-type="dbtbl_with_masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
-        <assertion sharding-rule-type="masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
+        <assertion sharding-rule-type="db" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />
+        <assertion sharding-rule-type="tbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />
+        <assertion sharding-rule-type="masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />
     </ddl-test-case>
     
     <ddl-test-case sql-case-id="drop_index">
@@ -133,16 +133,16 @@
     </ddl-test-case>
     
     <ddl-test-case sql-case-id="truncate_table">
-        <assertion sharding-rule-type="db" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
-        <assertion sharding-rule-type="tbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
-        <assertion sharding-rule-type="dbtbl_with_masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
-        <assertion sharding-rule-type="masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
+        <assertion sharding-rule-type="db" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />
+        <assertion sharding-rule-type="tbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />
+        <assertion sharding-rule-type="masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />
     </ddl-test-case>
     
     <ddl-test-case sql-case-id="truncate_table_only">
-        <assertion sharding-rule-type="db" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
-        <assertion sharding-rule-type="tbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
-        <assertion sharding-rule-type="dbtbl_with_masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
-        <assertion sharding-rule-type="masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
+        <assertion sharding-rule-type="db" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />
+        <assertion sharding-rule-type="tbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />
+        <assertion sharding-rule-type="masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />
     </ddl-test-case>
 </integrate-test-cases>

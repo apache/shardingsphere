@@ -1,3 +1,3 @@
 <datasets>
-    <columns values="item_id, order_id, user_id, status, creation_date" />
+    <columns values="item_id, order_id, user_id, status, creation_date, order_by_derived_0" />
 </datasets>

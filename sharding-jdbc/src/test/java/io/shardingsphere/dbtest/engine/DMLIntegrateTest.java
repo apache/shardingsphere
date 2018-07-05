@@ -178,7 +178,7 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
     
     @Test
     public void assertExecuteUpdateWithColumnIndexes() throws JAXBException, IOException, SQLException, ParseException {
-        if (!getDatabaseTypeEnvironment().isEnabled()) {
+        if (!getDatabaseTypeEnvironment().isEnabled() || DatabaseType.PostgreSQL == getDatabaseTypeEnvironment().getDatabaseType()) {
             return;
         }
         try (Connection connection = getDataSource().getConnection()) {
@@ -208,7 +208,7 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
     
     @Test
     public void assertExecuteUpdateWithColumnNames() throws JAXBException, IOException, SQLException, ParseException {
-        if (!getDatabaseTypeEnvironment().isEnabled()) {
+        if (!getDatabaseTypeEnvironment().isEnabled() || DatabaseType.PostgreSQL == getDatabaseTypeEnvironment().getDatabaseType()) {
             return;
         }
         try (Connection connection = getDataSource().getConnection()) {
@@ -336,7 +336,7 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
     
     @Test
     public void assertExecuteWithColumnIndexes() throws JAXBException, IOException, SQLException, ParseException {
-        if (!getDatabaseTypeEnvironment().isEnabled()) {
+        if (!getDatabaseTypeEnvironment().isEnabled() || DatabaseType.PostgreSQL == getDatabaseTypeEnvironment().getDatabaseType()) {
             return;
         }
         try (Connection connection = getDataSource().getConnection()) {
@@ -368,7 +368,7 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
     
     @Test
     public void assertExecuteWithColumnNames() throws JAXBException, IOException, SQLException, ParseException {
-        if (!getDatabaseTypeEnvironment().isEnabled()) {
+        if (!getDatabaseTypeEnvironment().isEnabled() || DatabaseType.PostgreSQL == getDatabaseTypeEnvironment().getDatabaseType()) {
             return;
         }
         try (Connection connection = getDataSource().getConnection()) {

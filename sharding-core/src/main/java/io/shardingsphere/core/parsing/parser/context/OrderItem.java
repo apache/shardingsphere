@@ -92,6 +92,15 @@ public final class OrderItem {
         return owner.isPresent() ? Optional.of(owner.get() + "." + name.get()) : name;
     }
     
+    /**
+     * Judge order item is index or not.
+     * 
+     * @return order item is index or not
+     */
+    public boolean isIndex() {
+        return -1 != index;
+    }
+    
     @Override
     public boolean equals(final Object obj) {
         if (null == obj || !(obj instanceof OrderItem)) {
