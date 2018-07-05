@@ -70,21 +70,29 @@ The core developers are a diverse group of experienced open source developers an
 
 * 高洪涛, Hongtao Gao, Database and APM expert, Apache SkyWalking(incubator) PMC member
 
+* 史海峰, Haifeng Shi, @PegasusS Ex-Director, ele.me
+
 #### Committer members
 
+* 张永伦, Yonglun Zhang, @tuohai666 Senior engineer, Jingdong
+
+* 潘娟, Juan Pan, @tristaZero Senior DBA, Jingdong
+
+* 王凯, Kai Wang, @oracle219 Architect, Dangdang
+
+* 林嘉琦, Jiaqi Lin, @chidaodezhongsheng Engineer, Dangdang
+
+* 赵俊, Jun Zhao, @cherrylzhao Senior engineer, Jingdong
+
+* 岳令, Ling Yue, @ling.yue QA Engineer, Dangdang
+
 * 李广云, Guangyun Li, Java Expert, Antfin
-
-* 王文斌, Wenbin Wang, Technical manager, Kangda
-
-* 朱政科, Zhengke Zhu, Senior engineer, Hangzhou Enniu Network Technology Company Limited
 
 * 马晓光, Xiaoguang Ma, Senior engineer, huimai365
 
 * 刘泽剑, ZeJian Liu, IT Manager, ZeDaYiSheng
 
-* 张永伦, Yonglun Zhang, Senior engineer, Jingdong
-
-* 潘娟, Juan Pan, Senior DBA, Jingdong
+* 陈清阳, QingYang Chen, @beckhampu Senior engineer, Orange Finance
 
 ## Known Risks
 
@@ -116,21 +124,16 @@ The Sharding-Sphere community acknowledges the value and recognition that the Ap
 
 A complete set of Sharding-Sphere documentations is provided on shardingsphere.io in both English and Simplified Chinese.
 
-* [English](http://shardingsphere.io/document/en/)
-
-* [Chinese](http://shardingsphere.io/document/cn/)
+- [English](http://shardingsphere.io/document/current/en/)
+- [Chinese](http://shardingsphere.io/document/current/cn/)
 
 ## Initial Source
 
-The project consists of four distinct codebases: Core, Opentracing adapter, example and document. These have existed as separate git repositories.
+The project consists of 3 distinct codebases: core, example and document. These have existed as separate git repositories.
 
-* https://github.com/shardingsphere/sharding-jdbc
-
-* https://github.com/shardingsphere/sharding-jdbc-opentracing
-
-* https://github.com/shardingsphere/sharding-jdbc-example
-
-* https://github.com/shardingsphere/sharding-jdbc-doc
+-  <https://github.com/sharding-sphere/sharding-sphere>
+-  <https://github.com/sharding-sphere/sharding-sphere-example>
+-  <https://github.com/sharding-sphere/sharding-sphere-doc>
 
 ## Source and Intellectual Property Submission Plan
 
@@ -180,17 +183,13 @@ MySQL JDBC driver is using on MySQL Proxy to connect MySQL now, we will use MySQ
 
 ### Git Repositories
 
-https://github.com/shardingsphere/sharding-jdbc.git
-
-https://github.com/shardingsphere/sharding-jdbc-opentracing.git
-
-https://github.com/shardingsphere/sharding-jdbc-example.git
-
-https://github.com/shardingsphere/sharding-jdbc-doc.git
+<https://github.com/sharding-sphere/sharding-sphere.git>
+<https://github.com/sharding-sphere/sharding-sphere-example.git>
+<https://github.com/sharding-sphere/sharding-sphere-doc.git>
 
 ### Issue Tracking
 
-https://github.com/shardingsphere/sharding-jdbc/issues
+<https://github.com/sharding-sphere/sharding-sphere/issues>
 
 ### Continuous Integration tool
 
@@ -202,43 +201,33 @@ Travis
 
 ### Communication
 
-Gitter [https://gitter.im/Sharding-JDBC/shardingsphere](https://gitter.im/Sharding-JDBC/shardingsphere)
+Gitter <https://gitter.im/shardingsphere/Lobby>
 
-Slack [https://sharding.slack.com](https://sharding.slack.com)
+Slack <https://sharding.slack.com>
 
 ## Initial Committers
 
-* 张亮, Liang Zhang, zhangliang@apache.org
-
-* 曹昊, Hao Cao, 
-
-* 吴晟, Sheng Wu, wusheng@apache.org
-
-* 高洪涛, Hongtao Gao, hanahmily@apache.org
-
-* 李广云, Guangyun Li, 
-
-* 王文斌, Wenbin Wang, 
-
-* 朱政科, Zhengke Zhu, 
-
-* 马晓光, Xiaoguang Ma, 
-
-* 刘泽剑, ZeJian Liu, 
-
-* 张永伦, Yonglun Zhang, 
-
-* 潘娟, Juan Pan,
+- 张亮, Liang Zhang, [zhangliang@apache.org](mailto:zhangliang@apache.org)
+- 曹昊, Hao Cao,
+- 吴晟, Sheng Wu, [wusheng@apache.org](mailto:wusheng@apache.org)
+- 高洪涛, Hongtao Gao, [hanahmily@apache.org](mailto:hanahmily@apache.org)
+- 张永伦, Yonglun Zhang
+- 潘娟, Juan Pan
+- 王凯, Kai Wang
+- 林嘉琦, Jiaqi Lin
+- 赵俊, Jun Zhao
+- 岳令, Ling Yue
+- 李广云, Guangyun Li
+- 马晓光, Xiaoguang Ma
+- 刘泽剑, ZeJian Liu
+- 陈清阳, QingYang Chen
 
 ## Affiliations
 
-* Jingdong: Liang Zhang, Yonglun Zhang, Juan Pan
-
-* Dangdang: Hao Cao
-
-* Enniu: Zhengke Zhu
-
-* Individuals: Sheng Wu, Hongtao Gao, Guangyun Li, Wenbin Wang, ZeJian Liu, Xiaoguang Ma
+- Jingdong: Liang Zhang, Yonglun Zhang, Juan Pan, Jun Zhao, Ling Yue
+- Dangdang: Hao Cao, Kai Wang, Jiaqi Lin
+- Orange Finance: QingYang Chen
+- Individuals: Sheng Wu, Hongtao Gao, Guangyun Li, ZeJian Liu, Xiaoguang Ma
 
 ## Sponsors
 

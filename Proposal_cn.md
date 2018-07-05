@@ -109,8 +109,8 @@ Sharding-Sphere社区承认Apache品牌会使Sharding-Sphere项目的价值和�
 
 点击shardingsphere.io，查看整套Sharding-Sphere文档。（包括英文和中文简体）
 
-- [English](http://shardingsphere.io/document/en/)
-- [Chinese](http://shardingsphere.io/document/cn/)
+- [English](http://shardingsphere.io/document/current/en/)
+- [Chinese](http://shardingsphere.io/document/current/cn/)
 
 ## Initial Source
 
