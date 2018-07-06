@@ -26,6 +26,7 @@ import org.apache.zookeeper.WatchedEvent;
  */
 @Getter
 public abstract class Listener {
+    
     private final String key;
     
     @Setter

@@ -28,6 +28,7 @@ import java.util.Random;
  * @author lidongbo
  */
 public class DelayPolicyExecutor {
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(DelayPolicyExecutor.class);
     
     private final DelayRetryPolicy delayRetryPolicy;
@@ -46,7 +47,6 @@ public class DelayPolicyExecutor {
         this.delayRetryPolicy = delayRetryPolicy;
         this.executeTick = System.currentTimeMillis();
         this.random = new Random();
-//        next();
     }
     
     /**

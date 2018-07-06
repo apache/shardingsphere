@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
  * @author lidongbo
  */
 public class WatcherCreator {
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(WatcherCreator.class);
     
     /**

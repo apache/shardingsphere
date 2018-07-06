@@ -42,6 +42,7 @@ import java.util.concurrent.TimeUnit;
  * @author lidongbo
  */
 public abstract class BaseClient implements IClient {
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseClient.class);
     
     @Getter(value = AccessLevel.PROTECTED)

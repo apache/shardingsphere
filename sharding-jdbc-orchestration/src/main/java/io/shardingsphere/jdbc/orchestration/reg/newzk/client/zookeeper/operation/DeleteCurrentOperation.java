@@ -27,6 +27,7 @@ import org.apache.zookeeper.KeeperException;
  * @author lidongbo
  */
 public class DeleteCurrentOperation extends BaseOperation {
+    
     private final String key;
     
     public DeleteCurrentOperation(final IProvider provider, final String key) {

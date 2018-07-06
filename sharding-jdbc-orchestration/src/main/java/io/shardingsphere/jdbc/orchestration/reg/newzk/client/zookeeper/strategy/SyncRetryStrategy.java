@@ -36,6 +36,7 @@ import java.util.List;
  * @author lidongbo
  */
 public class SyncRetryStrategy extends UsualStrategy {
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(SyncRetryStrategy.class);
     
     @Getter(value = AccessLevel.PROTECTED)

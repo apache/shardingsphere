@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author lidongbo
  */
 public abstract class LeaderElection {
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(LeaderElection.class);
     
     private boolean done;

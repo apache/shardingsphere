@@ -27,6 +27,7 @@ import org.apache.zookeeper.KeeperException;
  * @author lidongbo
  */
 public class UpdateOperation extends BaseOperation {
+    
     private final String key;
     
     private final String value;

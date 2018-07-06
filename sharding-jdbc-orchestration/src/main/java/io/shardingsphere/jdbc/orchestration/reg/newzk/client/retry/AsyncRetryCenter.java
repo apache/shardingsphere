@@ -29,6 +29,7 @@ import java.util.concurrent.DelayQueue;
  * @author lidongbo
  */
 public enum AsyncRetryCenter {
+    
     INSTANCE;
     
     private static final Logger LOGGER = LoggerFactory.getLogger(AsyncRetryCenter.class);

@@ -36,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 @Setter(value = AccessLevel.PROTECTED)
 @Getter(value = AccessLevel.PROTECTED)
 public abstract class BaseClientFactory {
+    
     private BaseClient client;
     
     private Listener globalListener;

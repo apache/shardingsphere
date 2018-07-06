@@ -38,6 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author lidongbo
  */
 public class PathNode {
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(PathNode.class);
 
     private final Map<String, PathNode> children = new ConcurrentHashMap<>();

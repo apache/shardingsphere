@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
  * @author lidongbo
  */
 public abstract class Callable<T> {
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(Callable.class);
 
     private final DelayPolicyExecutor delayPolicyExecutor;

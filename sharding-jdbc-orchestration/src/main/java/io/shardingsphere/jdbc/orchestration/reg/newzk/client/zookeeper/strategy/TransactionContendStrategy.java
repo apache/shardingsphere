@@ -37,6 +37,7 @@ import java.util.Stack;
  * @since zookeeper 3.4.0
  */
 public class TransactionContendStrategy extends ContentionStrategy {
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(TransactionContendStrategy.class);
     
     public TransactionContendStrategy(final ITransactionProvider provider) {
@@ -71,7 +72,7 @@ public class TransactionContendStrategy extends ContentionStrategy {
     }
 
     private void createBegin(final String key, final String value, final CreateMode createMode, final ZKTransaction transaction) throws KeeperException, InterruptedException {
-        if (key.indexOf(ZookeeperConstants.PATH_SEPARATOR) < -1) {
+        if (!key.contains(ZookeeperConstants.PATH_SEPARATOR)) {
             ((ITransactionProvider) getProvider()).createInTransaction(key, value, createMode, transaction);
             return;
         }

@@ -38,6 +38,7 @@ import java.util.concurrent.TimeUnit;
  * @author lidongbo
  */
 public class Holder {
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(Holder.class);
     
     private final CountDownLatch connectLatch = new CountDownLatch(1);

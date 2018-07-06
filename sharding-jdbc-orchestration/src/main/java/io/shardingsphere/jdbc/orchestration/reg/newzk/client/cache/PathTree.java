@@ -50,6 +50,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author lidongbo
  */
 public final class PathTree {
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(PathTree.class);
     
     private final transient ReentrantLock lock = new ReentrantLock();

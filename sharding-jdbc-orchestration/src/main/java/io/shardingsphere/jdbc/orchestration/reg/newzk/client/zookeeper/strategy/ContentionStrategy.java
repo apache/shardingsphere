@@ -37,6 +37,7 @@ import java.util.Stack;
  * @author lidongbo
  */
 public class ContentionStrategy extends UsualStrategy {
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(ContentionStrategy.class);
     
     public ContentionStrategy(final IProvider provider) {
@@ -169,7 +170,8 @@ public class ContentionStrategy extends UsualStrategy {
     }
     
     private void createBegin(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
-        if (key.indexOf(ZookeeperConstants.PATH_SEPARATOR) < -1) {
+        // todo start with /
+        if (!key.contains(ZookeeperConstants.PATH_SEPARATOR)) {
             getProvider().create(key, value, createMode);
             return;
         }

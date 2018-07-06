@@ -32,6 +32,7 @@ import java.util.List;
  * @author lidongbo
  */
 public class TransactionProvider extends BaseProvider implements ITransactionProvider {
+    
     public TransactionProvider(final String rootNode, final Holder holder, final boolean watched, final List<ACL> authorities) {
         super(rootNode, holder, watched, authorities);
     }

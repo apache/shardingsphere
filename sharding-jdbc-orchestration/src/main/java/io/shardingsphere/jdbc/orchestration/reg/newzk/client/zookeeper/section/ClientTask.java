@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
  * @author lidongbo
  */
 public abstract class ClientTask implements Runnable {
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(ClientTask.class);
     
     private final IProvider provider;

@@ -35,6 +35,7 @@ import java.util.List;
  * @author lidongbo
  */
 public class UsualStrategy extends BaseStrategy {
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(UsualStrategy.class);
     
     public UsualStrategy(final IProvider provider) {
@@ -88,7 +89,7 @@ public class UsualStrategy extends BaseStrategy {
     
     @Override
     public void createAllNeedPath(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
-        if (key.indexOf(ZookeeperConstants.PATH_SEPARATOR) < -1) {
+        if (!key.contains(ZookeeperConstants.PATH_SEPARATOR)) {
             this.createCurrentOnly(key, value, createMode);
             return;
         }
@@ -143,7 +144,7 @@ public class UsualStrategy extends BaseStrategy {
     @Override
     public void deleteCurrentBranch(final String key) throws KeeperException, InterruptedException {
         LOGGER.debug("deleteCurrentBranch:{}", key);
-        if (key.indexOf(ZookeeperConstants.PATH_SEPARATOR) < -1) {
+        if (!key.contains(ZookeeperConstants.PATH_SEPARATOR)) {
             this.deleteOnlyCurrent(key);
             return;
         }

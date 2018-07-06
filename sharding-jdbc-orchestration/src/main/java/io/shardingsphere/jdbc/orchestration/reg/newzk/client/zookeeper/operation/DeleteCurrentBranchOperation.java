@@ -28,6 +28,7 @@ import org.apache.zookeeper.KeeperException;
  * @author lidongbo
  */
 public class DeleteCurrentBranchOperation extends BaseOperation {
+    
     private final String key;
     
     public DeleteCurrentBranchOperation(final IProvider provider, final String key) {

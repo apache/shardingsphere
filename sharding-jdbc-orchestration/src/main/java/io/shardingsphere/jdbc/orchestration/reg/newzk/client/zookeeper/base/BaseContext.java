@@ -31,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Getter
 @Setter(value = AccessLevel.PROTECTED)
 public abstract class BaseContext {
+    
     private String servers;
     
     private int sessionTimeOut;

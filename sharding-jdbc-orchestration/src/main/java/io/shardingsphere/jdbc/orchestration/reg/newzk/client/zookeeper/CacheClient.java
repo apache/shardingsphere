@@ -36,6 +36,7 @@ import java.util.List;
  * @author lidongbo
  */
 public final class CacheClient extends UsualClient {
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(CacheClient.class);
     
     private PathTree pathTree;

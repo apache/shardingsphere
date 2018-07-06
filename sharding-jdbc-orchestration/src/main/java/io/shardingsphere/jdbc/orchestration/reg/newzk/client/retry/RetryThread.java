@@ -35,6 +35,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author lidongbo
  */
 public class RetryThread extends Thread {
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(RetryThread.class);
     
     private final int corePoolSize = Runtime.getRuntime().availableProcessors();

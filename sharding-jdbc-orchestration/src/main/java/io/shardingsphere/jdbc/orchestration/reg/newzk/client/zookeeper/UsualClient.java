@@ -47,6 +47,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author lidongbo
  */
 public class UsualClient extends BaseClient {
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(UsualClient.class);
     
     private final Map<StrategyType, IExecStrategy> strategies = new ConcurrentHashMap<>();

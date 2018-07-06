@@ -37,6 +37,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Getter(value = AccessLevel.PROTECTED)
 public abstract class BaseOperation implements Delayed {
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseOperation.class);
     
     private final IProvider provider;

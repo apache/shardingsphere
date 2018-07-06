@@ -40,6 +40,7 @@ import java.util.Stack;
  * @author lidongbo
  */
 public class BaseProvider implements IProvider {
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseProvider.class);
     
     @Getter

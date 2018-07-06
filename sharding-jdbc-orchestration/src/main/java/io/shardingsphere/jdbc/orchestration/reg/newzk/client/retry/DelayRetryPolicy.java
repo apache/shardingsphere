@@ -25,6 +25,7 @@ import lombok.Getter;
  * @author lidongbo
  */
 public class DelayRetryPolicy {
+    
     private static final long BASE_DELAY = 10;
     
     private static final int BASE_COUNT = 3;
