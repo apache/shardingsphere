@@ -24,11 +24,18 @@ import io.shardingsphere.proxy.backend.common.SQLPacketsBackendHandler;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
+import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.statement.close.DummyPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ComQueryPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextResultSetRowPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
@@ -48,6 +55,8 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
     private final String table;
     
     private final String fieldWildcard;
+    
+    private int currentSequenceId;
     
     private SQLExecuteBackendHandler sqlExecuteBackendHandler;
     
@@ -82,10 +91,12 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
         // TODO use common database type
         if (RuleRegistry.getInstance().isWithoutJdbc()) {
             sqlPacketsBackendHandler = new SQLPacketsBackendHandler(this, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
-            return sqlPacketsBackendHandler.execute();
+            sqlPacketsBackendHandler.execute();
+            return new CommandResponsePackets(new DummyPacket());
         } else {
             sqlExecuteBackendHandler = new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
-            return sqlExecuteBackendHandler.execute();
+            sqlExecuteBackendHandler.execute();
+            return new CommandResponsePackets(new DummyPacket());
         }
     }
     
@@ -104,10 +115,25 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
     
     @Override
     public DatabaseProtocolPacket getResultValue() {
+        DatabaseProtocolPacket result;
         if (RuleRegistry.getInstance().isWithoutJdbc()) {
-            return sqlPacketsBackendHandler.getResultValue();
+            result = sqlPacketsBackendHandler.getResultValue();
+            if (!sqlPacketsBackendHandler.isHasMoreResultValueFlag()) {
+                return new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
+            }
         } else {
-            return sqlExecuteBackendHandler.getResultValue();
+            result = sqlExecuteBackendHandler.getResultValue();
+            if (!sqlExecuteBackendHandler.isHasMoreResultValueFlag()) {
+                return new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
+            }
+        }
+        if (result instanceof TextResultSetRowPacket) {
+            TextResultSetRowPacket fieldListResponse = (TextResultSetRowPacket) result;
+            String columnName = (String) fieldListResponse.getData().get(0);
+            return new ColumnDefinition41Packet(++currentSequenceId, ShardingConstant.LOGIC_SCHEMA_NAME, table, table,
+                columnName, columnName, 100, ColumnType.MYSQL_TYPE_VARCHAR, 0);
+        } else {
+            return new ErrPacket(1, 0, "", "", "");
         }
     }
     

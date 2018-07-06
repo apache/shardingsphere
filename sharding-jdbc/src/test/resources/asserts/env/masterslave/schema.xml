@@ -15,7 +15,7 @@
     <table-drop>
         <sql>DROP TABLE t_order</sql>
         <sql>DROP TABLE t_order_item</sql>
-        <sql>DROP TABLE t_config</sql>
+        <sql>DROP TABLE t_broadcast_table</sql>
         <sql>DROP TABLE t_global</sql>
     </table-drop>
 </schema>
