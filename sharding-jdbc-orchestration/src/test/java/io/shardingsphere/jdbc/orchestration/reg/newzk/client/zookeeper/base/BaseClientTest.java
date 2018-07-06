@@ -43,12 +43,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public abstract class BaseClientTest extends BaseTest {
     
