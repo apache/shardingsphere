@@ -18,8 +18,8 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.ClientFactory;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
 import io.shardingsphere.jdbc.orchestration.util.EmbedTestingServer;
@@ -30,9 +30,7 @@ import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
-import org.hamcrest.CoreMatchers;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -44,6 +42,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+
+import static junit.framework.TestCase.assertTrue;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 public abstract class BaseClientTest extends BaseTest {
     
@@ -75,48 +80,48 @@ public abstract class BaseClientTest extends BaseTest {
     public void assertDeleteRoot() throws KeeperException, InterruptedException {
         ((BaseClient)testClient).createNamespace();
         deleteRoot(testClient);
-        Assert.assertNull(getZooKeeper(testClient).exists(ZookeeperConstants.PATH_SEPARATOR + TestSupport.ROOT, false));
+        assertNull(getZooKeeper(testClient).exists(ZookeeperConstants.PATH_SEPARATOR + TestSupport.ROOT, false));
     }
     
     protected void createRoot(IClient client) throws KeeperException, InterruptedException {
         ((BaseClient)client).createNamespace();
-        Assert.assertNotNull(getZooKeeper(client).exists(ZookeeperConstants.PATH_SEPARATOR + TestSupport.ROOT, false));
+        assertNotNull(getZooKeeper(client).exists(ZookeeperConstants.PATH_SEPARATOR + TestSupport.ROOT, false));
         ((BaseClient)client).deleteNamespace();
-        Assert.assertNull(getZooKeeper(client).exists(ZookeeperConstants.PATH_SEPARATOR + TestSupport.ROOT, false));
+        assertNull(getZooKeeper(client).exists(ZookeeperConstants.PATH_SEPARATOR + TestSupport.ROOT, false));
     }
     
     protected void createChild(IClient client) throws KeeperException, InterruptedException {
         String key = "a/b/bb";
         client.createAllNeedPath(key, "bbb11", CreateMode.PERSISTENT);
-        Assert.assertNotNull(getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, key), false));
+        assertNotNull(getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, key), false));
         client.deleteCurrentBranch(key);
-        Assert.assertNull(getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, key), false));
+        assertNull(getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, key), false));
     }
     
     protected void deleteBranch(IClient client) throws KeeperException, InterruptedException {
         String keyB = "a/b/bb";
         String valueB = "bbb11";
         client.createAllNeedPath(keyB, valueB, CreateMode.PERSISTENT);
-        Assert.assertNotNull(getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, keyB), false));
+        assertNotNull(getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, keyB), false));
         String keyC  = "a/c/cc";
         client.createAllNeedPath(keyC, "ccc11", CreateMode.PERSISTENT);
-        Assert.assertNotNull(getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, keyC), false));
+        assertNotNull(getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, keyC), false));
         client.deleteCurrentBranch(keyC);
-        Assert.assertNull(getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, keyC), false));
-        Assert.assertNotNull(getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, "a"), false));
+        assertNull(getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, keyC), false));
+        assertNotNull(getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, "a"), false));
         client.deleteCurrentBranch(keyB);
-        Assert.assertNull(getZooKeeper(client).exists(PathUtil.checkPath(TestSupport.ROOT), false));
+        assertNull(getZooKeeper(client).exists(PathUtil.checkPath(TestSupport.ROOT), false));
         client.createAllNeedPath(keyB, valueB, CreateMode.PERSISTENT);
-        Assert.assertNotNull(getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, keyB), false));
-        Assert.assertEquals(valueB, client.getDataString(keyB));
+        assertNotNull(getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, keyB), false));
+        assertThat(client.getDataString(keyB), is(valueB));
         client.deleteCurrentBranch(keyB);
-        Assert.assertNull(getZooKeeper(client).exists(PathUtil.checkPath(TestSupport.ROOT), false));
+        assertNull(getZooKeeper(client).exists(PathUtil.checkPath(TestSupport.ROOT), false));
     }
     
     protected void isExisted(IClient client) throws KeeperException, InterruptedException {
         String key = "a/b/bb";
         client.createAllNeedPath(key, "", CreateMode.PERSISTENT);
-        Assert.assertTrue(isExisted(key, client));
+        assertTrue(isExisted(key, client));
         client.deleteCurrentBranch(key);
     }
     
@@ -124,9 +129,9 @@ public abstract class BaseClientTest extends BaseTest {
         String value = "bbb11";
         client.createAllNeedPath("a/b", value, CreateMode.PERSISTENT);
         String key = "a";
-        Assert.assertEquals(getDirectly(key, client), "");
+        assertThat(getDirectly(key, client), is(""));
         key = "a/b";
-        Assert.assertEquals(getDirectly(key, client), value);
+        assertThat(getDirectly(key, client), is(value));
         client.deleteCurrentBranch("a/b");
     }
     
@@ -140,7 +145,7 @@ public abstract class BaseClientTest extends BaseTest {
             public void processResult(int rc, String path, Object ctx, byte[] data, Stat stat) {
                 String result = new String(data);
                 LOGGER.info(new StringBuffer().append("rc:").append(rc).append(",path:").append(path).append(",ctx:").append(ctx).append(",stat:").append(stat).toString());
-                Assert.assertEquals(result, ctx);
+                assertThat(result, is(ctx));
                 ready.countDown();
             }
         };
@@ -167,7 +172,7 @@ public abstract class BaseClientTest extends BaseTest {
                 return o2.compareTo(o1);
             }
         });
-        Assert.assertEquals(result.get(0), "b");
+        assertThat(result.get(0), is("b"));
         client.deleteCurrentBranch(key);
     }
     
@@ -181,10 +186,10 @@ public abstract class BaseClientTest extends BaseTest {
             updateWithCheck(key, value, client);
         }
     
-        Assert.assertEquals(getDirectly(key, client), value);
+        assertThat(getDirectly(key, client), is(value));
     
         updateWithCheck(key, newValue, client);
-        Assert.assertEquals(getDirectly(key, client), newValue);
+        assertThat(getDirectly(key, client), is(newValue));
         client.deleteCurrentBranch(key);
     }
     
@@ -198,13 +203,13 @@ public abstract class BaseClientTest extends BaseTest {
         client.createAllNeedPath(key, value, CreateMode.PERSISTENT);
         Stat stat = new Stat();
         getZooKeeper(client).getData(PathUtil.getRealPath(TestSupport.ROOT, key), false, stat);
-        Assert.assertThat(stat.getEphemeralOwner(), CoreMatchers.is(0L));
+        assertThat(stat.getEphemeralOwner(), is(0L));
         
         client.deleteAllChildren(key);
-        Assert.assertFalse(isExisted(key, client));
+        assertFalse(isExisted(key, client));
         client.createAllNeedPath(key, value, CreateMode.EPHEMERAL);
         
-        Assert.assertNotEquals(getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, key), null).getEphemeralOwner(), 0L);
+        assertThat(getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, key), null).getEphemeralOwner(), is(getZooKeeper(client).getSessionId()));
         client.deleteCurrentBranch(key);
     }
     
@@ -214,10 +219,10 @@ public abstract class BaseClientTest extends BaseTest {
         key = "a/c/cc";
         client.createAllNeedPath(key, "cc", CreateMode.PERSISTENT);
         LOGGER.debug("getNumChildren:" + getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, "a"), null).getNumChildren());
-        Assert.assertNotNull(getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, key), false));
+        assertNotNull(getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, key), false));
         client.deleteAllChildren("a");
-        Assert.assertNull(getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, key), false));
-        Assert.assertNotNull(getZooKeeper(client).exists("/" + TestSupport.ROOT, false));
+        assertNull(getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, key), false));
+        assertNotNull(getZooKeeper(client).exists("/" + TestSupport.ROOT, false));
         ((BaseClient)client).deleteNamespace();
     }
     
@@ -240,20 +245,23 @@ public abstract class BaseClientTest extends BaseTest {
                 listener.process(event);
             }
         });
-        client.update(key, "value");
+        String value = "value";
+        client.update(key, value);
         LOGGER.info(new String(client.getData(key)));
-        Assert.assertEquals(client.getDataString(key), "value");
-        client.update(key, "value1");
-        Assert.assertEquals(client.getDataString(key), "value1");
-        client.update(key, "value2");
-        Assert.assertEquals(client.getDataString(key), "value2");
+        assertThat(client.getDataString(key), is(value));
+        String value1 = "value1";
+        client.update(key, value1);
+        assertThat(client.getDataString(key), is(value1));
+        String value2 = "value2";
+        client.update(key, value2);
+        assertThat(client.getDataString(key), is(value2));
         client.deleteCurrentBranch(key);
         sleep(1000);
-        Assert.assertEquals(expected.size(), actual.size());
+        assertThat(actual.size(), is(expected.size()));
 
         //The acquisition value is after the reception of the event,
         //so the value may be not equal.
-        Assert.assertTrue(expected.containsAll(actual));
+        assertTrue(expected.containsAll(actual));
         client.unregisterWatch(listener.getKey());
     }
     
@@ -270,14 +278,10 @@ public abstract class BaseClientTest extends BaseTest {
                         String result;
                         try {
                             result = new String(getZooKeeper(client).getData(event.getPath(),false, null));
-                            LOGGER.info(result);
-                        } catch (KeeperException e) {
+                        } catch (KeeperException | InterruptedException e) {
                             result = e.getMessage();
-                            e.printStackTrace();
-                        } catch (InterruptedException e) {
-                            result = e.getMessage();
-                            e.printStackTrace();
                         }
+                        LOGGER.info(result);
                         actual.add(new StringBuilder().append("update_").append(event.getPath()).append("_").append(result).toString());
                         break;
                     }
@@ -295,6 +299,6 @@ public abstract class BaseClientTest extends BaseTest {
     
     protected void close(IClient client) throws Exception {
         client.close();
-        Assert.assertEquals(getZooKeeper(client).getState(), ZooKeeper.States.CLOSED);
+        assertThat(getZooKeeper(client).getState(), is(ZooKeeper.States.CLOSED));
     }
 }

@@ -75,6 +75,7 @@ public abstract class BaseClient implements IClient {
     
     @Override
     public synchronized boolean start(final int wait, final TimeUnit units) throws InterruptedException, IOException {
+        LOGGER.debug("start wait:{}, units:{}", wait, units);
         prepareStart();
         holder.start(wait, units);
         return holder.isConnected();

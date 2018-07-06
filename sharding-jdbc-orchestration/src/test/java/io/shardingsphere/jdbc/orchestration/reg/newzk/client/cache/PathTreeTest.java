@@ -36,6 +36,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 public class PathTreeTest extends BaseTest {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(PathTreeTest.class);
@@ -72,17 +76,17 @@ public class PathTreeTest extends BaseTest {
         final String keyB = "a/b/bb";
         final String valueB = "bbb11";
         testClient.createAllNeedPath(keyB, valueB, CreateMode.PERSISTENT);
-        assert testClient.checkExists(keyB);
+        assertTrue(testClient.checkExists(keyB));
         final String keyC  = "a/c/cc";
         final String valueC = "ccc11";
         testClient.createAllNeedPath(keyC, valueC, CreateMode.PERSISTENT);
-        assert testClient.checkExists(keyC);
+        assertTrue(testClient.checkExists(keyC));
         
         try {
             pathTree.load();
     
-            assert valueB.equals(new String(pathTree.getValue(keyB)));
-            assert valueC.equals(new String(pathTree.getValue(keyC)));
+            assertThat(new String(pathTree.getValue(keyB)), is(valueB));
+            assertThat(new String(pathTree.getValue(keyC)), is(valueC));
         } finally {
             testClient.deleteCurrentBranch(keyC);
             testClient.deleteCurrentBranch(keyB);
@@ -102,7 +106,7 @@ public class PathTreeTest extends BaseTest {
             testClient.update(keyB, "111");
             
             Thread.sleep(1000);
-//            assert valueB.equals(new String(pathTree.getValue(keyB)));
+            assertThat(new String(pathTree.getValue(keyB)), is(valueB));
         } finally {
             testClient.deleteCurrentBranch(keyB);
         }
