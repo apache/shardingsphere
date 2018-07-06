@@ -21,11 +21,20 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
 import org.apache.zookeeper.KeeperException;
 
 public class BaseTest {
-    protected void createRootOnly(IClient client) throws KeeperException, InterruptedException {
+    
+    protected void createRootOnly(final IClient client) throws KeeperException, InterruptedException {
         ((BaseClient)client).createNamespace();
     }
     
-    protected void deleteRoot(IClient client) throws KeeperException, InterruptedException {
+    protected void deleteRoot(final IClient client) throws KeeperException, InterruptedException {
         ((BaseClient)client).deleteNamespace();
+    }
+    
+    protected void sleep(final long tick) {
+        try {
+            Thread.sleep(tick);
+        } catch (InterruptedException e) {
+            // ignore
+        }
     }
 }

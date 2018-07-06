@@ -20,6 +20,7 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ClientContext;
 import io.shardingsphere.jdbc.orchestration.util.EmbedTestingServer;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,6 +28,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 public class StartWaitTest {
+    
     @Before
     public void start() throws IOException, InterruptedException {
         EmbedTestingServer.start();
@@ -35,14 +37,14 @@ public class StartWaitTest {
     @Test
     public void assertStart() throws IOException, InterruptedException {
         IClient testClient = new TestClient(new ClientContext(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT));
-        assert testClient.start(10000, TimeUnit.MILLISECONDS);
+        Assert.assertTrue(testClient.start(10000, TimeUnit.MILLISECONDS));
         testClient.close();
     }
     
     @Test
     public void assertNotStart() throws IOException, InterruptedException {
         TestClient testClient = new TestClient(new ClientContext(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT));
-        assert !testClient.start(100, TimeUnit.MILLISECONDS);
+        Assert.assertFalse(testClient.start(100, TimeUnit.MILLISECONDS));
         testClient.close();
     }
 }

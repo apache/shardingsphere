@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 public class TestClient extends UsualClient {
+    
     TestClient(BaseContext context) {
         super(context);
     }

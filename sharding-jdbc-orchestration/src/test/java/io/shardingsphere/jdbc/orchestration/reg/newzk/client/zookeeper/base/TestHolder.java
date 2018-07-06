@@ -25,6 +25,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 public class TestHolder extends Holder {
+    
     private final CountDownLatch CONNECTING = new CountDownLatch(1);
     
     public TestHolder(final BaseContext context) {
