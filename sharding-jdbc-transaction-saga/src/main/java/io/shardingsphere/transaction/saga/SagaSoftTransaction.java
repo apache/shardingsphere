@@ -15,12 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.api;
+package io.shardingsphere.transaction.saga;
 
-import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
-import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
-import io.shardingsphere.transaction.constants.SoftTransactionType;
 import com.google.common.base.Preconditions;
+import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.sql.Connection;
@@ -28,32 +27,32 @@ import java.sql.SQLException;
 import java.util.UUID;
 
 /**
- * B.A.S.E transaction abstract class.
+ * Saga soft transaction.
  * 
- * @author zhangliang 
+ * @author zhangyonglun
  */
-public abstract class AbstractSoftTransaction {
+@Getter
+@AllArgsConstructor
+public abstract class SagaSoftTransaction {
     
     private boolean previousAutoCommit;
     
-    @Getter
     private ShardingConnection connection;
     
-    @Getter
-    private SoftTransactionType transactionType;
-    
-    @Getter
     private String transactionId;
     
-    protected final void beginInternal(final Connection conn, final SoftTransactionType type) throws SQLException {
-        // TODO if in traditional transaction, then throw exception
-        Preconditions.checkArgument(conn instanceof ShardingConnection, "Only ShardingConnection can support eventual consistency transaction.");
-        ExecutorExceptionHandler.setExceptionThrown(false);
-        connection = (ShardingConnection) conn;
-        transactionType = type;
+    /**
+     * Begin transaction.
+     *
+     * @param connection connection
+     * @throws SQLException SQL exception
+     */
+    public final void begin(final Connection connection) throws SQLException {
+        Preconditions.checkArgument(connection instanceof ShardingConnection, "Only ShardingConnection can support Saga transaction.");
+//        ExecutorExceptionHandler.setExceptionThrown(false);
         previousAutoCommit = connection.getAutoCommit();
-        connection.setAutoCommit(true);
-        // TODO replace to snowflake
+        this.connection = (ShardingConnection) connection;
+        this.connection.setAutoCommit(true);
         transactionId = UUID.randomUUID().toString();
     }
     
@@ -64,9 +63,8 @@ public abstract class AbstractSoftTransaction {
      */
     public final void end() throws SQLException {
         if (null != connection) {
-            ExecutorExceptionHandler.setExceptionThrown(true);
+//            ExecutorExceptionHandler.setExceptionThrown(true);
             connection.setAutoCommit(previousAutoCommit);
-            SoftTransactionManager.closeCurrentTransactionManager();
         }
     }
 }
