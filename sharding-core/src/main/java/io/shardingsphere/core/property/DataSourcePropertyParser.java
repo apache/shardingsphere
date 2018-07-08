@@ -24,7 +24,7 @@ import javax.sql.DataSource;
  *
  * @author panjuan
  */
-public abstract class DataSourcePropertyParser {
+public interface DataSourcePropertyParser {
     
     /**
      * Parse data source.
@@ -32,5 +32,5 @@ public abstract class DataSourcePropertyParser {
      * @param dataSource data source.
      * @return data source property.
      */
-    public abstract DataSourceProperty parseDataSource(DataSource dataSource);
+    DataSourceProperty parseDataSource(DataSource dataSource);
 }
