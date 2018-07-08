@@ -24,6 +24,8 @@ import io.shardingsphere.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * Sharding router factory.
  * 
@@ -40,9 +42,13 @@ public final class ShardingRouterFactory {
      * @param shardingMetaData sharding meta data
      * @param databaseType database type
      * @param showSQL show SQL or not
+     * @param instanceDataSourceNames instance data source Names
      * @return sharding router instance
      */
-    public static ShardingRouter createSQLRouter(final ShardingRule shardingRule, final ShardingMetaData shardingMetaData, final DatabaseType databaseType, final boolean showSQL) {
-        return HintManagerHolder.isDatabaseShardingOnly() ? new DatabaseHintSQLRouter(shardingRule, showSQL) : new ParsingSQLRouter(shardingRule, shardingMetaData, databaseType, showSQL);
+    public static ShardingRouter createSQLRouter(final ShardingRule shardingRule, final ShardingMetaData shardingMetaData,
+                                                 final DatabaseType databaseType, final boolean showSQL,
+                                                 final List<String> instanceDataSourceNames) {
+        return HintManagerHolder.isDatabaseShardingOnly() ? new DatabaseHintSQLRouter(shardingRule, showSQL)
+                : new ParsingSQLRouter(shardingRule, shardingMetaData, databaseType, showSQL, instanceDataSourceNames);
     }
 }
