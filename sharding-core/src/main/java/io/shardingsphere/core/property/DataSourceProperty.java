@@ -32,9 +32,20 @@ public class DataSourceProperty {
     
     private final String hostName;
     
-    private final int port;
+    private final Integer port;
     
     private final String schemeName;
     
     private final DatabaseType databaseType;
+    
+    /**
+     * Judge whether two of data source properties point at the same instance.
+     *
+     * @param dataSourceProperty data source property.
+     * @return pointing at the same instance or not.
+     */
+    public boolean isPointAtSameInstance(final DataSourceProperty dataSourceProperty) {
+        return getHostName().equals(dataSourceProperty.getHostName()) && getPort().equals(dataSourceProperty.getPort())
+                && getDatabaseType().equals(dataSourceProperty.getDatabaseType());
+    }
 }
