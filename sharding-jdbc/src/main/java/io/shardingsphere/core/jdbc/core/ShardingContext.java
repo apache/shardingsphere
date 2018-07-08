@@ -21,13 +21,15 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.executor.ExecutorEngine;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.property.DataSourceProperty;
+import io.shardingsphere.core.property.DataSourcePropertyFactory;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.util.DataSourcePropertyParser;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -69,8 +71,32 @@ public final class ShardingContext {
     private Map<String, DataSourceProperty> initDataSourcePropertyMap() {
         Map<String, DataSourceProperty> result = new LinkedHashMap<>();
         for (Map.Entry<String, DataSource> each : dataSourceMap.entrySet()) {
-            result.put(each.getKey(), DataSourcePropertyParser.parseDataSource(databaseType, each.getValue()));
+            result.put(each.getKey(), DataSourcePropertyFactory.createDataSourcePropertyParser(databaseType).parseDataSource(each.getValue()));
         }
         return result;
+    }
+    
+    /**
+     * Get all instance data source names.
+     *
+     * @return instance data source name list.
+     */
+    public List<String> getAllInstanceDataSourceName() {
+        List<String> result = new LinkedList<>();
+        for (Map.Entry<String, DataSource> each : dataSourceMap.entrySet()) {
+            if (!isExisted(each.getKey(), result)) {
+                result.add(each.getKey());
+            }
+        }
+        return result;
+    }
+    
+    private boolean isExisted(final String dataSourceName, final List<String> existedDataSourceNames) {
+        for (String each : existedDataSourceNames) {
+            if (dataSourcePropertyMap.get(each).isPointAtSameInstance(dataSourcePropertyMap.get(dataSourceName))) {
+                return true;
+            }
+        }
+        return false;
     }
 }
