@@ -20,11 +20,14 @@ package io.shardingsphere.core.jdbc.core;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.executor.ExecutorEngine;
 import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.property.DataSourceProperty;
 import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.core.util.DataSourcePropertyParser;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -39,6 +42,8 @@ public final class ShardingContext {
     
     private final Map<String, DataSource> dataSourceMap;
     
+    private final Map<String, DataSourceProperty> dataSourcePropertyMap;
+    
     private final ShardingRule shardingRule;
     
     private final DatabaseType databaseType;
@@ -48,4 +53,24 @@ public final class ShardingContext {
     private final ShardingMetaData shardingMetaData;
     
     private final boolean showSQL;
+    
+    public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule,
+                           final DatabaseType databaseType, final ExecutorEngine executorEngine, final ShardingMetaData shardingMetaData,
+                           final boolean showSQL) {
+        this.dataSourceMap = dataSourceMap;
+        this.shardingRule = shardingRule;
+        this.databaseType = databaseType;
+        this.executorEngine = executorEngine;
+        this.shardingMetaData = shardingMetaData;
+        this.showSQL = showSQL;
+        this.dataSourcePropertyMap = initDataSourcePropertyMap();
+    }
+    
+    private Map<String, DataSourceProperty> initDataSourcePropertyMap() {
+        Map<String, DataSourceProperty> result = new LinkedHashMap<>();
+        for (Map.Entry<String, DataSource> each : dataSourceMap.entrySet()) {
+            result.put(each.getKey(), DataSourcePropertyParser.parseDataSource(databaseType, each.getValue()));
+        }
+        return result;
+    }
 }
