@@ -15,12 +15,26 @@
  * </p>
  */
 
-package io.shardingsphere.core.rule;
+package io.shardingsphere.core.property;
+
+import io.shardingsphere.core.constant.DatabaseType;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Data source property.
  *
  * @author panjuan
  */
+@RequiredArgsConstructor
+@Getter
 public class DataSourceProperty {
+    
+    private final String hostName;
+    
+    private final int port;
+    
+    private final String schemeName;
+    
+    private final DatabaseType databaseType;
 }
