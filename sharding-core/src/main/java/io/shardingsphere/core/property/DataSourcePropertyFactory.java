@@ -17,20 +17,32 @@
 
 package io.shardingsphere.core.property;
 
+import io.shardingsphere.core.constant.DatabaseType;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import javax.sql.DataSource;
 
 /**
- * Data source parameter parser.
+ * Data source property factory.
  *
  * @author panjuan
  */
-public abstract class DataSourcePropertyParser {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DataSourcePropertyFactory {
     
     /**
-     * Parse data source.
+     * Create data source property parser.
      *
-     * @param dataSource data source.
-     * @return data source property.
+     * @param databaseType data base type.
+     * @return data source property parser.
      */
-    public abstract DataSourceProperty parseDataSource(DataSource dataSource);
+    public static DataSourcePropertyParser createDataSourcePropertyParser(final DatabaseType databaseType) {
+        return new DataSourcePropertyParser() {
+            @Override
+            public DataSourceProperty parseDataSource(final DataSource dataSource) {
+                return null;
+            }
+        };
+    }
 }
