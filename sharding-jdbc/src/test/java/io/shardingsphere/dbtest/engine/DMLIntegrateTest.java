@@ -26,7 +26,7 @@ import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.cases.assertion.dml.DMLIntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.dml.DMLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.cases.assertion.root.SQLValue;
-import io.shardingsphere.dbtest.cases.dataset.expected.dml.DMLDataSet;
+import io.shardingsphere.dbtest.cases.dataset.expected.DMLDataSet;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetColumn;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
 import io.shardingsphere.dbtest.cases.dataset.init.DataSetRow;

@@ -15,30 +15,40 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.cases.dataset.expected.dql;
+package io.shardingsphere.dbtest.cases.dataset.expected;
 
-import io.shardingsphere.dbtest.cases.dataset.init.DataSetRow;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
 import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * DQL data set.
+ * DDL data set.
  *
  * @author zhangliang
  */
 @Getter
 @XmlRootElement(name = "datasets")
-public final class DQLDataSet {
+public final class DDLDataSet {
     
     @XmlElement(name = "metadata")
     private List<DataSetMetadata> metadataList = new LinkedList<>();
     
-    @XmlElement(name = "dataset")
-    private List<DataSetRow> rows = new ArrayList<>();
+    /**
+     * Find expected metadata via table name.
+     * 
+     * @param tableName table name
+     * @return expected metadata
+     */
+    public DataSetMetadata find(final String tableName) {
+        for (DataSetMetadata each : metadataList) {
+            if (tableName.equals(each.getTableName())) {
+                return each;
+            }
+        }
+        throw new IllegalArgumentException(String.format("Cannot find expected metadata via table name: '%s'", tableName));
+    }
 }
