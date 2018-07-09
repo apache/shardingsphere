@@ -133,7 +133,23 @@ public final class ParsingSQLRouter implements ShardingRouter {
             // TODO config for cartesian set
             routingEngine = new ComplexRoutingEngine(shardingRule, parameters, tableNames, shardingConditions);
         }
-        return routingEngine.route();
+        return getRoutingResult(routingEngine, sqlStatement);
+    }
+    
+    private RoutingResult getRoutingResult(final RoutingEngine routingEngine, final SQLStatement sqlStatement) {
+        RoutingResult result = routingEngine.route();
+        if (routingEngine instanceof DatabaseBroadcastRoutingEngine && sqlStatement instanceof DCLStatement) {
+            removeRedundantTableUnits(result);
+        }
+        return result;
+    }
+    
+    private void removeRedundantTableUnits(final RoutingResult routingResult) {
+        for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
+            if (!instanceDataSourceNames.contains(each.getDataSourceName())) {
+                routingResult.getTableUnits().getTableUnits().remove(each);
+            }
+        }
     }
     
     private GeneratedKey getGenerateKey(final ShardingRule shardingRule, final InsertStatement insertStatement, final List<Object> parameters) {
