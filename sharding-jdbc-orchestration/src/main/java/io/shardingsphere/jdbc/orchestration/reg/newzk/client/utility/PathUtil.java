@@ -17,6 +17,7 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility;
 
+import com.google.common.base.Strings;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -40,7 +41,7 @@ public class PathUtil {
     }
     
     private static String adjustPath(final String root, final String path) {
-        if (StringUtil.isNullOrBlank(path)) {
+        if (Strings.isNullOrEmpty(path)) {
             throw new IllegalArgumentException("path should have content!");
         }
         String rootPath = root;
@@ -138,7 +139,7 @@ public class PathUtil {
     // CHECKSTYLE:OFF
     public static String checkPath(final String key) throws IllegalArgumentException {
         // CHECKSTYLE:ON
-        if (StringUtil.isNullOrBlank(key)) {
+        if (Strings.isNullOrEmpty(key)) {
             throw new IllegalArgumentException("path should not be null");
         }
         String path = key;

@@ -17,10 +17,10 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
+import com.google.common.base.Strings;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.StringUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.WatcherCreator;
@@ -91,7 +91,6 @@ public abstract class BaseClient implements IClient {
     @Override
     public synchronized boolean blockUntilConnected(final int wait, final TimeUnit units) throws InterruptedException {
         long maxWait = units != null ? TimeUnit.MILLISECONDS.convert(wait, units) : 0;
-        
         while (!holder.isConnected()) {
             long waitTime = maxWait - CIRCLE_WAIT;
             if (waitTime <= 0) {
@@ -136,7 +135,7 @@ public abstract class BaseClient implements IClient {
     
     @Override
     public void unregisterWatch(final String key) {
-        if (StringUtil.isNullOrBlank(key)) {
+        if (Strings.isNullOrEmpty(key)) {
             throw new IllegalArgumentException("key should not be blank");
         }
         if (context.getWatchers().containsKey(key)) {

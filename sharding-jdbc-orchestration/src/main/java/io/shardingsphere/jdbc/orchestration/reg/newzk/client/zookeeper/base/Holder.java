@@ -17,11 +17,14 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
+import com.google.common.base.Strings;
+import io.shardingsphere.core.util.StringUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
@@ -76,7 +79,7 @@ public class Holder {
     protected void initZookeeper() throws IOException {
         LOGGER.debug("Holder servers:{},sessionTimeOut:{}", context.getServers(), context.getSessionTimeOut());
         zooKeeper = new ZooKeeper(context.getServers(), context.getSessionTimeOut(), startWatcher());
-        if (!io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.StringUtil.isNullOrBlank(context.getScheme())) {
+        if (!Strings.isNullOrEmpty(context.getScheme())) {
             zooKeeper.addAuthInfo(context.getScheme(), context.getAuth());
             LOGGER.debug("Holder scheme:{},auth:{}", context.getScheme(), context.getAuth());
         }
@@ -87,7 +90,8 @@ public class Holder {
             public void process(final WatchedEvent event) {
                 processConnection(event);
                 processGlobalListener(event);
-                // todo filter event type or path
+                // todo filter event type or path, add watch
+                // reWatch(event);
                 if (event.getType() == Event.EventType.None) {
                     return;
                 }
@@ -121,6 +125,8 @@ public class Holder {
                     // CHECKSTYLE:ON
                     LOGGER.error("event state Expired:{}", e.getMessage(), e);
                 }
+            } else if (Watcher.Event.KeeperState.Disconnected == event.getState()) {
+                connected = false;
             }
         }
     }
@@ -129,6 +135,18 @@ public class Holder {
         if (context.getGlobalListener() != null) {
             context.getGlobalListener().process(event);
             LOGGER.debug("Holder {} process", ZookeeperConstants.GLOBAL_LISTENER_KEY);
+        }
+    }
+    
+    private void reWatch(final WatchedEvent event) {
+        if (!Strings.isNullOrEmpty(event.getPath())) {
+            try {
+                zooKeeper.exists(event.getPath(), true);
+            } catch (KeeperException | InterruptedException e) {
+                if (connected) {
+                    reWatch(event);
+                }
+            }
         }
     }
     

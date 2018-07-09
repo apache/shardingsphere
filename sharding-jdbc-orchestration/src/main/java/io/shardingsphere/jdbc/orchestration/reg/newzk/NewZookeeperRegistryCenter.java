@@ -26,7 +26,6 @@ import io.shardingsphere.jdbc.orchestration.reg.listener.EventListener;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.PathTree;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayRetryPolicy;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.StringUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.ClientFactory;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
@@ -207,7 +206,7 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
         cache.watch(new Listener() {
             @Override
             public void process(final WatchedEvent event) {
-                if (!StringUtil.isNullOrBlank(event.getPath())) {
+                if (!Strings.isNullOrEmpty(event.getPath())) {
                     eventListener.onChange(new DataChangedEvent(getEventType(event), event.getPath(), getWithoutCache(event.getPath())));
                 }
             }
