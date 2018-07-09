@@ -23,6 +23,12 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperCo
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.ClientFactory;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
 import io.shardingsphere.jdbc.orchestration.util.EmbedTestingServer;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -30,19 +36,15 @@ import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
+import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -227,11 +229,6 @@ public abstract class BaseClientTest extends BaseTest {
     }
     
     protected void watch(IClient client) throws KeeperException, InterruptedException {
-        List<String> expected = new ArrayList<>();
-        expected.add("update_/test/a_value");
-        expected.add("update_/test/a_value1");
-        expected.add("update_/test/a_value2");
-        expected.add("delete_/test/a_");
         List<String> actual = new ArrayList<>();
         
         final Listener listener = buildListener(client, actual);
@@ -245,23 +242,57 @@ public abstract class BaseClientTest extends BaseTest {
                 listener.process(event);
             }
         });
-        String value = "value";
+        String value = "value0";
         client.update(key, value);
-        LOGGER.info(new String(client.getData(key)));
         assertThat(client.getDataString(key), is(value));
+        sleep(200);
+        
         String value1 = "value1";
         client.update(key, value1);
         assertThat(client.getDataString(key), is(value1));
+        sleep(200);
+        
         String value2 = "value2";
         client.update(key, value2);
         assertThat(client.getDataString(key), is(value2));
         client.deleteCurrentBranch(key);
-        sleep(1000);
-        assertThat(actual.size(), is(expected.size()));
+        sleep(200);
 
         //The acquisition value is after the reception of the event,
         //so the value may be not equal.
-        assertTrue(expected.containsAll(actual));
+        assertThat(actual, hasItems("update_/test/a_value0", "update_/test/a_value1", "update_/test/a_value2", "delete_/test/a_"));
+        client.unregisterWatch(listener.getKey());
+    }
+    
+    protected void watchRegister(IClient client) throws KeeperException, InterruptedException {
+        List<String> actual = new ArrayList<>();
+        
+        final Listener listener = buildListener(client, actual);
+        
+        String key = "a";
+        client.registerWatch(key, listener);
+        client.createCurrentOnly(key, "aaa", CreateMode.EPHEMERAL);
+        assertThat(client.getDataString(key), is("aaa"));
+        
+        String value = "value0";
+        client.update(key, value);
+        assertThat(client.getDataString(key), is(value));
+        sleep(200);
+        
+        String value1 = "value1";
+        client.update(key, value1);
+        assertThat(client.getDataString(key), is(value1));
+        sleep(200);
+        
+        String value2 = "value2";
+        client.update(key, value2);
+        assertThat(client.getDataString(key), is(value2));
+        client.deleteCurrentBranch(key);
+        sleep(200);
+        
+        //The acquisition value is after the reception of the event,
+        //so the value may be not equal.
+        assertThat(actual, hasItems("update_/test/a_value0", "update_/test/a_value1", "update_/test/a_value2", "delete_/test/a_"));
         client.unregisterWatch(listener.getKey());
     }
     

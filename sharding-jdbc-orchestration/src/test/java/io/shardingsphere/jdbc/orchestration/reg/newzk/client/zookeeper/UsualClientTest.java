@@ -91,6 +91,11 @@ public class UsualClientTest extends BaseClientTest {
     }
     
     @Test
+    public void assertWatchRegister() throws KeeperException, InterruptedException {
+        super.watchRegister(testClient);
+    }
+    
+    @Test
     public void assertClose() throws Exception {
         super.close(testClient);
     }
