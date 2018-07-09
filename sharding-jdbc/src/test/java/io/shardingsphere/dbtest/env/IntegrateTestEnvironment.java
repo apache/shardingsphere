@@ -17,6 +17,7 @@
 
 package io.shardingsphere.dbtest.env;
 
+import com.google.common.base.Splitter;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.dbtest.engine.DQLIntegrateTest;
 import io.shardingsphere.dbtest.env.datasource.DatabaseEnvironment;
@@ -42,6 +43,8 @@ public final class IntegrateTestEnvironment {
     private final Collection<DatabaseType> databaseTypes;
     
     private final Map<DatabaseType, DatabaseEnvironment> databaseEnvironments;
+    
+    private final Collection<String> shardingRuleTypes;
     
     private IntegrateTestEnvironment() {
         Properties prop = new Properties();
@@ -80,6 +83,7 @@ public final class IntegrateTestEnvironment {
                     break;
             }
         }
+        shardingRuleTypes = Splitter.on(",").trimResults().splitToList(prop.getProperty("sharding.rule.type"));
     }
     
     /**

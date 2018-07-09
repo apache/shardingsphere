@@ -70,19 +70,22 @@ import static org.junit.Assert.assertTrue;
 @RunWith(Parameterized.class)
 public final class DQLIntegrateTest extends BaseIntegrateTest {
     
+    private static IntegrateTestEnvironment integrateTestEnvironment = IntegrateTestEnvironment.getInstance();
+    
     private static SQLCasesLoader sqlCasesLoader = SQLCasesLoader.getInstance();
     
     private static IntegrateTestCasesLoader integrateTestCasesLoader = IntegrateTestCasesLoader.getInstance();
     
     private final DQLIntegrateTestCaseAssertion assertion;
     
-    public DQLIntegrateTest(final String sqlCaseId, final String path, final DQLIntegrateTestCaseAssertion assertion, final DatabaseTypeEnvironment databaseTypeEnvironment, 
-                            final SQLCaseType caseType, final int countInSameCase) throws IOException, JAXBException, SQLException, ParseException {
-        super(sqlCaseId, path, assertion, databaseTypeEnvironment, caseType, countInSameCase);
+    public DQLIntegrateTest(final String sqlCaseId, final String path, final DQLIntegrateTestCaseAssertion assertion, final String shardingRuleType, 
+                            final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType, final int countInSameCase) 
+            throws IOException, JAXBException, SQLException, ParseException {
+        super(sqlCaseId, path, assertion, shardingRuleType, databaseTypeEnvironment, caseType, countInSameCase);
         this.assertion = assertion;
     }
     
-    @Parameters(name = "{0}[{5}] -> {2} -> {3} -> {4}")
+    @Parameters(name = "{0}[{6}] -> Rule:{3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
         // TODO sqlCasesLoader size should eq integrateTestCasesLoader size
         // assertThat(sqlCasesLoader.countAllSupportedSQLCases(), is(integrateTestCasesLoader.countAllDataSetTestCases()));
@@ -114,7 +117,7 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
     }
     
     private static void insertData(final DatabaseType databaseType) throws SQLException, ParseException, IOException, JAXBException {
-        for (String each : integrateTestCasesLoader.getShardingRuleTypes()) {
+        for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
             new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(each), createDataSourceMap(databaseType, each)).initialize();
         }
     }
@@ -129,7 +132,7 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
     }
     
     private static void clearData(final DatabaseType databaseType) throws SQLException, IOException, JAXBException {
-        for (String each : integrateTestCasesLoader.getShardingRuleTypes()) {
+        for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
             new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(each), createDataSourceMap(databaseType, each)).clear();
         }
     }
