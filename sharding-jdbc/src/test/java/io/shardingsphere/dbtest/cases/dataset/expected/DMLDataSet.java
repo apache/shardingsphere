@@ -42,7 +42,7 @@ public final class DMLDataSet {
     private List<DataSetMetadata> metadataList = new LinkedList<>();
     
     @XmlElement(name = "dataset")
-    private List<DataSetRow> dataSetRows = new LinkedList<>();
+    private List<DataSetRow> rows = new LinkedList<>();
     
     /**
      * Find data set meta data via data node.
@@ -75,8 +75,8 @@ public final class DMLDataSet {
      * @return data set rows belong to current data node
      */
     public List<DataSetRow> findDataSetRows(final DataNode dataNode) {
-        List<DataSetRow> result = new ArrayList<>(dataSetRows.size());
-        for (DataSetRow each : dataSetRows) {
+        List<DataSetRow> result = new ArrayList<>(rows.size());
+        for (DataSetRow each : rows) {
             if (new DataNode(each.getDataNode()).equals(dataNode)) {
                 result.add(each);
             }
