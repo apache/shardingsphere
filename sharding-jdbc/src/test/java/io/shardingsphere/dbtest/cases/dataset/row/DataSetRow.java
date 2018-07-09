@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.cases.dataset.init;
+package io.shardingsphere.dbtest.cases.dataset.row;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;
@@ -25,6 +25,11 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import java.util.List;
 
+/**
+ * Data set row.
+ * 
+ * @author zhangliang 
+ */
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class DataSetRow {

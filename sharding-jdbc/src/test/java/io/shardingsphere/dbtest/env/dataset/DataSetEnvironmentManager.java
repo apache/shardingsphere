@@ -24,8 +24,8 @@ import io.shardingsphere.dbtest.cases.assertion.root.SQLValue;
 import io.shardingsphere.dbtest.cases.assertion.root.SQLValueGroup;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetColumn;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
-import io.shardingsphere.dbtest.cases.dataset.init.DataSetRow;
-import io.shardingsphere.dbtest.cases.dataset.init.DataSetsRoot;
+import io.shardingsphere.dbtest.cases.dataset.row.DataSetRow;
+import io.shardingsphere.dbtest.cases.dataset.DataSets;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
@@ -50,13 +50,13 @@ import java.util.Map.Entry;
  */
 public final class DataSetEnvironmentManager {
     
-    private final DataSetsRoot dataSetsRoot;
+    private final DataSets dataSetsRoot;
     
     private final Map<String, DataSource> dataSourceMap;
     
     public DataSetEnvironmentManager(final String path, final Map<String, DataSource> dataSourceMap) throws IOException, JAXBException {
         try (FileReader reader = new FileReader(path)) {
-            dataSetsRoot = (DataSetsRoot) JAXBContext.newInstance(DataSetsRoot.class).createUnmarshaller().unmarshal(reader);
+            dataSetsRoot = (DataSets) JAXBContext.newInstance(DataSets.class).createUnmarshaller().unmarshal(reader);
         }
         this.dataSourceMap = dataSourceMap;
     }
@@ -73,7 +73,7 @@ public final class DataSetEnvironmentManager {
         for (Entry<DataNode, List<DataSetRow>> entry : dataNodeListMap.entrySet()) {
             DataNode dataNode = entry.getKey();
             List<DataSetRow> dataSetRows = entry.getValue();
-            DataSetMetadata dataSetMetadata = dataSetsRoot.findDataSetMetadata(dataNode);
+            DataSetMetadata dataSetMetadata = dataSetsRoot.findMetadata(dataNode);
             String insertSQL = generateInsertSQL(dataNode.getTableName(), dataSetMetadata.getColumns());
             List<SQLValueGroup> sqlValueGroups = new LinkedList<>();
             for (DataSetRow row : dataSetRows) {
@@ -87,7 +87,7 @@ public final class DataSetEnvironmentManager {
     
     private Map<DataNode, List<DataSetRow>> getDataSetRowMap() {
         Map<DataNode, List<DataSetRow>> result = new LinkedHashMap<>();
-        for (DataSetRow each : dataSetsRoot.getDataSetRows()) {
+        for (DataSetRow each : dataSetsRoot.getRows()) {
             DataNode dataNode = new DataNode(each.getDataNode());
             if (!result.containsKey(dataNode)) {
                 result.put(dataNode, new LinkedList<DataSetRow>());

@@ -26,10 +26,10 @@ import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.cases.assertion.dml.DMLIntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.dml.DMLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.cases.assertion.root.SQLValue;
-import io.shardingsphere.dbtest.cases.dataset.expected.ExpectedDataSet;
-import io.shardingsphere.dbtest.cases.dataset.init.DataSetRow;
+import io.shardingsphere.dbtest.cases.dataset.DataSets;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetColumn;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
+import io.shardingsphere.dbtest.cases.dataset.row.DataSetRow;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
@@ -408,9 +408,9 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
     }
     
     private void assertDataSet() throws SQLException, IOException, JAXBException {
-        ExpectedDataSet expected;
+        DataSets expected;
         try (FileReader reader = new FileReader(getExpectedDataFile())) {
-            expected = (ExpectedDataSet) JAXBContext.newInstance(ExpectedDataSet.class).createUnmarshaller().unmarshal(reader);
+            expected = (DataSets) JAXBContext.newInstance(DataSets.class).createUnmarshaller().unmarshal(reader);
         }
         assertThat("Only support single table for DML.", expected.getMetadataList().size(), is(1));
         DataSetMetadata expectedDataSetMetadata = expected.getMetadataList().get(0);
@@ -418,7 +418,7 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
             DataNode dataNode = new DataNode(each);
             try (Connection connection = getDataSourceMap().get(dataNode.getDataSourceName()).getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(String.format("SELECT * FROM %s", dataNode.getTableName()))) {
-                assertDataSet(preparedStatement, expected.findDataSetRows(dataNode), expectedDataSetMetadata);
+                assertDataSet(preparedStatement, expected.findRows(dataNode), expectedDataSetMetadata);
             }
         }
     }

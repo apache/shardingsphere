@@ -15,11 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.cases.dataset.expected;
+package io.shardingsphere.dbtest.cases.dataset;
 
 import io.shardingsphere.core.rule.DataNode;
-import io.shardingsphere.dbtest.cases.dataset.init.DataSetRow;
+import io.shardingsphere.core.util.InlineExpressionParser;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
+import io.shardingsphere.dbtest.cases.dataset.row.DataSetRow;
 import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -29,13 +30,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Expected data set.
- *
- * @author zhangliang
+ * Data sets root xml entry.
+ * 
+ * @author zhangliang 
  */
 @Getter
 @XmlRootElement(name = "datasets")
-public final class ExpectedDataSet {
+public final class DataSets {
     
     @XmlElement(name = "metadata")
     private List<DataSetMetadata> metadataList = new LinkedList<>();
@@ -44,10 +45,10 @@ public final class ExpectedDataSet {
     private List<DataSetRow> rows = new LinkedList<>();
     
     /**
-     * Find data set metadata via table name.
-     * 
+     * Find data set meta data via table name.
+     *
      * @param tableName table name
-     * @return expected metadata
+     * @return data set meta data belong to current table
      */
     public DataSetMetadata findMetadata(final String tableName) {
         for (DataSetMetadata each : metadataList) {
@@ -57,6 +58,30 @@ public final class ExpectedDataSet {
         }
         throw new IllegalArgumentException(String.format("Cannot find expected metadata via table name: '%s'", tableName));
     }
+        
+    /**
+     * Find data set meta data via data node.
+     * 
+     * @param dataNode data node
+     * @return data set meta data belong to current data node
+     */
+    public DataSetMetadata findMetadata(final DataNode dataNode) {
+        for (DataSetMetadata each : metadataList) {
+            if (contains(new InlineExpressionParser(each.getDataNodes()).splitAndEvaluate(), dataNode)) {
+                return each;
+            }
+        }
+        throw new IllegalArgumentException(String.format("Cannot find data node: %s", dataNode.toString()));
+    }
+    
+    private boolean contains(final List<String> dataNodes, final DataNode dataNode) {
+        for (String each : dataNodes) {
+            if (new DataNode(each).equals(dataNode)) {
+                return true;
+            }
+        }
+        return false;
+    }
     
     /**
      * Find data set rows via data node.
@@ -64,7 +89,7 @@ public final class ExpectedDataSet {
      * @param dataNode data node
      * @return data set rows belong to current data node
      */
-    public List<DataSetRow> findDataSetRows(final DataNode dataNode) {
+    public List<DataSetRow> findRows(final DataNode dataNode) {
         List<DataSetRow> result = new ArrayList<>(rows.size());
         for (DataSetRow each : rows) {
             if (new DataNode(each.getDataNode()).equals(dataNode)) {
