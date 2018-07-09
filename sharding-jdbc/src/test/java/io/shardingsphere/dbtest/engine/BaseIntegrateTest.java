@@ -17,6 +17,7 @@
 
 package io.shardingsphere.dbtest.engine;
 
+import com.google.common.base.Joiner;
 import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
 import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
 import io.shardingsphere.core.constant.DatabaseType;
@@ -87,7 +88,7 @@ public abstract class BaseIntegrateTest {
         this.caseType = caseType;
         this.countInSameCase = countInSameCase;
         sql = getSQL(sqlCaseId);
-        expectedDataFile = null == assertion.getExpectedDataFile() ? null : getExpectedDataFile(path, databaseTypeEnvironment.getDatabaseType(), assertion.getExpectedDataFile());
+        expectedDataFile = getExpectedDataFile(path, assertion.getShardingRuleType(), databaseTypeEnvironment.getDatabaseType(), assertion.getExpectedDataFile());
         if (databaseTypeEnvironment.isEnabled()) {
             dataSourceMap = createDataSourceMap(assertion);
             dataSource = createDataSource(dataSourceMap);
@@ -105,17 +106,20 @@ public abstract class BaseIntegrateTest {
         return SQLCasesLoader.getInstance().getSupportedSQL(sqlCaseId, caseType, parameters);
     }
     
-    private String getExpectedDataFile(final String path, final DatabaseType databaseType, final String expectedDataFile) {
-        String pathPrefix = path.substring(0, path.lastIndexOf(File.separator));
-        if (expectedDataFile.contains(File.separator)) {
-            String expectedDataFilePath = expectedDataFile.substring(0, expectedDataFile.lastIndexOf(File.separator));
-            String expectedDataFileName = expectedDataFile.substring(expectedDataFile.lastIndexOf(File.separator));
-            String expectedDataFileWithDatabaseType = String.format("%s/dataset/%s/%s/%s", pathPrefix, expectedDataFilePath, databaseType.toString().toLowerCase(), expectedDataFileName);
-            if (new File(expectedDataFileWithDatabaseType).exists()) {
-                return expectedDataFileWithDatabaseType;
-            }
+    private String getExpectedDataFile(final String path, final String shardingRuleType, final DatabaseType databaseType, final String expectedDataFile) {
+        if (null == expectedDataFile) {
+            return null;
         }
-        return String.format("%s/dataset/%s", pathPrefix, expectedDataFile);
+        String prefix = path.substring(0, path.lastIndexOf(File.separator));
+        String result = Joiner.on("/").join(prefix, "dataset", shardingRuleType, databaseType.toString().toLowerCase(), expectedDataFile);
+        if (new File(result).exists()) {
+            return result;
+        }
+        result = Joiner.on("/").join(prefix, "dataset", shardingRuleType, expectedDataFile);
+        if (new File(result).exists()) {
+            return result;
+        }
+        return Joiner.on("/").join(prefix, "dataset", expectedDataFile);
     }
     
     private Map<String, DataSource> createDataSourceMap(final IntegrateTestCaseAssertion assertion) throws IOException, JAXBException {
