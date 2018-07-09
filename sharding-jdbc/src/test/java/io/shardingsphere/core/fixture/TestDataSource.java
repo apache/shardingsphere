@@ -60,6 +60,7 @@ public final class TestDataSource extends AbstractDataSourceAdapter {
         DatabaseMetaData metaData = Mockito.mock(DatabaseMetaData.class);
         when(metaData.getDatabaseProductName()).thenReturn("H2");
         when(result.getMetaData()).thenReturn(metaData);
+        when(result.getMetaData().getURL()).thenReturn("jdbc:h2:mem:demo_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         if (throwExceptionWhenClosing) {
             doThrow(SQLException.class).when(result).close();
         }
