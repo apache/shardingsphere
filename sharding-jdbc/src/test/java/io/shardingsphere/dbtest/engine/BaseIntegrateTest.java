@@ -88,7 +88,7 @@ public abstract class BaseIntegrateTest {
         this.caseType = caseType;
         this.countInSameCase = countInSameCase;
         sql = getSQL(sqlCaseId);
-        expectedDataFile = null == assertion.getExpectedDataFile() ? null : getExpectedDataFile(path, assertion.getShardingRuleType(), databaseTypeEnvironment.getDatabaseType(), assertion.getExpectedDataFile());
+        expectedDataFile = getExpectedDataFile(path, assertion.getShardingRuleType(), databaseTypeEnvironment.getDatabaseType(), assertion.getExpectedDataFile());
         if (databaseTypeEnvironment.isEnabled()) {
             dataSourceMap = createDataSourceMap(assertion);
             dataSource = createDataSource(dataSourceMap);
@@ -107,6 +107,9 @@ public abstract class BaseIntegrateTest {
     }
     
     private String getExpectedDataFile(final String path, final String shardingRuleType, final DatabaseType databaseType, final String expectedDataFile) {
+        if (null == expectedDataFile) {
+            return null;
+        }
         String prefix = path.substring(0, path.lastIndexOf(File.separator));
         String result = Joiner.on("/").join(prefix, "dataset", shardingRuleType, databaseType.toString().toLowerCase(), expectedDataFile);
         if (new File(result).exists()) {
