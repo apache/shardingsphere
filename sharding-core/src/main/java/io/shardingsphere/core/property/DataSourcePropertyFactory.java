@@ -18,10 +18,13 @@
 package io.shardingsphere.core.property;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.property.dialect.H2DataSourcePropertyParser;
+import io.shardingsphere.core.property.dialect.MySQLDataSourcePropertyParser;
+import io.shardingsphere.core.property.dialect.OracleDataSourcePropertyParser;
+import io.shardingsphere.core.property.dialect.PostgreSQLDataSourcePropertyParser;
+import io.shardingsphere.core.property.dialect.SQLServerDataSourcePropertyParser;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
-import javax.sql.DataSource;
 
 /**
  * Data source property factory.
@@ -38,11 +41,19 @@ public final class DataSourcePropertyFactory {
      * @return data source property parser.
      */
     public static DataSourcePropertyParser createDataSourcePropertyParser(final DatabaseType databaseType) {
-        return new DataSourcePropertyParser() {
-            @Override
-            public DataSourceProperty parseDataSource(final DataSource dataSource) {
-                return new DataSourceProperty("", 3306, "", databaseType);
-            }
-        };
+        switch (databaseType) {
+            case H2:
+                return new H2DataSourcePropertyParser();
+            case MySQL:
+                return new MySQLDataSourcePropertyParser();
+            case Oracle:
+                return new OracleDataSourcePropertyParser();
+            case PostgreSQL:
+                return new PostgreSQLDataSourcePropertyParser();
+            case SQLServer:
+                return new SQLServerDataSourcePropertyParser();
+            default:
+                throw new UnsupportedOperationException(String.format("Cannot support database [%s].", databaseType));
+        }
     }
 }
