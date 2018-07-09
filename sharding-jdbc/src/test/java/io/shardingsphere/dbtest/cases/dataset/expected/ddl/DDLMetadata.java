@@ -15,21 +15,26 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.cases.dataset.expected.metadata;
+package io.shardingsphere.dbtest.cases.dataset.expected.ddl;
 
 import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.List;
 
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedIndex {
+public final class DDLMetadata {
     
-    @XmlAttribute
-    private String name;
+    @XmlAttribute(name = "table")
+    private String tableName;
     
-    @XmlAttribute
-    private boolean unique;
+    @XmlElement(name = "column")
+    private List<DDLColumn> columns;
+    
+    @XmlElement(name = "index")
+    private List<DDLIndex> indexes;
 }

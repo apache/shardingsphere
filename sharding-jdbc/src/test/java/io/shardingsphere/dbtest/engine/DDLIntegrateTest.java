@@ -25,8 +25,8 @@ import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.cases.assertion.ddl.DDLIntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.ddl.DDLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.cases.dataset.expected.ddl.DDLDataSet;
-import io.shardingsphere.dbtest.cases.dataset.expected.metadata.ExpectedColumn;
-import io.shardingsphere.dbtest.cases.dataset.expected.metadata.ExpectedMetadata;
+import io.shardingsphere.dbtest.cases.dataset.expected.ddl.DDLColumn;
+import io.shardingsphere.dbtest.cases.dataset.expected.ddl.DDLMetadata;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
@@ -68,7 +68,8 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
     
     private final DatabaseType databaseType;
     
-    public DDLIntegrateTest(final String sqlCaseId, final String path, final DDLIntegrateTestCaseAssertion assertion, final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
+    public DDLIntegrateTest(final String sqlCaseId, final String path, final DDLIntegrateTestCaseAssertion assertion, final String shardingRuleType, 
+                            final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
         super(sqlCaseId, path, assertion, shardingRuleType, databaseTypeEnvironment, caseType);
         this.assertion = assertion;
         databaseType = databaseTypeEnvironment.getDatabaseType();
@@ -153,18 +154,18 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
             expected = (DDLDataSet) JAXBContext.newInstance(DDLDataSet.class).createUnmarshaller().unmarshal(reader);
         }
         String tableName = assertion.getTable();
-        List<ExpectedColumn> actualColumns = getActualColumns(connection, tableName);
+        List<DDLColumn> actualColumns = getActualColumns(connection, tableName);
         assertMetadata(actualColumns, expected.find(tableName));
     }
     
-    private void assertMetadata(final List<ExpectedColumn> actual, final ExpectedMetadata expected) {
-        for (ExpectedColumn each : expected.getColumns()) {
+    private void assertMetadata(final List<DDLColumn> actual, final DDLMetadata expected) {
+        for (DDLColumn each : expected.getColumns()) {
             assertMetadata(actual, each);
         }
     }
     
-    private void assertMetadata(final List<ExpectedColumn> actual, final ExpectedColumn expect) {
-        for (ExpectedColumn each : actual) {
+    private void assertMetadata(final List<DDLColumn> actual, final DDLColumn expect) {
+        for (DDLColumn each : actual) {
             if (expect.getName().equals(each.getName())) {
                 if (DatabaseType.MySQL == databaseType && "integer".equals(expect.getType())) {
                     assertThat(each.getType(), is("int"));
@@ -177,16 +178,16 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
         }
     }
     
-    private List<ExpectedColumn> getActualColumns(final Connection connection, final String tableName) throws SQLException {
+    private List<DDLColumn> getActualColumns(final Connection connection, final String tableName) throws SQLException {
         DatabaseMetaData metaData = connection.getMetaData();
         boolean isTableExisted = metaData.getTables(null, null, tableName, new String[] {"TABLE"}).next();
         if (!isTableExisted) {
             return Collections.emptyList();
         }
         try (ResultSet resultSet = metaData.getColumns(null, null, tableName, null)) {
-            List<ExpectedColumn> result = new LinkedList<>();
+            List<DDLColumn> result = new LinkedList<>();
             while (resultSet.next()) {
-                ExpectedColumn each = new ExpectedColumn();
+                DDLColumn each = new DDLColumn();
                 each.setName(resultSet.getString("COLUMN_NAME"));
                 each.setType(resultSet.getString("TYPE_NAME").toLowerCase());
                 result.add(each);
