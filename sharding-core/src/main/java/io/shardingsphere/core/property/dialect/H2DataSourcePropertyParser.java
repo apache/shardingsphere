@@ -33,11 +33,14 @@ public final class H2DataSourcePropertyParser extends DataSourcePropertyParser {
     
     private static final Integer DEFAULT_PORT = -1;
     
+    private static final String DEFAULT_HOST = "localhost";
+    
     @Override
     protected DataSourceProperty parseJDBCUrl(final String url) {
         String cleanUrl = url.substring(5);
         if (cleanUrl.contains("h2:~")) {
-            cleanUrl = cleanUrl.replace(":", "://");
+            cleanUrl = cleanUrl.split(";")[0];
+            cleanUrl = cleanUrl.replace(":", "://").replace("~", DEFAULT_HOST);
         } else if (cleanUrl.contains("h2:mem")) {
             cleanUrl = cleanUrl.split(";")[0];
             String[] parts = cleanUrl.split(":");
