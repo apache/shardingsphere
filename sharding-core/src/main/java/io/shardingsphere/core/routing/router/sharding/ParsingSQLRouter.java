@@ -76,6 +76,8 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     private final List<Number> generatedKeys = new LinkedList<>();
     
+    private final List<String> instanceDataSourceNames;
+    
     @Override
     public SQLStatement parse(final String logicSQL, final boolean useCache) {
         return new SQLParsingEngine(databaseType, logicSQL, shardingRule, shardingMetaData).parse(useCache);
