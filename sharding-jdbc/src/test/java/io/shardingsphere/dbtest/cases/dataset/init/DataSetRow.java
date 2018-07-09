@@ -32,7 +32,7 @@ public final class DataSetRow {
     @XmlAttribute(name = "data-node")
     private String dataNode;
     
-    @XmlAttribute
+    @XmlAttribute(required = true)
     private String values;
     
     /**

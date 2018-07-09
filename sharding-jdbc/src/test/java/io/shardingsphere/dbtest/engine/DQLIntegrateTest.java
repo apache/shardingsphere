@@ -25,7 +25,7 @@ import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.cases.assertion.root.SQLValue;
 import io.shardingsphere.dbtest.cases.dataset.expected.dql.DQLDataSet;
-import io.shardingsphere.dbtest.cases.dataset.expected.dql.DQLRow;
+import io.shardingsphere.dbtest.cases.dataset.init.DataSetRow;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetColumn;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
@@ -378,7 +378,7 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
         }
     }
     
-    private void assertDataSets(final ResultSet actualResultSet, final List<DQLRow> expectedDatSetRows) throws SQLException {
+    private void assertDataSets(final ResultSet actualResultSet, final List<DataSetRow> expectedDatSetRows) throws SQLException {
         int count = 0;
         ResultSetMetaData actualMetaData = actualResultSet.getMetaData();
         while (actualResultSet.next()) {

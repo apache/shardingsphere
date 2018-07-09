@@ -17,6 +17,7 @@
 
 package io.shardingsphere.dbtest.cases.dataset.expected.dql;
 
+import io.shardingsphere.dbtest.cases.dataset.init.DataSetRow;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
 import lombok.Getter;
 
@@ -39,5 +40,5 @@ public final class DQLDataSet {
     private List<DataSetMetadata> metadataList = new LinkedList<>();
     
     @XmlElement(name = "dataset")
-    private List<DQLRow> rows = new ArrayList<>();
+    private List<DataSetRow> rows = new ArrayList<>();
 }
