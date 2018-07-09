@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.cases.dataset.expected.dataset;
+package io.shardingsphere.dbtest.cases.dataset.expected.dql;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;
@@ -25,9 +25,14 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import java.util.List;
 
+/**
+ * DQL row.
+ *
+ * @author zhangliang
+ */
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedDataSetRow {
+public final class DQLRow {
     
     @XmlAttribute
     private String values;

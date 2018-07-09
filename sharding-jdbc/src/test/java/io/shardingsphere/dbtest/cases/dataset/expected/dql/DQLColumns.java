@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.cases.dataset.expected.dataset;
+package io.shardingsphere.dbtest.cases.dataset.expected.dql;
 
 import com.google.common.base.Splitter;
 
@@ -24,8 +24,13 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import java.util.List;
 
+/**
+ * DQL columns.
+ * 
+ * @author zhangliang 
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedColumns {
+public final class DQLColumns {
     
     @XmlAttribute
     private String values;

@@ -17,8 +17,6 @@
 
 package io.shardingsphere.dbtest.cases.dataset.expected.dql;
 
-import io.shardingsphere.dbtest.cases.dataset.expected.dataset.ExpectedColumns;
-import io.shardingsphere.dbtest.cases.dataset.expected.dataset.ExpectedDataSetRow;
 import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -36,8 +34,8 @@ import java.util.List;
 public final class DQLDataSet {
     
     @XmlElement
-    private ExpectedColumns columns;
+    private DQLColumns columns;
     
     @XmlElement(name = "dataset")
-    private List<ExpectedDataSetRow> dataSetRows = new ArrayList<>();
+    private List<DQLRow> rows = new ArrayList<>();
 }
