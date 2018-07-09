@@ -19,6 +19,7 @@ package io.shardingsphere.dbtest.cases.dataset.init;
 
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.util.InlineExpressionParser;
+import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
 import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlElement;

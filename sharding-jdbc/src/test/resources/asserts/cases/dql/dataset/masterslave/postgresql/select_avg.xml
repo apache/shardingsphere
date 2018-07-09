@@ -1,4 +1,6 @@
 <datasets>
-    <columns values="user_id_avg" />
+    <metadata>
+        <column name="user_id_avg" />
+    </metadata>
     <dataset values="19.5000000000000000" />
 </datasets>

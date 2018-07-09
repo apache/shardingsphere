@@ -1,5 +1,7 @@
 <datasets>
-    <columns values="gen_order_id_" />
+    <metadata>
+        <column name="gen_order_id_" />
+    </metadata>
     <dataset values="1000" />
     <dataset values="1001" />
     <dataset values="1100" />

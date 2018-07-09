@@ -1,3 +1,7 @@
 <datasets>
-    <columns values="order_id, user_id, status" />
+    <metadata>
+        <column name="order_id" />
+        <column name="user_id" />
+        <column name="status" />
+    </metadata>
 </datasets>

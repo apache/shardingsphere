@@ -1,4 +1,6 @@
 <datasets>
-    <columns values="user_id" />
+    <metadata>
+        <column name="user_id" />
+    </metadata>
     <dataset values="10" />
 </datasets>

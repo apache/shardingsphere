@@ -1,5 +1,8 @@
 <datasets>
-    <columns values="orders_sum, user_id" />
+    <metadata>
+        <column name="orders_sum" />
+        <column name="user_id" />
+    </metadata>
     <dataset values="19045, 19" />
     <dataset values="18045, 18" />
     <dataset values="17045, 17" />

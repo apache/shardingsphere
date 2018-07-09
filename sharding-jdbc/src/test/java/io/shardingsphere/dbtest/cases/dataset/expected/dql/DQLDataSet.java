@@ -17,11 +17,13 @@
 
 package io.shardingsphere.dbtest.cases.dataset.expected.dql;
 
+import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
 import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -33,8 +35,8 @@ import java.util.List;
 @XmlRootElement(name = "datasets")
 public final class DQLDataSet {
     
-    @XmlElement
-    private DQLColumns columns;
+    @XmlElement(name = "metadata")
+    private List<DataSetMetadata> metadataList = new LinkedList<>();
     
     @XmlElement(name = "dataset")
     private List<DQLRow> rows = new ArrayList<>();

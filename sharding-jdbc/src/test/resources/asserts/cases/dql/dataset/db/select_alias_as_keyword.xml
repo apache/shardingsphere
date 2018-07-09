@@ -1,4 +1,6 @@
 <datasets>
-    <columns values="password" />
+    <metadata>
+        <column name="password" />
+    </metadata>
     <dataset values="100001" />
 </datasets>

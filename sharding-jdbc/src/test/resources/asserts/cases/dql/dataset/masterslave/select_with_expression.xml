@@ -1,5 +1,7 @@
 <datasets>
-    <columns values="exp" />
+    <metadata>
+        <column name="exp" />
+    </metadata>
     <dataset values="1002" />
     <dataset values="1003" />
     <dataset values="1102" />

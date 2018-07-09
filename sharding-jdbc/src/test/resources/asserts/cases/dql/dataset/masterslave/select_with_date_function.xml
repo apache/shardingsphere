@@ -1,5 +1,7 @@
 <datasets>
-    <columns values="creation_date" />
+    <metadata>
+        <column name="creation_date" />
+    </metadata>
     <dataset values="2017-08-08" />
     <dataset values="2017-08-08" />
     <dataset values="2017-08-08" />

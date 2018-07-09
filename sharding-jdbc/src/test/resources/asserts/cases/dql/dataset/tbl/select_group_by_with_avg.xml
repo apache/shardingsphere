@@ -1,5 +1,10 @@
 <datasets>
-    <columns values="orders_avg, user_id, AVG_DERIVED_COUNT_0, AVG_DERIVED_SUM_0" />
+    <metadata>
+        <column name="orders_avg" />
+        <column name="user_id" />
+        <column name="AVG_DERIVED_COUNT_0" />
+        <column name="AVG_DERIVED_SUM_0" />
+    </metadata>
     <dataset values="1004.5000, 10, 10, 10045" />
     <dataset values="1104.5000, 11, 10, 11045" />
 </datasets>

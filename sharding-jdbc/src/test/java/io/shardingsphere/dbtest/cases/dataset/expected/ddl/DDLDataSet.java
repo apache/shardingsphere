@@ -17,6 +17,7 @@
 
 package io.shardingsphere.dbtest.cases.dataset.expected.ddl;
 
+import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
 import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -34,7 +35,7 @@ import java.util.List;
 public final class DDLDataSet {
     
     @XmlElement(name = "metadata")
-    private List<DDLMetadata> metadataList = new LinkedList<>();
+    private List<DataSetMetadata> metadataList = new LinkedList<>();
     
     /**
      * Find expected metadata via table name.
@@ -42,9 +43,9 @@ public final class DDLDataSet {
      * @param tableName table name
      * @return expected metadata
      */
-    public DDLMetadata find(final String tableName) {
-        for (DDLMetadata each : metadataList) {
-            if (each.getTableName().equals(tableName)) {
+    public DataSetMetadata find(final String tableName) {
+        for (DataSetMetadata each : metadataList) {
+            if (tableName.equals(each.getTableName())) {
                 return each;
             }
         }

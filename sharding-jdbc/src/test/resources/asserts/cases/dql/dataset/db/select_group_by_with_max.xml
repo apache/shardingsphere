@@ -1,5 +1,8 @@
 <datasets>
-    <columns values="max_order_id, user_id" />
+    <metadata>
+        <column name="max_order_id" />
+        <column name="user_id" />
+    </metadata>
     <dataset values="1001, 10" />
     <dataset values="1101, 11" />
     <dataset values="1201, 12" />

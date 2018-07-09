@@ -27,8 +27,8 @@ import io.shardingsphere.dbtest.cases.assertion.dml.DMLIntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.dml.DMLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.cases.assertion.root.SQLValue;
 import io.shardingsphere.dbtest.cases.dataset.expected.dml.DMLDataSet;
-import io.shardingsphere.dbtest.cases.dataset.init.DataSetColumnMetadata;
-import io.shardingsphere.dbtest.cases.dataset.init.DataSetMetadata;
+import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetColumn;
+import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
 import io.shardingsphere.dbtest.cases.dataset.init.DataSetRow;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
@@ -425,15 +425,15 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
     
     private void assertDataSet(final PreparedStatement actualPreparedStatement, final List<DataSetRow> expectedDataSetRows, final DataSetMetadata expectedDataSetMetadata) throws SQLException {
         try (ResultSet actualResultSet = actualPreparedStatement.executeQuery()) {
-            assertMetaData(actualResultSet.getMetaData(), expectedDataSetMetadata.getColumnMetadataList());
+            assertMetaData(actualResultSet.getMetaData(), expectedDataSetMetadata.getColumns());
             assertDataSets(actualResultSet, expectedDataSetRows);
         }
     }
     
-    private void assertMetaData(final ResultSetMetaData actualMetaData, final List<DataSetColumnMetadata> columnMetadataList) throws SQLException {
+    private void assertMetaData(final ResultSetMetaData actualMetaData, final List<DataSetColumn> columnMetadataList) throws SQLException {
         assertThat(actualMetaData.getColumnCount(), is(columnMetadataList.size()));
         int index = 1;
-        for (DataSetColumnMetadata each : columnMetadataList) {
+        for (DataSetColumn each : columnMetadataList) {
             assertThat(actualMetaData.getColumnLabel(index++), is(each.getName()));
         }
     }

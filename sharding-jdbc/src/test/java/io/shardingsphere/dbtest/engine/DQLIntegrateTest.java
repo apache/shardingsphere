@@ -24,8 +24,10 @@ import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.cases.assertion.root.SQLValue;
-import io.shardingsphere.dbtest.cases.dataset.expected.dql.DQLRow;
 import io.shardingsphere.dbtest.cases.dataset.expected.dql.DQLDataSet;
+import io.shardingsphere.dbtest.cases.dataset.expected.dql.DQLRow;
+import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetColumn;
+import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.dbtest.env.IntegrateTestEnvironment;
@@ -360,15 +362,19 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
         try (FileReader reader = new FileReader(getExpectedDataFile())) {
             expected = (DQLDataSet) JAXBContext.newInstance(DQLDataSet.class).createUnmarshaller().unmarshal(reader);
         }
-        assertMetaData(resultSet.getMetaData(), expected.getColumns().getValues());
+        List<DataSetColumn> expectedColumns = new LinkedList<>();
+        for (DataSetMetadata each : expected.getMetadataList()) {
+            expectedColumns.addAll(each.getColumns());
+        }
+        assertMetaData(resultSet.getMetaData(), expectedColumns);
         assertDataSets(resultSet, expected.getRows());
     }
     
-    private void assertMetaData(final ResultSetMetaData actualMetaData, final List<String> expectedColumnNames) throws SQLException {
-        assertThat(actualMetaData.getColumnCount(), is(expectedColumnNames.size()));
+    private void assertMetaData(final ResultSetMetaData actualMetaData, final List<DataSetColumn> expectedColumns) throws SQLException {
+        assertThat(actualMetaData.getColumnCount(), is(expectedColumns.size()));
         int index = 1;
-        for (String each : expectedColumnNames) {
-            assertThat(actualMetaData.getColumnLabel(index++).toLowerCase(), is(each.toLowerCase()));
+        for (DataSetColumn each : expectedColumns) {
+            assertThat(actualMetaData.getColumnLabel(index++).toLowerCase(), is(each.getName().toLowerCase()));
         }
     }
     

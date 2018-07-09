@@ -22,8 +22,8 @@ import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.util.InlineExpressionParser;
 import io.shardingsphere.dbtest.cases.assertion.root.SQLValue;
 import io.shardingsphere.dbtest.cases.assertion.root.SQLValueGroup;
-import io.shardingsphere.dbtest.cases.dataset.init.DataSetColumnMetadata;
-import io.shardingsphere.dbtest.cases.dataset.init.DataSetMetadata;
+import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetColumn;
+import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
 import io.shardingsphere.dbtest.cases.dataset.init.DataSetRow;
 import io.shardingsphere.dbtest.cases.dataset.init.DataSetsRoot;
 
@@ -74,7 +74,7 @@ public final class DataSetEnvironmentManager {
             DataNode dataNode = entry.getKey();
             List<DataSetRow> dataSetRows = entry.getValue();
             DataSetMetadata dataSetMetadata = dataSetsRoot.findDataSetMetadata(dataNode);
-            String insertSQL = generateInsertSQL(dataNode.getTableName(), dataSetMetadata.getColumnMetadataList());
+            String insertSQL = generateInsertSQL(dataNode.getTableName(), dataSetMetadata.getColumns());
             List<SQLValueGroup> sqlValueGroups = new LinkedList<>();
             for (DataSetRow row : dataSetRows) {
                 sqlValueGroups.add(new SQLValueGroup(dataSetMetadata, row.getValues()));
@@ -97,10 +97,10 @@ public final class DataSetEnvironmentManager {
         return result;
     }
     
-    private String generateInsertSQL(final String tableName, final List<DataSetColumnMetadata> columnMetadata) {
+    private String generateInsertSQL(final String tableName, final List<DataSetColumn> columnMetadata) {
         List<String> columnNames = new LinkedList<>();
         List<String> placeholders = new LinkedList<>();
-        for (DataSetColumnMetadata each : columnMetadata) {
+        for (DataSetColumn each : columnMetadata) {
             columnNames.add(each.getName());
             placeholders.add("?");
         }

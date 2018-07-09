@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.cases.dataset.init;
+package io.shardingsphere.dbtest.cases.dataset.metadata;
 
 import lombok.Getter;
 
@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class DataSetIndexMetadata {
+public final class DataSetIndex {
     
     @XmlAttribute
     private String name;

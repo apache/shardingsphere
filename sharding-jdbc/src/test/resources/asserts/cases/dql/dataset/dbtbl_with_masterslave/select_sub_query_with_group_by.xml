@@ -1,4 +1,6 @@
 <datasets>
-    <columns values="order_items_count" />
+    <metadata>
+        <column name="order_items_count" />
+    </metadata>
     <dataset values="100" />
 </datasets>

@@ -1,5 +1,8 @@
 <datasets>
-    <columns values="exp, ORDER_BY_DERIVED_0" />
+    <metadata>
+        <column name="exp" />
+        <column name="ORDER_BY_DERIVED_0" />
+    </metadata>
     <dataset values="1002, 1000" />
     <dataset values="1003, 1001" />
     <dataset values="1102, 1100" />

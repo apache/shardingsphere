@@ -1,5 +1,12 @@
 <datasets>
-    <columns values="item_id, order_id, user_id, status, creation_date, ORDER_BY_DERIVED_0" />
+    <metadata>
+        <column name="item_id" />
+        <column name="order_id" />
+        <column name="user_id" />
+        <column name="status" />
+        <column name="creation_date" />
+        <column name="ORDER_BY_DERIVED_0" />
+    </metadata>
     <dataset values="100801, 1008, 1, 10, init, 100801" />
     <dataset values="100800, 1008, 2, 10, init, 100800" />
 </datasets>

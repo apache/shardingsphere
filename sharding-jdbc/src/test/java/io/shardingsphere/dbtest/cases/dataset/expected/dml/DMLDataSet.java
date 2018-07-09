@@ -19,7 +19,7 @@ package io.shardingsphere.dbtest.cases.dataset.expected.dml;
 
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.util.InlineExpressionParser;
-import io.shardingsphere.dbtest.cases.dataset.init.DataSetMetadata;
+import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
 import io.shardingsphere.dbtest.cases.dataset.init.DataSetRow;
 import lombok.Getter;
 
@@ -39,7 +39,7 @@ import java.util.List;
 public final class DMLDataSet {
     
     @XmlElement(name = "metadata")
-    private List<DataSetMetadata> metadataList;
+    private List<DataSetMetadata> metadataList = new LinkedList<>();
     
     @XmlElement(name = "dataset")
     private List<DataSetRow> dataSetRows = new LinkedList<>();

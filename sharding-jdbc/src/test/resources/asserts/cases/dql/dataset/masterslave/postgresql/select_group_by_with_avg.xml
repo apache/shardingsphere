@@ -1,5 +1,8 @@
 <datasets>
-    <columns values="orders_avg, user_id" />
+    <metadata>
+        <column name="orders_avg" />
+        <column name="user_id" />
+    </metadata>
     <dataset values="1000.5000000000000000, 10" />
     <dataset values="1100.5000000000000000, 11" />
     <dataset values="1200.5000000000000000, 12" />

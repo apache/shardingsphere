@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.cases.dataset.init;
+package io.shardingsphere.dbtest.cases.dataset.metadata;
 
 import lombok.Getter;
 
@@ -33,9 +33,12 @@ public final class DataSetMetadata {
     @XmlAttribute(name = "data-nodes")
     private String dataNodes;
     
+    @XmlAttribute(name = "table-name")
+    private String tableName;
+    
     @XmlElement(name = "column")
-    private List<DataSetColumnMetadata> columnMetadataList = new LinkedList<>();
+    private List<DataSetColumn> columns = new LinkedList<>();
     
     @XmlElement(name = "index")
-    private List<DataSetIndexMetadata> indexMetadataList = new LinkedList<>();
+    private List<DataSetIndex> indexes = new LinkedList<>();
 }
