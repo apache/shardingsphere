@@ -41,6 +41,6 @@ public final class MySQLDataSourcePropertyParser extends DataSourcePropertyParse
             throw new ShardingException("The URL of JDBC is not supported.");
         }
         return new DataSourceProperty(uri.getHost(), -1 == uri.getPort() ? DEFAULT_PORT : uri.getPort(),
-                uri.getPath().substring(1), DatabaseType.MySQL);
+                uri.getPath().isEmpty() ? "" : uri.getPath().substring(1), DatabaseType.MySQL);
     }
 }
