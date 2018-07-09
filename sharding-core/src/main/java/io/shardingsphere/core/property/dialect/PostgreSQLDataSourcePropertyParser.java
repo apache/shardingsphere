@@ -25,7 +25,7 @@ import io.shardingsphere.core.property.DataSourcePropertyParser;
 import java.net.URI;
 
 /**
- * MySQL data source property parser.
+ * PostgreSQL data source property parser.
  *
  * @author panjuan
  */
