@@ -69,16 +69,12 @@ public final class StatementExecuteBackendHandler extends ExecuteBackendHandler 
     @Override
     protected SQLRouteResult doSqlShardingRoute() {
         PreparedStatementRoutingEngine routingEngine = new PreparedStatementRoutingEngine(getSql(),
-                RuleRegistry.getInstance().getShardingRule(), RuleRegistry.getInstance().getShardingMetaData(), getDatabaseType(), isShowSQL());
+                RuleRegistry.getInstance().getShardingRule(), RuleRegistry.getInstance().getShardingMetaData(),
+                getDatabaseType(), isShowSQL(), RuleRegistry.getInstance().getDataSourcePropertyManager().getAllInstanceDataSourceNames());
         return routingEngine.route(getComStmtExecuteParameters());
     }
     
-    /**
-     * Get PreparedStatement Parameter values.
-     *
-     * @return parameter value list
-     */
-    public List<Object> getComStmtExecuteParameters() {
+    private List<Object> getComStmtExecuteParameters() {
         List<Object> result = new ArrayList<>(32);
         for (PreparedStatementParameter each : preparedStatementParameters) {
             result.add(each.getValue());

@@ -54,7 +54,7 @@ public final class SQLExecuteBackendHandler extends ExecuteBackendHandler implem
     @Override
     protected SQLRouteResult doSqlShardingRoute() {
         StatementRoutingEngine routingEngine = new StatementRoutingEngine(RuleRegistry.getInstance().getShardingRule(),
-                RuleRegistry.getInstance().getShardingMetaData(), getDatabaseType(), isShowSQL());
+                RuleRegistry.getInstance().getShardingMetaData(), getDatabaseType(), isShowSQL(), RuleRegistry.getInstance().getDataSourcePropertyManager().getAllInstanceDataSourceNames());
         return routingEngine.route(getSql());
     }
     
