@@ -26,7 +26,6 @@ import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCases;
 import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCases;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.xml.bind.JAXBContext;
@@ -41,9 +40,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -64,9 +61,6 @@ public final class IntegrateTestCasesLoader {
     
     private static final IntegrateTestCasesLoader INSTANCE = new IntegrateTestCasesLoader();
     
-    @Getter
-    private final Collection<String> shardingRuleTypes;
-    
     private final Map<String, IntegrateTestCase> dqlIntegrateTestCaseMap;
     
     private final Map<String, IntegrateTestCase> dmlIntegrateTestCaseMap;
@@ -74,7 +68,6 @@ public final class IntegrateTestCasesLoader {
     private final Map<String, IntegrateTestCase> ddlIntegrateTestCaseMap;
     
     private IntegrateTestCasesLoader() {
-        shardingRuleTypes = new HashSet<>();
         try {
             dqlIntegrateTestCaseMap = loadIntegrateTestCases(DQL_INTEGRATE_TEST_CASES_FILE_PREFIX);
             dmlIntegrateTestCaseMap = loadIntegrateTestCases(DML_INTEGRATE_TEST_CASES_FILE_PREFIX);
@@ -114,7 +107,6 @@ public final class IntegrateTestCasesLoader {
         for (IntegrateTestCase each : integrateTestCases) {
             result.put(each.getSqlCaseId(), each);
             each.setPath(file);
-            shardingRuleTypes.addAll(each.getShardingRuleTypes());
         }
         return result;
     }

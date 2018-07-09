@@ -17,6 +17,7 @@
 
 package io.shardingsphere.dbtest.engine;
 
+import com.google.common.base.Joiner;
 import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
 import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
 import io.shardingsphere.core.constant.DatabaseType;
@@ -58,15 +59,17 @@ import java.util.TimeZone;
 @Getter(AccessLevel.PROTECTED)
 public abstract class BaseIntegrateTest {
     
+    private static IntegrateTestEnvironment integrateTestEnvironment = IntegrateTestEnvironment.getInstance();
+    
     private static IntegrateTestCasesLoader integrateTestCasesLoader = IntegrateTestCasesLoader.getInstance();
+    
+    private final String shardingRuleType;
     
     private final DatabaseTypeEnvironment databaseTypeEnvironment;
     
     private final IntegrateTestCaseAssertion assertion;
     
     private final SQLCaseType caseType;
-    
-    private final int countInSameCase;
     
     private final String sql;
     
@@ -80,16 +83,17 @@ public abstract class BaseIntegrateTest {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     }
     
-    public BaseIntegrateTest(final String sqlCaseId, final String path, final IntegrateTestCaseAssertion assertion, final DatabaseTypeEnvironment databaseTypeEnvironment, 
-                             final SQLCaseType caseType, final int countInSameCase) throws IOException, JAXBException, SQLException, ParseException {
+    public BaseIntegrateTest(final String sqlCaseId, final String path, final IntegrateTestCaseAssertion assertion, final String shardingRuleType, 
+                             final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) 
+            throws IOException, JAXBException, SQLException, ParseException {
+        this.shardingRuleType = shardingRuleType;
         this.databaseTypeEnvironment = databaseTypeEnvironment;
         this.assertion = assertion;
         this.caseType = caseType;
-        this.countInSameCase = countInSameCase;
         sql = getSQL(sqlCaseId);
-        expectedDataFile = null == assertion.getExpectedDataFile() ? null : getExpectedDataFile(path, databaseTypeEnvironment.getDatabaseType(), assertion.getExpectedDataFile());
+        expectedDataFile = getExpectedDataFile(path, shardingRuleType, databaseTypeEnvironment.getDatabaseType(), assertion.getExpectedDataFile());
         if (databaseTypeEnvironment.isEnabled()) {
-            dataSourceMap = createDataSourceMap(assertion);
+            dataSourceMap = createDataSourceMap(shardingRuleType);
             dataSource = createDataSource(dataSourceMap);
         } else {
             dataSourceMap = null;
@@ -105,21 +109,24 @@ public abstract class BaseIntegrateTest {
         return SQLCasesLoader.getInstance().getSupportedSQL(sqlCaseId, caseType, parameters);
     }
     
-    private String getExpectedDataFile(final String path, final DatabaseType databaseType, final String expectedDataFile) {
-        String pathPrefix = path.substring(0, path.lastIndexOf(File.separator));
-        if (expectedDataFile.contains(File.separator)) {
-            String expectedDataFilePath = expectedDataFile.substring(0, expectedDataFile.lastIndexOf(File.separator));
-            String expectedDataFileName = expectedDataFile.substring(expectedDataFile.lastIndexOf(File.separator));
-            String expectedDataFileWithDatabaseType = String.format("%s/dataset/%s/%s/%s", pathPrefix, expectedDataFilePath, databaseType.toString().toLowerCase(), expectedDataFileName);
-            if (new File(expectedDataFileWithDatabaseType).exists()) {
-                return expectedDataFileWithDatabaseType;
-            }
+    private String getExpectedDataFile(final String path, final String shardingRuleType, final DatabaseType databaseType, final String expectedDataFile) {
+        if (null == expectedDataFile) {
+            return null;
         }
-        return String.format("%s/dataset/%s", pathPrefix, expectedDataFile);
+        String prefix = path.substring(0, path.lastIndexOf(File.separator));
+        String result = Joiner.on("/").join(prefix, "dataset", shardingRuleType, databaseType.toString().toLowerCase(), expectedDataFile);
+        if (new File(result).exists()) {
+            return result;
+        }
+        result = Joiner.on("/").join(prefix, "dataset", shardingRuleType, expectedDataFile);
+        if (new File(result).exists()) {
+            return result;
+        }
+        return Joiner.on("/").join(prefix, "dataset", expectedDataFile);
     }
     
-    private Map<String, DataSource> createDataSourceMap(final IntegrateTestCaseAssertion assertion) throws IOException, JAXBException {
-        Collection<String> dataSourceNames = SchemaEnvironmentManager.getDataSourceNames(assertion.getShardingRuleType());
+    private Map<String, DataSource> createDataSourceMap(final String shardingRuleType) throws IOException, JAXBException {
+        Collection<String> dataSourceNames = SchemaEnvironmentManager.getDataSourceNames(shardingRuleType);
         Map<String, DataSource> result = new HashMap<>(dataSourceNames.size(), 1);
         for (String each : dataSourceNames) {
             result.put(each, DataSourceUtil.createDataSource(databaseTypeEnvironment.getDatabaseType(), each));
@@ -128,46 +135,47 @@ public abstract class BaseIntegrateTest {
     }
     
     private DataSource createDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException, IOException {
-        return "masterslave".equals(assertion.getShardingRuleType())
-                ? YamlMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(assertion.getShardingRuleType())))
-                : YamlShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(assertion.getShardingRuleType())));
+        return "masterslave".equals(shardingRuleType)
+                ? YamlMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)))
+                : YamlShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)));
     }
     
     protected static Collection<Object[]> getParameters(final DatabaseType databaseType, final SQLCaseType caseType, final IntegrateTestCase integrateTestCase) {
         Collection<Object[]> result = new LinkedList<>();
-        int countInSameCase = 0;
         for (IntegrateTestCaseAssertion assertion : integrateTestCase.getIntegrateTestCaseAssertions()) {
-            Object[] data = new Object[6];
-            data[0] = integrateTestCase.getSqlCaseId();
-            data[1] = integrateTestCase.getPath();
-            data[2] = assertion;
-            data[3] = new DatabaseTypeEnvironment(databaseType, IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType));
-            data[4] = caseType;
-            data[5] = countInSameCase++;
-            result.add(data);
+            for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
+                Object[] data = new Object[6];
+                data[0] = integrateTestCase.getSqlCaseId();
+                data[1] = integrateTestCase.getPath();
+                data[2] = assertion;
+                data[3] = each;
+                data[4] = new DatabaseTypeEnvironment(databaseType, IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType));
+                data[5] = caseType;
+                result.add(data);
+            }
         }
         return result;
     }
     
     @BeforeClass
     public static void createDatabasesAndTables() throws JAXBException, IOException, SQLException {
-        for (String each : integrateTestCasesLoader.getShardingRuleTypes()) {
+        for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
             SchemaEnvironmentManager.dropDatabase(each);
         }
-        for (String each : integrateTestCasesLoader.getShardingRuleTypes()) {
+        for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
             SchemaEnvironmentManager.createDatabase(each);
         }
-        for (String each : integrateTestCasesLoader.getShardingRuleTypes()) {
+        for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
             SchemaEnvironmentManager.dropTable(each);
         }
-        for (String each : integrateTestCasesLoader.getShardingRuleTypes()) {
+        for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
             SchemaEnvironmentManager.createTable(each);
         }
     }
     
     @AfterClass
     public static void dropDatabases() throws JAXBException, IOException {
-        for (String each : integrateTestCasesLoader.getShardingRuleTypes()) {
+        for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
             SchemaEnvironmentManager.dropDatabase(each);
         }
     }
