@@ -91,6 +91,7 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
                 return new CommandResponsePackets(new OKPacket(1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
             }
         } catch (final Exception ex) {
+            log.error("doTransactionIntercept Exception", ex);
             return new CommandResponsePackets(new ErrPacket(1, 0, "", "", "" + ex.getMessage()));
         }
         if (RuleRegistry.getInstance().isWithoutJdbc()) {
@@ -152,29 +153,37 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
     
     private boolean doTransactionIntercept() throws Exception {
         if (RuleRegistry.isXaTransaction()) {
-            if (isXaBegin()) {
+            if (isBegin()) {
                 AtomikosUserTransaction.getInstance().begin();
                 return true;
-            } else if (isXaCommit()) {
+            } else if (isCommit()) {
                 AtomikosUserTransaction.getInstance().commit();
                 return true;
             } else if (isXaRollback()) {
                 AtomikosUserTransaction.getInstance().rollback();
                 return true;
             }
+        } else {
+            if (isBegin() || isCommit() || isRollback()) {
+                return true;
+            }
         }
         return false;
     }
     
-    private boolean isXaBegin() {
+    private boolean isBegin() {
         return "BEGIN".equalsIgnoreCase(sql) || "START TRANSACTION".equalsIgnoreCase(sql) || "SET AUTOCOMMIT=0".equalsIgnoreCase(sql);
     }
     
-    private boolean isXaCommit() {
+    private boolean isCommit() {
         return "COMMIT".equalsIgnoreCase(sql);
     }
     
     private boolean isXaRollback() throws SystemException {
         return "ROLLBACK".equalsIgnoreCase(sql) && Status.STATUS_NO_TRANSACTION != AtomikosUserTransaction.getInstance().getStatus();
+    }
+    
+    private boolean isRollback() {
+        return "ROLLBACK".equalsIgnoreCase(sql);
     }
 }
