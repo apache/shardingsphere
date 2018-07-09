@@ -51,6 +51,16 @@ public interface IClient extends IAction, IGroupAction {
     boolean start(int wait, TimeUnit units) throws IOException, InterruptedException;
     
     /**
+     * block until connected.
+     *
+     * @param wait wait
+     * @param units units
+     * @return connected
+     * @throws InterruptedException InterruptedException
+     */
+    boolean blockUntilConnected(int wait, TimeUnit units) throws InterruptedException;
+    
+    /**
      * close.
      */
     void close();

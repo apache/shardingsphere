@@ -86,12 +86,12 @@ public class Holder {
         return new Watcher() {
             public void process(final WatchedEvent event) {
                 processConnection(event);
-                if (context.getGlobalListener() != null) {
-                    context.getGlobalListener().process(event);
-                    LOGGER.debug("Holder {} process", ZookeeperConstants.GLOBAL_LISTENER_KEY);
+                processGlobalListener(event);
+                // todo filter event type or path
+                if (event.getType() == Event.EventType.None) {
+                    return;
                 }
                 if (!context.getWatchers().isEmpty()) {
-                    // todo filter event type or path
                     for (Listener listener : context.getWatchers().values()) {
                         if (listener.getPath() == null || event.getPath().startsWith(listener.getPath())) {
                             LOGGER.debug("listener process:{}, listener:{}", listener.getPath(), listener.getKey());
@@ -122,6 +122,13 @@ public class Holder {
                     LOGGER.error("event state Expired:{}", e.getMessage(), e);
                 }
             }
+        }
+    }
+    
+    private void processGlobalListener(final WatchedEvent event) {
+        if (context.getGlobalListener() != null) {
+            context.getGlobalListener().process(event);
+            LOGGER.debug("Holder {} process", ZookeeperConstants.GLOBAL_LISTENER_KEY);
         }
     }
     

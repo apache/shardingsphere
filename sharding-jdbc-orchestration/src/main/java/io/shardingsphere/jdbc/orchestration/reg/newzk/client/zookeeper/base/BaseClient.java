@@ -45,6 +45,8 @@ public abstract class BaseClient implements IClient {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseClient.class);
     
+    private static final int CIRCLE_WAIT = 30;
+    
     @Getter(value = AccessLevel.PROTECTED)
     private List<ACL> authorities;
     
@@ -84,6 +86,20 @@ public abstract class BaseClient implements IClient {
     private void prepareStart() {
         holder = new Holder(getContext());
         useExecStrategy(StrategyType.USUAL);
+    }
+    
+    @Override
+    public synchronized boolean blockUntilConnected(final int wait, final TimeUnit units) throws InterruptedException {
+        long maxWait = units != null ? TimeUnit.MILLISECONDS.convert(wait, units) : 0;
+        
+        while (!holder.isConnected()) {
+            long waitTime = maxWait - CIRCLE_WAIT;
+            if (waitTime <= 0) {
+                return holder.isConnected();
+            }
+            wait(CIRCLE_WAIT);
+        }
+        return true;
     }
     
     @Override
