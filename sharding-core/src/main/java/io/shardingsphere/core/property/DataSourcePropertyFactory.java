@@ -41,7 +41,7 @@ public final class DataSourcePropertyFactory {
         return new DataSourcePropertyParser() {
             @Override
             public DataSourceProperty parseDataSource(final DataSource dataSource) {
-                return null;
+                return new DataSourceProperty("", 3306, "", databaseType);
             }
         };
     }
