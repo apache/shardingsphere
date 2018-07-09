@@ -24,9 +24,9 @@ import io.shardingsphere.core.parsing.SQLJudgeEngine;
 import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.cases.assertion.ddl.DDLIntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.ddl.DDLIntegrateTestCaseAssertion;
+import io.shardingsphere.dbtest.cases.dataset.expected.ddl.DDLDataSet;
 import io.shardingsphere.dbtest.cases.dataset.expected.metadata.ExpectedColumn;
 import io.shardingsphere.dbtest.cases.dataset.expected.metadata.ExpectedMetadata;
-import io.shardingsphere.dbtest.cases.dataset.expected.metadata.ExpectedMetadataRoot;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
@@ -68,8 +68,7 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
     
     private final DatabaseType databaseType;
     
-    public DDLIntegrateTest(final String sqlCaseId, final String path, final DDLIntegrateTestCaseAssertion assertion, final String shardingRuleType, 
-                            final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
+    public DDLIntegrateTest(final String sqlCaseId, final String path, final DDLIntegrateTestCaseAssertion assertion, final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
         super(sqlCaseId, path, assertion, shardingRuleType, databaseTypeEnvironment, caseType);
         this.assertion = assertion;
         databaseType = databaseTypeEnvironment.getDatabaseType();
@@ -149,9 +148,9 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
         if (null == assertion.getExpectedDataFile()) {
             return;
         }
-        ExpectedMetadataRoot expected;
+        DDLDataSet expected;
         try (FileReader reader = new FileReader(getExpectedDataFile())) {
-            expected = (ExpectedMetadataRoot) JAXBContext.newInstance(ExpectedMetadataRoot.class).createUnmarshaller().unmarshal(reader);
+            expected = (DDLDataSet) JAXBContext.newInstance(DDLDataSet.class).createUnmarshaller().unmarshal(reader);
         }
         String tableName = assertion.getTable();
         List<ExpectedColumn> actualColumns = getActualColumns(connection, tableName);

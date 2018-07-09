@@ -25,7 +25,7 @@ import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.cases.assertion.root.SQLValue;
 import io.shardingsphere.dbtest.cases.dataset.expected.dataset.ExpectedDataSetRow;
-import io.shardingsphere.dbtest.cases.dataset.expected.dataset.ExpectedDataSetsRoot;
+import io.shardingsphere.dbtest.cases.dataset.expected.dql.DQLDataSet;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.dbtest.env.IntegrateTestEnvironment;
@@ -356,9 +356,9 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
     }
     
     private void assertResultSet(final ResultSet resultSet) throws SQLException, JAXBException, IOException {
-        ExpectedDataSetsRoot expected;
+        DQLDataSet expected;
         try (FileReader reader = new FileReader(getExpectedDataFile())) {
-            expected = (ExpectedDataSetsRoot) JAXBContext.newInstance(ExpectedDataSetsRoot.class).createUnmarshaller().unmarshal(reader);
+            expected = (DQLDataSet) JAXBContext.newInstance(DQLDataSet.class).createUnmarshaller().unmarshal(reader);
         }
         List<String> expectedColumnNames = expected.getColumns().getValues();
         assertMetaData(resultSet.getMetaData(), expectedColumnNames);
