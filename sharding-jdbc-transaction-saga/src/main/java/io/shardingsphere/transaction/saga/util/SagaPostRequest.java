@@ -1,30 +1,40 @@
+/*
+ * Copyright 2016-2018 shardingsphere.io.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * </p>
+ */
+
 package io.shardingsphere.transaction.saga.util;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @Getter
 @Setter
 @Slf4j
-public class SagaPostRequest {
+public final class SagaPostRequest {
     
     private static final SagaPostRequest INSTANCE = new SagaPostRequest();
     
@@ -34,27 +44,28 @@ public class SagaPostRequest {
     
     private OkHttpClient okHttpClient;
     
-    public void SagaPostRequest() {
+    private SagaPostRequest() {
         InetSocketAddress address = new InetSocketAddress(ip, port);
         Proxy proxy = new Proxy(Proxy.Type.HTTP, address);
-        try {
-            OkHttpClient.Builder builder = new OkHttpClient.Builder();
-            builder.retryOnConnectionFailure(true);
-            builder.connectTimeout(30, TimeUnit.SECONDS);
-            builder.writeTimeout(30, TimeUnit.SECONDS);
-            builder.readTimeout(30, TimeUnit.SECONDS);
-            builder.proxy(proxy);
-            okHttpClient = builder.build();
-        } catch (final Exception ex) {
-            log.error("SagaPostRequest() Error: " + ex);
-        }
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        builder.retryOnConnectionFailure(true);
+        builder.connectTimeout(30, TimeUnit.SECONDS);
+        builder.writeTimeout(30, TimeUnit.SECONDS);
+        builder.readTimeout(30, TimeUnit.SECONDS);
+        builder.proxy(proxy);
+        okHttpClient = builder.build();
     }
     
+    /**
+     * Get saga post request instance.
+     *
+     * @return saga post request instance
+     */
     public static SagaPostRequest getInstance() {
         return INSTANCE;
     }
     
-    private String request(String body) {
+    private String request(final String body) {
         String url = "127.0.0.1:8083/requests/";
         String result = "";
         Request.Builder builder = new Request.Builder();
@@ -66,7 +77,7 @@ public class SagaPostRequest {
         try (Response response = getOkHttpClient().newCall(request).execute()) {
             byte[] contentByte = response.body().bytes();
             result = new String(contentByte);
-        } catch (final Exception ex) {
+        } catch (final IOException ex) {
             log.error("Post: error: ", ex);
         }
         return result;
