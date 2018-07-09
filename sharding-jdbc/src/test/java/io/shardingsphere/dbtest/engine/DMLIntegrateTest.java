@@ -26,10 +26,10 @@ import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.cases.assertion.dml.DMLIntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.dml.DMLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.cases.assertion.root.SQLValue;
-import io.shardingsphere.dbtest.cases.dataset.expected.DMLDataSet;
+import io.shardingsphere.dbtest.cases.dataset.expected.ExpectedDataSet;
+import io.shardingsphere.dbtest.cases.dataset.init.DataSetRow;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetColumn;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
-import io.shardingsphere.dbtest.cases.dataset.init.DataSetRow;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
@@ -408,9 +408,9 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
     }
     
     private void assertDataSet() throws SQLException, IOException, JAXBException {
-        DMLDataSet expected;
+        ExpectedDataSet expected;
         try (FileReader reader = new FileReader(getExpectedDataFile())) {
-            expected = (DMLDataSet) JAXBContext.newInstance(DMLDataSet.class).createUnmarshaller().unmarshal(reader);
+            expected = (ExpectedDataSet) JAXBContext.newInstance(ExpectedDataSet.class).createUnmarshaller().unmarshal(reader);
         }
         assertThat("Only support single table for DML.", expected.getMetadataList().size(), is(1));
         DataSetMetadata expectedDataSetMetadata = expected.getMetadataList().get(0);

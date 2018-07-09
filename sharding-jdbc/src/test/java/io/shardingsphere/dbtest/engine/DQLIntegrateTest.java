@@ -24,7 +24,7 @@ import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.cases.assertion.root.SQLValue;
-import io.shardingsphere.dbtest.cases.dataset.expected.DQLDataSet;
+import io.shardingsphere.dbtest.cases.dataset.expected.ExpectedDataSet;
 import io.shardingsphere.dbtest.cases.dataset.init.DataSetRow;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetColumn;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
@@ -358,9 +358,9 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
     }
     
     private void assertResultSet(final ResultSet resultSet) throws SQLException, JAXBException, IOException {
-        DQLDataSet expected;
+        ExpectedDataSet expected;
         try (FileReader reader = new FileReader(getExpectedDataFile())) {
-            expected = (DQLDataSet) JAXBContext.newInstance(DQLDataSet.class).createUnmarshaller().unmarshal(reader);
+            expected = (ExpectedDataSet) JAXBContext.newInstance(ExpectedDataSet.class).createUnmarshaller().unmarshal(reader);
         }
         List<DataSetColumn> expectedColumns = new LinkedList<>();
         for (DataSetMetadata each : expected.getMetadataList()) {

@@ -17,25 +17,31 @@
 
 package io.shardingsphere.dbtest.cases.dataset.expected;
 
+import io.shardingsphere.core.rule.DataNode;
+import io.shardingsphere.dbtest.cases.dataset.init.DataSetRow;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
 import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * DDL data set.
+ * Expected data set.
  *
  * @author zhangliang
  */
 @Getter
 @XmlRootElement(name = "datasets")
-public final class DDLDataSet {
+public final class ExpectedDataSet {
     
     @XmlElement(name = "metadata")
     private List<DataSetMetadata> metadataList = new LinkedList<>();
+    
+    @XmlElement(name = "dataset")
+    private List<DataSetRow> rows = new LinkedList<>();
     
     /**
      * Find expected metadata via table name.
@@ -50,5 +56,21 @@ public final class DDLDataSet {
             }
         }
         throw new IllegalArgumentException(String.format("Cannot find expected metadata via table name: '%s'", tableName));
+    }
+    
+    /**
+     * Find data set rows via data node.
+     *
+     * @param dataNode data node
+     * @return data set rows belong to current data node
+     */
+    public List<DataSetRow> findDataSetRows(final DataNode dataNode) {
+        List<DataSetRow> result = new ArrayList<>(rows.size());
+        for (DataSetRow each : rows) {
+            if (new DataNode(each.getDataNode()).equals(dataNode)) {
+                result.add(each);
+            }
+        }
+        return result;
     }
 }
