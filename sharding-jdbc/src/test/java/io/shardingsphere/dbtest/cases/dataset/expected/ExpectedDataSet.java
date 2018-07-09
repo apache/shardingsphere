@@ -44,12 +44,12 @@ public final class ExpectedDataSet {
     private List<DataSetRow> rows = new LinkedList<>();
     
     /**
-     * Find expected metadata via table name.
+     * Find data set metadata via table name.
      * 
      * @param tableName table name
      * @return expected metadata
      */
-    public DataSetMetadata find(final String tableName) {
+    public DataSetMetadata findMetadata(final String tableName) {
         for (DataSetMetadata each : metadataList) {
             if (tableName.equals(each.getTableName())) {
                 return each;

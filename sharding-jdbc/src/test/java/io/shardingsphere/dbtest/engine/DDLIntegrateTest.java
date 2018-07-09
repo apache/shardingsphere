@@ -155,7 +155,7 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
         }
         String tableName = assertion.getTable();
         List<DataSetColumn> actualColumns = getActualColumns(connection, tableName);
-        assertMetadata(actualColumns, expected.find(tableName));
+        assertMetadata(actualColumns, expected.findMetadata(tableName));
     }
     
     private void assertMetadata(final List<DataSetColumn> actual, final DataSetMetadata expected) {
