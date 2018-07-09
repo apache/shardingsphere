@@ -69,14 +69,13 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
     private final DatabaseType databaseType;
     
     public DDLIntegrateTest(final String sqlCaseId, final String path, final DDLIntegrateTestCaseAssertion assertion, final String shardingRuleType, 
-                            final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType, final int countInSameCase)
-            throws IOException, JAXBException, SQLException, ParseException {
-        super(sqlCaseId, path, assertion, shardingRuleType, databaseTypeEnvironment, caseType, countInSameCase);
+                            final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
+        super(sqlCaseId, path, assertion, shardingRuleType, databaseTypeEnvironment, caseType);
         this.assertion = assertion;
         databaseType = databaseTypeEnvironment.getDatabaseType();
     }
     
-    @Parameters(name = "{0}[{6}] -> Rule:{3} -> {4} -> {5}")
+    @Parameters(name = "{0} -> Rule:{3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
         // TODO sqlCasesLoader size should eq integrateTestCasesLoader size
         // assertThat(sqlCasesLoader.countAllSupportedSQLCases(), is(integrateTestCasesLoader.countAllDataSetTestCases()));

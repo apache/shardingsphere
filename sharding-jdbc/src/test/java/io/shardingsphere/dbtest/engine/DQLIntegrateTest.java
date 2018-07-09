@@ -79,9 +79,8 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
     private final DQLIntegrateTestCaseAssertion assertion;
     
     public DQLIntegrateTest(final String sqlCaseId, final String path, final DQLIntegrateTestCaseAssertion assertion, final String shardingRuleType, 
-                            final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType, final int countInSameCase) 
-            throws IOException, JAXBException, SQLException, ParseException {
-        super(sqlCaseId, path, assertion, shardingRuleType, databaseTypeEnvironment, caseType, countInSameCase);
+                            final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
+        super(sqlCaseId, path, assertion, shardingRuleType, databaseTypeEnvironment, caseType);
         this.assertion = assertion;
     }
     
