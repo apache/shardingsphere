@@ -235,7 +235,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
         try {
             routeResult = new StatementRoutingEngine(shardingContext.getShardingRule(),
                     shardingContext.getShardingMetaData(), shardingContext.getDatabaseType(),
-                    shardingContext.isShowSQL(), shardingContext.getDataSourcePropertyManager().getAllInstanceDataSourceNames())
+                    shardingContext.isShowSQL(), shardingContext.getDataSourcePropertyManager())
                     .route(sql);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
