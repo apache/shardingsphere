@@ -37,6 +37,7 @@ import io.shardingsphere.core.parsing.parser.token.RowCountToken;
 import io.shardingsphere.core.parsing.parser.token.SQLToken;
 import io.shardingsphere.core.parsing.parser.token.SchemaToken;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
+import io.shardingsphere.core.property.DataSourcePropertyManager;
 import io.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
@@ -79,6 +80,8 @@ public final class SQLRewriteEngine {
     
     private final List<Object> parameters;
     
+    private final DataSourcePropertyManager dataSourcePropertyManager;
+    
     /**
      * Constructs SQL rewrite engine.
      * 
@@ -90,7 +93,8 @@ public final class SQLRewriteEngine {
      * @param parameters parameters
      */
     public SQLRewriteEngine(final ShardingRule shardingRule, final String originalSQL, final DatabaseType databaseType,
-                            final SQLStatement sqlStatement, final ShardingConditions shardingConditions, final List<Object> parameters) {
+                            final SQLStatement sqlStatement, final ShardingConditions shardingConditions,
+                            final List<Object> parameters, final DataSourcePropertyManager dataSourcePropertyManager) {
         this.shardingRule = shardingRule;
         this.originalSQL = originalSQL;
         this.databaseType = databaseType;
@@ -98,6 +102,7 @@ public final class SQLRewriteEngine {
         this.shardingConditions = shardingConditions;
         this.parameters = parameters;
         sqlTokens.addAll(sqlStatement.getSqlTokens());
+        this.dataSourcePropertyManager = dataSourcePropertyManager;
     }
     
     /**
