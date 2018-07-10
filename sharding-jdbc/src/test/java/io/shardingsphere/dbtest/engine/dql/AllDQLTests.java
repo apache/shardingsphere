@@ -15,20 +15,16 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest;
+package io.shardingsphere.dbtest.engine.dql;
 
-import io.shardingsphere.dbtest.engine.ddl.AllDDLTests;
-import io.shardingsphere.dbtest.engine.dml.AllDMLTests;
-import io.shardingsphere.dbtest.engine.dql.AllDQLTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        AllDQLTests.class,
-        AllDMLTests.class,
-        AllDDLTests.class
-})
-public class AllIntegrateTests {
+        GeneralDQLIntegrateTest.class, 
+        AdditionalDQLIntegrateTest.class
+    })
+public class AllDQLTests {
 }

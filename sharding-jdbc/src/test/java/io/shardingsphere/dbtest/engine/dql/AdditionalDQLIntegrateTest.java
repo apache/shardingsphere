@@ -15,142 +15,49 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.engine;
+package io.shardingsphere.dbtest.engine.dql;
 
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.cases.assertion.root.SQLValue;
-import io.shardingsphere.dbtest.cases.dataset.DataSet;
-import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetColumn;
-import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
-import io.shardingsphere.dbtest.cases.dataset.row.DataSetRow;
+import io.shardingsphere.dbtest.engine.IntegrateTestParameters;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
-import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.dbtest.env.IntegrateTestEnvironment;
-import io.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
-import io.shardingsphere.dbtest.env.datasource.DataSourceUtil;
-import io.shardingsphere.dbtest.env.schema.SchemaEnvironmentManager;
 import io.shardingsphere.test.sql.SQLCaseType;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import javax.sql.DataSource;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Types;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
-public final class DQLIntegrateTest extends BaseIntegrateTest {
+public final class AdditionalDQLIntegrateTest extends BaseDQLIntegrateTest {
     
     private static IntegrateTestEnvironment integrateTestEnvironment = IntegrateTestEnvironment.getInstance();
     
     private final DQLIntegrateTestCaseAssertion assertion;
     
-    public DQLIntegrateTest(final String sqlCaseId, final String path, final DQLIntegrateTestCaseAssertion assertion, final String shardingRuleType, 
-                            final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
+    public AdditionalDQLIntegrateTest(final String sqlCaseId, final String path, final DQLIntegrateTestCaseAssertion assertion, final String shardingRuleType,
+                                      final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
         super(sqlCaseId, path, assertion, shardingRuleType, databaseTypeEnvironment, caseType);
         this.assertion = assertion;
     }
     
     @Parameters(name = "{0} -> Rule:{3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
-        return IntegrateTestParameters.getParameters(SQLType.DQL);
-    }
-    
-    @BeforeClass
-    public static void insertData() throws IOException, JAXBException, SQLException, ParseException {
-        for (DatabaseType each : DatabaseType.values()) {
-            if (IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(each)) {
-                insertData(each);
-            }
-        }
-    }
-    
-    private static void insertData(final DatabaseType databaseType) throws SQLException, ParseException, IOException, JAXBException {
-        for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
-            new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(each), createDataSourceMap(databaseType, each)).initialize();
-        }
-    }
-    
-    @AfterClass
-    public static void clearData() throws IOException, JAXBException, SQLException {
-        for (DatabaseType each : DatabaseType.values()) {
-            if (IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(each)) {
-                clearData(each);
-            }
-        }
-    }
-    
-    private static void clearData(final DatabaseType databaseType) throws SQLException, IOException, JAXBException {
-        for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
-            new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(each), createDataSourceMap(databaseType, each)).clear();
-        }
-    }
-    
-    private static Map<String, DataSource> createDataSourceMap(final DatabaseType databaseType, final String shardingRuleType) throws IOException, JAXBException {
-        Collection<String> dataSourceNames = SchemaEnvironmentManager.getDataSourceNames(shardingRuleType);
-        Map<String, DataSource> result = new HashMap<>(dataSourceNames.size(), 1);
-        for (String each : dataSourceNames) {
-            result.put(each, DataSourceUtil.createDataSource(databaseType, each));
-        }
-        return result;
-    }
-    
-    @Test
-    public void assertExecuteQuery() throws JAXBException, IOException, SQLException, ParseException {
-        if (!getDatabaseTypeEnvironment().isEnabled()) {
-            return;
-        }
-        try (Connection connection = getDataSource().getConnection()) {
-            if (SQLCaseType.Literal == getCaseType()) {
-                assertExecuteQueryForStatement(connection);
-            } else {
-                assertExecuteQueryForPreparedStatement(connection);
-            }
-        }
-    }
-    
-    private void assertExecuteQueryForStatement(final Connection connection) throws SQLException, JAXBException, IOException, ParseException {
-        try (
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(String.format(getSql(), assertion.getSQLValues().toArray()))) {
-            assertResultSet(resultSet);
-        }
-    }
-    
-    private void assertExecuteQueryForPreparedStatement(final Connection connection) throws SQLException, ParseException, JAXBException, IOException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getSql())) {
-            for (SQLValue each : assertion.getSQLValues()) {
-                preparedStatement.setObject(each.getIndex(), each.getValue());
-            }
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                assertResultSet(resultSet);
-            }
-        }
+        return integrateTestEnvironment.isRunAdditionalTestCases() ? IntegrateTestParameters.getParameters(SQLType.DQL) : Collections.<Object[]>emptyList();
     }
     
     @Test
@@ -217,41 +124,6 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
             }
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                assertResultSet(resultSet);
-            }
-        }
-    }
-    
-    @Test
-    public void assertExecute() throws JAXBException, IOException, SQLException, ParseException {
-        if (!getDatabaseTypeEnvironment().isEnabled()) {
-            return;
-        }
-        try (Connection connection = getDataSource().getConnection()) {
-            if (SQLCaseType.Literal == getCaseType()) {
-                assertExecuteForStatement(connection);
-            } else {
-                assertExecuteForPreparedStatement(connection);
-            }
-        }
-    }
-    
-    private void assertExecuteForStatement(final Connection connection) throws SQLException, ParseException, JAXBException, IOException {
-        try (Statement statement = connection.createStatement()) {
-            assertTrue("Not a DQL statement.", statement.execute(String.format(getSql(), assertion.getSQLValues().toArray())));
-            try (ResultSet resultSet = statement.getResultSet()) {
-                assertResultSet(resultSet);
-            }
-        }
-    }
-    
-    private void assertExecuteForPreparedStatement(final Connection connection) throws SQLException, ParseException, JAXBException, IOException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getSql())) {
-            for (SQLValue each : assertion.getSQLValues()) {
-                preparedStatement.setObject(each.getIndex(), each.getValue());
-            }
-            assertTrue("Not a DQL statement.", preparedStatement.execute());
-            try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 assertResultSet(resultSet);
             }
         }
@@ -328,47 +200,5 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
                 assertResultSet(resultSet);
             }
         }
-    }
-    
-    private void assertResultSet(final ResultSet resultSet) throws SQLException, JAXBException, IOException {
-        DataSet expected;
-        try (FileReader reader = new FileReader(getExpectedDataFile())) {
-            expected = (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);
-        }
-        List<DataSetColumn> expectedColumns = new LinkedList<>();
-        for (DataSetMetadata each : expected.getMetadataList()) {
-            expectedColumns.addAll(each.getColumns());
-        }
-        assertMetaData(resultSet.getMetaData(), expectedColumns);
-        assertRows(resultSet, expected.getRows());
-    }
-    
-    private void assertMetaData(final ResultSetMetaData actualMetaData, final List<DataSetColumn> expectedColumns) throws SQLException {
-        assertThat(actualMetaData.getColumnCount(), is(expectedColumns.size()));
-        int index = 1;
-        for (DataSetColumn each : expectedColumns) {
-            assertThat(actualMetaData.getColumnLabel(index++).toLowerCase(), is(each.getName().toLowerCase()));
-        }
-    }
-    
-    private void assertRows(final ResultSet actualResultSet, final List<DataSetRow> expectedDatSetRows) throws SQLException {
-        int count = 0;
-        ResultSetMetaData actualMetaData = actualResultSet.getMetaData();
-        while (actualResultSet.next()) {
-            int index = 1;
-            assertTrue("Size of actual result set is different with size of expected dat set rows.", count < expectedDatSetRows.size());
-            for (String each : expectedDatSetRows.get(count).getValues()) {
-                if (Types.DATE == actualResultSet.getMetaData().getColumnType(index)) {
-                    assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actualResultSet.getDate(index)), is(each));
-                    assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actualResultSet.getDate(actualMetaData.getColumnLabel(index))), is(each));
-                } else {
-                    assertThat(String.valueOf(actualResultSet.getObject(index)), is(each));
-                    assertThat(String.valueOf(actualResultSet.getObject(actualMetaData.getColumnLabel(index))), is(each));
-                }
-                index++;
-            }
-            count++;
-        }
-        assertThat("Size of actual result set is different with size of expected dat set rows.", count, is(expectedDatSetRows.size()));
     }
 }

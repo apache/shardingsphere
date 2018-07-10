@@ -39,11 +39,13 @@ public final class IntegrateTestEnvironment {
     
     private static final IntegrateTestEnvironment INSTANCE = new IntegrateTestEnvironment();
     
+    private final boolean runAdditionalTestCases;
+    
+    private final Collection<String> shardingRuleTypes;
+    
     private final Collection<DatabaseType> databaseTypes;
     
     private final Map<DatabaseType, DatabaseEnvironment> databaseEnvironments;
-    
-    private final Collection<String> shardingRuleTypes;
     
     private IntegrateTestEnvironment() {
         Properties prop = new Properties();
@@ -52,6 +54,8 @@ public final class IntegrateTestEnvironment {
         } catch (final IOException ex) {
             ex.printStackTrace();
         }
+        runAdditionalTestCases = Boolean.valueOf(prop.getProperty("run.additional.cases"));
+        shardingRuleTypes = Splitter.on(",").trimResults().splitToList(prop.getProperty("sharding.rule.type"));
         databaseTypes = new LinkedList<>();
         for (String each : prop.getProperty("databases", DatabaseType.H2.name()).split(",")) {
             databaseTypes.add(DatabaseType.valueOf(each.trim()));
@@ -82,7 +86,6 @@ public final class IntegrateTestEnvironment {
                     break;
             }
         }
-        shardingRuleTypes = Splitter.on(",").trimResults().splitToList(prop.getProperty("sharding.rule.type"));
     }
     
     /**

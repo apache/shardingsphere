@@ -15,24 +15,21 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.engine;
+package io.shardingsphere.dbtest.engine.ddl;
 
-import com.google.common.base.Strings;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.dbtest.cases.assertion.ddl.DDLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.cases.dataset.DataSet;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetColumn;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
+import io.shardingsphere.dbtest.engine.BaseIntegrateTest;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
 import io.shardingsphere.test.sql.SQLCaseType;
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -44,7 +41,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -53,22 +49,17 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Parameterized.class)
-public final class DDLIntegrateTest extends BaseIntegrateTest {
+public abstract class BaseDDLIntegrateTest extends BaseIntegrateTest {
     
     private final DDLIntegrateTestCaseAssertion assertion;
     
     private final DatabaseType databaseType;
     
-    public DDLIntegrateTest(final String sqlCaseId, final String path, final DDLIntegrateTestCaseAssertion assertion, final String shardingRuleType, 
-                            final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
+    public BaseDDLIntegrateTest(final String sqlCaseId, final String path, final DDLIntegrateTestCaseAssertion assertion, final String shardingRuleType,
+                                final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
         super(sqlCaseId, path, assertion, shardingRuleType, databaseTypeEnvironment, caseType);
         this.assertion = assertion;
         databaseType = databaseTypeEnvironment.getDatabaseType();
-    }
-    
-    @Parameters(name = "{0} -> Rule:{3} -> {4} -> {5}")
-    public static Collection<Object[]> getParameters() {
-        return IntegrateTestParameters.getParameters(SQLType.DDL);
     }
     
     @Before
@@ -78,47 +69,7 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
         }
     }
     
-    @Test
-    public void assertExecuteUpdate() throws JAXBException, IOException, SQLException {
-        if (!getDatabaseTypeEnvironment().isEnabled()) {
-            return;
-        }
-        try (Connection connection = getDataSource().getConnection()) {
-            dropTableIfExisted(connection);
-            if (!Strings.isNullOrEmpty(assertion.getInitSql())) {
-                connection.prepareStatement(assertion.getInitSql()).executeUpdate();
-            }
-            if (SQLCaseType.Literal == getCaseType()) {
-                connection.createStatement().executeUpdate(getSql());
-            } else {
-                connection.prepareStatement(getSql()).executeUpdate();
-            }
-            assertMetadata(connection);
-            dropTableIfExisted(connection);
-        }
-    }
-    
-    @Test
-    public void assertExecute() throws JAXBException, IOException, SQLException {
-        if (!getDatabaseTypeEnvironment().isEnabled()) {
-            return;
-        }
-        try (Connection connection = getDataSource().getConnection()) {
-            dropTableIfExisted(connection);
-            if (!Strings.isNullOrEmpty(assertion.getInitSql())) {
-                connection.prepareStatement(assertion.getInitSql()).executeUpdate();
-            }
-            if (SQLCaseType.Literal == getCaseType()) {
-                connection.createStatement().execute(getSql());
-            } else {
-                connection.prepareStatement(getSql()).execute();
-            }
-            assertMetadata(connection);
-            dropTableIfExisted(connection);
-        }
-    }
-    
-    private void assertMetadata(final Connection connection) throws IOException, JAXBException, SQLException {
+    protected void assertMetadata(final Connection connection) throws IOException, JAXBException, SQLException {
         // TODO case for drop (index) and truncate, add assert later
         if (null == assertion.getExpectedDataFile()) {
             return;
@@ -170,7 +121,7 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
         }
     }
     
-    private void dropTableIfExisted(final Connection connection) {
+    protected void dropTableIfExisted(final Connection connection) {
         try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DROP TABLE %s", assertion.getTable()))) {
             preparedStatement.executeUpdate();
             // CHECKSTYLE: OFF
