@@ -1,4 +1,4 @@
-<dataset>
+<dataset update-count="2">
     <metadata data-nodes="db_${0..9}.t_order">
         <column name="order_id" type="numeric" />
         <column name="user_id" type="numeric" />

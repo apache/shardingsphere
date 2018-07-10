@@ -82,8 +82,7 @@
         <assertion parameters="1000:int, 10:int, init:String" expected-update="1" expected-data-file="delete_with_sharding_value.xml" />
     </dml-test-case>
     
-    <!-- FIX ME for expected-update -->
-    <!--<dml-test-case sql-case-id="delete_without_sharding_value">-->
-        <!--<assertion parameters="init:String" expected-update="40" expected-data-file="delete_without_sharding_value.xml" />-->
-    <!--</dml-test-case>-->
+    <dml-test-case sql-case-id="delete_without_sharding_value">
+        <assertion parameters="init:String" expected-update="40" expected-data-file="delete_without_sharding_value.xml" />
+    </dml-test-case>
 </integrate-test-cases>

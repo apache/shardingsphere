@@ -23,6 +23,7 @@ import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
 import io.shardingsphere.dbtest.cases.dataset.row.DataSetRow;
 import lombok.Getter;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
@@ -37,6 +38,9 @@ import java.util.List;
 @Getter
 @XmlRootElement(name = "dataset")
 public final class DataSet {
+    
+    @XmlAttribute(name = "update-count")
+    private int updateCount;
     
     @XmlElement(name = "metadata")
     private List<DataSetMetadata> metadataList = new LinkedList<>();

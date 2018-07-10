@@ -1,4 +1,4 @@
-<dataset>
+<dataset update-count="1">
     <metadata data-nodes="tbl.t_order_item_${0..9}">
         <column name="item_id" type="numeric" />
         <column name="order_id" type="numeric" />
