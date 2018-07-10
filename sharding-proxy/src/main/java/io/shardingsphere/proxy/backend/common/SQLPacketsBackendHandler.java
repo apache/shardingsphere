@@ -126,7 +126,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     
     private CommandResponsePackets executeForSharding() {
         StatementRoutingEngine routingEngine = new StatementRoutingEngine(RuleRegistry.getInstance().getShardingRule(),
-                RuleRegistry.getInstance().getShardingMetaData(), databaseType, showSQL, RuleRegistry.getInstance().getDataSourcePropertyManager().getAllInstanceDataSourceNames());
+                RuleRegistry.getInstance().getShardingMetaData(), databaseType, showSQL, RuleRegistry.getInstance().getDataSourcePropertyManager());
         SQLRouteResult routeResult = routingEngine.route(rebuilder.sql());
         if (routeResult.getExecutionUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
