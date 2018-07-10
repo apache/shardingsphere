@@ -417,7 +417,7 @@ public final class SQLRewriteEngineTest {
         selectStatement.getSqlTokens().add(new TableToken(18, 0, "table_x"));
         selectStatement.getSqlTokens().add(new SchemaToken(29, "table_x", "table_x"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SHOW CREATE TABLE table_x ON table_x", DatabaseType.MySQL, selectStatement, null, Collections.emptyList());
-        assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, shardingRule, dataSourcePropertyManager).getSql(), is("SHOW CREATE TABLE table_y ON db0"));
+        assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, shardingRule, dataSourcePropertyManager).getSql(), is("SHOW CREATE TABLE table_y ON actual_db"));
     }
     
     @Test
