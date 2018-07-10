@@ -35,8 +35,8 @@ import java.util.List;
  * @author zhangliang 
  */
 @Getter
-@XmlRootElement(name = "datasets")
-public final class DataSets {
+@XmlRootElement(name = "dataset")
+public final class DataSet {
     
     @XmlElement(name = "metadata")
     private List<DataSetMetadata> metadataList = new LinkedList<>();

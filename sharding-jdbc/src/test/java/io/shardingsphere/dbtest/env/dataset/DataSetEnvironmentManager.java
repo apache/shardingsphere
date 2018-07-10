@@ -25,7 +25,7 @@ import io.shardingsphere.dbtest.cases.assertion.root.SQLValueGroup;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetColumn;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
 import io.shardingsphere.dbtest.cases.dataset.row.DataSetRow;
-import io.shardingsphere.dbtest.cases.dataset.DataSets;
+import io.shardingsphere.dbtest.cases.dataset.DataSet;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
@@ -50,13 +50,13 @@ import java.util.Map.Entry;
  */
 public final class DataSetEnvironmentManager {
     
-    private final DataSets dataSetsRoot;
+    private final DataSet dataSet;
     
     private final Map<String, DataSource> dataSourceMap;
     
     public DataSetEnvironmentManager(final String path, final Map<String, DataSource> dataSourceMap) throws IOException, JAXBException {
         try (FileReader reader = new FileReader(path)) {
-            dataSetsRoot = (DataSets) JAXBContext.newInstance(DataSets.class).createUnmarshaller().unmarshal(reader);
+            dataSet = (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);
         }
         this.dataSourceMap = dataSourceMap;
     }
@@ -73,7 +73,7 @@ public final class DataSetEnvironmentManager {
         for (Entry<DataNode, List<DataSetRow>> entry : dataNodeListMap.entrySet()) {
             DataNode dataNode = entry.getKey();
             List<DataSetRow> dataSetRows = entry.getValue();
-            DataSetMetadata dataSetMetadata = dataSetsRoot.findMetadata(dataNode);
+            DataSetMetadata dataSetMetadata = dataSet.findMetadata(dataNode);
             String insertSQL = generateInsertSQL(dataNode.getTableName(), dataSetMetadata.getColumns());
             List<SQLValueGroup> sqlValueGroups = new LinkedList<>();
             for (DataSetRow row : dataSetRows) {
@@ -87,7 +87,7 @@ public final class DataSetEnvironmentManager {
     
     private Map<DataNode, List<DataSetRow>> getDataSetRowMap() {
         Map<DataNode, List<DataSetRow>> result = new LinkedHashMap<>();
-        for (DataSetRow each : dataSetsRoot.getRows()) {
+        for (DataSetRow each : dataSet.getRows()) {
             DataNode dataNode = new DataNode(each.getDataNode());
             if (!result.containsKey(dataNode)) {
                 result.put(dataNode, new LinkedList<DataSetRow>());
@@ -149,7 +149,7 @@ public final class DataSetEnvironmentManager {
     
     private Map<String, Collection<String>> getDataNodeMap() {
         Map<String, Collection<String>> result = new LinkedHashMap<>();
-        for (DataSetMetadata each : dataSetsRoot.getMetadataList()) {
+        for (DataSetMetadata each : dataSet.getMetadataList()) {
             for (Entry<String, Collection<String>> entry : getDataNodeMap(each).entrySet()) {
                 if (!result.containsKey(entry.getKey())) {
                     result.put(entry.getKey(), new LinkedList<String>());

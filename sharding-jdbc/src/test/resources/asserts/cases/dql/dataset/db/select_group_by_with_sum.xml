@@ -1,4 +1,4 @@
-<datasets>
+<dataset>
     <metadata>
         <column name="orders_sum" />
         <column name="user_id" />
@@ -23,4 +23,4 @@
     <row values="5401, 27" />
     <row values="5601, 28" />
     <row values="5801, 29" />
-</datasets>
+</dataset>

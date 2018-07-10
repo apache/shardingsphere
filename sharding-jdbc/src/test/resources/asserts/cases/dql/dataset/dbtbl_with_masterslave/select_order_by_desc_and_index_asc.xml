@@ -1,4 +1,4 @@
-<datasets>
+<dataset>
     <metadata>
         <column name="item_id" />
         <column name="order_id" />
@@ -7,4 +7,4 @@
         <column name="creation_date" />
         <column name="order_by_derived_0" />
     </metadata>
-</datasets>
+</dataset>

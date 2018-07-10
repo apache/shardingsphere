@@ -1,4 +1,4 @@
-<datasets>
+<dataset>
     <metadata>
         <column name="orders_avg" />
         <column name="user_id" />
@@ -15,4 +15,4 @@
     <row values="1704.5000, 17, 10, 17045" />
     <row values="1804.5000, 18, 10, 18045" />
     <row values="1904.5000, 19, 10, 19045" />
-</datasets>
+</dataset>

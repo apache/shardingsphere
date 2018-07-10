@@ -1,4 +1,4 @@
-<datasets>
+<dataset>
     <metadata>
         <column name="creation_date" />
     </metadata>
@@ -82,4 +82,4 @@
     <row values="2017-08-08" />
     <row values="2017-08-08" />
     <row values="2017-08-08" />
-</datasets>
+</dataset>

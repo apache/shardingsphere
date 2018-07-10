@@ -1,6 +1,6 @@
-<datasets>
+<dataset>
     <metadata>
         <column name="user_id_sum" />
     </metadata>
     <row values="1450" />
-</datasets>
+</dataset>

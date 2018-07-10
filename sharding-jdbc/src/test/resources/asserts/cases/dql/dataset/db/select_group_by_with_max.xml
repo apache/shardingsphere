@@ -1,4 +1,4 @@
-<datasets>
+<dataset>
     <metadata>
         <column name="max_order_id" />
         <column name="user_id" />
@@ -23,4 +23,4 @@
     <row values="2701, 27" />
     <row values="2801, 28" />
     <row values="2901, 29" />
-</datasets>
+</dataset>

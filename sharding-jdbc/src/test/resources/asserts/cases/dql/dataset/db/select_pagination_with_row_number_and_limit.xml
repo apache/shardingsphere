@@ -1,4 +1,4 @@
-<datasets>
+<dataset>
     <metadata>
         <column name="item_id" />
         <column name="order_id" />
@@ -9,4 +9,4 @@
     </metadata>
     <row values="190002, 1900, 3, 19, init, 190002" />
     <row values="190001, 1900, 4, 19, init, 190001" />
-</datasets>
+</dataset>

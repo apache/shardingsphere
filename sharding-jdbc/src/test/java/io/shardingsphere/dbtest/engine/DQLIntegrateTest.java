@@ -24,7 +24,7 @@ import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.cases.assertion.root.SQLValue;
-import io.shardingsphere.dbtest.cases.dataset.DataSets;
+import io.shardingsphere.dbtest.cases.dataset.DataSet;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetColumn;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
 import io.shardingsphere.dbtest.cases.dataset.row.DataSetRow;
@@ -358,16 +358,16 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
     }
     
     private void assertResultSet(final ResultSet resultSet) throws SQLException, JAXBException, IOException {
-        DataSets expected;
+        DataSet expected;
         try (FileReader reader = new FileReader(getExpectedDataFile())) {
-            expected = (DataSets) JAXBContext.newInstance(DataSets.class).createUnmarshaller().unmarshal(reader);
+            expected = (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);
         }
         List<DataSetColumn> expectedColumns = new LinkedList<>();
         for (DataSetMetadata each : expected.getMetadataList()) {
             expectedColumns.addAll(each.getColumns());
         }
         assertMetaData(resultSet.getMetaData(), expectedColumns);
-        assertDataSets(resultSet, expected.getRows());
+        assertRows(resultSet, expected.getRows());
     }
     
     private void assertMetaData(final ResultSetMetaData actualMetaData, final List<DataSetColumn> expectedColumns) throws SQLException {
@@ -378,7 +378,7 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
         }
     }
     
-    private void assertDataSets(final ResultSet actualResultSet, final List<DataSetRow> expectedDatSetRows) throws SQLException {
+    private void assertRows(final ResultSet actualResultSet, final List<DataSetRow> expectedDatSetRows) throws SQLException {
         int count = 0;
         ResultSetMetaData actualMetaData = actualResultSet.getMetaData();
         while (actualResultSet.next()) {

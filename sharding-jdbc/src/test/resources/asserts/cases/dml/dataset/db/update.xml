@@ -1,4 +1,4 @@
-<datasets>
+<dataset>
     <metadata data-nodes="db_${0..9}.t_order">
         <column name="order_id" type="numeric" />
         <column name="user_id" type="numeric" />
@@ -44,4 +44,4 @@
     <row data-node="db_9.t_order" values="1901, 19, init" />
     <row data-node="db_9.t_order" values="2900, 29, init" />
     <row data-node="db_9.t_order" values="2901, 29, init" />
-</datasets>
+</dataset>

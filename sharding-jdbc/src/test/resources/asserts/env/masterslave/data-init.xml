@@ -1,4 +1,4 @@
-<datasets>
+<dataset>
     <metadata data-nodes="master.t_order,slave_${0..1}.t_order">
         <column name="order_id" type="numeric" />
         <column name="user_id" type="numeric" />
@@ -385,4 +385,4 @@
     <row data-node="slave_1.t_order_item" values="290102, 2901, 29, init_slave, 2017-08-08" />
     <row data-node="slave_1.t_broadcast_table" values="1, init_slave" />
     <row data-node="slave_1.t_global" values="1, global_slave_1" />
-</datasets>
+</dataset>

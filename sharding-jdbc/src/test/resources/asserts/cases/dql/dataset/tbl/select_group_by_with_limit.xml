@@ -1,6 +1,6 @@
-<datasets>
+<dataset>
     <metadata>
         <column name="user_id" />
     </metadata>
     <row values="10" />
-</datasets>
+</dataset>

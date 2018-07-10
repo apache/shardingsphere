@@ -26,7 +26,7 @@ import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.cases.assertion.dml.DMLIntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.dml.DMLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.cases.assertion.root.SQLValue;
-import io.shardingsphere.dbtest.cases.dataset.DataSets;
+import io.shardingsphere.dbtest.cases.dataset.DataSet;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetColumn;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
 import io.shardingsphere.dbtest.cases.dataset.row.DataSetRow;
@@ -408,9 +408,9 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
     }
     
     private void assertDataSet() throws SQLException, IOException, JAXBException {
-        DataSets expected;
+        DataSet expected;
         try (FileReader reader = new FileReader(getExpectedDataFile())) {
-            expected = (DataSets) JAXBContext.newInstance(DataSets.class).createUnmarshaller().unmarshal(reader);
+            expected = (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);
         }
         assertThat("Only support single table for DML.", expected.getMetadataList().size(), is(1));
         DataSetMetadata expectedDataSetMetadata = expected.getMetadataList().get(0);
@@ -426,7 +426,7 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
     private void assertDataSet(final PreparedStatement actualPreparedStatement, final List<DataSetRow> expectedDataSetRows, final DataSetMetadata expectedDataSetMetadata) throws SQLException {
         try (ResultSet actualResultSet = actualPreparedStatement.executeQuery()) {
             assertMetaData(actualResultSet.getMetaData(), expectedDataSetMetadata.getColumns());
-            assertDataSets(actualResultSet, expectedDataSetRows);
+            assertRows(actualResultSet, expectedDataSetRows);
         }
     }
     
@@ -438,7 +438,7 @@ public final class DMLIntegrateTest extends BaseIntegrateTest {
         }
     }
     
-    private void assertDataSets(final ResultSet actualResultSet, final List<DataSetRow> expectedDatSetRows) throws SQLException {
+    private void assertRows(final ResultSet actualResultSet, final List<DataSetRow> expectedDatSetRows) throws SQLException {
         int count = 0;
         while (actualResultSet.next()) {
             int index = 1;

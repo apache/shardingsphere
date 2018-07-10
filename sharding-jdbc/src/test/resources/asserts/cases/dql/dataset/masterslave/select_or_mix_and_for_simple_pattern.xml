@@ -1,7 +1,7 @@
-<datasets>
+<dataset>
     <metadata>
         <column name="order_id" />
         <column name="user_id" />
         <column name="status" />
     </metadata>
-</datasets>
+</dataset>

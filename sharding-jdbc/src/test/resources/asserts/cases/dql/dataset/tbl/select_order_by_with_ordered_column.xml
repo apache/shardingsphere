@@ -1,4 +1,4 @@
-<datasets>
+<dataset>
     <metadata>
         <column name="gen_order_id_" />
     </metadata>
@@ -22,4 +22,4 @@
     <row values="1107" />
     <row values="1108" />
     <row values="1109" />
-</datasets>
+</dataset>

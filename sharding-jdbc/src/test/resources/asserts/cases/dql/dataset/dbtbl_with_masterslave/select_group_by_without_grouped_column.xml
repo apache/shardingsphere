@@ -1,8 +1,8 @@
-<datasets>
+<dataset>
     <metadata>
         <column name="items_count" />
         <column name="GROUP_BY_DERIVED_0" />
     </metadata>
     <row values="20, 10" />
     <row values="20, 11" />
-</datasets>
+</dataset>

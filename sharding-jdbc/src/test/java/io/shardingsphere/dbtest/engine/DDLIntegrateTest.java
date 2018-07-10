@@ -24,7 +24,7 @@ import io.shardingsphere.core.parsing.SQLJudgeEngine;
 import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.cases.assertion.ddl.DDLIntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.ddl.DDLIntegrateTestCaseAssertion;
-import io.shardingsphere.dbtest.cases.dataset.DataSets;
+import io.shardingsphere.dbtest.cases.dataset.DataSet;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetColumn;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
@@ -149,9 +149,9 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
         if (null == assertion.getExpectedDataFile()) {
             return;
         }
-        DataSets expected;
+        DataSet expected;
         try (FileReader reader = new FileReader(getExpectedDataFile())) {
-            expected = (DataSets) JAXBContext.newInstance(DataSets.class).createUnmarshaller().unmarshal(reader);
+            expected = (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);
         }
         String tableName = assertion.getTable();
         List<DataSetColumn> actualColumns = getActualColumns(connection, tableName);

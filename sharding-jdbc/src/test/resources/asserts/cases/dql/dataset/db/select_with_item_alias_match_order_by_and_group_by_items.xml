@@ -1,4 +1,4 @@
-<datasets>
+<dataset>
     <metadata>
         <column name="uid" />
     </metadata>
@@ -22,4 +22,4 @@
     <row values="27" />
     <row values="28" />
     <row values="29" />
-</datasets>
+</dataset>
