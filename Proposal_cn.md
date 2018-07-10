@@ -44,7 +44,7 @@ Sharding-Sidecar是一个新概念，就像Service Mesh中的数据面板一样�
 
 ### Meritocracy
 
-该项目于2015年在当当网孵化，2016年在GitHub开源。2017年，京东认可其价值，并决定支持此项目。 我们成立了PMC团队和committer团队。该项目由来自许多公司的贡献者和用户。现有PMC成员指导并审查新的贡献者，在合适的时机，PMC会进行投票决定新的贡献者是否可以成为PMC和committer团队中的一员。点击这里查看详细信息。我们欢迎并高度重视新的贡献。
+该项目于2015年在当当网孵化，2016年在GitHub开源。2017年，京东认可其价值，并决定支持此项目。 我们成立了PMC团队和committer团队。该项目由来自许多公司的贡献者和用户。现有PMC成员指导并审查新的贡献者，在合适的时机，PMC会进行投票决定新的贡献者是否可以成为PMC和committer团队中的一员。点击[这里](http://shardingsphere.io/community/en/organization/)查看详细信息。我们欢迎并高度重视新的贡献。
 
 ### Community
 
