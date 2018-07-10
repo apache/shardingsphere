@@ -19,9 +19,6 @@ package io.shardingsphere.dbtest.engine;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.parsing.SQLJudgeEngine;
-import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
-import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.cases.assertion.root.SQLValue;
 import io.shardingsphere.dbtest.cases.dataset.DataSet;
@@ -35,7 +32,6 @@ import io.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
 import io.shardingsphere.dbtest.env.datasource.DataSourceUtil;
 import io.shardingsphere.dbtest.env.schema.SchemaEnvironmentManager;
 import io.shardingsphere.test.sql.SQLCaseType;
-import io.shardingsphere.test.sql.SQLCasesLoader;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -57,9 +53,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -74,10 +68,6 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
     
     private static IntegrateTestEnvironment integrateTestEnvironment = IntegrateTestEnvironment.getInstance();
     
-    private static SQLCasesLoader sqlCasesLoader = SQLCasesLoader.getInstance();
-    
-    private static IntegrateTestCasesLoader integrateTestCasesLoader = IntegrateTestCasesLoader.getInstance();
-    
     private final DQLIntegrateTestCaseAssertion assertion;
     
     public DQLIntegrateTest(final String sqlCaseId, final String path, final DQLIntegrateTestCaseAssertion assertion, final String shardingRuleType, 
@@ -86,26 +76,9 @@ public final class DQLIntegrateTest extends BaseIntegrateTest {
         this.assertion = assertion;
     }
     
-    @Parameters(name = "{0}[{6}] -> Rule:{3} -> {4} -> {5}")
+    @Parameters(name = "{0} -> Rule:{3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
-        // TODO sqlCasesLoader size should eq integrateTestCasesLoader size
-        // assertThat(sqlCasesLoader.countAllSupportedSQLCases(), is(integrateTestCasesLoader.countAllDataSetTestCases()));
-        Collection<Object[]> result = new LinkedList<>();
-        for (Object[] each : sqlCasesLoader.getSupportedSQLTestParameters(Arrays.<Enum>asList(DatabaseType.values()), DatabaseType.class)) {
-            String sqlCaseId = each[0].toString();
-            if (SQLType.DQL != new SQLJudgeEngine(sqlCasesLoader.getSupportedSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList())).judge().getType()) {
-                continue;
-            }
-            DatabaseType databaseType = (DatabaseType) each[1];
-            SQLCaseType caseType = (SQLCaseType) each[2];
-            DQLIntegrateTestCase integrateTestCase = integrateTestCasesLoader.getDQLIntegrateTestCase(sqlCaseId);
-            // TODO remove when transfer finished
-            if (null == integrateTestCase) {
-                continue;
-            }
-            result.addAll(getParameters(databaseType, caseType, integrateTestCase));
-        }
-        return result;
+        return IntegrateTestParameters.getParameters(SQLType.DQL);
     }
     
     @BeforeClass
