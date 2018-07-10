@@ -19,6 +19,12 @@ package io.shardingsphere.transaction.saga.api;
 
 import lombok.AllArgsConstructor;
 
+/**
+ * Request.
+ * @see <a href="https://github.com/apache/incubator-servicecomb-saga/blob/old-saga/docs/api/api.md">Saga API</a>
+ *
+ * @author zhangyonglun
+ */
 @AllArgsConstructor
 public class Request {
     

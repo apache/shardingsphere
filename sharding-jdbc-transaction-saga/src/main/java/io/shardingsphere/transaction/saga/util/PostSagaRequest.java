@@ -31,12 +31,17 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Post saga request.
+ *
+ * @author zhangyonglun
+ */
 @Getter
 @Setter
 @Slf4j
-public final class SagaPostRequest {
+public final class PostSagaRequest {
     
-    private static final SagaPostRequest INSTANCE = new SagaPostRequest();
+    private static final PostSagaRequest INSTANCE = new PostSagaRequest();
     
     private final String ip = "127.0.0.1";
     
@@ -44,7 +49,7 @@ public final class SagaPostRequest {
     
     private OkHttpClient okHttpClient;
     
-    private SagaPostRequest() {
+    private PostSagaRequest() {
         InetSocketAddress address = new InetSocketAddress(ip, port);
         Proxy proxy = new Proxy(Proxy.Type.HTTP, address);
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
@@ -57,11 +62,11 @@ public final class SagaPostRequest {
     }
     
     /**
-     * Get saga post request instance.
+     * Get post saga request instance.
      *
-     * @return saga post request instance
+     * @return post saga request instance
      */
-    public static SagaPostRequest getInstance() {
+    public static PostSagaRequest getInstance() {
         return INSTANCE;
     }
     
