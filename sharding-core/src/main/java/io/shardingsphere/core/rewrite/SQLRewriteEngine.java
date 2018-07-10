@@ -63,6 +63,7 @@ import java.util.Map;
  *
  * @author zhangliang
  * @author maxiaoguang
+ * @author panjuan
  */
 public final class SQLRewriteEngine {
     
@@ -248,6 +249,7 @@ public final class SQLRewriteEngine {
      * 
      * @param tableUnit route table unit
      * @param sqlBuilder SQL builder
+     * @param dataSourcePropertyManager dataSource property manager
      * @return SQL unit
      */
     public SQLUnit generateSQL(final TableUnit tableUnit, final SQLBuilder sqlBuilder, final DataSourcePropertyManager dataSourcePropertyManager) {
