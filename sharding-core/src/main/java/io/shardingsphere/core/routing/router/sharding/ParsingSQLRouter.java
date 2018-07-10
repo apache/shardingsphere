@@ -34,6 +34,7 @@ import io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
+import io.shardingsphere.core.property.DataSourcePropertyManager;
 import io.shardingsphere.core.rewrite.SQLBuilder;
 import io.shardingsphere.core.rewrite.SQLRewriteEngine;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
@@ -76,7 +77,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     private final List<Number> generatedKeys = new LinkedList<>();
     
-    private final List<String> instanceDataSourceNames;
+    private final DataSourcePropertyManager dataSourcePropertyManager;
     
     @Override
     public SQLStatement parse(final String logicSQL, final boolean useCache) {
@@ -146,7 +147,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     private void removeRedundantTableUnits(final RoutingResult routingResult) {
         for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
-            if (!instanceDataSourceNames.contains(each.getDataSourceName())) {
+            if (!dataSourcePropertyManager.getAllInstanceDataSourceNames().contains(each.getDataSourceName())) {
                 routingResult.getTableUnits().getTableUnits().remove(each);
             }
         }
