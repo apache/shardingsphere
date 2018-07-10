@@ -17,9 +17,6 @@
 
 package io.shardingsphere.transaction.saga;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,9 +25,12 @@ import java.util.List;
  *
  * @author zhangyonglun
  */
-@AllArgsConstructor
-@Getter
 public class SQLPair {
     
     private final List<String> sqlPair = new ArrayList<>(2);
+    
+    public SQLPair(final String sql, final String compensation) {
+        sqlPair.add(sql);
+        sqlPair.add(compensation);
+    }
 }

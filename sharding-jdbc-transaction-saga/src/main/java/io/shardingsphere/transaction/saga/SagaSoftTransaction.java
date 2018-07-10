@@ -17,13 +17,7 @@
 
 package io.shardingsphere.transaction.saga;
 
-import com.google.common.base.Preconditions;
-import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -31,40 +25,36 @@ import java.util.UUID;
  * 
  * @author zhangyonglun
  */
-@Getter
-@AllArgsConstructor
 public abstract class SagaSoftTransaction {
     
-    private boolean previousAutoCommit;
-    
-    private ShardingConnection connection;
-    
     private String transactionId;
+    
+    private List<SQLPair> sqlPairs;
     
     /**
      * Begin transaction.
      *
-     * @param connection connection
-     * @throws SQLException SQL exception
      */
-    public final void begin(final Connection connection) throws SQLException {
-        Preconditions.checkArgument(connection instanceof ShardingConnection, "Only ShardingConnection can support Saga transaction.");
-//        ExecutorExceptionHandler.setExceptionThrown(false);
-        previousAutoCommit = connection.getAutoCommit();
-        this.connection = (ShardingConnection) connection;
-        this.connection.setAutoCommit(true);
+    public final void begin() {
         transactionId = UUID.randomUUID().toString();
     }
     
     /**
      * End transaction.
      * 
-     * @throws SQLException SQL exception
      */
-    public final void end() throws SQLException {
-        if (null != connection) {
-//            ExecutorExceptionHandler.setExceptionThrown(true);
-            connection.setAutoCommit(previousAutoCommit);
-        }
+    public final void end() {
+    
+    }
+    
+    /**
+     * Set sql and compensation.
+     *
+     * @param sql sql
+     * @param compensation compensation
+     */
+    public void setSQLAndCompensation(final String sql, final String compensation) {
+        SQLPair sqlPair = new SQLPair(sql, compensation);
+        sqlPairs.add(sqlPair);
     }
 }
