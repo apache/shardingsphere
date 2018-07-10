@@ -53,7 +53,7 @@ public final class GeneralDQLIntegrateTest extends BaseDQLIntegrateTest {
     
     @Parameters(name = "{0} -> Rule:{3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
-        return IntegrateTestParameters.getParameters(SQLType.DQL);
+        return IntegrateTestParameters.getParametersWithAssertion(SQLType.DQL);
     }
     
     @Test

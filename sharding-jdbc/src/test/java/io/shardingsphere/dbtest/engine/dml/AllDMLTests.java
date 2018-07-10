@@ -23,7 +23,8 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        GeneralDMLIntegrateTest.class, 
+        GeneralDMLIntegrateTest.class,
+        ExecuteBatchIntegrateTest.class, 
         AdditionalDMLIntegrateTest.class
     })
 public class AllDMLTests {

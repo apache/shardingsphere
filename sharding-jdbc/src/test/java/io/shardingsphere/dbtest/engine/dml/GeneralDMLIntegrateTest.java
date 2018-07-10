@@ -49,7 +49,7 @@ public final class GeneralDMLIntegrateTest extends BaseDMLIntegrateTest {
     
     @Parameters(name = "{0} -> Rule:{3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
-        return IntegrateTestParameters.getParameters(SQLType.DML);
+        return IntegrateTestParameters.getParametersWithAssertion(SQLType.DML);
     }
     
     @Test

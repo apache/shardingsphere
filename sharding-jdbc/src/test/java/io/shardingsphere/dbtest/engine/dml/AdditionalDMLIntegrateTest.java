@@ -54,7 +54,7 @@ public final class AdditionalDMLIntegrateTest extends BaseDMLIntegrateTest {
     
     @Parameters(name = "{0} -> Rule:{3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
-        return integrateTestEnvironment.isRunAdditionalTestCases() ? IntegrateTestParameters.getParameters(SQLType.DML) : Collections.<Object[]>emptyList();
+        return integrateTestEnvironment.isRunAdditionalTestCases() ? IntegrateTestParameters.getParametersWithAssertion(SQLType.DML) : Collections.<Object[]>emptyList();
     }
     
     @Test

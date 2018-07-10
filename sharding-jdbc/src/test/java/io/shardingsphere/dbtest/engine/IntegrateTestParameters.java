@@ -47,12 +47,12 @@ public final class IntegrateTestParameters {
     private static IntegrateTestEnvironment integrateTestEnvironment = IntegrateTestEnvironment.getInstance();
     
     /**
-     * Get parameters.
+     * Get parameters with assertions.
      * 
      * @param sqlType SQL type
      * @return integrate test parameters.
      */
-    public static Collection<Object[]> getParameters(final SQLType sqlType) {
+    public static Collection<Object[]> getParametersWithAssertion(final SQLType sqlType) {
         // TODO sqlCasesLoader size should eq integrateTestCasesLoader size
         // assertThat(sqlCasesLoader.countAllSupportedSQLCases(), is(integrateTestCasesLoader.countAllDataSetTestCases()));
         Collection<Object[]> result = new LinkedList<>();
@@ -68,24 +68,74 @@ public final class IntegrateTestParameters {
             if (null == integrateTestCase) {
                 continue;
             }
-            result.addAll(getParameters(databaseType, caseType, integrateTestCase));
+            result.addAll(getParametersWithAssertion(databaseType, caseType, integrateTestCase));
         }
         return result;
     }
     
-    private static Collection<Object[]> getParameters(final DatabaseType databaseType, final SQLCaseType caseType, final IntegrateTestCase integrateTestCase) {
+    private static Collection<Object[]> getParametersWithAssertion(final DatabaseType databaseType, final SQLCaseType caseType, final IntegrateTestCase integrateTestCase) {
         Collection<Object[]> result = new LinkedList<>();
-        for (IntegrateTestCaseAssertion assertion : integrateTestCase.getIntegrateTestCaseAssertions()) {
-            for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
-                Object[] data = new Object[6];
-                data[0] = integrateTestCase.getSqlCaseId();
-                data[1] = integrateTestCase.getPath();
-                data[2] = assertion;
-                data[3] = each;
-                data[4] = new DatabaseTypeEnvironment(databaseType, IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType));
-                data[5] = caseType;
-                result.add(data);
+        for (IntegrateTestCaseAssertion each : integrateTestCase.getIntegrateTestCaseAssertions()) {
+            result.addAll(getParametersWithAssertion(integrateTestCase, each, databaseType, caseType));
+        }
+        return result;
+    }
+    
+    private static Collection<Object[]> getParametersWithAssertion(final IntegrateTestCase integrateTestCase, final IntegrateTestCaseAssertion assertion, final DatabaseType databaseType, final SQLCaseType caseType) {
+        Collection<Object[]> result = new LinkedList<>();
+        for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
+            Object[] data = new Object[6];
+            data[0] = integrateTestCase.getSqlCaseId();
+            data[1] = integrateTestCase.getPath();
+            data[2] = assertion;
+            data[3] = each;
+            data[4] = new DatabaseTypeEnvironment(databaseType, IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType));
+            data[5] = caseType;
+            result.add(data);
+        }
+        return result;
+    }
+    
+    /**
+     * Get parameters with test cases.
+     *
+     * @param sqlType SQL type
+     * @return integrate test parameters.
+     */
+    public static Collection<Object[]> getParametersWithCase(final SQLType sqlType) {
+        // TODO sqlCasesLoader size should eq integrateTestCasesLoader size
+        // assertThat(sqlCasesLoader.countAllSupportedSQLCases(), is(integrateTestCasesLoader.countAllDataSetTestCases()));
+        Collection<Object[]> result = new LinkedList<>();
+        for (Object[] each : sqlCasesLoader.getSupportedSQLTestParameters(Arrays.<Enum>asList(DatabaseType.values()), DatabaseType.class)) {
+            String sqlCaseId = each[0].toString();
+            if (sqlType != new SQLJudgeEngine(sqlCasesLoader.getSupportedSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList())).judge().getType()) {
+                continue;
             }
+            DatabaseType databaseType = (DatabaseType) each[1];
+            SQLCaseType caseType = (SQLCaseType) each[2];
+            // TODO only for prepared statement for now
+            if (SQLCaseType.Literal == caseType) {
+                continue;
+            }
+            IntegrateTestCase integrateTestCase = getIntegrateTestCase(sqlCaseId, sqlType);
+            // TODO remove when transfer finished
+            if (null == integrateTestCase) {
+                continue;
+            }
+            result.addAll(getParametersWithCase(databaseType, integrateTestCase));
+        }
+        return result;
+    }
+    
+    private static Collection<Object[]> getParametersWithCase(final DatabaseType databaseType, final IntegrateTestCase integrateTestCase) {
+        Collection<Object[]> result = new LinkedList<>();
+        for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
+            Object[] data = new Object[4];
+            data[0] = integrateTestCase.getSqlCaseId();
+            data[1] = integrateTestCase;
+            data[2] = each;
+            data[3] = new DatabaseTypeEnvironment(databaseType, IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType));
+            result.add(data);
         }
         return result;
     }
