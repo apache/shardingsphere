@@ -2,5 +2,5 @@
     <metadata>
         <column name="user_id_sum" />
     </metadata>
-    <dataset values="210" />
+    <row values="210" />
 </datasets>

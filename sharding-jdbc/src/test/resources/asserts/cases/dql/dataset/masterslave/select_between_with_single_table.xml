@@ -4,6 +4,6 @@
         <column name="user_id" />
         <column name="status" />
     </metadata>
-    <dataset values="1100, 11, init_slave" />
-    <dataset values="1101, 11, init_slave" />
+    <row values="1100, 11, init_slave" />
+    <row values="1101, 11, init_slave" />
 </datasets>

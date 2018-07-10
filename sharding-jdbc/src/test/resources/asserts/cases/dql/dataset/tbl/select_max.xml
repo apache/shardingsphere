@@ -2,5 +2,5 @@
     <metadata>
         <column name="max_user_id" />
     </metadata>
-    <dataset values="11" />
+    <row values="11" />
 </datasets>

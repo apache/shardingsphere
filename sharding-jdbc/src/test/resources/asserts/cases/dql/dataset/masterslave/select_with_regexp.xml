@@ -6,5 +6,5 @@
         <column name="status" />
         <column name="creation_date" />
     </metadata>
-    <dataset values="100001, 1000, 10, init_slave, 2017-08-08" />
+    <row values="100001, 1000, 10, init_slave, 2017-08-08" />
 </datasets>

@@ -3,5 +3,5 @@
         <column name="user_id" />
         <column name="orders_sum" />
     </metadata>
-    <dataset values="10, 2001" />
+    <row values="10, 2001" />
 </datasets>

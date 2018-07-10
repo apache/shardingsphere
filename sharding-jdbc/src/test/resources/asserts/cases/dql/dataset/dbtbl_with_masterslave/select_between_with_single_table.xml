@@ -4,14 +4,14 @@
         <column name="user_id" />
         <column name="status" />
     </metadata>
-    <dataset values="1009, 10, init_slave" />
-    <dataset values="1100, 11, init_slave" />
-    <dataset values="1101, 11, init_slave" />
-    <dataset values="1102, 11, init_slave" />
-    <dataset values="1103, 11, init_slave" />
-    <dataset values="1104, 11, init_slave" />
-    <dataset values="1105, 11, init_slave" />
-    <dataset values="1106, 11, init_slave" />
-    <dataset values="1107, 11, init_slave" />
-    <dataset values="1108, 11, init_slave" />
+    <row values="1009, 10, init_slave" />
+    <row values="1100, 11, init_slave" />
+    <row values="1101, 11, init_slave" />
+    <row values="1102, 11, init_slave" />
+    <row values="1103, 11, init_slave" />
+    <row values="1104, 11, init_slave" />
+    <row values="1105, 11, init_slave" />
+    <row values="1106, 11, init_slave" />
+    <row values="1107, 11, init_slave" />
+    <row values="1108, 11, init_slave" />
 </datasets>

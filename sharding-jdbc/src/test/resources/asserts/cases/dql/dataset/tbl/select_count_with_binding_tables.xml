@@ -2,5 +2,5 @@
     <metadata>
         <column name="items_count" />
     </metadata>
-    <dataset values="40" />
+    <row values="40" />
 </datasets>

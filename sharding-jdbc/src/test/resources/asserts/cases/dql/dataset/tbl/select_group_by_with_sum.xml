@@ -3,6 +3,6 @@
         <column name="orders_sum" />
         <column name="user_id" />
     </metadata>
-    <dataset values="10045, 10" />
-    <dataset values="11045, 11" />
+    <row values="10045, 10" />
+    <row values="11045, 11" />
 </datasets>

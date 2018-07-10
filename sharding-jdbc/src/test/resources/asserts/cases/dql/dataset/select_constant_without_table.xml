@@ -2,5 +2,5 @@
     <metadata>
         <column name="a" />
     </metadata>
-    <dataset values="1" />
+    <row values="1" />
 </datasets>

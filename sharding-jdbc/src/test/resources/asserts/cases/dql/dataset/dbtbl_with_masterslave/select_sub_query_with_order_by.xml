@@ -2,5 +2,5 @@
     <metadata>
         <column name="orders_count" />
     </metadata>
-    <dataset values="100" />
+    <row values="100" />
 </datasets>

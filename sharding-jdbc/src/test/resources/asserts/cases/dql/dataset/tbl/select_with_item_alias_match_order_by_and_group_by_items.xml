@@ -2,6 +2,6 @@
     <metadata>
         <column name="uid" />
     </metadata>
-    <dataset values="10" />
-    <dataset values="11" />
+    <row values="10" />
+    <row values="11" />
 </datasets>

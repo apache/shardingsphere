@@ -2,5 +2,5 @@
     <metadata>
         <column name="password" />
     </metadata>
-    <dataset values="100001" />
+    <row values="100001" />
 </datasets>

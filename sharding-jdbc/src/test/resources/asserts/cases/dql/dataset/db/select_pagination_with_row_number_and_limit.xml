@@ -7,6 +7,6 @@
         <column name="creation_date" />
         <column name="ORDER_BY_DERIVED_0" />
     </metadata>
-    <dataset values="190002, 1900, 3, 19, init, 190002" />
-    <dataset values="190001, 1900, 4, 19, init, 190001" />
+    <row values="190002, 1900, 3, 19, init, 190002" />
+    <row values="190001, 1900, 4, 19, init, 190001" />
 </datasets>

@@ -41,7 +41,7 @@ public final class DataSets {
     @XmlElement(name = "metadata")
     private List<DataSetMetadata> metadataList = new LinkedList<>();
     
-    @XmlElement(name = "dataset")
+    @XmlElement(name = "row")
     private List<DataSetRow> rows = new LinkedList<>();
     
     /**

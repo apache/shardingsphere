@@ -3,14 +3,14 @@
         <column name="orders_count" />
         <column name="user_id" />
     </metadata>
-    <dataset values="10, 10" />
-    <dataset values="10, 11" />
-    <dataset values="10, 12" />
-    <dataset values="10, 13" />
-    <dataset values="10, 14" />
-    <dataset values="10, 15" />
-    <dataset values="10, 16" />
-    <dataset values="10, 17" />
-    <dataset values="10, 18" />
-    <dataset values="10, 19" />
+    <row values="10, 10" />
+    <row values="10, 11" />
+    <row values="10, 12" />
+    <row values="10, 13" />
+    <row values="10, 14" />
+    <row values="10, 15" />
+    <row values="10, 16" />
+    <row values="10, 17" />
+    <row values="10, 18" />
+    <row values="10, 19" />
 </datasets>

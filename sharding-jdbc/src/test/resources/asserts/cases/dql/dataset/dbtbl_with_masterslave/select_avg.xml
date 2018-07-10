@@ -4,5 +4,5 @@
         <column name="AVG_DERIVED_COUNT_0" />
         <column name="AVG_DERIVED_SUM_0" />
     </metadata>
-    <dataset values="14.5000, 100, 1450" />
+    <row values="14.5000, 100, 1450" />
 </datasets>
