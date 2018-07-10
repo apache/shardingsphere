@@ -1,32 +1,39 @@
 <integrate-test-cases>
    <dml-test-case sql-case-id="insert_with_all_placeholders">
-       <assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order.xml" />
+       <assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />
+       <assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />
     </dml-test-case>
     
     <!-- TODO fixme -->
     <!--<dml-test-case sql-case-id="insert_with_all_placeholders_for_table_identifier">-->
-        <!--<assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order.xml" />-->
+        <!--<assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />-->
+        <!--<assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />-->
     <!--</dml-test-case>-->
     
     <dml-test-case sql-case-id="insert_without_columns_with_all_placeholders">
-        <assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order.xml" />
+        <assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />
+        <assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />
     </dml-test-case>
     
     <dml-test-case sql-case-id="insert_set_with_all_placeholders">
-        <assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order.xml" />
+        <assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />
+        <assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />
     </dml-test-case>
     
     <!-- TODO fixme -->
     <!--<dml-test-case sql-case-id="insert_set_with_all_placeholders_for_table_identifier">-->
-        <!--<assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order.xml" />-->
+        <!--<assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />-->
+        <!--<assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />-->
     <!--</dml-test-case>-->
     
     <dml-test-case sql-case-id="insert_with_partial_placeholders">
-        <assertion parameters="1:int, 1:int" expected-data-file="insert_for_order.xml" />
+        <assertion parameters="1:int, 1:int" expected-data-file="insert_for_order_1.xml" />
+        <assertion parameters="2:int, 2:int" expected-data-file="insert_for_order_2.xml" />
     </dml-test-case>
     
     <dml-test-case sql-case-id="insert_set_with_partial_placeholders">
-        <assertion parameters="1:int, 1:int" expected-data-file="insert_for_order.xml" />
+        <assertion parameters="1:int, 1:int" expected-data-file="insert_for_order_1.xml" />
+        <assertion parameters="2:int, 2:int" expected-data-file="insert_for_order_2.xml" />
     </dml-test-case>
     
     <dml-test-case sql-case-id="insert_with_generate_key_column">
