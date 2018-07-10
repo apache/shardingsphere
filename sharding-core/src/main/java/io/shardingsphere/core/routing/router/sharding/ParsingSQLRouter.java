@@ -96,14 +96,14 @@ public final class ParsingSQLRouter implements ShardingRouter {
             setGeneratedKeys(result, generatedKey);
         }
         RoutingResult routingResult = route(parameters, sqlStatement, shardingConditions);
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, logicSQL, databaseType, sqlStatement, shardingConditions, parameters, dataSourcePropertyManager);
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, logicSQL, databaseType, sqlStatement, shardingConditions, parameters);
         boolean isSingleRouting = routingResult.isSingleRouting();
         if (sqlStatement instanceof SelectStatement && null != ((SelectStatement) sqlStatement).getLimit()) {
             processLimit(parameters, (SelectStatement) sqlStatement, isSingleRouting);
         }
         SQLBuilder sqlBuilder = rewriteEngine.rewrite(!isSingleRouting);
         for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
-            result.getExecutionUnits().add(new SQLExecutionUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder)));
+            result.getExecutionUnits().add(new SQLExecutionUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder, dataSourcePropertyManager)));
         }
         if (showSQL) {
             SQLLogger.logSQL(logicSQL, sqlStatement, result.getExecutionUnits());
