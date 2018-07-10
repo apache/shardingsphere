@@ -1,4 +1,7 @@
-<datasets>
+<dataset>
     <columns values="order_items_count" />
-    <dataset values="20" />
-</datasets>
+    <metadata>
+        <column name="order_items_count" />
+    </metadata>
+    <row values="20" />
+</dataset>

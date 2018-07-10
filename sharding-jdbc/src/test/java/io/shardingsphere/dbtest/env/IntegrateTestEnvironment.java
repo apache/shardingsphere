@@ -19,7 +19,6 @@ package io.shardingsphere.dbtest.env;
 
 import com.google.common.base.Splitter;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.dbtest.engine.DQLIntegrateTest;
 import io.shardingsphere.dbtest.env.datasource.DatabaseEnvironment;
 import lombok.Getter;
 
@@ -40,19 +39,23 @@ public final class IntegrateTestEnvironment {
     
     private static final IntegrateTestEnvironment INSTANCE = new IntegrateTestEnvironment();
     
+    private final boolean runAdditionalTestCases;
+    
+    private final Collection<String> shardingRuleTypes;
+    
     private final Collection<DatabaseType> databaseTypes;
     
     private final Map<DatabaseType, DatabaseEnvironment> databaseEnvironments;
     
-    private final Collection<String> shardingRuleTypes;
-    
     private IntegrateTestEnvironment() {
         Properties prop = new Properties();
         try {
-            prop.load(DQLIntegrateTest.class.getClassLoader().getResourceAsStream("integrate/env.properties"));
+            prop.load(IntegrateTestEnvironment.class.getClassLoader().getResourceAsStream("integrate/env.properties"));
         } catch (final IOException ex) {
             ex.printStackTrace();
         }
+        runAdditionalTestCases = Boolean.valueOf(prop.getProperty("run.additional.cases"));
+        shardingRuleTypes = Splitter.on(",").trimResults().splitToList(prop.getProperty("sharding.rule.type"));
         databaseTypes = new LinkedList<>();
         for (String each : prop.getProperty("databases", DatabaseType.H2.name()).split(",")) {
             databaseTypes.add(DatabaseType.valueOf(each.trim()));
@@ -83,7 +86,6 @@ public final class IntegrateTestEnvironment {
                     break;
             }
         }
-        shardingRuleTypes = Splitter.on(",").trimResults().splitToList(prop.getProperty("sharding.rule.type"));
     }
     
     /**

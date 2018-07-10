@@ -1,4 +1,8 @@
-<datasets>
-    <columns values="user_id_avg, AVG_DERIVED_COUNT_0, AVG_DERIVED_SUM_0" />
-    <dataset values="10.5000, 20, 210" />
-</datasets>
+<dataset>
+    <metadata>
+        <column name="user_id_avg" />
+        <column name="AVG_DERIVED_COUNT_0" />
+        <column name="AVG_DERIVED_SUM_0" />
+    </metadata>
+    <row values="10.5000, 20, 210" />
+</dataset>

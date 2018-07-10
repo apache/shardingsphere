@@ -24,7 +24,6 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.parsing.cache.ParsingResultCache;
 import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
-import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.cases.assertion.root.SQLValue;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
@@ -138,23 +137,6 @@ public abstract class BaseIntegrateTest {
         return "masterslave".equals(shardingRuleType)
                 ? YamlMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)))
                 : YamlShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)));
-    }
-    
-    protected static Collection<Object[]> getParameters(final DatabaseType databaseType, final SQLCaseType caseType, final IntegrateTestCase integrateTestCase) {
-        Collection<Object[]> result = new LinkedList<>();
-        for (IntegrateTestCaseAssertion assertion : integrateTestCase.getIntegrateTestCaseAssertions()) {
-            for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
-                Object[] data = new Object[6];
-                data[0] = integrateTestCase.getSqlCaseId();
-                data[1] = integrateTestCase.getPath();
-                data[2] = assertion;
-                data[3] = each;
-                data[4] = new DatabaseTypeEnvironment(databaseType, IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType));
-                data[5] = caseType;
-                result.add(data);
-            }
-        }
-        return result;
     }
     
     @BeforeClass

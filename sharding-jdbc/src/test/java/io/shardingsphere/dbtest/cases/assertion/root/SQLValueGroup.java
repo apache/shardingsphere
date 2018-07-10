@@ -17,7 +17,7 @@
 
 package io.shardingsphere.dbtest.cases.assertion.root;
 
-import io.shardingsphere.dbtest.cases.dataset.init.DataSetMetadata;
+import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
 import lombok.Getter;
 
 import java.text.ParseException;
@@ -39,7 +39,7 @@ public final class SQLValueGroup {
         sqlValues = new LinkedList<>();
         int count = 0;
         for (String each : values) {
-            sqlValues.add(new SQLValue(each, dataSetMetadata.getColumnMetadataList().get(count).getType(), count + 1));
+            sqlValues.add(new SQLValue(each, dataSetMetadata.getColumns().get(count).getType(), count + 1));
             count++;
         }
     }

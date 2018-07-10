@@ -15,35 +15,61 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.cases.dataset.init;
+package io.shardingsphere.dbtest.cases.dataset;
 
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.util.InlineExpressionParser;
+import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
+import io.shardingsphere.dbtest.cases.dataset.row.DataSetRow;
 import lombok.Getter;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Data sets root xml entry.
+ * 
+ * @author zhangliang 
+ */
 @Getter
-@XmlRootElement(name = "datasets")
-public final class DataSetsRoot {
+@XmlRootElement(name = "dataset")
+public final class DataSet {
+    
+    @XmlAttribute(name = "update-count")
+    private int updateCount;
     
     @XmlElement(name = "metadata")
-    private List<DataSetMetadata> metadataList;
+    private List<DataSetMetadata> metadataList = new LinkedList<>();
     
-    @XmlElement(name = "dataset")
-    private List<DataSetRow> dataSetRows = new LinkedList<>();
+    @XmlElement(name = "row")
+    private List<DataSetRow> rows = new LinkedList<>();
     
+    /**
+     * Find data set meta data via table name.
+     *
+     * @param tableName table name
+     * @return data set meta data belong to current table
+     */
+    public DataSetMetadata findMetadata(final String tableName) {
+        for (DataSetMetadata each : metadataList) {
+            if (tableName.equals(each.getTableName())) {
+                return each;
+            }
+        }
+        throw new IllegalArgumentException(String.format("Cannot find expected metadata via table name: '%s'", tableName));
+    }
+        
     /**
      * Find data set meta data via data node.
      * 
      * @param dataNode data node
      * @return data set meta data belong to current data node
      */
-    public DataSetMetadata findDataSetMetadata(final DataNode dataNode) {
+    public DataSetMetadata findMetadata(final DataNode dataNode) {
         for (DataSetMetadata each : metadataList) {
             if (contains(new InlineExpressionParser(each.getDataNodes()).splitAndEvaluate(), dataNode)) {
                 return each;
@@ -63,13 +89,13 @@ public final class DataSetsRoot {
     
     /**
      * Find data set rows via data node.
-     * 
+     *
      * @param dataNode data node
      * @return data set rows belong to current data node
      */
-    public List<DataSetRow> findDataSetRows(final DataNode dataNode) {
-        List<DataSetRow> result = new ArrayList<>(dataSetRows.size());
-        for (DataSetRow each : dataSetRows) {
+    public List<DataSetRow> findRows(final DataNode dataNode) {
+        List<DataSetRow> result = new ArrayList<>(rows.size());
+        for (DataSetRow each : rows) {
             if (new DataNode(each.getDataNode()).equals(dataNode)) {
                 result.add(each);
             }

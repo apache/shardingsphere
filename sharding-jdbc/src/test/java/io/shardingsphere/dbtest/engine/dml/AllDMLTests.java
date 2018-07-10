@@ -15,29 +15,16 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.cases.dataset.expected.dataset;
+package io.shardingsphere.dbtest.engine.dml;
 
-import com.google.common.base.Splitter;
-import lombok.Getter;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import java.util.List;
-
-@Getter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedDataSetRow {
-    
-    @XmlAttribute
-    private String values;
-    
-    /**
-     * Get values.
-     *
-     * @return value list
-     */
-    public List<String> getValues() {
-        return Splitter.on(",").trimResults().splitToList(values);
-    }
+@RunWith(Suite.class)
+@SuiteClasses({
+        GeneralDMLIntegrateTest.class, 
+        AdditionalDMLIntegrateTest.class
+    })
+public class AllDMLTests {
 }
