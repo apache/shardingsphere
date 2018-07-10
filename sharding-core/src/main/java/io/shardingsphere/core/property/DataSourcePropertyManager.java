@@ -50,7 +50,7 @@ public class DataSourcePropertyManager {
     /**
      * Get all instance data source names.
      *
-     * @return instance data source name list.
+     * @return instance data source name list
      */
     public List<String> getAllInstanceDataSourceNames() {
         List<String> result = new LinkedList<>();
@@ -69,5 +69,15 @@ public class DataSourcePropertyManager {
             }
         }
         return false;
+    }
+    
+    /**
+     * Get actual schema name.
+     *
+     * @param actualDataSourceName actual data source name
+     * @return actual schema name
+     */
+    public String getActualSchemaName(final String actualDataSourceName) {
+        return dataSourcePropertyMap.get(actualDataSourceName).getSchemeName();
     }
 }
