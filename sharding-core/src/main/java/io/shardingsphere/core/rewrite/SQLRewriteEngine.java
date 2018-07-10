@@ -80,8 +80,6 @@ public final class SQLRewriteEngine {
     
     private final List<Object> parameters;
     
-    private final DataSourcePropertyManager dataSourcePropertyManager;
-    
     /**
      * Constructs SQL rewrite engine.
      * 
@@ -93,8 +91,7 @@ public final class SQLRewriteEngine {
      * @param parameters parameters
      */
     public SQLRewriteEngine(final ShardingRule shardingRule, final String originalSQL, final DatabaseType databaseType,
-                            final SQLStatement sqlStatement, final ShardingConditions shardingConditions,
-                            final List<Object> parameters, final DataSourcePropertyManager dataSourcePropertyManager) {
+                            final SQLStatement sqlStatement, final ShardingConditions shardingConditions, final List<Object> parameters) {
         this.shardingRule = shardingRule;
         this.originalSQL = originalSQL;
         this.databaseType = databaseType;
@@ -102,7 +99,6 @@ public final class SQLRewriteEngine {
         this.shardingConditions = shardingConditions;
         this.parameters = parameters;
         sqlTokens.addAll(sqlStatement.getSqlTokens());
-        this.dataSourcePropertyManager = dataSourcePropertyManager;
     }
     
     /**
@@ -254,8 +250,8 @@ public final class SQLRewriteEngine {
      * @param sqlBuilder SQL builder
      * @return SQL unit
      */
-    public SQLUnit generateSQL(final TableUnit tableUnit, final SQLBuilder sqlBuilder) {
-        return sqlBuilder.toSQL(tableUnit, getTableTokens(tableUnit), shardingRule);
+    public SQLUnit generateSQL(final TableUnit tableUnit, final SQLBuilder sqlBuilder, final DataSourcePropertyManager dataSourcePropertyManager) {
+        return sqlBuilder.toSQL(tableUnit, getTableTokens(tableUnit), shardingRule, dataSourcePropertyManager);
     }
    
     private Map<String, String> getTableTokens(final TableUnit tableUnit) {
