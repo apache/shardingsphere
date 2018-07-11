@@ -20,11 +20,13 @@ package io.shardingsphere.core.rewrite;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.core.property.DataSourcePropertyManager;
 import io.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.TablePlaceholder;
 import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -45,7 +47,7 @@ public final class SQLBuilderTest {
         sqlBuilder.appendLiterals(".id");
         sqlBuilder.appendLiterals(" FROM ");
         sqlBuilder.appendLiterals("table_x");
-        assertThat(sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null).getSql(), is("SELECT table_x.id FROM table_x"));
+        assertThat(sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null, null).getSql(), is("SELECT table_x.id FROM table_x"));
     }
     
     @Test
@@ -56,7 +58,7 @@ public final class SQLBuilderTest {
         sqlBuilder.appendLiterals(".id");
         sqlBuilder.appendLiterals(" FROM ");
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x"));
-        assertThat(sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null).getSql(), is("SELECT table_x.id FROM table_x"));
+        assertThat(sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null, null).getSql(), is("SELECT table_x.id FROM table_x"));
     }
     
     @Test
@@ -69,7 +71,7 @@ public final class SQLBuilderTest {
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x"));
         Map<String, String> tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_x", "table_x_1");
-        assertThat(sqlBuilder.toSQL(null, tableTokens, null).getSql(), is("SELECT table_x_1.id FROM table_x_1"));
+        assertThat(sqlBuilder.toSQL(null, tableTokens, null, null).getSql(), is("SELECT table_x_1.id FROM table_x_1"));
     }
     
     @Test
@@ -80,7 +82,7 @@ public final class SQLBuilderTest {
         sqlBuilder.appendLiterals(" ON ");
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x"));
         sqlBuilder.appendLiterals(" ('column')");
-        assertThat(sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null).getSql(), is("CREATE INDEX index_name ON table_x ('column')"));
+        assertThat(sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null, null).getSql(), is("CREATE INDEX index_name ON table_x ('column')"));
     }
     
     @Test
@@ -93,7 +95,7 @@ public final class SQLBuilderTest {
         sqlBuilder.appendLiterals(" ('column')");
         Map<String, String> tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_x", "table_x_1");
-        assertThat(sqlBuilder.toSQL(null, tableTokens, null).getSql(), is("CREATE INDEX index_name_table_x_1 ON table_x_1 ('column')"));
+        assertThat(sqlBuilder.toSQL(null, tableTokens, null, null).getSql(), is("CREATE INDEX index_name_table_x_1 ON table_x_1 ('column')"));
     }
     
     @Test(expected = ShardingException.class)
@@ -104,7 +106,7 @@ public final class SQLBuilderTest {
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x"));
         sqlBuilder.appendLiterals("ON ");
         sqlBuilder.appendPlaceholder(new SchemaPlaceholder("dx", "table_x"));
-        sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), createShardingRule());
+        sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), createShardingRule(), null);
     }
     
     @Test
@@ -117,7 +119,9 @@ public final class SQLBuilderTest {
         sqlBuilder.appendPlaceholder(new SchemaPlaceholder("ds", "table_0"));
         Map<String, String> tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_0", "table_1");
-        assertThat(sqlBuilder.toSQL(null, tableTokens, createShardingRule()).getSql(), is("SHOW CREATE TABLE table_1 ON ds0"));
+        DataSourcePropertyManager dataSourcePropertyManager = Mockito.mock(DataSourcePropertyManager.class);
+        Mockito.when(dataSourcePropertyManager.getActualSchemaName(Mockito.anyString())).thenReturn("actual_db");
+        assertThat(sqlBuilder.toSQL(null, tableTokens, createShardingRule(), dataSourcePropertyManager).getSql(), is("SHOW CREATE TABLE table_1 ON actual_db"));
     }
     
     @Test

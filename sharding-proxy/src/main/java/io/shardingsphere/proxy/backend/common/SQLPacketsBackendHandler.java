@@ -104,7 +104,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
         }
     }
     
-    protected CommandResponsePackets executeForMasterSlave() {
+    private CommandResponsePackets executeForMasterSlave() {
         MasterSlaveRouter masterSlaveRouter = new MasterSlaveRouter(RuleRegistry.getInstance().getMasterSlaveRule());
         SQLStatement sqlStatement = new SQLJudgeEngine(rebuilder.sql()).judge();
         String dataSourceName = masterSlaveRouter.route(sqlStatement.getType()).iterator().next();
@@ -124,8 +124,9 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
         return merge(sqlStatement, packets, queryResults);
     }
     
-    protected CommandResponsePackets executeForSharding() {
-        StatementRoutingEngine routingEngine = new StatementRoutingEngine(RuleRegistry.getInstance().getShardingRule(), RuleRegistry.getInstance().getShardingMetaData(), databaseType, showSQL);
+    private CommandResponsePackets executeForSharding() {
+        StatementRoutingEngine routingEngine = new StatementRoutingEngine(RuleRegistry.getInstance().getShardingRule(),
+                RuleRegistry.getInstance().getShardingMetaData(), databaseType, showSQL, RuleRegistry.getInstance().getDataSourcePropertyManager());
         SQLRouteResult routeResult = routingEngine.route(rebuilder.sql());
         if (routeResult.getExecutionUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
@@ -158,7 +159,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
         return result;
     }
     
-    protected CommandResponsePackets merge(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets, final List<QueryResult> queryResults) {
+    private CommandResponsePackets merge(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets, final List<QueryResult> queryResults) {
         CommandResponsePackets headPackets = new CommandResponsePackets();
         for (CommandResponsePackets each : packets) {
             headPackets.addPacket(each.getHeadPacket());

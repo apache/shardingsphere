@@ -23,6 +23,7 @@ import com.google.common.base.Strings;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.optimizer.condition.ShardingCondition;
 import io.shardingsphere.core.optimizer.insert.InsertShardingCondition;
+import io.shardingsphere.core.property.DataSourcePropertyManager;
 import io.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
@@ -42,7 +43,7 @@ import java.util.Map;
 
 /**
  * SQL builder.
- * 
+ *
  * @author gaohongtao
  * @author zhangliang
  * @author maxiaoguang
@@ -92,9 +93,11 @@ public final class SQLBuilder {
      * @param tableUnit table unit
      * @param logicAndActualTableMap logic and actual map
      * @param shardingRule sharding rule
+     * @param dataSourcePropertyManager data source property manager
      * @return SQL unit
      */
-    public SQLUnit toSQL(final TableUnit tableUnit, final Map<String, String> logicAndActualTableMap, final ShardingRule shardingRule) {
+    public SQLUnit toSQL(final TableUnit tableUnit, final Map<String, String> logicAndActualTableMap,
+                         final ShardingRule shardingRule, final DataSourcePropertyManager dataSourcePropertyManager) {
         List<Object> insertParameters = new LinkedList<>();
         StringBuilder result = new StringBuilder();
         for (Object each : segments) {
@@ -112,10 +115,9 @@ public final class SQLBuilder {
                 if (!tableRule.isPresent() && Strings.isNullOrEmpty(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName())) {
                     throw new ShardingException("Cannot found schema name '%s' in sharding rule.", schemaPlaceholder.getLogicSchemaName());
                 }
-                // TODO 目前只能找到真实数据源名称. 未来需要在初始化sharding rule时创建connection,并验证连接是否正确,并获取出真实的schema的名字, 然后在这里替换actualDataSourceName为actualSchemaName
-                // TODO 目前actualDataSourceName必须actualSchemaName一样,才能保证替换schema的场景不出错, 如: show columns xxx
                 Preconditions.checkState(tableRule.isPresent());
-                result.append(tableRule.get().getActualDatasourceNames().iterator().next());
+                String actualSchemaName = dataSourcePropertyManager.getActualSchemaName(tableRule.get().getActualDatasourceNames().iterator().next());
+                result.append(actualSchemaName);
             } else if (each instanceof IndexPlaceholder) {
                 IndexPlaceholder indexPlaceholder = (IndexPlaceholder) each;
                 result.append(indexPlaceholder.getLogicIndexName());

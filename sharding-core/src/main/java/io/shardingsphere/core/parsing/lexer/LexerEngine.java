@@ -61,6 +61,15 @@ public final class LexerEngine {
     }
     
     /**
+     * Is end or not.
+     *
+     * @return current token is end token or not.
+     */
+    public boolean isEnd() {
+        return lexer.getCurrentToken().getType() == Assist.END;
+    }
+    
+    /**
      * Get current token.
      * 
      * @return current token

@@ -32,12 +32,15 @@ import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.jdbc.core.statement.ShardingPreparedStatement;
 import io.shardingsphere.core.jdbc.core.statement.ShardingStatement;
+import io.shardingsphere.core.property.DataSourceProperty;
+import io.shardingsphere.core.property.DataSourcePropertyManager;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.util.EventBusInstance;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
@@ -76,7 +79,7 @@ public final class SqlRoutingEventListenerTest {
         dataSourceMap.put("ds_0", null);
         dataSourceMap.put("ds_1", null);
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, dataSourceMap.keySet());
-        shardingContext = new ShardingContext(dataSourceMap, shardingRule, DatabaseType.MySQL, null, null, true);
+        shardingContext = new ShardingContext(dataSourceMap, null, shardingRule, DatabaseType.MySQL, null, null, true);
     }
     
     @Test

@@ -33,6 +33,7 @@ import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTablesS
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingException;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
@@ -40,10 +41,14 @@ import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 /**
  * SQL judge engine.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 public final class SQLJudgeEngine {
@@ -67,20 +72,25 @@ public final class SQLJudgeEngine {
                 if (isDML(tokenType)) {
                     return getDMLStatement(tokenType);
                 }
-                if (isDDL(tokenType)) {
-                    return getDDLStatement();
-                }
                 if (isTCL(tokenType)) {
                     return getTCLStatement();
                 }
                 if (isDAL(tokenType)) {
                     return getDALStatement(tokenType, lexerEngine);
                 }
+                lexerEngine.nextToken();
+                if (isDCL(tokenType, lexerEngine)) {
+                    return getDCLStatement();
+                }
+                if (isDDL(tokenType, lexerEngine)) {
+                    return getDDLStatement();
+                }
+            } else {
+                lexerEngine.nextToken();
             }
             if (tokenType instanceof Assist && Assist.END == tokenType) {
                 throw new SQLParsingException("Unsupported SQL statement: [%s]", sql);
             }
-            lexerEngine.nextToken();
         }
     }
     
@@ -92,8 +102,20 @@ public final class SQLJudgeEngine {
         return DefaultKeyword.INSERT == tokenType || DefaultKeyword.UPDATE == tokenType || DefaultKeyword.DELETE == tokenType;
     }
     
-    private boolean isDDL(final TokenType tokenType) {
-        return DefaultKeyword.CREATE == tokenType || DefaultKeyword.ALTER == tokenType || DefaultKeyword.DROP == tokenType || DefaultKeyword.TRUNCATE == tokenType;
+    private static boolean isDDL(final TokenType tokenType, final LexerEngine lexerEngine) {
+        Collection<DefaultKeyword> primaryTokens = Arrays.asList(DefaultKeyword.CREATE, DefaultKeyword.ALTER, DefaultKeyword.DROP, DefaultKeyword.TRUNCATE);
+        Collection<DefaultKeyword> secondaryTokens = Arrays.asList(DefaultKeyword.LOGIN, DefaultKeyword.USER, DefaultKeyword.ROLE);
+        return primaryTokens.contains(tokenType) && !secondaryTokens.contains(lexerEngine.getCurrentToken().getType());
+    }
+    
+    private static boolean isDCL(final TokenType tokenType, final LexerEngine lexerEngine) {
+        Collection<DefaultKeyword> primaryTokens = Arrays.asList(DefaultKeyword.GRANT, DefaultKeyword.REVOKE, DefaultKeyword.DENY);
+        Collection<DefaultKeyword> secondaryTokens = Arrays.asList(DefaultKeyword.LOGIN, DefaultKeyword.USER, DefaultKeyword.ROLE);
+        if (primaryTokens.contains(tokenType)) {
+            return true;
+        }
+        primaryTokens = Arrays.asList(DefaultKeyword.CREATE, DefaultKeyword.ALTER, DefaultKeyword.DROP, DefaultKeyword.RENAME);
+        return primaryTokens.contains(tokenType) && secondaryTokens.contains(lexerEngine.getCurrentToken().getType());
     }
     
     private boolean isTCL(final TokenType tokenType) {
@@ -118,6 +140,10 @@ public final class SQLJudgeEngine {
     
     private SQLStatement getDDLStatement() {
         return new DDLStatement();
+    }
+    
+    private SQLStatement getDCLStatement() {
+        return new DCLStatement();
     }
     
     private SQLStatement getTCLStatement() {
