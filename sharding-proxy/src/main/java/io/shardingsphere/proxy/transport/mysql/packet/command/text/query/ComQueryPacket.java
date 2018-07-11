@@ -18,6 +18,9 @@
 package io.shardingsphere.proxy.transport.mysql.packet.command.text.query;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.constant.TCLType;
+import io.shardingsphere.core.transaction.event.XaTransactionEvent;
+import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.proxy.backend.common.SQLExecuteBackendHandler;
 import io.shardingsphere.proxy.backend.common.SQLPacketsBackendHandler;
 import io.shardingsphere.proxy.config.RuleRegistry;
@@ -152,23 +155,28 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
     }
     
     private boolean doTransactionIntercept() throws Exception {
+        boolean result = false;
         if (RuleRegistry.isXaTransaction()) {
+            XaTransactionEvent xaTransactionEvent = new XaTransactionEvent(sql);
             if (isBegin()) {
-                AtomikosUserTransaction.getInstance().begin();
-                return true;
+                xaTransactionEvent.setTclType(TCLType.BEGIN);
+                result = true;
             } else if (isCommit()) {
-                AtomikosUserTransaction.getInstance().commit();
-                return true;
+                xaTransactionEvent.setTclType(TCLType.COMMIT);
+                result = true;
             } else if (isXaRollback()) {
-                AtomikosUserTransaction.getInstance().rollback();
-                return true;
+                xaTransactionEvent.setTclType(TCLType.ROLLBACK);
+                result = true;
+            }
+            if (result) {
+                EventBusInstance.getInstance().post(xaTransactionEvent);
             }
         } else {
             if (isBegin() || isCommit() || isRollback()) {
-                return true;
+                result = true;
             }
         }
-        return false;
+        return result;
     }
     
     private boolean isBegin() {
