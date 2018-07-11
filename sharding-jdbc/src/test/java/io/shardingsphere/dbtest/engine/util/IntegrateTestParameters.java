@@ -36,7 +36,8 @@ import java.util.LinkedList;
 /**
  * Integrate test parameters.
  * 
- * @author zhangliang 
+ * @author zhangliang
+ * @author panjuan
  */
 public final class IntegrateTestParameters {
     
