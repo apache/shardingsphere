@@ -149,6 +149,8 @@ public final class IntegrateTestParameters {
                 return integrateTestCasesLoader.getDMLIntegrateTestCase(sqlCaseId);
             case DDL:
                 return integrateTestCasesLoader.getDDLIntegrateTestCase(sqlCaseId);
+            case DCL:
+                return integrateTestCasesLoader.getDCLIntegrateTestCase(sqlCaseId);
             default:
                 throw new UnsupportedOperationException(sqlType.name());
         }
