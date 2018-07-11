@@ -21,6 +21,7 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
@@ -29,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /*
  * zookeeper connection holder
@@ -47,6 +49,7 @@ public class Holder {
     private ZooKeeper zooKeeper;
     
     @Getter
+    @Setter(value = AccessLevel.PROTECTED)
     private boolean connected;
     
     Holder(final BaseContext context) {
@@ -60,13 +63,22 @@ public class Holder {
      * @throws InterruptedException InterruptedException
      */
     public void start() throws IOException, InterruptedException {
+        initZookeeper();
+        connectLatch.await();
+    }
+    
+    protected void start(final int wait, final TimeUnit units) throws IOException, InterruptedException {
+        initZookeeper();
+        connectLatch.await(wait, units);
+    }
+    
+    protected void initZookeeper() throws IOException {
         LOGGER.debug("Holder servers:{},sessionTimeOut:{}", context.getServers(), context.getSessionTimeOut());
         zooKeeper = new ZooKeeper(context.getServers(), context.getSessionTimeOut(), startWatcher());
         if (!io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.StringUtil.isNullOrBlank(context.getScheme())) {
             zooKeeper.addAuthInfo(context.getScheme(), context.getAuth());
             LOGGER.debug("Holder scheme:{},auth:{}", context.getScheme(), context.getAuth());
         }
-        connectLatch.await();
     }
     
     private Watcher startWatcher() {
@@ -89,7 +101,7 @@ public class Holder {
         };
     }
     
-    private void processConnection(final WatchedEvent event) {
+    protected void processConnection(final WatchedEvent event) {
         LOGGER.debug("BaseClient process event:{}", event.toString());
         if (Watcher.Event.EventType.None == event.getType()) {
             if (Watcher.Event.KeeperState.SyncConnected == event.getState()) {

@@ -24,6 +24,7 @@ import io.shardingsphere.core.parsing.parser.context.limit.Limit;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.SelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.StarSelectItem;
+import io.shardingsphere.core.parsing.parser.context.table.Table;
 import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
 import io.shardingsphere.core.parsing.parser.token.OffsetToken;
 import io.shardingsphere.core.parsing.parser.token.RowCountToken;
@@ -34,6 +35,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -108,19 +110,55 @@ public final class SelectStatement extends DQLStatement {
     }
     
     /**
-     * Get start select items.
-     *
-     * @return start select items.
+     * Judge has unqualified star select item.
+     * 
+     * @return star select item without owner
      */
-    public List<StarSelectItem> getStarSelectItems() {
-        List<StarSelectItem> result = new LinkedList<>();
+    public boolean hasUnqualifiedStarSelectItem() {
         for (SelectItem each : items) {
-            if (each instanceof StarSelectItem) {
-                StarSelectItem starSelectItem = (StarSelectItem) each;
-                result.add(starSelectItem);
+            if (each instanceof StarSelectItem && !((StarSelectItem) each).getOwner().isPresent()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Get qualified star select items.
+     *
+     * @return qualified star select items
+     */
+    public Collection<StarSelectItem> getQualifiedStarSelectItems() {
+        Collection<StarSelectItem> result = new LinkedList<>();
+        for (SelectItem each : items) {
+            if (each instanceof StarSelectItem && ((StarSelectItem) each).getOwner().isPresent()) {
+                result.add((StarSelectItem) each);
             }
         }
         return result;
+    }
+    
+    /**
+     * Find star select item via table name or alias.
+     *
+     * @param tableNameOrAlias table name or alias
+     * @return star select item via table name or alias
+     */
+    public Optional<StarSelectItem> findStarSelectItem(final String tableNameOrAlias) {
+        Optional<Table> table = getTables().find(tableNameOrAlias);
+        if (!table.isPresent()) {
+            return Optional.absent();
+        }
+        for (SelectItem each : items) {
+            if (!(each instanceof StarSelectItem)) {
+                continue;
+            }
+            StarSelectItem starSelectItem = (StarSelectItem) each;
+            if (starSelectItem.getOwner().isPresent() && getTables().find(starSelectItem.getOwner().get()).equals(table)) {
+                return Optional.of(starSelectItem);
+            }
+        }
+        return Optional.absent();
     }
     
     /**

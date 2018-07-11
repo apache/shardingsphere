@@ -20,8 +20,6 @@ package io.shardingsphere.dbtest.cases.assertion.dml;
 import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
 import lombok.Getter;
 
-import javax.xml.bind.annotation.XmlAttribute;
-
 /**
  * JAXB definition of DML integrate test case assertion.
  *
@@ -29,7 +27,4 @@ import javax.xml.bind.annotation.XmlAttribute;
  */
 @Getter
 public final class DMLIntegrateTestCaseAssertion extends IntegrateTestCaseAssertion {
-    
-    @XmlAttribute(name = "expected-update")
-    private int expectedUpdate;
 }

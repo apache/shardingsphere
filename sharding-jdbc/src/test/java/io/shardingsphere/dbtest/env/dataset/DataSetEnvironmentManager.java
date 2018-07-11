@@ -22,10 +22,10 @@ import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.util.InlineExpressionParser;
 import io.shardingsphere.dbtest.cases.assertion.root.SQLValue;
 import io.shardingsphere.dbtest.cases.assertion.root.SQLValueGroup;
-import io.shardingsphere.dbtest.cases.dataset.init.DataSetColumnMetadata;
-import io.shardingsphere.dbtest.cases.dataset.init.DataSetMetadata;
-import io.shardingsphere.dbtest.cases.dataset.init.DataSetRow;
-import io.shardingsphere.dbtest.cases.dataset.init.DataSetsRoot;
+import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetColumn;
+import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
+import io.shardingsphere.dbtest.cases.dataset.row.DataSetRow;
+import io.shardingsphere.dbtest.cases.dataset.DataSet;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
@@ -50,13 +50,13 @@ import java.util.Map.Entry;
  */
 public final class DataSetEnvironmentManager {
     
-    private final DataSetsRoot dataSetsRoot;
+    private final DataSet dataSet;
     
     private final Map<String, DataSource> dataSourceMap;
     
     public DataSetEnvironmentManager(final String path, final Map<String, DataSource> dataSourceMap) throws IOException, JAXBException {
         try (FileReader reader = new FileReader(path)) {
-            dataSetsRoot = (DataSetsRoot) JAXBContext.newInstance(DataSetsRoot.class).createUnmarshaller().unmarshal(reader);
+            dataSet = (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);
         }
         this.dataSourceMap = dataSourceMap;
     }
@@ -73,8 +73,8 @@ public final class DataSetEnvironmentManager {
         for (Entry<DataNode, List<DataSetRow>> entry : dataNodeListMap.entrySet()) {
             DataNode dataNode = entry.getKey();
             List<DataSetRow> dataSetRows = entry.getValue();
-            DataSetMetadata dataSetMetadata = dataSetsRoot.findDataSetMetadata(dataNode);
-            String insertSQL = generateInsertSQL(dataNode.getTableName(), dataSetMetadata.getColumnMetadataList());
+            DataSetMetadata dataSetMetadata = dataSet.findMetadata(dataNode);
+            String insertSQL = generateInsertSQL(dataNode.getTableName(), dataSetMetadata.getColumns());
             List<SQLValueGroup> sqlValueGroups = new LinkedList<>();
             for (DataSetRow row : dataSetRows) {
                 sqlValueGroups.add(new SQLValueGroup(dataSetMetadata, row.getValues()));
@@ -87,7 +87,7 @@ public final class DataSetEnvironmentManager {
     
     private Map<DataNode, List<DataSetRow>> getDataSetRowMap() {
         Map<DataNode, List<DataSetRow>> result = new LinkedHashMap<>();
-        for (DataSetRow each : dataSetsRoot.getDataSetRows()) {
+        for (DataSetRow each : dataSet.getRows()) {
             DataNode dataNode = new DataNode(each.getDataNode());
             if (!result.containsKey(dataNode)) {
                 result.put(dataNode, new LinkedList<DataSetRow>());
@@ -97,10 +97,10 @@ public final class DataSetEnvironmentManager {
         return result;
     }
     
-    private String generateInsertSQL(final String tableName, final List<DataSetColumnMetadata> columnMetadata) {
+    private String generateInsertSQL(final String tableName, final List<DataSetColumn> columnMetadata) {
         List<String> columnNames = new LinkedList<>();
         List<String> placeholders = new LinkedList<>();
-        for (DataSetColumnMetadata each : columnMetadata) {
+        for (DataSetColumn each : columnMetadata) {
             columnNames.add(each.getName());
             placeholders.add("?");
         }
@@ -149,7 +149,7 @@ public final class DataSetEnvironmentManager {
     
     private Map<String, Collection<String>> getDataNodeMap() {
         Map<String, Collection<String>> result = new LinkedHashMap<>();
-        for (DataSetMetadata each : dataSetsRoot.getMetadataList()) {
+        for (DataSetMetadata each : dataSet.getMetadataList()) {
             for (Entry<String, Collection<String>> entry : getDataNodeMap(each).entrySet()) {
                 if (!result.containsKey(entry.getKey())) {
                     result.put(entry.getKey(), new LinkedList<String>());

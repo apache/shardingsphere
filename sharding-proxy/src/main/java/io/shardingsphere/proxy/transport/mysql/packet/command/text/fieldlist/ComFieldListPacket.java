@@ -24,12 +24,21 @@ import io.shardingsphere.proxy.backend.common.SQLPacketsBackendHandler;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
+import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.statement.close.DummyPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ComQueryPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextResultSetRowPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import lombok.extern.slf4j.Slf4j;
+
+import java.sql.SQLException;
 
 /**
  * COM_FIELD_LIST command packet.
@@ -46,6 +55,12 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
     private final String table;
     
     private final String fieldWildcard;
+    
+    private int currentSequenceId;
+    
+    private SQLExecuteBackendHandler sqlExecuteBackendHandler;
+    
+    private SQLPacketsBackendHandler sqlPacketsBackendHandler;
     
     public ComFieldListPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload mysqlPacketPayload) {
         super(sequenceId);
@@ -75,20 +90,55 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
         String sql = String.format("SHOW COLUMNS FROM %s FROM %s", table, ShardingConstant.LOGIC_SCHEMA_NAME);
         // TODO use common database type
         if (RuleRegistry.getInstance().isWithoutJdbc()) {
-            return new SQLPacketsBackendHandler(this, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL()).execute();
+            sqlPacketsBackendHandler = new SQLPacketsBackendHandler(this, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
+            if (sqlPacketsBackendHandler.execute().getHeadPacket() instanceof ErrPacket) {
+                return new CommandResponsePackets(new ErrPacket(1, 0, "", "", ""));
+            }
+            return new CommandResponsePackets(new DummyPacket());
         } else {
-            return new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL()).execute();
+            sqlExecuteBackendHandler = new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
+            if (sqlExecuteBackendHandler.execute().getHeadPacket() instanceof ErrPacket) {
+                return new CommandResponsePackets(new ErrPacket(1, 0, "", "", ""));
+            }
+            return new CommandResponsePackets(new DummyPacket());
         }
     }
     
     @Override
     public boolean hasMoreResultValue() {
-        return false;
+        try {
+            if (RuleRegistry.getInstance().isWithoutJdbc()) {
+                return sqlPacketsBackendHandler.hasMoreResultValue();
+            } else {
+                return sqlExecuteBackendHandler.hasMoreResultValue();
+            }
+        } catch (final SQLException ex) {
+            return false;
+        }
     }
     
     @Override
     public DatabaseProtocolPacket getResultValue() {
-        return null;
+        DatabaseProtocolPacket result;
+        if (RuleRegistry.getInstance().isWithoutJdbc()) {
+            result = sqlPacketsBackendHandler.getResultValue();
+            if (!sqlPacketsBackendHandler.isHasMoreResultValueFlag()) {
+                return new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
+            }
+        } else {
+            result = sqlExecuteBackendHandler.getResultValue();
+            if (!sqlExecuteBackendHandler.isHasMoreResultValueFlag()) {
+                return new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
+            }
+        }
+        if (result instanceof TextResultSetRowPacket) {
+            TextResultSetRowPacket fieldListResponse = (TextResultSetRowPacket) result;
+            String columnName = (String) fieldListResponse.getData().get(0);
+            return new ColumnDefinition41Packet(++currentSequenceId, ShardingConstant.LOGIC_SCHEMA_NAME, table, table,
+                columnName, columnName, 100, ColumnType.MYSQL_TYPE_VARCHAR, 0);
+        } else {
+            return new ErrPacket(1, 0, "", "", "");
+        }
     }
     
     @Override

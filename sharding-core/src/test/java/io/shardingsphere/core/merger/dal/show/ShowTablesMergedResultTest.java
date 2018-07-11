@@ -24,6 +24,8 @@ import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.api.config.strategy.ComplexShardingStrategyConfiguration;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.merger.fixture.TestQueryResult;
+import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.metadata.TableMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,10 +34,12 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -47,6 +51,8 @@ public final class ShowTablesMergedResultTest {
     
     private ResultSet resultSet;
     
+    private ShardingMetaData shardingMetaData;
+    
     @Before
     public void setUp() throws SQLException {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
@@ -56,6 +62,11 @@ public final class ShowTablesMergedResultTest {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         shardingRule = new ShardingRule(shardingRuleConfig, Lists.newArrayList("ds"));
+        shardingMetaData = mock(ShardingMetaData.class);
+        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>();
+        tableMetaDataMap.put("table", new TableMetaData());
+        when(shardingMetaData.getTableMetaDataMap()).thenReturn(tableMetaDataMap);
+//        when(shardingMetaData.getTableMetaDataMap().keySet()).thenReturn(new HashSet<String>(){{add("table");}});
         
         resultSet = mock(ResultSet.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
@@ -73,21 +84,21 @@ public final class ShowTablesMergedResultTest {
     
     @Test
     public void assertNextForEmptyQueryResult() throws SQLException {
-        ShowTablesMergedResult showTablesMergedResult = new ShowTablesMergedResult(shardingRule, new ArrayList<QueryResult>());
+        ShowTablesMergedResult showTablesMergedResult = new ShowTablesMergedResult(shardingRule, new ArrayList<QueryResult>(), shardingMetaData);
         assertFalse(showTablesMergedResult.next());
     }
     
     @Test
     public void assertNextForActualTableNameInTableRule() throws SQLException {
         when(resultSet.getObject(1)).thenReturn("table_0");
-        ShowTablesMergedResult showTablesMergedResult = new ShowTablesMergedResult(shardingRule, queryResults);
+        ShowTablesMergedResult showTablesMergedResult = new ShowTablesMergedResult(shardingRule, queryResults, shardingMetaData);
         assertTrue(showTablesMergedResult.next());
     }
     
     @Test
     public void assertNextForActualTableNameNotInTableRule() throws SQLException {
         when(resultSet.getObject(1)).thenReturn("table_3");
-        ShowTablesMergedResult showTablesMergedResult = new ShowTablesMergedResult(shardingRule, queryResults);
+        ShowTablesMergedResult showTablesMergedResult = new ShowTablesMergedResult(shardingRule, queryResults, shardingMetaData);
         assertTrue(showTablesMergedResult.next());
     }
 }

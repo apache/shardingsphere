@@ -17,21 +17,28 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command.text.query;
 
-import java.sql.SQLException;
-
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.constant.TCLType;
+import io.shardingsphere.core.transaction.event.XaTransactionEvent;
+import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.proxy.backend.common.SQLExecuteBackendHandler;
 import io.shardingsphere.proxy.backend.common.SQLPacketsBackendHandler;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transaction.AtomikosUserTransaction;
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
+import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import lombok.extern.slf4j.Slf4j;
+
+import javax.transaction.Status;
+import javax.transaction.SystemException;
+import java.sql.SQLException;
 
 /**
  * COM_QUERY command packet.
@@ -39,6 +46,7 @@ import lombok.extern.slf4j.Slf4j;
  *
  * @author zhangliang
  * @author linjiaqi
+ * @author zhaojun
  */
 @Slf4j
 public final class ComQueryPacket extends CommandPacket implements CommandPacketRebuilder {
@@ -82,8 +90,11 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
     public CommandResponsePackets execute() {
         log.debug("COM_QUERY received for Sharding-Proxy: {}", sql);
         try {
-            doTransactionIntercept();
+            if (doTransactionIntercept()) {
+                return new CommandResponsePackets(new OKPacket(1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+            }
         } catch (final Exception ex) {
+            log.error("doTransactionIntercept Exception", ex);
             return new CommandResponsePackets(new ErrPacket(1, 0, "", "", "" + ex.getMessage()));
         }
         if (RuleRegistry.getInstance().isWithoutJdbc()) {
@@ -143,27 +154,44 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
         return new ComQueryPacket((int) params[0], (int) params[1], (String) params[2]);
     }
     
-    private void doTransactionIntercept() throws Exception {
+    private boolean doTransactionIntercept() throws Exception {
+        boolean result = false;
         if (RuleRegistry.isXaTransaction()) {
-            if (isXaBegin()) {
-                AtomikosUserTransaction.getInstance().begin();
-            } else if (isXaCommit()) {
-                AtomikosUserTransaction.getInstance().commit();
+            XaTransactionEvent xaTransactionEvent = new XaTransactionEvent(sql);
+            if (isBegin()) {
+                xaTransactionEvent.setTclType(TCLType.BEGIN);
+                result = true;
+            } else if (isCommit()) {
+                xaTransactionEvent.setTclType(TCLType.COMMIT);
+                result = true;
             } else if (isXaRollback()) {
-                AtomikosUserTransaction.getInstance().rollback();
+                xaTransactionEvent.setTclType(TCLType.ROLLBACK);
+                result = true;
+            }
+            if (result) {
+                EventBusInstance.getInstance().post(xaTransactionEvent);
+            }
+        } else {
+            if (isBegin() || isCommit() || isRollback()) {
+                result = true;
             }
         }
+        return result;
     }
     
-    private boolean isXaBegin() {
+    private boolean isBegin() {
         return "BEGIN".equalsIgnoreCase(sql) || "START TRANSACTION".equalsIgnoreCase(sql) || "SET AUTOCOMMIT=0".equalsIgnoreCase(sql);
     }
     
-    private boolean isXaCommit() {
+    private boolean isCommit() {
         return "COMMIT".equalsIgnoreCase(sql);
     }
     
-    private boolean isXaRollback() {
+    private boolean isXaRollback() throws SystemException {
+        return "ROLLBACK".equalsIgnoreCase(sql) && Status.STATUS_NO_TRANSACTION != AtomikosUserTransaction.getInstance().getStatus();
+    }
+    
+    private boolean isRollback() {
         return "ROLLBACK".equalsIgnoreCase(sql);
     }
 }
