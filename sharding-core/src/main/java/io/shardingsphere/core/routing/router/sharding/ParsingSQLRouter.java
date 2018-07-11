@@ -146,9 +146,10 @@ public final class ParsingSQLRouter implements ShardingRouter {
     }
     
     private void removeRedundantTableUnits(final RoutingResult routingResult) {
-        for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
-            if (!dataSourcePropertyManager.getAllInstanceDataSourceNames().contains(each.getDataSourceName())) {
-                routingResult.getTableUnits().getTableUnits().remove(each);
+        for (int i = 0; i < routingResult.getTableUnits().getTableUnits().size(); i++) {
+            String dataSourceName = routingResult.getTableUnits().getTableUnits().get(i).getDataSourceName();
+            if (!dataSourcePropertyManager.getAllInstanceDataSourceNames().contains(dataSourceName)) {
+                routingResult.getTableUnits().getTableUnits().remove(i);
             }
         }
     }
