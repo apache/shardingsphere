@@ -36,6 +36,7 @@ public class XaRawJdbcRepository {
         createTable();
         insertData();
         insertFailure();
+        updateData();
         System.out.println("1.Query with EQUAL--------------");
         queryWithEqual();
         System.out.println("2.Query with IN--------------");
@@ -103,13 +104,47 @@ public class XaRawJdbcRepository {
         return result;
     }
     
+    protected void updateData() throws SQLException {
+        Connection connection = dataSource.getConnection();
+        connection.setAutoCommit(false);
+        try {
+            for (int i = 1; i <= 10; i++) {
+                Long orderId = getRandomOrderId(connection, i);
+                String sql = String.format("UPDATE t_order SET status='UPDATE_1' WHERE user_id=? and order_id=?");
+                PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                preparedStatement.setObject(1, i);
+                preparedStatement.setObject(2, orderId);
+                preparedStatement.executeUpdate();
+            }
+            connection.commit();
+        } catch (SQLException ex) {
+            connection.rollback();
+        }
+        finally {
+            connection.close();
+        }
+    }
+    
+    private Long getRandomOrderId(Connection connection, int userId) throws SQLException {
+        Statement statement = connection.createStatement();
+        int index = (int) (Math.random()*500);
+        ResultSet resultSet = statement.executeQuery("select order_id from t_order where user_id=" + userId);
+        long location = 0;
+        while (resultSet.next()) {
+            if (++location == index) {
+                return resultSet.getLong(1);
+            }
+        }
+        return 0l;
+    }
+    
     private void queryWithEqual() throws SQLException {
-        String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=10";
+        String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=?";
         try (
                 Connection connection = dataSource.getConnection();
-                Statement statement = connection.createStatement()) {
-//            preparedStatement.setInt(1, 10);
-            printQuery(statement, sql);
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, 10);
+            printQuery(preparedStatement);
         }
     }
     
@@ -120,12 +155,12 @@ public class XaRawJdbcRepository {
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, 10);
             preparedStatement.setInt(2, 11);
-            printQuery(preparedStatement, sql);
+            printQuery(preparedStatement);
         }
     }
     
-    private void printQuery(final Statement statement, String sql) throws SQLException {
-        try (ResultSet resultSet = statement.executeQuery(sql)) {
+    private void printQuery(final PreparedStatement preparedStatement) throws SQLException {
+        try (ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {
                 System.out.print("order_item_id:" + resultSet.getLong(1) + ", ");
                 System.out.print("order_id:" + resultSet.getLong(2) + ", ");
