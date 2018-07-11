@@ -17,6 +17,7 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import java.util.ArrayList;
 import java.util.List;
@@ -137,11 +138,10 @@ public class PathUtil {
      * @throws IllegalArgumentException IllegalArgumentException
      */
     // CHECKSTYLE:OFF
-    public static String checkPath(final String key) throws IllegalArgumentException {
+    public static String checkPath(final String key) {
         // CHECKSTYLE:ON
-        if (Strings.isNullOrEmpty(key)) {
-            throw new IllegalArgumentException("path should not be null");
-        }
+        Preconditions.checkNotNull(key, "path should not be null");
+
         String path = key;
         if (path.charAt(0) != 47 || path.charAt(path.length() - 1) == 47) {
             path = ZookeeperConstants.PATH_SEPARATOR + path;

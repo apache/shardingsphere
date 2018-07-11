@@ -18,6 +18,8 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache;
 
 /*
+ * Path status.
+ *
  * @author lidongbo
  */
 public enum PathStatus {

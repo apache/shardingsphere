@@ -19,7 +19,7 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayRetryPolicy;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.Callable;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.RetryCallable;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.zookeeper.CreateMode;
@@ -45,7 +45,7 @@ public class SyncRetryStrategy extends UsualStrategy {
     public SyncRetryStrategy(final IProvider provider, final DelayRetryPolicy delayRetryPolicy) {
         super(provider);
         if (delayRetryPolicy == null) {
-            LOGGER.info("Callable constructor context's delayRetryPolicy is null");
+            LOGGER.info("RetryCallable constructor context's delayRetryPolicy is null");
             this.delayRetryPolicy = DelayRetryPolicy.newNoInitDelayPolicy();
         } else {
             this.delayRetryPolicy = delayRetryPolicy;
@@ -54,111 +54,111 @@ public class SyncRetryStrategy extends UsualStrategy {
 
     @Override
     public byte[] getData(final String key) throws KeeperException, InterruptedException {
-        Callable<byte[]> callable = new Callable<byte[]>(getProvider(), delayRetryPolicy) {
+        RetryCallable<byte[]> retryCallable = new RetryCallable<byte[]>(getProvider(), delayRetryPolicy) {
             @Override
             public void call() throws KeeperException, InterruptedException {
                 setResult(getProvider().getData(getProvider().getRealPath(key)));
             }
         };
-        return callable.getResult();
+        return retryCallable.getResult();
     }
     
     @Override
     public boolean checkExists(final String key) throws KeeperException, InterruptedException {
-        Callable<Boolean> callable = new Callable<Boolean>(getProvider(), delayRetryPolicy) {
+        RetryCallable<Boolean> retryCallable = new RetryCallable<Boolean>(getProvider(), delayRetryPolicy) {
             @Override
             public void call() throws KeeperException, InterruptedException {
                 setResult(getProvider().exists(getProvider().getRealPath(key)));
             }
         };
-        return callable.getResult();
+        return retryCallable.getResult();
     }
     
     @Override
     public boolean checkExists(final String key, final Watcher watcher) throws KeeperException, InterruptedException {
-        Callable<Boolean> callable = new Callable<Boolean>(getProvider(), delayRetryPolicy) {
+        RetryCallable<Boolean> retryCallable = new RetryCallable<Boolean>(getProvider(), delayRetryPolicy) {
             @Override
             public void call() throws KeeperException, InterruptedException {
                 setResult(getProvider().exists(getProvider().getRealPath(key), watcher));
             }
         };
-        return callable.getResult();
+        return retryCallable.getResult();
     }
     
     @Override
     public List<String> getChildren(final String key) throws KeeperException, InterruptedException {
-        Callable<List<String>> callable = new Callable<List<String>>(getProvider(), delayRetryPolicy) {
+        RetryCallable<List<String>> retryCallable = new RetryCallable<List<String>>(getProvider(), delayRetryPolicy) {
             @Override
             public void call() throws KeeperException, InterruptedException {
                 setResult(getProvider().getChildren(getProvider().getRealPath(key)));
             }
         };
-        return callable.getResult();
+        return retryCallable.getResult();
     }
     
     @Override
     public void createCurrentOnly(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
-        Callable callable = new Callable(getProvider(), delayRetryPolicy) {
+        RetryCallable retryCallable = new RetryCallable(getProvider(), delayRetryPolicy) {
             @Override
             public void call() throws KeeperException, InterruptedException {
                 getProvider().create(getProvider().getRealPath(key), value, createMode);
             }
         };
-        callable.exec();
+        retryCallable.exec();
     }
     
     @Override
     public void update(final String key, final String value) throws KeeperException, InterruptedException {
-        Callable callable = new Callable(getProvider(), delayRetryPolicy) {
+        RetryCallable retryCallable = new RetryCallable(getProvider(), delayRetryPolicy) {
             @Override
             public void call() throws KeeperException, InterruptedException {
                 getProvider().update(getProvider().getRealPath(key), value);
             }
         };
-        callable.exec();
+        retryCallable.exec();
     }
     
     @Override
     public void deleteOnlyCurrent(final String key) throws KeeperException, InterruptedException {
-        Callable callable = new Callable(getProvider(), delayRetryPolicy) {
+        RetryCallable retryCallable = new RetryCallable(getProvider(), delayRetryPolicy) {
             @Override
             public void call() throws KeeperException, InterruptedException {
                 getProvider().delete(getProvider().getRealPath(key));
             }
         };
-        callable.exec();
+        retryCallable.exec();
     }
     
     @Override
     public void createAllNeedPath(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
-        Callable callable = new Callable(getProvider(), delayRetryPolicy) {
+        RetryCallable retryCallable = new RetryCallable(getProvider(), delayRetryPolicy) {
             @Override
             public void call() throws KeeperException, InterruptedException {
                 new UsualStrategy(getProvider()).createAllNeedPath(key, value, createMode);
             }
         };
-        callable.exec();
+        retryCallable.exec();
     }
     
     @Override
     public void deleteAllChildren(final String key) throws KeeperException, InterruptedException {
-        Callable callable = new Callable(getProvider(), delayRetryPolicy) {
+        RetryCallable retryCallable = new RetryCallable(getProvider(), delayRetryPolicy) {
             @Override
             public void call() throws KeeperException, InterruptedException {
                 new UsualStrategy(getProvider()).deleteAllChildren(key);
             }
         };
-        callable.exec();
+        retryCallable.exec();
     }
     
     @Override
     public void deleteCurrentBranch(final String key) throws KeeperException, InterruptedException {
-        Callable callable = new Callable(getProvider(), delayRetryPolicy) {
+        RetryCallable retryCallable = new RetryCallable(getProvider(), delayRetryPolicy) {
             @Override
             public void call() throws KeeperException, InterruptedException {
                 new UsualStrategy(getProvider()).deleteCurrentBranch(key);
             }
         };
-        callable.exec();
+        retryCallable.exec();
     }
 }

@@ -45,7 +45,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 
 /*
- * zookeeper cache tree
+ * Zookeeper cache tree.
  *
  * @author lidongbo
  */
@@ -80,7 +80,7 @@ public final class PathTree {
     }
     
     /**
-     * load data.
+     * Load data.
      *
      * @throws KeeperException Zookeeper Exception
      * @throws InterruptedException InterruptedException
@@ -127,9 +127,9 @@ public final class PathTree {
             LOGGER.info("attechIntoNode there are no children");
             return;
         }
-        for (String child : children) {
-            String childPath = PathUtil.getRealPath(pathNode.getPath(), child);
-            PathNode current = new PathNode(PathUtil.checkPath(child), provider.getData(childPath));
+        for (String each : children) {
+            String childPath = PathUtil.getRealPath(pathNode.getPath(), each);
+            PathNode current = new PathNode(PathUtil.checkPath(each), provider.getData(childPath));
             pathNode.attachChild(current);
             List<String> subs = provider.getChildren(childPath);
             this.attechIntoNode(subs, current);
@@ -137,7 +137,7 @@ public final class PathTree {
     }
     
     /**
-     * start thread pool period load data.
+     * Start thread pool period load data.
      *
      * @param period period
      */
@@ -185,7 +185,7 @@ public final class PathTree {
     }
     
     /**
-     * stop thread pool period load data.
+     * Stop thread pool period load data.
      */
     public void stopRefresh() {
         cacheService.shutdown();
@@ -194,7 +194,7 @@ public final class PathTree {
     }
     
     /**
-     * watch data change.
+     * Watch data change.
      */
     public void watch() {
         watch(new Listener(rootNode.get().getKey()) {
@@ -219,7 +219,7 @@ public final class PathTree {
     }
     
     /**
-     * watch data change.
+     * Watch data change.
      *
      * @param listener listener
      */
@@ -254,7 +254,7 @@ public final class PathTree {
     }
     
     /**
-     * get root node.
+     * Get root node.
      *
      * @return root node
      */
@@ -263,7 +263,7 @@ public final class PathTree {
     }
     
     /**
-     * get node value.
+     * Get node value.
      *
      * @param path path
      * @return node data
@@ -286,7 +286,7 @@ public final class PathTree {
     }
     
     /**
-     * get children.
+     * Get children.
      *
      * @param path path
      * @return children
@@ -328,7 +328,7 @@ public final class PathTree {
     }
     
     /**
-     * put node.
+     * Put node.
      *
      * @param path path
      * @param value value
@@ -366,7 +366,7 @@ public final class PathTree {
     }
     
     /**
-     * delete node.
+     * Delete node.
      *
      * @param path path
      */
@@ -399,7 +399,7 @@ public final class PathTree {
     }
     
     /**
-     * close.
+     * Close.
      */
     public void close() {
         final ReentrantLock lock = this.lock;
@@ -423,9 +423,9 @@ public final class PathTree {
         if (node.getChildren().isEmpty()) {
             return;
         }
-        for (String one : node.getChildren().keySet()) {
-            deleteAllChildren(node.getChildren().get(one));
-            node.getChildren().remove(one);
+        for (String each : node.getChildren().keySet()) {
+            deleteAllChildren(node.getChildren().get(each));
+            node.getChildren().remove(each);
         }
     }
 }

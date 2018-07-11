@@ -33,11 +33,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /*
- * zookeeper node cache
+ * Zookeeper node cache.
  *
  * @author lidongbo
  */
-public class PathNode {
+public final class PathNode {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(PathNode.class);
 
@@ -64,7 +64,7 @@ public class PathNode {
     }
     
     /**
-     * get children.
+     * Get children.
      *
      * @return children
      */
@@ -73,7 +73,7 @@ public class PathNode {
     }
     
     /**
-     * get key.
+     * Get key.
      *
      * @return node key
      */
@@ -82,7 +82,7 @@ public class PathNode {
     }
     
     /**
-     * attach child node.
+     * Attach child node.
      *
      * @param node node
      */

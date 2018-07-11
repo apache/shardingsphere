@@ -25,13 +25,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /*
- * sync retry call
+ * Sync retry call.
+ * todo Split up into two classes, one use exec() and other use getResult()
  *
  * @author lidongbo
  */
-public abstract class Callable<T> {
+public abstract class RetryCallable<T> {
     
-    private static final Logger LOGGER = LoggerFactory.getLogger(Callable.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RetryCallable.class);
 
     private final DelayPolicyExecutor delayPolicyExecutor;
     
@@ -40,13 +41,13 @@ public abstract class Callable<T> {
     @Setter
     private T result;
     
-    public Callable(final IProvider provider, final DelayRetryPolicy delayRetryPolicy) {
+    public RetryCallable(final IProvider provider, final DelayRetryPolicy delayRetryPolicy) {
         this.delayPolicyExecutor = new DelayPolicyExecutor(delayRetryPolicy);
         this.provider = provider;
     }
     
     /**
-     * call.
+     * Call the action.
      *
      * @throws KeeperException Zookeeper Exception
      * @throws InterruptedException InterruptedException
@@ -54,7 +55,7 @@ public abstract class Callable<T> {
     public abstract void call() throws KeeperException, InterruptedException;
     
     /**
-     * get result.
+     * Get result.
      *
      * @return result
      * @throws KeeperException Zookeeper Exception
@@ -68,7 +69,7 @@ public abstract class Callable<T> {
     }
     
     /**
-     * call without result.
+     * Call without result.
      *
      * @throws KeeperException Zookeeper Exception
      * @throws InterruptedException InterruptedException

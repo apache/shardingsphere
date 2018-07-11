@@ -39,6 +39,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /*
+ * Base client.
+ *
  * @author lidongbo
  */
 public abstract class BaseClient implements IClient {
@@ -109,9 +111,9 @@ public abstract class BaseClient implements IClient {
                 this.deleteNamespace();
             }
             // CHECKSTYLE:OFF
-        } catch (Exception e) {
+        } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            LOGGER.error("zk client close delete root error:{}", e.getMessage(), e);
+            LOGGER.error("zk client close delete root error:{}", ex.getMessage(), ex);
         }
         holder.close();
     }

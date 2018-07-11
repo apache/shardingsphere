@@ -213,17 +213,21 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
             }
             
             private DataChangedEvent.Type getEventType(final WatchedEvent event) {
-                switch (event.getType()) {
-                    case NodeDataChanged:
-                    case NodeChildrenChanged:
-                        return DataChangedEvent.Type.UPDATED;
-                    case NodeDeleted:
-                        return DataChangedEvent.Type.DELETED;
-                    default:
-                        return DataChangedEvent.Type.IGNORED;
-                }
+                return extractEventType(event);
             }
         });
+    }
+    
+    private DataChangedEvent.Type extractEventType(final WatchedEvent event) {
+        switch (event.getType()) {
+            case NodeDataChanged:
+            case NodeChildrenChanged:
+                return DataChangedEvent.Type.UPDATED;
+            case NodeDeleted:
+                return DataChangedEvent.Type.DELETED;
+            default:
+                return DataChangedEvent.Type.IGNORED;
+        }
     }
     
     private synchronized String getWithoutCache(final String key) {
