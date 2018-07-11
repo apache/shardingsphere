@@ -18,7 +18,7 @@
     </parser-result>
     <parser-result sql-case-id="grant_role" />
     <parser-result sql-case-id="grant_user_with_admin" />
-    <parser-result sql-case-id="grant_user_on_db_mysql">
+    <parser-result sql-case-id="grant_user_on_db">
         <tables>
             <table name="*" />
         </tables>
@@ -26,7 +26,7 @@
             <table-token begin-position="13" original-literals="*" />
         </tokens>
     </parser-result>
-    <parser-result sql-case-id="grant_user_on_table_mysql">
+    <parser-result sql-case-id="grant_user_on_tablel">
         <tables>
             <table name="t_order" />
         </tables>
