@@ -17,6 +17,7 @@
 
 package io.shardingsphere.dbtest.engine;
 
+import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.util.InlineExpressionParser;
 import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
@@ -85,7 +86,7 @@ public abstract class BatchIntegrateTest extends BaseIntegrateTest {
     
     @Parameters(name = "{0} -> Rule:{2} -> {3}")
     public static Collection<Object[]> getParameters() {
-        return IntegrateTestParameters.getParametersWithCase();
+        return IntegrateTestParameters.getParametersWithCase(SQLType.DML);
     }
     
     @Before
@@ -145,21 +146,21 @@ public abstract class BatchIntegrateTest extends BaseIntegrateTest {
     }
     
     private void mergeMetadata(final DataSet original, final DataSet dist) {
-        if (original.getMetadataList().isEmpty()) {
-            original.getMetadataList().addAll(dist.getMetadataList());
+        if (dist.getMetadataList().isEmpty()) {
+            dist.getMetadataList().addAll(original.getMetadataList());
         }
     }
     
     private void mergeRow(final DataSet original, final DataSet dist, final Set<List<String>> existedRowValues) {
-        for (DataSetRow each : dist.getRows()) {
+        for (DataSetRow each : original.getRows()) {
             if (existedRowValues.add(each.getValues())) {
-                original.getRows().add(each);
+                dist.getRows().add(each);
             }
         }
     }
     
-    private void sortRow(final DataSet result) {
-        Collections.sort(result.getRows(), new Comparator<DataSetRow>() {
+    private void sortRow(final DataSet dataSet) {
+        Collections.sort(dataSet.getRows(), new Comparator<DataSetRow>() {
             
             @Override
             public int compare(final DataSetRow o1, final DataSetRow o2) {
