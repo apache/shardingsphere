@@ -15,24 +15,25 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing;
+package io.shardingsphere.core.parsing.parser.sql;
 
-import io.shardingsphere.core.parsing.integrate.AllParsingIntegrateTests;
-import io.shardingsphere.core.parsing.lexer.AllLexerTests;
-import io.shardingsphere.core.parsing.parser.context.OrderItemTest;
-import io.shardingsphere.core.parsing.parser.sql.AllSQLTests;
-import io.shardingsphere.core.parsing.parser.sql.AllStatementParserTests;
+import io.shardingsphere.core.parsing.parser.sql.dal.DALStatementTest;
+import io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatementTest;
+import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatementTest;
+import io.shardingsphere.core.parsing.parser.sql.dml.DMLStatementTest;
+import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatementTest;
+import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatementTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        AllLexerTests.class, 
-        AllStatementParserTests.class, 
-        AllSQLTests.class, 
-        SQLJudgeEngineTest.class, 
-        OrderItemTest.class, 
-        AllParsingIntegrateTests.class
+        DQLStatementTest.class, 
+        DMLStatementTest.class, 
+        DDLStatementTest.class, 
+        DCLStatementTest.class, 
+        TCLStatementTest.class, 
+        DALStatementTest.class
     })
-public class AllParsingTests {
+public class AllSQLTests {
 }
