@@ -79,10 +79,11 @@ public final class SQLJudgeEngine {
                     return getDALStatement(tokenType, lexerEngine);
                 }
                 lexerEngine.nextToken();
-                if (isDCL(tokenType, lexerEngine)) {
+                TokenType secondaryTokenType = lexerEngine.getCurrentToken().getType();
+                if (isDCL(tokenType, secondaryTokenType)) {
                     return getDCLStatement();
                 }
-                if (isDDL(tokenType, lexerEngine)) {
+                if (isDDL(tokenType, secondaryTokenType)) {
                     return getDDLStatement();
                 }
             } else {
@@ -102,20 +103,20 @@ public final class SQLJudgeEngine {
         return DefaultKeyword.INSERT == tokenType || DefaultKeyword.UPDATE == tokenType || DefaultKeyword.DELETE == tokenType;
     }
     
-    private static boolean isDDL(final TokenType tokenType, final LexerEngine lexerEngine) {
+    private static boolean isDDL(final TokenType tokenType, final TokenType secondaryTokenType) {
         Collection<DefaultKeyword> primaryTokens = Arrays.asList(DefaultKeyword.CREATE, DefaultKeyword.ALTER, DefaultKeyword.DROP, DefaultKeyword.TRUNCATE);
         Collection<DefaultKeyword> secondaryTokens = Arrays.asList(DefaultKeyword.LOGIN, DefaultKeyword.USER, DefaultKeyword.ROLE);
-        return primaryTokens.contains(tokenType) && !secondaryTokens.contains(lexerEngine.getCurrentToken().getType());
+        return primaryTokens.contains(tokenType) && !secondaryTokens.contains(secondaryTokenType);
     }
     
-    private static boolean isDCL(final TokenType tokenType, final LexerEngine lexerEngine) {
+    private static boolean isDCL(final TokenType tokenType, final TokenType secondaryTokenType) {
         Collection<DefaultKeyword> primaryTokens = Arrays.asList(DefaultKeyword.GRANT, DefaultKeyword.REVOKE, DefaultKeyword.DENY);
         Collection<DefaultKeyword> secondaryTokens = Arrays.asList(DefaultKeyword.LOGIN, DefaultKeyword.USER, DefaultKeyword.ROLE);
         if (primaryTokens.contains(tokenType)) {
             return true;
         }
         primaryTokens = Arrays.asList(DefaultKeyword.CREATE, DefaultKeyword.ALTER, DefaultKeyword.DROP, DefaultKeyword.RENAME);
-        return primaryTokens.contains(tokenType) && secondaryTokens.contains(lexerEngine.getCurrentToken().getType());
+        return primaryTokens.contains(tokenType) && secondaryTokens.contains(secondaryTokenType);
     }
     
     private boolean isTCL(final TokenType tokenType) {
