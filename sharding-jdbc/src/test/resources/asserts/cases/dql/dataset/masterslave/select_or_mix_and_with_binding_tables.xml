@@ -1,5 +1,11 @@
-<datasets>
-    <columns values="item_id, order_id, user_id, status, creation_date" />
-    <dataset values="110001, 1100, 11, init_slave, 2017-08-08" />
-    <dataset values="110002, 1100, 11, init_slave, 2017-08-08" />
-</datasets>
+<dataset>
+    <metadata>
+        <column name="item_id" />
+        <column name="order_id" />
+        <column name="user_id" />
+        <column name="status" />
+        <column name="creation_date" />
+    </metadata>
+    <row values="110001, 1100, 11, init_slave, 2017-08-08" />
+    <row values="110002, 1100, 11, init_slave, 2017-08-08" />
+</dataset>

@@ -17,10 +17,13 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
+import io.shardingsphere.jdbc.orchestration.reg.newzk.NewZookeeperRegistryCenter;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ClientContext;
+import io.shardingsphere.jdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import io.shardingsphere.jdbc.orchestration.util.EmbedTestingServer;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -36,38 +39,28 @@ public class StartWaitTest {
     }
     
     @Test
-    public void testStart() throws IOException, InterruptedException {
+    public void assertStart() throws IOException, InterruptedException {
         IClient testClient = new TestClient(new ClientContext(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT));
-        boolean result = testClient.start(10000, TimeUnit.MILLISECONDS);
-        assert result;
-        System.out.println(result);
+        assert testClient.start(10000, TimeUnit.MILLISECONDS);
         testClient.close();
     }
     
     @Test
-    public void testSortStart() throws IOException, InterruptedException {
+    public void assertNotStart() throws IOException, InterruptedException {
         TestClient testClient = new TestClient(new ClientContext(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT));
-        boolean result = testClient.start(100, TimeUnit.MILLISECONDS);
-        assert !result;
-        System.out.println(result);
+        assert !testClient.start(100, TimeUnit.MILLISECONDS);
         testClient.close();
     }
     
+    @Ignore
     @Test
-    public void testNotStart() throws IOException, InterruptedException {
-        TestClient c = new TestClient(new ClientContext(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT));
-        boolean r = c.start(100, TimeUnit.MILLISECONDS);
-        System.out.println("result : " + r);
-        assert !r;
-        c.close();
-        assert !c.getZookeeper().getState().isConnected();
-        
-        System.out.println("===============================================================================");
-    
-        TestClient c1 = new TestClient(new ClientContext(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT));
-        boolean r1 = c1.start(10000, TimeUnit.MILLISECONDS);
-        System.out.println("result : " + r1);
-        assert r1;
-        c1.close();
+    public void assertNewCenter() {
+        ZookeeperConfiguration zc = new ZookeeperConfiguration();
+        zc.setNamespace(TestSupport.ROOT);
+        zc.setServerLists(TestSupport.SERVERS);
+        NewZookeeperRegistryCenter center = new NewZookeeperRegistryCenter(zc);
+        center.close();
+        center = new NewZookeeperRegistryCenter(zc);
+        center.close();
     }
 }

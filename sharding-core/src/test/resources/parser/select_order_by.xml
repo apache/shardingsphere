@@ -21,9 +21,14 @@
         <tokens>
             <table-token begin-position="16" original-literals="t_order" />
             <table-token begin-position="27" original-literals="t_order_item" />
+            <items-token begin-position="11">
+                <items>
+                    <item>o.order_id AS ORDER_BY_DERIVED_0 </item>
+                </items>
+            </items-token>
         </tokens>
         <order-by-columns>
-            <order-by-column owner="o" name="order_id" order-direction="DESC" />
+            <order-by-column owner="o" name="order_id" alias="ORDER_BY_DERIVED_0" order-direction="DESC" />
             <order-by-column index="1" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
@@ -48,10 +53,15 @@
         <tokens>
             <table-token begin-position="16" original-literals="t_order" />
             <table-token begin-position="27" original-literals="t_order_item" />
+            <items-token begin-position="11">
+                <items>
+                    <item>o.order_id AS ORDER_BY_DERIVED_0 </item>
+                </items>
+            </items-token>
         </tokens>
         <order-by-columns>
             <order-by-column owner="i" name="creation_date" order-direction="DESC" />
-            <order-by-column owner="o" name="order_id" order-direction="DESC" />
+            <order-by-column owner="o" name="order_id" alias="ORDER_BY_DERIVED_0" order-direction="DESC" />
             <order-by-column owner="i" name="item_id" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
