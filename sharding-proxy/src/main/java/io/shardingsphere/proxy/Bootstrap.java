@@ -18,9 +18,11 @@
 package io.shardingsphere.proxy;
 
 import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.frontend.ShardingProxy;
 import io.shardingsphere.proxy.yaml.YamlProxyConfiguration;
+import io.shardingsphere.transaction.xa.XaTransactionListener;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,6 +48,7 @@ public final class Bootstrap {
      */
     public static void main(final String[] args) throws InterruptedException, MalformedURLException {
         initializeRuleRegistry();
+        EventBusInstance.getInstance().register(new XaTransactionListener());
         new ShardingProxy().start(getPort(args));
     }
     

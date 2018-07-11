@@ -69,11 +69,9 @@ public abstract class ExecuteWorker implements Callable<CommandResponsePackets> 
     
     private CommandResponsePackets execute() throws SQLException {
         switch (sqlStatement.getType()) {
-            case DQL:
-            case DAL:
+            case DQL: case DAL:
                 return executeQuery();
-            case DML:
-            case DDL:
+            case DML: case DDL:
                 return executeUpdate();
             default:
                 return executeCommon();
