@@ -2,6 +2,14 @@ shardingRule:
   tables:
     config:
       actualDataNodes: db_ms_${0..9}.t_config
+    t_log:
+      actualDataNodes: db_ms_${0..9}.t_log
+      databaseStrategy:
+        standard:
+          shardingColumn: id
+          preciseAlgorithmClassName: io.shardingsphere.dbtest.fixture.PreciseModuloAlgorithm
+          rangeAlgorithmClassName: io.shardingsphere.dbtest.fixture.RangeModuloAlgorithm
+      logicIndex: t_log_index
     t_order:
       actualDataNodes: db_ms_${0..9}.t_order_${0..9}
       databaseStrategy:
@@ -14,7 +22,7 @@ shardingRule:
           shardingColumn: order_id
           preciseAlgorithmClassName: io.shardingsphere.dbtest.fixture.PreciseModuloAlgorithm
           rangeAlgorithmClassName: io.shardingsphere.dbtest.fixture.RangeModuloAlgorithm
-      logicIndex: order_index
+      logicIndex: t_order_index
     t_order_item:
       actualDataNodes: db_ms_${0..9}.t_order_item_${0..9}
       databaseStrategy:

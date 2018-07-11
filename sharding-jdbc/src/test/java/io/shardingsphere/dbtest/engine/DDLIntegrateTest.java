@@ -17,6 +17,8 @@
 
 package io.shardingsphere.dbtest.engine;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
@@ -32,6 +34,7 @@ import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
+import org.h2.tools.RunScript;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,6 +45,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringReader;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -112,7 +116,9 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
         try (Connection connection = getDataSource().getConnection()) {
             dropTableIfExisted(connection);
             if (!Strings.isNullOrEmpty(assertion.getInitSql())) {
-                connection.prepareStatement(assertion.getInitSql()).executeUpdate();
+                for (String  sql :  Splitter.on(";").split(assertion.getInitSql())) {
+                    connection.prepareStatement(sql).executeUpdate();
+                }
             }
             if (SQLCaseType.Literal == getCaseType()) {
                 connection.createStatement().executeUpdate(getSql());
@@ -132,7 +138,9 @@ public final class DDLIntegrateTest extends BaseIntegrateTest {
         try (Connection connection = getDataSource().getConnection()) {
             dropTableIfExisted(connection);
             if (!Strings.isNullOrEmpty(assertion.getInitSql())) {
-                connection.prepareStatement(assertion.getInitSql()).executeUpdate();
+                for (String  sql :  Splitter.on(";").split(assertion.getInitSql())) {
+                    connection.prepareStatement(sql).executeUpdate();
+                }
             }
             if (SQLCaseType.Literal == getCaseType()) {
                 connection.createStatement().execute(getSql());

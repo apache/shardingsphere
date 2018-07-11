@@ -1,5 +1,5 @@
 <integrate-test-cases>
-    <ddl-test-case sql-case-id="create_table">
+   <ddl-test-case sql-case-id="create_table">
         <assertion sharding-rule-type="db" table="t_log" expected-data-file="create_table.xml" />
         <assertion sharding-rule-type="tbl" table="t_log" expected-data-file="create_table.xml" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" table="t_log" expected-data-file="create_table.xml" />
@@ -119,10 +119,10 @@
     </ddl-test-case>
     
     <ddl-test-case sql-case-id="drop_index_without_on">
-        <assertion sharding-rule-type="db" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
-        <assertion sharding-rule-type="tbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
-        <assertion sharding-rule-type="dbtbl_with_masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
-        <assertion sharding-rule-type="masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
+        <assertion sharding-rule-type="db" init-sql="CREATE TABLE t_log(id int, status varchar(10));CREATE INDEX  t_log_index ON t_log (status)" table="t_log" />
+        <assertion sharding-rule-type="tbl" init-sql="CREATE TABLE t_log(id int, status varchar(10));CREATE INDEX  t_log_index ON t_log (status)" table="t_log" />
+        <assertion sharding-rule-type="dbtbl_with_masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10));CREATE INDEX  t_log_index ON t_log (status)" table="t_log" />
+        <assertion sharding-rule-type="masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10));CREATE INDEX  t_log_index ON t_log (status)" table="t_log" />
     </ddl-test-case>
     
     <ddl-test-case sql-case-id="drop_index_if_exists">
@@ -131,8 +131,7 @@
         <assertion sharding-rule-type="dbtbl_with_masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
         <assertion sharding-rule-type="masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
     </ddl-test-case>
-    
-    <ddl-test-case sql-case-id="truncate_table">
+   <ddl-test-case sql-case-id="truncate_table">
         <assertion sharding-rule-type="db" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
         <assertion sharding-rule-type="tbl" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
         <assertion sharding-rule-type="dbtbl_with_masterslave" init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" />
