@@ -9,6 +9,8 @@
 1. [ISSUE #290](https://github.com/sharding-sphere/sharding-sphere/issues/290) Support batch INSERT statements
 1. [ISSUE #501](https://github.com/sharding-sphere/sharding-sphere/issues/501) Support OR statement
 1. [ISSUE #862](https://github.com/sharding-sphere/sharding-sphere/issues/862) Support data orchestration in cloud side
+1. [ISSUE #980](https://github.com/sharding-sphere/sharding-sphere/issues/980) 支持 DCL statement
+1. [ISSUE #936](https://github.com/sharding-sphere/sharding-sphere/issues/936) Support the registry center for Proxy
 
 ### Enhancements
 
@@ -23,6 +25,7 @@
 1. [ISSUE #720](https://github.com/sharding-sphere/sharding-sphere/issues/720) Support Spring bean namespace to inject sharding algorithm objects
 1. [ISSUE #773](https://github.com/sharding-sphere/sharding-sphere/issues/773) Support sharding and autoincrement primary key of INSERT statements without column names
 1. [ISSUE #916](https://github.com/sharding-sphere/sharding-sphere/issues/916) Support authorization for Sharding Proxy
+1. [ISSUE #935](https://github.com/sharding-sphere/sharding-sphere/issues/935) Support to store configuration by using Yaml instead of JSON in registry center.
 
 ### Bug Fixes
 
