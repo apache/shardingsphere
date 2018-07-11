@@ -44,11 +44,13 @@ public class XaProxyRawDataSource extends ProxyRawDataSource {
         dataSourceBean.setUniqueResourceName(key);
         dataSourceBean.setXaDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource");
         dataSourceBean.setMaxPoolSize(dataSourceParameter.getMaximumPoolSize());
+        dataSourceBean.setTestQuery("SELECT 1");
         Properties xaProperties = new Properties();
         xaProperties.setProperty("user", dataSourceParameter.getUsername());
         xaProperties.setProperty("password", Optional.fromNullable(dataSourceParameter.getPassword()).or(""));
         xaProperties.setProperty("URL", dataSourceParameter.getUrl());
         xaProperties.setProperty("pinGlobalTxToPhysicalConnection", "true");
+        xaProperties.setProperty("autoReconnect", "true");
         dataSourceBean.setXaProperties(xaProperties);
         result.put(key, dataSourceBean);
         return result;

@@ -1,7 +1,7 @@
-<datasets>
-    <metadata table="t_log">
+<dataset>
+    <metadata table-name="t_log">
         <column name="id" type="integer" />
         <column name="status" type="varchar" />
         <column name="name" type="varchar" />
     </metadata>
-</datasets>
+</dataset>

@@ -69,7 +69,7 @@ public final class MySQLShardingMetaDataHandler extends ShardingMetaDataHandler 
         Collection<String> result = new LinkedList<>();
         try (Connection connection = getDataSource().getConnection();
              Statement statement = connection.createStatement()) {
-            statement.executeQuery("show tables;");
+            statement.execute("show tables;");
             try (ResultSet resultSet = statement.getResultSet()) {
                 while (resultSet.next()) {
                     result.add(resultSet.getString(1));

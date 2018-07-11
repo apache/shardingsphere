@@ -1,4 +1,6 @@
-<datasets>
-    <columns values="items_count" />
-    <dataset values="8" />
-</datasets>
+<dataset>
+    <metadata>
+        <column name="items_count" />
+    </metadata>
+    <row values="8" />
+</dataset>

@@ -1,23 +1,26 @@
-<datasets>
-    <columns values="orders_avg, user_id" />
-    <dataset values="1000, 10" />
-    <dataset values="1100, 11" />
-    <dataset values="1200, 12" />
-    <dataset values="1300, 13" />
-    <dataset values="1400, 14" />
-    <dataset values="1500, 15" />
-    <dataset values="1600, 16" />
-    <dataset values="1700, 17" />
-    <dataset values="1800, 18" />
-    <dataset values="1900, 19" />
-    <dataset values="2000, 20" />
-    <dataset values="2100, 21" />
-    <dataset values="2200, 22" />
-    <dataset values="2300, 23" />
-    <dataset values="2400, 24" />
-    <dataset values="2500, 25" />
-    <dataset values="2600, 26" />
-    <dataset values="2700, 27" />
-    <dataset values="2800, 28" />
-    <dataset values="2900, 29" />
-</datasets>
+<dataset>
+    <metadata>
+        <column name="orders_avg" />
+        <column name="user_id" />
+    </metadata>
+    <row values="1000, 10" />
+    <row values="1100, 11" />
+    <row values="1200, 12" />
+    <row values="1300, 13" />
+    <row values="1400, 14" />
+    <row values="1500, 15" />
+    <row values="1600, 16" />
+    <row values="1700, 17" />
+    <row values="1800, 18" />
+    <row values="1900, 19" />
+    <row values="2000, 20" />
+    <row values="2100, 21" />
+    <row values="2200, 22" />
+    <row values="2300, 23" />
+    <row values="2400, 24" />
+    <row values="2500, 25" />
+    <row values="2600, 26" />
+    <row values="2700, 27" />
+    <row values="2800, 28" />
+    <row values="2900, 29" />
+</dataset>

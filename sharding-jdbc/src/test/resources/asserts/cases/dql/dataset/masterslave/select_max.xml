@@ -1,4 +1,6 @@
-<datasets>
-    <columns values="max_user_id" />
-    <dataset values="29" />
-</datasets>
+<dataset>
+    <metadata>
+        <column name="max_user_id" />
+    </metadata>
+    <row values="29" />
+</dataset>
