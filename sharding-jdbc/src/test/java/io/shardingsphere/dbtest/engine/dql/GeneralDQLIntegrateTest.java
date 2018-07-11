@@ -24,8 +24,6 @@ import io.shardingsphere.dbtest.engine.IntegrateTestParameters;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.test.sql.SQLCaseType;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import javax.xml.bind.JAXBException;
@@ -40,7 +38,6 @@ import java.util.Collection;
 
 import static org.junit.Assert.assertTrue;
 
-@RunWith(Parameterized.class)
 public final class GeneralDQLIntegrateTest extends BaseDQLIntegrateTest {
     
     private final DQLIntegrateTestCaseAssertion assertion;
