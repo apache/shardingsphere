@@ -20,6 +20,7 @@ package io.shardingsphere.dbtest.engine.util;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.parsing.SQLJudgeEngine;
+import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
@@ -99,17 +100,18 @@ public final class IntegrateTestParameters {
     
     /**
      * Get parameters with test cases.
+     * 
+     * <p>For insert SQL only.</p>
      *
-     * @param sqlType SQL type
      * @return integrate test parameters.
      */
-    public static Collection<Object[]> getParametersWithCase(final SQLType sqlType) {
+    public static Collection<Object[]> getParametersWithCase() {
         // TODO sqlCasesLoader size should eq integrateTestCasesLoader size
         // assertThat(sqlCasesLoader.countAllSupportedSQLCases(), is(integrateTestCasesLoader.countAllDataSetTestCases()));
         Collection<Object[]> result = new LinkedList<>();
         for (Object[] each : sqlCasesLoader.getSupportedSQLTestParameters(Arrays.<Enum>asList(DatabaseType.values()), DatabaseType.class)) {
             String sqlCaseId = each[0].toString();
-            if (sqlType != new SQLJudgeEngine(sqlCasesLoader.getSupportedSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList())).judge().getType()) {
+            if (!(new SQLJudgeEngine(sqlCasesLoader.getSupportedSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList())).judge() instanceof InsertStatement)) {
                 continue;
             }
             DatabaseType databaseType = (DatabaseType) each[1];
@@ -118,7 +120,7 @@ public final class IntegrateTestParameters {
             if (SQLCaseType.Literal == caseType) {
                 continue;
             }
-            IntegrateTestCase integrateTestCase = getIntegrateTestCase(sqlCaseId, sqlType);
+            IntegrateTestCase integrateTestCase = getIntegrateTestCase(sqlCaseId, SQLType.DML);
             // TODO remove when transfer finished
             if (null == integrateTestCase) {
                 continue;

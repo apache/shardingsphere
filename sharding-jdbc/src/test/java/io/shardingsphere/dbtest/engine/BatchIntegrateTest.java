@@ -17,7 +17,6 @@
 
 package io.shardingsphere.dbtest.engine;
 
-import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.util.InlineExpressionParser;
 import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
@@ -86,7 +85,7 @@ public abstract class BatchIntegrateTest extends BaseIntegrateTest {
     
     @Parameters(name = "{0} -> Rule:{2} -> {3}")
     public static Collection<Object[]> getParameters() {
-        return IntegrateTestParameters.getParametersWithCase(SQLType.DML);
+        return IntegrateTestParameters.getParametersWithCase();
     }
     
     @Before
