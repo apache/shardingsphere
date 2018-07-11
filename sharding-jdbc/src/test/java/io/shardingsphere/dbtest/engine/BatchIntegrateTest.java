@@ -15,22 +15,28 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.engine.dml;
+package io.shardingsphere.dbtest.engine;
 
+import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.util.InlineExpressionParser;
-import io.shardingsphere.dbtest.cases.assertion.dml.DMLIntegrateTestCaseAssertion;
+import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
+import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.cases.dataset.DataSet;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetColumn;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
 import io.shardingsphere.dbtest.cases.dataset.row.DataSetRow;
-import io.shardingsphere.dbtest.engine.SingleIntegrateTest;
+import io.shardingsphere.dbtest.engine.util.IntegrateTestParameters;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
 import io.shardingsphere.test.sql.SQLCaseType;
+import io.shardingsphere.test.sql.SQLCasesLoader;
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.runners.Parameterized.Parameters;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -44,19 +50,43 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public abstract class BaseDMLIntegrateTest extends SingleIntegrateTest {
+@Getter(value = AccessLevel.PROTECTED)
+public abstract class BatchIntegrateTest extends BaseIntegrateTest {
     
-    private final DataSetEnvironmentManager dataSetEnvironmentManager;
+    private static DataSetEnvironmentManager dataSetEnvironmentManager;
     
-    public BaseDMLIntegrateTest(final String sqlCaseId, final String path, final DMLIntegrateTestCaseAssertion assertion, final String shardingRuleType,
-                                final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
-        super(sqlCaseId, path, assertion, shardingRuleType, databaseTypeEnvironment, caseType);
-        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(getShardingRuleType()), getDataSourceMap());
+    private final IntegrateTestCase integrateTestCase;
+    
+    private final String sql;
+    
+    private final Collection<String> expectedDataFiles;
+    
+    public BatchIntegrateTest(final String sqlCaseId, final IntegrateTestCase integrateTestCase, 
+                              final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, JAXBException, SQLException, ParseException {
+        super(shardingRuleType, databaseTypeEnvironment);
+        this.integrateTestCase = integrateTestCase;
+        sql = SQLCasesLoader.getInstance().getSupportedSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList());
+        expectedDataFiles = new LinkedList<>();
+        for (IntegrateTestCaseAssertion each : integrateTestCase.getIntegrateTestCaseAssertions()) {
+            expectedDataFiles.add(getExpectedDataFile(integrateTestCase.getPath(), shardingRuleType, databaseTypeEnvironment.getDatabaseType(), each.getExpectedDataFile()));
+        }
+        dataSetEnvironmentManager = databaseTypeEnvironment.isEnabled() ? new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(shardingRuleType), getDataSourceMap()) : null;
+    }
+    
+    @Parameters(name = "{0} -> Rule:{2} -> {3}")
+    public static Collection<Object[]> getParameters() {
+        return IntegrateTestParameters.getParametersWithCase(SQLType.DML);
     }
     
     @Before
@@ -73,18 +103,25 @@ public abstract class BaseDMLIntegrateTest extends SingleIntegrateTest {
         }
     }
     
-    protected void assertDataSet(final int actualUpdateCount) throws SQLException, IOException, JAXBException {
-        DataSet expected;
-        try (FileReader reader = new FileReader(getExpectedDataFile())) {
-            expected = (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);
+    protected void assertDataSet(final int[] actualUpdateCounts) throws SQLException, IOException, JAXBException {
+        Collection<DataSet> expectedList = new LinkedList<>();
+        assertThat(actualUpdateCounts.length, is(getExpectedDataFiles().size()));
+        int count = 0;
+        for (String each : getExpectedDataFiles()) {
+            try (FileReader reader = new FileReader(each)) {
+                DataSet expected = (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);
+                assertThat(actualUpdateCounts[count], is(expected.getUpdateCount()));
+                expectedList.add(expected);
+            }
+            count++;
         }
+        DataSet expected = merge(expectedList);
         assertThat("Only support single table for DML.", expected.getMetadataList().size(), is(1));
-        assertThat(actualUpdateCount, is(expected.getUpdateCount()));
         DataSetMetadata expectedDataSetMetadata = expected.getMetadataList().get(0);
         for (String each : new InlineExpressionParser(expectedDataSetMetadata.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
             try (Connection connection = getDataSourceMap().get(dataNode.getDataSourceName()).getConnection();
-                 PreparedStatement preparedStatement = connection.prepareStatement(String.format("SELECT * FROM %s", dataNode.getTableName()))) {
+                 PreparedStatement preparedStatement = connection.prepareStatement(String.format("SELECT * FROM %s ORDER BY 1", dataNode.getTableName()))) {
                 assertDataSet(preparedStatement, expected.findRows(dataNode), expectedDataSetMetadata);
             }
         }
@@ -95,6 +132,29 @@ public abstract class BaseDMLIntegrateTest extends SingleIntegrateTest {
             assertMetaData(actualResultSet.getMetaData(), expectedDataSetMetadata.getColumns());
             assertRows(actualResultSet, expectedDataSetRows);
         }
+    }
+    
+    private DataSet merge(final Collection<DataSet> expectedList) {
+        DataSet result = new DataSet();
+        Set<List<String>> rowValues = new HashSet<>();
+        for (DataSet each : expectedList) {
+            if (result.getMetadataList().isEmpty()) {
+                result.getMetadataList().addAll(each.getMetadataList());
+            }
+            for (DataSetRow row : each.getRows()) {
+                if (rowValues.add(row.getValues())) {
+                    result.getRows().add(row);
+                }
+            }
+        }
+        Collections.sort(result.getRows(), new Comparator<DataSetRow>() {
+            
+            @Override
+            public int compare(final DataSetRow o1, final DataSetRow o2) {
+                return Integer.parseInt(o1.getValues().get(0)) - Integer.parseInt(o2.getValues().get(0));
+            }
+        });
+        return result;
     }
     
     private void assertMetaData(final ResultSetMetaData actualMetaData, final List<DataSetColumn> columnMetadataList) throws SQLException {

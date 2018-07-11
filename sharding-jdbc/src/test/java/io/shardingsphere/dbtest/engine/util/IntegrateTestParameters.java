@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.engine;
+package io.shardingsphere.dbtest.engine.util;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
@@ -81,7 +81,8 @@ public final class IntegrateTestParameters {
         return result;
     }
     
-    private static Collection<Object[]> getParametersWithAssertion(final IntegrateTestCase integrateTestCase, final IntegrateTestCaseAssertion assertion, final DatabaseType databaseType, final SQLCaseType caseType) {
+    private static Collection<Object[]> getParametersWithAssertion(
+            final IntegrateTestCase integrateTestCase, final IntegrateTestCaseAssertion assertion, final DatabaseType databaseType, final SQLCaseType caseType) {
         Collection<Object[]> result = new LinkedList<>();
         for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
             Object[] data = new Object[6];

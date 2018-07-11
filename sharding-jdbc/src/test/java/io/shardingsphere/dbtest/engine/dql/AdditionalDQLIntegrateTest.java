@@ -20,7 +20,7 @@ package io.shardingsphere.dbtest.engine.dql;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.cases.assertion.root.SQLValue;
-import io.shardingsphere.dbtest.engine.IntegrateTestParameters;
+import io.shardingsphere.dbtest.engine.util.IntegrateTestParameters;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.IntegrateTestEnvironment;
 import io.shardingsphere.test.sql.SQLCaseType;
