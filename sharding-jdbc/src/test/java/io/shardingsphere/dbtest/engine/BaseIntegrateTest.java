@@ -24,15 +24,11 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.parsing.cache.ParsingResultCache;
 import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
-import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
-import io.shardingsphere.dbtest.cases.assertion.root.SQLValue;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.dbtest.env.IntegrateTestEnvironment;
 import io.shardingsphere.dbtest.env.datasource.DataSourceUtil;
 import io.shardingsphere.dbtest.env.schema.SchemaEnvironmentManager;
-import io.shardingsphere.test.sql.SQLCaseType;
-import io.shardingsphere.test.sql.SQLCasesLoader;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.junit.After;
@@ -46,11 +42,8 @@ import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -66,14 +59,6 @@ public abstract class BaseIntegrateTest {
     
     private final DatabaseTypeEnvironment databaseTypeEnvironment;
     
-    private final IntegrateTestCaseAssertion assertion;
-    
-    private final SQLCaseType caseType;
-    
-    private final String sql;
-    
-    private final String expectedDataFile;
-    
     private final Map<String, DataSource> dataSourceMap;
     
     private final DataSource dataSource;
@@ -82,15 +67,9 @@ public abstract class BaseIntegrateTest {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     }
     
-    public BaseIntegrateTest(final String sqlCaseId, final String path, final IntegrateTestCaseAssertion assertion, final String shardingRuleType, 
-                             final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) 
-            throws IOException, JAXBException, SQLException, ParseException {
+    public BaseIntegrateTest(final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, JAXBException, SQLException {
         this.shardingRuleType = shardingRuleType;
         this.databaseTypeEnvironment = databaseTypeEnvironment;
-        this.assertion = assertion;
-        this.caseType = caseType;
-        sql = getSQL(sqlCaseId);
-        expectedDataFile = getExpectedDataFile(path, shardingRuleType, databaseTypeEnvironment.getDatabaseType(), assertion.getExpectedDataFile());
         if (databaseTypeEnvironment.isEnabled()) {
             dataSourceMap = createDataSourceMap(shardingRuleType);
             dataSource = createDataSource(dataSourceMap);
@@ -100,15 +79,7 @@ public abstract class BaseIntegrateTest {
         }
     }
     
-    private String getSQL(final String sqlCaseId) throws ParseException {
-        List<String> parameters = new LinkedList<>();
-        for (SQLValue each : assertion.getSQLValues()) {
-            parameters.add(each.toString());
-        }
-        return SQLCasesLoader.getInstance().getSupportedSQL(sqlCaseId, caseType, parameters);
-    }
-    
-    private String getExpectedDataFile(final String path, final String shardingRuleType, final DatabaseType databaseType, final String expectedDataFile) {
+    protected String getExpectedDataFile(final String path, final String shardingRuleType, final DatabaseType databaseType, final String expectedDataFile) {
         if (null == expectedDataFile) {
             return null;
         }

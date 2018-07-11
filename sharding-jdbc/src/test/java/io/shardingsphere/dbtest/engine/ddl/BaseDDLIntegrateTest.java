@@ -22,7 +22,7 @@ import io.shardingsphere.dbtest.cases.assertion.ddl.DDLIntegrateTestCaseAssertio
 import io.shardingsphere.dbtest.cases.dataset.DataSet;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetColumn;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
-import io.shardingsphere.dbtest.engine.BaseIntegrateTest;
+import io.shardingsphere.dbtest.engine.SingleIntegrateTest;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
@@ -46,7 +46,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public abstract class BaseDDLIntegrateTest extends BaseIntegrateTest {
+public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
     
     private final DDLIntegrateTestCaseAssertion assertion;
     
