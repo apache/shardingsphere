@@ -9,7 +9,7 @@
 1. [ISSUE #290](https://github.com/sharding-sphere/sharding-sphere/issues/290) Support batch INSERT statements
 1. [ISSUE #501](https://github.com/sharding-sphere/sharding-sphere/issues/501) Support OR statement
 1. [ISSUE #862](https://github.com/sharding-sphere/sharding-sphere/issues/862) Support data orchestration in cloud side
-1. [ISSUE #980](https://github.com/sharding-sphere/sharding-sphere/issues/980) 支持 DCL statement
+1. [ISSUE #980](https://github.com/sharding-sphere/sharding-sphere/issues/980) Support DCL statement
 1. [ISSUE #936](https://github.com/sharding-sphere/sharding-sphere/issues/936) Support the registry center for Proxy
 
 ### Enhancements
