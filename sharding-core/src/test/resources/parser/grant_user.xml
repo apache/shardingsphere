@@ -26,7 +26,7 @@
             <table-token begin-position="13" original-literals="*" />
         </tokens>
     </parser-result>
-    <parser-result sql-case-id="grant_user_on_tablel">
+    <parser-result sql-case-id="grant_user_on_table">
         <tables>
             <table name="t_order" />
         </tables>
