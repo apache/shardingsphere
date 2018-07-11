@@ -33,16 +33,15 @@ import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTablesS
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingException;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
+import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 import lombok.RequiredArgsConstructor;
-
-import java.util.Arrays;
-import java.util.Collection;
 
 /**
  * SQL judge engine.
@@ -56,7 +55,7 @@ public final class SQLJudgeEngine {
     private final String sql;
     
     /**
-     * judge SQL Type only.
+     * Judge SQL type only.
      *
      * @return SQL statement
      */
@@ -66,25 +65,25 @@ public final class SQLJudgeEngine {
         while (true) {
             TokenType tokenType = lexerEngine.getCurrentToken().getType();
             if (tokenType instanceof Keyword) {
-                if (isDQL(tokenType)) {
+                if (DQLStatement.isDQL(tokenType)) {
                     return getDQLStatement();
                 }
-                if (isDML(tokenType)) {
+                if (DMLStatement.isDML(tokenType)) {
                     return getDMLStatement(tokenType);
                 }
-                if (isTCL(tokenType)) {
+                if (TCLStatement.isTCL(tokenType)) {
                     return getTCLStatement();
                 }
-                if (isDAL(tokenType)) {
+                if (DALStatement.isDAL(tokenType)) {
                     return getDALStatement(tokenType, lexerEngine);
                 }
                 lexerEngine.nextToken();
                 TokenType secondaryTokenType = lexerEngine.getCurrentToken().getType();
-                if (isDCL(tokenType, secondaryTokenType)) {
-                    return getDCLStatement();
-                }
-                if (isDDL(tokenType, secondaryTokenType)) {
+                if (DDLStatement.isDDL(tokenType, secondaryTokenType)) {
                     return getDDLStatement();
+                }
+                if (DCLStatement.isDCL(tokenType, secondaryTokenType)) {
+                    return getDCLStatement();
                 }
             } else {
                 lexerEngine.nextToken();
@@ -93,39 +92,6 @@ public final class SQLJudgeEngine {
                 throw new SQLParsingException("Unsupported SQL statement: [%s]", sql);
             }
         }
-    }
-    
-    private boolean isDQL(final TokenType tokenType) {
-        return DefaultKeyword.SELECT == tokenType;
-    }
-    
-    private boolean isDML(final TokenType tokenType) {
-        return DefaultKeyword.INSERT == tokenType || DefaultKeyword.UPDATE == tokenType || DefaultKeyword.DELETE == tokenType;
-    }
-    
-    private static boolean isDDL(final TokenType tokenType, final TokenType secondaryTokenType) {
-        Collection<DefaultKeyword> primaryTokens = Arrays.asList(DefaultKeyword.CREATE, DefaultKeyword.ALTER, DefaultKeyword.DROP, DefaultKeyword.TRUNCATE);
-        Collection<DefaultKeyword> secondaryTokens = Arrays.asList(DefaultKeyword.LOGIN, DefaultKeyword.USER, DefaultKeyword.ROLE);
-        return primaryTokens.contains(tokenType) && !secondaryTokens.contains(secondaryTokenType);
-    }
-    
-    private static boolean isDCL(final TokenType tokenType, final TokenType secondaryTokenType) {
-        Collection<DefaultKeyword> primaryTokens = Arrays.asList(DefaultKeyword.GRANT, DefaultKeyword.REVOKE, DefaultKeyword.DENY);
-        Collection<DefaultKeyword> secondaryTokens = Arrays.asList(DefaultKeyword.LOGIN, DefaultKeyword.USER, DefaultKeyword.ROLE);
-        if (primaryTokens.contains(tokenType)) {
-            return true;
-        }
-        primaryTokens = Arrays.asList(DefaultKeyword.CREATE, DefaultKeyword.ALTER, DefaultKeyword.DROP, DefaultKeyword.RENAME);
-        return primaryTokens.contains(tokenType) && secondaryTokens.contains(secondaryTokenType);
-    }
-    
-    private boolean isTCL(final TokenType tokenType) {
-        return DefaultKeyword.SET == tokenType || DefaultKeyword.COMMIT == tokenType || DefaultKeyword.ROLLBACK == tokenType
-                || DefaultKeyword.SAVEPOINT == tokenType || DefaultKeyword.BEGIN == tokenType;
-    }
-    
-    private boolean isDAL(final TokenType tokenType) {
-        return DefaultKeyword.USE == tokenType || DefaultKeyword.DESC == tokenType || MySQLKeyword.DESCRIBE == tokenType || MySQLKeyword.SHOW == tokenType;
     }
     
     private SQLStatement getDQLStatement() {

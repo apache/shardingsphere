@@ -25,9 +25,11 @@ import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
 import io.shardingsphere.core.parsing.lexer.token.TokenType;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
+import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingsphere.core.parsing.parser.sql.dal.describe.DescribeParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dal.show.ShowParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dal.use.UseParserFactory;
+import io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dcl.alter.AlterUserParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dcl.create.CreateUserParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dcl.deny.DenyUserParserFactory;
@@ -35,23 +37,24 @@ import io.shardingsphere.core.parsing.parser.sql.dcl.drop.DropUserParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dcl.grant.GrantUserParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dcl.rename.RenameUserParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dcl.revoke.RevokeUserParserFactory;
+import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.alter.table.AlterTableParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.index.CreateIndexParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.ddl.drop.index.DropIndexParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.ddl.drop.table.DropTableParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.ddl.truncate.table.TruncateTableParserFactory;
+import io.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.delete.DeleteParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dml.update.UpdateParserFactory;
+import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.tcl.TCLParserFactory;
+import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
-import java.util.Arrays;
-import java.util.Collection;
 
 /**
  * SQL parser factory.
@@ -73,60 +76,27 @@ public final class SQLParserFactory {
      * @return SQL parser
      */
     public static SQLParser newInstance(final DatabaseType dbType, final TokenType tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingMetaData shardingMetaData) {
-        if (isDQL(tokenType)) {
+        if (DQLStatement.isDQL(tokenType)) {
             return getDQLParser(dbType, shardingRule, lexerEngine, shardingMetaData);
         }
-        if (isDML(tokenType)) {
+        if (DMLStatement.isDML(tokenType)) {
             return getDMLParser(dbType, tokenType, shardingRule, lexerEngine, shardingMetaData);
         }
-        if (isTCL(tokenType)) {
+        if (TCLStatement.isTCL(tokenType)) {
             return getTCLParser(dbType, shardingRule, lexerEngine);
         }
-        if (isDAL(tokenType)) {
+        if (DALStatement.isDAL(tokenType)) {
             return getDALParser(dbType, (Keyword) tokenType, shardingRule, lexerEngine);
         }
         lexerEngine.nextToken();
         TokenType secondaryTokenType = lexerEngine.getCurrentToken().getType();
-        if (isDCL(tokenType, secondaryTokenType)) {
-            return getDCLParser(dbType, tokenType, shardingRule, lexerEngine);
-        }
-        if (isDDL(tokenType, secondaryTokenType)) {
+        if (DDLStatement.isDDL(tokenType, secondaryTokenType)) {
             return getDDLParser(dbType, tokenType, shardingRule, lexerEngine);
         }
-        throw new SQLParsingUnsupportedException(tokenType);
-    }
-    
-    private static boolean isDQL(final TokenType tokenType) {
-        return DefaultKeyword.SELECT == tokenType;
-    }
-    
-    private static boolean isDML(final TokenType tokenType) {
-        return DefaultKeyword.INSERT == tokenType || DefaultKeyword.UPDATE == tokenType || DefaultKeyword.DELETE == tokenType;
-    }
-    
-    private static boolean isTCL(final TokenType tokenType) {
-        return DefaultKeyword.SET == tokenType || DefaultKeyword.COMMIT == tokenType || DefaultKeyword.ROLLBACK == tokenType
-                || DefaultKeyword.SAVEPOINT == tokenType || DefaultKeyword.BEGIN == tokenType;
-    }
-    
-    private static boolean isDAL(final TokenType tokenType) {
-        return DefaultKeyword.USE == tokenType || DefaultKeyword.DESC == tokenType || MySQLKeyword.DESCRIBE == tokenType || MySQLKeyword.SHOW == tokenType;
-    }
-    
-    private static boolean isDDL(final TokenType tokenType, final TokenType secondaryTokenType) {
-        Collection<DefaultKeyword> primaryTokens = Arrays.asList(DefaultKeyword.CREATE, DefaultKeyword.ALTER, DefaultKeyword.DROP, DefaultKeyword.TRUNCATE);
-        Collection<DefaultKeyword> secondaryTokens = Arrays.asList(DefaultKeyword.LOGIN, DefaultKeyword.USER, DefaultKeyword.ROLE);
-        return primaryTokens.contains(tokenType) && !secondaryTokens.contains(secondaryTokenType);
-    }
-    
-    private static boolean isDCL(final TokenType tokenType, final TokenType secondaryTokenType) {
-        Collection<DefaultKeyword> primaryTokens = Arrays.asList(DefaultKeyword.GRANT, DefaultKeyword.REVOKE, DefaultKeyword.DENY);
-        Collection<DefaultKeyword> secondaryTokens = Arrays.asList(DefaultKeyword.LOGIN, DefaultKeyword.USER, DefaultKeyword.ROLE);
-        if (primaryTokens.contains(tokenType)) {
-            return true;
+        if (DCLStatement.isDCL(tokenType, secondaryTokenType)) {
+            return getDCLParser(dbType, tokenType, shardingRule, lexerEngine);
         }
-        primaryTokens = Arrays.asList(DefaultKeyword.CREATE, DefaultKeyword.ALTER, DefaultKeyword.DROP, DefaultKeyword.RENAME);
-        return primaryTokens.contains(tokenType) && secondaryTokens.contains(secondaryTokenType);
+        throw new SQLParsingUnsupportedException(tokenType);
     }
     
     private static SQLParser getDQLParser(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingMetaData shardingMetaData) {
