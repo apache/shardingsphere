@@ -173,8 +173,11 @@ public final class MySQLPacketPayload {
      */
     public long readIntLenenc() {
         int firstByte = readInt1();
-        if (firstByte <= 0xfb) {
+        if (firstByte < 0xfb) {
             return firstByte;
+        }
+        if (0xfb == firstByte) {
+            return 0;
         }
         if (0xfc == firstByte) {
             return byteBuf.readShortLE();

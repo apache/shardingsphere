@@ -15,24 +15,13 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.cases.dataset.init;
+package io.shardingsphere.dbtest.engine.ddl;
 
-import lombok.Getter;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-
-@Getter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class DataSetIndexMetadata {
-    
-    @XmlAttribute
-    private String name;
-    
-    @XmlAttribute
-    private String columns;
-    
-    @XmlAttribute
-    private boolean unique;
+@RunWith(Suite.class)
+@SuiteClasses(GeneralDDLIntegrateTest.class)
+public class AllDDLTests {
 }

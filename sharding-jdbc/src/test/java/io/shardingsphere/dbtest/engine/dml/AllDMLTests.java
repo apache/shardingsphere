@@ -15,22 +15,17 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.cases.dataset.expected.dataset;
+package io.shardingsphere.dbtest.engine.dml;
 
-import lombok.Getter;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.List;
-
-@Getter
-@XmlRootElement(name = "datasets")
-public final class ExpectedDataSetsRoot {
-    
-    @XmlElement
-    private ExpectedColumns columns;
-    
-    @XmlElement(name = "dataset")
-    private List<ExpectedDataSetRow> dataSetRows = new ArrayList<>();
+@RunWith(Suite.class)
+@SuiteClasses({
+        GeneralDMLIntegrateTest.class,
+        BatchDMLIntegrateTest.class, 
+        AdditionalDMLIntegrateTest.class
+    })
+public class AllDMLTests {
 }

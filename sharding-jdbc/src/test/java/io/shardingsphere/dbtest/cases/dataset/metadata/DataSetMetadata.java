@@ -15,29 +15,30 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.cases.dataset.expected.dataset;
+package io.shardingsphere.dbtest.cases.dataset.metadata;
 
-import com.google.common.base.Splitter;
 import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
 import java.util.List;
 
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedDataSetRow {
+public final class DataSetMetadata {
     
-    @XmlAttribute
-    private String values;
+    @XmlAttribute(name = "data-nodes")
+    private String dataNodes;
     
-    /**
-     * Get values.
-     *
-     * @return value list
-     */
-    public List<String> getValues() {
-        return Splitter.on(",").trimResults().splitToList(values);
-    }
+    @XmlAttribute(name = "table-name")
+    private String tableName;
+    
+    @XmlElement(name = "column")
+    private List<DataSetColumn> columns = new LinkedList<>();
+    
+    @XmlElement(name = "index")
+    private List<DataSetIndex> indexes = new LinkedList<>();
 }

@@ -15,26 +15,16 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.cases.dataset.expected.metadata;
+package io.shardingsphere.dbtest.engine.dql;
 
-import lombok.Getter;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.List;
-
-@Getter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedMetadata {
-    
-    @XmlAttribute(name = "table")
-    private String tableName;
-    
-    @XmlElement(name = "column")
-    private List<ExpectedColumn> columns;
-    
-    @XmlElement(name = "index")
-    private List<ExpectedIndex> indexes;
+@RunWith(Suite.class)
+@SuiteClasses({
+        GeneralDQLIntegrateTest.class, 
+        AdditionalDQLIntegrateTest.class
+    })
+public class AllDQLTests {
 }

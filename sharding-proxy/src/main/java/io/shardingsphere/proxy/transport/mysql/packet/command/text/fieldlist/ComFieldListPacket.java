@@ -91,11 +91,15 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
         // TODO use common database type
         if (RuleRegistry.getInstance().isWithoutJdbc()) {
             sqlPacketsBackendHandler = new SQLPacketsBackendHandler(this, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
-            sqlPacketsBackendHandler.execute();
+            if (sqlPacketsBackendHandler.execute().getHeadPacket() instanceof ErrPacket) {
+                return new CommandResponsePackets(new ErrPacket(1, 0, "", "", ""));
+            }
             return new CommandResponsePackets(new DummyPacket());
         } else {
             sqlExecuteBackendHandler = new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
-            sqlExecuteBackendHandler.execute();
+            if (sqlExecuteBackendHandler.execute().getHeadPacket() instanceof ErrPacket) {
+                return new CommandResponsePackets(new ErrPacket(1, 0, "", "", ""));
+            }
             return new CommandResponsePackets(new DummyPacket());
         }
     }

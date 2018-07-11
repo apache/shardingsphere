@@ -1,5 +1,7 @@
-<datasets>
-    <columns values="items_count" />
-    <dataset values="4" />
-    <dataset values="4" />
-</datasets>
+<dataset>
+    <metadata>
+        <column name="items_count" />
+    </metadata>
+    <row values="4" />
+    <row values="4" />
+</dataset>
