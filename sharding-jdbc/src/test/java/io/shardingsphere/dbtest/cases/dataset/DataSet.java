@@ -36,6 +36,7 @@ import java.util.List;
  * @author zhangliang 
  */
 @Getter
+//@Setter
 @XmlRootElement(name = "dataset")
 public final class DataSet {
     

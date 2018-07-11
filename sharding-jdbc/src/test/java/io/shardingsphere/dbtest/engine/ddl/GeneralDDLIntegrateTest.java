@@ -24,8 +24,6 @@ import io.shardingsphere.dbtest.engine.IntegrateTestParameters;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.test.sql.SQLCaseType;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import javax.xml.bind.JAXBException;
@@ -35,7 +33,6 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Collection;
 
-@RunWith(Parameterized.class)
 public final class GeneralDDLIntegrateTest extends BaseDDLIntegrateTest {
     
     private final DDLIntegrateTestCaseAssertion assertion;
@@ -48,7 +45,7 @@ public final class GeneralDDLIntegrateTest extends BaseDDLIntegrateTest {
     
     @Parameters(name = "{0} -> Rule:{3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
-        return IntegrateTestParameters.getParameters(SQLType.DDL);
+        return IntegrateTestParameters.getParametersWithAssertion(SQLType.DDL);
     }
     
     @Test

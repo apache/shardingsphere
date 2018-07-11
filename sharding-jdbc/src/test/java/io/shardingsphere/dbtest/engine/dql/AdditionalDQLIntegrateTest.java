@@ -25,8 +25,6 @@ import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.IntegrateTestEnvironment;
 import io.shardingsphere.test.sql.SQLCaseType;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import javax.xml.bind.JAXBException;
@@ -42,7 +40,6 @@ import java.util.Collections;
 
 import static org.junit.Assert.assertTrue;
 
-@RunWith(Parameterized.class)
 public final class AdditionalDQLIntegrateTest extends BaseDQLIntegrateTest {
     
     private static IntegrateTestEnvironment integrateTestEnvironment = IntegrateTestEnvironment.getInstance();
@@ -57,7 +54,7 @@ public final class AdditionalDQLIntegrateTest extends BaseDQLIntegrateTest {
     
     @Parameters(name = "{0} -> Rule:{3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
-        return integrateTestEnvironment.isRunAdditionalTestCases() ? IntegrateTestParameters.getParameters(SQLType.DQL) : Collections.<Object[]>emptyList();
+        return integrateTestEnvironment.isRunAdditionalTestCases() ? IntegrateTestParameters.getParametersWithAssertion(SQLType.DQL) : Collections.<Object[]>emptyList();
     }
     
     @Test

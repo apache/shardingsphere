@@ -22,9 +22,6 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({
-        GeneralDDLIntegrateTest.class, 
-        AdditionalDDLIntegrateTest.class
-    })
+@SuiteClasses(GeneralDDLIntegrateTest.class)
 public class AllDDLTests {
 }
