@@ -221,14 +221,18 @@ public final class ExecuteBatchIntegrateTest {
     
     private int[] executeBatchForPreparedStatement(final Connection connection) throws SQLException, ParseException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            for (IntegrateTestCaseAssertion assertion : integrateTestCase.getIntegrateTestCaseAssertions()) {
-                for (SQLValue each : assertion.getSQLValues()) {
-                    preparedStatement.setObject(each.getIndex(), each.getValue());
-                }
-                preparedStatement.addBatch();
+            for (IntegrateTestCaseAssertion each : integrateTestCase.getIntegrateTestCaseAssertions()) {
+                addBatch(preparedStatement, each);
             }
             return preparedStatement.executeBatch();
         }
+    }
+    
+    private void addBatch(final PreparedStatement preparedStatement, final IntegrateTestCaseAssertion assertion) throws ParseException, SQLException {
+        for (SQLValue each : assertion.getSQLValues()) {
+            preparedStatement.setObject(each.getIndex(), each.getValue());
+        }
+        preparedStatement.addBatch();
     }
     
     private void assertDataSet(final int[] actualUpdateCounts) throws SQLException, IOException, JAXBException {
@@ -308,5 +312,22 @@ public final class ExecuteBatchIntegrateTest {
             count++;
         }
         assertThat("Size of actual result set is different with size of expected dat set rows.", count, is(expectedDatSetRows.size()));
+    }
+    
+    @Test
+    public void assertClearBatch() throws SQLException, ParseException {
+        // TODO fix masterslave
+        if (!databaseTypeEnvironment.isEnabled() || "masterslave".equals(shardingRuleType)) {
+            return;
+        }
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                for (IntegrateTestCaseAssertion each : integrateTestCase.getIntegrateTestCaseAssertions()) {
+                    addBatch(preparedStatement, each);
+                }
+                preparedStatement.clearBatch();
+                assertThat(preparedStatement.executeBatch().length, is(0));
+            }
+        }
     }
 }
