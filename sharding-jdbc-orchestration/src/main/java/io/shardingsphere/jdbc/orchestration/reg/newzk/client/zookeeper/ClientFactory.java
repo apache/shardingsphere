@@ -19,17 +19,16 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayRetryPolicy;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseClientFactory;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ClientContext;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
+import java.io.IOException;
+import java.util.List;
 import org.apache.zookeeper.data.ACL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.util.List;
 
 /*
  * @author lidongbo
@@ -82,11 +81,11 @@ public class ClientFactory extends BaseClientFactory {
     /**
      * wait to register global listener.
      *
-     * @param globalListener globalListener
+     * @param globalZookeeperEventListener globalListener
      * @return ClientFactory this
      */
-    public ClientFactory watch(final Listener globalListener) {
-        setGlobalListener(globalListener);
+    public ClientFactory watch(final ZookeeperEventListener globalZookeeperEventListener) {
+        setGlobalZookeeperEventListener(globalZookeeperEventListener);
         return this;
     }
     

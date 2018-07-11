@@ -46,7 +46,7 @@ public class SyncRetryStrategy extends UsualStrategy {
         super(provider);
         if (delayRetryPolicy == null) {
             LOGGER.info("RetryCallable constructor context's delayRetryPolicy is null");
-            this.delayRetryPolicy = DelayRetryPolicy.newNoInitDelayPolicy();
+            this.delayRetryPolicy = DelayRetryPolicy.defaultDelayPolicy();
         } else {
             this.delayRetryPolicy = delayRetryPolicy;
         }

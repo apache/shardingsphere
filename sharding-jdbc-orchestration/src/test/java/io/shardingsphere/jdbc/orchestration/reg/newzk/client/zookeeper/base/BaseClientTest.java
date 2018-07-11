@@ -21,7 +21,8 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.ClientFactory;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
 import io.shardingsphere.jdbc.orchestration.util.EmbedTestingServer;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -231,15 +232,15 @@ public abstract class BaseClientTest extends BaseTest {
     protected void watch(IClient client) throws KeeperException, InterruptedException {
         List<String> actual = new ArrayList<>();
         
-        final Listener listener = buildListener(client, actual);
+        final ZookeeperEventListener zookeeperEventListener = buildListener(client, actual);
         
         String key = "a";
-        client.registerWatch(key, listener);
+        client.registerWatch(key, zookeeperEventListener);
         client.createCurrentOnly(key, "aaa", CreateMode.EPHEMERAL);
         client.checkExists(key, new Watcher() {
             @Override
             public void process(WatchedEvent event) {
-                listener.process(event);
+                zookeeperEventListener.process(event);
             }
         });
         String value = "value0";
@@ -261,16 +262,16 @@ public abstract class BaseClientTest extends BaseTest {
         //The acquisition value is after the reception of the event,
         //so the value may be not equal.
         assertThat(actual, hasItems("update_/test/a_value0", "update_/test/a_value1", "update_/test/a_value2", "delete_/test/a_"));
-        client.unregisterWatch(listener.getKey());
+        client.unregisterWatch(zookeeperEventListener.getKey());
     }
     
     protected void watchRegister(IClient client) throws KeeperException, InterruptedException {
         List<String> actual = new ArrayList<>();
         
-        final Listener listener = buildListener(client, actual);
+        final ZookeeperEventListener zookeeperEventListener = buildListener(client, actual);
         
         String key = "a";
-        client.registerWatch(key, listener);
+        client.registerWatch(key, zookeeperEventListener);
         client.createCurrentOnly(key, "aaa", CreateMode.EPHEMERAL);
         assertThat(client.getDataString(key), is("aaa"));
         
@@ -293,11 +294,11 @@ public abstract class BaseClientTest extends BaseTest {
         //The acquisition value is after the reception of the event,
         //so the value may be not equal.
         assertThat(actual, hasItems("update_/test/a_value0", "update_/test/a_value1", "update_/test/a_value2", "delete_/test/a_"));
-        client.unregisterWatch(listener.getKey());
+        client.unregisterWatch(zookeeperEventListener.getKey());
     }
     
-    protected Listener buildListener(final IClient client, final List<String> actual){
-        return new Listener(null) {
+    protected ZookeeperEventListener buildListener(final IClient client, final List<String> actual){
+        return new ZookeeperEventListener(null) {
             @Override
             public void process(WatchedEvent event) {
                 LOGGER.info(event.getPath());

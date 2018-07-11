@@ -31,7 +31,7 @@ import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
 /*
- * base async retry operation
+ * Base async retry operation.
  *
  * @author lidongbo
  */
@@ -57,7 +57,7 @@ public abstract class BaseOperation implements Delayed {
     }
     
     /**
-     * queue precedence.
+     * Queue precedence.
      */
     @Override
     public int compareTo(final Delayed delayed) {
@@ -67,7 +67,7 @@ public abstract class BaseOperation implements Delayed {
     protected abstract void execute() throws KeeperException, InterruptedException;
     
     /**
-     * queue precedence.
+     * Queue precedence.
      *
      * @return whether or not continue enqueue
      * @throws KeeperException Keeper Exception

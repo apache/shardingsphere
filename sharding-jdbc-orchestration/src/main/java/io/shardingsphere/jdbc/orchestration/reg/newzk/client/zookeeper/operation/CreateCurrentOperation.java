@@ -23,7 +23,7 @@ import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 
 /*
- * async retry
+ * Async retry operation which CreateCurrent action.
  *
  * @author lidongbo
  */

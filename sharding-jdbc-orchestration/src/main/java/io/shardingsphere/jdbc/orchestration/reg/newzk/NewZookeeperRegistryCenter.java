@@ -28,8 +28,8 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.PathTree;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayRetryPolicy;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.ClientFactory;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
 import io.shardingsphere.jdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import java.util.Collections;
 import java.util.Comparator;
@@ -203,7 +203,7 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
             addCacheData(key);
         }
         final PathTree cache = caches.get(path);
-        cache.watch(new Listener() {
+        cache.watch(new ZookeeperEventListener() {
             
             @Override
             public void process(final WatchedEvent event) {

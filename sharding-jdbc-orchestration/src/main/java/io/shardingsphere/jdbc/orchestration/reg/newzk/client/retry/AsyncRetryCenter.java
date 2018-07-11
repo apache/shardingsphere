@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.DelayQueue;
 
 /*
- * async retry center
+ * Async retry center.
  *
  * @author lidongbo
  */
@@ -50,8 +50,8 @@ public enum AsyncRetryCenter {
     public void init(final DelayRetryPolicy delayRetryPolicy) {
         LOGGER.debug("delayRetryPolicy init");
         if (delayRetryPolicy == null) {
-            LOGGER.warn("delayRetryPolicy is null and auto init with DelayRetryPolicy.newNoInitDelayPolicy");
-            this.delayRetryPolicy = DelayRetryPolicy.newNoInitDelayPolicy();
+            LOGGER.warn("delayRetryPolicy is null and auto init with DelayRetryPolicy.defaultDelayPolicy");
+            this.delayRetryPolicy = DelayRetryPolicy.defaultDelayPolicy();
             return;
         }
         this.delayRetryPolicy = delayRetryPolicy;
@@ -76,8 +76,8 @@ public enum AsyncRetryCenter {
      */
     public void add(final BaseOperation operation) {
         if (delayRetryPolicy == null) {
-            LOGGER.warn("delayRetryPolicy no init and auto init with DelayRetryPolicy.newNoInitDelayPolicy");
-            delayRetryPolicy = DelayRetryPolicy.newNoInitDelayPolicy();
+            LOGGER.warn("delayRetryPolicy no init and auto init with DelayRetryPolicy.defaultDelayPolicy");
+            delayRetryPolicy = DelayRetryPolicy.defaultDelayPolicy();
         }
         operation.setDelayPolicyExecutor(new DelayPolicyExecutor(delayRetryPolicy));
         queue.offer(operation);

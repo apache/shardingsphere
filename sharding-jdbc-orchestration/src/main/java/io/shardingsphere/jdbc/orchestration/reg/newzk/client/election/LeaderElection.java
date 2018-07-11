@@ -18,10 +18,10 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.election;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.WatcherCreator;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /*
- * competition of node write permission
+ * Competition of node write permission.
  * It is not recommended to be used as a global variable.
  *
  * @author lidongbo
@@ -46,7 +46,7 @@ public abstract class LeaderElection {
         retryCount = ZookeeperConstants.NODE_ELECTION_RETRY;
     }
 
-    private boolean contend(final String node, final IProvider provider, final Listener listener) throws KeeperException, InterruptedException {
+    private boolean contend(final String node, final IProvider provider, final ZookeeperEventListener zookeeperEventListener) throws KeeperException, InterruptedException {
         boolean success = false;
         try {
             // todo EPHEMERAL_SEQUENTIAL check index value
@@ -55,13 +55,13 @@ public abstract class LeaderElection {
         } catch (KeeperException.NodeExistsException e) {
             LOGGER.info("contend not success");
             // TODO or changing_key node value == current client id
-            provider.exists(node, WatcherCreator.deleteWatcher(listener));
+            provider.exists(node, WatcherCreator.deleteWatcher(zookeeperEventListener));
         }
         return success;
     }
     
     /**
-     * listener will be register when the contention of the path is unsuccessful.
+     * Listener will be register when the contention of the path is unsuccessful.
      *
      * @param nodeBeContend nodeBeContend
      * @param provider provider
@@ -72,7 +72,7 @@ public abstract class LeaderElection {
         boolean canBegin;
         final String realNode = provider.getRealPath(nodeBeContend);
         final String contendNode = PathUtil.getRealPath(realNode, ZookeeperConstants.CHANGING_KEY);
-        canBegin = this.contend(contendNode, provider, new Listener(contendNode) {
+        canBegin = this.contend(contendNode, provider, new ZookeeperEventListener(contendNode) {
             @Override
             public void process(final WatchedEvent event) {
                 try {
@@ -105,7 +105,7 @@ public abstract class LeaderElection {
     }
     
     /**
-     * wait done.
+     * Wait done.
      */
     public void waitDone() {
         while (!done) {
@@ -118,7 +118,7 @@ public abstract class LeaderElection {
     }
     
     /**
-     * contend exec.
+     * Contend exec.
      *
      * @throws KeeperException Zookeeper Exception
      * @throws InterruptedException InterruptedException
@@ -126,7 +126,7 @@ public abstract class LeaderElection {
     public abstract void action() throws KeeperException, InterruptedException;
     
     /**
-     * callback.
+     * Callback.
      */
     public void callback() {
         

@@ -23,7 +23,7 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.
 import org.apache.zookeeper.KeeperException;
 
 /*
- * async retry
+ * Async retry operation which DeleteAllChildren action.
  *
  * @author lidongbo
  */

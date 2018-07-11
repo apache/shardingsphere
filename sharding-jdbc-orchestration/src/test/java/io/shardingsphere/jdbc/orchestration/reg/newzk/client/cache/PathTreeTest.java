@@ -21,7 +21,8 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.ClientFactory;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseTest;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.TestSupport;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
 import io.shardingsphere.jdbc.orchestration.util.EmbedTestingServer;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -48,7 +49,7 @@ public class PathTreeTest extends BaseTest {
     
     private IClient testClient;
     
-    private Listener listener = new Listener() {
+    private ZookeeperEventListener zookeeperEventListener = new ZookeeperEventListener() {
         @Override
         public void process(WatchedEvent event) {
             LOGGER.debug("debug event :" + event.toString());
@@ -60,7 +61,7 @@ public class PathTreeTest extends BaseTest {
         EmbedTestingServer.start();
         ClientFactory creator = new ClientFactory();
         testClient = creator.setClientNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes(), ZooDefs.Ids.CREATOR_ALL_ACL)
-                .watch(listener).newClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).start();
+                .watch(zookeeperEventListener).newClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).start();
     
         pathTree = new PathTree(TestSupport.ROOT, testClient);
     }

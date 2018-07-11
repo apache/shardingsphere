@@ -37,6 +37,8 @@ import java.util.List;
 import java.util.Stack;
 
 /*
+ * Base provider.
+ *
  * @author lidongbo
  */
 public class BaseProvider implements IProvider {

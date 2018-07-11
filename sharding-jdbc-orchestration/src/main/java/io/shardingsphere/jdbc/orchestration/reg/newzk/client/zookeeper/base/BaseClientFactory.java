@@ -18,7 +18,7 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /*
+ * Base client factory.
+ *
  * @author lidongbo
  */
 @Setter(value = AccessLevel.PROTECTED)
@@ -39,7 +41,7 @@ public abstract class BaseClientFactory {
     
     private BaseClient client;
     
-    private Listener globalListener;
+    private ZookeeperEventListener globalZookeeperEventListener;
     
     private String namespace;
     
@@ -52,7 +54,7 @@ public abstract class BaseClientFactory {
     private BaseContext context;
     
     /**
-     * start.
+     * Start.
      *
      * @return client
      * @throws IOException IO Exception
@@ -65,7 +67,7 @@ public abstract class BaseClientFactory {
     }
     
     /**
-     * start until Timeout.
+     * Start until Timeout.
      *
      * @param wait wait
      * @param units units
@@ -89,8 +91,8 @@ public abstract class BaseClientFactory {
             authorities = ZooDefs.Ids.OPEN_ACL_UNSAFE;
         }
         client.setAuthorities(scheme, auth, authorities);
-        if (globalListener != null) {
-            client.registerWatch(globalListener);
+        if (globalZookeeperEventListener != null) {
+            client.registerWatch(globalZookeeperEventListener);
         }
     }
 }

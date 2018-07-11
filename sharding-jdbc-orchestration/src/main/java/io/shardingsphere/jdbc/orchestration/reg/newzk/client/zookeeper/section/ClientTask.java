@@ -23,6 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /*
+ * Client task.
+ *
  * @author lidongbo
  */
 public abstract class ClientTask implements Runnable {
@@ -36,7 +38,7 @@ public abstract class ClientTask implements Runnable {
     }
     
     /**
-     * run.
+     * Run.
      *
      * @param provider provider
      * @throws KeeperException Zookeeper Exception

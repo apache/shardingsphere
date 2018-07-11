@@ -19,11 +19,14 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
 import com.google.common.base.Strings;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.WatcherCreator;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,10 +36,6 @@ import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.data.ACL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /*
  * Base client.
@@ -118,20 +117,20 @@ public abstract class BaseClient implements IClient {
         holder.close();
     }
     
-    void registerWatch(final Listener globalListener) {
-        if (context.getGlobalListener() != null) {
+    void registerWatch(final ZookeeperEventListener globalZookeeperEventListener) {
+        if (context.getGlobalZookeeperEventListener() != null) {
             LOGGER.warn("global listener can only register one");
             return;
         }
-        context.setGlobalListener(globalListener);
-        LOGGER.debug("globalListenerRegistered:{}", globalListener.getKey());
+        context.setGlobalZookeeperEventListener(globalZookeeperEventListener);
+        LOGGER.debug("globalListenerRegistered:{}", globalZookeeperEventListener.getKey());
     }
     
     @Override
-    public void registerWatch(final String key, final Listener listener) {
+    public void registerWatch(final String key, final ZookeeperEventListener zookeeperEventListener) {
         String path = PathUtil.getRealPath(rootNode, key);
-        listener.setPath(path);
-        context.getWatchers().put(listener.getKey(), listener);
+        zookeeperEventListener.setPath(path);
+        context.getWatchers().put(zookeeperEventListener.getKey(), zookeeperEventListener);
         LOGGER.debug("register watcher:{}", path);
     }
     
@@ -166,7 +165,7 @@ public abstract class BaseClient implements IClient {
             rootExist = true;
             return;
         }
-        holder.getZooKeeper().exists(rootNode, WatcherCreator.deleteWatcher(new Listener(rootNode) {
+        holder.getZooKeeper().exists(rootNode, WatcherCreator.deleteWatcher(new ZookeeperEventListener(rootNode) {
             @Override
             public void process(final WatchedEvent event) {
                 rootExist = false;

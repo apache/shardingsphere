@@ -19,7 +19,7 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
 import com.google.common.base.Strings;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -34,7 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /*
- * zookeeper connection holder
+ * Zookeeper connection holder.
  *
  * @author lidongbo
  */
@@ -59,7 +59,7 @@ public class Holder {
     }
     
     /**
-     * start.
+     * Start.
      *
      * @throws IOException IO Exception
      * @throws InterruptedException InterruptedException
@@ -94,10 +94,10 @@ public class Holder {
                     return;
                 }
                 if (!context.getWatchers().isEmpty()) {
-                    for (Listener listener : context.getWatchers().values()) {
-                        if (listener.getPath() == null || event.getPath().startsWith(listener.getPath())) {
-                            LOGGER.debug("listener process:{}, listener:{}", listener.getPath(), listener.getKey());
-                            listener.process(event);
+                    for (ZookeeperEventListener zookeeperEventListener : context.getWatchers().values()) {
+                        if (zookeeperEventListener.getPath() == null || event.getPath().startsWith(zookeeperEventListener.getPath())) {
+                            LOGGER.debug("listener process:{}, listener:{}", zookeeperEventListener.getPath(), zookeeperEventListener.getKey());
+                            zookeeperEventListener.process(event);
                         }
                     }
                 }
@@ -130,8 +130,8 @@ public class Holder {
     }
     
     private void processGlobalListener(final WatchedEvent event) {
-        if (context.getGlobalListener() != null) {
-            context.getGlobalListener().process(event);
+        if (context.getGlobalZookeeperEventListener() != null) {
+            context.getGlobalZookeeperEventListener().process(event);
             LOGGER.debug("Holder {} process", ZookeeperConstants.GLOBAL_LISTENER_KEY);
         }
     }
@@ -149,7 +149,7 @@ public class Holder {
     }
     
     /**
-     * reset connection.
+     * Reset connection.
      *
      * @throws IOException IO Exception
      * @throws InterruptedException InterruptedException
@@ -162,7 +162,7 @@ public class Holder {
     }
     
     /**
-     * close.
+     * Close.
      */
     public void close() {
         try {

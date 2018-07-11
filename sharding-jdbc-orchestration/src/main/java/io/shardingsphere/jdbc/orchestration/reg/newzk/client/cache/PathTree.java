@@ -23,18 +23,10 @@ import io.shardingsphere.core.parsing.lexer.analyzer.Dictionary;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.UsualClient;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.common.PathUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -43,6 +35,13 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.WatchedEvent;
+import org.apache.zookeeper.common.PathUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /*
  * Zookeeper cache tree.
@@ -197,7 +196,7 @@ public final class PathTree {
      * Watch data change.
      */
     public void watch() {
-        watch(new Listener(rootNode.get().getKey()) {
+        watch(new ZookeeperEventListener(rootNode.get().getKey()) {
             @Override
             public void process(final WatchedEvent event) {
                 String path = event.getPath();
@@ -221,15 +220,15 @@ public final class PathTree {
     /**
      * Watch data change.
      *
-     * @param listener listener
+     * @param zookeeperEventListener listener
      */
-    public void watch(final Listener listener) {
+    public void watch(final ZookeeperEventListener zookeeperEventListener) {
         if (closed) {
             return;
         }
-        final String key = listener.getKey();
+        final String key = zookeeperEventListener.getKey();
         LOGGER.debug("PathTree Watch:{}", key);
-        client.registerWatch(rootNode.get().getKey(), listener);
+        client.registerWatch(rootNode.get().getKey(), zookeeperEventListener);
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override
             public void run() {

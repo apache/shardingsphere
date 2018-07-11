@@ -17,7 +17,7 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.action;
 
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
 
@@ -69,9 +69,9 @@ public interface IClient extends IAction, IGroupAction {
      * Register watcher.
      *
      * @param key key
-     * @param listener listener
+     * @param zookeeperEventListener listener
      */
-    void registerWatch(String key, Listener listener);
+    void registerWatch(String key, ZookeeperEventListener zookeeperEventListener);
     
     /**
      * Unregister watcher.

@@ -29,6 +29,8 @@ import org.apache.zookeeper.data.ACL;
 import java.util.List;
 
 /*
+ * Provider with transaction.
+ *
  * @author lidongbo
  */
 public class TransactionProvider extends BaseProvider implements ITransactionProvider {

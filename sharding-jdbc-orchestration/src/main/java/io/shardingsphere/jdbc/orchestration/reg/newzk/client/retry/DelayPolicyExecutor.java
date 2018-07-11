@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Random;
 
 /*
- * delay policy executor
+ * Delay policy executor.
  *
  * @author lidongbo
  */
@@ -40,7 +40,7 @@ public class DelayPolicyExecutor {
     private long executeTick;
     
     public DelayPolicyExecutor() {
-        this(DelayRetryPolicy.newNoInitDelayPolicy());
+        this(DelayRetryPolicy.defaultDelayPolicy());
     }
     
     public DelayPolicyExecutor(final DelayRetryPolicy delayRetryPolicy) {
@@ -50,7 +50,7 @@ public class DelayPolicyExecutor {
     }
     
     /**
-     * has next.
+     * Has next.
      *
      * @return has next
      */
@@ -59,7 +59,7 @@ public class DelayPolicyExecutor {
     }
     
     /**
-     * next exec tick.
+     * Next exec tick.
      *
      * @return next exec tick
      */
@@ -68,7 +68,7 @@ public class DelayPolicyExecutor {
     }
     
     /**
-     * next.
+     * Next.
      */
     public void next() {
         executeCount++;

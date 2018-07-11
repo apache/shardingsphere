@@ -20,7 +20,7 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility;
 import java.nio.charset.Charset;
 
 /*
- * constants
+ * Zookeeper client constants.
  *
  * @author lidongbo
  */

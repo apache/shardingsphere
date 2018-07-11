@@ -22,27 +22,29 @@ import lombok.Setter;
 import org.apache.zookeeper.WatchedEvent;
 
 /*
+ * Watch event listener.
+ *
  * @author lidongbo
  */
 @Getter
-public abstract class Listener {
+public abstract class ZookeeperEventListener {
     
     private final String key;
     
     @Setter
     private String path;
     
-    public Listener() {
+    public ZookeeperEventListener() {
         this(null);
     }
     
-    public Listener(final String path) {
+    public ZookeeperEventListener(final String path) {
         this.path = path;
         this.key = path + System.currentTimeMillis();
     }
     
     /**
-     * process.
+     * Process.
      *
      * @param event event
      */

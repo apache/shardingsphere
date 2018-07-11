@@ -24,14 +24,14 @@ import java.util.List;
 import java.util.Stack;
 
 /*
- * path util
+ * Path util.
  *
  * @author lidongbo
  */
 public class PathUtil {
     
     /**
-     * get real path.
+     * Get real path.
      *
      * @param root root
      * @param path path
@@ -60,7 +60,7 @@ public class PathUtil {
     }
     
     /**
-     * get path nodes, child to root.
+     * Get path nodes, child to root.
      *
      * @param root root
      * @param path path
@@ -82,7 +82,7 @@ public class PathUtil {
     }
     
     /**
-     * get path nodes.
+     * Get path nodes.
      *
      * @param root root
      * @param path path
@@ -105,7 +105,7 @@ public class PathUtil {
     }
     
     /**
-     * get path nodes.
+     * Get path nodes.
      *
      * @param path path
      * @return all path nodes
@@ -130,7 +130,7 @@ public class PathUtil {
     }
     
     /**
-     * ignore invalid char and // /./  /../.
+     * Ignore invalid char and // /./  /../.
      * code consult zookeeper
      *
      * @param key key

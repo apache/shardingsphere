@@ -17,15 +17,16 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 /*
+ * Base context.
+ *
  * @author lidongbo
  */
 @Getter
@@ -40,12 +41,12 @@ public abstract class BaseContext {
     
     private byte[] auth;
     
-    private Listener globalListener;
+    private ZookeeperEventListener globalZookeeperEventListener;
     
-    private final Map<String, Listener> watchers = new ConcurrentHashMap<>();
+    private final Map<String, ZookeeperEventListener> watchers = new ConcurrentHashMap<>();
     
     /**
-     * close.
+     * Close.
      */
     public void close() {
         this.watchers.clear();

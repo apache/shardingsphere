@@ -32,15 +32,15 @@ public class WatcherCreator {
     /**
      * get string type data.
      *
-     * @param listener listener
+     * @param zookeeperEventListener listener
      * @return watcher
      */
-    public static Watcher deleteWatcher(final Listener listener) {
+    public static Watcher deleteWatcher(final ZookeeperEventListener zookeeperEventListener) {
         return new Watcher() {
             @Override
             public void process(final WatchedEvent event) {
-                if (listener.getPath().equals(event.getPath()) && Event.EventType.NodeDeleted.equals(event.getType())) {
-                    listener.process(event);
+                if (zookeeperEventListener.getPath().equals(event.getPath()) && Event.EventType.NodeDeleted.equals(event.getType())) {
+                    zookeeperEventListener.process(event);
                     LOGGER.debug("delete node event:{}", event.toString());
                 }
             }

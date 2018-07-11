@@ -30,11 +30,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /*
- * async retry
+ * Async retry.
  *
  * @author lidongbo
  */
-public class RetryThread extends Thread {
+public final class RetryThread extends Thread {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(RetryThread.class);
     
@@ -99,7 +99,7 @@ public class RetryThread extends Thread {
         }
     }
     
-    final void addDelayedShutdownHook(final ExecutorService service, final long terminationTimeout, final TimeUnit timeUnit) {
+    private void addDelayedShutdownHook(final ExecutorService service, final long terminationTimeout, final TimeUnit timeUnit) {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
