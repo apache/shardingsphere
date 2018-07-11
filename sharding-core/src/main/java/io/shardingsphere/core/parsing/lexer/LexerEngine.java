@@ -79,15 +79,6 @@ public final class LexerEngine {
     }
     
     /**
-     * Pre-read next token.
-     *
-     * @return next token.
-     */
-    public Token preReadNextToken() {
-        return lexer.preReadNextToken();
-    }
-    
-    /**
      * skip all tokens that inside parentheses.
      *
      * @param sqlStatement SQL statement

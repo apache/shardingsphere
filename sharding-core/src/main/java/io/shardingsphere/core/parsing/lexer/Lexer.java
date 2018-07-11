@@ -83,25 +83,6 @@ public class Lexer {
         }
     }
     
-    /**
-     * Pre-read next token.
-     *
-     * @return next token.
-     */
-    public Token preReadNextToken() {
-        int offset = this.offset;
-        Token token = currentToken;
-        nextToken();
-        Token result = currentToken;
-        backToken(offset, token);
-        return result;
-    }
-    
-    private void backToken(final int backOffset, final Token backToken) {
-        offset = backOffset;
-        currentToken = backToken;
-    }
-    
     protected boolean isHintBegin() {
         return false;
     }
