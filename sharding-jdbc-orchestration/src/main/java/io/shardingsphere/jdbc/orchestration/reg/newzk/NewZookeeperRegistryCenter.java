@@ -83,9 +83,9 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
             
             newClient.useExecStrategy(StrategyType.SYNC_RETRY);
             // CHECKSTYLE:OFF
-        } catch (Exception e) {
+        } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            RegExceptionHandler.handleException(e);
+            RegExceptionHandler.handleException(ex);
         }
         return newClient;
     }
@@ -204,6 +204,7 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
         }
         final PathTree cache = caches.get(path);
         cache.watch(new Listener() {
+            
             @Override
             public void process(final WatchedEvent event) {
                 if (!Strings.isNullOrEmpty(event.getPath())) {

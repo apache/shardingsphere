@@ -22,12 +22,14 @@ import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 
 /*
+ * Provider with transaction.
+ *
  * @author lidongbo
  */
 public interface ITransactionProvider extends IProvider {
     
     /**
-     * only create target node in transaction.
+     * Only create target node in transaction.
      *
      * @param key key
      * @param value value

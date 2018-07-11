@@ -17,7 +17,7 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy;
 
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.Callback;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.ContentionCallback;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.election.LeaderElection;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
@@ -68,7 +68,7 @@ public class ContentionStrategy extends UsualStrategy {
         election.waitDone();
     }
     
-    private LeaderElection buildCreateElection(final String key, final String value, final CreateMode createMode, final Callback callback) {
+    private LeaderElection buildCreateElection(final String key, final String value, final CreateMode createMode, final ContentionCallback contentionCallback) {
         return new LeaderElection() {
             @Override
             public void action() throws KeeperException, InterruptedException {
@@ -77,8 +77,8 @@ public class ContentionStrategy extends UsualStrategy {
             
             @Override
             public void callback() {
-                if (callback != null) {
-                    callback.processResult();
+                if (contentionCallback != null) {
+                    contentionCallback.processResult();
                 }
             }
         };
@@ -92,7 +92,7 @@ public class ContentionStrategy extends UsualStrategy {
         election.waitDone();
     }
     
-    private LeaderElection buildUpdateElection(final String key, final String value, final Callback callback) {
+    private LeaderElection buildUpdateElection(final String key, final String value, final ContentionCallback contentionCallback) {
         return new LeaderElection() {
             @Override
             public void action() throws KeeperException, InterruptedException {
@@ -102,8 +102,8 @@ public class ContentionStrategy extends UsualStrategy {
             
             @Override
             public void callback() {
-                if (callback != null) {
-                    callback.processResult();
+                if (contentionCallback != null) {
+                    contentionCallback.processResult();
                 }
             }
         };
@@ -128,7 +128,7 @@ public class ContentionStrategy extends UsualStrategy {
         });
     }
     
-    private LeaderElection buildDeleteElection(final String key, final Callback callback) {
+    private LeaderElection buildDeleteElection(final String key, final ContentionCallback contentionCallback) {
         return new LeaderElection() {
             @Override
             public void action() throws KeeperException, InterruptedException {
@@ -137,8 +137,8 @@ public class ContentionStrategy extends UsualStrategy {
             
             @Override
             public void callback() {
-                if (callback != null) {
-                    callback.processResult();
+                if (contentionCallback != null) {
+                    contentionCallback.processResult();
                 }
             }
         };
@@ -152,7 +152,7 @@ public class ContentionStrategy extends UsualStrategy {
         election.waitDone();
     }
     
-    private LeaderElection buildCreateAllNeedElection(final String key, final String value, final CreateMode createMode, final Callback callback) {
+    private LeaderElection buildCreateAllNeedElection(final String key, final String value, final CreateMode createMode, final ContentionCallback contentionCallback) {
         return new LeaderElection() {
             @Override
             public void action() throws KeeperException, InterruptedException {
@@ -162,8 +162,8 @@ public class ContentionStrategy extends UsualStrategy {
             
             @Override
             public void callback() {
-                if (callback != null) {
-                    callback.processResult();
+                if (contentionCallback != null) {
+                    contentionCallback.processResult();
                 }
             }
         };
@@ -250,15 +250,15 @@ public class ContentionStrategy extends UsualStrategy {
     
     //todo Use arbitrary competitive nodes
     //IExecStrategy convert to ContentionStrategy
-    /*public void createCurrentOnly(final String key, final String value, final CreateMode createMode, final Callback callback) throws KeeperException, InterruptedException {
+    /*public void createCurrentOnly(final String key, final String value, final CreateMode createMode, final ContentionCallback callback) throws KeeperException, InterruptedException {
         getProvider().executeContention(buildCreateElection(key, value, createMode, callback));
     }
     
-    public void update(final String key, final String value, final Callback callback) throws KeeperException, InterruptedException {
+    public void update(final String key, final String value, final ContentionCallback callback) throws KeeperException, InterruptedException {
         getProvider().executeContention(buildUpdateElection(key, value, null));
     }
 
-    public void deleteOnlyCurrent(final String key, final Callback callback) throws KeeperException, InterruptedException {
+    public void deleteOnlyCurrent(final String key, final ContentionCallback callback) throws KeeperException, InterruptedException {
         getProvider().executeContention(buildDeleteElection(key, null));
     }*/
 }

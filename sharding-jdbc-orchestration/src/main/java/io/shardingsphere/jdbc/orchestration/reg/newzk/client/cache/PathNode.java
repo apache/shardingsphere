@@ -94,32 +94,32 @@ public class PathNode {
     PathNode set(final Iterator<String> iterator, final String value) {
         String key = iterator.next();
         LOGGER.debug("PathNode set:{},value:{}", key, value);
-        PathNode node = children.get(key);
-        if (node == null) {
+        PathNode result = children.get(key);
+        if (result == null) {
             LOGGER.debug("set children haven't:{}", key);
-            node = new PathNode(key);
-            children.put(key, node);
+            result = new PathNode(key);
+            children.put(key, result);
         }
         if (iterator.hasNext()) {
-            node.set(iterator, value);
+            result.set(iterator, value);
         } else {
-            node.setValue(value.getBytes(ZookeeperConstants.UTF_8));
+            result.setValue(value.getBytes(ZookeeperConstants.UTF_8));
         }
-        return node;
+        return result;
     }
     
     PathNode get(final Iterator<String> iterator) {
         String key = iterator.next();
         LOGGER.debug("get:{}", key);
-        PathNode node = children.get(key);
-        if (node == null) {
+        PathNode result = children.get(key);
+        if (result == null) {
             LOGGER.debug("get children haven't:{}", key);
             return null;
         }
         if (iterator.hasNext()) {
-            return node.get(iterator);
+            return result.get(iterator);
         }
-        return node;
+        return result;
     }
     
     void delete(final String path, final LexerEngine lexerEngine) {
@@ -131,8 +131,6 @@ public class PathNode {
             lexerEngine.nextToken();
             lexerEngine.skipIfEqual(Symbol.SLASH);
             node.delete(lexerEngine.getCurrentToken().getLiterals(), lexerEngine);
-        } else {
-            return;
         }
     }
 }

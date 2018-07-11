@@ -25,14 +25,14 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 /*
- * client api
+ * Client api.
  *
  * @author lidongbo
  */
 public interface IClient extends IAction, IGroupAction {
     
     /**
-     * start.
+     * Start.
      *
      * @throws IOException IO Exception
      * @throws InterruptedException InterruptedException
@@ -40,7 +40,7 @@ public interface IClient extends IAction, IGroupAction {
     void start() throws IOException, InterruptedException;
     
     /**
-     * start until out.
+     * Start until out.
      *
      * @param wait wait
      * @param units units
@@ -51,7 +51,7 @@ public interface IClient extends IAction, IGroupAction {
     boolean start(int wait, TimeUnit units) throws IOException, InterruptedException;
     
     /**
-     * block until connected.
+     * Block until connected.
      *
      * @param wait wait
      * @param units units
@@ -61,12 +61,12 @@ public interface IClient extends IAction, IGroupAction {
     boolean blockUntilConnected(int wait, TimeUnit units) throws InterruptedException;
     
     /**
-     * close.
+     * Close.
      */
     void close();
     
     /**
-     * register watcher.
+     * Register watcher.
      *
      * @param key key
      * @param listener listener
@@ -74,33 +74,23 @@ public interface IClient extends IAction, IGroupAction {
     void registerWatch(String key, Listener listener);
     
     /**
-     * unregister watcher.
+     * Unregister watcher.
      *
      * @param key key
      */
     void unregisterWatch(String key);
     
     /**
-     * choice exec strategy.
+     * Choice exec strategy.
      *
      * @param strategyType strategyType
      */
     void useExecStrategy(StrategyType strategyType);
     
     /**
-     * create transaction.
+     * Create transaction.
      *
      * @return ZKTransaction
      */
     BaseTransaction transaction();
-    /*
-    void createNamespace();
-    void deleteNamespace();
-    
-    Watcher registerWatch(Listener listener);
-    void setRootNode(String namespace);
-    
-    void setAuthorities(String scheme, byte[] auth);
-    ZooKeeper getZooKeeper();
-    */
 }
