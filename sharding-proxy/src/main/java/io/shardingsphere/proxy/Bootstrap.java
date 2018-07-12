@@ -56,10 +56,11 @@ public final class Bootstrap {
      */
     public static void main(final String[] args) throws InterruptedException, IOException {
         YamlProxyConfiguration localConfig = loadLocalConfiguration(new File(Bootstrap.class.getResource(CONFIG_YAML).getFile()));
+        int port = getPort(args);
         if (null == localConfig.getOrchestration()) {
-            startWithoutRegistryCenter(localConfig, args);
+            startWithoutRegistryCenter(localConfig, port);
         } else {
-            startWithRegistryCenter(localConfig, args);
+            startWithRegistryCenter(localConfig, port);
         }
     }
     
@@ -74,24 +75,6 @@ public final class Bootstrap {
         }
     }
     
-    private static void startWithoutRegistryCenter(final YamlProxyConfiguration config, final String[] args) throws InterruptedException, MalformedURLException {
-        RuleRegistry.getInstance().init(config);
-        EventBusInstance.getInstance().register(new XaTransactionListener());
-        new ShardingProxy().start(getPort(args));
-    }
-    
-    private static void startWithRegistryCenter(final YamlProxyConfiguration localConfig, final String[] args) throws InterruptedException, MalformedURLException {
-        try (OrchestrationFacade orchestrationFacade = new OrchestrationFacade(localConfig.getOrchestration().getOrchestrationConfiguration())) {
-            YamlProxyConfiguration config = localConfig.isEmptyLocalConfiguration()
-                    ? new YamlProxyConfiguration(orchestrationFacade.getConfigService().loadDataSources(), orchestrationFacade.getConfigService().loadProxyConfiguration()) : localConfig;
-            orchestrationFacade.init(config);
-            RuleRegistry.getInstance().init(config);
-            ProxyEventBusInstance.getInstance().register(new YamlProxyConfiguration());
-            EventBusInstance.getInstance().register(new XaTransactionListener());
-            new ShardingProxy().start(getPort(args));    
-        }
-    }
-    
     private static int getPort(final String[] args) {
         if (0 == args.length) {
             return DEFAULT_PORT;
@@ -101,5 +84,27 @@ public final class Bootstrap {
         } catch (final NumberFormatException ex) {
             return DEFAULT_PORT;
         }
+    }
+    
+    private static void startWithoutRegistryCenter(final YamlProxyConfiguration config, final int port) throws InterruptedException, MalformedURLException {
+        RuleRegistry.getInstance().init(config);
+        EventBusInstance.getInstance().register(new XaTransactionListener());
+        new ShardingProxy().start(port);
+    }
+    
+    private static void startWithRegistryCenter(final YamlProxyConfiguration localConfig, final int port) throws InterruptedException, MalformedURLException {
+        try (OrchestrationFacade orchestrationFacade = new OrchestrationFacade(localConfig.getOrchestration().getOrchestrationConfiguration())) {
+            YamlProxyConfiguration config = getYamlProxyConfiguration(localConfig, orchestrationFacade);
+            orchestrationFacade.init(config);
+            RuleRegistry.getInstance().init(config);
+            ProxyEventBusInstance.getInstance().register(new YamlProxyConfiguration());
+            EventBusInstance.getInstance().register(new XaTransactionListener());
+            new ShardingProxy().start(port);
+        }
+    }
+    
+    private static YamlProxyConfiguration getYamlProxyConfiguration(final YamlProxyConfiguration localConfig, final OrchestrationFacade orchestrationFacade) {
+        return localConfig.isEmptyLocalConfiguration()
+                        ? new YamlProxyConfiguration(orchestrationFacade.getConfigService().loadDataSources(), orchestrationFacade.getConfigService().loadProxyConfiguration()) : localConfig;
     }
 }
