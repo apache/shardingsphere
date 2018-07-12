@@ -17,32 +17,18 @@
 
 package io.shardingsphere.core.property;
 
-import io.shardingsphere.core.exception.ShardingException;
-
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
-
 /**
  * Data source meta data parser.
  *
  * @author panjuan
  */
-public abstract class DataSourceMetaDataParser {
+public interface DataSourceMetaDataParser {
     
     /**
      * Get data source meta data.
      *
-     * @param dataSource data source
+     * @param url data source URL
      * @return data source meta data
      */
-    public DataSourceMetaData getDataSourceMetaData(final DataSource dataSource) {
-        try (Connection connection = dataSource.getConnection()) {
-            return getDataSourceMetaData(connection.getMetaData().getURL());
-        } catch (final SQLException ex) {
-            throw new ShardingException(ex);
-        }
-    }
-    
-    protected abstract DataSourceMetaData getDataSourceMetaData(String url);
+    DataSourceMetaData getDataSourceMetaData(String url);
 }

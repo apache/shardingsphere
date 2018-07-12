@@ -28,12 +28,12 @@ import java.net.URI;
  *
  * @author panjuan
  */
-public final class SQLServerDataSourceMetaDataParser extends DataSourceMetaDataParser {
+public final class SQLServerDataSourceMetaDataParser implements DataSourceMetaDataParser {
     
     private static final Integer DEFAULT_PORT = 1433;
     
     @Override
-    protected DataSourceMetaData getDataSourceMetaData(final String url) {
+    public DataSourceMetaData getDataSourceMetaData(final String url) {
         String cleanUrl = url.substring(5);
         cleanUrl = cleanUrl.replace("microsoft:", "").replace(";DatabaseName=", "/");
         URI uri = URI.create(cleanUrl);

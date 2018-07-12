@@ -28,12 +28,12 @@ import java.net.URI;
  *
  * @author panjuan
  */
-public final class PostgreSQLDataSourceMetaDataParser extends DataSourceMetaDataParser {
+public final class PostgreSQLDataSourceMetaDataParser implements DataSourceMetaDataParser {
     
     private static final Integer DEFAULT_PORT = 5432;
     
     @Override
-    protected DataSourceMetaData getDataSourceMetaData(final String url) {
+    public DataSourceMetaData getDataSourceMetaData(final String url) {
         String cleanUrl = url.substring(5);
         URI uri = URI.create(cleanUrl);
         if (null == uri.getHost()) {

@@ -18,6 +18,7 @@
 package io.shardingsphere.core.property;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.property.dialect.H2DataSourceMetaDataParser;
 import io.shardingsphere.core.property.dialect.MySQLDataSourceMetaDataParser;
 import io.shardingsphere.core.property.dialect.OracleDataSourceMetaDataParser;
@@ -26,8 +27,12 @@ import io.shardingsphere.core.property.dialect.SQLServerDataSourceMetaDataParser
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+
 /**
- * Data source meta data parser factory.
+ * Data source meta data factory.
  *
  * @author panjuan
  */
@@ -35,12 +40,25 @@ import lombok.NoArgsConstructor;
 public final class DataSourceMetaDataFactory {
     
     /**
-     * Create data source meta data parser.
+     * Get data source meta data.
      *
      * @param databaseType database type
-     * @return instance of data source meta data parser
+     * @param dataSource data source
+     * @return data source meta data
      */
-    public static DataSourceMetaDataParser createDataSourceMetaDataParser(final DatabaseType databaseType) {
+    public static DataSourceMetaData getDataSourceMetaData(final DatabaseType databaseType, final DataSource dataSource) {
+        return createDataSourceMetaDataParser(databaseType).getDataSourceMetaData(getDataSourceURL(dataSource));
+    }
+    
+    private static String getDataSourceURL(final DataSource dataSource) {
+        try (Connection connection = dataSource.getConnection()) {
+            return connection.getMetaData().getURL();
+        } catch (final SQLException ex) {
+            throw new ShardingException(ex);
+        }
+    }
+    
+    private static DataSourceMetaDataParser createDataSourceMetaDataParser(final DatabaseType databaseType) {
         switch (databaseType) {
             case H2:
                 return new H2DataSourceMetaDataParser();

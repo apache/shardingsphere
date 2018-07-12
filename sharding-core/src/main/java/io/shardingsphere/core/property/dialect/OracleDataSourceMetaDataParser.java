@@ -28,12 +28,12 @@ import java.net.URI;
  *
  * @author panjuan
  */
-public final class OracleDataSourceMetaDataParser extends DataSourceMetaDataParser {
+public final class OracleDataSourceMetaDataParser implements DataSourceMetaDataParser {
     
     private static final Integer DEFAULT_PORT = 1521;
     
     @Override
-    protected DataSourceMetaData getDataSourceMetaData(final String url) {
+    public DataSourceMetaData getDataSourceMetaData(final String url) {
         String cleanUrl = url.substring(5);
         if (cleanUrl.contains("oracle:thin:@//")) {
             cleanUrl = cleanUrl.replace("oracle:thin:@//", "oracle://");

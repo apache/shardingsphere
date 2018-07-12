@@ -28,14 +28,14 @@ import java.net.URI;
  *
  * @author panjuan
  */
-public final class H2DataSourceMetaDataParser extends DataSourceMetaDataParser {
+public final class H2DataSourceMetaDataParser implements DataSourceMetaDataParser {
     
     private static final Integer DEFAULT_PORT = -1;
     
     private static final String DEFAULT_HOST = "localhost";
     
     @Override
-    protected DataSourceMetaData getDataSourceMetaData(final String url) {
+    public DataSourceMetaData getDataSourceMetaData(final String url) {
         String cleanUrl = url.substring(5);
         if (cleanUrl.contains("h2:~")) {
             cleanUrl = cleanUrl.split(";")[0];
