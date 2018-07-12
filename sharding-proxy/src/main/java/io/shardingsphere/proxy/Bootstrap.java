@@ -17,16 +17,18 @@
 
 package io.shardingsphere.proxy;
 
-import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.frontend.ShardingProxy;
 import io.shardingsphere.proxy.yaml.YamlProxyConfiguration;
 import io.shardingsphere.transaction.xa.XaTransactionListener;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
+import java.io.InputStreamReader;
 
 /**
  * Sharding-Proxy Bootstrap.
@@ -46,23 +48,27 @@ public final class Bootstrap {
      * 
      * @param args startup arguments
      * @throws InterruptedException interrupted exception
-     * @throws MalformedURLException URL exception
+     * @throws IOException IO exception
      */
-    public static void main(final String[] args) throws InterruptedException, MalformedURLException {
+    public static void main(final String[] args) throws InterruptedException, IOException {
         initializeRuleRegistry();
         EventBusInstance.getInstance().register(new XaTransactionListener());
         new ShardingProxy().start(getPort(args));
     }
     
-    private static void initializeRuleRegistry() {
-        YamlProxyConfiguration config;
-        try {
-            config = YamlProxyConfiguration.unmarshal(new File(Bootstrap.class.getResource(CONFIG_YAML).getFile()));
-            config.init();
-        } catch (final IOException ex) {
-            throw new ShardingException(ex);
-        }
+    private static void initializeRuleRegistry() throws IOException {
+        YamlProxyConfiguration config = unmarshal(new File(Bootstrap.class.getResource(CONFIG_YAML).getFile()));
+        config.init();
         RuleRegistry.getInstance().init(config);
+    }
+    
+    private static YamlProxyConfiguration unmarshal(final File yamlFile) throws IOException {
+        try (
+                FileInputStream fileInputStream = new FileInputStream(yamlFile);
+                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")
+        ) {
+            return new Yaml(new Constructor(YamlProxyConfiguration.class)).loadAs(inputStreamReader, YamlProxyConfiguration.class);
+        }
     }
     
     private static int getPort(final String[] args) {

@@ -28,13 +28,7 @@ import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfigura
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusInstance;
 import io.shardingsphere.proxy.config.RuleRegistry;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -45,22 +39,6 @@ import java.util.Collections;
  * @author panjuan
  */
 public final class YamlProxyConfiguration extends OrchestrationProxyConfiguration {
-    
-    /**
-     * Unmarshal yaml sharding configuration from yaml file.
-     * 
-     * @param yamlFile yaml file
-     * @return yaml sharding configuration
-     * @throws IOException IO Exception
-     */
-    public static YamlProxyConfiguration unmarshal(final File yamlFile) throws IOException {
-        try (
-                FileInputStream fileInputStream = new FileInputStream(yamlFile);
-                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")
-        ) {
-            return new Yaml(new Constructor(YamlProxyConfiguration.class)).loadAs(inputStreamReader, YamlProxyConfiguration.class);
-        }
-    }
     
     /**
      * Initialize yaml proxy configuration.
