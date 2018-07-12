@@ -33,16 +33,16 @@ import java.util.Map.Entry;
  */
 public class DataSourcePropertyManager {
     
-    private final Map<String, DataSourceProperty> dataSourcePropertyMap;
+    private final Map<String, DataSourceMetaData> dataSourcePropertyMap;
     
     public DataSourcePropertyManager(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
         dataSourcePropertyMap = initDataSourcePropertyMap(dataSourceMap, databaseType);
     }
     
-    private Map<String, DataSourceProperty> initDataSourcePropertyMap(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
-        Map<String, DataSourceProperty> result = new LinkedHashMap<>();
+    private Map<String, DataSourceMetaData> initDataSourcePropertyMap(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
+        Map<String, DataSourceMetaData> result = new LinkedHashMap<>();
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            result.put(entry.getKey(), DataSourcePropertyFactory.createDataSourcePropertyParser(databaseType).parseDataSource(entry.getValue()));
+            result.put(entry.getKey(), DataSourcePropertyFactory.createDataSourcePropertyParser(databaseType).getDataSourceMetaData(entry.getValue()));
         }
         return result;
     }
@@ -54,7 +54,7 @@ public class DataSourcePropertyManager {
      */
     public List<String> getAllInstanceDataSourceNames() {
         List<String> result = new LinkedList<>();
-        for (Entry<String, DataSourceProperty> entry : dataSourcePropertyMap.entrySet()) {
+        for (Entry<String, DataSourceMetaData> entry : dataSourcePropertyMap.entrySet()) {
             if (!isExisted(entry.getKey(), result)) {
                 result.add(entry.getKey());
             }

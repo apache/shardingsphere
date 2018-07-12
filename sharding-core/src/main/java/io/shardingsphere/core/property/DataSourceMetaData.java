@@ -21,13 +21,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Data source property.
+ * Data source meta data.
  *
  * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public final class DataSourceProperty {
+public final class DataSourceMetaData {
     
     private final String hostName;
     
@@ -41,7 +41,7 @@ public final class DataSourceProperty {
      * @param dataSourceProperty data source property.
      * @return pointing at the same instance or not.
      */
-    public boolean isPointAtSameInstance(final DataSourceProperty dataSourceProperty) {
+    public boolean isPointAtSameInstance(final DataSourceMetaData dataSourceProperty) {
         return hostName.equals(dataSourceProperty.getHostName()) && port.equals(dataSourceProperty.getPort());
     }
 }

@@ -31,18 +31,18 @@ import java.sql.SQLException;
 public abstract class DataSourcePropertyParser {
     
     /**
-     * Parse data source.
+     * Get data source meta data.
      *
      * @param dataSource data source
-     * @return data source property
+     * @return data source meta data
      */
-    public DataSourceProperty parseDataSource(final DataSource dataSource) {
+    public DataSourceMetaData getDataSourceMetaData(final DataSource dataSource) {
         try (Connection connection = dataSource.getConnection()) {
-            return parseJDBCUrl(connection.getMetaData().getURL());
-        } catch (SQLException ex) {
+            return getDataSourceMetaData(connection.getMetaData().getURL());
+        } catch (final SQLException ex) {
             throw new ShardingException(ex);
         }
     }
     
-    protected abstract DataSourceProperty parseJDBCUrl(String url);
+    protected abstract DataSourceMetaData getDataSourceMetaData(String url);
 }
