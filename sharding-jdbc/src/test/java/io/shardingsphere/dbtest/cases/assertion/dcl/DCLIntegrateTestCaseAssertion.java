@@ -38,4 +38,7 @@ public final class DCLIntegrateTestCaseAssertion extends IntegrateTestCaseAssert
     
     @XmlAttribute(name = "type")
     private String type;
+    
+    @XmlAttribute(name = "new-name")
+    private String newName;
 }
