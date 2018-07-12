@@ -18,6 +18,7 @@
 package io.shardingsphere.proxy.config;
 
 import com.google.common.base.Preconditions;
+import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
@@ -31,9 +32,11 @@ import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ProxyAuthority;
 import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusEvent;
 import io.shardingsphere.proxy.backend.common.ProxyMode;
 import io.shardingsphere.proxy.metadata.ProxyShardingMetaData;
-import io.shardingsphere.proxy.yaml.YamlProxyConfiguration;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -54,7 +57,7 @@ import java.util.concurrent.Executors;
  * @author zhaojun
  * @author wangkai
  */
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public final class RuleRegistry {
     
@@ -100,7 +103,7 @@ public final class RuleRegistry {
      *
      * @param config yaml proxy configuration
      */
-    public void init(final YamlProxyConfiguration config) {
+    public synchronized void init(final OrchestrationProxyConfiguration config) {
         Properties properties = config.getShardingRule().getProps();
         ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
         showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
@@ -108,7 +111,7 @@ public final class RuleRegistry {
         transactionType = TransactionType.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_MODE));
         maxWorkingThreads = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_MAX_WORKING_THREADS);
         shardingRule = new ShardingRule(config.getShardingRule().getShardingRuleConfiguration(), config.getDataSources().keySet());
-        masterSlaveRule = null == getMasterSlaveRule().getMasterDataSourceName()
+        masterSlaveRule = null == config.getMasterSlaveRule().getMasterDataSourceName()
                 ? new MasterSlaveRule(new MasterSlaveRuleConfiguration("", "", Collections.singletonList(""), null))
                 : new MasterSlaveRule(config.getMasterSlaveRule().getMasterSlaveRuleConfiguration());
         dataSourceMap = ProxyRawDataSourceFactory.create(transactionType, config);
@@ -135,5 +138,15 @@ public final class RuleRegistry {
      */
     public boolean isMasterSlaveOnly() {
         return shardingRule.getTableRules().isEmpty() && !masterSlaveRule.getMasterDataSourceName().isEmpty();
+    }
+    
+    /**
+     * Renew rule registry.
+     *
+     * @param proxyEventBusEvent proxy event bus event.
+     */
+    @Subscribe
+    public void renew(final ProxyEventBusEvent proxyEventBusEvent) {
+        init(new OrchestrationProxyConfiguration(proxyEventBusEvent.getDataSources(), proxyEventBusEvent.getOrchestrationConfig()));
     }
 }
