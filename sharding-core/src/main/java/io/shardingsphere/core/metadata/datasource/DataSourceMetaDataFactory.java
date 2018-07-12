@@ -15,15 +15,15 @@
  * </p>
  */
 
-package io.shardingsphere.core.property;
+package io.shardingsphere.core.metadata.datasource;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.property.dialect.H2DataSourceMetaDataParser;
-import io.shardingsphere.core.property.dialect.MySQLDataSourceMetaDataParser;
-import io.shardingsphere.core.property.dialect.OracleDataSourceMetaDataParser;
-import io.shardingsphere.core.property.dialect.PostgreSQLDataSourceMetaDataParser;
-import io.shardingsphere.core.property.dialect.SQLServerDataSourceMetaDataParser;
+import io.shardingsphere.core.metadata.datasource.dialect.OracleDataSourceMetaDataParser;
+import io.shardingsphere.core.metadata.datasource.dialect.SQLServerDataSourceMetaDataParser;
+import io.shardingsphere.core.metadata.datasource.dialect.H2DataSourceMetaDataParser;
+import io.shardingsphere.core.metadata.datasource.dialect.MySQLDataSourceMetaDataParser;
+import io.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaDataParser;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

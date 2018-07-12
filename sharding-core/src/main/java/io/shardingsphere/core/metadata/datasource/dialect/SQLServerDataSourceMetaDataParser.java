@@ -15,11 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.core.property.dialect;
+package io.shardingsphere.core.metadata.datasource.dialect;
 
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.property.DataSourceMetaData;
-import io.shardingsphere.core.property.DataSourceMetaDataParser;
+import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataParser;
+import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 
 import java.net.URI;
 

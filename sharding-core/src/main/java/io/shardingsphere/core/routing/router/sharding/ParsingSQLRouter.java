@@ -34,7 +34,7 @@ import io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
-import io.shardingsphere.core.property.ShardingDataSourceMetaData;
+import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.rewrite.SQLBuilder;
 import io.shardingsphere.core.rewrite.SQLRewriteEngine;
 import io.shardingsphere.core.routing.SQLExecutionUnit;

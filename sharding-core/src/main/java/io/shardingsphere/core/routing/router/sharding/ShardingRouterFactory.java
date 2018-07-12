@@ -20,7 +20,7 @@ package io.shardingsphere.core.routing.router.sharding;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.property.ShardingDataSourceMetaData;
+import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

@@ -41,7 +41,7 @@ import io.shardingsphere.core.parsing.parser.token.OrderByToken;
 import io.shardingsphere.core.parsing.parser.token.RowCountToken;
 import io.shardingsphere.core.parsing.parser.token.SchemaToken;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
-import io.shardingsphere.core.property.ShardingDataSourceMetaData;
+import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.routing.type.RoutingTable;
 import io.shardingsphere.core.routing.type.TableUnit;
 import io.shardingsphere.core.rule.DataNode;

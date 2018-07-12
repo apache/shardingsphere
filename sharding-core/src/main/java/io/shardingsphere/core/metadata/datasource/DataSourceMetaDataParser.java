@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.property;
+package io.shardingsphere.core.metadata.datasource;
 
 /**
  * Data source meta data parser.

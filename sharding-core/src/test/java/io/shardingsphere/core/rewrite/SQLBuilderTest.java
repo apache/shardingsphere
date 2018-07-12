@@ -20,7 +20,7 @@ package io.shardingsphere.core.rewrite;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.property.ShardingDataSourceMetaData;
+import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.TablePlaceholder;

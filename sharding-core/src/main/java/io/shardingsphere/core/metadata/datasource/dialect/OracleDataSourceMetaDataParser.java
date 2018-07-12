@@ -15,26 +15,36 @@
  * </p>
  */
 
-package io.shardingsphere.core.property.dialect;
+package io.shardingsphere.core.metadata.datasource.dialect;
 
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.property.DataSourceMetaData;
-import io.shardingsphere.core.property.DataSourceMetaDataParser;
+import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
+import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataParser;
 
 import java.net.URI;
 
 /**
- * MySQL data source meta data parser.
+ * Oracle data source meta data parser.
  *
  * @author panjuan
  */
-public final class MySQLDataSourceMetaDataParser implements DataSourceMetaDataParser {
+public final class OracleDataSourceMetaDataParser implements DataSourceMetaDataParser {
     
-    private static final Integer DEFAULT_PORT = 3306;
+    private static final Integer DEFAULT_PORT = 1521;
     
     @Override
     public DataSourceMetaData getDataSourceMetaData(final String url) {
         String cleanUrl = url.substring(5);
+        if (cleanUrl.contains("oracle:thin:@//")) {
+            cleanUrl = cleanUrl.replace("oracle:thin:@//", "oracle://");
+        } else if (cleanUrl.contains("oracle:thin:@")) {
+            cleanUrl = cleanUrl.replace("oracle:thin:@", "oracle://");
+        }
+    
+        String[] parts = cleanUrl.split(":");
+        if (4 == parts.length) {
+            cleanUrl = parts[0] + ":" + parts[1] + ":" + parts[2] + "/" + parts[3];
+        }
         URI uri = URI.create(cleanUrl);
         if (null == uri.getHost()) {
             throw new ShardingException("The URL of JDBC is not supported.");

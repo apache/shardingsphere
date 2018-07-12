@@ -26,7 +26,7 @@ import io.shardingsphere.core.constant.ShardingProperties;
 import io.shardingsphere.core.constant.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.property.ShardingDataSourceMetaData;
+import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ProxyAuthority;

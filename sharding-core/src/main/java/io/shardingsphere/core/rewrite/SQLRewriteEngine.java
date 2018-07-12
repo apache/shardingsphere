@@ -37,7 +37,7 @@ import io.shardingsphere.core.parsing.parser.token.RowCountToken;
 import io.shardingsphere.core.parsing.parser.token.SQLToken;
 import io.shardingsphere.core.parsing.parser.token.SchemaToken;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
-import io.shardingsphere.core.property.ShardingDataSourceMetaData;
+import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;

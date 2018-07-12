@@ -23,7 +23,7 @@ import com.google.common.base.Strings;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.optimizer.condition.ShardingCondition;
 import io.shardingsphere.core.optimizer.insert.InsertShardingCondition;
-import io.shardingsphere.core.property.ShardingDataSourceMetaData;
+import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
