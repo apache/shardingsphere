@@ -50,19 +50,25 @@ public abstract class BaseDCLIntegrateTest extends SingleIntegrateTest {
         }
     }
     
-    protected void dropUserIfExisted(final Connection connection) {
-        String name = !Strings.isNullOrEmpty(assertion.getNewName()) ? assertion.getUser() : assertion.getNewName();
-        String dropSQL = "drop " + assertion.getType() + " " + name;
-        if (!Strings.isNullOrEmpty(assertion.getHost())) {
-            dropSQL = dropSQL + ";";
-        } else {
-            dropSQL = dropSQL + "@" + assertion.getHost() + ";";
+    protected void cleanEnvironment(final Connection connection) {
+        if (!Strings.isNullOrEmpty(assertion.getCleanSQL())) {
+            try (Statement statement = connection.createStatement()) {
+                statement.execute(assertion.getCleanSQL());
+                // CHECKSTYLE: OFF
+            } catch (final SQLException ignored) {
+                // CHECKSTYLE: ON
+            }
         }
-        try (Statement statement = connection.createStatement()) {
-            statement.execute(dropSQL);
-            // CHECKSTYLE: OFF
-        } catch (final SQLException ignored) {
-            // CHECKSTYLE: ON
+    }
+    
+    protected void initEnvironment(final Connection connection) {
+        if (!Strings.isNullOrEmpty(assertion.getInitSQL())) {
+            try (Statement statement = connection.createStatement()) {
+                statement.execute(assertion.getInitSQL());
+                // CHECKSTYLE: OFF
+            } catch (final SQLException ignored) {
+                // CHECKSTYLE: ON
+            }
         }
     }
 }
