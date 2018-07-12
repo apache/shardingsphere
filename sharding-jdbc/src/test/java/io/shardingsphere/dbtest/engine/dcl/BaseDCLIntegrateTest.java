@@ -18,6 +18,7 @@
 package io.shardingsphere.dbtest.engine.dcl;
 
 import com.google.common.base.Strings;
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.dbtest.cases.assertion.dcl.DCLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.engine.SingleIntegrateTest;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
@@ -32,6 +33,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
+import java.util.Collection;
+import java.util.LinkedList;
 
 public abstract class BaseDCLIntegrateTest extends SingleIntegrateTest {
     
@@ -51,9 +54,9 @@ public abstract class BaseDCLIntegrateTest extends SingleIntegrateTest {
     }
     
     protected void cleanEnvironment(final Connection connection) {
-        if (!Strings.isNullOrEmpty(assertion.getCleanSQL())) {
+        if (!Strings.isNullOrEmpty(assertion.getCleanSQLs())) {
             try (Statement statement = connection.createStatement()) {
-                for (String each : assertion.getCleanSQL().split(";")) {
+                for (String each : assertion.getCleanSQLs().split(";")) {
                     statement.execute(each);
                 }
                 // CHECKSTYLE: OFF
@@ -64,9 +67,9 @@ public abstract class BaseDCLIntegrateTest extends SingleIntegrateTest {
     }
     
     protected void initEnvironment(final Connection connection) {
-        if (!Strings.isNullOrEmpty(assertion.getInitSQL())) {
+        if (!Strings.isNullOrEmpty(assertion.getInitSQLs())) {
             try (Statement statement = connection.createStatement()) {
-                for (String each : assertion.getInitSQL().split(";")) {
+                for (String each : assertion.getInitSQLs().split(";")) {
                     statement.execute(each);
                 }
                 // CHECKSTYLE: OFF
@@ -74,5 +77,16 @@ public abstract class BaseDCLIntegrateTest extends SingleIntegrateTest {
                 // CHECKSTYLE: ON
             }
         }
+    }
+    
+    protected boolean isExcuted() {
+        if (Strings.isNullOrEmpty(assertion.getDbTypes())) {
+            return true;
+        }
+        Collection<DatabaseType> databaseTypeList = new LinkedList<>();
+        for (String each : assertion.getDbTypes().split(",")) {
+            databaseTypeList.add(DatabaseType.valueOf(each));
+        }
+        return databaseTypeList.contains(getDatabaseTypeEnvironment().getDatabaseType());
     }
 }
