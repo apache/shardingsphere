@@ -53,6 +53,7 @@ public final class GeneralDCLIntegrateTest extends BaseDCLIntegrateTest {
             return;
         }
         try (Connection connection = getDataSource().getConnection()) {
+            dropUserIfExisted(connection);
             if (SQLCaseType.Literal == getCaseType()) {
                 connection.createStatement().execute(getSql());
             } else {
