@@ -57,23 +57,10 @@ public class OrchestrationProxyConfiguration {
     }
     
     /**
-     * Renew orchestration proxy configuration.
-     * 
-     * @param dataSources data sources
-     * @param orchestrationConfig orchestration configuration
+     * Judge has local configuration or not. 
+     * @return has local configuration or not
      */
-    public void renew(final Map<String, DataSourceParameter> dataSources, final OrchestrationProxyConfiguration orchestrationConfig) {
-        this.dataSources = dataSources;
-        shardingRule = orchestrationConfig.getShardingRule();
-        masterSlaveRule = orchestrationConfig.getMasterSlaveRule();
-        proxyAuthority = orchestrationConfig.getProxyAuthority();
-    }
-    
-    /**
-     * Judge local configuration is empty or not. 
-     * @return local configuration is empty or not
-     */
-    public boolean isEmptyLocalConfiguration() {
-        return shardingRule.getTables().isEmpty() && null == masterSlaveRule.getMasterDataSourceName();
+    public boolean hasLocalConfiguration() {
+        return !shardingRule.getTables().isEmpty() || null != masterSlaveRule.getMasterDataSourceName();
     }
 }

@@ -73,7 +73,7 @@ public final class Bootstrap {
             Preconditions.checkNotNull(result, String.format("Configuration file `%s` is invalid.", CONFIG_YAML));
             Preconditions.checkNotNull(result.getProxyAuthority(), "Authority configuration is invalid.");
             Preconditions.checkNotNull(result.getProxyAuthority().getUsername(), "Authority configuration is invalid.");
-            Preconditions.checkState(!result.isEmptyLocalConfiguration() || null != result.getOrchestration(), 
+            Preconditions.checkState(result.hasLocalConfiguration() || null != result.getOrchestration(), 
                     "Configuration invalid, sharding rule, local and orchestration configuration can not be both null.");
             return result;
         }
@@ -98,7 +98,7 @@ public final class Bootstrap {
     
     private static void startWithRegistryCenter(final OrchestrationProxyConfiguration localConfig, final int port) throws InterruptedException, MalformedURLException {
         try (OrchestrationFacade orchestrationFacade = new OrchestrationFacade(localConfig.getOrchestration().getOrchestrationConfiguration())) {
-            if (!localConfig.isEmptyLocalConfiguration()) {
+            if (localConfig.hasLocalConfiguration()) {
                 orchestrationFacade.init(localConfig);
             }
             OrchestrationProxyConfiguration config = new OrchestrationProxyConfiguration(
