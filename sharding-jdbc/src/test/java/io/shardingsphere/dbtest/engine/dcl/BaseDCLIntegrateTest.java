@@ -28,8 +28,8 @@ import org.junit.Before;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.ParseException;
 
 public abstract class BaseDCLIntegrateTest extends SingleIntegrateTest {
@@ -50,9 +50,14 @@ public abstract class BaseDCLIntegrateTest extends SingleIntegrateTest {
     }
     
     protected void dropUserIfExisted(final Connection connection) {
-        String dropSql = "drop " + assertion.getType() + " " + assertion.getUser() + null == assertion.getHost() ? ";" : "@" + assertion.getHost() + ";";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(dropSql)) {
-            preparedStatement.executeUpdate();
+        String dropSQL = "drop " + assertion.getType() + " " + assertion.getUser();
+        if (null == assertion.getHost()) {
+            dropSQL = dropSQL + ";";
+        } else {
+            dropSQL = dropSQL + "@" + assertion.getHost() + ";";
+        }
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(dropSQL);
             // CHECKSTYLE: OFF
         } catch (final SQLException ignored) {
             // CHECKSTYLE: ON
