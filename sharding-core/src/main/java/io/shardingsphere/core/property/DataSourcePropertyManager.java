@@ -20,9 +20,9 @@ package io.shardingsphere.core.property;
 import io.shardingsphere.core.constant.DatabaseType;
 
 import javax.sql.DataSource;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -50,10 +50,10 @@ public class DataSourcePropertyManager {
     /**
      * Get all instance data source names.
      *
-     * @return instance data source name list
+     * @return instance data source names
      */
-    public List<String> getAllInstanceDataSourceNames() {
-        List<String> result = new LinkedList<>();
+    public Collection<String> getAllInstanceDataSourceNames() {
+        Collection<String> result = new LinkedList<>();
         for (Entry<String, DataSourceMetaData> entry : dataSourceMetaDataMap.entrySet()) {
             if (!isExisted(entry.getKey(), result)) {
                 result.add(entry.getKey());
@@ -62,7 +62,7 @@ public class DataSourcePropertyManager {
         return result;
     }
     
-    private boolean isExisted(final String dataSourceName, final List<String> existedDataSourceNames) {
+    private boolean isExisted(final String dataSourceName, final Collection<String> existedDataSourceNames) {
         for (String each : existedDataSourceNames) {
             if (dataSourceMetaDataMap.get(each).isInSameDatabaseInstance(dataSourceMetaDataMap.get(dataSourceName))) {
                 return true;
