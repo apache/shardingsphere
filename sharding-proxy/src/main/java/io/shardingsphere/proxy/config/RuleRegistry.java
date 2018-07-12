@@ -103,7 +103,7 @@ public final class RuleRegistry {
      *
      * @param config yaml proxy configuration
      */
-    public synchronized void init(final OrchestrationProxyConfiguration config) {
+    public void init(final OrchestrationProxyConfiguration config) {
         Properties properties = config.getShardingRule().getProps();
         ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
         showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
