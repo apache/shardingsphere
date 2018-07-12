@@ -18,40 +18,40 @@
 package io.shardingsphere.core.property;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.property.dialect.H2DataSourcePropertyParser;
-import io.shardingsphere.core.property.dialect.MySQLDataSourcePropertyParser;
-import io.shardingsphere.core.property.dialect.OracleDataSourcePropertyParser;
-import io.shardingsphere.core.property.dialect.PostgreSQLDataSourcePropertyParser;
-import io.shardingsphere.core.property.dialect.SQLServerDataSourcePropertyParser;
+import io.shardingsphere.core.property.dialect.H2DataSourceMetaDataParser;
+import io.shardingsphere.core.property.dialect.MySQLDataSourceMetaDataParser;
+import io.shardingsphere.core.property.dialect.OracleDataSourceMetaDataParser;
+import io.shardingsphere.core.property.dialect.PostgreSQLDataSourceMetaDataParser;
+import io.shardingsphere.core.property.dialect.SQLServerDataSourceMetaDataParser;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Data source property factory.
+ * Data source meta data parser factory.
  *
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataSourcePropertyFactory {
+public final class DataSourceMetaDataFactory {
     
     /**
-     * Create data source property parser.
+     * Create data source meta data parser.
      *
-     * @param databaseType data base type.
-     * @return data source property parser.
+     * @param databaseType database type
+     * @return instance of data source meta data parser
      */
-    public static DataSourcePropertyParser createDataSourcePropertyParser(final DatabaseType databaseType) {
+    public static DataSourceMetaDataParser createDataSourceMetaDataParser(final DatabaseType databaseType) {
         switch (databaseType) {
             case H2:
-                return new H2DataSourcePropertyParser();
+                return new H2DataSourceMetaDataParser();
             case MySQL:
-                return new MySQLDataSourcePropertyParser();
+                return new MySQLDataSourceMetaDataParser();
             case Oracle:
-                return new OracleDataSourcePropertyParser();
+                return new OracleDataSourceMetaDataParser();
             case PostgreSQL:
-                return new PostgreSQLDataSourcePropertyParser();
+                return new PostgreSQLDataSourceMetaDataParser();
             case SQLServer:
-                return new SQLServerDataSourcePropertyParser();
+                return new SQLServerDataSourceMetaDataParser();
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support database [%s].", databaseType));
         }

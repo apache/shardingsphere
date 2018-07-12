@@ -42,7 +42,7 @@ public class DataSourcePropertyManager {
     private Map<String, DataSourceMetaData> initDataSourcePropertyMap(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
         Map<String, DataSourceMetaData> result = new LinkedHashMap<>();
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            result.put(entry.getKey(), DataSourcePropertyFactory.createDataSourcePropertyParser(databaseType).getDataSourceMetaData(entry.getValue()));
+            result.put(entry.getKey(), DataSourceMetaDataFactory.createDataSourceMetaDataParser(databaseType).getDataSourceMetaData(entry.getValue()));
         }
         return result;
     }

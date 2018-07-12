@@ -24,11 +24,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * Data source parameter parser.
+ * Data source meta data parser.
  *
  * @author panjuan
  */
-public abstract class DataSourcePropertyParser {
+public abstract class DataSourceMetaDataParser {
     
     /**
      * Get data source meta data.

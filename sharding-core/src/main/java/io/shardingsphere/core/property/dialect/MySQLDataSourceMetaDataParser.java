@@ -19,23 +19,22 @@ package io.shardingsphere.core.property.dialect;
 
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.property.DataSourceMetaData;
-import io.shardingsphere.core.property.DataSourcePropertyParser;
+import io.shardingsphere.core.property.DataSourceMetaDataParser;
 
 import java.net.URI;
 
 /**
- * SQLServer data source property parser.
+ * MySQL data source meta data parser.
  *
  * @author panjuan
  */
-public final class SQLServerDataSourcePropertyParser extends DataSourcePropertyParser {
+public final class MySQLDataSourceMetaDataParser extends DataSourceMetaDataParser {
     
-    private static final Integer DEFAULT_PORT = 1433;
+    private static final Integer DEFAULT_PORT = 3306;
     
     @Override
     protected DataSourceMetaData getDataSourceMetaData(final String url) {
         String cleanUrl = url.substring(5);
-        cleanUrl = cleanUrl.replace("microsoft:", "").replace(";DatabaseName=", "/");
         URI uri = URI.create(cleanUrl);
         if (null == uri.getHost()) {
             throw new ShardingException("The URL of JDBC is not supported.");

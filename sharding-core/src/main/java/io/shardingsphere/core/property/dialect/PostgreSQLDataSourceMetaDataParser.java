@@ -19,32 +19,22 @@ package io.shardingsphere.core.property.dialect;
 
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.property.DataSourceMetaData;
-import io.shardingsphere.core.property.DataSourcePropertyParser;
+import io.shardingsphere.core.property.DataSourceMetaDataParser;
 
 import java.net.URI;
 
 /**
- * Oracle data source property parser.
+ * PostgreSQL data source meta data parser.
  *
  * @author panjuan
  */
-public final class OracleDataSourcePropertyParser extends DataSourcePropertyParser {
+public final class PostgreSQLDataSourceMetaDataParser extends DataSourceMetaDataParser {
     
-    private static final Integer DEFAULT_PORT = 1521;
+    private static final Integer DEFAULT_PORT = 5432;
     
     @Override
     protected DataSourceMetaData getDataSourceMetaData(final String url) {
         String cleanUrl = url.substring(5);
-        if (cleanUrl.contains("oracle:thin:@//")) {
-            cleanUrl = cleanUrl.replace("oracle:thin:@//", "oracle://");
-        } else if (cleanUrl.contains("oracle:thin:@")) {
-            cleanUrl = cleanUrl.replace("oracle:thin:@", "oracle://");
-        }
-    
-        String[] parts = cleanUrl.split(":");
-        if (4 == parts.length) {
-            cleanUrl = parts[0] + ":" + parts[1] + ":" + parts[2] + "/" + parts[3];
-        }
         URI uri = URI.create(cleanUrl);
         if (null == uri.getHost()) {
             throw new ShardingException("The URL of JDBC is not supported.");
