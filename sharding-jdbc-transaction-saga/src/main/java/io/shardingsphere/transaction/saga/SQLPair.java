@@ -17,6 +17,8 @@
 
 package io.shardingsphere.transaction.saga;
 
+import lombok.Getter;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +27,7 @@ import java.util.List;
  *
  * @author zhangyonglun
  */
+@Getter
 public class SQLPair {
     
     private final List<String> sqlPair = new ArrayList<>(2);

@@ -17,7 +17,11 @@
 
 package io.shardingsphere.transaction.saga;
 
+import io.shardingsphere.transaction.saga.request.Transaction;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -25,7 +29,7 @@ import java.util.UUID;
  * 
  * @author zhangyonglun
  */
-public abstract class SagaSoftTransaction {
+public class SagaSoftTransaction {
     
     private String transactionId;
     
@@ -44,7 +48,13 @@ public abstract class SagaSoftTransaction {
      * 
      */
     public final void end() {
-    
+        for (SQLPair sqlPair : sqlPairs) {
+            Map<String, String> form = new HashMap<>();
+            form.put("SQL", sqlPair.getSqlPair().get(0));
+            Map<String, Map<String, String>> params = new HashMap<>();
+            params.put("form", form);
+            Transaction transaction = new Transaction("post", "", params);
+        }
     }
     
     /**

@@ -15,20 +15,20 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.saga.api;
+package io.shardingsphere.transaction.saga.request;
 
 import lombok.AllArgsConstructor;
 
 import java.util.Map;
 
 /**
- * Transaction.
+ * Compensation.
  * @see <a href="https://github.com/apache/incubator-servicecomb-saga/blob/old-saga/docs/api/api.md">Saga API</a>
  *
  * @author zhangyonglun
  */
 @AllArgsConstructor
-public class Transaction {
+public class Compensation {
     
     private final String method;
     
