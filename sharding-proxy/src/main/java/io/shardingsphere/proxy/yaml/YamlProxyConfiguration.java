@@ -20,7 +20,6 @@ package io.shardingsphere.proxy.yaml;
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
@@ -38,7 +37,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 
 /**
  * Yaml sharding configuration for proxy.
@@ -69,19 +67,15 @@ public final class YamlProxyConfiguration extends OrchestrationProxyConfiguratio
      * Initialize yaml proxy configuration.
      */
     public void init() {
-        if (isInitFromRegistry()) {
-            initFromRegistryCenter();
+        if (isFromRegistryCenter()) {
+            OrchestrationFacade orchestrationFacade = new OrchestrationFacade(getOrchestration().getOrchestrationConfiguration());
+            renew(orchestrationFacade.getConfigService().loadDataSources(), orchestrationFacade.getConfigService().loadProxyConfiguration());
         }
         ProxyEventBusInstance.getInstance().register(new YamlProxyConfiguration());
     }
     
-    private boolean isInitFromRegistry() {
+    private boolean isFromRegistryCenter() {
         return null != getOrchestration() && getShardingRule().getTables().isEmpty() && null == getMasterSlaveRule().getMasterDataSourceName();
-    }
-    
-    private void initFromRegistryCenter() {
-        OrchestrationFacade orchestrationFacade = new OrchestrationFacade(obtainOrchestrationConfigurationOptional().get());
-        assignProperties(orchestrationFacade.getConfigService().loadDataSourceParameter(), orchestrationFacade.getConfigService().loadProxyConfiguration());
     }
     
     /**
@@ -91,18 +85,8 @@ public final class YamlProxyConfiguration extends OrchestrationProxyConfiguratio
      */
     @Subscribe
     public void renew(final ProxyEventBusEvent proxyEventBusEvent) {
-        assignProperties(proxyEventBusEvent.getDataSourceParameterMap(), proxyEventBusEvent.getOrchestrationProxyConfig());
+        renew(proxyEventBusEvent.getDataSources(), proxyEventBusEvent.getOrchestrationConfig());
         RuleRegistry.getInstance().init(this);
-    }
-    
-    private void assignProperties(final Map<String, DataSourceParameter> dataSources, final OrchestrationProxyConfiguration orchestrationProxyConfiguration) {
-        setDataSources(dataSources);
-        setMasterSlaveRule(orchestrationProxyConfiguration.getMasterSlaveRule());
-        setShardingRule(orchestrationProxyConfiguration.getShardingRule());
-        setProxyAuthority(orchestrationProxyConfiguration.getProxyAuthority());
-        setWithoutJdbc(orchestrationProxyConfiguration.isWithoutJdbc());
-        setTransactionMode(orchestrationProxyConfiguration.getTransactionMode());
-        setMaxWorkingThreads(orchestrationProxyConfiguration.getMaxWorkingThreads());
     }
     
     /**
@@ -126,11 +110,11 @@ public final class YamlProxyConfiguration extends OrchestrationProxyConfiguratio
     }
     
     /**
-     * Get Orchestration configuration from yaml.
+     * Get orchestration configuration.
      *
      * @return Orchestration configuration
      */
-    public Optional<OrchestrationConfiguration> obtainOrchestrationConfigurationOptional() {
+    public Optional<OrchestrationConfiguration> obtainOrchestrationConfiguration() {
         return null != getOrchestration() ? Optional.fromNullable(getOrchestration().getOrchestrationConfiguration()) : Optional.<OrchestrationConfiguration>absent();
     }
 }

@@ -125,12 +125,10 @@ public final class RuleRegistry implements AutoCloseable {
     }
     
     private void assignOrchestrationFacade(final YamlProxyConfiguration yamlProxyConfiguration) {
-        Optional<OrchestrationConfiguration> configOptional = yamlProxyConfiguration.obtainOrchestrationConfigurationOptional();
-        if (configOptional.isPresent()) {
-            orchestrationFacade = new OrchestrationFacade(configOptional.get());
+        Optional<OrchestrationConfiguration> orchestrationConfig = yamlProxyConfiguration.obtainOrchestrationConfiguration();
+        if (orchestrationConfig.isPresent()) {
+            orchestrationFacade = new OrchestrationFacade(orchestrationConfig.get());
             orchestrationFacade.init(yamlProxyConfiguration);
-        } else {
-            orchestrationFacade = null;
         }
     }
     
