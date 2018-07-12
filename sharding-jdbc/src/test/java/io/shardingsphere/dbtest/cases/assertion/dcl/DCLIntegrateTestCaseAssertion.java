@@ -30,13 +30,13 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 public final class DCLIntegrateTestCaseAssertion extends IntegrateTestCaseAssertion {
     
-    @XmlAttribute(name = "init-sql")
-    private String initSQL;
+    @XmlAttribute(name = "init-sqls")
+    private String initSQLs;
     
-    @XmlAttribute(name = "clean-sql")
-    private String cleanSQL;
+    @XmlAttribute(name = "clean-sqls")
+    private String cleanSQLs;
     
-    @XmlAttribute(name = "db-type")
-    private String dbType;
+    @XmlAttribute(name = "db-types")
+    private String dbTypes;
     
 }
