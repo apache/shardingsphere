@@ -68,8 +68,6 @@ public final class RuleRegistry implements AutoCloseable {
     
     private MasterSlaveRule masterSlaveRule;
     
-    private boolean isOnlyMasterSlave;
-    
     private Map<String, DataSource> dataSourceMap;
     
     private Map<String, DataSourceParameter> dataSourceConfigurationMap;
@@ -113,25 +111,23 @@ public final class RuleRegistry implements AutoCloseable {
         proxyMode = ProxyMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_MODE));
         transactionType = TransactionType.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_MODE));
         maxWorkingThreads = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_MAX_WORKING_THREADS);
-        
-        dataSourceMap = ProxyRawDataSourceFactory.create(transactionType, config);
         shardingRule = config.obtainShardingRule(Collections.<String>emptyList());
         masterSlaveRule = config.obtainMasterSlaveRule();
-        isOnlyMasterSlave = shardingRule.getTableRules().isEmpty() && !masterSlaveRule.getMasterDataSourceName().isEmpty();
+        dataSourceMap = ProxyRawDataSourceFactory.create(transactionType, config);
         dataSourceConfigurationMap = new HashMap<>(128, 1);
-        for (Entry<String, DataSourceParameter> entry : config.getDataSources().entrySet()) {
-            if (withoutJdbc) {
+        if (withoutJdbc) {
+            for (Entry<String, DataSourceParameter> entry : config.getDataSources().entrySet()) {
                 dataSourceConfigurationMap.put(entry.getKey(), entry.getValue());
             }
         }
         executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(maxWorkingThreads));
         shardingDataSourceMetaData = new ShardingDataSourceMetaData(dataSourceMap, DatabaseType.MySQL);
         shardingMetaData = new ProxyShardingMetaData(executorService, dataSourceMap);
-        if (!isOnlyMasterSlave) {
+        if (!shardingRule.getTableRules().isEmpty() && masterSlaveRule.getMasterDataSourceName().isEmpty()) {
             shardingMetaData.init(shardingRule);
         }
         proxyAuthority = config.getProxyAuthority();
-        Preconditions.checkNotNull(proxyAuthority.getUsername(), "Invalid configuration for proxyAuthority.");
+        Preconditions.checkNotNull(proxyAuthority.getUsername(), "Invalid configuration for proxy authority.");
         assignOrchestrationFacade(config);
     }
     
