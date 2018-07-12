@@ -44,8 +44,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.sql.DataSource;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -265,4 +267,18 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
     }
     
     protected abstract DatabaseProtocolPacket newDatabaseProtocolPacket(int sequenceId, List<Object> data);
+    
+    protected Connection getConnection(final DataSource dataSource) throws SQLException {
+        Connection result;
+        if (RuleRegistry.isConnectionStrictly()) {
+            result = ProxyConnectionHolder.getConnection(dataSource);
+            if (null == result) {
+                result = dataSource.getConnection();
+                ProxyConnectionHolder.setConnection(dataSource, result);
+            }
+        } else {
+            result = dataSource.getConnection();
+        }
+        return result;
+    }
 }
