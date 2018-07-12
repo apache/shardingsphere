@@ -53,12 +53,13 @@ public final class GeneralDCLIntegrateTest extends BaseDCLIntegrateTest {
             return;
         }
         try (Connection connection = getDataSource().getConnection()) {
+            initEnvironment(connection);
             if (SQLCaseType.Literal == getCaseType()) {
                 connection.createStatement().execute(getSql());
             } else {
                 connection.prepareStatement(getSql()).execute();
             }
-            dropUserIfExisted(connection);
+            cleanEnvironment(connection);
         } catch (final SQLException ex) {
             assert false : ex.toString();
         }
