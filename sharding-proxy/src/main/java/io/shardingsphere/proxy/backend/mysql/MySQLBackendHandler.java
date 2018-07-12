@@ -55,7 +55,7 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
     
     private AuthType authType = AuthType.UN_AUTH;
     
-    private Map<String, MySQLQueryResult> resultMap = Maps.newHashMap();
+    private Map<Integer, MySQLQueryResult> resultMap = Maps.newHashMap();
     
     @Override
     public void channelRead(final ChannelHandlerContext context, final Object message) {
@@ -108,36 +108,39 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
     
     @Override
     protected void okPacket(final ChannelHandlerContext context, final MySQLPacketPayload mysqlPacketPayload) {
+        int connectionId = MySQLResultCache.getInstance().getConnection(context.channel().id().asShortText());
         try {
             MySQLQueryResult mysqlQueryResult = new MySQLQueryResult();
             mysqlQueryResult.setGenericResponse(new OKPacket(mysqlPacketPayload));
-            resultMap.put(context.channel().id().asShortText(), mysqlQueryResult);
+            resultMap.put(connectionId, mysqlQueryResult);
             setResponse(context);
         } finally {
-            resultMap.remove(context.channel().id().asShortText());
+            resultMap.remove(connectionId);
             mysqlPacketPayload.getByteBuf().release();
         }
     }
     
     @Override
     protected void errPacket(final ChannelHandlerContext context, final MySQLPacketPayload mysqlPacketPayload) {
+        int connectionId = MySQLResultCache.getInstance().getConnection(context.channel().id().asShortText());
         try {
             MySQLQueryResult mysqlQueryResult = new MySQLQueryResult();
             mysqlQueryResult.setGenericResponse(new ErrPacket(mysqlPacketPayload));
-            resultMap.put(context.channel().id().asShortText(), mysqlQueryResult);
+            resultMap.put(connectionId, mysqlQueryResult);
             setResponse(context);
         } finally {
-            resultMap.remove(context.channel().id().asShortText());
+            resultMap.remove(connectionId);
             mysqlPacketPayload.getByteBuf().release();
         }
     }
     
     @Override
     protected void eofPacket(final ChannelHandlerContext context, final MySQLPacketPayload mysqlPacketPayload) {
-        MySQLQueryResult mysqlQueryResult = resultMap.get(context.channel().id().asShortText());
+        int connectionId = MySQLResultCache.getInstance().getConnection(context.channel().id().asShortText());
+        MySQLQueryResult mysqlQueryResult = resultMap.get(connectionId);
         if (mysqlQueryResult.isColumnFinished()) {
             mysqlQueryResult.setRowFinished(new EofPacket(mysqlPacketPayload));
-            resultMap.remove(context.channel().id().asShortText());
+            resultMap.remove(connectionId);
             mysqlPacketPayload.getByteBuf().release();
         } else {
             mysqlQueryResult.setColumnFinished(new EofPacket(mysqlPacketPayload));
@@ -147,10 +150,11 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
     
     @Override
     protected void commonPacket(final ChannelHandlerContext context, final MySQLPacketPayload mysqlPacketPayload) {
-        MySQLQueryResult mysqlQueryResult = resultMap.get(context.channel().id().asShortText());
+        int connectionId = MySQLResultCache.getInstance().getConnection(context.channel().id().asShortText());
+        MySQLQueryResult mysqlQueryResult = resultMap.get(connectionId);
         if (mysqlQueryResult == null) {
             mysqlQueryResult = new MySQLQueryResult(mysqlPacketPayload);
-            resultMap.put(context.channel().id().asShortText(), mysqlQueryResult);
+            resultMap.put(connectionId, mysqlQueryResult);
         } else if (mysqlQueryResult.needColumnDefinition()) {
             mysqlQueryResult.addColumnDefinition(new ColumnDefinition41Packet(mysqlPacketPayload));
         } else {
@@ -186,8 +190,7 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
     private void setResponse(final ChannelHandlerContext context) {
         int connectionId = MySQLResultCache.getInstance().getConnection(context.channel().id().asShortText());
         if (MySQLResultCache.getInstance().getFuture(connectionId) != null) {
-            MySQLQueryResult mysqlQueryResult = resultMap.get(context.channel().id().asShortText());
-            MySQLResultCache.getInstance().getFuture(connectionId).setResponse(mysqlQueryResult);
+            MySQLResultCache.getInstance().getFuture(connectionId).setResponse(resultMap.get(connectionId));
         }
     }
 }
