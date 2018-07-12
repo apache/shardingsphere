@@ -53,7 +53,9 @@ public abstract class BaseDCLIntegrateTest extends SingleIntegrateTest {
     protected void cleanEnvironment(final Connection connection) {
         if (!Strings.isNullOrEmpty(assertion.getCleanSQL())) {
             try (Statement statement = connection.createStatement()) {
-                statement.execute(assertion.getCleanSQL());
+                for (String each : assertion.getCleanSQL().split(";")) {
+                    statement.execute(each);
+                }
                 // CHECKSTYLE: OFF
             } catch (final SQLException ignored) {
                 // CHECKSTYLE: ON
@@ -64,7 +66,9 @@ public abstract class BaseDCLIntegrateTest extends SingleIntegrateTest {
     protected void initEnvironment(final Connection connection) {
         if (!Strings.isNullOrEmpty(assertion.getInitSQL())) {
             try (Statement statement = connection.createStatement()) {
-                statement.execute(assertion.getInitSQL());
+                for (String each : assertion.getInitSQL().split(";")) {
+                    statement.execute(each);
+                }
                 // CHECKSTYLE: OFF
             } catch (final SQLException ignored) {
                 // CHECKSTYLE: ON
