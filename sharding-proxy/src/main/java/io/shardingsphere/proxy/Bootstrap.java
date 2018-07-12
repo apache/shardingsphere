@@ -19,6 +19,8 @@ package io.shardingsphere.proxy;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.util.EventBusInstance;
+import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusInstance;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.frontend.ShardingProxy;
 import io.shardingsphere.proxy.yaml.YamlProxyConfiguration;
@@ -30,6 +32,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 
 /**
  * Sharding-Proxy Bootstrap.
@@ -52,24 +55,40 @@ public final class Bootstrap {
      * @throws IOException IO exception
      */
     public static void main(final String[] args) throws InterruptedException, IOException {
-        initializeRuleRegistry();
-        EventBusInstance.getInstance().register(new XaTransactionListener());
-        new ShardingProxy().start(getPort(args));
+        YamlProxyConfiguration localConfig = loadLocalConfiguration(new File(Bootstrap.class.getResource(CONFIG_YAML).getFile()));
+        if (null == localConfig.getOrchestration()) {
+            startWithoutRegistryCenter(localConfig, args);
+        } else {
+            startWithRegistryCenter(localConfig, args);
+        }
     }
     
-    private static void initializeRuleRegistry() throws IOException {
-        YamlProxyConfiguration config = unmarshal(new File(Bootstrap.class.getResource(CONFIG_YAML).getFile()));
-        Preconditions.checkNotNull(config, String.format("Configuration file `%s` is invalid.", CONFIG_YAML));
-        config.init();
-        RuleRegistry.getInstance().init(config);
-    }
-    
-    private static YamlProxyConfiguration unmarshal(final File yamlFile) throws IOException {
+    private static YamlProxyConfiguration loadLocalConfiguration(final File yamlFile) throws IOException {
         try (
                 FileInputStream fileInputStream = new FileInputStream(yamlFile);
                 InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")
         ) {
-            return new Yaml(new Constructor(YamlProxyConfiguration.class)).loadAs(inputStreamReader, YamlProxyConfiguration.class);
+            YamlProxyConfiguration result = new Yaml(new Constructor(YamlProxyConfiguration.class)).loadAs(inputStreamReader, YamlProxyConfiguration.class);
+            Preconditions.checkNotNull(result, String.format("Configuration file `%s` is invalid.", CONFIG_YAML));
+            return result;
+        }
+    }
+    
+    private static void startWithoutRegistryCenter(final YamlProxyConfiguration config, final String[] args) throws InterruptedException, MalformedURLException {
+        RuleRegistry.getInstance().init(config);
+        EventBusInstance.getInstance().register(new XaTransactionListener());
+        new ShardingProxy().start(getPort(args));
+    }
+    
+    private static void startWithRegistryCenter(final YamlProxyConfiguration localConfig, final String[] args) throws InterruptedException, MalformedURLException {
+        try (OrchestrationFacade orchestrationFacade = new OrchestrationFacade(localConfig.getOrchestration().getOrchestrationConfiguration())) {
+            YamlProxyConfiguration config = localConfig.isEmptyLocalConfiguration()
+                    ? new YamlProxyConfiguration(orchestrationFacade.getConfigService().loadDataSources(), orchestrationFacade.getConfigService().loadProxyConfiguration()) : localConfig;
+            orchestrationFacade.init(config);
+            RuleRegistry.getInstance().init(config);
+            ProxyEventBusInstance.getInstance().register(new YamlProxyConfiguration());
+            EventBusInstance.getInstance().register(new XaTransactionListener());
+            new ShardingProxy().start(getPort(args));    
         }
     }
     

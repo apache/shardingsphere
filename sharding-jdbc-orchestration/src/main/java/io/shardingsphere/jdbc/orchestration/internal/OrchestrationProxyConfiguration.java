@@ -59,4 +59,12 @@ public class OrchestrationProxyConfiguration {
         masterSlaveRule = orchestrationConfig.getMasterSlaveRule();
         proxyAuthority = orchestrationConfig.getProxyAuthority();
     }
+    
+    /**
+     * Judge local configuration is empty or not. 
+     * @return local configuration is empty or not
+     */
+    public boolean isEmptyLocalConfiguration() {
+        return shardingRule.getTables().isEmpty() && null == masterSlaveRule.getMasterDataSourceName();
+    }
 }

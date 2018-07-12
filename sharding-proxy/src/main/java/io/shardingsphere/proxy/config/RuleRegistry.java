@@ -17,7 +17,6 @@
 
 package io.shardingsphere.proxy.config;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -31,8 +30,6 @@ import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ProxyAuthority;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
-import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.proxy.backend.common.ProxyMode;
 import io.shardingsphere.proxy.metadata.ProxyShardingMetaData;
 import io.shardingsphere.proxy.yaml.YamlProxyConfiguration;
@@ -86,8 +83,6 @@ public final class RuleRegistry {
     
     private int maxWorkingThreads;
     
-    private OrchestrationFacade orchestrationFacade;
-    
     private ShardingDataSourceMetaData shardingDataSourceMetaData;
     
     /**
@@ -128,15 +123,6 @@ public final class RuleRegistry {
         }
         proxyAuthority = config.getProxyAuthority();
         Preconditions.checkNotNull(proxyAuthority.getUsername(), "Invalid configuration for proxy authority.");
-        assignOrchestrationFacade(config);
-    }
-    
-    private void assignOrchestrationFacade(final YamlProxyConfiguration yamlProxyConfiguration) {
-        Optional<OrchestrationConfiguration> orchestrationConfig = yamlProxyConfiguration.obtainOrchestrationConfiguration();
-        if (orchestrationConfig.isPresent()) {
-            orchestrationFacade = new OrchestrationFacade(orchestrationConfig.get());
-            orchestrationFacade.init(yamlProxyConfiguration);
-        }
     }
     
     /**
