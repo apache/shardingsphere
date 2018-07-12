@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.property.dialect;
 
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.property.DataSourceProperty;
 import io.shardingsphere.core.property.DataSourcePropertyParser;
@@ -54,6 +53,6 @@ public final class H2DataSourcePropertyParser extends DataSourcePropertyParser {
         if (null == uri.getHost()) {
             throw new ShardingException("The URL of JDBC is not supported.");
         }
-        return new DataSourceProperty(uri.getHost(), -1 == uri.getPort() ? DEFAULT_PORT : uri.getPort(), uri.getPath().isEmpty() ? "" : uri.getPath().substring(1), DatabaseType.H2);
+        return new DataSourceProperty(uri.getHost(), -1 == uri.getPort() ? DEFAULT_PORT : uri.getPort(), uri.getPath().isEmpty() ? "" : uri.getPath().substring(1));
     }
 }

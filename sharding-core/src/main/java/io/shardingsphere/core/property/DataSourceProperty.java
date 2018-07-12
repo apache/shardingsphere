@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.property;
 
-import io.shardingsphere.core.constant.DatabaseType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -36,8 +35,6 @@ public final class DataSourceProperty {
     
     private final String schemeName;
     
-    private final DatabaseType databaseType;
-    
     /**
      * Judge whether two of data source properties point at the same instance.
      *
@@ -45,6 +42,6 @@ public final class DataSourceProperty {
      * @return pointing at the same instance or not.
      */
     public boolean isPointAtSameInstance(final DataSourceProperty dataSourceProperty) {
-        return hostName.equals(dataSourceProperty.getHostName()) && port.equals(dataSourceProperty.getPort()) && databaseType.equals(dataSourceProperty.getDatabaseType());
+        return hostName.equals(dataSourceProperty.getHostName()) && port.equals(dataSourceProperty.getPort());
     }
 }
