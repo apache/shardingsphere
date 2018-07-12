@@ -22,7 +22,10 @@ import io.shardingsphere.transaction.saga.request.SagaApi;
 import io.shardingsphere.transaction.saga.request.SagaRequest;
 import io.shardingsphere.transaction.saga.request.Transaction;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,18 +56,19 @@ public class SagaSoftTransaction {
      */
     public final void end() {
         List<SagaRequest> sagaRequests = new ArrayList<>(128);
-        for (SQLPair sqlPair : sqlPairs) {
-            Map<String, String> transaction_form = new HashMap<>();
-            transaction_form.put("SQL", sqlPair.getSqlPair().get(0));
-            Map<String, Map<String, String>> transaction_params = new HashMap<>();
-            transaction_params.put("form", transaction_form);
-            Transaction transaction = new Transaction("post", "", transaction_params);
-            Map<String, String> compensation_form = new HashMap<>();
-            compensation_form.put("SQL", sqlPair.getSqlPair().get(1));
-            Map<String, Map<String, String>> compensation_params = new HashMap<>();
-            compensation_params.put("form", compensation_form);
-            Compensation compensation = new Compensation("put", "", compensation_params);
-            SagaRequest sagaRequest = new SagaRequest(transactionId, "rest", transactionId, transaction, compensation);
+        for (int i = 0; i < sqlPairs.size(); i++) {
+            Map<String, String> transactionForm = new HashMap<>();
+            transactionForm.put("SQL", sqlPairs.get(i).getSqlPair().get(0));
+            Map<String, Map<String, String>> transactionParams = new HashMap<>();
+            transactionParams.put("form", transactionForm);
+            Transaction transaction = new Transaction("post", "", transactionParams);
+            Map<String, String> compensationForm = new HashMap<>();
+            compensationForm.put("SQL", sqlPairs.get(i).getSqlPair().get(1));
+            Map<String, Map<String, String>> compensationParams = new HashMap<>();
+            compensationParams.put("form", compensationForm);
+            Compensation compensation = new Compensation("put", "", compensationParams);
+            String parent = 0 == i ? "" : transactionId + (i - 1);
+            SagaRequest sagaRequest = new SagaRequest(transactionId, "rest", transactionId + i, Collections.singletonList(parent), transaction, compensation);
             sagaRequests.add(sagaRequest);
         }
         SagaApi sagaApi = new SagaApi("BackwardRecovery", sagaRequests);

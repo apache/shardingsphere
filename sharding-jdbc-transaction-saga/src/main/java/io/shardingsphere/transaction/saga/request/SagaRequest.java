@@ -19,6 +19,8 @@ package io.shardingsphere.transaction.saga.request;
 
 import lombok.AllArgsConstructor;
 
+import java.util.List;
+
 /**
  * SagaRequest.
  * @see <a href="https://github.com/apache/incubator-servicecomb-saga/blob/old-saga/docs/api/api.md">Saga API</a>
@@ -33,6 +35,8 @@ public class SagaRequest {
     private final String type;
     
     private final String serviceName;
+    
+    private final List<String> parents;
     
     private final Transaction transaction;
     
