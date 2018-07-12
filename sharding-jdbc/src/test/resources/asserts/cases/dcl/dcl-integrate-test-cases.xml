@@ -18,19 +18,16 @@
         <assertion clean-sql="drop user user_dev" />
     </dcl-test-case>
     <dcl-test-case sql-case-id="create_login">
-        <assertion clean-sql="drop login user_dev" />
+        <assertion clean-sql="drop login login_dev" />
     </dcl-test-case>
     <dcl-test-case sql-case-id="create_role">
-        <assertion clean-sql="drop role user_dev" />
+        <assertion clean-sql="drop role role_dev" />
     </dcl-test-case>
     <dcl-test-case sql-case-id="create_role_identified_by">
-        <assertion clean-sql="drop role user_dev" />
+        <assertion clean-sql="drop role role_dev" />
     </dcl-test-case>
     <dcl-test-case sql-case-id="create_role_password">
-        <assertion clean-sql="drop role user_dev" />
-    </dcl-test-case>
-    <dcl-test-case sql-case-id="">
-        <assertion user="" type="" />
+        <assertion clean-sql="drop role role_dev" />
     </dcl-test-case>
 
 </integrate-test-cases>
