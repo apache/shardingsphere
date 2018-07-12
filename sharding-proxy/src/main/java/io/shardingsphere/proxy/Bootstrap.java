@@ -102,12 +102,14 @@ public final class Bootstrap {
             if (localConfig.hasLocalConfiguration()) {
                 orchestrationFacade.init(localConfig);
             }
-            ConfigurationService configService = orchestrationFacade.getConfigService();
-            OrchestrationProxyConfiguration config = new OrchestrationProxyConfiguration(configService.loadDataSources(), configService.loadProxyConfiguration());
-            RuleRegistry.getInstance().init(config);
-            ProxyEventBusInstance.getInstance().register(RuleRegistry.getInstance());
+            initRuleRegistry(orchestrationFacade.getConfigService());
             EventBusInstance.getInstance().register(new XaTransactionListener());
             new ShardingProxy().start(port);
         }
+    }
+    
+    private static void initRuleRegistry(final ConfigurationService configService) {
+        RuleRegistry.getInstance().init(new OrchestrationProxyConfiguration(configService.loadDataSources(), configService.loadProxyConfiguration()));
+        ProxyEventBusInstance.getInstance().register(RuleRegistry.getInstance());
     }
 }
