@@ -39,6 +39,8 @@ public final class Bootstrap {
     
     private static final int DEFAULT_PORT = 3307;
     
+    private static final String CONFIG_YAML = "/conf/config.yaml";
+    
     /**
      * Main Entrance.
      * 
@@ -64,13 +66,13 @@ public final class Bootstrap {
     }
     
     private static void initializeRuleRegistry() {
-        YamlProxyConfiguration yamlProxyConfiguration;
+        YamlProxyConfiguration yamlProxyConfig;
         try {
-            yamlProxyConfiguration = YamlProxyConfiguration.unmarshal(new File(Bootstrap.class.getResource("/conf/config.yaml").getFile()));
-            yamlProxyConfiguration.init();
+            yamlProxyConfig = YamlProxyConfiguration.unmarshal(new File(Bootstrap.class.getResource(CONFIG_YAML).getFile()));
+            yamlProxyConfig.init();
         } catch (final IOException ex) {
             throw new ShardingException(ex);
         }
-        RuleRegistry.getInstance().init(yamlProxyConfiguration);
+        RuleRegistry.getInstance().init(yamlProxyConfig);
     }
 }

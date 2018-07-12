@@ -74,7 +74,7 @@ public final class RuleRegistry implements AutoCloseable {
     
     private ShardingMetaData shardingMetaData; 
 
-    private int maxWorkingThreads;
+    private int maxWorkingThreads = Runtime.getRuntime().availableProcessors() * 2;
     
     private ListeningExecutorService executorService;
     
