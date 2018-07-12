@@ -65,15 +65,44 @@
     <dcl-test-case sql-case-id="alter_role_drop_member">
         <assertion init-sql="create role role_dev;create user user_dev" clean-sql="drop role role_dev;drop user user_dev" />
     </dcl-test-case>
-
-    <dcl-test-case sql-case-id="">
-        <assertion clean-sql="" init-sql="" />
+    <dcl-test-case sql-case-id="deny_user">
+        <assertion init-sql="drop user user_dev" clean-sql="create user user_dev" />
     </dcl-test-case>
     <dcl-test-case sql-case-id="">
-        <assertion clean-sql="" init-sql="" />
+        <assertion init-sql="" clean-sql="" />
     </dcl-test-case>
     <dcl-test-case sql-case-id="">
-        <assertion clean-sql="" init-sql="" />
+        <assertion init-sql="" clean-sql="" />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="">
+        <assertion init-sql="" clean-sql="" />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="">
+        <assertion init-sql="" clean-sql="" />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="">
+        <assertion init-sql="" clean-sql="" />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="">
+        <assertion init-sql="" clean-sql="" />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="">
+        <assertion init-sql="" clean-sql="" />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="">
+        <assertion init-sql="" clean-sql="" />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="">
+        <assertion init-sql="" clean-sql="" />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="">
+        <assertion init-sql="" clean-sql="" />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="">
+        <assertion init-sql="" clean-sql="" />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="">
+        <assertion init-sql="" clean-sql="" />
     </dcl-test-case>
 
 </integrate-test-cases>
