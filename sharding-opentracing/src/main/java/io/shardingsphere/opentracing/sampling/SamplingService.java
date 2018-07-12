@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.TimeUnit;
 
 /**
- * samping control service.
+ * Sampling control service.
  *
  * @author chenqingyang
  */

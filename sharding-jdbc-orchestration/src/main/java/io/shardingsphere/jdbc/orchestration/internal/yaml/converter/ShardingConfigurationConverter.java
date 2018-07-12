@@ -37,7 +37,7 @@ import java.util.Properties;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ShardingConfigurationConverter {
     
-    private static final Yaml yaml = new Yaml(new DefaultConfigurationRepresenter());
+    private static final Yaml YAML = new Yaml(new DefaultConfigurationRepresenter());
     
     /**
      * Convert sharding rule configuration to yaml string.
@@ -59,7 +59,7 @@ public class ShardingConfigurationConverter {
      * @return sharding rule configuration
      */
     public static ShardingRuleConfiguration shardingRuleConfigFromYaml(final String shardingRuleConfigYamlString) {
-        return yaml.loadAs(shardingRuleConfigYamlString, YamlShardingRuleConfiguration.class).getShardingRuleConfiguration();
+        return YAML.loadAs(shardingRuleConfigYamlString, YamlShardingRuleConfiguration.class).getShardingRuleConfiguration();
     }
     
     /**
@@ -69,7 +69,7 @@ public class ShardingConfigurationConverter {
      * @return config map string
      */
     public static String configMapToYaml(final Map<String, Object> configMap) {
-        return yaml.dumpAsMap(configMap);
+        return YAML.dumpAsMap(configMap);
     }
     
     /**
@@ -80,7 +80,7 @@ public class ShardingConfigurationConverter {
      */
     @SuppressWarnings("unchecked")
     public static Map<String, Object> configMapFromYaml(final String configMapYamlString) {
-        return (Map<String, Object>) yaml.load(configMapYamlString);
+        return (Map<String, Object>) YAML.load(configMapYamlString);
     }
     
     /**
@@ -90,7 +90,7 @@ public class ShardingConfigurationConverter {
      * @return properties string
      */
     public static String propertiesToYaml(final Properties props) {
-        return yaml.dumpAsMap(props);
+        return YAML.dumpAsMap(props);
     }
     
     /**
@@ -100,6 +100,6 @@ public class ShardingConfigurationConverter {
      * @return properties
      */
     public static Properties propertiesFromYaml(final String propertiesYamlString) {
-        return yaml.loadAs(propertiesYamlString, Properties.class);
+        return YAML.loadAs(propertiesYamlString, Properties.class);
     }
 }

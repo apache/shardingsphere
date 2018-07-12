@@ -29,8 +29,6 @@ import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfigura
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusInstance;
 import io.shardingsphere.proxy.config.RuleRegistry;
-import lombok.Getter;
-import lombok.Setter;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
@@ -48,8 +46,6 @@ import java.util.Map;
  * @author zhangyonglun
  * @author panjuan
  */
-@Getter
-@Setter
 public final class YamlProxyConfiguration extends OrchestrationProxyConfiguration {
     
     /**

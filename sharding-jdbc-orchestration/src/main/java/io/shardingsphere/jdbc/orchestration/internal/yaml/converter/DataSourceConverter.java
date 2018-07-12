@@ -33,7 +33,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourceConverter {
     
-    private static final Yaml yaml = new Yaml();
+    private static final Yaml YAML = new Yaml();
     
     /**
      * Convert data source map to Yaml string.
@@ -54,7 +54,7 @@ public final class DataSourceConverter {
      */
     @SuppressWarnings("unchecked")
     public static Map<String, DataSource> dataSourceMapFromYaml(final String dataSourceMapYamlString) {
-        return (Map<String, DataSource>) yaml.load(dataSourceMapYamlString);
+        return (Map<String, DataSource>) YAML.load(dataSourceMapYamlString);
     
     }
 }

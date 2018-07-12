@@ -119,11 +119,11 @@ public class InsertSetClauseParser implements SQLClauseParser {
     }
     
     private void removeUnnecessaryToken(final InsertStatement insertStatement) {
-        Iterator<SQLToken> sqlTokenIterable = insertStatement.getSqlTokens().iterator();
-        while (sqlTokenIterable.hasNext()) {
-            SQLToken sqlToken = sqlTokenIterable.next();
+        Iterator<SQLToken> sqlTokens = insertStatement.getSqlTokens().iterator();
+        while (sqlTokens.hasNext()) {
+            SQLToken sqlToken = sqlTokens.next();
             if (sqlToken instanceof InsertColumnToken || sqlToken instanceof ItemsToken) {
-                sqlTokenIterable.remove();
+                sqlTokens.remove();
             }
         }
     }

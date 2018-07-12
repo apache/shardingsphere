@@ -77,8 +77,8 @@ public final class ExecuteEventListenerTest {
     public void assertSingleStatement() throws Exception {
         Statement statement = mock(Statement.class);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        executorEngine.execute(SQLType.DML, Collections.singleton(new StatementUnit(new SQLExecutionUnit("ds_0",
-                new SQLUnit("insert into ...", Collections.singletonList(Collections.<Object>singletonList(1)))), statement)), new ExecuteCallback<Integer>() {
+        executorEngine.execute(SQLType.DML, Collections.singleton(new StatementUnit(
+                new SQLExecutionUnit("ds_0", new SQLUnit("insert into ...", Collections.singletonList(Collections.<Object>singletonList(1)))), statement)), new ExecuteCallback<Integer>() {
             
             @Override
             public Integer execute(final BaseStatementUnit baseStatementUnit) {
@@ -110,13 +110,13 @@ public final class ExecuteEventListenerTest {
     @Test
     public void assertBatchPreparedStatement() throws Exception {
         List<BatchPreparedStatementUnit> statementUnitList = new ArrayList<>(2);
-        List<List<Object>> parameterSets = Arrays.asList(Arrays.<Object>asList(1,2), Arrays.<Object>asList(3,4));
-        PreparedStatement pstm1 = mock(PreparedStatement.class);
-        when(pstm1.getConnection()).thenReturn(mock(Connection.class));
-        statementUnitList.add(new BatchPreparedStatementUnit(new SQLExecutionUnit("ds_0", new SQLUnit("insert into ...", parameterSets)), pstm1));
-        PreparedStatement pstm2 = mock(PreparedStatement.class);
-        when(pstm2.getConnection()).thenReturn(mock(Connection.class));
-        statementUnitList.add(new BatchPreparedStatementUnit(new SQLExecutionUnit("ds_1", new SQLUnit("insert into ...", parameterSets)), pstm2));
+        List<List<Object>> parameterSets = Arrays.asList(Arrays.<Object>asList(1, 2), Arrays.<Object>asList(3, 4));
+        PreparedStatement preparedStatement1 = mock(PreparedStatement.class);
+        when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
+        statementUnitList.add(new BatchPreparedStatementUnit(new SQLExecutionUnit("ds_0", new SQLUnit("insert into ...", parameterSets)), preparedStatement1));
+        PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
+        when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
+        statementUnitList.add(new BatchPreparedStatementUnit(new SQLExecutionUnit("ds_1", new SQLUnit("insert into ...", parameterSets)), preparedStatement2));
         executorEngine.execute(SQLType.DML, statementUnitList, new ExecuteCallback<Integer>() {
 
             @Override
