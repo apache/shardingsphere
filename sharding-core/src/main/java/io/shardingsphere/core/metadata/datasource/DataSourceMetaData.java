@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.metadata.datasource;
 
+import io.shardingsphere.core.constant.DatabaseType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -35,6 +36,8 @@ public final class DataSourceMetaData {
     
     private final String schemeName;
     
+    private final DatabaseType databaseType;
+    
     /**
      * Judge whether two of data sources are in the same database instance.
      *
@@ -42,6 +45,10 @@ public final class DataSourceMetaData {
      * @return data sources are in the same database instance or not
      */
     public boolean isInSameDatabaseInstance(final DataSourceMetaData dataSourceMetaData) {
+        if (dataSourceMetaData.databaseType == DatabaseType.H2) {
+            return hostName.equals(dataSourceMetaData.getHostName()) && port.equals(dataSourceMetaData.getPort())
+                    && schemeName.equals(dataSourceMetaData.schemeName);
+        }
         return hostName.equals(dataSourceMetaData.getHostName()) && port.equals(dataSourceMetaData.getPort());
     }
 }
