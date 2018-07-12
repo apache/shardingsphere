@@ -52,7 +52,6 @@ public final class YamlProxyConfiguration extends OrchestrationProxyConfiguratio
      * @param yamlFile yaml file
      * @return yaml sharding configuration
      * @throws IOException IO Exception
-     *
      */
     public static YamlProxyConfiguration unmarshal(final File yamlFile) throws IOException {
         try (
