@@ -36,4 +36,7 @@ public final class DCLIntegrateTestCaseAssertion extends IntegrateTestCaseAssert
     @XmlAttribute(name = "clean-sql")
     private String cleanSQL;
     
+    @XmlAttribute(name = "db-type")
+    private String dbType;
+    
 }
