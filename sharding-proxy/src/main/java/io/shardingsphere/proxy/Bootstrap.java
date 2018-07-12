@@ -54,6 +54,17 @@ public final class Bootstrap {
         new ShardingProxy().start(getPort(args));
     }
     
+    private static void initializeRuleRegistry() {
+        YamlProxyConfiguration config;
+        try {
+            config = YamlProxyConfiguration.unmarshal(new File(Bootstrap.class.getResource(CONFIG_YAML).getFile()));
+            config.init();
+        } catch (final IOException ex) {
+            throw new ShardingException(ex);
+        }
+        RuleRegistry.getInstance().init(config);
+    }
+    
     private static int getPort(final String[] args) {
         if (0 == args.length) {
             return DEFAULT_PORT;
@@ -63,16 +74,5 @@ public final class Bootstrap {
         } catch (final NumberFormatException ex) {
             return DEFAULT_PORT;
         }
-    }
-    
-    private static void initializeRuleRegistry() {
-        YamlProxyConfiguration yamlProxyConfig;
-        try {
-            yamlProxyConfig = YamlProxyConfiguration.unmarshal(new File(Bootstrap.class.getResource(CONFIG_YAML).getFile()));
-            yamlProxyConfig.init();
-        } catch (final IOException ex) {
-            throw new ShardingException(ex);
-        }
-        RuleRegistry.getInstance().init(yamlProxyConfig);
     }
 }

@@ -43,6 +43,7 @@ import javax.sql.DataSource;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.Executors;
 
@@ -61,31 +62,31 @@ public final class RuleRegistry implements AutoCloseable {
     
     private static final RuleRegistry INSTANCE = new RuleRegistry();
     
+    private final boolean withoutJdbc = false;
+    
     private ShardingRule shardingRule;
     
     private MasterSlaveRule masterSlaveRule;
     
     private boolean isOnlyMasterSlave;
     
-    private boolean withoutJdbc;
-    
     private Map<String, DataSource> dataSourceMap;
     
     private Map<String, DataSourceParameter> dataSourceConfigurationMap;
     
-    private ShardingMetaData shardingMetaData; 
-
-    private int maxWorkingThreads = Runtime.getRuntime().availableProcessors() * 2;
+    private ProxyAuthority proxyAuthority;
+    
+    private ShardingMetaData shardingMetaData;
     
     private ListeningExecutorService executorService;
     
-    private ProxyMode proxyMode;
-    
     private boolean showSQL;
+    
+    private ProxyMode proxyMode;
     
     private TransactionType transactionType;
     
-    private ProxyAuthority proxyAuthority;
+    private int maxWorkingThreads;
     
     private OrchestrationFacade orchestrationFacade;
     
@@ -106,24 +107,24 @@ public final class RuleRegistry implements AutoCloseable {
      * @param config yaml proxy configuration
      */
     public void init(final YamlProxyConfiguration config) {
-        transactionType = TransactionType.findByValue(config.getTransactionMode());
+        Properties properties = config.getShardingRule().getProps();
+        ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
+        showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
+        proxyMode = ProxyMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_MODE));
+        transactionType = TransactionType.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_MODE));
+        maxWorkingThreads = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_MAX_WORKING_THREADS);
+        
         dataSourceMap = ProxyRawDataSourceFactory.create(transactionType, config);
         shardingRule = config.obtainShardingRule(Collections.<String>emptyList());
         masterSlaveRule = config.obtainMasterSlaveRule();
         isOnlyMasterSlave = shardingRule.getTableRules().isEmpty() && !masterSlaveRule.getMasterDataSourceName().isEmpty();
-        withoutJdbc = config.isWithoutJdbc();
         dataSourceConfigurationMap = new HashMap<>(128, 1);
-        for (Map.Entry<String, DataSourceParameter> entry : config.getDataSources().entrySet()) {
+        for (Entry<String, DataSourceParameter> entry : config.getDataSources().entrySet()) {
             if (withoutJdbc) {
                 dataSourceConfigurationMap.put(entry.getKey(), entry.getValue());
             }
         }
-        Properties properties = config.getShardingRule().getProps();
-        ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
-        proxyMode = ProxyMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_MODE));
-        maxWorkingThreads = config.getMaxWorkingThreads();
         executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(maxWorkingThreads));
-        showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         shardingDataSourceMetaData = new ShardingDataSourceMetaData(dataSourceMap, DatabaseType.MySQL);
         shardingMetaData = new ProxyShardingMetaData(executorService, dataSourceMap);
         if (!isOnlyMasterSlave) {
