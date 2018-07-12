@@ -145,10 +145,10 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
         List<CommandResponsePackets> packets = Lists.newArrayListWithCapacity(queryResults.size());
         for (QueryResult each : queryResults) {
             MySQLQueryResult queryResult = (MySQLQueryResult) each;
-            if (currentSequenceId == 0) {
+            if (0 == currentSequenceId) {
                 currentSequenceId = queryResult.getCurrentSequenceId();
             }
-            if (columnCount == 0) {
+            if (0 == columnCount) {
                 columnCount = queryResult.getColumnCount();
             }
             packets.add(queryResult.getCommandResponsePackets());
