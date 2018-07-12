@@ -27,6 +27,8 @@ import org.junit.Before;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.ParseException;
 
@@ -44,6 +46,16 @@ public abstract class BaseDCLIntegrateTest extends SingleIntegrateTest {
     public void insertData() throws SQLException, ParseException, IOException, JAXBException {
         if (getDatabaseTypeEnvironment().isEnabled()) {
             new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(getShardingRuleType()), getDataSourceMap()).initialize();
+        }
+    }
+    
+    protected void dropUserIfExisted(final Connection connection) {
+        String dropSql = "drop " + assertion.getType() + " " + assertion.getUser() + null == assertion.getHost() ? ";" : "@" + assertion.getHost() + ";";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(dropSql)) {
+            preparedStatement.executeUpdate();
+            // CHECKSTYLE: OFF
+        } catch (final SQLException ignored) {
+            // CHECKSTYLE: ON
         }
     }
 }
