@@ -44,11 +44,10 @@ public final class PreparedStatementRoutingEngine {
     
     private SQLStatement sqlStatement;
     
-    public PreparedStatementRoutingEngine(final String logicSQL, final ShardingRule shardingRule,
-                                          final ShardingMetaData shardingMetaData, final DatabaseType databaseType,
-                                          final boolean showSQL, final ShardingDataSourceMetaData dataSourcePropertyManager) {
+    public PreparedStatementRoutingEngine(final String logicSQL, final ShardingRule shardingRule, final ShardingMetaData shardingMetaData, 
+                                          final DatabaseType databaseType, final boolean showSQL, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
         this.logicSQL = logicSQL;
-        shardingRouter = ShardingRouterFactory.createSQLRouter(shardingRule, shardingMetaData, databaseType, showSQL, dataSourcePropertyManager);
+        shardingRouter = ShardingRouterFactory.createSQLRouter(shardingRule, shardingMetaData, databaseType, showSQL, shardingDataSourceMetaData);
         masterSlaveRouter = new ShardingMasterSlaveRouter(shardingRule.getMasterSlaveRules());
     }
     

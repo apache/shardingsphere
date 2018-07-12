@@ -45,7 +45,7 @@ public class DatabaseTest {
     
     private Map<String, DataSource> dataSourceMap;
     
-    private ShardingDataSourceMetaData dataSourcePropertyManager;
+    private ShardingDataSourceMetaData shardingDataSourceMetaData;
     
     private ShardingRule shardingRule;
     
@@ -57,7 +57,7 @@ public class DatabaseTest {
         dataSourceMap.put("ds_0", null);
         dataSourceMap.put("ds_1", null);
         shardingRule = new ShardingRule(shardingRuleConfig, dataSourceMap.keySet());
-        dataSourcePropertyManager = Mockito.mock(ShardingDataSourceMetaData.class);
+        shardingDataSourceMetaData = Mockito.mock(ShardingDataSourceMetaData.class);
     }
     
     @Test
@@ -77,7 +77,7 @@ public class DatabaseTest {
     @Test
     public void assertDatabaseAllRoutingSQL() {
         String originSql = "select * from tesT";
-        SQLRouteResult actual = new StatementRoutingEngine(shardingRule, null, DatabaseType.MySQL, false, dataSourcePropertyManager).route(originSql);
+        SQLRouteResult actual = new StatementRoutingEngine(shardingRule, null, DatabaseType.MySQL, false, shardingDataSourceMetaData).route(originSql);
         assertThat(actual.getExecutionUnits().size(), is(1));
         Set<String> actualDataSources = new HashSet<>(Collections2.transform(actual.getExecutionUnits(), new Function<SQLExecutionUnit, String>() {
         
@@ -99,7 +99,7 @@ public class DatabaseTest {
     }
     
     private void assertTarget(final String originSql, final String targetDataSource) {
-        SQLRouteResult actual = new StatementRoutingEngine(shardingRule, null, DatabaseType.MySQL, false, dataSourcePropertyManager).route(originSql);
+        SQLRouteResult actual = new StatementRoutingEngine(shardingRule, null, DatabaseType.MySQL, false, shardingDataSourceMetaData).route(originSql);
         assertThat(actual.getExecutionUnits().size(), is(1));
         Set<String> actualDataSources = new HashSet<>(Collections2.transform(actual.getExecutionUnits(), new Function<SQLExecutionUnit, String>() {
             

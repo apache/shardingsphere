@@ -93,10 +93,10 @@ public final class SQLBuilder {
      * @param tableUnit table unit
      * @param logicAndActualTableMap logic and actual map
      * @param shardingRule sharding rule
-     * @param dataSourcePropertyManager data source property manager
+     * @param shardingDataSourceMetaData sharding data source meta data
      * @return SQL unit
      */
-    public SQLUnit toSQL(final TableUnit tableUnit, final Map<String, String> logicAndActualTableMap, final ShardingRule shardingRule, final ShardingDataSourceMetaData dataSourcePropertyManager) {
+    public SQLUnit toSQL(final TableUnit tableUnit, final Map<String, String> logicAndActualTableMap, final ShardingRule shardingRule, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
         List<Object> insertParameters = new LinkedList<>();
         StringBuilder result = new StringBuilder();
         for (Object each : segments) {
@@ -115,7 +115,7 @@ public final class SQLBuilder {
                     throw new ShardingException("Cannot found schema name '%s' in sharding rule.", schemaPlaceholder.getLogicSchemaName());
                 }
                 Preconditions.checkState(tableRule.isPresent());
-                result.append(dataSourcePropertyManager.getActualSchemaName(tableRule.get().getActualDatasourceNames().iterator().next()));
+                result.append(shardingDataSourceMetaData.getActualSchemaName(tableRule.get().getActualDatasourceNames().iterator().next()));
             } else if (each instanceof IndexPlaceholder) {
                 IndexPlaceholder indexPlaceholder = (IndexPlaceholder) each;
                 result.append(indexPlaceholder.getLogicIndexName());

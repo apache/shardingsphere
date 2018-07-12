@@ -88,7 +88,7 @@ public final class RuleRegistry implements AutoCloseable {
     
     private OrchestrationFacade orchestrationFacade;
     
-    private ShardingDataSourceMetaData dataSourcePropertyManager;
+    private ShardingDataSourceMetaData shardingDataSourceMetaData;
     
     /**
      * Initialize rule registry.
@@ -114,7 +114,7 @@ public final class RuleRegistry implements AutoCloseable {
         maxWorkingThreads = yamlProxyConfiguration.getMaxWorkingThreads();
         executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(maxWorkingThreads));
         showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
-        dataSourcePropertyManager = new ShardingDataSourceMetaData(dataSourceMap, DatabaseType.MySQL);
+        shardingDataSourceMetaData = new ShardingDataSourceMetaData(dataSourceMap, DatabaseType.MySQL);
         shardingMetaData = new ProxyShardingMetaData(executorService, dataSourceMap);
         if (!isOnlyMasterSlave) {
             shardingMetaData.init(shardingRule);

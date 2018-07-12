@@ -119,9 +119,9 @@ public final class SQLBuilderTest {
         sqlBuilder.appendPlaceholder(new SchemaPlaceholder("ds", "table_0"));
         Map<String, String> tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_0", "table_1");
-        ShardingDataSourceMetaData dataSourcePropertyManager = Mockito.mock(ShardingDataSourceMetaData.class);
-        Mockito.when(dataSourcePropertyManager.getActualSchemaName(Mockito.anyString())).thenReturn("actual_db");
-        assertThat(sqlBuilder.toSQL(null, tableTokens, createShardingRule(), dataSourcePropertyManager).getSql(), is("SHOW CREATE TABLE table_1 ON actual_db"));
+        ShardingDataSourceMetaData shardingDataSourceMetaData = Mockito.mock(ShardingDataSourceMetaData.class);
+        Mockito.when(shardingDataSourceMetaData.getActualSchemaName(Mockito.anyString())).thenReturn("actual_db");
+        assertThat(sqlBuilder.toSQL(null, tableTokens, createShardingRule(), shardingDataSourceMetaData).getSql(), is("SHOW CREATE TABLE table_1 ON actual_db"));
     }
     
     @Test

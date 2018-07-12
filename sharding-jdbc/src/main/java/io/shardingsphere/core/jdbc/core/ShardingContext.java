@@ -40,7 +40,7 @@ public final class ShardingContext {
     
     private final Map<String, DataSource> dataSourceMap;
     
-    private final ShardingDataSourceMetaData dataSourcePropertyManager;
+    private final ShardingDataSourceMetaData shardingDataSourceMetaData;
     
     private final ShardingRule shardingRule;
     
@@ -53,14 +53,13 @@ public final class ShardingContext {
     private final boolean showSQL;
     
     public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule,
-                           final DatabaseType databaseType, final ExecutorEngine executorEngine, final ShardingMetaData shardingMetaData,
-                           final boolean showSQL) {
+                           final DatabaseType databaseType, final ExecutorEngine executorEngine, final ShardingMetaData shardingMetaData, final boolean showSQL) {
         this.dataSourceMap = dataSourceMap;
         this.shardingRule = shardingRule;
         this.databaseType = databaseType;
         this.executorEngine = executorEngine;
         this.shardingMetaData = shardingMetaData;
         this.showSQL = showSQL;
-        this.dataSourcePropertyManager = new ShardingDataSourceMetaData(dataSourceMap, databaseType);
+        shardingDataSourceMetaData = new ShardingDataSourceMetaData(dataSourceMap, databaseType);
     }
 }

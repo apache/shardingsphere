@@ -41,13 +41,12 @@ public final class ShardingRouterFactory {
      * @param shardingMetaData sharding meta data
      * @param databaseType database type
      * @param showSQL show SQL or not
-     * @param dataSourcePropertyManager data source property manager
+     * @param shardingDataSourceMetaData sharding data source meta data
      * @return sharding router instance
      */
-    public static ShardingRouter createSQLRouter(final ShardingRule shardingRule, final ShardingMetaData shardingMetaData,
-                                                 final DatabaseType databaseType, final boolean showSQL,
-                                                 final ShardingDataSourceMetaData dataSourcePropertyManager) {
+    public static ShardingRouter createSQLRouter(final ShardingRule shardingRule, final ShardingMetaData shardingMetaData, 
+                                                 final DatabaseType databaseType, final boolean showSQL, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
         return HintManagerHolder.isDatabaseShardingOnly() ? new DatabaseHintSQLRouter(shardingRule, showSQL)
-                : new ParsingSQLRouter(shardingRule, shardingMetaData, databaseType, showSQL, dataSourcePropertyManager);
+                : new ParsingSQLRouter(shardingRule, shardingMetaData, databaseType, showSQL, shardingDataSourceMetaData);
     }
 }

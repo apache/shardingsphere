@@ -41,8 +41,8 @@ public final class StatementRoutingEngine {
     private final ShardingMasterSlaveRouter masterSlaveRouter;
     
     public StatementRoutingEngine(final ShardingRule shardingRule, final ShardingMetaData shardingMetaData,
-                                  final DatabaseType databaseType, final boolean showSQL, final ShardingDataSourceMetaData dataSourcePropertyManager) {
-        shardingRouter = ShardingRouterFactory.createSQLRouter(shardingRule, shardingMetaData, databaseType, showSQL, dataSourcePropertyManager);
+                                  final DatabaseType databaseType, final boolean showSQL, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
+        shardingRouter = ShardingRouterFactory.createSQLRouter(shardingRule, shardingMetaData, databaseType, showSQL, shardingDataSourceMetaData);
         masterSlaveRouter = new ShardingMasterSlaveRouter(shardingRule.getMasterSlaveRules());
     }
     

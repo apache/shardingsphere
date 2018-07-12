@@ -111,7 +111,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
         
         synchronizedFuture = new SynchronizedFuture<>(1);
         MySQLResultCache.getInstance().putFuture(rebuilder.connectionId(), synchronizedFuture);
-        CommandPacket commandPacket = rebuilder.rebuild(new Object[]{rebuilder.sequenceId(), rebuilder.connectionId(), rebuilder.sql()});
+        CommandPacket commandPacket = rebuilder.rebuild(rebuilder.sequenceId(), rebuilder.connectionId(), rebuilder.sql());
         executeCommand(dataSourceName, rebuilder.connectionId(), commandPacket);
         //TODO timeout should be set.
         List<QueryResult> queryResults = synchronizedFuture.get(CONNECT_TIMEOUT, TimeUnit.SECONDS);
@@ -126,7 +126,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     
     private CommandResponsePackets executeForSharding() {
         StatementRoutingEngine routingEngine = new StatementRoutingEngine(RuleRegistry.getInstance().getShardingRule(),
-                RuleRegistry.getInstance().getShardingMetaData(), databaseType, showSQL, RuleRegistry.getInstance().getDataSourcePropertyManager());
+                RuleRegistry.getInstance().getShardingMetaData(), databaseType, showSQL, RuleRegistry.getInstance().getShardingDataSourceMetaData());
         SQLRouteResult routeResult = routingEngine.route(rebuilder.sql());
         if (routeResult.getExecutionUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
@@ -135,7 +135,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
         synchronizedFuture = new SynchronizedFuture<>(routeResult.getExecutionUnits().size());
         MySQLResultCache.getInstance().putFuture(rebuilder.connectionId(), synchronizedFuture);
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
-            CommandPacket commandPacket = rebuilder.rebuild(new Object[]{rebuilder.sequenceId(), rebuilder.connectionId(), each.getSqlUnit().getSql()});
+            CommandPacket commandPacket = rebuilder.rebuild(rebuilder.sequenceId(), rebuilder.connectionId(), each.getSqlUnit().getSql());
             executeCommand(each.getDataSource(), rebuilder.connectionId(), commandPacket);
         }
         //TODO timeout should be set.
