@@ -33,6 +33,7 @@ import io.shardingsphere.core.rule.ProxyAuthority;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
+import io.shardingsphere.proxy.backend.common.ProxyMode;
 import io.shardingsphere.proxy.metadata.ProxyShardingMetaData;
 import io.shardingsphere.proxy.yaml.YamlProxyConfiguration;
 import lombok.Getter;
@@ -139,6 +140,33 @@ public final class RuleRegistry implements AutoCloseable {
             orchestrationFacade = new OrchestrationFacade(orchestrationConfig.get());
             orchestrationFacade.init(yamlProxyConfiguration);
         }
+    }
+    
+    /**
+     * Judge whether current thread is xa transaction or not.
+     *
+     * @return true or false
+     */
+    public static boolean isXaTransaction() {
+        return TransactionType.XA.equals(RuleRegistry.getInstance().getTransactionType());
+    }
+    
+    /**
+     * Judge whether proxy mode is MEMORY_STRICTLY.
+     *
+     * @return true or false
+     */
+    public static boolean isMemoryStrictly() {
+        return ProxyMode.MEMORY_STRICTLY == ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode());
+    }
+    
+    /**
+     * Judge whether proxy mode is CONNECTION_STRICTLY.
+     *
+     * @return true or false
+     */
+    public static boolean isConnectionStrictly() {
+        return ProxyMode.CONNECTION_STRICTLY == ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode());
     }
     
     @Override

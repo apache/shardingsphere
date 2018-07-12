@@ -61,7 +61,7 @@ public final class SQLExecuteBackendHandler extends ExecuteBackendHandler implem
     @Override
     protected Statement prepareResource(final String dataSourceName, final String unitSql, final SQLStatement sqlStatement) throws SQLException {
         DataSource dataSource = RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName);
-        Connection connection = dataSource.getConnection();
+        Connection connection = getConnection(dataSource);
         Statement statement = connection.createStatement();
         ProxyJDBCResource proxyJDBCResource = (ProxyJDBCResource) getJdbcResource();
         proxyJDBCResource.addConnection(connection);
