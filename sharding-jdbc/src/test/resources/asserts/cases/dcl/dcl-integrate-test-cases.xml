@@ -29,5 +29,50 @@
     <dcl-test-case sql-case-id="create_role_password">
         <assertion clean-sql="drop role role_dev" />
     </dcl-test-case>
+    <dcl-test-case sql-case-id="alter_user_identified_without_hostname">
+        <assertion clean-sql="drop user user_dev" init-sql="create user user_dev" />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="alter_user_identified_with_hostname">
+        <assertion clean-sql="create user 'user_dev'@'localhost'" init-sql="drop user 'user_dev'@'localhost'" />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="alter_user_account">
+        <assertion clean-sql="create user user_dev" init-sql="drop user user_dev" />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="alter_login_name">
+        <assertion clean-sql="create login login_dev" init-sql="drop login login_dev_new" />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="alter_login_passwd">
+        <assertion clean-sql="create login login_dev" init-sql="drop login login_dev" />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="alter_user_name_with_name">
+        <assertion clean-sql="create user user_dev" init-sql="drop user user_dev_new" />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="alter_user_name_rename">
+        <assertion clean-sql="create user user_dev" init-sql="drop user user_dev_new" />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="alter_user_passwd_with_equality">
+        <assertion clean-sql="create user user_dev" init-sql="drop user user_dev" />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="alter_user_passwd_without_equality">
+        <assertion clean-sql="create user user_dev" init-sql="drop user user_dev" />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="alter_user_passwd_set">
+        <assertion clean-sql="create user user_dev" init-sql="drop user user_dev" />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="alter_role_add_member">
+        <assertion clean-sql="create role role_dev" init-sql="drop role role_dev" />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="alter_role_drop_member">
+        <assertion clean-sql="create role role_dev" init-sql="drop role role_dev" />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="">
+        <assertion clean-sql="" init-sql="" />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="">
+        <assertion clean-sql="" init-sql="" />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="">
+        <assertion clean-sql="" init-sql="" />
+    </dcl-test-case>
 
 </integrate-test-cases>
