@@ -52,6 +52,9 @@ public final class GeneralDCLIntegrateTest extends BaseDCLIntegrateTest {
         if (!getDatabaseTypeEnvironment().isEnabled()) {
             return;
         }
+        if (!isExcuted()) {
+            return;
+        }
         try (Connection connection = getDataSource().getConnection()) {
             initEnvironment(connection);
             if (SQLCaseType.Literal == getCaseType()) {
