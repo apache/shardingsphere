@@ -15,20 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.property;
+package io.shardingsphere.core.metadata.datasource;
 
-import io.shardingsphere.core.constant.DatabaseType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Data source property.
+ * Data source meta data.
  *
  * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public class DataSourceProperty {
+public final class DataSourceMetaData {
     
     private final String hostName;
     
@@ -36,16 +35,13 @@ public class DataSourceProperty {
     
     private final String schemeName;
     
-    private final DatabaseType databaseType;
-    
     /**
-     * Judge whether two of data source properties point at the same instance.
+     * Judge whether two of data sources are in the same database instance.
      *
-     * @param dataSourceProperty data source property.
-     * @return pointing at the same instance or not.
+     * @param dataSourceMetaData data source meta data
+     * @return data sources are in the same database instance or not
      */
-    public boolean isPointAtSameInstance(final DataSourceProperty dataSourceProperty) {
-        return getHostName().equals(dataSourceProperty.getHostName()) && getPort().equals(dataSourceProperty.getPort())
-                && getDatabaseType().equals(dataSourceProperty.getDatabaseType());
+    public boolean isInSameDatabaseInstance(final DataSourceMetaData dataSourceMetaData) {
+        return hostName.equals(dataSourceMetaData.getHostName()) && port.equals(dataSourceMetaData.getPort());
     }
 }

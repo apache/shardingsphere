@@ -26,7 +26,7 @@ import io.shardingsphere.core.constant.ShardingProperties;
 import io.shardingsphere.core.constant.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.property.DataSourcePropertyManager;
+import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ProxyAuthority;
@@ -88,7 +88,7 @@ public final class RuleRegistry implements AutoCloseable {
     
     private OrchestrationFacade orchestrationFacade;
     
-    private DataSourcePropertyManager dataSourcePropertyManager;
+    private ShardingDataSourceMetaData shardingDataSourceMetaData;
     
     /**
      * Initialize rule registry.
@@ -114,7 +114,7 @@ public final class RuleRegistry implements AutoCloseable {
         maxWorkingThreads = yamlProxyConfiguration.getMaxWorkingThreads();
         executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(maxWorkingThreads));
         showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
-        dataSourcePropertyManager = new DataSourcePropertyManager(dataSourceMap, DatabaseType.MySQL);
+        shardingDataSourceMetaData = new ShardingDataSourceMetaData(dataSourceMap, DatabaseType.MySQL);
         shardingMetaData = new ProxyShardingMetaData(executorService, dataSourceMap);
         if (!isOnlyMasterSlave) {
             shardingMetaData.init(shardingRule);

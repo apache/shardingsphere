@@ -17,31 +17,21 @@
 
 package io.shardingsphere.core.parsing.parser.sql.dql;
 
-import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
-import io.shardingsphere.core.parsing.lexer.token.TokenType;
-import io.shardingsphere.core.parsing.parser.sql.AbstractSQLStatement;
-import lombok.ToString;
+import org.junit.Test;
 
-/**
- * DQL statement.
- *
- * @author zhangliang
- */
-@ToString(callSuper = true)
-public class DQLStatement extends AbstractSQLStatement {
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+public final class DQLStatementTest {
     
-    public DQLStatement() {
-        super(SQLType.DQL);
+    @Test
+    public void assertIsDQLForSelect() {
+        assertTrue(DQLStatement.isDQL(DefaultKeyword.SELECT));
     }
     
-    /**
-     * Is DQL statement.
-     *
-     * @param tokenType token type
-     * @return is DQL or not
-     */
-    public static boolean isDQL(final TokenType tokenType) {
-        return DefaultKeyword.SELECT == tokenType;
+    @Test
+    public void assertIsNotDQL() {
+        assertFalse(DQLStatement.isDQL(DefaultKeyword.INSERT));
     }
 }

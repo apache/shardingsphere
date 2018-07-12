@@ -15,27 +15,20 @@
  * </p>
  */
 
-package io.shardingsphere.core.routing;
-
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-
-import java.util.List;
+package io.shardingsphere.core.metadata.datasource;
 
 /**
- * SQL unit.
+ * Data source meta data parser.
  *
- * @author maxiaoguang
+ * @author panjuan
  */
-@RequiredArgsConstructor
-@Getter
-@EqualsAndHashCode(of = { "sql" })
-@ToString
-public final class SQLUnit {
+public interface DataSourceMetaDataParser {
     
-    private final String sql;
-    
-    private final List<List<Object>> parameterSets;
+    /**
+     * Get data source meta data.
+     *
+     * @param url data source URL
+     * @return data source meta data
+     */
+    DataSourceMetaData getDataSourceMetaData(String url);
 }

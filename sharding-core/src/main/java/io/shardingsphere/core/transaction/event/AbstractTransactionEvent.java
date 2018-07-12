@@ -15,27 +15,38 @@
  * </p>
  */
 
-package io.shardingsphere.core.routing;
+package io.shardingsphere.core.transaction.event;
 
-import lombok.EqualsAndHashCode;
+import com.google.common.base.Optional;
+import io.shardingsphere.core.constant.TCLType;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.Setter;
 
-import java.util.List;
+import java.util.UUID;
 
 /**
- * SQL unit.
+ * Abstract Transaction Event.
  *
- * @author maxiaoguang
+ * @author zhaojun
  */
-@RequiredArgsConstructor
-@Getter
-@EqualsAndHashCode(of = { "sql" })
-@ToString
-public final class SQLUnit {
+public abstract class AbstractTransactionEvent {
     
-    private final String sql;
+    @Getter
+    private final String id = UUID.randomUUID().toString();
     
-    private final List<List<Object>> parameterSets;
+    @Getter
+    @Setter
+    private TCLType tclType;
+    
+    @Setter
+    private Exception exception;
+    
+    /**
+     * Get exception.
+     *
+     * @return exception
+     */
+    public Optional<? extends Exception> getException() {
+        return Optional.fromNullable(exception);
+    }
 }

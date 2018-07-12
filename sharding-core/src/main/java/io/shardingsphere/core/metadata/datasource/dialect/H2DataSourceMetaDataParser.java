@@ -15,28 +15,27 @@
  * </p>
  */
 
-package io.shardingsphere.core.property.dialect;
+package io.shardingsphere.core.metadata.datasource.dialect;
 
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.property.DataSourceProperty;
-import io.shardingsphere.core.property.DataSourcePropertyParser;
+import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
+import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataParser;
 
 import java.net.URI;
 
 /**
- * H2 data source property parser.
+ * H2 data source meta data parser.
  *
  * @author panjuan
  */
-public final class H2DataSourcePropertyParser extends DataSourcePropertyParser {
+public final class H2DataSourceMetaDataParser implements DataSourceMetaDataParser {
     
     private static final Integer DEFAULT_PORT = -1;
     
     private static final String DEFAULT_HOST = "localhost";
     
     @Override
-    protected DataSourceProperty parseJDBCUrl(final String url) {
+    public DataSourceMetaData getDataSourceMetaData(final String url) {
         String cleanUrl = url.substring(5);
         if (cleanUrl.contains("h2:~")) {
             cleanUrl = cleanUrl.split(";")[0];
@@ -54,7 +53,6 @@ public final class H2DataSourcePropertyParser extends DataSourcePropertyParser {
         if (null == uri.getHost()) {
             throw new ShardingException("The URL of JDBC is not supported.");
         }
-        return new DataSourceProperty(uri.getHost(), -1 == uri.getPort() ? DEFAULT_PORT : uri.getPort(),
-                uri.getPath().isEmpty() ? "" : uri.getPath().substring(1), DatabaseType.H2);
+        return new DataSourceMetaData(uri.getHost(), -1 == uri.getPort() ? DEFAULT_PORT : uri.getPort(), uri.getPath().isEmpty() ? "" : uri.getPath().substring(1));
     }
 }

@@ -124,7 +124,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         ShardingContext shardingContext = connection.getShardingContext();
         routingEngine = new PreparedStatementRoutingEngine(
                 sql, shardingContext.getShardingRule(), shardingContext.getShardingMetaData(), shardingContext.getDatabaseType(),
-                shardingContext.isShowSQL(), shardingContext.getDataSourcePropertyManager());
+                shardingContext.isShowSQL(), shardingContext.getShardingDataSourceMetaData());
     }
     
     @Override

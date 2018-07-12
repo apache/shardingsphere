@@ -15,33 +15,33 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.dql;
+package io.shardingsphere.core.parsing.parser.sql.dml;
 
-import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
-import io.shardingsphere.core.parsing.lexer.token.TokenType;
-import io.shardingsphere.core.parsing.parser.sql.AbstractSQLStatement;
-import lombok.ToString;
+import org.junit.Test;
 
-/**
- * DQL statement.
- *
- * @author zhangliang
- */
-@ToString(callSuper = true)
-public class DQLStatement extends AbstractSQLStatement {
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+public final class DMLStatementTest {
     
-    public DQLStatement() {
-        super(SQLType.DQL);
+    @Test
+    public void assertIsDMLForInsert() {
+        assertTrue(DMLStatement.isDML(DefaultKeyword.INSERT));
     }
     
-    /**
-     * Is DQL statement.
-     *
-     * @param tokenType token type
-     * @return is DQL or not
-     */
-    public static boolean isDQL(final TokenType tokenType) {
-        return DefaultKeyword.SELECT == tokenType;
+    @Test
+    public void assertIsDMLForUpdate() {
+        assertTrue(DMLStatement.isDML(DefaultKeyword.UPDATE));
+    }
+    
+    @Test
+    public void assertIsDMLForDelete() {
+        assertTrue(DMLStatement.isDML(DefaultKeyword.DELETE));
+    }
+    
+    @Test
+    public void assertIsNotDML() {
+        assertFalse(DMLStatement.isDML(DefaultKeyword.SELECT));
     }
 }

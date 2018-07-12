@@ -15,27 +15,18 @@
  * </p>
  */
 
-package io.shardingsphere.core.routing;
-
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-
-import java.util.List;
+package io.shardingsphere.core.constant;
 
 /**
- * SQL unit.
+ * TCL Type.
  *
- * @author maxiaoguang
+ * @author zhaojun
  */
-@RequiredArgsConstructor
-@Getter
-@EqualsAndHashCode(of = { "sql" })
-@ToString
-public final class SQLUnit {
+public enum TCLType {
     
-    private final String sql;
-    
-    private final List<List<Object>> parameterSets;
+    SET,
+    BEGIN,
+    COMMIT,
+    ROLLBACK,
+    SAVEPOINT
 }
