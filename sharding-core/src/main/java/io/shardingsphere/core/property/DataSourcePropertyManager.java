@@ -33,13 +33,13 @@ import java.util.Map.Entry;
  */
 public class DataSourcePropertyManager {
     
-    private final Map<String, DataSourceMetaData> dataSourcePropertyMap;
+    private final Map<String, DataSourceMetaData> dataSourceMetaDataMap;
     
     public DataSourcePropertyManager(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
-        dataSourcePropertyMap = initDataSourcePropertyMap(dataSourceMap, databaseType);
+        dataSourceMetaDataMap = getDataSourceMetaDataMap(dataSourceMap, databaseType);
     }
     
-    private Map<String, DataSourceMetaData> initDataSourcePropertyMap(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
+    private Map<String, DataSourceMetaData> getDataSourceMetaDataMap(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
         Map<String, DataSourceMetaData> result = new LinkedHashMap<>();
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             result.put(entry.getKey(), DataSourceMetaDataFactory.getDataSourceMetaData(databaseType, entry.getValue()));
@@ -54,7 +54,7 @@ public class DataSourcePropertyManager {
      */
     public List<String> getAllInstanceDataSourceNames() {
         List<String> result = new LinkedList<>();
-        for (Entry<String, DataSourceMetaData> entry : dataSourcePropertyMap.entrySet()) {
+        for (Entry<String, DataSourceMetaData> entry : dataSourceMetaDataMap.entrySet()) {
             if (!isExisted(entry.getKey(), result)) {
                 result.add(entry.getKey());
             }
@@ -64,7 +64,7 @@ public class DataSourcePropertyManager {
     
     private boolean isExisted(final String dataSourceName, final List<String> existedDataSourceNames) {
         for (String each : existedDataSourceNames) {
-            if (dataSourcePropertyMap.get(each).isPointAtSameInstance(dataSourcePropertyMap.get(dataSourceName))) {
+            if (dataSourceMetaDataMap.get(each).isInSameDatabaseInstance(dataSourceMetaDataMap.get(dataSourceName))) {
                 return true;
             }
         }
@@ -78,6 +78,6 @@ public class DataSourcePropertyManager {
      * @return actual schema name
      */
     public String getActualSchemaName(final String actualDataSourceName) {
-        return dataSourcePropertyMap.get(actualDataSourceName).getSchemeName();
+        return dataSourceMetaDataMap.get(actualDataSourceName).getSchemeName();
     }
 }

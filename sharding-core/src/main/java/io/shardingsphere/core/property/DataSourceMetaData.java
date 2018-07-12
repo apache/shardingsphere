@@ -36,12 +36,12 @@ public final class DataSourceMetaData {
     private final String schemeName;
     
     /**
-     * Judge whether two of data source properties point at the same instance.
+     * Judge whether two of data sources are in the same database instance.
      *
-     * @param dataSourceProperty data source property.
-     * @return pointing at the same instance or not.
+     * @param dataSourceMetaData data source meta data
+     * @return data sources are in the same database instance or not
      */
-    public boolean isPointAtSameInstance(final DataSourceMetaData dataSourceProperty) {
-        return hostName.equals(dataSourceProperty.getHostName()) && port.equals(dataSourceProperty.getPort());
+    public boolean isInSameDatabaseInstance(final DataSourceMetaData dataSourceMetaData) {
+        return hostName.equals(dataSourceMetaData.getHostName()) && port.equals(dataSourceMetaData.getPort());
     }
 }
