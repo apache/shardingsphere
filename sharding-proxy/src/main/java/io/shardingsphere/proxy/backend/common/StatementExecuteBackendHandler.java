@@ -108,7 +108,7 @@ public final class StatementExecuteBackendHandler extends ExecuteBackendHandler 
     @Override
     protected QueryResult newQueryResult(final CommandResponsePackets packet, final int index) {
         MySQLPacketStatementExecuteQueryResult mySQLPacketStatementExecuteQueryResult = new MySQLPacketStatementExecuteQueryResult(packet, columnTypes);
-        if (ProxyMode.MEMORY_STRICTLY == ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode())) {
+        if (RuleRegistry.isMemoryStrictly()) {
             mySQLPacketStatementExecuteQueryResult.setResultSet(getJdbcResource().getResultSets().get(index));
         } else {
             mySQLPacketStatementExecuteQueryResult.setResultList(getResultLists().get(index));

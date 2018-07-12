@@ -79,9 +79,9 @@ public abstract class ExecuteWorker implements Callable<CommandResponsePackets> 
     }
     
     private CommandResponsePackets executeQuery() throws SQLException {
-        if (ProxyMode.MEMORY_STRICTLY == ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode())) {
+        if (RuleRegistry.isMemoryStrictly()) {
             return executeQueryWithStreamResultSet();
-        } else if (ProxyMode.CONNECTION_STRICTLY == ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode())) {
+        } else if (RuleRegistry.isConnectionStrictly()) {
             return executeQueryWithNonStreamResultSet();
         } else {
             return new CommandResponsePackets(new ErrPacket(1, 0, "", "", "Invalid proxy.mode"));
