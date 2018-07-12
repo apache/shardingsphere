@@ -94,17 +94,14 @@ public final class Bootstrap {
     
     private static void startWithRegistryCenter(final YamlProxyConfiguration localConfig, final int port) throws InterruptedException, MalformedURLException {
         try (OrchestrationFacade orchestrationFacade = new OrchestrationFacade(localConfig.getOrchestration().getOrchestrationConfiguration())) {
-            YamlProxyConfiguration config = getYamlProxyConfiguration(localConfig, orchestrationFacade);
-            orchestrationFacade.init(config);
+            if (!localConfig.isEmptyLocalConfiguration()) {
+                orchestrationFacade.init(localConfig);
+            }
+            YamlProxyConfiguration config = new YamlProxyConfiguration(orchestrationFacade.getConfigService().loadDataSources(), orchestrationFacade.getConfigService().loadProxyConfiguration());
             RuleRegistry.getInstance().init(config);
             ProxyEventBusInstance.getInstance().register(new YamlProxyConfiguration());
             EventBusInstance.getInstance().register(new XaTransactionListener());
             new ShardingProxy().start(port);
         }
-    }
-    
-    private static YamlProxyConfiguration getYamlProxyConfiguration(final YamlProxyConfiguration localConfig, final OrchestrationFacade orchestrationFacade) {
-        return localConfig.isEmptyLocalConfiguration()
-                        ? new YamlProxyConfiguration(orchestrationFacade.getConfigService().loadDataSources(), orchestrationFacade.getConfigService().loadProxyConfiguration()) : localConfig;
     }
 }
