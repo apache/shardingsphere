@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
+import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusInstance;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.frontend.ShardingProxy;
@@ -101,8 +102,8 @@ public final class Bootstrap {
             if (localConfig.hasLocalConfiguration()) {
                 orchestrationFacade.init(localConfig);
             }
-            OrchestrationProxyConfiguration config = new OrchestrationProxyConfiguration(
-                    orchestrationFacade.getConfigService().loadDataSources(), orchestrationFacade.getConfigService().loadProxyConfiguration());
+            ConfigurationService configService = orchestrationFacade.getConfigService();
+            OrchestrationProxyConfiguration config = new OrchestrationProxyConfiguration(configService.loadDataSources(), configService.loadProxyConfiguration());
             RuleRegistry.getInstance().init(config);
             ProxyEventBusInstance.getInstance().register(RuleRegistry.getInstance());
             EventBusInstance.getInstance().register(new XaTransactionListener());
