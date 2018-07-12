@@ -80,7 +80,7 @@ public final class DataSourceService {
      * @return available data source parameters
      */
     public Map<String, DataSourceParameter> getAvailableDataSourceParameters() {
-        Map<String, DataSourceParameter> result = configService.loadDataSourceParameter();
+        Map<String, DataSourceParameter> result = configService.loadDataSources();
         Collection<String> disabledDataSourceNames = getDisabledDataSourceNames();
         for (String each : disabledDataSourceNames) {
             result.remove(each);

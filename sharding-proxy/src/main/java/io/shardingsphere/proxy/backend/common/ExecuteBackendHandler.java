@@ -19,6 +19,7 @@ package io.shardingsphere.proxy.backend.common;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.MergedResult;
@@ -132,9 +133,8 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
     }
     
     private boolean isXaDDL(final SQLRouteResult routeResult) throws SystemException {
-        return RuleRegistry.isXaTransaction()
-                && SQLType.DDL.equals(routeResult.getSqlStatement().getType())
-                && Status.STATUS_NO_TRANSACTION != AtomikosUserTransaction.getInstance().getStatus();
+        return TransactionType.XA.equals(RuleRegistry.getInstance().getTransactionType())
+                && SQLType.DDL.equals(routeResult.getSqlStatement().getType()) && Status.STATUS_NO_TRANSACTION != AtomikosUserTransaction.getInstance().getStatus();
     }
     
     private SQLRouteResult doMasterSlaveRoute() {

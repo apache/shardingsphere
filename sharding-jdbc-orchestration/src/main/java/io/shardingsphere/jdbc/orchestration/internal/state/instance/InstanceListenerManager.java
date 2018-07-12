@@ -100,7 +100,7 @@ public final class InstanceListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    Map<String, DataSourceParameter> dataSourceParameterMap = configService.loadDataSourceParameter();
+                    Map<String, DataSourceParameter> dataSourceParameterMap = configService.loadDataSources();
                     if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey()))) {
                         dataSourceParameterMap.clear();
                     }

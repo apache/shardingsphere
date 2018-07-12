@@ -29,7 +29,7 @@ import io.shardingsphere.proxy.config.DataSourceConfig;
  */
 public final class BackendHandlerFactory {
     /**
-     * Create bakcend handler instance.
+     * Create backend handler instance.
      *
      * @param databaseType database type
      * @param dataSourceConfig dataSourceConfig

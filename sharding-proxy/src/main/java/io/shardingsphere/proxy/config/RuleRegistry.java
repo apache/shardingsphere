@@ -92,27 +92,36 @@ public final class RuleRegistry implements AutoCloseable {
     private ShardingDataSourceMetaData shardingDataSourceMetaData;
     
     /**
+     * Get instance of sharding rule registry.
+     *
+     * @return instance of sharding rule registry
+     */
+    public static RuleRegistry getInstance() {
+        return INSTANCE;
+    }
+    
+    /**
      * Initialize rule registry.
      *
-     * @param yamlProxyConfiguration yaml proxy configuration
+     * @param config yaml proxy configuration
      */
-    public void init(final YamlProxyConfiguration yamlProxyConfiguration) {
-        transactionType = TransactionType.findByValue(yamlProxyConfiguration.getTransactionMode());
-        dataSourceMap = ProxyRawDataSourceFactory.create(transactionType, yamlProxyConfiguration);
-        shardingRule = yamlProxyConfiguration.obtainShardingRule(Collections.<String>emptyList());
-        masterSlaveRule = yamlProxyConfiguration.obtainMasterSlaveRule();
+    public void init(final YamlProxyConfiguration config) {
+        transactionType = TransactionType.findByValue(config.getTransactionMode());
+        dataSourceMap = ProxyRawDataSourceFactory.create(transactionType, config);
+        shardingRule = config.obtainShardingRule(Collections.<String>emptyList());
+        masterSlaveRule = config.obtainMasterSlaveRule();
         isOnlyMasterSlave = shardingRule.getTableRules().isEmpty() && !masterSlaveRule.getMasterDataSourceName().isEmpty();
-        withoutJdbc = yamlProxyConfiguration.isWithoutJdbc();
+        withoutJdbc = config.isWithoutJdbc();
         dataSourceConfigurationMap = new HashMap<>(128, 1);
-        for (Map.Entry<String, DataSourceParameter> entry : yamlProxyConfiguration.getDataSources().entrySet()) {
+        for (Map.Entry<String, DataSourceParameter> entry : config.getDataSources().entrySet()) {
             if (withoutJdbc) {
                 dataSourceConfigurationMap.put(entry.getKey(), entry.getValue());
             }
         }
-        Properties properties = yamlProxyConfiguration.getShardingRule().getProps();
+        Properties properties = config.getShardingRule().getProps();
         ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
         proxyMode = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_MODE);
-        maxWorkingThreads = yamlProxyConfiguration.getMaxWorkingThreads();
+        maxWorkingThreads = config.getMaxWorkingThreads();
         executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(maxWorkingThreads));
         showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         shardingDataSourceMetaData = new ShardingDataSourceMetaData(dataSourceMap, DatabaseType.MySQL);
@@ -120,28 +129,17 @@ public final class RuleRegistry implements AutoCloseable {
         if (!isOnlyMasterSlave) {
             shardingMetaData.init(shardingRule);
         }
-        proxyAuthority = yamlProxyConfiguration.getProxyAuthority();
+        proxyAuthority = config.getProxyAuthority();
         Preconditions.checkNotNull(proxyAuthority.getUsername(), "Invalid configuration for proxyAuthority.");
-        assignOrchestrationFacade(yamlProxyConfiguration);
+        assignOrchestrationFacade(config);
     }
     
     private void assignOrchestrationFacade(final YamlProxyConfiguration yamlProxyConfiguration) {
-        Optional<OrchestrationConfiguration> configOptional = yamlProxyConfiguration.obtainOrchestrationConfigurationOptional();
-        if (configOptional.isPresent()) {
-            orchestrationFacade = new OrchestrationFacade(configOptional.get());
+        Optional<OrchestrationConfiguration> orchestrationConfig = yamlProxyConfiguration.obtainOrchestrationConfiguration();
+        if (orchestrationConfig.isPresent()) {
+            orchestrationFacade = new OrchestrationFacade(orchestrationConfig.get());
             orchestrationFacade.init(yamlProxyConfiguration);
-        } else {
-            orchestrationFacade = null;
         }
-    }
-    
-    /**
-     * Get instance of sharding rule registry.
-     *
-     * @return instance of sharding rule registry
-     */
-    public static RuleRegistry getInstance() {
-        return INSTANCE;
     }
     
     /**
