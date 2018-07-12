@@ -34,7 +34,7 @@ import io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
-import io.shardingsphere.core.property.DataSourcePropertyManager;
+import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.rewrite.SQLBuilder;
 import io.shardingsphere.core.rewrite.SQLRewriteEngine;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
@@ -77,7 +77,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     private final List<Number> generatedKeys = new LinkedList<>();
     
-    private final DataSourcePropertyManager dataSourcePropertyManager;
+    private final ShardingDataSourceMetaData shardingDataSourceMetaData;
     
     @Override
     public SQLStatement parse(final String logicSQL, final boolean useCache) {
@@ -103,7 +103,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
         }
         SQLBuilder sqlBuilder = rewriteEngine.rewrite(!isSingleRouting);
         for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
-            result.getExecutionUnits().add(new SQLExecutionUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder, dataSourcePropertyManager)));
+            result.getExecutionUnits().add(new SQLExecutionUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder, shardingDataSourceMetaData)));
         }
         if (showSQL) {
             SQLLogger.logSQL(logicSQL, sqlStatement, result.getExecutionUnits());
@@ -146,13 +146,11 @@ public final class ParsingSQLRouter implements ShardingRouter {
     }
     
     private void removeRedundantTableUnits(final RoutingResult routingResult) {
-        Collection<TableUnit> toRemoved = new LinkedList<>();
         for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
-            if (!dataSourcePropertyManager.getAllInstanceDataSourceNames().contains(each.getDataSourceName())) {
-                toRemoved.add(each);
+            if (!shardingDataSourceMetaData.getAllInstanceDataSourceNames().contains(each.getDataSourceName())) {
+                routingResult.getTableUnits().getTableUnits().remove(each);
             }
         }
-        routingResult.getTableUnits().getTableUnits().removeAll(toRemoved);
     }
     
     private GeneratedKey getGenerateKey(final ShardingRule shardingRule, final InsertStatement insertStatement, final List<Object> parameters) {

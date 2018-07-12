@@ -18,9 +18,15 @@
 package io.shardingsphere.core.parsing.parser.sql.dcl;
 
 import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
+import io.shardingsphere.core.parsing.lexer.token.Keyword;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
+import io.shardingsphere.core.parsing.lexer.token.TokenType;
 import io.shardingsphere.core.parsing.parser.sql.AbstractSQLStatement;
 import lombok.ToString;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * DCL statement.
@@ -30,8 +36,25 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class DCLStatement extends AbstractSQLStatement {
     
+    private static final Collection<Keyword> STATEMENT_PREFIX = Arrays.<Keyword>asList(DefaultKeyword.GRANT, DefaultKeyword.REVOKE, DefaultKeyword.DENY);
+    
+    private static final Collection<Keyword> PRIMARY_STATEMENT_PREFIX = Arrays.<Keyword>asList(DefaultKeyword.CREATE, DefaultKeyword.ALTER, DefaultKeyword.DROP, DefaultKeyword.RENAME);
+    
+    private static final Collection<Keyword> SECONDARY_STATEMENT_PREFIX = Arrays.<Keyword>asList(DefaultKeyword.LOGIN, DefaultKeyword.USER, DefaultKeyword.ROLE);
+    
     public DCLStatement() {
         super(SQLType.DCL);
+    }
+    
+    /**
+     * Is DCL statement.
+     *
+     * @param primaryTokenType primary token type
+     * @param secondaryTokenType secondary token type
+     * @return is DCL or not
+     */
+    public static boolean isDCL(final TokenType primaryTokenType, final TokenType secondaryTokenType) {
+        return STATEMENT_PREFIX.contains(primaryTokenType) || (PRIMARY_STATEMENT_PREFIX.contains(primaryTokenType) && SECONDARY_STATEMENT_PREFIX.contains(secondaryTokenType));
     }
     
     /**

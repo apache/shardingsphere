@@ -15,34 +15,34 @@
  * </p>
  */
 
-package io.shardingsphere.core.property;
+package io.shardingsphere.core.transaction.event;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.exception.ShardingException;
-
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Data source parameter parser.
+ * XA transactionEvent.
  *
- * @author panjuan
+ * @author zhaojun
  */
-public abstract class DataSourcePropertyParser {
+@RequiredArgsConstructor
+@Getter
+public class XaTransactionEvent extends AbstractTransactionEvent {
+    
+    private final String sql;
     
     /**
-     * Parse data source.
+     * Get exception.
      *
-     * @param dataSource data source
-     * @return data source property
+     * @return exception
      */
-    public DataSourceProperty parseDataSource(final DataSource dataSource) {
-        try (Connection connection = dataSource.getConnection()) {
-            return parseJDBCUrl(connection.getMetaData().getURL());
-        } catch (SQLException ex) {
-            throw new ShardingException(ex);
+    public Optional<ShardingException> getException() {
+        Optional<? extends Exception> ex = super.getException();
+        if (ex.isPresent()) {
+            return Optional.of((ShardingException) ex.get());
         }
+        return Optional.absent();
     }
-    
-    protected abstract DataSourceProperty parseJDBCUrl(String url);
 }

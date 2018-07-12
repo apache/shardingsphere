@@ -65,7 +65,11 @@ public enum ShardingPropertiesConstant {
      * Meanwhile, the cost of the memory will be increased.
      * </p>
      */
-    PROXY_MODE("proxy.mode", "MEMORY_STRICTLY", String.class);
+    PROXY_MODE("proxy.mode", "MEMORY_STRICTLY", String.class),
+    
+    PROXY_TRANSACTION_MODE("proxy.transaction.mode", "NONE", String.class),
+    
+    PROXY_MAX_WORKING_THREADS("proxy.max.working.threads", Runtime.getRuntime().availableProcessors() * 2 + "", int.class);
     
     private final String key;
     

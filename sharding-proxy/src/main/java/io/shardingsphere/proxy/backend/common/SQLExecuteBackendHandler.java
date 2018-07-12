@@ -54,14 +54,14 @@ public final class SQLExecuteBackendHandler extends ExecuteBackendHandler implem
     @Override
     protected SQLRouteResult doSqlShardingRoute() {
         StatementRoutingEngine routingEngine = new StatementRoutingEngine(RuleRegistry.getInstance().getShardingRule(),
-                RuleRegistry.getInstance().getShardingMetaData(), getDatabaseType(), isShowSQL(), RuleRegistry.getInstance().getDataSourcePropertyManager());
+                RuleRegistry.getInstance().getShardingMetaData(), getDatabaseType(), isShowSQL(), RuleRegistry.getInstance().getShardingDataSourceMetaData());
         return routingEngine.route(getSql());
     }
     
     @Override
     protected Statement prepareResource(final String dataSourceName, final String unitSql, final SQLStatement sqlStatement) throws SQLException {
         DataSource dataSource = RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName);
-        Connection connection = dataSource.getConnection();
+        Connection connection = getConnection(dataSource);
         Statement statement = connection.createStatement();
         ProxyJDBCResource proxyJDBCResource = (ProxyJDBCResource) getJdbcResource();
         proxyJDBCResource.addConnection(connection);
@@ -77,7 +77,7 @@ public final class SQLExecuteBackendHandler extends ExecuteBackendHandler implem
     @Override
     protected QueryResult newQueryResult(final CommandResponsePackets packet, final int index) {
         MySQLPacketQueryResult mySQLPacketQueryResult = new MySQLPacketQueryResult(packet);
-        if (ProxyMode.MEMORY_STRICTLY == ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode())) {
+        if (ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
             mySQLPacketQueryResult.setResultSet(getJdbcResource().getResultSets().get(index));
         } else {
             mySQLPacketQueryResult.setResultList(getResultLists().get(index));

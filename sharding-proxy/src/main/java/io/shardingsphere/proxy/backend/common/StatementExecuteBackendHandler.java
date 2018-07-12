@@ -70,7 +70,7 @@ public final class StatementExecuteBackendHandler extends ExecuteBackendHandler 
     protected SQLRouteResult doSqlShardingRoute() {
         PreparedStatementRoutingEngine routingEngine = new PreparedStatementRoutingEngine(getSql(),
                 RuleRegistry.getInstance().getShardingRule(), RuleRegistry.getInstance().getShardingMetaData(),
-                getDatabaseType(), isShowSQL(), RuleRegistry.getInstance().getDataSourcePropertyManager());
+                getDatabaseType(), isShowSQL(), RuleRegistry.getInstance().getShardingDataSourceMetaData());
         return routingEngine.route(getComStmtExecuteParameters());
     }
     
@@ -90,7 +90,7 @@ public final class StatementExecuteBackendHandler extends ExecuteBackendHandler 
     @Override
     protected PreparedStatement prepareResource(final String dataSourceName, final String unitSql, final SQLStatement sqlStatement) throws SQLException {
         DataSource dataSource = RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName);
-        Connection connection = dataSource.getConnection();
+        Connection connection = getConnection(dataSource);
         PreparedStatement statement = sqlStatement instanceof InsertStatement ? connection.prepareStatement(unitSql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(unitSql);
         for (int i = 0; i < preparedStatementParameters.size(); i++) {
             statement.setObject(i + 1, preparedStatementParameters.get(i).getValue());
@@ -104,7 +104,7 @@ public final class StatementExecuteBackendHandler extends ExecuteBackendHandler 
     @Override
     protected QueryResult newQueryResult(final CommandResponsePackets packet, final int index) {
         MySQLPacketStatementExecuteQueryResult mySQLPacketStatementExecuteQueryResult = new MySQLPacketStatementExecuteQueryResult(packet, columnTypes);
-        if (ProxyMode.MEMORY_STRICTLY == ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode())) {
+        if (ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
             mySQLPacketStatementExecuteQueryResult.setResultSet(getJdbcResource().getResultSets().get(index));
         } else {
             mySQLPacketStatementExecuteQueryResult.setResultList(getResultLists().get(index));

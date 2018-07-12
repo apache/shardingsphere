@@ -15,32 +15,30 @@
  * </p>
  */
 
-package io.shardingsphere.core.property.dialect;
+package io.shardingsphere.core.metadata.datasource.dialect;
 
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.property.DataSourceProperty;
-import io.shardingsphere.core.property.DataSourcePropertyParser;
+import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataParser;
+import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 
 import java.net.URI;
 
 /**
- * PostgreSQL data source property parser.
+ * MySQL data source meta data parser.
  *
  * @author panjuan
  */
-public final class PostgreSQLDataSourcePropertyParser extends DataSourcePropertyParser {
+public final class MySQLDataSourceMetaDataParser implements DataSourceMetaDataParser {
     
-    private static final Integer DEFAULT_PORT = 5432;
+    private static final Integer DEFAULT_PORT = 3306;
     
     @Override
-    protected DataSourceProperty parseJDBCUrl(final String url) {
+    public DataSourceMetaData getDataSourceMetaData(final String url) {
         String cleanUrl = url.substring(5);
         URI uri = URI.create(cleanUrl);
         if (null == uri.getHost()) {
             throw new ShardingException("The URL of JDBC is not supported.");
         }
-        return new DataSourceProperty(uri.getHost(), -1 == uri.getPort() ? DEFAULT_PORT : uri.getPort(),
-                uri.getPath().isEmpty() ? "" : uri.getPath().substring(1), DatabaseType.PostgreSQL);
+        return new DataSourceMetaData(uri.getHost(), -1 == uri.getPort() ? DEFAULT_PORT : uri.getPort(), uri.getPath().isEmpty() ? "" : uri.getPath().substring(1));
     }
 }

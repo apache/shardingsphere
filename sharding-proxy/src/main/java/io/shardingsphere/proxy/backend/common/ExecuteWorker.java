@@ -69,11 +69,9 @@ public abstract class ExecuteWorker implements Callable<CommandResponsePackets> 
     
     private CommandResponsePackets execute() throws SQLException {
         switch (sqlStatement.getType()) {
-            case DQL:
-            case DAL:
+            case DQL: case DAL:
                 return executeQuery();
-            case DML:
-            case DDL:
+            case DML: case DDL:
                 return executeUpdate();
             default:
                 return executeCommon();
@@ -81,9 +79,9 @@ public abstract class ExecuteWorker implements Callable<CommandResponsePackets> 
     }
     
     private CommandResponsePackets executeQuery() throws SQLException {
-        if (ProxyMode.MEMORY_STRICTLY == ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode())) {
+        if (ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
             return executeQueryWithStreamResultSet();
-        } else if (ProxyMode.CONNECTION_STRICTLY == ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode())) {
+        } else if (ProxyMode.CONNECTION_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
             return executeQueryWithNonStreamResultSet();
         } else {
             return new CommandResponsePackets(new ErrPacket(1, 0, "", "", "Invalid proxy.mode"));
@@ -120,7 +118,6 @@ public abstract class ExecuteWorker implements Callable<CommandResponsePackets> 
     }
     
     protected void setColumnType(final ColumnType columnType) {
-        return;
     }
     
     protected CommandResponsePackets getCommonDatabaseProtocolPackets(final ResultSet resultSet) throws SQLException {

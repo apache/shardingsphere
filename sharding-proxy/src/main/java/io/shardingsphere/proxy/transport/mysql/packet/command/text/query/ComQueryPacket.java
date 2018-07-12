@@ -18,6 +18,10 @@
 package io.shardingsphere.proxy.transport.mysql.packet.command.text.query;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.constant.TCLType;
+import io.shardingsphere.core.constant.TransactionType;
+import io.shardingsphere.core.transaction.event.XaTransactionEvent;
+import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.proxy.backend.common.SQLExecuteBackendHandler;
 import io.shardingsphere.proxy.backend.common.SQLPacketsBackendHandler;
 import io.shardingsphere.proxy.config.RuleRegistry;
@@ -91,6 +95,7 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
                 return new CommandResponsePackets(new OKPacket(1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
             }
         } catch (final Exception ex) {
+            log.error("doTransactionIntercept Exception", ex);
             return new CommandResponsePackets(new ErrPacket(1, 0, "", "", "" + ex.getMessage()));
         }
         if (RuleRegistry.getInstance().isWithoutJdbc()) {
@@ -151,30 +156,43 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
     }
     
     private boolean doTransactionIntercept() throws Exception {
-        if (RuleRegistry.isXaTransaction()) {
-            if (isXaBegin()) {
-                AtomikosUserTransaction.getInstance().begin();
-                return true;
-            } else if (isXaCommit()) {
-                AtomikosUserTransaction.getInstance().commit();
-                return true;
+        boolean result = false;
+        if (TransactionType.XA.equals(RuleRegistry.getInstance().getTransactionType())) {
+            XaTransactionEvent xaTransactionEvent = new XaTransactionEvent(sql);
+            if (isBegin()) {
+                xaTransactionEvent.setTclType(TCLType.BEGIN);
+                result = true;
+            } else if (isCommit()) {
+                xaTransactionEvent.setTclType(TCLType.COMMIT);
+                result = true;
             } else if (isXaRollback()) {
-                AtomikosUserTransaction.getInstance().rollback();
-                return true;
+                xaTransactionEvent.setTclType(TCLType.ROLLBACK);
+                result = true;
+            }
+            if (result) {
+                EventBusInstance.getInstance().post(xaTransactionEvent);
+            }
+        } else {
+            if (isBegin() || isCommit() || isRollback()) {
+                result = true;
             }
         }
-        return false;
+        return result;
     }
     
-    private boolean isXaBegin() {
+    private boolean isBegin() {
         return "BEGIN".equalsIgnoreCase(sql) || "START TRANSACTION".equalsIgnoreCase(sql) || "SET AUTOCOMMIT=0".equalsIgnoreCase(sql);
     }
     
-    private boolean isXaCommit() {
+    private boolean isCommit() {
         return "COMMIT".equalsIgnoreCase(sql);
     }
     
     private boolean isXaRollback() throws SystemException {
         return "ROLLBACK".equalsIgnoreCase(sql) && Status.STATUS_NO_TRANSACTION != AtomikosUserTransaction.getInstance().getStatus();
+    }
+    
+    private boolean isRollback() {
+        return "ROLLBACK".equalsIgnoreCase(sql);
     }
 }

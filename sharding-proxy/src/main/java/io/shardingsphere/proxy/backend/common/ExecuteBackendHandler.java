@@ -19,6 +19,7 @@ package io.shardingsphere.proxy.backend.common;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.MergedResult;
@@ -44,8 +45,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.sql.DataSource;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -130,9 +133,8 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
     }
     
     private boolean isXaDDL(final SQLRouteResult routeResult) throws SystemException {
-        return RuleRegistry.isXaTransaction()
-                && SQLType.DDL.equals(routeResult.getSqlStatement().getType())
-                && Status.STATUS_NO_TRANSACTION != AtomikosUserTransaction.getInstance().getStatus();
+        return TransactionType.XA.equals(RuleRegistry.getInstance().getTransactionType())
+                && SQLType.DDL.equals(routeResult.getSqlStatement().getType()) && Status.STATUS_NO_TRANSACTION != AtomikosUserTransaction.getInstance().getStatus();
     }
     
     private SQLRouteResult doMasterSlaveRoute() {
@@ -265,4 +267,18 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
     }
     
     protected abstract DatabaseProtocolPacket newDatabaseProtocolPacket(int sequenceId, List<Object> data);
+    
+    protected Connection getConnection(final DataSource dataSource) throws SQLException {
+        Connection result;
+        if (ProxyMode.CONNECTION_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
+            result = ProxyConnectionHolder.getConnection(dataSource);
+            if (null == result) {
+                result = dataSource.getConnection();
+                ProxyConnectionHolder.setConnection(dataSource, result);
+            }
+        } else {
+            result = dataSource.getConnection();
+        }
+        return result;
+    }
 }

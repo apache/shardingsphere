@@ -39,9 +39,9 @@ public class OrchestrationProxyConfiguration {
     
     private Map<String, DataSourceParameter> dataSources = new HashMap<>();
     
-    private YamlMasterSlaveRuleConfiguration masterSlaveRule = new YamlMasterSlaveRuleConfiguration();
-    
     private YamlShardingRuleConfiguration shardingRule = new YamlShardingRuleConfiguration();
+    
+    private YamlMasterSlaveRuleConfiguration masterSlaveRule = new YamlMasterSlaveRuleConfiguration();
     
     private ProxyAuthority proxyAuthority = new ProxyAuthority();
     
@@ -52,4 +52,20 @@ public class OrchestrationProxyConfiguration {
     private int maxWorkingThreads;
     
     private YamlOrchestrationConfiguration orchestration;
+    
+    /**
+     * Renew orchestration proxy configuration.
+     * 
+     * @param dataSources data sources
+     * @param orchestrationConfig orchestration configuration
+     */
+    public void renew(final Map<String, DataSourceParameter> dataSources, final OrchestrationProxyConfiguration orchestrationConfig) {
+        this.dataSources = dataSources;
+        shardingRule = orchestrationConfig.getShardingRule();
+        masterSlaveRule = orchestrationConfig.getMasterSlaveRule();
+        proxyAuthority = orchestrationConfig.getProxyAuthority();
+        withoutJdbc = orchestrationConfig.isWithoutJdbc();
+        transactionMode = orchestrationConfig.getTransactionMode();
+        maxWorkingThreads = orchestrationConfig.getMaxWorkingThreads();
+    }
 }

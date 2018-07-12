@@ -37,7 +37,7 @@ import io.shardingsphere.core.parsing.parser.token.RowCountToken;
 import io.shardingsphere.core.parsing.parser.token.SQLToken;
 import io.shardingsphere.core.parsing.parser.token.SchemaToken;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
-import io.shardingsphere.core.property.DataSourcePropertyManager;
+import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
@@ -249,11 +249,11 @@ public final class SQLRewriteEngine {
      * 
      * @param tableUnit route table unit
      * @param sqlBuilder SQL builder
-     * @param dataSourcePropertyManager dataSource property manager
+     * @param shardingDataSourceMetaData sharding data source meta data
      * @return SQL unit
      */
-    public SQLUnit generateSQL(final TableUnit tableUnit, final SQLBuilder sqlBuilder, final DataSourcePropertyManager dataSourcePropertyManager) {
-        return sqlBuilder.toSQL(tableUnit, getTableTokens(tableUnit), shardingRule, dataSourcePropertyManager);
+    public SQLUnit generateSQL(final TableUnit tableUnit, final SQLBuilder sqlBuilder, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
+        return sqlBuilder.toSQL(tableUnit, getTableTokens(tableUnit), shardingRule, shardingDataSourceMetaData);
     }
    
     private Map<String, String> getTableTokens(final TableUnit tableUnit) {

@@ -20,7 +20,9 @@ package io.shardingsphere.proxy.frontend.mysql;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.EventLoopGroup;
+import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
+import io.shardingsphere.proxy.backend.common.ProxyConnectionHolder;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.frontend.common.FrontendHandler;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
@@ -100,6 +102,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
                     }
                 } finally {
                     MasterVisitedManager.clear();
+                    ProxyConnectionHolder.clear();
                     mysqlPacketPayload.getByteBuf().release();
                 }
             }
@@ -107,6 +110,6 @@ public final class MySQLFrontendHandler extends FrontendHandler {
     }
     
     private ExecutorService getExecutor(final ChannelHandlerContext context) {
-        return RuleRegistry.isXaTransaction() ? ChannelThreadHolder.get(context.channel().id()) : eventLoopGroup;
+        return TransactionType.XA.equals(RuleRegistry.getInstance().getTransactionType()) ? ChannelThreadHolder.get(context.channel().id()) : eventLoopGroup;
     }
 }

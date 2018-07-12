@@ -115,8 +115,7 @@ public final class AdditionalDQLIntegrateTest extends BaseDQLIntegrateTest {
     
     private void assertExecuteQueryForPreparedStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(final Connection connection)
             throws SQLException, ParseException, JAXBException, IOException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(
-                getSql(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getSql(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
             for (SQLValue each : assertion.getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
             }
@@ -187,8 +186,7 @@ public final class AdditionalDQLIntegrateTest extends BaseDQLIntegrateTest {
     
     private void assertExecuteForPreparedStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(final Connection connection)
             throws SQLException, ParseException, JAXBException, IOException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(
-                getSql(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getSql(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
             for (SQLValue each : assertion.getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
             }
