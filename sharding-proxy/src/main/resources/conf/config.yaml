@@ -64,12 +64,6 @@
 #    proxy.mode: MEMORY_STRICTLY
 #    sql.show: false
 #
-#proxyAuthority:
-#  username: root
-#  password: root
-
-#maxWorkingThreads: 200
-
 
 # The example of master-slave rule.
 
@@ -97,7 +91,12 @@
 #  masterDataSourceName: ds_0
 #  slaveDataSourceNames:
 #    - ds_1
-#
+
+
+# Common configuration.
+
 #proxyAuthority:
 #  username: root
 #  password: root
+
+#maxWorkingThreads: 16

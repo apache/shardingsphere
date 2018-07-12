@@ -18,8 +18,14 @@
 package io.shardingsphere.core.parsing.parser.sql.ddl;
 
 import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
+import io.shardingsphere.core.parsing.lexer.token.Keyword;
+import io.shardingsphere.core.parsing.lexer.token.TokenType;
 import io.shardingsphere.core.parsing.parser.sql.AbstractSQLStatement;
 import lombok.ToString;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * DDL statement.
@@ -29,7 +35,22 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public final class DDLStatement extends AbstractSQLStatement {
     
+    private static final Collection<Keyword> PRIMARY_STATEMENT_PREFIX = Arrays.<Keyword>asList(DefaultKeyword.CREATE, DefaultKeyword.ALTER, DefaultKeyword.DROP, DefaultKeyword.TRUNCATE);
+    
+    private static final Collection<Keyword> NOT_SECONDARY_STATEMENT_PREFIX = Arrays.<Keyword>asList(DefaultKeyword.LOGIN, DefaultKeyword.USER, DefaultKeyword.ROLE);
+    
     public DDLStatement() {
         super(SQLType.DDL);
+    }
+    
+    /**
+     * Is DDL statement.
+     *
+     * @param primaryTokenType primary token type
+     * @param secondaryTokenType secondary token type
+     * @return is DDL or not
+     */
+    public static boolean isDDL(final TokenType primaryTokenType, final TokenType secondaryTokenType) {
+        return PRIMARY_STATEMENT_PREFIX.contains(primaryTokenType) && !NOT_SECONDARY_STATEMENT_PREFIX.contains(secondaryTokenType);
     }
 }

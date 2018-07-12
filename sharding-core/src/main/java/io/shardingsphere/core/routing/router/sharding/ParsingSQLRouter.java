@@ -30,9 +30,11 @@ import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTablesS
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
+import io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
+import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.rewrite.SQLBuilder;
 import io.shardingsphere.core.rewrite.SQLRewriteEngine;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
@@ -75,6 +77,8 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     private final List<Number> generatedKeys = new LinkedList<>();
     
+    private final ShardingDataSourceMetaData shardingDataSourceMetaData;
+    
     @Override
     public SQLStatement parse(final String logicSQL, final boolean useCache) {
         return new SQLParsingEngine(databaseType, logicSQL, shardingRule, shardingMetaData).parse(useCache);
@@ -99,7 +103,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
         }
         SQLBuilder sqlBuilder = rewriteEngine.rewrite(!isSingleRouting);
         for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
-            result.getExecutionUnits().add(new SQLExecutionUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder)));
+            result.getExecutionUnits().add(new SQLExecutionUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder, shardingDataSourceMetaData)));
         }
         if (showSQL) {
             SQLLogger.logSQL(logicSQL, sqlStatement, result.getExecutionUnits());
@@ -112,9 +116,9 @@ public final class ParsingSQLRouter implements ShardingRouter {
         RoutingEngine routingEngine;
         if (sqlStatement instanceof UseStatement) {
             routingEngine = new IgnoreRoutingEngine();
-        } else if (sqlStatement instanceof DDLStatement) {
+        } else if (sqlStatement instanceof DDLStatement || (sqlStatement instanceof DCLStatement && ((DCLStatement) sqlStatement).isGrantForSingleTable())) {
             routingEngine = new TableBroadcastRoutingEngine(shardingRule, sqlStatement);
-        } else if (sqlStatement instanceof ShowDatabasesStatement || sqlStatement instanceof ShowTablesStatement) {
+        } else if (sqlStatement instanceof ShowDatabasesStatement || sqlStatement instanceof ShowTablesStatement || sqlStatement instanceof DCLStatement) {
             routingEngine = new DatabaseBroadcastRoutingEngine(shardingRule);
         } else if (shardingConditions.isAlwaysFalse()) {
             routingEngine = new UnicastRoutingEngine(shardingRule, tableNames);
@@ -130,7 +134,23 @@ public final class ParsingSQLRouter implements ShardingRouter {
             // TODO config for cartesian set
             routingEngine = new ComplexRoutingEngine(shardingRule, parameters, tableNames, shardingConditions);
         }
-        return routingEngine.route();
+        return getRoutingResult(routingEngine, sqlStatement);
+    }
+    
+    private RoutingResult getRoutingResult(final RoutingEngine routingEngine, final SQLStatement sqlStatement) {
+        RoutingResult result = routingEngine.route();
+        if (routingEngine instanceof DatabaseBroadcastRoutingEngine && sqlStatement instanceof DCLStatement) {
+            removeRedundantTableUnits(result);
+        }
+        return result;
+    }
+    
+    private void removeRedundantTableUnits(final RoutingResult routingResult) {
+        for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
+            if (!shardingDataSourceMetaData.getAllInstanceDataSourceNames().contains(each.getDataSourceName())) {
+                routingResult.getTableUnits().getTableUnits().remove(each);
+            }
+        }
     }
     
     private GeneratedKey getGenerateKey(final ShardingRule shardingRule, final InsertStatement insertStatement, final List<Object> parameters) {

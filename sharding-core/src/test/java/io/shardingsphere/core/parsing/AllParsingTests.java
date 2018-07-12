@@ -20,6 +20,7 @@ package io.shardingsphere.core.parsing;
 import io.shardingsphere.core.parsing.integrate.AllParsingIntegrateTests;
 import io.shardingsphere.core.parsing.lexer.AllLexerTests;
 import io.shardingsphere.core.parsing.parser.context.OrderItemTest;
+import io.shardingsphere.core.parsing.parser.sql.AllSQLTests;
 import io.shardingsphere.core.parsing.parser.sql.AllStatementParserTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -28,6 +29,7 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
         AllLexerTests.class, 
         AllStatementParserTests.class, 
+        AllSQLTests.class, 
         SQLJudgeEngineTest.class, 
         OrderItemTest.class, 
         AllParsingIntegrateTests.class

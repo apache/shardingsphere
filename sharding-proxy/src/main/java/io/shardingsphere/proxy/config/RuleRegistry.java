@@ -21,16 +21,19 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.ShardingProperties;
 import io.shardingsphere.core.constant.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ProxyAuthority;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
+import io.shardingsphere.proxy.backend.common.ProxyMode;
 import io.shardingsphere.proxy.metadata.ProxyShardingMetaData;
 import io.shardingsphere.proxy.yaml.YamlProxyConfiguration;
 import lombok.Getter;
@@ -72,7 +75,7 @@ public final class RuleRegistry implements AutoCloseable {
     
     private ShardingMetaData shardingMetaData; 
 
-    private int maxWorkingThreads;
+    private int maxWorkingThreads = Runtime.getRuntime().availableProcessors() * 2;
     
     private ListeningExecutorService executorService;
     
@@ -85,6 +88,8 @@ public final class RuleRegistry implements AutoCloseable {
     private ProxyAuthority proxyAuthority;
     
     private OrchestrationFacade orchestrationFacade;
+    
+    private ShardingDataSourceMetaData shardingDataSourceMetaData;
     
     /**
      * Initialize rule registry.
@@ -110,6 +115,7 @@ public final class RuleRegistry implements AutoCloseable {
         maxWorkingThreads = yamlProxyConfiguration.getMaxWorkingThreads();
         executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(maxWorkingThreads));
         showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
+        shardingDataSourceMetaData = new ShardingDataSourceMetaData(dataSourceMap, DatabaseType.MySQL);
         shardingMetaData = new ProxyShardingMetaData(executorService, dataSourceMap);
         if (!isOnlyMasterSlave) {
             shardingMetaData.init(shardingRule);
@@ -145,6 +151,24 @@ public final class RuleRegistry implements AutoCloseable {
      */
     public static boolean isXaTransaction() {
         return TransactionType.XA.equals(RuleRegistry.getInstance().getTransactionType());
+    }
+    
+    /**
+     * Judge whether proxy mode is MEMORY_STRICTLY.
+     *
+     * @return true or false
+     */
+    public static boolean isMemoryStrictly() {
+        return ProxyMode.MEMORY_STRICTLY == ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode());
+    }
+    
+    /**
+     * Judge whether proxy mode is CONNECTION_STRICTLY.
+     *
+     * @return true or false
+     */
+    public static boolean isConnectionStrictly() {
+        return ProxyMode.CONNECTION_STRICTLY == ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode());
     }
     
     @Override

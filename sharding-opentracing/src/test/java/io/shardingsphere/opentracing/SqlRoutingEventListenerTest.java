@@ -76,7 +76,7 @@ public final class SqlRoutingEventListenerTest {
         dataSourceMap.put("ds_0", null);
         dataSourceMap.put("ds_1", null);
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, dataSourceMap.keySet());
-        shardingContext = new ShardingContext(dataSourceMap, shardingRule, DatabaseType.MySQL, null, null, true);
+        shardingContext = new ShardingContext(dataSourceMap, null, shardingRule, DatabaseType.MySQL, null, null, true);
     }
     
     @Test

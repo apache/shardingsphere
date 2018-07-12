@@ -39,9 +39,9 @@ public class OrchestrationProxyConfiguration {
     
     private Map<String, DataSourceParameter> dataSources = new HashMap<>();
     
-    private YamlMasterSlaveRuleConfiguration masterSlaveRule = new YamlMasterSlaveRuleConfiguration();
-    
     private YamlShardingRuleConfiguration shardingRule = new YamlShardingRuleConfiguration();
+    
+    private YamlMasterSlaveRuleConfiguration masterSlaveRule = new YamlMasterSlaveRuleConfiguration();
     
     private ProxyAuthority proxyAuthority = new ProxyAuthority();
     

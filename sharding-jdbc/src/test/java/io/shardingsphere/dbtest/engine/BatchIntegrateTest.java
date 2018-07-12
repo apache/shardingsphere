@@ -136,25 +136,37 @@ public abstract class BatchIntegrateTest extends BaseIntegrateTest {
     
     private DataSet merge(final Collection<DataSet> expectedList) {
         DataSet result = new DataSet();
-        Set<List<String>> rowValues = new HashSet<>();
+        Set<List<String>> existedRowValues = new HashSet<>();
         for (DataSet each : expectedList) {
-            if (result.getMetadataList().isEmpty()) {
-                result.getMetadataList().addAll(each.getMetadataList());
-            }
-            for (DataSetRow row : each.getRows()) {
-                if (rowValues.add(row.getValues())) {
-                    result.getRows().add(row);
-                }
+            mergeMetadata(each, result);
+            mergeRow(each, result, existedRowValues);
+        }
+        sortRow(result);
+        return result;
+    }
+    
+    private void mergeMetadata(final DataSet original, final DataSet dist) {
+        if (dist.getMetadataList().isEmpty()) {
+            dist.getMetadataList().addAll(original.getMetadataList());
+        }
+    }
+    
+    private void mergeRow(final DataSet original, final DataSet dist, final Set<List<String>> existedRowValues) {
+        for (DataSetRow each : original.getRows()) {
+            if (existedRowValues.add(each.getValues())) {
+                dist.getRows().add(each);
             }
         }
-        Collections.sort(result.getRows(), new Comparator<DataSetRow>() {
+    }
+    
+    private void sortRow(final DataSet dataSet) {
+        Collections.sort(dataSet.getRows(), new Comparator<DataSetRow>() {
             
             @Override
             public int compare(final DataSetRow o1, final DataSetRow o2) {
                 return Integer.parseInt(o1.getValues().get(0)) - Integer.parseInt(o2.getValues().get(0));
             }
         });
-        return result;
     }
     
     private void assertMetaData(final ResultSetMetaData actualMetaData, final List<DataSetColumn> columnMetadataList) throws SQLException {
