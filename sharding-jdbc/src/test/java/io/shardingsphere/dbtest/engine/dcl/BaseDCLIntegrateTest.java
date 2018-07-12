@@ -79,7 +79,7 @@ public abstract class BaseDCLIntegrateTest extends SingleIntegrateTest {
         }
     }
     
-    protected boolean isExcuted() {
+    protected boolean isExecuted() {
         if (Strings.isNullOrEmpty(assertion.getDbTypes())) {
             return true;
         }
