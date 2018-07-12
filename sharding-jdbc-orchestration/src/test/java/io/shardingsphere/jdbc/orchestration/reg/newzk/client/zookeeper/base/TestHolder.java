@@ -44,12 +44,11 @@ public class TestHolder extends Holder {
             if (Watcher.Event.KeeperState.SyncConnected == event.getState()) {
                 try {
                     Thread.sleep(1000);
-                } catch (Exception e) {
-                    System.out.println("wait " + e.getMessage());
+                } catch (final Exception ex) {
+                    //ignore
                 }
                 this.setConnected(true);
                 CONNECTING.countDown();
-                return;
             }
         }
     }

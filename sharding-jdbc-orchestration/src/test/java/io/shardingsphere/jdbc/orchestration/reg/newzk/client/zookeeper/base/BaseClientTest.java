@@ -22,7 +22,6 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.ClientFactory;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
 import io.shardingsphere.jdbc.orchestration.util.EmbedTestingServer;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,14 +36,12 @@ import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
-import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -310,8 +307,8 @@ public abstract class BaseClientTest extends BaseTest {
                         String result;
                         try {
                             result = new String(getZooKeeper(client).getData(event.getPath(),false, null));
-                        } catch (KeeperException | InterruptedException e) {
-                            result = e.getMessage();
+                        } catch (final KeeperException | InterruptedException ex) {
+                            result = ex.getMessage();
                         }
                         LOGGER.info(result);
                         actual.add(new StringBuilder().append("update_").append(event.getPath()).append("_").append(result).toString());
