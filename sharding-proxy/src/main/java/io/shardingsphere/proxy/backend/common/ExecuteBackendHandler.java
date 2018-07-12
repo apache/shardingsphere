@@ -103,7 +103,7 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
     @Override
     public CommandResponsePackets execute() {
         try {
-            SQLRouteResult sqlRouteResult = RuleRegistry.getInstance().isOnlyMasterSlave() ? doMasterSlaveRoute() : doSqlShardingRoute();
+            SQLRouteResult sqlRouteResult = RuleRegistry.getInstance().isMasterSlaveOnly() ? doMasterSlaveRoute() : doSqlShardingRoute();
             return doExecuteInternal(sqlRouteResult);
         } catch (final Exception ex) {
             log.error("ExecuteBackendHandler", ex);
@@ -126,7 +126,7 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
         }
         List<CommandResponsePackets> packets = buildCommandResponsePackets(futureList);
         CommandResponsePackets result = merge(routeResult.getSqlStatement(), packets);
-        if (!RuleRegistry.getInstance().isOnlyMasterSlave()) {
+        if (!RuleRegistry.getInstance().isMasterSlaveOnly()) {
             ProxyShardingRefreshHandler.build(routeResult).execute();
         }
         return result;

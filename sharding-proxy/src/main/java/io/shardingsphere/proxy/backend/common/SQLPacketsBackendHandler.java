@@ -97,7 +97,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     
     @Override
     public CommandResponsePackets execute() {
-        if (RuleRegistry.getInstance().isOnlyMasterSlave()) {
+        if (RuleRegistry.getInstance().isMasterSlaveOnly()) {
             return executeForMasterSlave();
         } else {
             return executeForSharding();

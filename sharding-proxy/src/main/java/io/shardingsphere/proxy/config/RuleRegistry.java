@@ -58,7 +58,7 @@ import java.util.concurrent.Executors;
  */
 @NoArgsConstructor
 @Getter
-public final class RuleRegistry implements AutoCloseable {
+public final class RuleRegistry {
     
     private static final RuleRegistry INSTANCE = new RuleRegistry();
     
@@ -123,7 +123,7 @@ public final class RuleRegistry implements AutoCloseable {
         executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(maxWorkingThreads));
         shardingDataSourceMetaData = new ShardingDataSourceMetaData(dataSourceMap, DatabaseType.MySQL);
         shardingMetaData = new ProxyShardingMetaData(executorService, dataSourceMap);
-        if (!shardingRule.getTableRules().isEmpty() && masterSlaveRule.getMasterDataSourceName().isEmpty()) {
+        if (!isMasterSlaveOnly()) {
             shardingMetaData.init(shardingRule);
         }
         proxyAuthority = config.getProxyAuthority();
@@ -139,10 +139,12 @@ public final class RuleRegistry implements AutoCloseable {
         }
     }
     
-    @Override
-    public void close() {
-        if (null != orchestrationFacade) {
-            orchestrationFacade.close();
-        }
+    /**
+     * Judge is master slave only.
+     * 
+     * @return is master slave only
+     */
+    public boolean isMasterSlaveOnly() {
+        return shardingRule.getTableRules().isEmpty() && !masterSlaveRule.getMasterDataSourceName().isEmpty();
     }
 }

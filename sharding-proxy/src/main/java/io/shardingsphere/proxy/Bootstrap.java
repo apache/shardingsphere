@@ -17,6 +17,7 @@
 
 package io.shardingsphere.proxy;
 
+import com.google.common.base.Preconditions;
 import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.frontend.ShardingProxy;
@@ -58,6 +59,7 @@ public final class Bootstrap {
     
     private static void initializeRuleRegistry() throws IOException {
         YamlProxyConfiguration config = unmarshal(new File(Bootstrap.class.getResource(CONFIG_YAML).getFile()));
+        Preconditions.checkNotNull(config, String.format("Configuration file `%s` is invalid.", CONFIG_YAML));
         config.init();
         RuleRegistry.getInstance().init(config);
     }

@@ -45,12 +45,6 @@ public class OrchestrationProxyConfiguration {
     
     private ProxyAuthority proxyAuthority = new ProxyAuthority();
     
-    private boolean withoutJdbc;
-    
-    private String transactionMode;
-    
-    private int maxWorkingThreads;
-    
     private YamlOrchestrationConfiguration orchestration;
     
     /**
@@ -64,8 +58,5 @@ public class OrchestrationProxyConfiguration {
         shardingRule = orchestrationConfig.getShardingRule();
         masterSlaveRule = orchestrationConfig.getMasterSlaveRule();
         proxyAuthority = orchestrationConfig.getProxyAuthority();
-        withoutJdbc = orchestrationConfig.isWithoutJdbc();
-        transactionMode = orchestrationConfig.getTransactionMode();
-        maxWorkingThreads = orchestrationConfig.getMaxWorkingThreads();
     }
 }
