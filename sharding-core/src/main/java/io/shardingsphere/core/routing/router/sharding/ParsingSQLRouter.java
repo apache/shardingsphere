@@ -146,11 +146,13 @@ public final class ParsingSQLRouter implements ShardingRouter {
     }
     
     private void removeRedundantTableUnits(final RoutingResult routingResult) {
+        Collection<TableUnit> toRemoved = new LinkedList<>();
         for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
             if (!shardingDataSourceMetaData.getAllInstanceDataSourceNames().contains(each.getDataSourceName())) {
-                routingResult.getTableUnits().getTableUnits().remove(each);
+                toRemoved.add(each);
             }
         }
+        routingResult.getTableUnits().getTableUnits().removeAll(toRemoved);
     }
     
     private GeneratedKey getGenerateKey(final ShardingRule shardingRule, final InsertStatement insertStatement, final List<Object> parameters) {

@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.metadata.datasource.dialect;
 
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataParser;
@@ -33,7 +34,7 @@ public final class OracleDataSourceMetaDataParser implements DataSourceMetaDataP
     private static final Integer DEFAULT_PORT = 1521;
     
     @Override
-    public DataSourceMetaData getDataSourceMetaData(final String url) {
+    public DataSourceMetaData getDataSourceMetaData(final String url, final DatabaseType databaseType) {
         String cleanUrl = url.substring(5);
         if (cleanUrl.contains("oracle:thin:@//")) {
             cleanUrl = cleanUrl.replace("oracle:thin:@//", "oracle://");
@@ -49,6 +50,6 @@ public final class OracleDataSourceMetaDataParser implements DataSourceMetaDataP
         if (null == uri.getHost()) {
             throw new ShardingException("The URL of JDBC is not supported.");
         }
-        return new DataSourceMetaData(uri.getHost(), -1 == uri.getPort() ? DEFAULT_PORT : uri.getPort(), uri.getPath().isEmpty() ? "" : uri.getPath().substring(1));
+        return new DataSourceMetaData(uri.getHost(), -1 == uri.getPort() ? DEFAULT_PORT : uri.getPort(), uri.getPath().isEmpty() ? "" : uri.getPath().substring(1), databaseType);
     }
 }
