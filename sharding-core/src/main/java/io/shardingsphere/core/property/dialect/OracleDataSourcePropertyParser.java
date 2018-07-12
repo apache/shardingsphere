@@ -50,7 +50,6 @@ public final class OracleDataSourcePropertyParser extends DataSourcePropertyPars
         if (null == uri.getHost()) {
             throw new ShardingException("The URL of JDBC is not supported.");
         }
-        return new DataSourceProperty(uri.getHost(), -1 == uri.getPort() ? DEFAULT_PORT : uri.getPort(),
-                uri.getPath().isEmpty() ? "" : uri.getPath().substring(1), DatabaseType.Oracle);
+        return new DataSourceProperty(uri.getHost(), -1 == uri.getPort() ? DEFAULT_PORT : uri.getPort(), uri.getPath().isEmpty() ? "" : uri.getPath().substring(1), DatabaseType.Oracle);
     }
 }

@@ -54,7 +54,6 @@ public final class H2DataSourcePropertyParser extends DataSourcePropertyParser {
         if (null == uri.getHost()) {
             throw new ShardingException("The URL of JDBC is not supported.");
         }
-        return new DataSourceProperty(uri.getHost(), -1 == uri.getPort() ? DEFAULT_PORT : uri.getPort(),
-                uri.getPath().isEmpty() ? "" : uri.getPath().substring(1), DatabaseType.H2);
+        return new DataSourceProperty(uri.getHost(), -1 == uri.getPort() ? DEFAULT_PORT : uri.getPort(), uri.getPath().isEmpty() ? "" : uri.getPath().substring(1), DatabaseType.H2);
     }
 }

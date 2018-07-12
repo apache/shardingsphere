@@ -24,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Data source property manager.
@@ -38,11 +39,10 @@ public class DataSourcePropertyManager {
         dataSourcePropertyMap = initDataSourcePropertyMap(dataSourceMap, databaseType);
     }
     
-    private Map<String, DataSourceProperty> initDataSourcePropertyMap(final Map<String, DataSource> dataSourceMap,
-            final DatabaseType databaseType) {
+    private Map<String, DataSourceProperty> initDataSourcePropertyMap(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
         Map<String, DataSourceProperty> result = new LinkedHashMap<>();
-        for (Map.Entry<String, DataSource> each : dataSourceMap.entrySet()) {
-            result.put(each.getKey(), DataSourcePropertyFactory.createDataSourcePropertyParser(databaseType).parseDataSource(each.getValue()));
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            result.put(entry.getKey(), DataSourcePropertyFactory.createDataSourcePropertyParser(databaseType).parseDataSource(entry.getValue()));
         }
         return result;
     }
@@ -54,9 +54,9 @@ public class DataSourcePropertyManager {
      */
     public List<String> getAllInstanceDataSourceNames() {
         List<String> result = new LinkedList<>();
-        for (Map.Entry<String, DataSourceProperty> each : dataSourcePropertyMap.entrySet()) {
-            if (!isExisted(each.getKey(), result)) {
-                result.add(each.getKey());
+        for (Entry<String, DataSourceProperty> entry : dataSourcePropertyMap.entrySet()) {
+            if (!isExisted(entry.getKey(), result)) {
+                result.add(entry.getKey());
             }
         }
         return result;

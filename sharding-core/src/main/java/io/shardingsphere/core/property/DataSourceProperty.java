@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class DataSourceProperty {
+public final class DataSourceProperty {
     
     private final String hostName;
     
@@ -45,7 +45,6 @@ public class DataSourceProperty {
      * @return pointing at the same instance or not.
      */
     public boolean isPointAtSameInstance(final DataSourceProperty dataSourceProperty) {
-        return getHostName().equals(dataSourceProperty.getHostName()) && getPort().equals(dataSourceProperty.getPort())
-                && getDatabaseType().equals(dataSourceProperty.getDatabaseType());
+        return hostName.equals(dataSourceProperty.getHostName()) && port.equals(dataSourceProperty.getPort()) && databaseType.equals(dataSourceProperty.getDatabaseType());
     }
 }
