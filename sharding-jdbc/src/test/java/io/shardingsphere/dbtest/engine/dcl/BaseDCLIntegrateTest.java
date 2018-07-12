@@ -17,6 +17,7 @@
 
 package io.shardingsphere.dbtest.engine.dcl;
 
+import com.google.common.base.Strings;
 import io.shardingsphere.dbtest.cases.assertion.dcl.DCLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.engine.SingleIntegrateTest;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
@@ -50,8 +51,9 @@ public abstract class BaseDCLIntegrateTest extends SingleIntegrateTest {
     }
     
     protected void dropUserIfExisted(final Connection connection) {
-        String dropSQL = "drop " + assertion.getType() + " " + assertion.getUser();
-        if (null == assertion.getHost()) {
+        String name = !Strings.isNullOrEmpty(assertion.getNewName()) ? assertion.getUser() : assertion.getNewName();
+        String dropSQL = "drop " + assertion.getType() + " " + name;
+        if (!Strings.isNullOrEmpty(assertion.getHost())) {
             dropSQL = dropSQL + ";";
         } else {
             dropSQL = dropSQL + "@" + assertion.getHost() + ";";
