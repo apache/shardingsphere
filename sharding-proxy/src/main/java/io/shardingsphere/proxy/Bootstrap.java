@@ -71,6 +71,10 @@ public final class Bootstrap {
         ) {
             YamlProxyConfiguration result = new Yaml(new Constructor(YamlProxyConfiguration.class)).loadAs(inputStreamReader, YamlProxyConfiguration.class);
             Preconditions.checkNotNull(result, String.format("Configuration file `%s` is invalid.", CONFIG_YAML));
+            Preconditions.checkNotNull(result.getProxyAuthority(), "Authority configuration is invalid.");
+            Preconditions.checkNotNull(result.getProxyAuthority().getUsername(), "Authority configuration is invalid.");
+            Preconditions.checkState(null == result.getShardingRule() && null == result.getMasterSlaveRule() && null == result.getOrchestration(), 
+                    "Configuration invalid, sharding rule, master-slave rule and orchestration configuration can not be all null.");
             return result;
         }
     }
