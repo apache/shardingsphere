@@ -75,6 +75,7 @@ public final class ShardingDataSourceFactoryTest {
                 ArgumentMatchers.<String>any(), ArgumentMatchers.<String[]>any())).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         Map<String, DataSource> result = new HashMap<>(1);
+        when(statement.getConnection().getMetaData().getURL()).thenReturn("jdbc:h2:mem:demo_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         result.put("ds", dataSource);
         return result;
     }

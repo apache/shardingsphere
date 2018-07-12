@@ -18,8 +18,14 @@
 package io.shardingsphere.core.parsing.parser.sql.tcl;
 
 import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
+import io.shardingsphere.core.parsing.lexer.token.Keyword;
+import io.shardingsphere.core.parsing.lexer.token.TokenType;
 import io.shardingsphere.core.parsing.parser.sql.AbstractSQLStatement;
 import lombok.ToString;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * Transaction Control Language statement.
@@ -29,7 +35,20 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public final class TCLStatement extends AbstractSQLStatement {
     
+    private static final Collection<Keyword> STATEMENT_PREFIX = Arrays.<Keyword>asList(
+            DefaultKeyword.SET, DefaultKeyword.COMMIT, DefaultKeyword.ROLLBACK, DefaultKeyword.SAVEPOINT, DefaultKeyword.BEGIN);
+    
     public TCLStatement() {
         super(SQLType.TCL);
+    }
+    
+    /**
+     * Is TCL statement.
+     *
+     * @param tokenType token type
+     * @return is TCL or not
+     */
+    public static boolean isTCL(final TokenType tokenType) {
+        return STATEMENT_PREFIX.contains(tokenType);
     }
 }

@@ -34,14 +34,12 @@ import lombok.Setter;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -72,21 +70,7 @@ public final class YamlProxyConfiguration extends OrchestrationProxyConfiguratio
     }
     
     /**
-     * Unmarshal yaml sharding configuration from yaml bytes.
-     * 
-     * @param yamlBytes yaml bytes
-     * @return yaml sharding configuration
-     * @throws IOException IO Exception
-     */
-    public static YamlProxyConfiguration unmarshal(final byte[] yamlBytes) throws IOException {
-        try (InputStream inputStream = new ByteArrayInputStream(yamlBytes)) {
-            return new Yaml(new Constructor(YamlProxyConfiguration.class)).loadAs(inputStream, YamlProxyConfiguration.class);
-        }
-    }
-    
-    /**
      * Initialize yaml proxy configuration.
-     *
      */
     public void init() {
         if (isInitFromRegistry()) {
@@ -95,13 +79,13 @@ public final class YamlProxyConfiguration extends OrchestrationProxyConfiguratio
         ProxyEventBusInstance.getInstance().register(new YamlProxyConfiguration());
     }
     
+    private boolean isInitFromRegistry() {
+        return null != getOrchestration() && getShardingRule().getTables().isEmpty() && null == getMasterSlaveRule().getMasterDataSourceName();
+    }
+    
     private void initFromRegistryCenter() {
         OrchestrationFacade orchestrationFacade = new OrchestrationFacade(obtainOrchestrationConfigurationOptional().get());
         assignProperties(orchestrationFacade.getConfigService().loadDataSourceParameter(), orchestrationFacade.getConfigService().loadProxyConfiguration());
-    }
-    
-    private boolean isInitFromRegistry() {
-        return null != getOrchestration() && getShardingRule().getTables().isEmpty() && null == getMasterSlaveRule().getMasterDataSourceName();
     }
     
     /**
@@ -141,7 +125,7 @@ public final class YamlProxyConfiguration extends OrchestrationProxyConfiguratio
      * @return master slave rule.
      */
     public MasterSlaveRule obtainMasterSlaveRule() {
-        return null == getMasterSlaveRule().getMasterDataSourceName() ? new MasterSlaveRule(new MasterSlaveRuleConfiguration("", "", Arrays.asList(""), null))
+        return null == getMasterSlaveRule().getMasterDataSourceName() ? new MasterSlaveRule(new MasterSlaveRuleConfiguration("", "", Collections.singletonList(""), null))
                 : new MasterSlaveRule(getMasterSlaveRule().getMasterSlaveRuleConfiguration());
     }
     

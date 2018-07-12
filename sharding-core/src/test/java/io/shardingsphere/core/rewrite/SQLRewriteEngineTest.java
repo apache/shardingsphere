@@ -41,6 +41,7 @@ import io.shardingsphere.core.parsing.parser.token.OrderByToken;
 import io.shardingsphere.core.parsing.parser.token.RowCountToken;
 import io.shardingsphere.core.parsing.parser.token.SchemaToken;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
+import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.routing.type.RoutingTable;
 import io.shardingsphere.core.routing.type.TableUnit;
 import io.shardingsphere.core.rule.DataNode;
@@ -48,6 +49,7 @@ import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.yaml.sharding.YamlShardingConfiguration;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,6 +58,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -76,6 +79,8 @@ public final class SQLRewriteEngineTest {
     
     private Map<String, String> tableTokens;
     
+    private ShardingDataSourceMetaData shardingDataSourceMetaData;
+    
     @Before
     public void setUp() throws IOException {
         URL url = SQLRewriteEngineTest.class.getClassLoader().getResource("yaml/rewrite-rule.yaml");
@@ -88,12 +93,15 @@ public final class SQLRewriteEngineTest {
         dmlStatement = new DMLStatement();
         tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_x", "table_1");
+        shardingDataSourceMetaData = Mockito.mock(ShardingDataSourceMetaData.class);
+        Mockito.when(shardingDataSourceMetaData.getActualSchemaName(Mockito.anyString())).thenReturn("actual_db");
     }
     
     @Test
     public void assertRewriteWithoutChange() {
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT table_y.id FROM table_y WHERE table_y.id=?", DatabaseType.MySQL, selectStatement, null, Collections.<Object>singletonList(1));
-        assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, null).getSql(), is("SELECT table_y.id FROM table_y WHERE table_y.id=?"));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
+                "SELECT table_y.id FROM table_y WHERE table_y.id=?", DatabaseType.MySQL, selectStatement, null, Collections.<Object>singletonList(1));
+        assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, null, shardingDataSourceMetaData).getSql(), is("SELECT table_y.id FROM table_y WHERE table_y.id=?"));
     }
     
     @Test
@@ -104,8 +112,9 @@ public final class SQLRewriteEngineTest {
         selectStatement.getSqlTokens().add(new TableToken(7, 0, "table_x"));
         selectStatement.getSqlTokens().add(new TableToken(31, 0, "table_x"));
         selectStatement.getSqlTokens().add(new TableToken(47, 0, "table_x"));
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT table_x.id, x.name FROM table_x x WHERE table_x.id=? AND x.name=?", DatabaseType.MySQL, selectStatement, null, parameters);
-        assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, null).getSql(), is("SELECT table_1.id, x.name FROM table_1 x WHERE table_1.id=? AND x.name=?"));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
+                "SELECT table_x.id, x.name FROM table_x x WHERE table_x.id=? AND x.name=?", DatabaseType.MySQL, selectStatement, null, parameters);
+        assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, null, shardingDataSourceMetaData).getSql(), is("SELECT table_1.id, x.name FROM table_1 x WHERE table_1.id=? AND x.name=?"));
     }
     
     @Test
@@ -114,8 +123,10 @@ public final class SQLRewriteEngineTest {
         ItemsToken itemsToken = new ItemsToken(12);
         itemsToken.getItems().addAll(Arrays.asList("x.id as ORDER_BY_DERIVED_0", "x.name as GROUP_BY_DERIVED_0"));
         selectStatement.getSqlTokens().add(itemsToken);
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT x.age FROM table_x x GROUP BY x.id ORDER BY x.name", DatabaseType.MySQL, selectStatement, null, Collections.emptyList());
-        assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, null).getSql(), is("SELECT x.age, x.id as ORDER_BY_DERIVED_0, x.name as GROUP_BY_DERIVED_0 FROM table_1 x GROUP BY x.id ORDER BY x.name"));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
+                "SELECT x.age FROM table_x x GROUP BY x.id ORDER BY x.name", DatabaseType.MySQL, selectStatement, null, Collections.emptyList());
+        assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, null, shardingDataSourceMetaData).getSql(), is(
+                "SELECT x.age, x.id as ORDER_BY_DERIVED_0, x.name as GROUP_BY_DERIVED_0 FROM table_1 x GROUP BY x.id ORDER BY x.name"));
     }
     
     @Test
@@ -125,7 +136,8 @@ public final class SQLRewriteEngineTest {
         itemsToken.getItems().addAll(Arrays.asList("COUNT(x.age) as AVG_DERIVED_COUNT_0", "SUM(x.age) as AVG_DERIVED_SUM_0"));
         selectStatement.getSqlTokens().add(itemsToken);
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT AVG(x.age) FROM table_x x", DatabaseType.MySQL, selectStatement, null, Collections.emptyList());
-        assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, null).getSql(), is("SELECT AVG(x.age), COUNT(x.age) as AVG_DERIVED_COUNT_0, SUM(x.age) as AVG_DERIVED_SUM_0 FROM table_1 x"));
+        assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, null, shardingDataSourceMetaData).getSql(), is(
+                "SELECT AVG(x.age), COUNT(x.age) as AVG_DERIVED_COUNT_0, SUM(x.age) as AVG_DERIVED_SUM_0 FROM table_1 x"));
     }
     
     @Test
@@ -144,9 +156,9 @@ public final class SQLRewriteEngineTest {
         shardingCondition.getDataNodes().add(new DataNode("db0.table_x"));
         TableUnit tableUnit = new TableUnit("db0");
         tableUnit.getRoutingTables().add(new RoutingTable("table_x", "table_x"));
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(
-                shardingRule, "INSERT INTO table_x (name, age) VALUES (?, ?)", DatabaseType.MySQL, insertStatement, new ShardingConditions(Collections.<ShardingCondition>singletonList(shardingCondition)), parameters);
-        assertThat(rewriteEngine.rewrite(true).toSQL(tableUnit, tableTokens, null).getSql(), is("INSERT INTO table_1 (name, age, id) VALUES (?, ?, ?)"));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "INSERT INTO table_x (name, age) VALUES (?, ?)", 
+                DatabaseType.MySQL, insertStatement, new ShardingConditions(Collections.<ShardingCondition>singletonList(shardingCondition)), parameters);
+        assertThat(rewriteEngine.rewrite(true).toSQL(tableUnit, tableTokens, null, shardingDataSourceMetaData).getSql(), is("INSERT INTO table_1 (name, age, id) VALUES (?, ?, ?)"));
     }
     
     @Test
@@ -169,9 +181,9 @@ public final class SQLRewriteEngineTest {
         shardingCondition.getDataNodes().add(new DataNode("db0.table_x"));
         TableUnit tableUnit = new TableUnit("db0");
         tableUnit.getRoutingTables().add(new RoutingTable("table_x", "table_x"));
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(
-                shardingRule, "INSERT INTO `table_x` VALUES (?)", DatabaseType.MySQL, insertStatement, new ShardingConditions(Collections.<ShardingCondition>singletonList(shardingCondition)), parameters);
-        assertThat(rewriteEngine.rewrite(true).toSQL(tableUnit, tableTokens, null).getSql(), is("INSERT INTO table_1(name, id) VALUES (?, ?)"));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
+                "INSERT INTO `table_x` VALUES (?)", DatabaseType.MySQL, insertStatement, new ShardingConditions(Collections.<ShardingCondition>singletonList(shardingCondition)), parameters);
+        assertThat(rewriteEngine.rewrite(true).toSQL(tableUnit, tableTokens, null, shardingDataSourceMetaData).getSql(), is("INSERT INTO table_1(name, id) VALUES (?, ?)"));
     }
     
     @Test
@@ -191,9 +203,9 @@ public final class SQLRewriteEngineTest {
         shardingCondition.getDataNodes().add(new DataNode("db0.table_x"));
         TableUnit tableUnit = new TableUnit("db0");
         tableUnit.getRoutingTables().add(new RoutingTable("table_x", "table_x"));
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(
-                shardingRule, "INSERT INTO `table_x` VALUES (10)", DatabaseType.MySQL, insertStatement, new ShardingConditions(Collections.<ShardingCondition>singletonList(shardingCondition)), Collections.emptyList());
-        assertThat(rewriteEngine.rewrite(true).toSQL(tableUnit, tableTokens, null).getSql(), is("INSERT INTO table_1(name, id) VALUES (10, 1)"));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "INSERT INTO `table_x` VALUES (10)", 
+                DatabaseType.MySQL, insertStatement, new ShardingConditions(Collections.<ShardingCondition>singletonList(shardingCondition)), Collections.emptyList());
+        assertThat(rewriteEngine.rewrite(true).toSQL(tableUnit, tableTokens, null, shardingDataSourceMetaData).getSql(), is("INSERT INTO table_1(name, id) VALUES (10, 1)"));
     }
     
     @Test
@@ -216,9 +228,9 @@ public final class SQLRewriteEngineTest {
         shardingCondition.getDataNodes().add(new DataNode("db0.table_x"));
         TableUnit tableUnit = new TableUnit("db0");
         tableUnit.getRoutingTables().add(new RoutingTable("table_x", "table_x"));
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(
-                shardingRule, "INSERT INTO `table_x` VALUES (10, 1)", DatabaseType.MySQL, insertStatement, new ShardingConditions(Collections.<ShardingCondition>singletonList(shardingCondition)), parameters);
-        assertThat(rewriteEngine.rewrite(true).toSQL(tableUnit, tableTokens, null).getSql(), is("INSERT INTO table_1(name, id) VALUES (10, 1)"));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
+                "INSERT INTO `table_x` VALUES (10, 1)", DatabaseType.MySQL, insertStatement, new ShardingConditions(Collections.<ShardingCondition>singletonList(shardingCondition)), parameters);
+        assertThat(rewriteEngine.rewrite(true).toSQL(tableUnit, tableTokens, null, shardingDataSourceMetaData).getSql(), is("INSERT INTO table_1(name, id) VALUES (10, 1)"));
     }
     
     @Test
@@ -241,9 +253,9 @@ public final class SQLRewriteEngineTest {
         shardingCondition.getDataNodes().add(new DataNode("db0.table_x"));
         TableUnit tableUnit = new TableUnit("db0");
         tableUnit.getRoutingTables().add(new RoutingTable("table_x", "table_x"));
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(
-                shardingRule, "INSERT INTO `table_x` VALUES (?, ?)", DatabaseType.MySQL, insertStatement, new ShardingConditions(Collections.<ShardingCondition>singletonList(shardingCondition)), parameters);
-        assertThat(rewriteEngine.rewrite(true).toSQL(tableUnit, tableTokens, null).getSql(), is("INSERT INTO table_1(name, id) VALUES (?, ?)"));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
+                "INSERT INTO `table_x` VALUES (?, ?)", DatabaseType.MySQL, insertStatement, new ShardingConditions(Collections.<ShardingCondition>singletonList(shardingCondition)), parameters);
+        assertThat(rewriteEngine.rewrite(true).toSQL(tableUnit, tableTokens, null, shardingDataSourceMetaData).getSql(), is("INSERT INTO table_1(name, id) VALUES (?, ?)"));
     }
     
     @Test
@@ -255,7 +267,7 @@ public final class SQLRewriteEngineTest {
         selectStatement.getSqlTokens().add(new OffsetToken(33, 2));
         selectStatement.getSqlTokens().add(new RowCountToken(36, 2));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT x.id FROM table_x x LIMIT 2, 2", DatabaseType.MySQL, selectStatement, null, Collections.emptyList());
-        assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, null).getSql(), is("SELECT x.id FROM table_1 x LIMIT 0, 4"));
+        assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, null, shardingDataSourceMetaData).getSql(), is("SELECT x.id FROM table_1 x LIMIT 0, 4"));
     }
     
     @Test
@@ -266,9 +278,9 @@ public final class SQLRewriteEngineTest {
         selectStatement.getSqlTokens().add(new TableToken(68, 0, "table_x"));
         selectStatement.getSqlTokens().add(new OffsetToken(119, 2));
         selectStatement.getSqlTokens().add(new RowCountToken(98, 4));
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
-                "SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_x x) row_ WHERE rownum<=4) t WHERE t.rownum_>2", DatabaseType.Oracle, selectStatement, null, Collections.emptyList());
-        assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, null).getSql(),
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_x x) row_ WHERE rownum<=4) t WHERE t.rownum_>2", 
+                DatabaseType.Oracle, selectStatement, null, Collections.emptyList());
+        assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, null, shardingDataSourceMetaData).getSql(),
                 is("SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_1 x) row_ WHERE rownum<=4) t WHERE t.rownum_>0"));
     }
     
@@ -280,9 +292,9 @@ public final class SQLRewriteEngineTest {
         selectStatement.getSqlTokens().add(new TableToken(85, 0, "table_x"));
         selectStatement.getSqlTokens().add(new OffsetToken(123, 2));
         selectStatement.getSqlTokens().add(new RowCountToken(26, 4));
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
-                "SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_x x) AS row_ WHERE row_.rownum_>2", DatabaseType.SQLServer, selectStatement, null, Collections.emptyList());
-        assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, null).getSql(),
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_x x) AS row_ WHERE row_.rownum_>2", 
+                DatabaseType.SQLServer, selectStatement, null, Collections.emptyList());
+        assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, null, shardingDataSourceMetaData).getSql(),
                 is("SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_1 x) AS row_ WHERE row_.rownum_>0"));
     }
     
@@ -297,7 +309,7 @@ public final class SQLRewriteEngineTest {
         selectStatement.getSqlTokens().add(new OffsetToken(33, 2));
         selectStatement.getSqlTokens().add(new RowCountToken(36, 2));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT x.id FROM table_x x LIMIT 2, 2", DatabaseType.MySQL, selectStatement, null, Collections.emptyList());
-        assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, null).getSql(), is("SELECT x.id FROM table_1 x LIMIT 0, 2147483647"));
+        assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, null, shardingDataSourceMetaData).getSql(), is("SELECT x.id FROM table_1 x LIMIT 0, 2147483647"));
     }
     
     @Test
@@ -310,9 +322,9 @@ public final class SQLRewriteEngineTest {
         selectStatement.getSqlTokens().add(new RowCountToken(98, 4));
         selectStatement.getOrderByItems().add(new OrderItem("x", "id", OrderDirection.ASC, OrderDirection.ASC, Optional.<String>absent()));
         selectStatement.getGroupByItems().add(new OrderItem("x", "id", OrderDirection.DESC, OrderDirection.ASC, Optional.<String>absent()));
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
-                "SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_x x) row_ WHERE rownum<=4) t WHERE t.rownum_>2", DatabaseType.Oracle, selectStatement, null, Collections.emptyList());
-        assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, null).getSql(),
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_x x) row_ WHERE rownum<=4) t WHERE t.rownum_>2", 
+                DatabaseType.Oracle, selectStatement, null, Collections.emptyList());
+        assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, null, shardingDataSourceMetaData).getSql(),
                 is("SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_1 x) row_ WHERE rownum<=2147483647) t WHERE t.rownum_>0"));
     }
     
@@ -326,9 +338,9 @@ public final class SQLRewriteEngineTest {
         selectStatement.getSqlTokens().add(new RowCountToken(26, 4));
         selectStatement.getOrderByItems().add(new OrderItem("x", "id", OrderDirection.ASC, OrderDirection.ASC, Optional.<String>absent()));
         selectStatement.getGroupByItems().add(new OrderItem("x", "id", OrderDirection.DESC, OrderDirection.ASC, Optional.<String>absent()));
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
-                "SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_x x) AS row_ WHERE row_.rownum_>2", DatabaseType.SQLServer, selectStatement, null, Collections.emptyList());
-        assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, null).getSql(),
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_x x) AS row_ WHERE row_.rownum_>2", 
+                DatabaseType.SQLServer, selectStatement, null, Collections.emptyList());
+        assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, null, shardingDataSourceMetaData).getSql(),
                 is("SELECT * FROM (SELECT TOP(2147483647) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_1 x) AS row_ WHERE row_.rownum_>0"));
     }
     
@@ -341,7 +353,7 @@ public final class SQLRewriteEngineTest {
         selectStatement.getSqlTokens().add(new OffsetToken(33, 2));
         selectStatement.getSqlTokens().add(new RowCountToken(36, 2));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT x.id FROM table_x x LIMIT 2, 2", DatabaseType.MySQL, selectStatement, null, Collections.emptyList());
-        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, null).getSql(), is("SELECT x.id FROM table_1 x LIMIT 2, 2"));
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, null, shardingDataSourceMetaData).getSql(), is("SELECT x.id FROM table_1 x LIMIT 2, 2"));
     }
     
     @Test
@@ -352,9 +364,9 @@ public final class SQLRewriteEngineTest {
         selectStatement.getSqlTokens().add(new TableToken(68, 0, "table_x"));
         selectStatement.getSqlTokens().add(new OffsetToken(119, 2));
         selectStatement.getSqlTokens().add(new RowCountToken(98, 4));
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
-                "SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_x x) row_ WHERE rownum<=4) t WHERE t.rownum_>2", DatabaseType.Oracle, selectStatement, null, Collections.emptyList());
-        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, null).getSql(),
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_x x) row_ WHERE rownum<=4) t WHERE t.rownum_>2", 
+                DatabaseType.Oracle, selectStatement, null, Collections.emptyList());
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, null, shardingDataSourceMetaData).getSql(),
                 is("SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_1 x) row_ WHERE rownum<=4) t WHERE t.rownum_>2"));
     }
     
@@ -366,9 +378,9 @@ public final class SQLRewriteEngineTest {
         selectStatement.getSqlTokens().add(new TableToken(85, 0, "table_x"));
         selectStatement.getSqlTokens().add(new OffsetToken(123, 2));
         selectStatement.getSqlTokens().add(new RowCountToken(26, 4));
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
-                "SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_x x) AS row_ WHERE row_.rownum_>2", DatabaseType.SQLServer, selectStatement, null, Collections.emptyList());
-        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, null).getSql(),
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_x x) AS row_ WHERE row_.rownum_>2", 
+                DatabaseType.SQLServer, selectStatement, null, Collections.emptyList());
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, null, shardingDataSourceMetaData).getSql(),
                 is("SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_1 x) AS row_ WHERE row_.rownum_>2"));
     }
     
@@ -379,8 +391,10 @@ public final class SQLRewriteEngineTest {
         selectStatement.getOrderByItems().add(new OrderItem("x", "name", OrderDirection.DESC, OrderDirection.ASC, Optional.<String>absent()));
         selectStatement.getSqlTokens().add(new TableToken(25, 0, "table_x"));
         selectStatement.getSqlTokens().add(new OrderByToken(61));
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT x.id, x.name FROM table_x x GROUP BY x.id, x.name DESC", DatabaseType.MySQL, selectStatement, null, Collections.emptyList());
-        assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, null).getSql(), is("SELECT x.id, x.name FROM table_1 x GROUP BY x.id, x.name DESC ORDER BY id ASC,name DESC "));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
+                "SELECT x.id, x.name FROM table_x x GROUP BY x.id, x.name DESC", DatabaseType.MySQL, selectStatement, null, Collections.emptyList());
+        assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, null, shardingDataSourceMetaData).getSql(), is(
+                "SELECT x.id, x.name FROM table_1 x GROUP BY x.id, x.name DESC ORDER BY id ASC,name DESC "));
     }
     
     @Test
@@ -398,7 +412,7 @@ public final class SQLRewriteEngineTest {
         SQLBuilder sqlBuilder = sqlRewriteEngine.rewrite(true);
         TableUnit tableUnit = new TableUnit("db0");
         tableUnit.getRoutingTables().add(new RoutingTable("table_x", "table_x"));
-        assertThat(sqlRewriteEngine.generateSQL(tableUnit, sqlBuilder).getSql(), is("SELECT table_x.id, x.name FROM table_x x, table_y y WHERE table_x.id=? AND x.name=?"));
+        assertThat(sqlRewriteEngine.generateSQL(tableUnit, sqlBuilder, shardingDataSourceMetaData).getSql(), is("SELECT table_x.id, x.name FROM table_x x, table_y y WHERE table_x.id=? AND x.name=?"));
     }
     
     @Test
@@ -408,7 +422,7 @@ public final class SQLRewriteEngineTest {
         selectStatement.getSqlTokens().add(new TableToken(18, 0, "table_x"));
         selectStatement.getSqlTokens().add(new SchemaToken(29, "table_x", "table_x"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SHOW CREATE TABLE table_x ON table_x", DatabaseType.MySQL, selectStatement, null, Collections.emptyList());
-        assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, shardingRule).getSql(), is("SHOW CREATE TABLE table_y ON db0"));
+        assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SHOW CREATE TABLE table_y ON actual_db"));
     }
     
     @Test
@@ -416,7 +430,7 @@ public final class SQLRewriteEngineTest {
         selectStatement.getSqlTokens().add(new IndexToken(13, "index_name", "table_x"));
         selectStatement.getSqlTokens().add(new TableToken(27, 0, "table_x"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "CREATE INDEX index_name ON table_x ('column')", DatabaseType.MySQL, selectStatement, null, Collections.emptyList());
-        assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, shardingRule).getSql(), is("CREATE INDEX index_name_table_1 ON table_1 ('column')"));
+        assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("CREATE INDEX index_name_table_1 ON table_1 ('column')"));
     }
     
     @Test
@@ -424,104 +438,112 @@ public final class SQLRewriteEngineTest {
         selectStatement.getSqlTokens().add(new IndexToken(13, "logic_index", ""));
         selectStatement.getSqlTokens().add(new TableToken(28, 0, "table_x"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "CREATE INDEX index_names ON table_x ('column')", DatabaseType.MySQL, selectStatement, null, Collections.emptyList());
-        assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, shardingRule).getSql(), is("CREATE INDEX logic_index_table_1 ON table_1 ('column')"));
+        assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("CREATE INDEX logic_index_table_1 ON table_1 ('column')"));
     }
     
     @Test
     public void assertTableTokenWithoutBackQuoteForShow() {
         showTablesStatement.getSqlTokens().add(new TableToken(18, 0, "table_x"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SHOW COLUMNS FROM table_x", DatabaseType.MySQL, showTablesStatement, null, Collections.emptyList());
-        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule).getSql(), is("SHOW COLUMNS FROM table_1"));
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SHOW COLUMNS FROM table_1"));
     }
     
     @Test
     public void assertTableTokenWithoutBackQuoteFromSchemaForShow() {
         showTablesStatement.getSqlTokens().add(new TableToken(18, 0, "table_x"));
+        showTablesStatement.getSqlTokens().add(new SchemaToken(31, "'sharding_db'", "table_x"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SHOW COLUMNS FROM table_x FROM 'sharding_db'", DatabaseType.MySQL, showTablesStatement, null, Collections.emptyList());
-        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule).getSql(), is("SHOW COLUMNS FROM table_1 FROM 'sharding_db'"));
+        assertThat(rewriteEngine.rewrite(false).toSQL(
+                null, new LinkedHashMap<String, String>() {{put("table_x", "table_x");}}, shardingRule, shardingDataSourceMetaData).getSql(), is("SHOW COLUMNS FROM table_x FROM actual_db"));
     }
     
     @Test
     public void assertTableTokenWithBackQuoteForShow() {
         showTablesStatement.getSqlTokens().add(new TableToken(18, 0, "`table_x`"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SHOW COLUMNS FROM `table_x`", DatabaseType.MySQL, showTablesStatement, null, Collections.emptyList());
-        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule).getSql(), is("SHOW COLUMNS FROM table_1"));
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SHOW COLUMNS FROM table_1"));
     }
     
     @Test
     public void assertTableTokenWithBackQuoteFromSchemaForShow() {
         showTablesStatement.getSqlTokens().add(new TableToken(18, 0, "`table_x`"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SHOW COLUMNS FROM `table_x` FROM 'sharding_db'", DatabaseType.MySQL, showTablesStatement, null, Collections.emptyList());
-        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule).getSql(), is("SHOW COLUMNS FROM table_1 FROM 'sharding_db'"));
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SHOW COLUMNS FROM table_1 FROM 'sharding_db'"));
     }
     
     @Test
     public void assertTableTokenWithSchemaForShow() {
         showTablesStatement.getSqlTokens().add(new TableToken(18, "sharding_db".length() + 1, "table_x"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SHOW COLUMNS FROM sharding_db.table_x", DatabaseType.MySQL, showTablesStatement, null, Collections.emptyList());
-        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule).getSql(), is("SHOW COLUMNS FROM table_1"));
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SHOW COLUMNS FROM table_1"));
     }
     
     @Test
     public void assertTableTokenWithSchemaFromSchemaForShow() {
         showTablesStatement.getSqlTokens().add(new TableToken(18, "sharding_db".length() + 1, "table_x"));
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SHOW COLUMNS FROM sharding_db.table_x FROM sharding_db", DatabaseType.MySQL, showTablesStatement, null, Collections.emptyList());
-        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule).getSql(), is("SHOW COLUMNS FROM table_1 FROM sharding_db"));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
+                "SHOW COLUMNS FROM sharding_db.table_x FROM sharding_db", DatabaseType.MySQL, showTablesStatement, null, Collections.emptyList());
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SHOW COLUMNS FROM table_1 FROM sharding_db"));
     }
     
     @Test
     public void assertTableTokenWithBackQuoteWithSchemaForShow() {
         showTablesStatement.getSqlTokens().add(new TableToken(18, "sharding_db".length() + 1, "`table_x`"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SHOW COLUMNS FROM sharding_db.`table_x`", DatabaseType.MySQL, showTablesStatement, null, Collections.emptyList());
-        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule).getSql(), is("SHOW COLUMNS FROM table_1"));
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SHOW COLUMNS FROM table_1"));
     }
     
     @Test
     public void assertTableTokenWithBackQuoteWithSchemaFromSchemaForShow() {
         showTablesStatement.getSqlTokens().add(new TableToken(18, "sharding_db".length() + 1, "`table_x`"));
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SHOW COLUMNS FROM sharding_db.`table_x` FROM sharding_db", DatabaseType.MySQL, showTablesStatement, null, Collections.emptyList());
-        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule).getSql(), is("SHOW COLUMNS FROM table_1 FROM sharding_db"));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
+                "SHOW COLUMNS FROM sharding_db.`table_x` FROM sharding_db", DatabaseType.MySQL, showTablesStatement, null, Collections.emptyList());
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SHOW COLUMNS FROM table_1 FROM sharding_db"));
     }
     
     @Test
     public void assertTableTokenWithSchemaWithBackQuoteForShow() {
         showTablesStatement.getSqlTokens().add(new TableToken(18, "`sharding_db`".length() + 1, "`table_x`"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SHOW COLUMNS FROM `sharding_db`.`table_x`", DatabaseType.MySQL, showTablesStatement, null, Collections.emptyList());
-        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule).getSql(), is("SHOW COLUMNS FROM table_1"));
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SHOW COLUMNS FROM table_1"));
     }
     
     @Test
     public void assertTableTokenWithSchemaWithBackQuoteFromSchemaForShow() {
         showTablesStatement.getSqlTokens().add(new TableToken(18, "`sharding_db`".length() + 1, "`table_x`"));
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SHOW COLUMNS FROM `sharding_db`.`table_x` FROM sharding_db", DatabaseType.MySQL, showTablesStatement, null, Collections.emptyList());
-        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule).getSql(), is("SHOW COLUMNS FROM table_1 FROM sharding_db"));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
+                "SHOW COLUMNS FROM `sharding_db`.`table_x` FROM sharding_db", DatabaseType.MySQL, showTablesStatement, null, Collections.emptyList());
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SHOW COLUMNS FROM table_1 FROM sharding_db"));
     }
     
     @Test
     public void assertTableTokenWithSchemaForSelect() {
         selectStatement.getSqlTokens().add(new TableToken(14, "sharding_db".length() + 1, "table_x"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT * FROM sharding_db.table_x", DatabaseType.MySQL, selectStatement, null, Collections.emptyList());
-        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule).getSql(), is("SELECT * FROM table_1"));
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SELECT * FROM table_1"));
     }
     
     @Test
     public void assertTableTokenWithSchemaForInsert() {
         insertStatement.getSqlTokens().add(new TableToken(12, "sharding_db".length() + 1, "table_x"));
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "INSERT INTO sharding_db.table_x (order_id, user_id, status) values (1, 1, 'OK')", DatabaseType.MySQL, insertStatement, null, Collections.emptyList());
-        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule).getSql(), is("INSERT INTO table_1 (order_id, user_id, status) values (1, 1, 'OK')"));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
+                "INSERT INTO sharding_db.table_x (order_id, user_id, status) values (1, 1, 'OK')", DatabaseType.MySQL, insertStatement, null, Collections.emptyList());
+        assertThat(rewriteEngine.rewrite(false).toSQL(
+                null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("INSERT INTO table_1 (order_id, user_id, status) values (1, 1, 'OK')"));
     }
     
     @Test
     public void assertTableTokenWithSchemaForUpdate() {
         dmlStatement.getSqlTokens().add(new TableToken(7, "`sharding_db`".length() + 1, "table_x"));
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "UPDATE `sharding_db`.table_x SET user_id=1 WHERE order_id=1", DatabaseType.MySQL, dmlStatement, null, Collections.emptyList());
-        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule).getSql(), is("UPDATE table_1 SET user_id=1 WHERE order_id=1"));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
+                "UPDATE `sharding_db`.table_x SET user_id=1 WHERE order_id=1", DatabaseType.MySQL, dmlStatement, null, Collections.emptyList());
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("UPDATE table_1 SET user_id=1 WHERE order_id=1"));
     }
     
     @Test
     public void assertTableTokenWithSchemaForDelete() {
         dmlStatement.getSqlTokens().add(new TableToken(12, "`sharding_db`".length() + 1, "`table_x`"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "DELETE FROM `sharding_db`.`table_x` WHERE user_id=1", DatabaseType.MySQL, dmlStatement, null, Collections.emptyList());
-        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule).getSql(), is("DELETE FROM table_1 WHERE user_id=1"));
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("DELETE FROM table_1 WHERE user_id=1"));
     }
 }

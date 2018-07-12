@@ -72,9 +72,9 @@ public final class ShowTablesMergedResult extends MemoryMergedResult {
                 String actualTableName = memoryResultSetRow.getCell(1).toString();
                 Optional<TableRule> tableRule = shardingRule.tryFindTableRuleByActualTable(actualTableName);
                 if (!tableRule.isPresent()) {
-                    if (shardingMetaData.getTableMetaDataMap().keySet().contains(actualTableName)) {
+                    if (shardingMetaData.getTableMetaDataMap().keySet().contains(actualTableName) && tableNames.add(actualTableName)) {
                         result.add(memoryResultSetRow);
-                    } else if (!shardingMetaData.isSupportedDatabaseType()) {
+                    } else if (!shardingMetaData.isSupportedDatabaseType() && tableNames.add(actualTableName)) {
                         result.add(memoryResultSetRow);
                     }
                 } else if (tableNames.add(tableRule.get().getLogicTable())) {

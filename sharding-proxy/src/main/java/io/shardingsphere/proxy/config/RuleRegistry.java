@@ -21,10 +21,12 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.ShardingProperties;
 import io.shardingsphere.core.constant.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ProxyAuthority;
@@ -73,7 +75,7 @@ public final class RuleRegistry implements AutoCloseable {
     
     private ShardingMetaData shardingMetaData; 
 
-    private int maxWorkingThreads;
+    private int maxWorkingThreads = Runtime.getRuntime().availableProcessors() * 2;
     
     private ListeningExecutorService executorService;
     
@@ -86,6 +88,8 @@ public final class RuleRegistry implements AutoCloseable {
     private ProxyAuthority proxyAuthority;
     
     private OrchestrationFacade orchestrationFacade;
+    
+    private ShardingDataSourceMetaData shardingDataSourceMetaData;
     
     /**
      * Initialize rule registry.
@@ -111,6 +115,7 @@ public final class RuleRegistry implements AutoCloseable {
         maxWorkingThreads = yamlProxyConfiguration.getMaxWorkingThreads();
         executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(maxWorkingThreads));
         showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
+        shardingDataSourceMetaData = new ShardingDataSourceMetaData(dataSourceMap, DatabaseType.MySQL);
         shardingMetaData = new ProxyShardingMetaData(executorService, dataSourceMap);
         if (!isOnlyMasterSlave) {
             shardingMetaData.init(shardingRule);

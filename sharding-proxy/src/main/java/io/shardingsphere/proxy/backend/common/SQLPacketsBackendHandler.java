@@ -104,14 +104,14 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
         }
     }
     
-    protected CommandResponsePackets executeForMasterSlave() {
+    private CommandResponsePackets executeForMasterSlave() {
         MasterSlaveRouter masterSlaveRouter = new MasterSlaveRouter(RuleRegistry.getInstance().getMasterSlaveRule());
         SQLStatement sqlStatement = new SQLJudgeEngine(rebuilder.sql()).judge();
         String dataSourceName = masterSlaveRouter.route(sqlStatement.getType()).iterator().next();
         
         synchronizedFuture = new SynchronizedFuture<>(1);
         MySQLResultCache.getInstance().putFuture(rebuilder.connectionId(), synchronizedFuture);
-        CommandPacket commandPacket = rebuilder.rebuild(new Object[]{rebuilder.sequenceId(), rebuilder.connectionId(), rebuilder.sql()});
+        CommandPacket commandPacket = rebuilder.rebuild(rebuilder.sequenceId(), rebuilder.connectionId(), rebuilder.sql());
         executeCommand(dataSourceName, rebuilder.connectionId(), commandPacket);
         //TODO timeout should be set.
         List<QueryResult> queryResults = synchronizedFuture.get(CONNECT_TIMEOUT, TimeUnit.SECONDS);
@@ -124,8 +124,9 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
         return merge(sqlStatement, packets, queryResults);
     }
     
-    protected CommandResponsePackets executeForSharding() {
-        StatementRoutingEngine routingEngine = new StatementRoutingEngine(RuleRegistry.getInstance().getShardingRule(), RuleRegistry.getInstance().getShardingMetaData(), databaseType, showSQL);
+    private CommandResponsePackets executeForSharding() {
+        StatementRoutingEngine routingEngine = new StatementRoutingEngine(RuleRegistry.getInstance().getShardingRule(),
+                RuleRegistry.getInstance().getShardingMetaData(), databaseType, showSQL, RuleRegistry.getInstance().getShardingDataSourceMetaData());
         SQLRouteResult routeResult = routingEngine.route(rebuilder.sql());
         if (routeResult.getExecutionUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
@@ -134,7 +135,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
         synchronizedFuture = new SynchronizedFuture<>(routeResult.getExecutionUnits().size());
         MySQLResultCache.getInstance().putFuture(rebuilder.connectionId(), synchronizedFuture);
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
-            CommandPacket commandPacket = rebuilder.rebuild(new Object[]{rebuilder.sequenceId(), rebuilder.connectionId(), each.getSqlUnit().getSql()});
+            CommandPacket commandPacket = rebuilder.rebuild(rebuilder.sequenceId(), rebuilder.connectionId(), each.getSqlUnit().getSql());
             executeCommand(each.getDataSource(), rebuilder.connectionId(), commandPacket);
         }
         //TODO timeout should be set.
@@ -144,10 +145,10 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
         List<CommandResponsePackets> packets = Lists.newArrayListWithCapacity(queryResults.size());
         for (QueryResult each : queryResults) {
             MySQLQueryResult queryResult = (MySQLQueryResult) each;
-            if (currentSequenceId == 0) {
+            if (0 == currentSequenceId) {
                 currentSequenceId = queryResult.getCurrentSequenceId();
             }
-            if (columnCount == 0) {
+            if (0 == columnCount) {
                 columnCount = queryResult.getColumnCount();
             }
             packets.add(queryResult.getCommandResponsePackets());
@@ -158,7 +159,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
         return result;
     }
     
-    protected CommandResponsePackets merge(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets, final List<QueryResult> queryResults) {
+    private CommandResponsePackets merge(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets, final List<QueryResult> queryResults) {
         CommandResponsePackets headPackets = new CommandResponsePackets();
         for (CommandResponsePackets each : packets) {
             headPackets.addPacket(each.getHeadPacket());
