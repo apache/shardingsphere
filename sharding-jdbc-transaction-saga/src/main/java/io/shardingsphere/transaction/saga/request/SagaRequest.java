@@ -20,13 +20,13 @@ package io.shardingsphere.transaction.saga.request;
 import lombok.AllArgsConstructor;
 
 /**
- * Request.
+ * SagaRequest.
  * @see <a href="https://github.com/apache/incubator-servicecomb-saga/blob/old-saga/docs/api/api.md">Saga API</a>
  *
  * @author zhangyonglun
  */
 @AllArgsConstructor
-public class Request {
+public class SagaRequest {
     
     private final String id;
     

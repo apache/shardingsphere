@@ -32,5 +32,5 @@ public class SagaApi {
     
     private final String policy;
     
-    private List<Request> requests;
+    private List<SagaRequest> sagaRequests;
 }
