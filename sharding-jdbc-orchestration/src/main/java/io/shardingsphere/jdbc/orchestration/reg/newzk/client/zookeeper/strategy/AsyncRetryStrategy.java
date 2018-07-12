@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /*
- * async retry strategy
+ * Async retry strategy.
  *
  * @author lidongbo
  */

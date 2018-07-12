@@ -32,7 +32,8 @@ import java.io.IOException;
 import java.util.List;
 
 /*
- * todo
+ * Cache Client.
+ * todo Partially prepared product
  * @author lidongbo
  */
 public final class CacheClient extends UsualClient {
@@ -50,8 +51,8 @@ public final class CacheClient extends UsualClient {
         super.start();
         try {
             useCacheStrategy(CacheStrategy.WATCH);
-        } catch (KeeperException e) {
-            LOGGER.error("CacheClient useCacheStrategy : " + e.getMessage());
+        } catch (final KeeperException ex) {
+            LOGGER.error("CacheClient useCacheStrategy : " + ex.getMessage());
         }
     }
     

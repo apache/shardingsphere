@@ -50,8 +50,8 @@ public abstract class ClientTask implements Runnable {
     public void run() {
         try {
             run(provider);
-        } catch (KeeperException | InterruptedException e) {
-            LOGGER.error(e.getMessage(), e);
+        } catch (final KeeperException | InterruptedException ex) {
+            LOGGER.error(ex.getMessage(), ex);
         }
     }
 }

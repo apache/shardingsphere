@@ -160,12 +160,13 @@ public abstract class BaseClient implements IClient {
             }
             rootExist = true;
             LOGGER.debug("creating root:{}", rootNode);
-        } catch (KeeperException.NodeExistsException e) {
-            LOGGER.warn("root create:{}", e.getMessage());
+        } catch (final KeeperException.NodeExistsException ex) {
+            LOGGER.warn("root create:{}", ex.getMessage());
             rootExist = true;
             return;
         }
         holder.getZooKeeper().exists(rootNode, WatcherCreator.deleteWatcher(new ZookeeperEventListener(rootNode) {
+            
             @Override
             public void process(final WatchedEvent event) {
                 rootExist = false;
@@ -177,8 +178,8 @@ public abstract class BaseClient implements IClient {
     protected void deleteNamespace() throws KeeperException, InterruptedException {
         try {
             holder.getZooKeeper().delete(rootNode, ZookeeperConstants.VERSION);
-        } catch (KeeperException.NodeExistsException | KeeperException.NotEmptyException e) {
-            LOGGER.info("delete root :{}", e.getMessage());
+        } catch (final KeeperException.NodeExistsException | KeeperException.NotEmptyException ex) {
+            LOGGER.info("delete root :{}", ex.getMessage());
         }
         rootExist = false;
         LOGGER.debug("delete root:{}", rootNode);

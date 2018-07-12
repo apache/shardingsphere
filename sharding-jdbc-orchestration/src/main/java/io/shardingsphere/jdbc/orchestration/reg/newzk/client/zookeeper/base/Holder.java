@@ -85,6 +85,7 @@ public class Holder {
     
     private Watcher startWatcher() {
         return new Watcher() {
+            
             public void process(final WatchedEvent event) {
                 processConnection(event);
                 processGlobalListener(event);
@@ -119,9 +120,9 @@ public class Holder {
                     LOGGER.warn("startWatcher Event.KeeperState.Expired");
                     reset();
                     // CHECKSTYLE:OFF
-                } catch (Exception e) {
+                } catch (final Exception ex) {
                     // CHECKSTYLE:ON
-                    LOGGER.error("event state Expired:{}", e.getMessage(), e);
+                    LOGGER.error("event state Expired:{}", ex.getMessage(), ex);
                 }
             } else if (Watcher.Event.KeeperState.Disconnected == event.getState()) {
                 connected = false;
@@ -140,7 +141,7 @@ public class Holder {
         if (!Strings.isNullOrEmpty(event.getPath())) {
             try {
                 zooKeeper.exists(event.getPath(), true);
-            } catch (KeeperException | InterruptedException e) {
+            } catch (final KeeperException | InterruptedException ex) {
                 if (connected) {
                     reWatch(event);
                 }
@@ -171,9 +172,9 @@ public class Holder {
             LOGGER.debug("zk closed");
             this.context.close();
             // CHECKSTYLE:OFF
-        } catch (Exception e) {
+        } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            LOGGER.warn("Holder close:{}", e.getMessage());
+            LOGGER.warn("Holder close:{}", ex.getMessage());
         }
     }
 }

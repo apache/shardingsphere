@@ -18,6 +18,8 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section;
 
 /*
+ * Exec strategy type.
+ *
  * @author lidongbo
  */
 public enum StrategyType {

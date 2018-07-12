@@ -107,8 +107,8 @@ public final class PathTree {
                 LOGGER.info("loading but cache status not release");
                 try {
                     Thread.sleep(10L);
-                } catch (InterruptedException e) {
-                    LOGGER.error("loading sleep error:{}", e.getMessage(), e);
+                } catch (final InterruptedException ex) {
+                    LOGGER.error("loading sleep error:{}", ex.getMessage(), ex);
                 }
                 load();
             }
@@ -164,9 +164,9 @@ public final class PathTree {
                         try {
                             load();
                             // CHECKSTYLE:OFF
-                        } catch (Exception e) {
+                        } catch (final Exception ex) {
                             // CHECKSTYLE:ON
-                            LOGGER.error(e.getMessage(), e);
+                            LOGGER.error(ex.getMessage(), ex);
                         }
                     }
                 }
@@ -246,9 +246,9 @@ public final class PathTree {
             }
             put(path, value);
             // CHECKSTYLE:OFF
-        } catch (Exception e) {
+        } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            LOGGER.error("PathTree put error : " + e.getMessage());
+            LOGGER.error("PathTree put error : " + ex.getMessage());
         }
     }
     
@@ -354,8 +354,8 @@ public final class PathTree {
                 try {
                     LOGGER.debug("put but cache status not release");
                     Thread.sleep(10L);
-                } catch (InterruptedException e) {
-                    LOGGER.error("put sleep error:{}", e.getMessage(), e);
+                } catch (final InterruptedException ex) {
+                    LOGGER.error("put sleep error:{}", ex.getMessage(), ex);
                 }
                 put(path, value);
             }
@@ -410,9 +410,9 @@ public final class PathTree {
             }
             deleteAllChildren(rootNode.get());
             // CHECKSTYLE:OFF
-        } catch (Exception ee){
+        } catch (final Exception ex){
             // CHECKSTYLE:ON
-            LOGGER.warn("PathTree close:{}", ee.getMessage());
+            LOGGER.warn("PathTree close:{}", ex.getMessage());
         } finally {
             lock.unlock();
         }

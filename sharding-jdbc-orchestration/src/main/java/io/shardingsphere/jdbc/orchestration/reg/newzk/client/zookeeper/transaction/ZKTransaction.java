@@ -31,6 +31,8 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /*
+ * Zookeeper transaction support.
+ *
  * @author lidongbo
  * @since zookeeper 3.4.0
  */
@@ -51,7 +53,7 @@ public class ZKTransaction extends BaseTransaction {
     @Override
     public ZKTransaction create(final String path, final byte[] data, final List<ACL> acl, final CreateMode createMode) {
         this.transaction.create(PathUtil.getRealPath(rootNode, path), data, acl, createMode);
-        LOGGER.debug("wait create:{},data:{},acl:{},createMode:{}", new Object[]{path, data, acl, createMode});
+        LOGGER.debug("wait create:{},data:{},acl:{},createMode:{}", path, data, acl, createMode);
         return this;
     }
     

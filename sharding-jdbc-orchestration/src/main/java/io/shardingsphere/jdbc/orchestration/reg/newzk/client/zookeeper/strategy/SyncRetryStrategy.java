@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /*
- * sync retry strategy
+ * Sync retry strategy.
  *
  * @author lidongbo
  */
@@ -55,6 +55,7 @@ public class SyncRetryStrategy extends UsualStrategy {
     @Override
     public byte[] getData(final String key) throws KeeperException, InterruptedException {
         RetryCallable<byte[]> retryCallable = new RetryCallable<byte[]>(getProvider(), delayRetryPolicy) {
+            
             @Override
             public void call() throws KeeperException, InterruptedException {
                 setResult(getProvider().getData(getProvider().getRealPath(key)));
@@ -66,6 +67,7 @@ public class SyncRetryStrategy extends UsualStrategy {
     @Override
     public boolean checkExists(final String key) throws KeeperException, InterruptedException {
         RetryCallable<Boolean> retryCallable = new RetryCallable<Boolean>(getProvider(), delayRetryPolicy) {
+            
             @Override
             public void call() throws KeeperException, InterruptedException {
                 setResult(getProvider().exists(getProvider().getRealPath(key)));
@@ -77,6 +79,7 @@ public class SyncRetryStrategy extends UsualStrategy {
     @Override
     public boolean checkExists(final String key, final Watcher watcher) throws KeeperException, InterruptedException {
         RetryCallable<Boolean> retryCallable = new RetryCallable<Boolean>(getProvider(), delayRetryPolicy) {
+            
             @Override
             public void call() throws KeeperException, InterruptedException {
                 setResult(getProvider().exists(getProvider().getRealPath(key), watcher));
@@ -88,6 +91,7 @@ public class SyncRetryStrategy extends UsualStrategy {
     @Override
     public List<String> getChildren(final String key) throws KeeperException, InterruptedException {
         RetryCallable<List<String>> retryCallable = new RetryCallable<List<String>>(getProvider(), delayRetryPolicy) {
+            
             @Override
             public void call() throws KeeperException, InterruptedException {
                 setResult(getProvider().getChildren(getProvider().getRealPath(key)));
@@ -99,6 +103,7 @@ public class SyncRetryStrategy extends UsualStrategy {
     @Override
     public void createCurrentOnly(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
         RetryCallable retryCallable = new RetryCallable(getProvider(), delayRetryPolicy) {
+            
             @Override
             public void call() throws KeeperException, InterruptedException {
                 getProvider().create(getProvider().getRealPath(key), value, createMode);
@@ -110,6 +115,7 @@ public class SyncRetryStrategy extends UsualStrategy {
     @Override
     public void update(final String key, final String value) throws KeeperException, InterruptedException {
         RetryCallable retryCallable = new RetryCallable(getProvider(), delayRetryPolicy) {
+            
             @Override
             public void call() throws KeeperException, InterruptedException {
                 getProvider().update(getProvider().getRealPath(key), value);
@@ -121,6 +127,7 @@ public class SyncRetryStrategy extends UsualStrategy {
     @Override
     public void deleteOnlyCurrent(final String key) throws KeeperException, InterruptedException {
         RetryCallable retryCallable = new RetryCallable(getProvider(), delayRetryPolicy) {
+            
             @Override
             public void call() throws KeeperException, InterruptedException {
                 getProvider().delete(getProvider().getRealPath(key));
@@ -132,6 +139,7 @@ public class SyncRetryStrategy extends UsualStrategy {
     @Override
     public void createAllNeedPath(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
         RetryCallable retryCallable = new RetryCallable(getProvider(), delayRetryPolicy) {
+            
             @Override
             public void call() throws KeeperException, InterruptedException {
                 new UsualStrategy(getProvider()).createAllNeedPath(key, value, createMode);
@@ -143,6 +151,7 @@ public class SyncRetryStrategy extends UsualStrategy {
     @Override
     public void deleteAllChildren(final String key) throws KeeperException, InterruptedException {
         RetryCallable retryCallable = new RetryCallable(getProvider(), delayRetryPolicy) {
+            
             @Override
             public void call() throws KeeperException, InterruptedException {
                 new UsualStrategy(getProvider()).deleteAllChildren(key);
@@ -154,6 +163,7 @@ public class SyncRetryStrategy extends UsualStrategy {
     @Override
     public void deleteCurrentBranch(final String key) throws KeeperException, InterruptedException {
         RetryCallable retryCallable = new RetryCallable(getProvider(), delayRetryPolicy) {
+            
             @Override
             public void call() throws KeeperException, InterruptedException {
                 new UsualStrategy(getProvider()).deleteCurrentBranch(key);

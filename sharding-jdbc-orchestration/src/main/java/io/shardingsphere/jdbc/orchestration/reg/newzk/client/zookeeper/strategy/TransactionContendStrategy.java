@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Stack;
 
 /*
+ * ContentionStrategy with transaction.
+ *
  * @author lidongbo
  * @since zookeeper 3.4.0
  */
@@ -54,6 +56,7 @@ public class TransactionContendStrategy extends ContentionStrategy {
     
     private LeaderElection buildCreateAllNeedElection(final String key, final String value, final CreateMode createMode, final ContentionCallback contentionCallback) {
         return new LeaderElection() {
+            
             @Override
             public void action() throws KeeperException, InterruptedException {
                 LOGGER.debug("ContentionStrategy createAllNeedPath action:{}", key);
@@ -94,6 +97,7 @@ public class TransactionContendStrategy extends ContentionStrategy {
     @Override
     public void deleteAllChildren(final String key) throws KeeperException, InterruptedException {
         getProvider().executeContention(new LeaderElection() {
+            
             @Override
             public void action() throws KeeperException, InterruptedException {
                 ZKTransaction transaction = new ZKTransaction(((BaseProvider) getProvider()).getRootNode(), ((BaseProvider) getProvider()).getHolder());
@@ -123,6 +127,7 @@ public class TransactionContendStrategy extends ContentionStrategy {
     @Override
     public void deleteCurrentBranch(final String key) throws KeeperException, InterruptedException {
         getProvider().executeContention(new LeaderElection() {
+            
             @Override
             public void action() throws KeeperException, InterruptedException {
                 ZKTransaction transaction = new ZKTransaction(((BaseProvider) getProvider()).getRootNode(), ((BaseProvider) getProvider()).getHolder());

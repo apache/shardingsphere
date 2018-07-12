@@ -23,6 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /*
+ * Build public watcher.
+ *
  * @author lidongbo
  */
 public class WatcherCreator {
@@ -30,13 +32,14 @@ public class WatcherCreator {
     private static final Logger LOGGER = LoggerFactory.getLogger(WatcherCreator.class);
     
     /**
-     * get string type data.
+     * Get string type data.
      *
      * @param zookeeperEventListener listener
      * @return watcher
      */
     public static Watcher deleteWatcher(final ZookeeperEventListener zookeeperEventListener) {
         return new Watcher() {
+            
             @Override
             public void process(final WatchedEvent event) {
                 if (zookeeperEventListener.getPath().equals(event.getPath()) && Event.EventType.NodeDeleted.equals(event.getType())) {

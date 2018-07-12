@@ -148,9 +148,9 @@ public class BaseProvider implements IProvider {
         try {
             holder.reset();
             // CHECKSTYLE:OFF
-        } catch (Exception e) {
+        } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            LOGGER.error("resetConnection Exception:{}", e.getMessage(), e);
+            LOGGER.error("resetConnection Exception:{}", ex.getMessage(), ex);
         }
     }
     

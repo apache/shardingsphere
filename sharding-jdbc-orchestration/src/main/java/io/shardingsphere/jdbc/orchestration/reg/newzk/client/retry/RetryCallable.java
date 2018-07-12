@@ -77,15 +77,13 @@ public abstract class RetryCallable<T> {
     public void exec() throws KeeperException, InterruptedException {
         try {
             call();
-        } catch (KeeperException e) {
-            LOGGER.warn("exec KeeperException:{}", e.getMessage());
+        } catch (final KeeperException ex) {
+            LOGGER.warn("exec KeeperException:{}", ex.getMessage());
             delayPolicyExecutor.next();
-            if (Connection.needReset(e)) {
+            if (Connection.needReset(ex)) {
                 provider.resetConnection();
             }
             execDelay();
-        } catch (InterruptedException e) {
-            throw e;
         }
     }
     
@@ -93,12 +91,8 @@ public abstract class RetryCallable<T> {
         for (;;) {
             long delay = delayPolicyExecutor.getNextTick() - System.currentTimeMillis();
             if (delay > 0) {
-                try {
-                    LOGGER.debug("exec delay:{}", delay);
-                    Thread.sleep(delay);
-                } catch (InterruptedException e) {
-                    throw e;
-                }
+                LOGGER.debug("exec delay:{}", delay);
+                Thread.sleep(delay);
             } else {
                 if (delayPolicyExecutor.hasNext()) {
                     LOGGER.debug("exec hasNext");

@@ -24,6 +24,8 @@ import lombok.Getter;
 import org.apache.zookeeper.KeeperException;
 
 /*
+ * Base exec strategy.
+ *
  * @author lidongbo
  */
 public abstract class BaseStrategy implements IExecStrategy {

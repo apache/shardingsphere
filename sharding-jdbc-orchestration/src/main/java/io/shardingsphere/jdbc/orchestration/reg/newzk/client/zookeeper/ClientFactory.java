@@ -31,6 +31,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /*
+ * Client factory.
+ *
  * @author lidongbo
  */
 public class ClientFactory extends BaseClientFactory {
@@ -40,7 +42,7 @@ public class ClientFactory extends BaseClientFactory {
     private DelayRetryPolicy delayRetryPolicy;
     
     /**
-     * create a new client.
+     * Create a new client.
      *
      * @param servers servers
      * @param sessionTimeoutMilliseconds sessionTimeoutMilliseconds
@@ -58,8 +60,8 @@ public class ClientFactory extends BaseClientFactory {
     }
     
     /*
-    * used for create new clients through a existing client
-    * this client is not perhaps the client
+    * Used for create new clients through a existing client.
+    * This client is not perhaps the client.
     */
     synchronized BaseClientFactory newClientByOriginal(final boolean closeOriginal) {
         IClient oldClient = getClient();
@@ -79,7 +81,7 @@ public class ClientFactory extends BaseClientFactory {
     }
     
     /**
-     * wait to register global listener.
+     * Wait to register global listener.
      *
      * @param globalZookeeperEventListener globalListener
      * @return ClientFactory this
@@ -90,7 +92,7 @@ public class ClientFactory extends BaseClientFactory {
     }
     
     /**
-     * set client namespace.
+     * Set client namespace.
      *
      * @param namespace namespace
      * @return ClientFactory this
@@ -101,7 +103,7 @@ public class ClientFactory extends BaseClientFactory {
     }
     
     /**
-     * authorization.
+     * Authorization.
      *
      * @param scheme scheme
      * @param auth auth
@@ -116,7 +118,7 @@ public class ClientFactory extends BaseClientFactory {
     }
     
     /**
-     * set delay retry policy.
+     * Set delay retry policy.
      *
      * @param delayRetryPolicy delayRetryPolicy
      * @return ClientFactory this

@@ -44,6 +44,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /*
+ * Usually use client.
+ *
  * @author lidongbo
  */
 public class UsualClient extends BaseClient {

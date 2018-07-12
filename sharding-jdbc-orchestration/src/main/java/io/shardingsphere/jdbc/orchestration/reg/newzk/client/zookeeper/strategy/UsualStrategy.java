@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /*
- * usual strategy
+ * Usual strategy.
  * 
  * @author lidongbo
  */
@@ -102,7 +102,7 @@ public class UsualStrategy extends BaseStrategy {
                     this.createCurrentOnly(nodes.get(i), ZookeeperConstants.NOTHING_VALUE, CreateMode.PERSISTENT);
                 }
                 LOGGER.debug("node not exist and create:", nodes.get(i));
-            } catch (KeeperException.NodeExistsException e) {
+            } catch (final KeeperException.NodeExistsException ex) {
                 LOGGER.debug("create node exist:{}", nodes.get(i));
             }
         }
@@ -119,21 +119,21 @@ public class UsualStrategy extends BaseStrategy {
         List<String> children;
         try {
             children = getProvider().getChildren(path);
-        } catch (KeeperException.NoNodeException e) {
-            LOGGER.warn("deleteChildren node not exist:{},e:{}", path, e.getMessage());
+        } catch (final KeeperException.NoNodeException ex) {
+            LOGGER.warn("deleteChildren node not exist:{},e:{}", path, ex.getMessage());
             return;
         }
-        for (String child : children) {
-            this.deleteAllChildren(PathUtil.getRealPath(path, child));
+        for (String each : children) {
+            this.deleteAllChildren(PathUtil.getRealPath(path, each));
         }
         if (deleteCurrentNode) {
             try {
                 this.deleteOnlyCurrent(path);
-            } catch (KeeperException.NotEmptyException e) {
-                LOGGER.warn("deleteCurrentNode exist children:{},e:{}", path, e.getMessage());
+            } catch (final KeeperException.NotEmptyException ex) {
+                LOGGER.warn("deleteCurrentNode exist children:{},ex:{}", path, ex.getMessage());
                 deleteChildren(path, true);
-            } catch (KeeperException.NoNodeException e) {
-                LOGGER.warn("deleteCurrentNode node not exist:{},e:{}", path, e.getMessage());
+            } catch (final KeeperException.NoNodeException ex) {
+                LOGGER.warn("deleteCurrentNode node not exist:{},ex:{}", path, ex.getMessage());
             }
         }
     }

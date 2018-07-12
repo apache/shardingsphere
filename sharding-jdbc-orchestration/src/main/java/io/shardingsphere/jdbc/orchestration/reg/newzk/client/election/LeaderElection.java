@@ -52,7 +52,7 @@ public abstract class LeaderElection {
             // todo EPHEMERAL_SEQUENTIAL check index value
             provider.create(node, ZookeeperConstants.CLIENT_ID, CreateMode.EPHEMERAL);
             success = true;
-        } catch (KeeperException.NodeExistsException e) {
+        } catch (final KeeperException.NodeExistsException ex) {
             LOGGER.info("contend not success");
             // TODO or changing_key node value == current client id
             provider.exists(node, WatcherCreator.deleteWatcher(zookeeperEventListener));
@@ -83,9 +83,9 @@ public abstract class LeaderElection {
                     }
                     executeContention(realNode, provider);
                     // CHECKSTYLE:OFF
-                } catch (Exception ee){
+                } catch (final Exception ex){
                     // CHECKSTYLE:ON
-                    LOGGER.error("Listener Exception executeContention:{}", ee.getMessage(), ee);
+                    LOGGER.error("Listener Exception executeContention:{}", ex.getMessage(), ex);
                 }
             }
         });
@@ -96,9 +96,9 @@ public abstract class LeaderElection {
                 done = true;
                 callback();
                 // CHECKSTYLE:OFF
-            } catch (Exception e){
+            } catch (final Exception ex){
                 // CHECKSTYLE:ON
-                LOGGER.error("action Exception executeContention:{}", e.getMessage(), e);
+                LOGGER.error("action Exception executeContention:{}", ex.getMessage(), ex);
             }
             provider.delete(contendNode);
         }
@@ -111,8 +111,8 @@ public abstract class LeaderElection {
         while (!done) {
             try {
                 Thread.sleep(10L);
-            } catch (InterruptedException e) {
-                LOGGER.error("waitDone:{}", e.getMessage(), e);
+            } catch (final InterruptedException ex) {
+                LOGGER.error("waitDone:{}", ex.getMessage(), ex);
             }
         }
     }
