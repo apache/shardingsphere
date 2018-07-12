@@ -20,7 +20,7 @@ package io.shardingsphere.core.rewrite;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.property.DataSourcePropertyManager;
+import io.shardingsphere.core.property.ShardingDataSourceMetaData;
 import io.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.TablePlaceholder;
@@ -119,7 +119,7 @@ public final class SQLBuilderTest {
         sqlBuilder.appendPlaceholder(new SchemaPlaceholder("ds", "table_0"));
         Map<String, String> tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_0", "table_1");
-        DataSourcePropertyManager dataSourcePropertyManager = Mockito.mock(DataSourcePropertyManager.class);
+        ShardingDataSourceMetaData dataSourcePropertyManager = Mockito.mock(ShardingDataSourceMetaData.class);
         Mockito.when(dataSourcePropertyManager.getActualSchemaName(Mockito.anyString())).thenReturn("actual_db");
         assertThat(sqlBuilder.toSQL(null, tableTokens, createShardingRule(), dataSourcePropertyManager).getSql(), is("SHOW CREATE TABLE table_1 ON actual_db"));
     }

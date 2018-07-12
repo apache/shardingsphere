@@ -24,7 +24,7 @@ import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.strategy.HintShardingStrategyConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.fixture.OrderDatabaseHintShardingAlgorithm;
-import io.shardingsphere.core.property.DataSourcePropertyManager;
+import io.shardingsphere.core.property.ShardingDataSourceMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,7 +45,7 @@ public class DatabaseTest {
     
     private Map<String, DataSource> dataSourceMap;
     
-    private DataSourcePropertyManager dataSourcePropertyManager;
+    private ShardingDataSourceMetaData dataSourcePropertyManager;
     
     private ShardingRule shardingRule;
     
@@ -57,7 +57,7 @@ public class DatabaseTest {
         dataSourceMap.put("ds_0", null);
         dataSourceMap.put("ds_1", null);
         shardingRule = new ShardingRule(shardingRuleConfig, dataSourceMap.keySet());
-        dataSourcePropertyManager = Mockito.mock(DataSourcePropertyManager.class);
+        dataSourcePropertyManager = Mockito.mock(ShardingDataSourceMetaData.class);
     }
     
     @Test

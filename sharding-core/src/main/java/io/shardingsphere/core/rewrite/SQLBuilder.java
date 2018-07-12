@@ -23,7 +23,7 @@ import com.google.common.base.Strings;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.optimizer.condition.ShardingCondition;
 import io.shardingsphere.core.optimizer.insert.InsertShardingCondition;
-import io.shardingsphere.core.property.DataSourcePropertyManager;
+import io.shardingsphere.core.property.ShardingDataSourceMetaData;
 import io.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
@@ -96,7 +96,7 @@ public final class SQLBuilder {
      * @param dataSourcePropertyManager data source property manager
      * @return SQL unit
      */
-    public SQLUnit toSQL(final TableUnit tableUnit, final Map<String, String> logicAndActualTableMap, final ShardingRule shardingRule, final DataSourcePropertyManager dataSourcePropertyManager) {
+    public SQLUnit toSQL(final TableUnit tableUnit, final Map<String, String> logicAndActualTableMap, final ShardingRule shardingRule, final ShardingDataSourceMetaData dataSourcePropertyManager) {
         List<Object> insertParameters = new LinkedList<>();
         StringBuilder result = new StringBuilder();
         for (Object each : segments) {

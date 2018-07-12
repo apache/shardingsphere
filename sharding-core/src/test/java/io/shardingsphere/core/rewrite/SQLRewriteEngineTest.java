@@ -41,7 +41,7 @@ import io.shardingsphere.core.parsing.parser.token.OrderByToken;
 import io.shardingsphere.core.parsing.parser.token.RowCountToken;
 import io.shardingsphere.core.parsing.parser.token.SchemaToken;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
-import io.shardingsphere.core.property.DataSourcePropertyManager;
+import io.shardingsphere.core.property.ShardingDataSourceMetaData;
 import io.shardingsphere.core.routing.type.RoutingTable;
 import io.shardingsphere.core.routing.type.TableUnit;
 import io.shardingsphere.core.rule.DataNode;
@@ -79,7 +79,7 @@ public final class SQLRewriteEngineTest {
     
     private Map<String, String> tableTokens;
     
-    private DataSourcePropertyManager dataSourcePropertyManager;
+    private ShardingDataSourceMetaData dataSourcePropertyManager;
     
     @Before
     public void setUp() throws IOException {
@@ -93,7 +93,7 @@ public final class SQLRewriteEngineTest {
         dmlStatement = new DMLStatement();
         tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_x", "table_1");
-        dataSourcePropertyManager = Mockito.mock(DataSourcePropertyManager.class);
+        dataSourcePropertyManager = Mockito.mock(ShardingDataSourceMetaData.class);
         Mockito.when(dataSourcePropertyManager.getActualSchemaName(Mockito.anyString())).thenReturn("actual_db");
         
     }

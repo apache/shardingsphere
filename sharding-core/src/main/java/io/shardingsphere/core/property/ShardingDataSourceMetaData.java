@@ -27,15 +27,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Data source property manager.
+ * Sharding data source meta data.
  *
  * @author panjuan
  */
-public class DataSourcePropertyManager {
+public class ShardingDataSourceMetaData {
     
     private final Map<String, DataSourceMetaData> dataSourceMetaDataMap;
     
-    public DataSourcePropertyManager(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
+    public ShardingDataSourceMetaData(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
         dataSourceMetaDataMap = getDataSourceMetaDataMap(dataSourceMap, databaseType);
     }
     

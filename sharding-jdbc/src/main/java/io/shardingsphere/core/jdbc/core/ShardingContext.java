@@ -20,7 +20,7 @@ package io.shardingsphere.core.jdbc.core;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.executor.ExecutorEngine;
 import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.property.DataSourcePropertyManager;
+import io.shardingsphere.core.property.ShardingDataSourceMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +40,7 @@ public final class ShardingContext {
     
     private final Map<String, DataSource> dataSourceMap;
     
-    private final DataSourcePropertyManager dataSourcePropertyManager;
+    private final ShardingDataSourceMetaData dataSourcePropertyManager;
     
     private final ShardingRule shardingRule;
     
@@ -61,6 +61,6 @@ public final class ShardingContext {
         this.executorEngine = executorEngine;
         this.shardingMetaData = shardingMetaData;
         this.showSQL = showSQL;
-        this.dataSourcePropertyManager = new DataSourcePropertyManager(dataSourceMap, databaseType);
+        this.dataSourcePropertyManager = new ShardingDataSourceMetaData(dataSourceMap, databaseType);
     }
 }
