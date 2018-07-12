@@ -18,6 +18,7 @@
 package io.shardingsphere.transaction.saga.request;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.util.List;
 
@@ -28,9 +29,10 @@ import java.util.List;
  * @author zhangyonglun
  */
 @AllArgsConstructor
+@Getter
 public class SagaApi {
     
     private final String policy;
     
-    private List<SagaRequest> sagaRequests;
+    private List<SagaRequest> requests;
 }

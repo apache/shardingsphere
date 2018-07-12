@@ -17,14 +17,14 @@
 
 package io.shardingsphere.transaction.saga;
 
+import com.alibaba.fastjson.JSON;
 import io.shardingsphere.transaction.saga.request.Compensation;
 import io.shardingsphere.transaction.saga.request.SagaApi;
 import io.shardingsphere.transaction.saga.request.SagaRequest;
 import io.shardingsphere.transaction.saga.request.Transaction;
+import io.shardingsphere.transaction.saga.util.PostSagaRequest;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -40,7 +40,7 @@ public class SagaSoftTransaction {
     
     private String transactionId;
     
-    private List<SQLPair> sqlPairs;
+    private List<SQLPair> sqlPairs = new ArrayList<>(128);
     
     /**
      * Begin transaction.
@@ -68,10 +68,11 @@ public class SagaSoftTransaction {
             compensationParams.put("form", compensationForm);
             Compensation compensation = new Compensation("put", "", compensationParams);
             String parent = 0 == i ? "" : transactionId + (i - 1);
-            SagaRequest sagaRequest = new SagaRequest(transactionId, "rest", transactionId + i, Collections.singletonList(parent), transaction, compensation);
+            SagaRequest sagaRequest = new SagaRequest(transactionId + i, "rest", transactionId, Collections.singletonList(parent), transaction, compensation);
             sagaRequests.add(sagaRequest);
         }
         SagaApi sagaApi = new SagaApi("BackwardRecovery", sagaRequests);
+        PostSagaRequest.getInstance().request(JSON.toJSONString(sagaApi));
     }
     
     /**

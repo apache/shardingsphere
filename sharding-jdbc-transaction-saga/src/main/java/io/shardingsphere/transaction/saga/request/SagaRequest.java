@@ -18,6 +18,7 @@
 package io.shardingsphere.transaction.saga.request;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.util.List;
 
@@ -28,6 +29,7 @@ import java.util.List;
  * @author zhangyonglun
  */
 @AllArgsConstructor
+@Getter
 public class SagaRequest {
     
     private final String id;

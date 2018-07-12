@@ -18,6 +18,7 @@
 package io.shardingsphere.transaction.saga.request;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.util.Map;
 
@@ -28,6 +29,7 @@ import java.util.Map;
  * @author zhangyonglun
  */
 @AllArgsConstructor
+@Getter
 public class Compensation {
     
     private final String method;

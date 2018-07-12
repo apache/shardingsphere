@@ -70,8 +70,14 @@ public final class PostSagaRequest {
         return INSTANCE;
     }
     
-    private String request(final String body) {
-        String url = "127.0.0.1:8083/requests/";
+    /**
+     * Request.
+     *
+     * @param body post body
+     * @return response
+     */
+    public String request(final String body) {
+        String url = "http://127.0.0.1:8083/requests/";
         String result = "";
         Request.Builder builder = new Request.Builder();
         builder.url(url);
