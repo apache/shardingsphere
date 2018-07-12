@@ -79,9 +79,9 @@ public abstract class ExecuteWorker implements Callable<CommandResponsePackets> 
     }
     
     private CommandResponsePackets executeQuery() throws SQLException {
-        if (RuleRegistry.isMemoryStrictly()) {
+        if (ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
             return executeQueryWithStreamResultSet();
-        } else if (RuleRegistry.isConnectionStrictly()) {
+        } else if (ProxyMode.CONNECTION_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
             return executeQueryWithNonStreamResultSet();
         } else {
             return new CommandResponsePackets(new ErrPacket(1, 0, "", "", "Invalid proxy.mode"));
@@ -118,7 +118,6 @@ public abstract class ExecuteWorker implements Callable<CommandResponsePackets> 
     }
     
     protected void setColumnType(final ColumnType columnType) {
-        return;
     }
     
     protected CommandResponsePackets getCommonDatabaseProtocolPackets(final ResultSet resultSet) throws SQLException {

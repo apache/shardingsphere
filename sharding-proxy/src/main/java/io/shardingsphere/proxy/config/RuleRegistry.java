@@ -79,7 +79,7 @@ public final class RuleRegistry implements AutoCloseable {
     
     private ListeningExecutorService executorService;
     
-    private String proxyMode;
+    private ProxyMode proxyMode;
     
     private boolean showSQL;
     
@@ -120,7 +120,7 @@ public final class RuleRegistry implements AutoCloseable {
         }
         Properties properties = config.getShardingRule().getProps();
         ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
-        proxyMode = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_MODE);
+        proxyMode = ProxyMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_MODE));
         maxWorkingThreads = config.getMaxWorkingThreads();
         executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(maxWorkingThreads));
         showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
@@ -140,33 +140,6 @@ public final class RuleRegistry implements AutoCloseable {
             orchestrationFacade = new OrchestrationFacade(orchestrationConfig.get());
             orchestrationFacade.init(yamlProxyConfiguration);
         }
-    }
-    
-    /**
-     * Judge whether current thread is xa transaction or not.
-     *
-     * @return true or false
-     */
-    public static boolean isXaTransaction() {
-        return TransactionType.XA.equals(RuleRegistry.getInstance().getTransactionType());
-    }
-    
-    /**
-     * Judge whether proxy mode is MEMORY_STRICTLY.
-     *
-     * @return true or false
-     */
-    public static boolean isMemoryStrictly() {
-        return ProxyMode.MEMORY_STRICTLY == ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode());
-    }
-    
-    /**
-     * Judge whether proxy mode is CONNECTION_STRICTLY.
-     *
-     * @return true or false
-     */
-    public static boolean isConnectionStrictly() {
-        return ProxyMode.CONNECTION_STRICTLY == ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode());
     }
     
     @Override

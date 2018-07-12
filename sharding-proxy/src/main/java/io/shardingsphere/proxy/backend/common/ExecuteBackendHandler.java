@@ -270,7 +270,7 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
     
     protected Connection getConnection(final DataSource dataSource) throws SQLException {
         Connection result;
-        if (RuleRegistry.isConnectionStrictly()) {
+        if (ProxyMode.CONNECTION_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
             result = ProxyConnectionHolder.getConnection(dataSource);
             if (null == result) {
                 result = dataSource.getConnection();
