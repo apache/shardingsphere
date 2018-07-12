@@ -1,32 +1,36 @@
 <integrate-test-cases>
     <dcl-test-case sql-case-id="create_user_with_hostname">
-        <assertion user="user_dev" host="localhost" type="user" />
+        <assertion clean-sql="drop user user_dev" />
     </dcl-test-case>
     <dcl-test-case sql-case-id="create_user_without_hostname">
-        <assertion user="user_dev" type="user" />
+        <assertion clean-sql="drop user user_dev" />
     </dcl-test-case>
     <dcl-test-case sql-case-id="create_user_identified_by_with_hostname">
-        <assertion user="user_dev" host="localhost" type="user" />
+        <assertion clean-sql="drop user user_dev@localhost" />
     </dcl-test-case>
     <dcl-test-case sql-case-id="create_user_identified_by_without_hostname">
-        <assertion user="user_dev" type="user" />
+        <assertion clean-sql="drop user user_dev" />
     </dcl-test-case>
     <dcl-test-case sql-case-id="create_user_identified_by_for">
-        <assertion user="user_dev" type="user" />
+        <assertion clean-sql="drop user user_dev" />
     </dcl-test-case>
     <dcl-test-case sql-case-id="create_user_password">
-        <assertion user="user_dev" type="user" />
+        <assertion clean-sql="drop user user_dev" />
     </dcl-test-case>
     <dcl-test-case sql-case-id="create_login">
-        <assertion user="login_dev" type="login" />
+        <assertion clean-sql="drop login user_dev" />
     </dcl-test-case>
     <dcl-test-case sql-case-id="create_role">
-        <assertion user="role_dev" type="role" />
+        <assertion clean-sql="drop role user_dev" />
     </dcl-test-case>
     <dcl-test-case sql-case-id="create_role_identified_by">
-        <assertion user="role_dev" type="role" />
+        <assertion clean-sql="drop role user_dev" />
     </dcl-test-case>
     <dcl-test-case sql-case-id="create_role_password">
-        <assertion user="role_dev" type="role" />
+        <assertion clean-sql="drop role user_dev" />
     </dcl-test-case>
+    <dcl-test-case sql-case-id="">
+        <assertion user="" type="" />
+    </dcl-test-case>
+
 </integrate-test-cases>
