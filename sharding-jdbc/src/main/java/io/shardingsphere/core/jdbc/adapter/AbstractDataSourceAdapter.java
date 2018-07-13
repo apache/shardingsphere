@@ -36,6 +36,10 @@ import java.util.logging.Logger;
  */
 public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOperationDataSource {
     
+    static {
+        // TODO use SPI to detect transaction Listener
+    }
+    
     @Getter
     private final DatabaseType databaseType;
     
