@@ -28,7 +28,7 @@ import java.util.Map;
  *
  * @author zhaojun
  */
-public class ProxyRawDataSourceFactory {
+public final class ProxyRawDataSourceFactory {
     
     /**
      * Crate raw datasource Map by transaction type.

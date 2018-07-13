@@ -73,7 +73,6 @@ public abstract class BaseJDBCResource {
                 if (!each.isClosed()) {
                     each.close();
                 }
-                
             }
         }
         if (null != resultSets) {

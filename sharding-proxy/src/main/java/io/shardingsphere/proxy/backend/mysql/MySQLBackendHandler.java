@@ -17,9 +17,6 @@
 
 package io.shardingsphere.proxy.backend.mysql;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.shardingsphere.proxy.backend.common.CommandResponsePacketsHandler;
@@ -40,6 +37,9 @@ import io.shardingsphere.proxy.util.MySQLResultCache;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 /**
  * Backend handler.
  *
@@ -49,6 +49,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class MySQLBackendHandler extends CommandResponsePacketsHandler {
+    
     private final DataSourceConfig dataSourceConfig;
     
     private AuthType authType = AuthType.UN_AUTH;

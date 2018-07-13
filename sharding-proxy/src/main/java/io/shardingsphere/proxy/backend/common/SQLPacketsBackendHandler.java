@@ -67,6 +67,7 @@ import java.util.concurrent.TimeoutException;
 @Slf4j
 @Getter
 public final class SQLPacketsBackendHandler implements BackendHandler {
+    
     private static final int CONNECT_TIMEOUT = 30;
     
     private SynchronizedFuture<List<QueryResult>> synchronizedFuture;

@@ -23,7 +23,7 @@ import java.sql.ResultSet;
 import java.util.List;
 
 /**
- * Proxy jdbc resource model for prepare statement.
+ * Proxy JDBC resource model for prepare statement.
  *
  * @author zhaojun
  */
