@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa;
+package io.shardingsphere.core.transaction.listener;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
@@ -24,7 +24,7 @@ import io.shardingsphere.core.transaction.spi.Transaction;
 import lombok.AllArgsConstructor;
 
 /**
- * XA Transaction Listener.
+ * Transaction Listener.
  *
  * @author zhaojun
  */

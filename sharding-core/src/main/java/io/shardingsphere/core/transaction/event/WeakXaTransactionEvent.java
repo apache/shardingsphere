@@ -38,7 +38,7 @@ public class WeakXaTransactionEvent extends TransactionEvent {
     private final Map<String, Connection> cachedConnections;
     
     @Setter
-    private final boolean autoCommit = true;
+    private boolean autoCommit = true;
     
     /**
      * Get exception.

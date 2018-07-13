@@ -15,11 +15,13 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa;
+package io.shardingsphere.core.jdbc.core.transaction;
 
 import io.shardingsphere.core.transaction.event.TransactionEvent;
 import io.shardingsphere.core.transaction.event.WeakXaTransactionEvent;
+import io.shardingsphere.core.transaction.listener.TransactionListener;
 import io.shardingsphere.core.transaction.spi.Transaction;
+import io.shardingsphere.core.transaction.spi.TransactionEventHolder;
 import io.shardingsphere.core.util.EventBusInstance;
 
 import java.sql.Connection;
@@ -36,6 +38,7 @@ public class WeakXaTransaction implements Transaction {
     
     static {
         EventBusInstance.getInstance().register(new TransactionListener(new WeakXaTransaction()));
+        TransactionEventHolder.set(WeakXaTransactionEvent.class);
     }
     
     @Override
