@@ -50,6 +50,10 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
         }
     }
     
+    protected abstract void auth(ChannelHandlerContext context, ByteBuf message);
+    
+    protected abstract void executeCommand(ChannelHandlerContext context, ByteBuf message);
+    
     @Override
     public void channelInactive(final ChannelHandlerContext ctx) {
         ctx.fireChannelInactive();
@@ -57,8 +61,4 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
             ChannelThreadHolder.remove(ctx.channel().id());
         }
     }
-    
-    protected abstract void auth(ChannelHandlerContext context, ByteBuf message);
-    
-    protected abstract void executeCommand(ChannelHandlerContext context, ByteBuf message);
 }

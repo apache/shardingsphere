@@ -35,7 +35,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.handshake.ConnectionIdGenerator;
 import io.shardingsphere.proxy.transport.mysql.packet.handshake.HandshakePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.handshake.HandshakeResponse41Packet;
-import io.shardingsphere.proxy.transport.mysql.packet.handshake.ProxyAuthorityHandler;
+import io.shardingsphere.proxy.transport.mysql.packet.handshake.AuthorityHandler;
 import io.shardingsphere.proxy.util.MySQLResultCache;
 
 import java.util.concurrent.ExecutorService;
@@ -51,11 +51,11 @@ public final class MySQLFrontendHandler extends FrontendHandler {
     
     private final EventLoopGroup eventLoopGroup;
     
-    private final ProxyAuthorityHandler proxyAuthorityHandler;
+    private final AuthorityHandler proxyAuthorityHandler;
     
     public MySQLFrontendHandler(final EventLoopGroup eventLoopGroup) {
         this.eventLoopGroup = eventLoopGroup;
-        proxyAuthorityHandler = new ProxyAuthorityHandler();
+        proxyAuthorityHandler = new AuthorityHandler();
     }
     
     @Override
@@ -70,10 +70,10 @@ public final class MySQLFrontendHandler extends FrontendHandler {
         MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message);
         try {
             HandshakeResponse41Packet response41 = new HandshakeResponse41Packet(mysqlPacketPayload);
-            if (proxyAuthorityHandler.isLegalForProxyLogin(response41.getUsername(), response41.getAuthResponse())) {
+            if (proxyAuthorityHandler.login(response41.getUsername(), response41.getAuthResponse())) {
                 context.writeAndFlush(new OKPacket(response41.getSequenceId() + 1, 0L, 0L, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
             } else {
-                context.writeAndFlush(new ErrPacket(response41.getSequenceId() + 1, 1045, "", "", "Access denied because of invalid username and password for Sharding Proxy."));
+                context.writeAndFlush(new ErrPacket(response41.getSequenceId() + 1, 1045, "", "", "Access denied because of invalid username and password for Sharding-Proxy."));
             }
         } finally {
             mysqlPacketPayload.getByteBuf().release();
