@@ -20,12 +20,10 @@ package io.shardingsphere.proxy.frontend.mysql;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.EventLoopGroup;
-import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.proxy.backend.common.ProxyConnectionHolder;
-import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.frontend.common.FrontendHandler;
-import io.shardingsphere.proxy.frontend.common.executor.ChannelThreadExecutorGroup;
+import io.shardingsphere.proxy.frontend.common.executor.ExecutorGroup;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
@@ -34,13 +32,11 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketFactory;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.handshake.AuthorityHandler;
 import io.shardingsphere.proxy.transport.mysql.packet.handshake.ConnectionIdGenerator;
 import io.shardingsphere.proxy.transport.mysql.packet.handshake.HandshakePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.handshake.HandshakeResponse41Packet;
-import io.shardingsphere.proxy.transport.mysql.packet.handshake.AuthorityHandler;
 import io.shardingsphere.proxy.util.MySQLResultCache;
-
-import java.util.concurrent.ExecutorService;
 
 /**
  * MySQL frontend handler.
@@ -82,7 +78,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
     
     @Override
     protected void executeCommand(final ChannelHandlerContext context, final ByteBuf message) {
-        getExecutorService(context).execute(new Runnable() {
+        new ExecutorGroup(eventLoopGroup, context.channel().id()).getExecutorService().execute(new Runnable() {
             
             @Override
             public void run() {
@@ -106,9 +102,5 @@ public final class MySQLFrontendHandler extends FrontendHandler {
                 }
             }
         });
-    }
-    
-    private ExecutorService getExecutorService(final ChannelHandlerContext context) {
-        return TransactionType.XA.equals(RuleRegistry.getInstance().getTransactionType()) ? ChannelThreadExecutorGroup.getInstance().get(context.channel().id()) : eventLoopGroup;
     }
 }
