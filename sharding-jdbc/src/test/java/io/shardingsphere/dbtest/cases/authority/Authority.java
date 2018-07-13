@@ -36,11 +36,8 @@ import java.util.LinkedList;
 @XmlRootElement(name = "authority")
 public final class Authority {
     
-    @XmlElement(name = "init-sql")
-    private Collection<InitSQL> initSQLs = new LinkedList<>();
-    
-    @XmlElement(name = "clean-sql")
-    private Collection<CleanSQL> cleanSQLs = new LinkedList<>();
+    @XmlElement(name = "sqlset")
+    private Collection<SQLSet> SQLSets = new LinkedList<>();
     
     /**
      * Get init sqls of this data base type.
@@ -49,12 +46,11 @@ public final class Authority {
      * @return init sqls of this data base type
      */
     public Collection<String> getInitSQLs(DatabaseType databaseType) {
-        for (InitSQL each : initSQLs) {
-            if (each.getDatabaseTypeList().contains(databaseType)) {
-                return each.getAllSQLContent();
-            }
+        Collection<String> result = new LinkedList<>();
+        for (SQLSet each : SQLSets) {
+            result.addAll(each.getAllSQLContent(SQLType.Init, databaseType));
         }
-        return new LinkedList<>();
+        return result;
     }
     
     /**
@@ -64,11 +60,10 @@ public final class Authority {
      * @return clean sqls of this data base type
      */
     public Collection<String> getCleanSQLs(DatabaseType databaseType) {
-        for (CleanSQL each : cleanSQLs) {
-            if (each.getDatabaseTypeList().contains(databaseType)) {
-                return each.getAllSQLContent();
-            }
+        Collection<String> result = new LinkedList<>();
+        for (SQLSet each : SQLSets) {
+            result.addAll(each.getAllSQLContent(SQLType.Clean, databaseType));
         }
-        return new LinkedList<>();
+        return result;
     }
 }
