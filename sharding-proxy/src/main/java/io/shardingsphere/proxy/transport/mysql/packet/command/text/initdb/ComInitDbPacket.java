@@ -56,7 +56,7 @@ public final class ComInitDbPacket extends CommandPacket {
         if (ShardingConstant.LOGIC_SCHEMA_NAME.equalsIgnoreCase(schemaName)) {
             return new CommandResponsePackets(new OKPacket(getSequenceId() + 1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
         }
-        return new CommandResponsePackets(new ErrPacket(getSequenceId() + 1, 1049, "", "", String.format("Unknown database '%s'", schemaName)));
+        return new CommandResponsePackets(new ErrPacket(getSequenceId() + 1, 1049, "", String.format("Unknown database '%s'", schemaName)));
     }
     
     @Override

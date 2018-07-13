@@ -207,7 +207,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
                     sqlStatement, RuleRegistry.getInstance().getShardingMetaData()).merge();
             isMerged = true;
         } catch (final SQLException ex) {
-            return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
+            return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), ex.getSQLState(), ex.getMessage()));
         }
         return packets.get(0);
     }
@@ -244,7 +244,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
             }
             return new TextResultSetRowPacket(++currentSequenceId, data);
         } catch (final SQLException ex) {
-            return new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage());
+            return new ErrPacket(1, ex.getErrorCode(), ex.getSQLState(), ex.getMessage());
         }
     }
 }

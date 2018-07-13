@@ -61,7 +61,7 @@ public abstract class ExecuteWorker implements Callable<CommandResponsePackets> 
             return execute();
         } catch (SQLException ex) {
             log.error("ExecuteWorker", ex);
-            return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
+            return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), ex.getSQLState(), ex.getMessage()));
         } finally {
             MasterVisitedManager.clear();
         }
@@ -84,7 +84,7 @@ public abstract class ExecuteWorker implements Callable<CommandResponsePackets> 
         } else if (ProxyMode.CONNECTION_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
             return executeQueryWithNonStreamResultSet();
         } else {
-            return new CommandResponsePackets(new ErrPacket(1, 0, "", "", "Invalid proxy.mode"));
+            return new CommandResponsePackets(new ErrPacket(1, 0, "", "Invalid proxy.mode"));
         }
     }
     
