@@ -33,7 +33,6 @@ import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingsphere.proxy.backend.resource.BaseJDBCResource;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;
-import io.shardingsphere.proxy.transaction.AtomikosUserTransaction;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
@@ -41,6 +40,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCo
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
+import io.shardingsphere.transaction.xa.AtomikosUserTransaction;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -103,11 +103,10 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
     @Override
     public CommandResponsePackets execute() {
         try {
-            SQLRouteResult sqlRouteResult = RuleRegistry.getInstance().isOnlyMasterSlave() ? doMasterSlaveRoute() : doSqlShardingRoute();
-            return doExecuteInternal(sqlRouteResult);
+            return doExecuteInternal(RuleRegistry.getInstance().isMasterSlaveOnly() ? doMasterSlaveRoute() : doSqlShardingRoute());
         } catch (final Exception ex) {
             log.error("ExecuteBackendHandler", ex);
-            return new CommandResponsePackets(new ErrPacket(1, 0, "", "", "" + ex.getMessage()));
+            return new CommandResponsePackets(new ErrPacket(1, 0, "", "" + ex.getMessage()));
         }
     }
     
@@ -126,7 +125,7 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
         }
         List<CommandResponsePackets> packets = buildCommandResponsePackets(futureList);
         CommandResponsePackets result = merge(routeResult.getSqlStatement(), packets);
-        if (!RuleRegistry.getInstance().isOnlyMasterSlave()) {
+        if (!RuleRegistry.getInstance().isMasterSlaveOnly()) {
             ProxyShardingRefreshHandler.build(routeResult).execute();
         }
         return result;
@@ -138,10 +137,9 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
     }
     
     private SQLRouteResult doMasterSlaveRoute() {
-        MasterSlaveRouter masterSlaveRouter = new MasterSlaveRouter(RuleRegistry.getInstance().getMasterSlaveRule());
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
         SQLRouteResult result = new SQLRouteResult(sqlStatement, null);
-        String dataSourceName = masterSlaveRouter.route(sqlStatement.getType()).iterator().next();
+        String dataSourceName = new MasterSlaveRouter(RuleRegistry.getInstance().getMasterSlaveRule()).route(sqlStatement.getType()).iterator().next();
         SQLUnit sqlUnit = new SQLUnit(sql, Collections.<List<Object>>emptyList());
         result.getExecutionUnits().add(new SQLExecutionUnit(dataSourceName, sqlUnit));
         return result;
@@ -203,11 +201,10 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
             queryResults.add(newQueryResult(packets.get(i), i));
         }
         try {
-            mergedResult = MergeEngineFactory.newInstance(RuleRegistry.getInstance().getShardingRule(),
-                    queryResults, sqlStatement, RuleRegistry.getInstance().getShardingMetaData()).merge();
+            mergedResult = MergeEngineFactory.newInstance(RuleRegistry.getInstance().getShardingRule(), queryResults, sqlStatement, RuleRegistry.getInstance().getShardingMetaData()).merge();
             isMerged = true;
         } catch (final SQLException ex) {
-            return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
+            return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), ex.getSQLState(), ex.getMessage()));
         }
         return buildPackets(packets);
     }
@@ -262,7 +259,7 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
             }
             return newDatabaseProtocolPacket(++currentSequenceId, data);
         } catch (final SQLException ex) {
-            return new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage());
+            return new ErrPacket(1, ex.getErrorCode(), ex.getSQLState(), ex.getMessage());
         }
     }
     
@@ -270,7 +267,7 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
     
     protected Connection getConnection(final DataSource dataSource) throws SQLException {
         Connection result;
-        if (RuleRegistry.isConnectionStrictly()) {
+        if (ProxyMode.CONNECTION_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
             result = ProxyConnectionHolder.getConnection(dataSource);
             if (null == result) {
                 result = dataSource.getConnection();

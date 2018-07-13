@@ -25,7 +25,6 @@ import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.proxy.backend.common.SQLExecuteBackendHandler;
 import io.shardingsphere.proxy.backend.common.SQLPacketsBackendHandler;
 import io.shardingsphere.proxy.config.RuleRegistry;
-import io.shardingsphere.proxy.transaction.AtomikosUserTransaction;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
@@ -35,6 +34,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
+import io.shardingsphere.transaction.xa.AtomikosUserTransaction;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.transaction.Status;
@@ -96,7 +96,7 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
             }
         } catch (final Exception ex) {
             log.error("doTransactionIntercept Exception", ex);
-            return new CommandResponsePackets(new ErrPacket(1, 0, "", "", "" + ex.getMessage()));
+            return new CommandResponsePackets(new ErrPacket(1, 0, "", "" + ex.getMessage()));
         }
         if (RuleRegistry.getInstance().isWithoutJdbc()) {
             return sqlPacketsBackendHandler.execute();

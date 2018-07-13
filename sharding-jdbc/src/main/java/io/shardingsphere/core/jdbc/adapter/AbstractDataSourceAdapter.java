@@ -19,6 +19,7 @@ package io.shardingsphere.core.jdbc.adapter;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.jdbc.core.transaction.TransactionLoader;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import lombok.Getter;
 
@@ -35,6 +36,10 @@ import java.util.logging.Logger;
  * @author zhangliang
  */
 public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOperationDataSource {
+    
+    static {
+        TransactionLoader.load();
+    }
     
     @Getter
     private final DatabaseType databaseType;

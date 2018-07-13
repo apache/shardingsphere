@@ -43,6 +43,7 @@ import io.shardingsphere.core.routing.type.RoutingEngine;
 import io.shardingsphere.core.routing.type.RoutingResult;
 import io.shardingsphere.core.routing.type.TableUnit;
 import io.shardingsphere.core.routing.type.broadcast.DatabaseBroadcastRoutingEngine;
+import io.shardingsphere.core.routing.type.broadcast.InstanceBroadcastRoutingEngine;
 import io.shardingsphere.core.routing.type.broadcast.TableBroadcastRoutingEngine;
 import io.shardingsphere.core.routing.type.complex.ComplexRoutingEngine;
 import io.shardingsphere.core.routing.type.ignore.IgnoreRoutingEngine;
@@ -118,8 +119,10 @@ public final class ParsingSQLRouter implements ShardingRouter {
             routingEngine = new IgnoreRoutingEngine();
         } else if (sqlStatement instanceof DDLStatement || (sqlStatement instanceof DCLStatement && ((DCLStatement) sqlStatement).isGrantForSingleTable())) {
             routingEngine = new TableBroadcastRoutingEngine(shardingRule, sqlStatement);
-        } else if (sqlStatement instanceof ShowDatabasesStatement || sqlStatement instanceof ShowTablesStatement || sqlStatement instanceof DCLStatement) {
+        } else if (sqlStatement instanceof ShowDatabasesStatement || sqlStatement instanceof ShowTablesStatement) {
             routingEngine = new DatabaseBroadcastRoutingEngine(shardingRule);
+        } else if (sqlStatement instanceof DCLStatement) {
+            routingEngine = new InstanceBroadcastRoutingEngine(shardingRule, shardingDataSourceMetaData);
         } else if (shardingConditions.isAlwaysFalse()) {
             routingEngine = new UnicastRoutingEngine(shardingRule, tableNames);
         } else if (sqlStatement instanceof DALStatement) {
@@ -134,23 +137,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
             // TODO config for cartesian set
             routingEngine = new ComplexRoutingEngine(shardingRule, parameters, tableNames, shardingConditions);
         }
-        return getRoutingResult(routingEngine, sqlStatement);
-    }
-    
-    private RoutingResult getRoutingResult(final RoutingEngine routingEngine, final SQLStatement sqlStatement) {
-        RoutingResult result = routingEngine.route();
-        if (routingEngine instanceof DatabaseBroadcastRoutingEngine && sqlStatement instanceof DCLStatement) {
-            removeRedundantTableUnits(result);
-        }
-        return result;
-    }
-    
-    private void removeRedundantTableUnits(final RoutingResult routingResult) {
-        for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
-            if (!shardingDataSourceMetaData.getAllInstanceDataSourceNames().contains(each.getDataSourceName())) {
-                routingResult.getTableUnits().getTableUnits().remove(each);
-            }
-        }
+        return routingEngine.route();
     }
     
     private GeneratedKey getGenerateKey(final ShardingRule shardingRule, final InsertStatement insertStatement, final List<Object> parameters) {

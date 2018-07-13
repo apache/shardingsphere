@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class XaTransactionEvent extends AbstractTransactionEvent {
+public class XaTransactionEvent extends TransactionEvent {
     
     private final String sql;
     

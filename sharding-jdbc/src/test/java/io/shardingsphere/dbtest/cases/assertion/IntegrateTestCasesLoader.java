@@ -18,6 +18,8 @@
 package io.shardingsphere.dbtest.cases.assertion;
 
 import com.google.common.base.Preconditions;
+import io.shardingsphere.dbtest.cases.assertion.dcl.DCLIntegrateTestCase;
+import io.shardingsphere.dbtest.cases.assertion.dcl.DCLIntegrateTestCases;
 import io.shardingsphere.dbtest.cases.assertion.ddl.DDLIntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.ddl.DDLIntegrateTestCases;
 import io.shardingsphere.dbtest.cases.assertion.dml.DMLIntegrateTestCase;
@@ -49,6 +51,7 @@ import java.util.Map;
  * Integrate test cases loader.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @Slf4j
 public final class IntegrateTestCasesLoader {
@@ -59,6 +62,8 @@ public final class IntegrateTestCasesLoader {
     
     private static final String DDL_INTEGRATE_TEST_CASES_FILE_PREFIX = "ddl-integrate-test-cases";
     
+    private static final String DCL_INTEGRATE_TEST_CASES_FILE_PREFIX = "dcl-integrate-test-cases";
+    
     private static final IntegrateTestCasesLoader INSTANCE = new IntegrateTestCasesLoader();
     
     private final Map<String, IntegrateTestCase> dqlIntegrateTestCaseMap;
@@ -67,11 +72,14 @@ public final class IntegrateTestCasesLoader {
     
     private final Map<String, IntegrateTestCase> ddlIntegrateTestCaseMap;
     
+    private final Map<String, IntegrateTestCase> dclIntegrateTestCaseMap;
+    
     private IntegrateTestCasesLoader() {
         try {
             dqlIntegrateTestCaseMap = loadIntegrateTestCases(DQL_INTEGRATE_TEST_CASES_FILE_PREFIX);
             dmlIntegrateTestCaseMap = loadIntegrateTestCases(DML_INTEGRATE_TEST_CASES_FILE_PREFIX);
             ddlIntegrateTestCaseMap = loadIntegrateTestCases(DDL_INTEGRATE_TEST_CASES_FILE_PREFIX);
+            dclIntegrateTestCaseMap = loadIntegrateTestCases(DCL_INTEGRATE_TEST_CASES_FILE_PREFIX);
         } catch (final IOException | URISyntaxException | JAXBException ex) {
             throw new RuntimeException(ex);
         }
@@ -137,6 +145,9 @@ public final class IntegrateTestCasesLoader {
             if (DDL_INTEGRATE_TEST_CASES_FILE_PREFIX.equals(filePrefix)) {
                 return (DDLIntegrateTestCases) JAXBContext.newInstance(DDLIntegrateTestCases.class).createUnmarshaller().unmarshal(reader);
             }
+            if (DCL_INTEGRATE_TEST_CASES_FILE_PREFIX.equals(filePrefix)) {
+                return (DCLIntegrateTestCases) JAXBContext.newInstance(DCLIntegrateTestCases.class).createUnmarshaller().unmarshal(reader);
+            }
             throw new UnsupportedOperationException(filePrefix);
         }
     }
@@ -187,6 +198,22 @@ public final class IntegrateTestCasesLoader {
             log.warn("Have not finish case `{}`", sqlCaseId);
         }
         return (DDLIntegrateTestCase) ddlIntegrateTestCaseMap.get(sqlCaseId);
+    }
+    
+    /**
+     * Get DCL integrate test case.
+     *
+     * @param sqlCaseId SQL case ID
+     * @return DCL integrate test case
+     */
+    public DCLIntegrateTestCase getDCLIntegrateTestCase(final String sqlCaseId) {
+        // TODO resume when transfer finished
+        //        Preconditions.checkState(ddlIntegrateTestCaseMap.containsKey(sqlCaseId), "Can't find SQL of id: " + sqlCaseId);
+        // TODO remove when transfer finished
+        if (!dclIntegrateTestCaseMap.containsKey(sqlCaseId)) {
+            log.warn("Have not finish case `{}`", sqlCaseId);
+        }
+        return (DCLIntegrateTestCase) dclIntegrateTestCaseMap.get(sqlCaseId);
     }
     
     /**

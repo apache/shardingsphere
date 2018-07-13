@@ -62,8 +62,10 @@
 #    # CONNECTION_STRICTLY: Proxy will release connections after get the overall rows from the ResultSet.
 #    #                      Meanwhile, the cost of the memory will be increased.
 #    proxy.mode: MEMORY_STRICTLY
+#    proxy.transaction.mode: NONE
+#    proxy.max.working.threads: 16
 #    sql.show: false
-#
+
 
 # The example of master-slave rule.
 
@@ -93,10 +95,8 @@
 #    - ds_1
 
 
-# Common configuration.
+# Common configuration for auth.
 
 #proxyAuthority:
 #  username: root
 #  password: root
-
-#maxWorkingThreads: 16

@@ -17,7 +17,9 @@
 
 package io.shardingsphere.core.metadata.datasource;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.rule.ShardingRule;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -35,14 +37,28 @@ public class ShardingDataSourceMetaData {
     
     private final Map<String, DataSourceMetaData> dataSourceMetaDataMap;
     
-    public ShardingDataSourceMetaData(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
-        dataSourceMetaDataMap = getDataSourceMetaDataMap(dataSourceMap, databaseType);
+    public ShardingDataSourceMetaData(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType) {
+        dataSourceMetaDataMap = getDataSourceMetaDataMap(dataSourceMap, shardingRule, databaseType);
     }
     
-    private Map<String, DataSourceMetaData> getDataSourceMetaDataMap(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
-        Map<String, DataSourceMetaData> result = new LinkedHashMap<>();
+    private Map<String, DataSourceMetaData> getDataSourceMetaDataMap(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType) {
+        Map<String, DataSourceMetaData> dataSourceMetaDataMap = new LinkedHashMap<>();
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            result.put(entry.getKey(), DataSourceMetaDataFactory.getDataSourceMetaData(databaseType, entry.getValue()));
+            dataSourceMetaDataMap.put(entry.getKey(), DataSourceMetaDataFactory.getDataSourceMetaData(databaseType, entry.getValue()));
+        }
+        return handleMasterSlaveDataSourceNames(shardingRule, dataSourceMetaDataMap);
+    }
+    
+    private Map<String, DataSourceMetaData> handleMasterSlaveDataSourceNames(final ShardingRule shardingRule, final Map<String, DataSourceMetaData> dataSourceMetaDataMap) {
+        Map<String, DataSourceMetaData> result = new LinkedHashMap<>();
+        if (shardingRule.getMasterSlaveRules().isEmpty()) {
+            return dataSourceMetaDataMap;
+        }
+        for (Entry<String, DataSourceMetaData> entry : dataSourceMetaDataMap.entrySet()) {
+            Optional<String> masterSlaveRuleNameOptional = shardingRule.getMasterSlaveRuleNameOptional(entry.getKey());
+            if (masterSlaveRuleNameOptional.isPresent()) {
+                result.put(masterSlaveRuleNameOptional.get(), entry.getValue());
+            }
         }
         return result;
     }

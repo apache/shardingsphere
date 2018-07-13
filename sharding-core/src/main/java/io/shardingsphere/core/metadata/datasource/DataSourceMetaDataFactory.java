@@ -47,7 +47,7 @@ public final class DataSourceMetaDataFactory {
      * @return data source meta data
      */
     public static DataSourceMetaData getDataSourceMetaData(final DatabaseType databaseType, final DataSource dataSource) {
-        return createDataSourceMetaDataParser(databaseType).getDataSourceMetaData(getDataSourceURL(dataSource));
+        return createDataSourceMetaDataParser(databaseType).getDataSourceMetaData(getDataSourceURL(dataSource), databaseType);
     }
     
     private static String getDataSourceURL(final DataSource dataSource) {

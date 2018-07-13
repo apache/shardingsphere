@@ -121,9 +121,7 @@ public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
     protected void dropTableIfExisted(final Connection connection) {
         try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DROP TABLE %s", assertion.getTable()))) {
             preparedStatement.executeUpdate();
-            // CHECKSTYLE: OFF
         } catch (final SQLException ignored) {
-            // CHECKSTYLE: ON
         }
     }
 }
