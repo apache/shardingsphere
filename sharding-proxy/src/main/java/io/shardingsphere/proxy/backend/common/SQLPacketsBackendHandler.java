@@ -123,7 +123,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
                 RuleRegistry.getInstance().getShardingMetaData(), databaseType, showSQL, RuleRegistry.getInstance().getShardingDataSourceMetaData());
         SQLRouteResult routeResult = routingEngine.route(rebuilder.sql());
         if (routeResult.getExecutionUnits().isEmpty()) {
-            return new CommandResponsePackets(new OKPacket(1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+            return new CommandResponsePackets(new OKPacket(1));
         }
         synchronizedFuture = new SynchronizedFuture<>(routeResult.getExecutionUnits().size());
         MySQLResultCache.getInstance().putFuture(rebuilder.connectionId(), synchronizedFuture);
@@ -198,7 +198,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
                 lastInsertId = okPacket.getLastInsertId();
             }
         }
-        return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+        return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId));
     }
     
     private CommandResponsePackets mergeDQLorDAL(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets, final List<QueryResult> queryResults) {

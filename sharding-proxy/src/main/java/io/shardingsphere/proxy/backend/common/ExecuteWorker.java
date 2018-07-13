@@ -103,7 +103,7 @@ public abstract class ExecuteWorker implements Callable<CommandResponsePackets> 
         int columnCount = resultSetMetaData.getColumnCount();
         executeBackendHandler.setColumnCount(columnCount);
         if (0 == columnCount) {
-            result.addPacket(new OKPacket(++currentSequenceId, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+            result.addPacket(new OKPacket(++currentSequenceId));
             return result;
         }
         result.addPacket(new FieldCountPacket(++currentSequenceId, columnCount));
@@ -127,7 +127,7 @@ public abstract class ExecuteWorker implements Callable<CommandResponsePackets> 
         int columnCount = resultSetMetaData.getColumnCount();
         executeBackendHandler.setColumnCount(columnCount);
         if (0 == columnCount) {
-            result.addPacket(new OKPacket(++currentSequenceId, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+            result.addPacket(new OKPacket(++currentSequenceId));
             return result;
         }
         result.addPacket(new FieldCountPacket(++currentSequenceId, columnCount));

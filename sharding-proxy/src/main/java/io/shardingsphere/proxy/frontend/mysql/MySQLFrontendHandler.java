@@ -26,7 +26,6 @@ import io.shardingsphere.proxy.frontend.common.FrontendHandler;
 import io.shardingsphere.proxy.frontend.common.executor.ExecutorGroup;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
-import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketFactory;
@@ -65,7 +64,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
         try (MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message)) {
             HandshakeResponse41Packet response41 = new HandshakeResponse41Packet(mysqlPacketPayload);
             if (authorityHandler.login(response41.getUsername(), response41.getAuthResponse())) {
-                context.writeAndFlush(new OKPacket(response41.getSequenceId() + 1, 0L, 0L, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+                context.writeAndFlush(new OKPacket(response41.getSequenceId() + 1));
             } else {
                 // TODO localhost should replace to real ip address
                 context.writeAndFlush(new ErrPacket(response41.getSequenceId() + 1, 

@@ -18,6 +18,7 @@
 package io.shardingsphere.proxy.transport.mysql.packet.generic;
 
 import com.google.common.base.Preconditions;
+import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import lombok.Getter;
@@ -35,21 +36,36 @@ public final class OKPacket extends MySQLPacket {
     
     private static final int HEADER = 0x00;
     
+    private static final int STATUS_FLAG = StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue();
+    
     private final long affectedRows;
     
     private final long lastInsertId;
-    
-    private final int statusFlags;
     
     private final int warnings;
     
     private final String info;
     
-    public OKPacket(final int sequenceId, final long affectedRows, final long lastInsertId, final int statusFlags, final int warnings, final String info) {
+    public OKPacket(final int sequenceId) {
+        super(sequenceId);
+        affectedRows = 0L;
+        lastInsertId = 0L;
+        warnings = 0;
+        info = "";
+    }
+    
+    public OKPacket(final int sequenceId, final long affectedRows, final long lastInsertId) {
         super(sequenceId);
         this.affectedRows = affectedRows;
         this.lastInsertId = lastInsertId;
-        this.statusFlags = statusFlags;
+        warnings = 0;
+        info = "";
+    }
+    
+    public OKPacket(final int sequenceId, final long affectedRows, final long lastInsertId, final int warnings, final String info) {
+        super(sequenceId);
+        this.affectedRows = affectedRows;
+        this.lastInsertId = lastInsertId;
         this.warnings = warnings;
         this.info = info;
     }
@@ -59,7 +75,7 @@ public final class OKPacket extends MySQLPacket {
         Preconditions.checkArgument(HEADER == mysqlPacketPayload.readInt1());
         affectedRows = mysqlPacketPayload.readIntLenenc();
         lastInsertId = mysqlPacketPayload.readIntLenenc();
-        statusFlags = mysqlPacketPayload.readInt2();
+        mysqlPacketPayload.readInt2();
         warnings = mysqlPacketPayload.readInt2();
         info = mysqlPacketPayload.readStringEOF();
     }
@@ -69,7 +85,7 @@ public final class OKPacket extends MySQLPacket {
         mysqlPacketPayload.writeInt1(HEADER);
         mysqlPacketPayload.writeIntLenenc(affectedRows);
         mysqlPacketPayload.writeIntLenenc(lastInsertId);
-        mysqlPacketPayload.writeInt2(statusFlags);
+        mysqlPacketPayload.writeInt2(STATUS_FLAG);
         mysqlPacketPayload.writeInt2(warnings);
         mysqlPacketPayload.writeStringEOF(info);
     }

@@ -20,7 +20,6 @@ package io.shardingsphere.proxy.backend.common;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
-import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 
@@ -83,7 +82,7 @@ public final class StatementExecuteWorker extends ExecuteWorker implements Calla
         } else {
             affectedRows = preparedStatement.executeUpdate();
         }
-        return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+        return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId));
     }
     
     @Override
@@ -92,7 +91,7 @@ public final class StatementExecuteWorker extends ExecuteWorker implements Calla
         if (hasResultSet) {
             return getCommonDatabaseProtocolPackets(preparedStatement.getResultSet());
         } else {
-            return new CommandResponsePackets(new OKPacket(1, preparedStatement.getUpdateCount(), 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+            return new CommandResponsePackets(new OKPacket(1, preparedStatement.getUpdateCount(), 0));
         }
     }
 }

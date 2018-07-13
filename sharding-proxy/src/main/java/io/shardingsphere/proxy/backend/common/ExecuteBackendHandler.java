@@ -112,7 +112,7 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
     
     private CommandResponsePackets doExecuteInternal(final SQLRouteResult routeResult) throws SQLException, SystemException {
         if (routeResult.getExecutionUnits().isEmpty()) {
-            return new CommandResponsePackets(new OKPacket(1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+            return new CommandResponsePackets(new OKPacket(1));
         }
         if (isXaDDL(routeResult)) {
             throw new SQLException("DDL command can't not execute in xa transaction mode.");
@@ -192,7 +192,7 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
                 lastInsertId = okPacket.getLastInsertId();
             }
         }
-        return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+        return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId));
     }
     
     private CommandResponsePackets mergeDQLorDAL(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets) {
