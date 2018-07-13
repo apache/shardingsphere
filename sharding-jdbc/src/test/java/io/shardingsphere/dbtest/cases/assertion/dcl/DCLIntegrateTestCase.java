@@ -15,23 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.core.metadata.datasource;
+package io.shardingsphere.dbtest.cases.assertion.dcl;
 
-import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
+import lombok.Getter;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Data source meta data parser.
+ * JAXB definition of DCL integrate test case.
  *
  * @author panjuan
  */
-public interface DataSourceMetaDataParser {
+@Getter
+public class DCLIntegrateTestCase extends IntegrateTestCase {
     
-    /**
-     * Get data source meta data.
-     *
-     * @param url data source URL
-     * @param databaseType database type
-     * @return data source meta data
-     */
-    DataSourceMetaData getDataSourceMetaData(String url, DatabaseType databaseType);
+    @XmlElement(name = "assertion")
+    private List<DCLIntegrateTestCaseAssertion> integrateTestCaseAssertions = new LinkedList<>();
 }

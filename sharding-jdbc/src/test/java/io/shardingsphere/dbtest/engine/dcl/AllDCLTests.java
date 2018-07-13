@@ -15,23 +15,13 @@
  * </p>
  */
 
-package io.shardingsphere.core.metadata.datasource;
+package io.shardingsphere.dbtest.engine.dcl;
 
-import io.shardingsphere.core.constant.DatabaseType;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-/**
- * Data source meta data parser.
- *
- * @author panjuan
- */
-public interface DataSourceMetaDataParser {
-    
-    /**
-     * Get data source meta data.
-     *
-     * @param url data source URL
-     * @param databaseType database type
-     * @return data source meta data
-     */
-    DataSourceMetaData getDataSourceMetaData(String url, DatabaseType databaseType);
+@RunWith(Suite.class)
+@SuiteClasses(GeneralDCLIntegrateTest.class)
+public class AllDCLTests {
 }

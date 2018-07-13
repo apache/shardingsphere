@@ -122,7 +122,7 @@ public final class RuleRegistry {
             }
         }
         executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(maxWorkingThreads));
-        shardingDataSourceMetaData = new ShardingDataSourceMetaData(dataSourceMap, DatabaseType.MySQL);
+        shardingDataSourceMetaData = new ShardingDataSourceMetaData(dataSourceMap, shardingRule, DatabaseType.MySQL);
         shardingMetaData = new ProxyShardingMetaData(executorService, dataSourceMap);
         if (!isMasterSlaveOnly()) {
             shardingMetaData.init(shardingRule);

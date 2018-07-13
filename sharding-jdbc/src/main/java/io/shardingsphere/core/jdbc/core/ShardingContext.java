@@ -60,6 +60,6 @@ public final class ShardingContext {
         this.executorEngine = executorEngine;
         this.shardingMetaData = shardingMetaData;
         this.showSQL = showSQL;
-        shardingDataSourceMetaData = new ShardingDataSourceMetaData(dataSourceMap, databaseType);
+        shardingDataSourceMetaData = new ShardingDataSourceMetaData(dataSourceMap, shardingRule, databaseType);
     }
 }
