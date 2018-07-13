@@ -24,16 +24,13 @@ import io.shardingsphere.core.routing.type.TableUnit;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Collection;
-import java.util.LinkedList;
-
 /**
  * Broadcast routing engine for instance databases.
  * 
  * @author panjuan
  */
 @RequiredArgsConstructor
-public final class InstanceDatabaseBroadcastRoutingEngine implements RoutingEngine {
+public final class InstanceBroadcastRoutingEngine implements RoutingEngine {
     
     private final ShardingRule shardingRule;
     
@@ -43,19 +40,10 @@ public final class InstanceDatabaseBroadcastRoutingEngine implements RoutingEngi
     public RoutingResult route() {
         RoutingResult result = new RoutingResult();
         for (String each : shardingRule.getShardingDataSourceNames().getDataSourceNames()) {
-            result.getTableUnits().getTableUnits().add(new TableUnit(each));
-        }
-        removeRedundantTableUnits(result);
-        return result;
-    }
-    
-    private void removeRedundantTableUnits(final RoutingResult routingResult) {
-        Collection<TableUnit> toRemoved = new LinkedList<>();
-        for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
-            if (!shardingDataSourceMetaData.getAllInstanceDataSourceNames().contains(each.getDataSourceName())) {
-                toRemoved.add(each);
+            if (shardingDataSourceMetaData.getAllInstanceDataSourceNames().contains(each)) {
+                result.getTableUnits().getTableUnits().add(new TableUnit(each));
             }
         }
-        routingResult.getTableUnits().getTableUnits().removeAll(toRemoved);
+        return result;
     }
 }
