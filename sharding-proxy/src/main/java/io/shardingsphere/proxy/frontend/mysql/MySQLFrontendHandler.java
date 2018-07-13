@@ -108,6 +108,6 @@ public final class MySQLFrontendHandler extends FrontendHandler {
     }
     
     private ExecutorService getExecutorService(final ChannelHandlerContext context) {
-        return TransactionType.XA.equals(RuleRegistry.getInstance().getTransactionType()) ? ChannelThreadHolder.get(context.channel().id()) : eventLoopGroup;
+        return TransactionType.XA.equals(RuleRegistry.getInstance().getTransactionType()) ? ChannelThreadHolder.getInstance().get(context.channel().id()) : eventLoopGroup;
     }
 }

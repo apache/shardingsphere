@@ -33,7 +33,7 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
     
     @Override
     public void channelActive(final ChannelHandlerContext context) {
-        ChannelThreadHolder.add(context.channel().id());
+        ChannelThreadHolder.getInstance().add(context.channel().id());
         handshake(context);
     }
     
@@ -56,6 +56,6 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelInactive(final ChannelHandlerContext context) {
         context.fireChannelInactive();
-        ChannelThreadHolder.remove(context.channel().id());
+        ChannelThreadHolder.getInstance().remove(context.channel().id());
     }
 }

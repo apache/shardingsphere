@@ -18,6 +18,8 @@
 package io.shardingsphere.proxy.frontend.mysql;
 
 import io.netty.channel.ChannelId;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,17 +32,30 @@ import java.util.concurrent.Executors;
  * <p>This ensure atomikos can process XA transaction by current thread id.</p>
  * 
  * @author zhaojun
+ * @author zhangliang
  */
-public class ChannelThreadHolder {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ChannelThreadHolder {
     
-    private static volatile Map<ChannelId, ExecutorService> threadPoolMap = new HashMap<>();
+    private static final ChannelThreadHolder INSTANCE = new ChannelThreadHolder();
+    
+    private volatile Map<ChannelId, ExecutorService> threadPoolMap = new HashMap<>();
+    
+    /**
+     * Get channel thread holder instance.
+     * 
+     * @return channel thread holder instance
+     */
+    public static ChannelThreadHolder getInstance() {
+        return INSTANCE;
+    }
     
     /**
      * Add active single thread pool of current channel.
      *
      * @param channelId channel id
      */
-    public static void add(final ChannelId channelId) {
+    public void add(final ChannelId channelId) {
         threadPoolMap.put(channelId, Executors.newSingleThreadExecutor());
     }
     
@@ -50,7 +65,7 @@ public class ChannelThreadHolder {
      * @param channelId channel id
      * @return thread pool
      */
-    public static ExecutorService get(final ChannelId channelId) {
+    public ExecutorService get(final ChannelId channelId) {
         return threadPoolMap.get(channelId);
     }
     
@@ -59,7 +74,7 @@ public class ChannelThreadHolder {
      *
      * @param channelId channel id
      */
-    public static void remove(final ChannelId channelId) {
+    public void remove(final ChannelId channelId) {
         threadPoolMap.remove(channelId).shutdown();
     }
 }
