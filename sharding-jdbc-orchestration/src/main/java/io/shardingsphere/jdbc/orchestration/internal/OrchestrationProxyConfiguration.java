@@ -41,7 +41,7 @@ public class OrchestrationProxyConfiguration {
     
     private Map<String, DataSourceParameter> dataSources = new HashMap<>();
     
-    private YamlShardingRuleConfiguration shardingRule = new YamlShardingRuleConfiguration();
+    private YamlShardingRuleConfiguration shardingRule;
     
     private YamlMasterSlaveRuleConfiguration masterSlaveRule;
     
@@ -54,13 +54,5 @@ public class OrchestrationProxyConfiguration {
         shardingRule = config.getShardingRule();
         masterSlaveRule = config.getMasterSlaveRule();
         proxyAuthority = config.getProxyAuthority();
-    }
-    
-    /**
-     * Judge has local configuration or not. 
-     * @return has local configuration or not
-     */
-    public boolean hasLocalConfiguration() {
-        return !shardingRule.getTables().isEmpty() || null != masterSlaveRule;
     }
 }
