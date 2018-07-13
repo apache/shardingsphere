@@ -56,10 +56,10 @@ public final class MasterSlaveRule {
     /**
      * Judge whether contain data source name.
      *
-     * @param datasourceName data source name
+     * @param dataSourceName data source name
      * @return contain or not.
      */
-    public boolean containDataSourceName(final String datasourceName) {
-        return masterDataSourceName.equals(datasourceName) || slaveDataSourceNames.contains(datasourceName);
+    public boolean containDataSourceName(final String dataSourceName) {
+        return masterDataSourceName.equals(dataSourceName) || slaveDataSourceNames.contains(dataSourceName);
     }
 }
