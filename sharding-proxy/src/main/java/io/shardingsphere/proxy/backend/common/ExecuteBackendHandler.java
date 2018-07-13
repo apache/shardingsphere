@@ -33,7 +33,6 @@ import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingsphere.proxy.backend.resource.BaseJDBCResource;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;
-import io.shardingsphere.proxy.transaction.AtomikosUserTransaction;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
@@ -41,6 +40,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCo
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
+import io.shardingsphere.transaction.xa.AtomikosUserTransaction;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
