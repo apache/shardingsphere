@@ -17,43 +17,40 @@
 
 package io.shardingsphere.transaction.xa;
 
+import io.shardingsphere.core.transaction.event.AbstractTransactionEvent;
+import io.shardingsphere.core.transaction.event.WeakXaTransactionEvent;
 import io.shardingsphere.core.transaction.spi.Transaction;
 import io.shardingsphere.core.util.EventBusInstance;
-import lombok.AllArgsConstructor;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Map;
 
 /**
  * Weak XA transaction implement for Transaction spi.
  *
  * @author zhaojun
  */
-@AllArgsConstructor
 public class WeakXaTransaction implements Transaction {
     
     static {
         EventBusInstance.getInstance().register(new WeakXaTransactionListener(new WeakXaTransaction()));
     }
     
-    private final boolean autoCommit = true;
-    
-    private final Map<String, Connection> cachedConnections;
-    
     @Override
-    public void begin() throws SQLException {
-        for (Connection each : cachedConnections.values()) {
-            each.setAutoCommit(autoCommit);
+    public void begin(AbstractTransactionEvent transactionEvent) throws SQLException {
+        WeakXaTransactionEvent weakXaTransactionEvent = (WeakXaTransactionEvent) transactionEvent;
+        for (Connection each : weakXaTransactionEvent.getCachedConnections().values()) {
+            each.setAutoCommit(weakXaTransactionEvent.isAutoCommit());
         }
     }
     
     @Override
-    public void commit() throws SQLException {
+    public void commit(AbstractTransactionEvent transactionEvent) throws SQLException {
+        WeakXaTransactionEvent weakXaTransactionEvent = (WeakXaTransactionEvent) transactionEvent;
         Collection<SQLException> exceptions = new LinkedList<>();
-        for (Connection each : cachedConnections.values()) {
+        for (Connection each : weakXaTransactionEvent.getCachedConnections().values()) {
             try {
                 each.commit();
             } catch (final SQLException ex) {
@@ -64,9 +61,10 @@ public class WeakXaTransaction implements Transaction {
     }
     
     @Override
-    public void rollback() throws SQLException {
+    public void rollback(AbstractTransactionEvent transactionEvent) throws SQLException {
+        WeakXaTransactionEvent weakXaTransactionEvent = (WeakXaTransactionEvent) transactionEvent;
         Collection<SQLException> exceptions = new LinkedList<>();
-        for (Connection each : cachedConnections.values()) {
+        for (Connection each : weakXaTransactionEvent.getCachedConnections().values()) {
             try {
                 each.rollback();
             } catch (final SQLException ex) {

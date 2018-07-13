@@ -22,10 +22,7 @@ import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.transaction.event.WeakXaTransactionEvent;
 import lombok.AllArgsConstructor;
 
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Weak-XA Transaction Listener.
@@ -48,56 +45,15 @@ public class WeakXaTransactionListener {
     public void listen(final WeakXaTransactionEvent weakXaTransactionEvent) throws SQLException {
         switch (weakXaTransactionEvent.getTclType()) {
             case BEGIN:
-                weakXaTransaction.begin();
+                weakXaTransaction.begin(weakXaTransactionEvent);
                 break;
             case COMMIT:
-                weakXaTransaction.commit();
+                weakXaTransaction.commit(weakXaTransactionEvent);
                 break;
             case ROLLBACK:
-                weakXaTransaction.rollback();
+                weakXaTransaction.rollback(weakXaTransactionEvent);
                 break;
             default:
         }
-    }
-    
-    private void doBegin(final WeakXaTransactionEvent weakXaTransactionEvent) throws SQLException {
-        for (Connection each : weakXaTransactionEvent.getCachedConnections().values()) {
-            each.setAutoCommit(weakXaTransactionEvent.isAutoCommit());
-        }
-    }
-    
-    private void doCommit(final WeakXaTransactionEvent weakXaTransactionEvent) throws SQLException {
-        Collection<SQLException> exceptions = new LinkedList<>();
-        for (Connection each : weakXaTransactionEvent.getCachedConnections().values()) {
-            try {
-                each.commit();
-            } catch (final SQLException ex) {
-                exceptions.add(ex);
-            }
-        }
-        throwSQLExceptionIfNecessary(exceptions);
-    }
-    
-    private void doRollback(final WeakXaTransactionEvent weakXaTransactionEvent) throws SQLException {
-        Collection<SQLException> exceptions = new LinkedList<>();
-        for (Connection each : weakXaTransactionEvent.getCachedConnections().values()) {
-            try {
-                each.rollback();
-            } catch (final SQLException ex) {
-                exceptions.add(ex);
-            }
-        }
-        throwSQLExceptionIfNecessary(exceptions);
-    }
-    
-    private void throwSQLExceptionIfNecessary(final Collection<SQLException> exceptions) throws SQLException {
-        if (exceptions.isEmpty()) {
-            return;
-        }
-        SQLException ex = new SQLException();
-        for (SQLException each : exceptions) {
-            ex.setNextException(each);
-        }
-        throw ex;
     }
 }

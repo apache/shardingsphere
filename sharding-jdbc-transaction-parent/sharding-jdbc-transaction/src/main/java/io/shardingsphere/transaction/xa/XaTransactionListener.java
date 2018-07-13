@@ -20,6 +20,7 @@ package io.shardingsphere.transaction.xa;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.transaction.event.XaTransactionEvent;
+import lombok.AllArgsConstructor;
 
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
@@ -32,7 +33,10 @@ import javax.transaction.SystemException;
  *
  * @author zhaojun
  */
+@AllArgsConstructor
 public class XaTransactionListener {
+    
+    private AtomikosXaTransaction atomikosXaTransaction;
     
     /**
      * Listen event.
@@ -50,13 +54,13 @@ public class XaTransactionListener {
     public void listen(final XaTransactionEvent xaTransactionEvent) throws SystemException, NotSupportedException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
         switch (xaTransactionEvent.getTclType()) {
             case BEGIN:
-                AtomikosUserTransaction.getInstance().begin();
+                atomikosXaTransaction.begin(xaTransactionEvent);
                 break;
             case COMMIT:
-                AtomikosUserTransaction.getInstance().commit();
+                atomikosXaTransaction.commit(xaTransactionEvent);
                 break;
             case ROLLBACK:
-                AtomikosUserTransaction.getInstance().rollback();
+                atomikosXaTransaction.rollback(xaTransactionEvent);
                 break;
             default:
         }
