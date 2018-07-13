@@ -40,6 +40,8 @@ public class SagaSoftTransaction {
     
     private String transactionId;
     
+    private String serviceName = "saga-transaction-example";
+    
     private List<SQLPair> sqlPairs = new ArrayList<>(128);
     
     /**
@@ -68,7 +70,7 @@ public class SagaSoftTransaction {
             compensationParams.put("form", compensationForm);
             Compensation compensation = new Compensation("put", "/execute", compensationParams);
             String parent = 0 == i ? "" : transactionId + (i - 1);
-            SagaRequest sagaRequest = new SagaRequest(transactionId + i, "rest", transactionId, Collections.singletonList(parent), transaction, compensation);
+            SagaRequest sagaRequest = new SagaRequest(transactionId + i, "rest", serviceName, Collections.singletonList(parent), transaction, compensation);
             sagaRequests.add(sagaRequest);
         }
         SagaApi sagaApi = new SagaApi("BackwardRecovery", sagaRequests);
