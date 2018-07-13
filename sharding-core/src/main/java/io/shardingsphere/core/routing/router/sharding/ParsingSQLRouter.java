@@ -43,7 +43,7 @@ import io.shardingsphere.core.routing.type.RoutingEngine;
 import io.shardingsphere.core.routing.type.RoutingResult;
 import io.shardingsphere.core.routing.type.TableUnit;
 import io.shardingsphere.core.routing.type.broadcast.DatabaseBroadcastRoutingEngine;
-import io.shardingsphere.core.routing.type.broadcast.InstanceDatabaseBroadcastRoutingEngine;
+import io.shardingsphere.core.routing.type.broadcast.InstanceBroadcastRoutingEngine;
 import io.shardingsphere.core.routing.type.broadcast.TableBroadcastRoutingEngine;
 import io.shardingsphere.core.routing.type.complex.ComplexRoutingEngine;
 import io.shardingsphere.core.routing.type.ignore.IgnoreRoutingEngine;
@@ -122,7 +122,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
         } else if (sqlStatement instanceof ShowDatabasesStatement || sqlStatement instanceof ShowTablesStatement) {
             routingEngine = new DatabaseBroadcastRoutingEngine(shardingRule);
         } else if (sqlStatement instanceof DCLStatement) {
-            routingEngine = new InstanceDatabaseBroadcastRoutingEngine(shardingRule, shardingDataSourceMetaData);
+            routingEngine = new InstanceBroadcastRoutingEngine(shardingRule, shardingDataSourceMetaData);
         } else if (shardingConditions.isAlwaysFalse()) {
             routingEngine = new UnicastRoutingEngine(shardingRule, tableNames);
         } else if (sqlStatement instanceof DALStatement) {
