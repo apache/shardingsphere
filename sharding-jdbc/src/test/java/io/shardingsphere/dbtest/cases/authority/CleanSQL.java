@@ -17,6 +17,7 @@
 
 package io.shardingsphere.dbtest.cases.authority;
 
+import io.shardingsphere.core.constant.DatabaseType;
 import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -39,5 +40,31 @@ public final class CleanSQL {
     private String dbTypes;
     
     @XmlElement(name = "sql")
-    private Collection<SQL> SQLS = new LinkedList<>();
+    private Collection<SQL> SQLs = new LinkedList<>();
+    
+    /**
+     * Get database type list.
+     *
+     * @return database type list
+     */
+    public Collection<DatabaseType> getDatabaseTypeList() {
+        Collection<DatabaseType> result = new LinkedList<>();
+        for (String each : dbTypes.split(",")) {
+            result.add(DatabaseType.valueOf(each));
+        }
+        return result;
+    }
+    
+    /**
+     * Get all sqls content.
+     *
+     * @return sqls content
+     */
+    public Collection<String> getAllSQLContent() {
+        Collection<String> result = new LinkedList<>();
+        for (SQL each : SQLs) {
+            result.add(each.getContent());
+        }
+        return result;
+    }
 }
