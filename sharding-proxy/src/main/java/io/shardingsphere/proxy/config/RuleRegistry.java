@@ -121,7 +121,7 @@ public final class RuleRegistry implements AutoCloseable {
             }
         }
         executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(maxWorkingThreads));
-        shardingDataSourceMetaData = new ShardingDataSourceMetaData(dataSourceMap, DatabaseType.MySQL);
+        shardingDataSourceMetaData = new ShardingDataSourceMetaData(dataSourceMap, shardingRule, DatabaseType.MySQL);
         shardingMetaData = new ProxyShardingMetaData(executorService, dataSourceMap);
         if (!shardingRule.getTableRules().isEmpty() && masterSlaveRule.getMasterDataSourceName().isEmpty()) {
             shardingMetaData.init(shardingRule);
