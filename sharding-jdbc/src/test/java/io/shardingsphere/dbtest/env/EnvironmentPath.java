@@ -34,7 +34,7 @@ public final class EnvironmentPath {
     
     private static final String DATABASE_ENVIRONMENT_RESOURCES_PATH = "asserts/env/%s/schema.xml";
     
-    private static final String DATA_INITIALIZE_RESOURCES_PATH = "asserts/env/%s/data-init.xml";
+    private static final String DATA_INITIALIZE_RESOURCES_PATH = "asserts/env/%s/dataset.xml";
     
     private static final String SHARDING_RULE_RESOURCES_PATH = "asserts/env/%s/sharding-rule.yaml";
     
