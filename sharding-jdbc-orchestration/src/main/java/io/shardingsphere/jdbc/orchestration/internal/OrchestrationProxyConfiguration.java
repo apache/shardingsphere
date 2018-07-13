@@ -37,7 +37,7 @@ import java.util.Map;
 @NoArgsConstructor
 @Getter
 @Setter
-public class OrchestrationProxyConfiguration {
+public final class OrchestrationProxyConfiguration {
     
     private Map<String, DataSourceParameter> dataSources = new HashMap<>();
     

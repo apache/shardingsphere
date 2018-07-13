@@ -17,6 +17,7 @@
 
 package io.shardingsphere.dbtest.engine.dcl;
 
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.dbtest.cases.assertion.dcl.DCLIntegrateTestCaseAssertion;
@@ -54,28 +55,26 @@ public abstract class BaseDCLIntegrateTest extends SingleIntegrateTest {
     }
     
     protected void cleanEnvironment(final Connection connection) {
-        if (!Strings.isNullOrEmpty(assertion.getCleanSQLs())) {
-            try (Statement statement = connection.createStatement()) {
-                for (String each : assertion.getCleanSQLs().split(";")) {
-                    statement.execute(each);
-                }
-                // CHECKSTYLE: OFF
-            } catch (final SQLException ignored) {
-                // CHECKSTYLE: ON
+        if (Strings.isNullOrEmpty(assertion.getCleanSQLs())) {
+            return;
+        }
+        try (Statement statement = connection.createStatement()) {
+            for (String each : Splitter.on(";").trimResults().splitToList(assertion.getCleanSQLs())) {
+                statement.execute(each);
             }
+        } catch (final SQLException ignored) {
         }
     }
     
     protected void initEnvironment(final Connection connection) {
-        if (!Strings.isNullOrEmpty(assertion.getInitSQLs())) {
-            try (Statement statement = connection.createStatement()) {
-                for (String each : assertion.getInitSQLs().split(";")) {
-                    statement.execute(each);
-                }
-                // CHECKSTYLE: OFF
-            } catch (final SQLException ignored) {
-                // CHECKSTYLE: ON
+        if (Strings.isNullOrEmpty(assertion.getInitSQLs())) {
+            return;
+        }
+        try (Statement statement = connection.createStatement()) {
+            for (String each : Splitter.on(";").trimResults().splitToList(assertion.getInitSQLs())) {
+                statement.execute(each);
             }
+        } catch (final SQLException ignored) {
         }
     }
     
@@ -84,7 +83,7 @@ public abstract class BaseDCLIntegrateTest extends SingleIntegrateTest {
             return true;
         }
         Collection<DatabaseType> databaseTypeList = new LinkedList<>();
-        for (String each : assertion.getDbTypes().split(",")) {
+        for (String each : Splitter.on(",").trimResults().splitToList(assertion.getDbTypes())) {
             databaseTypeList.add(DatabaseType.valueOf(each));
         }
         return databaseTypeList.contains(getDatabaseTypeEnvironment().getDatabaseType());

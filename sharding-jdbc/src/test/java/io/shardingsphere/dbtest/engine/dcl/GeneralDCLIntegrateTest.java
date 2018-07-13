@@ -32,16 +32,11 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Collection;
 
-import static junit.framework.TestCase.fail;
-
 public final class GeneralDCLIntegrateTest extends BaseDCLIntegrateTest {
-    
-    private final DCLIntegrateTestCaseAssertion assertion;
     
     public GeneralDCLIntegrateTest(final String sqlCaseId, final String path, final DCLIntegrateTestCaseAssertion assertion, final String shardingRuleType,
                                    final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
         super(sqlCaseId, path, assertion, shardingRuleType, databaseTypeEnvironment, caseType);
-        this.assertion = assertion;
     }
     
     @Parameters(name = "{0} -> Rule:{3} -> {4} -> {5}")
@@ -50,11 +45,8 @@ public final class GeneralDCLIntegrateTest extends BaseDCLIntegrateTest {
     }
     
     @Test
-    public void assertExecute() {
-        if (!getDatabaseTypeEnvironment().isEnabled()) {
-            return;
-        }
-        if (!isExecuted()) {
+    public void assertExecute() throws SQLException {
+        if (!getDatabaseTypeEnvironment().isEnabled() && !isExecuted()) {
             return;
         }
         try (Connection connection = getDataSource().getConnection()) {
@@ -65,8 +57,6 @@ public final class GeneralDCLIntegrateTest extends BaseDCLIntegrateTest {
                 connection.prepareStatement(getSql()).execute();
             }
             cleanEnvironment(connection);
-        } catch (final SQLException ex) {
-            fail(ex.toString());
         }
     }
 }
