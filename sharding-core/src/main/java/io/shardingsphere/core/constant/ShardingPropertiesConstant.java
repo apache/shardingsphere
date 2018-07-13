@@ -69,7 +69,9 @@ public enum ShardingPropertiesConstant {
     
     PROXY_TRANSACTION_MODE("proxy.transaction.mode", "NONE", String.class),
     
-    PROXY_MAX_WORKING_THREADS("proxy.max.working.threads", Runtime.getRuntime().availableProcessors() * 2 + "", int.class);
+    PROXY_MAX_WORKING_THREADS("proxy.max.working.threads", Runtime.getRuntime().availableProcessors() * 2 + "", int.class),
+    
+    PROXY_BACKEND_USE_NIO("proxy.backend.use.nio", Boolean.FALSE.toString(), boolean.class);
     
     private final String key;
     

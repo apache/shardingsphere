@@ -63,7 +63,7 @@ public final class ShardingProxy {
      */
     public void start(final int port) throws InterruptedException, MalformedURLException {
         try {
-            if (RuleRegistry.getInstance().isWithoutJdbc()) {
+            if (RuleRegistry.getInstance().isProxyBackendUseNio()) {
                 ShardingProxyClient.getInstance().start();
             }
             ServerBootstrap bootstrap = new ServerBootstrap();
@@ -79,7 +79,7 @@ public final class ShardingProxy {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
             userGroup.shutdownGracefully();
-            if (RuleRegistry.getInstance().isWithoutJdbc()) {
+            if (RuleRegistry.getInstance().isProxyBackendUseNio()) {
                 ShardingProxyClient.getInstance().stop();
             }
         }

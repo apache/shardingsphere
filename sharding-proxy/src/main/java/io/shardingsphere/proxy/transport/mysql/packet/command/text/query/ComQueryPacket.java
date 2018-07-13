@@ -64,7 +64,7 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
         super(sequenceId);
         this.connectionId = connectionId;
         sql = mysqlPacketPayload.readStringEOF();
-        if (RuleRegistry.getInstance().isWithoutJdbc()) {
+        if (RuleRegistry.getInstance().isProxyBackendUseNio()) {
             sqlExecuteBackendHandler = null;
             sqlPacketsBackendHandler = new SQLPacketsBackendHandler(this, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
         } else {
@@ -98,7 +98,7 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
             log.error("doTransactionIntercept Exception", ex);
             return new CommandResponsePackets(new ErrPacket(1, 0, "", "", "" + ex.getMessage()));
         }
-        if (RuleRegistry.getInstance().isWithoutJdbc()) {
+        if (RuleRegistry.getInstance().isProxyBackendUseNio()) {
             return sqlPacketsBackendHandler.execute();
         } else {
             return sqlExecuteBackendHandler.execute();
@@ -112,7 +112,7 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
      */
     public boolean hasMoreResultValue() {
         try {
-            if (RuleRegistry.getInstance().isWithoutJdbc()) {
+            if (RuleRegistry.getInstance().isProxyBackendUseNio()) {
                 return sqlPacketsBackendHandler.hasMoreResultValue();
             } else {
                 return sqlExecuteBackendHandler.hasMoreResultValue();
@@ -128,7 +128,7 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
      * @return database protocol packet
      */
     public DatabaseProtocolPacket getResultValue() {
-        if (RuleRegistry.getInstance().isWithoutJdbc()) {
+        if (RuleRegistry.getInstance().isProxyBackendUseNio()) {
             return sqlPacketsBackendHandler.getResultValue();
         } else {
             return sqlExecuteBackendHandler.getResultValue();

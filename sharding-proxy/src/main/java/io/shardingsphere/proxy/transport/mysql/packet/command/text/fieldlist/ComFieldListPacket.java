@@ -89,7 +89,7 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
         log.debug("field wildcard received for Sharding-Proxy: {}", fieldWildcard);
         String sql = String.format("SHOW COLUMNS FROM %s FROM %s", table, ShardingConstant.LOGIC_SCHEMA_NAME);
         // TODO use common database type
-        if (RuleRegistry.getInstance().isWithoutJdbc()) {
+        if (RuleRegistry.getInstance().isProxyBackendUseNio()) {
             sqlPacketsBackendHandler = new SQLPacketsBackendHandler(this, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
             if (sqlPacketsBackendHandler.execute().getHeadPacket() instanceof ErrPacket) {
                 return new CommandResponsePackets(new ErrPacket(1, 0, "", "", ""));
@@ -107,7 +107,7 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
     @Override
     public boolean hasMoreResultValue() {
         try {
-            if (RuleRegistry.getInstance().isWithoutJdbc()) {
+            if (RuleRegistry.getInstance().isProxyBackendUseNio()) {
                 return sqlPacketsBackendHandler.hasMoreResultValue();
             } else {
                 return sqlExecuteBackendHandler.hasMoreResultValue();
@@ -120,7 +120,7 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
     @Override
     public DatabaseProtocolPacket getResultValue() {
         DatabaseProtocolPacket result;
-        if (RuleRegistry.getInstance().isWithoutJdbc()) {
+        if (RuleRegistry.getInstance().isProxyBackendUseNio()) {
             result = sqlPacketsBackendHandler.getResultValue();
             if (!sqlPacketsBackendHandler.isHasMoreResultValueFlag()) {
                 return new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
