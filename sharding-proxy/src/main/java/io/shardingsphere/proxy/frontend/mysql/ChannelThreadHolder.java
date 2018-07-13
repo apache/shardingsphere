@@ -44,11 +44,11 @@ public class ChannelThreadHolder {
     public static ExecutorService get(final ChannelId channelId) {
         ExecutorService newExecutorService = Executors.newSingleThreadExecutor();
         ExecutorService existedExecutorService = threadPoolMap.putIfAbsent(channelId, newExecutorService);
-        if (null != existedExecutorService) {
-            newExecutorService.shutdown();
-            return existedExecutorService;
+        if (null == existedExecutorService) {
+            return newExecutorService;
         }
-        return newExecutorService;
+        newExecutorService.shutdown();
+        return existedExecutorService;
     }
     
     /**
