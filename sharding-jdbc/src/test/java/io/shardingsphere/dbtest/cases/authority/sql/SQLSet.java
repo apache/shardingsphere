@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.cases.authority;
+package io.shardingsphere.dbtest.cases.authority.sql;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import lombok.Getter;
