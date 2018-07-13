@@ -69,13 +69,6 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
         fieldWildcard = mysqlPacketPayload.readStringEOF();
     }
     
-    public ComFieldListPacket(final int sequenceId, final int connectionId, final String table, final String fieldWildcard) {
-        super(sequenceId);
-        this.connectionId = connectionId;
-        this.table = table;
-        this.fieldWildcard = fieldWildcard;
-    }
-    
     @Override
     public void write(final MySQLPacketPayload mysqlPacketPayload) {
         mysqlPacketPayload.writeInt1(CommandPacketType.COM_FIELD_LIST.getValue());
@@ -107,11 +100,7 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
     @Override
     public boolean hasMoreResultValue() {
         try {
-            if (RuleRegistry.getInstance().isWithoutJdbc()) {
-                return sqlPacketsBackendHandler.hasMoreResultValue();
-            } else {
-                return sqlExecuteBackendHandler.hasMoreResultValue();
-            }
+            return RuleRegistry.getInstance().isWithoutJdbc() ? sqlPacketsBackendHandler.hasMoreResultValue() : sqlExecuteBackendHandler.hasMoreResultValue();
         } catch (final SQLException ex) {
             return false;
         }

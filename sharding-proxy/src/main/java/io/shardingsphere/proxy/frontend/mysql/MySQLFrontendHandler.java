@@ -81,7 +81,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
     
     @Override
     protected void executeCommand(final ChannelHandlerContext context, final ByteBuf message) {
-        getExecutor(context).execute(new Runnable() {
+        getExecutorService(context).execute(new Runnable() {
             
             @Override
             public void run() {
@@ -93,6 +93,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
                         context.writeAndFlush(each);
                     }
                     while (commandPacket.hasMoreResultValue()) {
+                        // TODO try to use wait notify
                         while (!context.channel().isWritable()) {
                             continue;
                         }
@@ -106,7 +107,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
         });
     }
     
-    private ExecutorService getExecutor(final ChannelHandlerContext context) {
+    private ExecutorService getExecutorService(final ChannelHandlerContext context) {
         return TransactionType.XA.equals(RuleRegistry.getInstance().getTransactionType()) ? ChannelThreadHolder.get(context.channel().id()) : eventLoopGroup;
     }
 }

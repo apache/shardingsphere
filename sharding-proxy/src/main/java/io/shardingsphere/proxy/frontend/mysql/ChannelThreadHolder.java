@@ -19,8 +19,8 @@ package io.shardingsphere.proxy.frontend.mysql;
 
 import io.netty.channel.ChannelId;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -33,7 +33,16 @@ import java.util.concurrent.Executors;
  */
 public class ChannelThreadHolder {
     
-    private static Map<ChannelId, ExecutorService> threadPoolMap = new ConcurrentHashMap<>();
+    private static volatile Map<ChannelId, ExecutorService> threadPoolMap = new HashMap<>();
+    
+    /**
+     * Add active single thread pool of current channel.
+     *
+     * @param channelId channel id
+     */
+    public static void add(final ChannelId channelId) {
+        threadPoolMap.put(channelId, Executors.newSingleThreadExecutor());
+    }
     
     /**
      * Get active single thread pool of current channel.
@@ -42,13 +51,7 @@ public class ChannelThreadHolder {
      * @return thread pool
      */
     public static ExecutorService get(final ChannelId channelId) {
-        ExecutorService newExecutorService = Executors.newSingleThreadExecutor();
-        ExecutorService existedExecutorService = threadPoolMap.putIfAbsent(channelId, newExecutorService);
-        if (null == existedExecutorService) {
-            return newExecutorService;
-        }
-        newExecutorService.shutdown();
-        return existedExecutorService;
+        return threadPoolMap.get(channelId);
     }
     
     /**

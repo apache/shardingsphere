@@ -112,11 +112,7 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
      */
     public boolean hasMoreResultValue() {
         try {
-            if (RuleRegistry.getInstance().isWithoutJdbc()) {
-                return sqlPacketsBackendHandler.hasMoreResultValue();
-            } else {
-                return sqlExecuteBackendHandler.hasMoreResultValue();
-            }
+            return RuleRegistry.getInstance().isWithoutJdbc() ? sqlPacketsBackendHandler.hasMoreResultValue() : sqlExecuteBackendHandler.hasMoreResultValue();
         } catch (final SQLException ex) {
             return false;
         }
@@ -128,11 +124,7 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
      * @return database protocol packet
      */
     public DatabaseProtocolPacket getResultValue() {
-        if (RuleRegistry.getInstance().isWithoutJdbc()) {
-            return sqlPacketsBackendHandler.getResultValue();
-        } else {
-            return sqlExecuteBackendHandler.getResultValue();
-        }
+        return RuleRegistry.getInstance().isWithoutJdbc() ? sqlPacketsBackendHandler.getResultValue() : sqlExecuteBackendHandler.getResultValue();
     }
     
     @Override
