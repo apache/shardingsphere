@@ -72,10 +72,10 @@ public final class Bootstrap {
         ) {
             OrchestrationProxyConfiguration result = new Yaml(new Constructor(OrchestrationProxyConfiguration.class)).loadAs(inputStreamReader, OrchestrationProxyConfiguration.class);
             Preconditions.checkNotNull(result, String.format("Configuration file `%s` is invalid.", CONFIG_YAML));
-            Preconditions.checkNotNull(result.getProxyAuthority(), "Authority configuration is invalid.");
-            Preconditions.checkNotNull(result.getProxyAuthority().getUsername(), "Authority configuration is invalid.");
+            Preconditions.checkState(!result.getDataSources().isEmpty(), "Data sources configuration can not be empty.");
             Preconditions.checkState(result.hasLocalConfiguration() || null != result.getOrchestration(), 
                     "Configuration invalid, sharding rule, local and orchestration configuration can not be both null.");
+            Preconditions.checkNotNull(result.getProxyAuthority().getUsername(), "Authority configuration is invalid.");
             return result;
         }
     }
