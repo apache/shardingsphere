@@ -64,7 +64,7 @@ public class HandshakePacket extends MySQLPacket {
         Preconditions.checkArgument(protocolVersion == mysqlPacketPayload.readInt1());
         mysqlPacketPayload.readStringNul();
         connectionId = mysqlPacketPayload.readInt4();
-        byte[] authPluginDataPart1 = mysqlPacketPayload.readStringNul().getBytes();
+        final byte[] authPluginDataPart1 = mysqlPacketPayload.readStringNul().getBytes();
         mysqlPacketPayload.readInt2();
         mysqlPacketPayload.readInt1();
         Preconditions.checkArgument(statusFlag.getValue() == mysqlPacketPayload.readInt2());

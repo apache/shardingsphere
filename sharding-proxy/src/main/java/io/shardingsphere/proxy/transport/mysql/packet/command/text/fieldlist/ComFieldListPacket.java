@@ -92,13 +92,13 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
         if (RuleRegistry.getInstance().isWithoutJdbc()) {
             sqlPacketsBackendHandler = new SQLPacketsBackendHandler(this, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
             if (sqlPacketsBackendHandler.execute().getHeadPacket() instanceof ErrPacket) {
-                return new CommandResponsePackets(new ErrPacket(1, 0, "", "", ""));
+                return new CommandResponsePackets(new ErrPacket(1, 0, "", ""));
             }
             return new CommandResponsePackets(new DummyPacket());
         } else {
             sqlExecuteBackendHandler = new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
             if (sqlExecuteBackendHandler.execute().getHeadPacket() instanceof ErrPacket) {
-                return new CommandResponsePackets(new ErrPacket(1, 0, "", "", ""));
+                return new CommandResponsePackets(new ErrPacket(1, 0, "", ""));
             }
             return new CommandResponsePackets(new DummyPacket());
         }
@@ -137,7 +137,7 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
             return new ColumnDefinition41Packet(++currentSequenceId, ShardingConstant.LOGIC_SCHEMA_NAME, table, table,
                 columnName, columnName, 100, ColumnType.MYSQL_TYPE_VARCHAR, 0);
         } else {
-            return new ErrPacket(1, 0, "", "", "");
+            return new ErrPacket(1, 0, "", "");
         }
     }
     

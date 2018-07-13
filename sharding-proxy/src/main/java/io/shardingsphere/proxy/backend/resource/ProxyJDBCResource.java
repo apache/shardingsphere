@@ -23,7 +23,7 @@ import java.sql.Statement;
 import java.util.List;
 
 /**
- * Proxy jdbc resource model for statement.
+ * Proxy JDBC resource model for statement.
  *
  * @author zhaojun
  */

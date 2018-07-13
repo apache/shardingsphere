@@ -71,10 +71,10 @@ public final class Bootstrap {
         ) {
             OrchestrationProxyConfiguration result = new Yaml(new Constructor(OrchestrationProxyConfiguration.class)).loadAs(inputStreamReader, OrchestrationProxyConfiguration.class);
             Preconditions.checkNotNull(result, String.format("Configuration file `%s` is invalid.", CONFIG_YAML));
-            Preconditions.checkNotNull(result.getProxyAuthority(), "Authority configuration is invalid.");
-            Preconditions.checkNotNull(result.getProxyAuthority().getUsername(), "Authority configuration is invalid.");
-            Preconditions.checkState(result.hasLocalConfiguration() || null != result.getOrchestration(), 
+            Preconditions.checkState(!result.getDataSources().isEmpty(), "Data sources configuration can not be empty.");
+            Preconditions.checkState(null != result.getShardingRule() || null != result.getMasterSlaveRule() || null != result.getOrchestration(), 
                     "Configuration invalid, sharding rule, local and orchestration configuration can not be both null.");
+            Preconditions.checkNotNull(result.getProxyAuthority().getUsername(), "Authority configuration is invalid.");
             return result;
         }
     }
@@ -98,7 +98,7 @@ public final class Bootstrap {
     
     private static void startWithRegistryCenter(final OrchestrationProxyConfiguration localConfig, final int port) throws InterruptedException, MalformedURLException {
         try (OrchestrationFacade orchestrationFacade = new OrchestrationFacade(localConfig.getOrchestration().getOrchestrationConfiguration())) {
-            if (localConfig.hasLocalConfiguration()) {
+            if (null != localConfig.getShardingRule() || null != localConfig.getMasterSlaveRule()) {
                 orchestrationFacade.init(localConfig);
             }
             initRuleRegistry(orchestrationFacade.getConfigService());

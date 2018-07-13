@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Proxy jdbc resource factory class.
+ * Proxy JDBC resource factory class.
  *
  * @author zhaojun
  */

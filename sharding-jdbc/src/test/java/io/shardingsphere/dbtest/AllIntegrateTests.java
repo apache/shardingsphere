@@ -17,6 +17,7 @@
 
 package io.shardingsphere.dbtest;
 
+import io.shardingsphere.dbtest.engine.dcl.AllDCLTests;
 import io.shardingsphere.dbtest.engine.ddl.AllDDLTests;
 import io.shardingsphere.dbtest.engine.dml.AllDMLTests;
 import io.shardingsphere.dbtest.engine.dql.AllDQLTests;
@@ -28,7 +29,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
         AllDQLTests.class,
         AllDMLTests.class,
-        AllDDLTests.class
+        AllDDLTests.class,
+        AllDCLTests.class
 })
 public class AllIntegrateTests {
 }
