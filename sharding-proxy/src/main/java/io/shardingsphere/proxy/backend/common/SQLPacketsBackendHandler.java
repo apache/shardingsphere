@@ -97,18 +97,12 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     
     @Override
     public CommandResponsePackets execute() {
-        if (RuleRegistry.getInstance().isMasterSlaveOnly()) {
-            return executeForMasterSlave();
-        } else {
-            return executeForSharding();
-        }
+        return RuleRegistry.getInstance().isMasterSlaveOnly() ? executeForMasterSlave() : executeForSharding();
     }
     
     private CommandResponsePackets executeForMasterSlave() {
-        MasterSlaveRouter masterSlaveRouter = new MasterSlaveRouter(RuleRegistry.getInstance().getMasterSlaveRule());
         SQLStatement sqlStatement = new SQLJudgeEngine(rebuilder.sql()).judge();
-        String dataSourceName = masterSlaveRouter.route(sqlStatement.getType()).iterator().next();
-        
+        String dataSourceName = new MasterSlaveRouter(RuleRegistry.getInstance().getMasterSlaveRule()).route(sqlStatement.getType()).iterator().next();
         synchronizedFuture = new SynchronizedFuture<>(1);
         MySQLResultCache.getInstance().putFuture(rebuilder.connectionId(), synchronizedFuture);
         CommandPacket commandPacket = rebuilder.rebuild(rebuilder.sequenceId(), rebuilder.connectionId(), rebuilder.sql());
@@ -116,7 +110,6 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
         //TODO timeout should be set.
         List<QueryResult> queryResults = synchronizedFuture.get(CONNECT_TIMEOUT, TimeUnit.SECONDS);
         MySQLResultCache.getInstance().deleteFuture(rebuilder.connectionId());
-        
         List<CommandResponsePackets> packets = new LinkedList<>();
         for (QueryResult each : queryResults) {
             packets.add(((MySQLQueryResult) each).getCommandResponsePackets());
@@ -131,7 +124,6 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
         if (routeResult.getExecutionUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
         }
-        
         synchronizedFuture = new SynchronizedFuture<>(routeResult.getExecutionUnits().size());
         MySQLResultCache.getInstance().putFuture(rebuilder.connectionId(), synchronizedFuture);
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
@@ -153,7 +145,6 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
             }
             packets.add(queryResult.getCommandResponsePackets());
         }
-        
         CommandResponsePackets result = merge(routeResult.getSqlStatement(), packets, queryResults);
         ProxyShardingRefreshHandler.build(routeResult).execute();
         return result;

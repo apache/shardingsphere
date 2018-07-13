@@ -43,7 +43,7 @@ public class OrchestrationProxyConfiguration {
     
     private YamlShardingRuleConfiguration shardingRule = new YamlShardingRuleConfiguration();
     
-    private YamlMasterSlaveRuleConfiguration masterSlaveRule = new YamlMasterSlaveRuleConfiguration();
+    private YamlMasterSlaveRuleConfiguration masterSlaveRule;
     
     private ProxyAuthority proxyAuthority = new ProxyAuthority();
     
@@ -61,6 +61,6 @@ public class OrchestrationProxyConfiguration {
      * @return has local configuration or not
      */
     public boolean hasLocalConfiguration() {
-        return !shardingRule.getTables().isEmpty() || null != masterSlaveRule.getMasterDataSourceName();
+        return !shardingRule.getTables().isEmpty() || null != masterSlaveRule;
     }
 }
