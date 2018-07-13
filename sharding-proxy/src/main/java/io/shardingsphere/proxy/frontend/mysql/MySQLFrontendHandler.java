@@ -68,8 +68,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
     
     @Override
     protected void auth(final ChannelHandlerContext context, final ByteBuf message) {
-        MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message);
-        try {
+        try (MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message)) {
             HandshakeResponse41Packet response41 = new HandshakeResponse41Packet(mysqlPacketPayload);
             if (proxyAuthorityHandler.login(response41.getUsername(), response41.getAuthResponse())) {
                 context.writeAndFlush(new OKPacket(response41.getSequenceId() + 1, 0L, 0L, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
@@ -77,8 +76,6 @@ public final class MySQLFrontendHandler extends FrontendHandler {
                 context.writeAndFlush(new ErrPacket(response41.getSequenceId() + 1, 
                         ServerErrorCode.ER_ACCESS_DENIED_ERROR, response41.getUsername(), "localhost", 0 == response41.getAuthResponse().length ? "NO" : "YES"));
             }
-        } finally {
-            mysqlPacketPayload.getByteBuf().release();
         }
     }
     
@@ -88,8 +85,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
             
             @Override
             public void run() {
-                MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message);
-                try {
+                try (MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message)) {
                     int sequenceId = mysqlPacketPayload.readInt1();
                     int connectionId = MySQLResultCache.getInstance().getConnection(context.channel().id().asShortText());
                     CommandPacket commandPacket = CommandPacketFactory.getCommandPacket(sequenceId, connectionId, mysqlPacketPayload);
@@ -105,7 +101,6 @@ public final class MySQLFrontendHandler extends FrontendHandler {
                 } finally {
                     MasterVisitedManager.clear();
                     ProxyConnectionHolder.clear();
-                    mysqlPacketPayload.getByteBuf().release();
                 }
             }
         });

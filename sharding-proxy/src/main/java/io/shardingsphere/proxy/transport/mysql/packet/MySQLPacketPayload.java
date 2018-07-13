@@ -38,7 +38,7 @@ import java.util.Date;
  */
 @RequiredArgsConstructor
 @Getter
-public final class MySQLPacketPayload {
+public final class MySQLPacketPayload implements AutoCloseable {
     
     private final ByteBuf byteBuf;
     
@@ -586,5 +586,10 @@ public final class MySQLPacketPayload {
             writeInt1(second);
             writeInt4(millisecond);
         }
+    }
+    
+    @Override
+    public void close() {
+        byteBuf.release();
     }
 }

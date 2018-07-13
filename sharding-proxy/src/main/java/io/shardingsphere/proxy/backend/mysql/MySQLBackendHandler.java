@@ -101,7 +101,7 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
             MySQLResultCache.getInstance().putConnection(context.channel().id().asShortText(), handshakePacket.getConnectionId());
             context.writeAndFlush(handshakeResponse41Packet);
         } finally {
-            mysqlPacketPayload.getByteBuf().release();
+            mysqlPacketPayload.close();
         }
     }
     
@@ -113,7 +113,7 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
             setResponse(context);
         } finally {
             mysqlQueryResult = null;
-            mysqlPacketPayload.getByteBuf().release();
+            mysqlPacketPayload.close();
         }
     }
     
@@ -125,7 +125,7 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
             setResponse(context);
         } finally {
             mysqlQueryResult = null;
-            mysqlPacketPayload.getByteBuf().release();
+            mysqlPacketPayload.close();
         }
     }
     
@@ -135,7 +135,7 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
         if (mysqlQueryResult.isColumnFinished()) {
             mysqlQueryResult.setRowFinished(eofPacket);
             mysqlQueryResult = null;
-            mysqlPacketPayload.getByteBuf().release();
+            mysqlPacketPayload.close();
         } else {
             mysqlQueryResult.setColumnFinished(eofPacket);
             setResponse(context);
