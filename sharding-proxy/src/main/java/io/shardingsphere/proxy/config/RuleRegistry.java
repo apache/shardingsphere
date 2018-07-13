@@ -17,10 +17,11 @@
 
 package io.shardingsphere.proxy.config;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
+import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.ShardingProperties;
 import io.shardingsphere.core.constant.ShardingPropertiesConstant;
@@ -31,11 +32,11 @@ import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ProxyAuthority;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
-import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
+import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusEvent;
 import io.shardingsphere.proxy.backend.common.ProxyMode;
 import io.shardingsphere.proxy.metadata.ProxyShardingMetaData;
-import io.shardingsphere.proxy.yaml.YamlProxyConfiguration;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -56,9 +57,9 @@ import java.util.concurrent.Executors;
  * @author zhaojun
  * @author wangkai
  */
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public final class RuleRegistry implements AutoCloseable {
+public final class RuleRegistry {
     
     private static final RuleRegistry INSTANCE = new RuleRegistry();
     
@@ -86,8 +87,6 @@ public final class RuleRegistry implements AutoCloseable {
     
     private int maxWorkingThreads;
     
-    private OrchestrationFacade orchestrationFacade;
-    
     private ShardingDataSourceMetaData shardingDataSourceMetaData;
     
     /**
@@ -104,15 +103,17 @@ public final class RuleRegistry implements AutoCloseable {
      *
      * @param config yaml proxy configuration
      */
-    public void init(final YamlProxyConfiguration config) {
+    public void init(final OrchestrationProxyConfiguration config) {
         Properties properties = config.getShardingRule().getProps();
         ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
         showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         proxyMode = ProxyMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_MODE));
         transactionType = TransactionType.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_MODE));
         maxWorkingThreads = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_MAX_WORKING_THREADS);
-        shardingRule = config.obtainShardingRule(Collections.<String>emptyList());
-        masterSlaveRule = config.obtainMasterSlaveRule();
+        shardingRule = new ShardingRule(config.getShardingRule().getShardingRuleConfiguration(), config.getDataSources().keySet());
+        masterSlaveRule = null == config.getMasterSlaveRule().getMasterDataSourceName()
+                ? new MasterSlaveRule(new MasterSlaveRuleConfiguration("", "", Collections.singletonList(""), null))
+                : new MasterSlaveRule(config.getMasterSlaveRule().getMasterSlaveRuleConfiguration());
         dataSourceMap = ProxyRawDataSourceFactory.create(transactionType, config);
         dataSourceConfigurationMap = new HashMap<>(128, 1);
         if (withoutJdbc) {
@@ -123,26 +124,29 @@ public final class RuleRegistry implements AutoCloseable {
         executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(maxWorkingThreads));
         shardingDataSourceMetaData = new ShardingDataSourceMetaData(dataSourceMap, shardingRule, DatabaseType.MySQL);
         shardingMetaData = new ProxyShardingMetaData(executorService, dataSourceMap);
-        if (!shardingRule.getTableRules().isEmpty() && masterSlaveRule.getMasterDataSourceName().isEmpty()) {
+        if (!isMasterSlaveOnly()) {
             shardingMetaData.init(shardingRule);
         }
         proxyAuthority = config.getProxyAuthority();
         Preconditions.checkNotNull(proxyAuthority.getUsername(), "Invalid configuration for proxy authority.");
-        assignOrchestrationFacade(config);
     }
     
-    private void assignOrchestrationFacade(final YamlProxyConfiguration yamlProxyConfiguration) {
-        Optional<OrchestrationConfiguration> orchestrationConfig = yamlProxyConfiguration.obtainOrchestrationConfiguration();
-        if (orchestrationConfig.isPresent()) {
-            orchestrationFacade = new OrchestrationFacade(orchestrationConfig.get());
-            orchestrationFacade.init(yamlProxyConfiguration);
-        }
+    /**
+     * Judge is master slave only.
+     * 
+     * @return is master slave only
+     */
+    public boolean isMasterSlaveOnly() {
+        return shardingRule.getTableRules().isEmpty() && !masterSlaveRule.getMasterDataSourceName().isEmpty();
     }
     
-    @Override
-    public void close() {
-        if (null != orchestrationFacade) {
-            orchestrationFacade.close();
-        }
+    /**
+     * Renew rule registry.
+     *
+     * @param proxyEventBusEvent proxy event bus event.
+     */
+    @Subscribe
+    public void renew(final ProxyEventBusEvent proxyEventBusEvent) {
+        init(new OrchestrationProxyConfiguration(proxyEventBusEvent.getDataSources(), proxyEventBusEvent.getOrchestrationConfig()));
     }
 }

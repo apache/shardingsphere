@@ -54,6 +54,5 @@ public final class DataSourceParameterConverter {
     @SuppressWarnings("unchecked")
     public static Map<String, DataSourceParameter> dataSourceParameterMapFromYaml(final String dataSourceParameterMapYamlString) {
         return (Map<String, DataSourceParameter>) YAML.load(dataSourceParameterMapYamlString);
-    
     }
 }

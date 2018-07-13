@@ -23,6 +23,7 @@ import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
 import io.shardingsphere.jdbc.orchestration.yaml.YamlOrchestrationConfiguration;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.HashMap;
@@ -33,6 +34,7 @@ import java.util.Map;
  *
  * @author panjuan
  */
+@NoArgsConstructor
 @Getter
 @Setter
 public class OrchestrationProxyConfiguration {
@@ -45,27 +47,20 @@ public class OrchestrationProxyConfiguration {
     
     private ProxyAuthority proxyAuthority = new ProxyAuthority();
     
-    private boolean withoutJdbc;
-    
-    private String transactionMode;
-    
-    private int maxWorkingThreads;
-    
     private YamlOrchestrationConfiguration orchestration;
     
-    /**
-     * Renew orchestration proxy configuration.
-     * 
-     * @param dataSources data sources
-     * @param orchestrationConfig orchestration configuration
-     */
-    public void renew(final Map<String, DataSourceParameter> dataSources, final OrchestrationProxyConfiguration orchestrationConfig) {
+    public OrchestrationProxyConfiguration(final Map<String, DataSourceParameter> dataSources, final OrchestrationProxyConfiguration config) {
         this.dataSources = dataSources;
-        shardingRule = orchestrationConfig.getShardingRule();
-        masterSlaveRule = orchestrationConfig.getMasterSlaveRule();
-        proxyAuthority = orchestrationConfig.getProxyAuthority();
-        withoutJdbc = orchestrationConfig.isWithoutJdbc();
-        transactionMode = orchestrationConfig.getTransactionMode();
-        maxWorkingThreads = orchestrationConfig.getMaxWorkingThreads();
+        shardingRule = config.getShardingRule();
+        masterSlaveRule = config.getMasterSlaveRule();
+        proxyAuthority = config.getProxyAuthority();
+    }
+    
+    /**
+     * Judge has local configuration or not. 
+     * @return has local configuration or not
+     */
+    public boolean hasLocalConfiguration() {
+        return !shardingRule.getTables().isEmpty() || null != masterSlaveRule.getMasterDataSourceName();
     }
 }

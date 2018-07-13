@@ -17,10 +17,14 @@
 
 package io.shardingsphere.proxy;
 
+import com.google.common.base.Preconditions;
 import io.shardingsphere.core.util.EventBusInstance;
+import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
+import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
+import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusInstance;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.frontend.ShardingProxy;
-import io.shardingsphere.proxy.yaml.YamlProxyConfiguration;
 import io.shardingsphere.transaction.xa.XaTransactionListener;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -29,6 +33,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 
 /**
  * Sharding-Proxy Bootstrap.
@@ -51,23 +56,27 @@ public final class Bootstrap {
      * @throws IOException IO exception
      */
     public static void main(final String[] args) throws InterruptedException, IOException {
-        initializeRuleRegistry();
-        EventBusInstance.getInstance().register(new XaTransactionListener());
-        new ShardingProxy().start(getPort(args));
+        OrchestrationProxyConfiguration localConfig = loadLocalConfiguration(new File(Bootstrap.class.getResource(CONFIG_YAML).getFile()));
+        int port = getPort(args);
+        if (null == localConfig.getOrchestration()) {
+            startWithoutRegistryCenter(localConfig, port);
+        } else {
+            startWithRegistryCenter(localConfig, port);
+        }
     }
     
-    private static void initializeRuleRegistry() throws IOException {
-        YamlProxyConfiguration config = unmarshal(new File(Bootstrap.class.getResource(CONFIG_YAML).getFile()));
-        config.init();
-        RuleRegistry.getInstance().init(config);
-    }
-    
-    private static YamlProxyConfiguration unmarshal(final File yamlFile) throws IOException {
+    private static OrchestrationProxyConfiguration loadLocalConfiguration(final File yamlFile) throws IOException {
         try (
                 FileInputStream fileInputStream = new FileInputStream(yamlFile);
                 InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")
         ) {
-            return new Yaml(new Constructor(YamlProxyConfiguration.class)).loadAs(inputStreamReader, YamlProxyConfiguration.class);
+            OrchestrationProxyConfiguration result = new Yaml(new Constructor(OrchestrationProxyConfiguration.class)).loadAs(inputStreamReader, OrchestrationProxyConfiguration.class);
+            Preconditions.checkNotNull(result, String.format("Configuration file `%s` is invalid.", CONFIG_YAML));
+            Preconditions.checkNotNull(result.getProxyAuthority(), "Authority configuration is invalid.");
+            Preconditions.checkNotNull(result.getProxyAuthority().getUsername(), "Authority configuration is invalid.");
+            Preconditions.checkState(result.hasLocalConfiguration() || null != result.getOrchestration(), 
+                    "Configuration invalid, sharding rule, local and orchestration configuration can not be both null.");
+            return result;
         }
     }
     
@@ -80,5 +89,27 @@ public final class Bootstrap {
         } catch (final NumberFormatException ex) {
             return DEFAULT_PORT;
         }
+    }
+    
+    private static void startWithoutRegistryCenter(final OrchestrationProxyConfiguration config, final int port) throws InterruptedException, MalformedURLException {
+        RuleRegistry.getInstance().init(config);
+        EventBusInstance.getInstance().register(new XaTransactionListener());
+        new ShardingProxy().start(port);
+    }
+    
+    private static void startWithRegistryCenter(final OrchestrationProxyConfiguration localConfig, final int port) throws InterruptedException, MalformedURLException {
+        try (OrchestrationFacade orchestrationFacade = new OrchestrationFacade(localConfig.getOrchestration().getOrchestrationConfiguration())) {
+            if (localConfig.hasLocalConfiguration()) {
+                orchestrationFacade.init(localConfig);
+            }
+            initRuleRegistry(orchestrationFacade.getConfigService());
+            EventBusInstance.getInstance().register(new XaTransactionListener());
+            new ShardingProxy().start(port);
+        }
+    }
+    
+    private static void initRuleRegistry(final ConfigurationService configService) {
+        RuleRegistry.getInstance().init(new OrchestrationProxyConfiguration(configService.loadDataSources(), configService.loadProxyConfiguration()));
+        ProxyEventBusInstance.getInstance().register(RuleRegistry.getInstance());
     }
 }
