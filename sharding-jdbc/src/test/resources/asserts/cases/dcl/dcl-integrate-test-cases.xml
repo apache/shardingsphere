@@ -126,7 +126,7 @@
     <dcl-test-case sql-case-id="revoke_user_on_db">
         <assertion init-sqls="CREATE USER 'user_dev'@'localhost'" clean-sqls="DROP USER 'user_dev'@'localhost'" />
     </dcl-test-case>
-    <dcl-test-case sql-case-id="revoke_user_on_table">
+    <dcl-test-case sql-case-id="revoke_user_with_hostname">
         <assertion init-sqls="CREATE USER 'user_dev'@'localhost'" clean-sqls="DROP USER 'user_dev'@'localhost'" />
     </dcl-test-case>
     <dcl-test-case sql-case-id="revoke_user_with_hostname">
