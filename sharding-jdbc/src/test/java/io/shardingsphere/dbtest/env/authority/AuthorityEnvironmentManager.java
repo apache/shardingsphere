@@ -17,6 +17,7 @@
 
 package io.shardingsphere.dbtest.env.authority;
 
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.dbtest.cases.authority.Authority;
 
 import javax.sql.DataSource;
@@ -24,8 +25,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
-import java.text.ParseException;
+import java.util.Collection;
 
 /**
  * Authority environment manager.
@@ -38,21 +40,47 @@ public final class AuthorityEnvironmentManager {
     
     private final DataSource dataSource;
     
-    public AuthorityEnvironmentManager(final String path, final DataSource dataSource) throws IOException, JAXBException {
+    private final DatabaseType databaseType;
+    
+    public AuthorityEnvironmentManager(final String path, final DataSource dataSource, final DatabaseType databaseType) throws IOException, JAXBException {
         try (FileReader reader = new FileReader(path)) {
             authority = (Authority) JAXBContext.newInstance(Authority.class).createUnmarshaller().unmarshal(reader);
         }
-       this.dataSource = dataSource;
+        this.dataSource = dataSource;
+        this.databaseType = databaseType;
     }
     
     /**
      * Initialize data.
-     * 
-     * @throws SQLException SQL exception
-     * @throws ParseException parse exception
+     *
      */
-    public void initialize() throws SQLException, ParseException {
+    public void initialize() {
+        Collection<String> initSQLs = authority.getInitSQLs(databaseType);
+        if (initSQLs.isEmpty()) {
+            return;
+        }
+        try (Connection connection = dataSource.getConnection()) {
+            for (String each : initSQLs) {
+                connection.createStatement().execute(each);
+            }
+        } catch (final SQLException ignored) {
+        }
+    }
     
-    
+    /**
+     * Clean data.
+     *
+     */
+    public void clean() {
+        Collection<String> cleanSQLs = authority.getCleanSQLs(databaseType);
+        if (cleanSQLs.isEmpty()) {
+            return;
+        }
+        try (Connection connection = dataSource.getConnection()) {
+            for (String each : cleanSQLs) {
+                connection.createStatement().execute(each);
+            }
+        } catch (final SQLException ignored) {
+        }
     }
 }
