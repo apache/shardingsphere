@@ -446,32 +446,30 @@ public final class MySQLPacketPayload implements AutoCloseable {
      * @return timestamp
      */
     public Timestamp readDate() {
-        Timestamp timestamp;
+        Timestamp result;
         Calendar calendar = Calendar.getInstance();
         int length = readInt1();
         switch (length) {
             case 0:
-                timestamp = new Timestamp(0);
+                result = new Timestamp(0);
                 break;
             case 4:
                 calendar.set(readInt2(), readInt1() - 1, readInt1());
-                timestamp = new Timestamp(calendar.getTimeInMillis());
+                result = new Timestamp(calendar.getTimeInMillis());
                 break;
             case 7:
-                calendar.set(readInt2(), readInt1() - 1, readInt1(),
-                    readInt1(), readInt1(), readInt1());
-                timestamp = new Timestamp(calendar.getTimeInMillis());
+                calendar.set(readInt2(), readInt1() - 1, readInt1(), readInt1(), readInt1(), readInt1());
+                result = new Timestamp(calendar.getTimeInMillis());
                 break;
             case 11:
-                calendar.set(readInt2(), readInt1() - 1, readInt1(),
-                    readInt1(), readInt1(), readInt1());
-                timestamp = new Timestamp(calendar.getTimeInMillis());
-                timestamp.setNanos(readInt4());
+                calendar.set(readInt2(), readInt1() - 1, readInt1(), readInt1(), readInt1(), readInt1());
+                result = new Timestamp(calendar.getTimeInMillis());
+                result.setNanos(readInt4());
                 break;
             default:
                 throw new IllegalArgumentException(String.format("Wrong length '%d' of MYSQL_TYPE_TIME", length));
         }
-        return timestamp;
+        return result;
     }
     
     /**
@@ -527,29 +525,29 @@ public final class MySQLPacketPayload implements AutoCloseable {
      * @return timestamp
      */
     public Timestamp readTime() {
-        Timestamp timestamp;
+        Timestamp result;
         Calendar calendar = Calendar.getInstance();
         int length = readInt1();
         readInt1();
         readInt4();
         switch (length) {
             case 0:
-                timestamp = new Timestamp(0);
+                result = new Timestamp(0);
                 break;
             case 8:
-                calendar.set(0, 0, 0, readInt1(), readInt1(), readInt1());
-                timestamp = new Timestamp(calendar.getTimeInMillis());
-                timestamp.setNanos(0);
+                calendar.set(0, Calendar.JANUARY, 0, readInt1(), readInt1(), readInt1());
+                result = new Timestamp(calendar.getTimeInMillis());
+                result.setNanos(0);
                 break;
             case 12:
-                calendar.set(0, 0, 0, readInt1(), readInt1(), readInt1());
-                timestamp = new Timestamp(calendar.getTimeInMillis());
-                timestamp.setNanos(readInt4());
+                calendar.set(0, Calendar.JANUARY, 0, readInt1(), readInt1(), readInt1());
+                result = new Timestamp(calendar.getTimeInMillis());
+                result.setNanos(readInt4());
                 break;
             default:
                 throw new IllegalArgumentException(String.format("Wrong length '%d' of MYSQL_TYPE_DATE", length));
         }
-        return timestamp;
+        return result;
     }
     
     /**
