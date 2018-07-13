@@ -26,8 +26,9 @@ import java.util.concurrent.Executors;
 
 /**
  * Manage the thread for each channel invoking.
- * this ensure atomikos can process xa transaction by current thread Id
- *
+ * 
+ * <p>This ensure atomikos can process XA transaction by current thread id.</p>
+ * 
  * @author zhaojun
  */
 public class ChannelThreadHolder {
@@ -37,25 +38,25 @@ public class ChannelThreadHolder {
     /**
      * Get active single thread pool of current channel.
      *
-     * @param channelId id of channel
-     * @return Thread
+     * @param channelId channel id
+     * @return thread pool
      */
     public static ExecutorService get(final ChannelId channelId) {
-        ExecutorService result = threadPoolMap.get(channelId);
-        if (null == result) {
-            threadPoolMap.put(channelId, Executors.newSingleThreadExecutor());
-            result = threadPoolMap.get(channelId);
+        ExecutorService newExecutorService = Executors.newSingleThreadExecutor();
+        ExecutorService existedExecutorService = threadPoolMap.putIfAbsent(channelId, newExecutorService);
+        if (null != existedExecutorService) {
+            newExecutorService.shutdown();
+            return existedExecutorService;
         }
-        return result;
+        return newExecutorService;
     }
     
     /**
-     * Remove the thread when channel was closed.
+     * Remove thread when channel was closed.
      *
-     * @param channelId id of channel
+     * @param channelId channel id
      */
     public static void remove(final ChannelId channelId) {
-        threadPoolMap.get(channelId).shutdown();
-        threadPoolMap.remove(channelId);
+        threadPoolMap.remove(channelId).shutdown();
     }
 }
