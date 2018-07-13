@@ -61,12 +61,12 @@ public class SagaSoftTransaction {
             transactionForm.put("SQL", sqlPairs.get(i).getSqlPair().get(0));
             Map<String, Map<String, String>> transactionParams = new HashMap<>();
             transactionParams.put("form", transactionForm);
-            Transaction transaction = new Transaction("post", "", transactionParams);
+            Transaction transaction = new Transaction("post", "/execute", transactionParams);
             Map<String, String> compensationForm = new HashMap<>();
             compensationForm.put("SQL", sqlPairs.get(i).getSqlPair().get(1));
             Map<String, Map<String, String>> compensationParams = new HashMap<>();
             compensationParams.put("form", compensationForm);
-            Compensation compensation = new Compensation("put", "", compensationParams);
+            Compensation compensation = new Compensation("put", "/execute", compensationParams);
             String parent = 0 == i ? "" : transactionId + (i - 1);
             SagaRequest sagaRequest = new SagaRequest(transactionId + i, "rest", transactionId, Collections.singletonList(parent), transaction, compensation);
             sagaRequests.add(sagaRequest);
