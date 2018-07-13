@@ -29,6 +29,7 @@ import java.util.Collection;
  * Databases and tables master-slave rule configuration.
  * 
  * @author zhangliang
+ * @author panjuan
  */
 @Getter
 public final class MasterSlaveRule {
@@ -50,5 +51,15 @@ public final class MasterSlaveRule {
         masterDataSourceName = config.getMasterDataSourceName();
         slaveDataSourceNames = config.getSlaveDataSourceNames();
         loadBalanceAlgorithm = null == config.getLoadBalanceAlgorithm() ? MasterSlaveLoadBalanceAlgorithmType.getDefaultAlgorithmType().getAlgorithm() : config.getLoadBalanceAlgorithm();
+    }
+    
+    /**
+     * Judge whether contain data source name.
+     *
+     * @param datasourceName data source name
+     * @return contain or not.
+     */
+    public boolean containDataSourceName(final String datasourceName) {
+        return masterDataSourceName.equals(datasourceName) || slaveDataSourceNames.contains(datasourceName);
     }
 }
