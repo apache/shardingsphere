@@ -20,7 +20,7 @@ package io.shardingsphere.proxy.frontend.common;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.shardingsphere.proxy.frontend.mysql.ChannelThreadExecutorGroup;
+import io.shardingsphere.proxy.frontend.common.executor.ChannelThreadExecutorGroup;
 
 /**
  * Frontend handler.

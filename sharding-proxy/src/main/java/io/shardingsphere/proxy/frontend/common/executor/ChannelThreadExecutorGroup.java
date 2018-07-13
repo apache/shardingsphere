@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.frontend.mysql;
+package io.shardingsphere.proxy.frontend.common.executor;
 
 import io.netty.channel.ChannelId;
 import lombok.AccessLevel;
