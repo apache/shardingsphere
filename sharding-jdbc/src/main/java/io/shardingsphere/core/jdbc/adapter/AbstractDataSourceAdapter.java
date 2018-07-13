@@ -20,11 +20,16 @@ package io.shardingsphere.core.jdbc.adapter;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
+import io.shardingsphere.core.transaction.event.TransactionEvent;
+import io.shardingsphere.core.transaction.event.WeakXaTransactionEvent;
+import io.shardingsphere.core.transaction.spi.Transaction;
+import io.shardingsphere.core.transaction.spi.TransactionEventHolder;
 import io.shardingsphere.core.transaction.spi.TransactionLoader;
 import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -38,7 +43,8 @@ import java.util.logging.Logger;
 public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOperationDataSource {
     
     static {
-        TransactionLoader.load();
+        Transaction transaction = TransactionLoader.load();
+        TransactionEventHolder.set(getTransactionEventClazz(transaction));
     }
     
     @Getter
@@ -87,5 +93,14 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     @Override
     public final Connection getConnection(final String username, final String password) throws SQLException {
         return getConnection();
+    }
+    
+    private static Class<? extends TransactionEvent> getTransactionEventClazz(final Transaction transaction) {
+        if (null == transaction) {
+            return WeakXaTransactionEvent.class;
+        }
+        Method method = transaction.getClass().getMethods()[0];
+        Class<?>[] clazz = method.getParameterTypes();
+        return (Class<? extends TransactionEvent>) clazz[0];
     }
 }
