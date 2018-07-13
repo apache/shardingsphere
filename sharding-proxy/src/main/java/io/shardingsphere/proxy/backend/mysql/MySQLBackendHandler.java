@@ -58,47 +58,51 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
     
     @Override
     public void channelRead(final ChannelHandlerContext context, final Object message) {
-        try (MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload((ByteBuf) message)) {
-            mysqlPacketPayload.getByteBuf().markReaderIndex();
-            mysqlPacketPayload.readInt1();
-            int header = mysqlPacketPayload.readInt1();
-            mysqlPacketPayload.getByteBuf().resetReaderIndex();
-            if (AuthType.UN_AUTH == authType) {
-                auth(context, mysqlPacketPayload);
-                authType = AuthType.AUTHING;
-            } else if (AuthType.AUTHING == authType) {
-                if (PacketHeader.OK.getValue() == header) {
-                    okPacket(context, mysqlPacketPayload);
-                    authType = AuthType.AUTH_SUCCESS;
-                } else {
-                    errPacket(context, mysqlPacketPayload);
-                    authType = AuthType.AUTH_FAILED;
-                }
-            } else if (AuthType.AUTH_FAILED == authType) {
-                log.error("mysql auth failed, cannot handle channel read message.");
+        MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload((ByteBuf) message);
+        mysqlPacketPayload.getByteBuf().markReaderIndex();
+        mysqlPacketPayload.readInt1();
+        int header = mysqlPacketPayload.readInt1();
+        mysqlPacketPayload.getByteBuf().resetReaderIndex();
+        
+        if (AuthType.UN_AUTH == authType) {
+            auth(context, mysqlPacketPayload);
+            authType = AuthType.AUTHING;
+        } else if (AuthType.AUTHING == authType) {
+            if (PacketHeader.OK.getValue() == header) {
+                okPacket(context, mysqlPacketPayload);
+                authType = AuthType.AUTH_SUCCESS;
             } else {
-                if (PacketHeader.EOF.getValue() == header) {
-                    eofPacket(context, mysqlPacketPayload);
-                } else if (PacketHeader.OK.getValue() == header) {
-                    okPacket(context, mysqlPacketPayload);
-                } else if (PacketHeader.ERR.getValue() == header) {
-                    errPacket(context, mysqlPacketPayload);
-                } else {
-                    commonPacket(mysqlPacketPayload);
-                }
+                errPacket(context, mysqlPacketPayload);
+                authType = AuthType.AUTH_FAILED;
+            }
+        } else if (AuthType.AUTH_FAILED == authType) {
+            log.error("mysql auth failed, cannot handle channel read message");
+        } else {
+            if (PacketHeader.EOF.getValue() == header) {
+                eofPacket(context, mysqlPacketPayload);
+            } else if (PacketHeader.OK.getValue() == header) {
+                okPacket(context, mysqlPacketPayload);
+            } else if (PacketHeader.ERR.getValue() == header) {
+                errPacket(context, mysqlPacketPayload);
+            } else {
+                commonPacket(mysqlPacketPayload);
             }
         }
     }
     
     @Override
     protected void auth(final ChannelHandlerContext context, final MySQLPacketPayload mysqlPacketPayload) {
-        HandshakePacket handshakePacket = new HandshakePacket(mysqlPacketPayload);
-        int capabilityFlags = CapabilityFlag.calculateHandshakeCapabilityFlagsLower();
-        byte[] authResponse = securePasswordAuthentication(dataSourceConfig.getPassword().getBytes(), handshakePacket.getAuthPluginData().getAuthPluginData());
-        HandshakeResponse41Packet handshakeResponse41Packet = new HandshakeResponse41Packet(handshakePacket.getSequenceId() + 1, capabilityFlags, 16777215,
-                ServerInfo.CHARSET, dataSourceConfig.getUsername(), authResponse, dataSourceConfig.getDatabase());
-        MySQLResultCache.getInstance().putConnection(context.channel().id().asShortText(), handshakePacket.getConnectionId());
-        context.writeAndFlush(handshakeResponse41Packet);
+        try {
+            HandshakePacket handshakePacket = new HandshakePacket(mysqlPacketPayload);
+            int capabilityFlags = CapabilityFlag.calculateHandshakeCapabilityFlagsLower();
+            byte[] authResponse = securePasswordAuthentication(dataSourceConfig.getPassword().getBytes(), handshakePacket.getAuthPluginData().getAuthPluginData());
+            HandshakeResponse41Packet handshakeResponse41Packet = new HandshakeResponse41Packet(handshakePacket.getSequenceId() + 1, capabilityFlags, 16777215, 
+                    ServerInfo.CHARSET, dataSourceConfig.getUsername(), authResponse, dataSourceConfig.getDatabase());
+            MySQLResultCache.getInstance().putConnection(context.channel().id().asShortText(), handshakePacket.getConnectionId());
+            context.writeAndFlush(handshakeResponse41Packet);
+        } finally {
+            mysqlPacketPayload.getByteBuf().release();
+        }
     }
     
     @Override
@@ -109,6 +113,7 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
             setResponse(context);
         } finally {
             mysqlQueryResult = null;
+            mysqlPacketPayload.getByteBuf().release();
         }
     }
     
@@ -120,6 +125,7 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
             setResponse(context);
         } finally {
             mysqlQueryResult = null;
+            mysqlPacketPayload.getByteBuf().release();
         }
     }
     
@@ -129,6 +135,7 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
         if (mysqlQueryResult.isColumnFinished()) {
             mysqlQueryResult.setRowFinished(eofPacket);
             mysqlQueryResult = null;
+            mysqlPacketPayload.getByteBuf().release();
         } else {
             mysqlQueryResult.setColumnFinished(eofPacket);
             setResponse(context);

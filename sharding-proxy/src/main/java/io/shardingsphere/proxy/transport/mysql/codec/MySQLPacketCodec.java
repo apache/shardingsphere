@@ -50,11 +50,14 @@ public final class MySQLPacketCodec extends PacketCodec<MySQLPacket> {
     
     @Override
     protected void doEncode(final ChannelHandlerContext context, final MySQLPacket message, final ByteBuf out) {
-        try (MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(context.alloc().buffer())) {
+        MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(context.alloc().buffer());
+        try {
             message.write(mysqlPacketPayload);
             out.writeMediumLE(mysqlPacketPayload.getByteBuf().readableBytes());
             out.writeByte(message.getSequenceId());
             out.writeBytes(mysqlPacketPayload.getByteBuf());
+        } finally {
+            mysqlPacketPayload.getByteBuf().release();
         }
     }
 }
