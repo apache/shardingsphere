@@ -17,58 +17,43 @@
 
 package io.shardingsphere.transaction.xa;
 
-import com.google.common.eventbus.AllowConcurrentEvents;
-import com.google.common.eventbus.Subscribe;
-import io.shardingsphere.core.transaction.event.WeakXaTransactionEvent;
+import io.shardingsphere.core.transaction.spi.Transaction;
+import io.shardingsphere.core.util.EventBusInstance;
 import lombok.AllArgsConstructor;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
- * Weak-XA Transaction Listener.
+ * Weak XA transaction implement for Transaction spi.
  *
  * @author zhaojun
  */
 @AllArgsConstructor
-public class WeakXaTransactionListener {
+public class WeakXaTransaction implements Transaction {
     
-    private WeakXaTransaction weakXaTransaction;
+    static {
+        EventBusInstance.getInstance().register(new WeakXaTransactionListener(new WeakXaTransaction()));
+    }
     
-    /**
-     * Weak-Xa Transaction Event Listener.
-     *
-     * @param weakXaTransactionEvent WeakXaTransactionEvent
-     * @throws SQLException SQLException
-     */
-    @Subscribe
-    @AllowConcurrentEvents
-    public void listen(final WeakXaTransactionEvent weakXaTransactionEvent) throws SQLException {
-        switch (weakXaTransactionEvent.getTclType()) {
-            case BEGIN:
-                weakXaTransaction.begin();
-                break;
-            case COMMIT:
-                weakXaTransaction.commit();
-                break;
-            case ROLLBACK:
-                weakXaTransaction.rollback();
-                break;
-            default:
+    private final boolean autoCommit = true;
+    
+    private final Map<String, Connection> cachedConnections;
+    
+    @Override
+    public void begin() throws SQLException {
+        for (Connection each : cachedConnections.values()) {
+            each.setAutoCommit(autoCommit);
         }
     }
     
-    private void doBegin(final WeakXaTransactionEvent weakXaTransactionEvent) throws SQLException {
-        for (Connection each : weakXaTransactionEvent.getCachedConnections().values()) {
-            each.setAutoCommit(weakXaTransactionEvent.isAutoCommit());
-        }
-    }
-    
-    private void doCommit(final WeakXaTransactionEvent weakXaTransactionEvent) throws SQLException {
+    @Override
+    public void commit() throws SQLException {
         Collection<SQLException> exceptions = new LinkedList<>();
-        for (Connection each : weakXaTransactionEvent.getCachedConnections().values()) {
+        for (Connection each : cachedConnections.values()) {
             try {
                 each.commit();
             } catch (final SQLException ex) {
@@ -78,9 +63,10 @@ public class WeakXaTransactionListener {
         throwSQLExceptionIfNecessary(exceptions);
     }
     
-    private void doRollback(final WeakXaTransactionEvent weakXaTransactionEvent) throws SQLException {
+    @Override
+    public void rollback() throws SQLException {
         Collection<SQLException> exceptions = new LinkedList<>();
-        for (Connection each : weakXaTransactionEvent.getCachedConnections().values()) {
+        for (Connection each : cachedConnections.values()) {
             try {
                 each.rollback();
             } catch (final SQLException ex) {
