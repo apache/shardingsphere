@@ -17,6 +17,8 @@
 
 package io.shardingsphere.core.metadata.datasource;
 
+import io.shardingsphere.core.constant.DatabaseType;
+
 /**
  * Data source meta data parser.
  *
@@ -28,7 +30,8 @@ public interface DataSourceMetaDataParser {
      * Get data source meta data.
      *
      * @param url data source URL
+     * @param databaseType database type
      * @return data source meta data
      */
-    DataSourceMetaData getDataSourceMetaData(String url);
+    DataSourceMetaData getDataSourceMetaData(String url, DatabaseType databaseType);
 }

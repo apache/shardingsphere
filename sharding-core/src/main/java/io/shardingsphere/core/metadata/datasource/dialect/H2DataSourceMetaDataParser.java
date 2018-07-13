@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.metadata.datasource.dialect;
 
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataParser;
@@ -35,7 +36,7 @@ public final class H2DataSourceMetaDataParser implements DataSourceMetaDataParse
     private static final String DEFAULT_HOST = "localhost";
     
     @Override
-    public DataSourceMetaData getDataSourceMetaData(final String url) {
+    public DataSourceMetaData getDataSourceMetaData(final String url, final DatabaseType databaseType) {
         String cleanUrl = url.substring(5);
         if (cleanUrl.contains("h2:~")) {
             cleanUrl = cleanUrl.split(";")[0];
@@ -53,6 +54,6 @@ public final class H2DataSourceMetaDataParser implements DataSourceMetaDataParse
         if (null == uri.getHost()) {
             throw new ShardingException("The URL of JDBC is not supported.");
         }
-        return new DataSourceMetaData(uri.getHost(), -1 == uri.getPort() ? DEFAULT_PORT : uri.getPort(), uri.getPath().isEmpty() ? "" : uri.getPath().substring(1));
+        return new DataSourceMetaData(uri.getHost(), -1 == uri.getPort() ? DEFAULT_PORT : uri.getPort(), uri.getPath().isEmpty() ? "" : uri.getPath().substring(1), databaseType);
     }
 }

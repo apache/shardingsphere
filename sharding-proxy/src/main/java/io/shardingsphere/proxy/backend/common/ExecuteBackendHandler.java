@@ -103,11 +103,10 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
     @Override
     public CommandResponsePackets execute() {
         try {
-            SQLRouteResult sqlRouteResult = RuleRegistry.getInstance().isMasterSlaveOnly() ? doMasterSlaveRoute() : doSqlShardingRoute();
-            return doExecuteInternal(sqlRouteResult);
+            return doExecuteInternal(RuleRegistry.getInstance().isMasterSlaveOnly() ? doMasterSlaveRoute() : doSqlShardingRoute());
         } catch (final Exception ex) {
             log.error("ExecuteBackendHandler", ex);
-            return new CommandResponsePackets(new ErrPacket(1, 0, "", "", "" + ex.getMessage()));
+            return new CommandResponsePackets(new ErrPacket(1, 0, "", "" + ex.getMessage()));
         }
     }
     
@@ -138,10 +137,9 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
     }
     
     private SQLRouteResult doMasterSlaveRoute() {
-        MasterSlaveRouter masterSlaveRouter = new MasterSlaveRouter(RuleRegistry.getInstance().getMasterSlaveRule());
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
         SQLRouteResult result = new SQLRouteResult(sqlStatement, null);
-        String dataSourceName = masterSlaveRouter.route(sqlStatement.getType()).iterator().next();
+        String dataSourceName = new MasterSlaveRouter(RuleRegistry.getInstance().getMasterSlaveRule()).route(sqlStatement.getType()).iterator().next();
         SQLUnit sqlUnit = new SQLUnit(sql, Collections.<List<Object>>emptyList());
         result.getExecutionUnits().add(new SQLExecutionUnit(dataSourceName, sqlUnit));
         return result;
@@ -203,11 +201,10 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
             queryResults.add(newQueryResult(packets.get(i), i));
         }
         try {
-            mergedResult = MergeEngineFactory.newInstance(RuleRegistry.getInstance().getShardingRule(),
-                    queryResults, sqlStatement, RuleRegistry.getInstance().getShardingMetaData()).merge();
+            mergedResult = MergeEngineFactory.newInstance(RuleRegistry.getInstance().getShardingRule(), queryResults, sqlStatement, RuleRegistry.getInstance().getShardingMetaData()).merge();
             isMerged = true;
         } catch (final SQLException ex) {
-            return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
+            return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), ex.getSQLState(), ex.getMessage()));
         }
         return buildPackets(packets);
     }
@@ -262,7 +259,7 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
             }
             return newDatabaseProtocolPacket(++currentSequenceId, data);
         } catch (final SQLException ex) {
-            return new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage());
+            return new ErrPacket(1, ex.getErrorCode(), ex.getSQLState(), ex.getMessage());
         }
     }
     

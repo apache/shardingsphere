@@ -15,33 +15,27 @@
  * </p>
  */
 
-package io.shardingsphere.core.rule;
+package io.shardingsphere.proxy.transport.mysql.constant;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Data source parameters.
+ * Server error code of MySQL.
+ * 
+ * @see <a href="https://dev.mysql.com/doc/refman/5.7/en/error-messages-server.html">error-messages-server</a>
  *
- * @author zhangyonglun
+ * @author zhangliang
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class DataSourceParameter {
+public enum ServerErrorCode {
     
-    private String url;
+    ER_ACCESS_DENIED_ERROR(1045, "28000", "Access denied for user '%s'@'%s' (using password: %s)");
     
-    private String username;
+    private final int errorCode;
     
-    private String password;
+    private final String sqlState;
     
-    private Boolean autoCommit;
-    
-    private long connectionTimeout;
-    
-    private long idleTimeout;
-    
-    private long maxLifetime;
-    
-    private int maximumPoolSize;
+    private final String errorMessage;
 }

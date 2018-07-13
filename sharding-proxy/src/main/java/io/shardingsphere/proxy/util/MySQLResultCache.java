@@ -17,20 +17,20 @@
 
 package io.shardingsphere.proxy.util;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import io.shardingsphere.core.merger.QueryResult;
+
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-
-import io.shardingsphere.core.merger.QueryResult;
-
 /**
- * cache for SynchronizedFuture.
+ * Cache for synchronized future.
  *
  * @author wangkai
  */
 public class MySQLResultCache {
+    
     private static final MySQLResultCache INSTANCE = new MySQLResultCache();
     
     //TODO expire time should be set.
@@ -39,60 +39,60 @@ public class MySQLResultCache {
     private Cache<String, Integer> connectionCache = CacheBuilder.newBuilder().build();
     
     /**
-     * put synchronizedFuture by connectionId.
+     * Get instance of MySQL result cache.
      *
-     * @param connectionId       mysql connection id.
-     * @param synchronizedFuture multiple result set.
+     * @return instance of MySQL result cache
+     */
+    public static MySQLResultCache getInstance() {
+        return INSTANCE;
+    }
+    
+    /**
+     * Put synchronized future by connection id.
+     *
+     * @param connectionId MySQL connection id
+     * @param synchronizedFuture multiple result set
      */
     public void putFuture(final int connectionId, final SynchronizedFuture<List<QueryResult>> synchronizedFuture) {
         resultCache.put(connectionId, synchronizedFuture);
     }
     
     /**
-     * get SynchronizedFuture by connectionId.
+     * Get synchronized future by connection id.
      *
-     * @param connectionId mysql connection id.
-     * @return multiple result set.
+     * @param connectionId MySQL connection id
+     * @return multiple result set
      */
     public SynchronizedFuture<List<QueryResult>> getFuture(final int connectionId) {
         return resultCache.getIfPresent(connectionId);
     }
     
     /**
-     * delete SynchronizedFuture by connectionId.
+     * Delete synchronized future by connection id.
      *
-     * @param connectionId mysql connection id.
+     * @param connectionId MySQL connection id
      */
     public void deleteFuture(final int connectionId) {
         resultCache.invalidate(connectionId);
     }
     
     /**
-     * put connectionId by channelId.
+     * Put connection id by channel id.
      *
-     * @param channelId    netty channel id.
-     * @param connectionId mysql connection id.
+     * @param channelId    netty channel id
+     * @param connectionId MySQL connection id
      */
     public void putConnection(final String channelId, final int connectionId) {
         connectionCache.put(channelId, connectionId);
     }
     
     /**
-     * get connectionId by channelId.
+     * Get connection id by channel id.
      *
-     * @param channelId netty channel id.
-     * @return connectionId   mysql connection id.
+     * @param channelId netty channel id
+     * @return connectionId MySQL connection id
      */
     public int getConnection(final String channelId) {
         return connectionCache.getIfPresent(channelId);
-    }
-    
-    /**
-     * Get instance of MySQLResultCache.
-     *
-     * @return instance of MySQLResultCache
-     */
-    public static MySQLResultCache getInstance() {
-        return INSTANCE;
     }
 }

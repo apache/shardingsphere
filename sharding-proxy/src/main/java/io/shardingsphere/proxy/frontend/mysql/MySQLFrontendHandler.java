@@ -26,6 +26,7 @@ import io.shardingsphere.proxy.backend.common.ProxyConnectionHolder;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.frontend.common.FrontendHandler;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
@@ -35,7 +36,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.handshake.ConnectionIdGenerator;
 import io.shardingsphere.proxy.transport.mysql.packet.handshake.HandshakePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.handshake.HandshakeResponse41Packet;
-import io.shardingsphere.proxy.transport.mysql.packet.handshake.ProxyAuthorityHandler;
+import io.shardingsphere.proxy.transport.mysql.packet.handshake.AuthorityHandler;
 import io.shardingsphere.proxy.util.MySQLResultCache;
 
 import java.util.concurrent.ExecutorService;
@@ -51,11 +52,11 @@ public final class MySQLFrontendHandler extends FrontendHandler {
     
     private final EventLoopGroup eventLoopGroup;
     
-    private final ProxyAuthorityHandler proxyAuthorityHandler;
+    private final AuthorityHandler proxyAuthorityHandler;
     
     public MySQLFrontendHandler(final EventLoopGroup eventLoopGroup) {
         this.eventLoopGroup = eventLoopGroup;
-        proxyAuthorityHandler = new ProxyAuthorityHandler();
+        proxyAuthorityHandler = new AuthorityHandler();
     }
     
     @Override
@@ -70,10 +71,11 @@ public final class MySQLFrontendHandler extends FrontendHandler {
         MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message);
         try {
             HandshakeResponse41Packet response41 = new HandshakeResponse41Packet(mysqlPacketPayload);
-            if (proxyAuthorityHandler.isLegalForProxyLogin(response41.getUsername(), response41.getAuthResponse())) {
+            if (proxyAuthorityHandler.login(response41.getUsername(), response41.getAuthResponse())) {
                 context.writeAndFlush(new OKPacket(response41.getSequenceId() + 1, 0L, 0L, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
             } else {
-                context.writeAndFlush(new ErrPacket(response41.getSequenceId() + 1, 1045, "", "", "Access denied because of invalid username and password for Sharding Proxy."));
+                context.writeAndFlush(new ErrPacket(response41.getSequenceId() + 1, 
+                        ServerErrorCode.ER_ACCESS_DENIED_ERROR, response41.getUsername(), "localhost", 0 == response41.getAuthResponse().length ? "NO" : "YES"));
             }
         } finally {
             mysqlPacketPayload.getByteBuf().release();

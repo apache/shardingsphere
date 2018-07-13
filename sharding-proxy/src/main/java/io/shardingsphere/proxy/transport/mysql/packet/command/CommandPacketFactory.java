@@ -38,8 +38,8 @@ public final class CommandPacketFactory {
     /**
      * Get command Packet.
      *
-     * @param sequenceId         sequence ID
-     * @param connectionId       MYSQL connection id
+     * @param sequenceId sequence id
+     * @param connectionId MySQL connection id
      * @param mysqlPacketPayload MySQL packet payload
      * @return Command packet
      */

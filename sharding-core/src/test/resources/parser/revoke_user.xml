@@ -18,7 +18,7 @@
             <table-token begin-position="25" original-literals="*" />
         </tokens>
     </parser-result>
-    <parser-result sql-case-id="revoke_user_on_table">
+    <parser-result sql-case-id="revoke_user_with_hostname">
         <tables>
             <table name="t_order" />
         </tables>

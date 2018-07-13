@@ -17,24 +17,24 @@
 
 package io.shardingsphere.proxy.util;
 
+import com.google.common.collect.Lists;
+import io.shardingsphere.core.merger.QueryResult;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import com.google.common.collect.Lists;
-
-import io.shardingsphere.core.merger.QueryResult;
-import lombok.extern.slf4j.Slf4j;
-
 /**
- * sync get multiple netty return.
+ * Synchronized future for get multiple netty returns.
  *
  * @author wangkai
  * @author linjiaqi
  */
 @Slf4j
 public class SynchronizedFuture<T> implements Future<List<QueryResult>> {
+    
     private boolean merged;
     
     private CountDownLatch latch;
@@ -58,7 +58,7 @@ public class SynchronizedFuture<T> implements Future<List<QueryResult>> {
     
     @Override
     public boolean isDone() {
-        return merged ? true : false;
+        return merged;
     }
     
     @Override
@@ -68,10 +68,11 @@ public class SynchronizedFuture<T> implements Future<List<QueryResult>> {
     }
     
     /**
-     * wait for responses.
-     * @param timeout wait timeout.
+     * Get responses for waiting time.
+     * 
+     * @param timeout wait timeout
      * @param unit time unit
-     * @return responses.
+     * @return responses
      */
     @Override
     public List<QueryResult> get(final long timeout, final TimeUnit unit) {
@@ -84,8 +85,9 @@ public class SynchronizedFuture<T> implements Future<List<QueryResult>> {
     }
     
     /**
-     * set response and count down.
-     * @param response sql command result.
+     * Set response and count down.
+     * 
+     * @param response SQL command result
      */
     public void setResponse(final QueryResult response) {
         responses.add(response);

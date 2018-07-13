@@ -26,12 +26,13 @@ import io.shardingsphere.proxy.config.RuleRegistry;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Refresh table metadata of ProxySharding.
+ * Refresh table metadata of proxy sharding.
  *
  * @author zhaojun
  */
 @Slf4j
 public final class ProxyShardingRefreshHandler extends AbstractRefreshHandler {
+    
     private ProxyShardingRefreshHandler(final SQLRouteResult routeResult, final ShardingMetaData shardingMetaData, final ShardingRule shardingRule) {
         super(routeResult, shardingMetaData, shardingRule);
     }

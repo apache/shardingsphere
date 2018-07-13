@@ -15,33 +15,13 @@
  * </p>
  */
 
-package io.shardingsphere.core.rule;
+package io.shardingsphere.dbtest.engine.dcl;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-/**
- * Data source parameters.
- *
- * @author zhangyonglun
- */
-@Getter
-@Setter
-public final class DataSourceParameter {
-    
-    private String url;
-    
-    private String username;
-    
-    private String password;
-    
-    private Boolean autoCommit;
-    
-    private long connectionTimeout;
-    
-    private long idleTimeout;
-    
-    private long maxLifetime;
-    
-    private int maximumPoolSize;
+@RunWith(Suite.class)
+@SuiteClasses(GeneralDCLIntegrateTest.class)
+public class AllDCLTests {
 }

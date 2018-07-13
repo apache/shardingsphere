@@ -15,33 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.core.rule;
+package io.shardingsphere.dbtest.cases.assertion.dcl;
 
+import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
 import lombok.Getter;
-import lombok.Setter;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Data source parameters.
+ * JAXB definition of DCL integrate test case.
  *
- * @author zhangyonglun
+ * @author panjuan
  */
 @Getter
-@Setter
-public final class DataSourceParameter {
+public class DCLIntegrateTestCase extends IntegrateTestCase {
     
-    private String url;
-    
-    private String username;
-    
-    private String password;
-    
-    private Boolean autoCommit;
-    
-    private long connectionTimeout;
-    
-    private long idleTimeout;
-    
-    private long maxLifetime;
-    
-    private int maximumPoolSize;
+    @XmlElement(name = "assertion")
+    private List<DCLIntegrateTestCaseAssertion> integrateTestCaseAssertions = new LinkedList<>();
 }

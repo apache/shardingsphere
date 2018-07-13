@@ -30,8 +30,6 @@ public final class UnsupportedCommandPacket extends CommandPacket {
     
     private static final int ERROR_CODE = 0xcc;
     
-    private static final String SQL_STATE_MARKER = "x";
-    
     private static final String SQL_STATE = "xxxxx";
     
     private static final String ERROR_MESSAGE = "Unsupported command packet '%s'.";
@@ -45,7 +43,7 @@ public final class UnsupportedCommandPacket extends CommandPacket {
     
     @Override
     public CommandResponsePackets execute() {
-        return new CommandResponsePackets(new ErrPacket(getSequenceId() + 1, ERROR_CODE, SQL_STATE_MARKER, SQL_STATE, String.format(ERROR_MESSAGE, type)));
+        return new CommandResponsePackets(new ErrPacket(getSequenceId() + 1, ERROR_CODE, SQL_STATE, String.format(ERROR_MESSAGE, type)));
     }
     
     @Override
