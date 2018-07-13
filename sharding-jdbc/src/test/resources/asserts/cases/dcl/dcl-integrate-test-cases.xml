@@ -86,7 +86,7 @@
     <dcl-test-case sql-case-id="rename_user">
         <assertion init-sqls="CREATE USER 'user_dev'@'localhost'" clean-sqls="DROP USER 'user_dev'@'127.0.0.1'" />
     </dcl-test-case>
-    <dcl-test-case sql-case-id="grant_user">
+    <dcl-test-case sql-case-id="grant_user_without_hostname">
         <assertion init-sqls="CREATE USER user_dev identified by passwd_dev" db-types="Oracle" clean-sqls="DROP USER user_dev" />
         <assertion init-sqls="CREATE LOGIN login_dev;CREATE USER user_dev FOR LOGIN login_dev" db-types="SQLServer" clean-sqls="DROP USER user_dev" />
         <assertion init-sqls="CREATE USER user_dev PASSWORD 'passwd_dev'" db-types="PostgreSQL,H2" clean-sqls="DROP USER user_dev" />
@@ -107,7 +107,7 @@
     <dcl-test-case sql-case-id="grant_user_on_db">
         <assertion init-sqls="CREATE USER 'user_dev'@'localhost'" clean-sqls="DROP USER 'user_dev'@'localhost'" />
     </dcl-test-case>
-    <dcl-test-case sql-case-id="grant_user_on_table">
+    <dcl-test-case sql-case-id="grant_user_with_hostname">
         <assertion init-sqls="CREATE USER 'user_dev'@'localhost'" clean-sqls="DROP USER 'user_dev'@'localhost'" />
     </dcl-test-case>
     <dcl-test-case sql-case-id="revoke_user_without_hostname">
