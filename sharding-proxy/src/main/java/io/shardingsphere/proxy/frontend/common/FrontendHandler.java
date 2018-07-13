@@ -20,6 +20,7 @@ package io.shardingsphere.proxy.frontend.common;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.frontend.mysql.ChannelThreadHolder;
 
@@ -52,7 +53,7 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelInactive(final ChannelHandlerContext ctx) {
         ctx.fireChannelInactive();
-        if (RuleRegistry.isXaTransaction()) {
+        if (TransactionType.XA.equals(RuleRegistry.getInstance().getTransactionType())) {
             ChannelThreadHolder.remove(ctx.channel().id());
         }
     }

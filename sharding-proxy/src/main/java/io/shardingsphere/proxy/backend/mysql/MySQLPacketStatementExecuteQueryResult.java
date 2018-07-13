@@ -80,7 +80,7 @@ public final class MySQLPacketStatementExecuteQueryResult implements QueryResult
     
     @Override
     public boolean next() throws SQLException {
-        if (ProxyMode.MEMORY_STRICTLY == ProxyMode.valueOf(RuleRegistry.getInstance().getProxyMode())) {
+        if (ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
             return nextForStreamResultSet();
         } else {
             return nextForNoneStreamResultList();

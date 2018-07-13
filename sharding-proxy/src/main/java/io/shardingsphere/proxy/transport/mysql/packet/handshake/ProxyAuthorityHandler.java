@@ -38,7 +38,7 @@ public class ProxyAuthorityHandler {
     }
     
     /**
-     * Judege whether it is legal to login into Proxy.
+     * Judge whether it is legal to login into Proxy.
      *
      * @param username connection username.
      * @param authResponse connection auth response.

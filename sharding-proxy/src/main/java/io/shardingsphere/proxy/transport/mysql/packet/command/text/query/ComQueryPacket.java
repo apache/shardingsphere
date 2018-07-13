@@ -19,6 +19,7 @@ package io.shardingsphere.proxy.transport.mysql.packet.command.text.query;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.TCLType;
+import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.transaction.event.XaTransactionEvent;
 import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.proxy.backend.common.SQLExecuteBackendHandler;
@@ -156,7 +157,7 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
     
     private boolean doTransactionIntercept() throws Exception {
         boolean result = false;
-        if (RuleRegistry.isXaTransaction()) {
+        if (TransactionType.XA.equals(RuleRegistry.getInstance().getTransactionType())) {
             XaTransactionEvent xaTransactionEvent = new XaTransactionEvent(sql);
             if (isBegin()) {
                 xaTransactionEvent.setTclType(TCLType.BEGIN);

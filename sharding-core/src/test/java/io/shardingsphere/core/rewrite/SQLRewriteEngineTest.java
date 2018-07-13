@@ -292,7 +292,8 @@ public final class SQLRewriteEngineTest {
         selectStatement.getSqlTokens().add(new TableToken(85, 0, "table_x"));
         selectStatement.getSqlTokens().add(new OffsetToken(123, 2));
         selectStatement.getSqlTokens().add(new RowCountToken(26, 4));
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_x x) AS row_ WHERE row_.rownum_>2", 
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
+                "SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_x x) AS row_ WHERE row_.rownum_>2", 
                 DatabaseType.SQLServer, selectStatement, null, Collections.emptyList());
         assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, null, shardingDataSourceMetaData).getSql(),
                 is("SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_1 x) AS row_ WHERE row_.rownum_>0"));
@@ -338,7 +339,8 @@ public final class SQLRewriteEngineTest {
         selectStatement.getSqlTokens().add(new RowCountToken(26, 4));
         selectStatement.getOrderByItems().add(new OrderItem("x", "id", OrderDirection.ASC, OrderDirection.ASC, Optional.<String>absent()));
         selectStatement.getGroupByItems().add(new OrderItem("x", "id", OrderDirection.DESC, OrderDirection.ASC, Optional.<String>absent()));
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_x x) AS row_ WHERE row_.rownum_>2", 
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
+                "SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_x x) AS row_ WHERE row_.rownum_>2", 
                 DatabaseType.SQLServer, selectStatement, null, Collections.emptyList());
         assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, null, shardingDataSourceMetaData).getSql(),
                 is("SELECT * FROM (SELECT TOP(2147483647) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_1 x) AS row_ WHERE row_.rownum_>0"));
@@ -378,7 +380,8 @@ public final class SQLRewriteEngineTest {
         selectStatement.getSqlTokens().add(new TableToken(85, 0, "table_x"));
         selectStatement.getSqlTokens().add(new OffsetToken(123, 2));
         selectStatement.getSqlTokens().add(new RowCountToken(26, 4));
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_x x) AS row_ WHERE row_.rownum_>2", 
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
+                "SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_x x) AS row_ WHERE row_.rownum_>2", 
                 DatabaseType.SQLServer, selectStatement, null, Collections.emptyList());
         assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, null, shardingDataSourceMetaData).getSql(),
                 is("SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_1 x) AS row_ WHERE row_.rownum_>2"));
@@ -453,8 +456,9 @@ public final class SQLRewriteEngineTest {
         showTablesStatement.getSqlTokens().add(new TableToken(18, 0, "table_x"));
         showTablesStatement.getSqlTokens().add(new SchemaToken(31, "'sharding_db'", "table_x"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SHOW COLUMNS FROM table_x FROM 'sharding_db'", DatabaseType.MySQL, showTablesStatement, null, Collections.emptyList());
-        assertThat(rewriteEngine.rewrite(false).toSQL(
-                null, new LinkedHashMap<String, String>() {{put("table_x", "table_x");}}, shardingRule, shardingDataSourceMetaData).getSql(), is("SHOW COLUMNS FROM table_x FROM actual_db"));
+        Map<String, String> logicAndActualTableMap = new LinkedHashMap<>();
+        logicAndActualTableMap.put("table_x", "table_x");
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, logicAndActualTableMap, shardingRule, shardingDataSourceMetaData).getSql(), is("SHOW COLUMNS FROM table_x FROM actual_db"));
     }
     
     @Test

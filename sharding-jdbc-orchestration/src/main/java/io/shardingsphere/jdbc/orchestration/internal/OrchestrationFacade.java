@@ -66,13 +66,13 @@ public final class OrchestrationFacade implements AutoCloseable {
     
     private final RegistryCenter regCenter;
     
-    public OrchestrationFacade(final OrchestrationConfiguration config) {
-        regCenter = createRegistryCenter(config.getRegCenterConfig());
-        isOverwrite = config.isOverwrite();
-        configService = new ConfigurationService(config.getName(), regCenter);
-        instanceStateService = new InstanceStateService(config.getName(), regCenter);
-        dataSourceService = new DataSourceService(config.getName(), regCenter);
-        listenerManager = new ListenerFactory(config.getName(), regCenter);
+    public OrchestrationFacade(final OrchestrationConfiguration orchestrationConfig) {
+        regCenter = createRegistryCenter(orchestrationConfig.getRegCenterConfig());
+        isOverwrite = orchestrationConfig.isOverwrite();
+        configService = new ConfigurationService(orchestrationConfig.getName(), regCenter);
+        instanceStateService = new InstanceStateService(orchestrationConfig.getName(), regCenter);
+        dataSourceService = new DataSourceService(orchestrationConfig.getName(), regCenter);
+        listenerManager = new ListenerFactory(orchestrationConfig.getName(), regCenter);
     }
     
     private RegistryCenter createRegistryCenter(final RegistryCenterConfiguration regCenterConfig) {
