@@ -43,21 +43,14 @@ public final class PostSagaRequest {
     
     private static final PostSagaRequest INSTANCE = new PostSagaRequest();
     
-    private final String ip = "127.0.0.1";
-    
-    private final int port = 8083;
-    
     private OkHttpClient okHttpClient;
     
     private PostSagaRequest() {
-        InetSocketAddress address = new InetSocketAddress(ip, port);
-        Proxy proxy = new Proxy(Proxy.Type.HTTP, address);
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.retryOnConnectionFailure(true);
         builder.connectTimeout(30, TimeUnit.SECONDS);
         builder.writeTimeout(30, TimeUnit.SECONDS);
         builder.readTimeout(30, TimeUnit.SECONDS);
-        builder.proxy(proxy);
         okHttpClient = builder.build();
     }
     
@@ -77,7 +70,7 @@ public final class PostSagaRequest {
      * @return response
      */
     public String request(final String body) {
-        String url = "http://127.0.0.1:8083/requests/";
+        String url = "http://127.0.0.1:8080/requests/";
         String result = "";
         Request.Builder builder = new Request.Builder();
         builder.url(url);
