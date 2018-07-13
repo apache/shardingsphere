@@ -357,4 +357,22 @@ public final class ShardingRule {
         }
         return masterSlaveRuleName;
     }
+    
+    /**
+     * Get master slave rule name optional.
+     *
+     * @param dataSourceName data source name
+     * @return master slave rule name
+     */
+    public Optional<String> getMasterSlaveRuleNameOptional(final String dataSourceName) {
+        if (masterSlaveRules.isEmpty()) {
+            return Optional.absent();
+        }
+        for (MasterSlaveRule each : masterSlaveRules) {
+            if (each.containDataSourceName(dataSourceName)) {
+                return Optional.fromNullable(each.getName());
+            }
+        }
+        return Optional.absent();
+    }
 }
