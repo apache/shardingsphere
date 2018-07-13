@@ -18,6 +18,8 @@
 package io.shardingsphere.dbtest.cases.authority;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.dbtest.cases.authority.sql.SQLSet;
+import io.shardingsphere.dbtest.cases.authority.sql.SQLType;
 import lombok.Getter;
 import lombok.Setter;
 
