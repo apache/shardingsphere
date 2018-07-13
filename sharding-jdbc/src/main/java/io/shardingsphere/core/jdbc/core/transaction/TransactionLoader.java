@@ -15,7 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.core.transaction.spi;
+package io.shardingsphere.core.jdbc.core.transaction;
+
+import io.shardingsphere.core.transaction.spi.Transaction;
 
 import java.util.Iterator;
 import java.util.ServiceLoader;
@@ -25,11 +27,16 @@ import java.util.ServiceLoader;
  *
  * @author zhaojun
  */
-public class TransactionLoader {
+public final class TransactionLoader {
     
     private TransactionLoader() {
     }
     
+    /**
+     * Using ServiceLoader to dynamic load spi transaction.
+     *
+     * @return transaction spi
+     */
     public static Transaction load() {
         Transaction result = null;
         ServiceLoader<Transaction> loader = ServiceLoader.load(Transaction.class);
@@ -37,6 +44,9 @@ public class TransactionLoader {
         while (iterator.hasNext()) {
             result = iterator.next();
             break;
+        }
+        if (null == result) {
+            result = new WeakXaTransaction();
         }
         return result;
     }

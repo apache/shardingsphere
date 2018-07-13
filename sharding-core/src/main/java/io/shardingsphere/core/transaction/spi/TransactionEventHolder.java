@@ -26,15 +26,15 @@ import io.shardingsphere.core.transaction.event.TransactionEvent;
  */
 public class TransactionEventHolder {
     
-    private static ThreadLocal<Class<? extends TransactionEvent>> EVENT = new ThreadLocal<>();
+    private static Class<? extends TransactionEvent> transactionEvent;
     
     /**
      * Set transactionEvent.
      *
      * @param clazz class type of TransactionEvent
      */
-    public static void set(final Class<? extends TransactionEvent> clazz) {
-        EVENT.set(clazz);
+    public static synchronized void set(final Class<? extends TransactionEvent> clazz) {
+        transactionEvent = clazz;
     }
     
     /**
@@ -43,6 +43,6 @@ public class TransactionEventHolder {
      * @return transactionEvent class type
      */
     public static Class<? extends TransactionEvent> get() {
-        return EVENT.get();
+        return transactionEvent;
     }
 }

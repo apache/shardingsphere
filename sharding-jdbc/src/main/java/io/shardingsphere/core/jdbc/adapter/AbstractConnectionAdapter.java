@@ -22,7 +22,10 @@ import io.shardingsphere.core.constant.TCLType;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
+import io.shardingsphere.core.transaction.event.TransactionEvent;
 import io.shardingsphere.core.transaction.event.WeakXaTransactionEvent;
+import io.shardingsphere.core.transaction.event.XaTransactionEvent;
+import io.shardingsphere.core.transaction.spi.TransactionEventHolder;
 import io.shardingsphere.core.util.EventBusInstance;
 
 import javax.sql.DataSource;
@@ -86,23 +89,23 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     public final void setAutoCommit(final boolean autoCommit) {
         this.autoCommit = autoCommit;
         recordMethodInvocation(Connection.class, "setAutoCommit", new Class[] {boolean.class}, new Object[] {autoCommit});
-        WeakXaTransactionEvent weakXaTransactionEvent = new WeakXaTransactionEvent(cachedConnections);
-        weakXaTransactionEvent.setTclType(TCLType.BEGIN);
-        EventBusInstance.getInstance().post(weakXaTransactionEvent);
+        TransactionEvent transactionEvent = buildTransactionEvent();
+        transactionEvent.setTclType(TCLType.BEGIN);
+        EventBusInstance.getInstance().post(transactionEvent);
     }
     
     @Override
     public final void commit() {
-        WeakXaTransactionEvent weakXaTransactionEvent = new WeakXaTransactionEvent(cachedConnections);
-        weakXaTransactionEvent.setTclType(TCLType.COMMIT);
-        EventBusInstance.getInstance().post(weakXaTransactionEvent);
+        TransactionEvent transactionEvent = buildTransactionEvent();
+        transactionEvent.setTclType(TCLType.COMMIT);
+        EventBusInstance.getInstance().post(transactionEvent);
     }
     
     @Override
     public final void rollback() {
-        WeakXaTransactionEvent weakXaTransactionEvent = new WeakXaTransactionEvent(cachedConnections);
-        weakXaTransactionEvent.setTclType(TCLType.ROLLBACK);
-        EventBusInstance.getInstance().post(weakXaTransactionEvent);
+        TransactionEvent transactionEvent = buildTransactionEvent();
+        transactionEvent.setTclType(TCLType.ROLLBACK);
+        EventBusInstance.getInstance().post(transactionEvent);
     }
     
     @Override
@@ -175,5 +178,16 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     @Override
     public final void setHoldability(final int holdability) {
+    }
+    
+    private TransactionEvent buildTransactionEvent() {
+        TransactionEvent transactionEvent;
+        if (TransactionEventHolder.get().isAssignableFrom(XaTransactionEvent.class)) {
+            transactionEvent = new XaTransactionEvent("");
+        } else {
+            transactionEvent = new WeakXaTransactionEvent(cachedConnections);
+            ((WeakXaTransactionEvent) transactionEvent).setAutoCommit(autoCommit);
+        }
+        return transactionEvent;
     }
 }
