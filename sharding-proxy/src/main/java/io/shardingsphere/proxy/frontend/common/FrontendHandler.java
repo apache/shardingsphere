@@ -20,7 +20,7 @@ package io.shardingsphere.proxy.frontend.common;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.shardingsphere.proxy.frontend.mysql.ChannelThreadHolder;
+import io.shardingsphere.proxy.frontend.mysql.ChannelThreadExecutorGroup;
 
 /**
  * Frontend handler.
@@ -33,7 +33,7 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
     
     @Override
     public void channelActive(final ChannelHandlerContext context) {
-        ChannelThreadHolder.getInstance().add(context.channel().id());
+        ChannelThreadExecutorGroup.getInstance().register(context.channel().id());
         handshake(context);
     }
     
@@ -56,6 +56,6 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelInactive(final ChannelHandlerContext context) {
         context.fireChannelInactive();
-        ChannelThreadHolder.getInstance().remove(context.channel().id());
+        ChannelThreadExecutorGroup.getInstance().unregister(context.channel().id());
     }
 }

@@ -27,54 +27,57 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Manage the thread for each channel invoking.
+ * Channel thread executor group.
  * 
- * <p>This ensure atomikos can process XA transaction by current thread id.</p>
+ * <p>
+ *     Manage the thread for each channel invoking.
+ *     This ensure XA transaction framework processed by current thread id.
+ * </p>
  * 
  * @author zhaojun
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ChannelThreadHolder {
+public final class ChannelThreadExecutorGroup {
     
-    private static final ChannelThreadHolder INSTANCE = new ChannelThreadHolder();
+    private static final ChannelThreadExecutorGroup INSTANCE = new ChannelThreadExecutorGroup();
     
-    private volatile Map<ChannelId, ExecutorService> threadPoolMap = new HashMap<>();
+    private volatile Map<ChannelId, ExecutorService> executorServices = new HashMap<>();
     
     /**
-     * Get channel thread holder instance.
+     * Get channel thread executor group.
      * 
-     * @return channel thread holder instance
+     * @return channel thread executor group
      */
-    public static ChannelThreadHolder getInstance() {
+    public static ChannelThreadExecutorGroup getInstance() {
         return INSTANCE;
     }
     
     /**
-     * Add active single thread pool of current channel.
+     * Register channel.
      *
      * @param channelId channel id
      */
-    public void add(final ChannelId channelId) {
-        threadPoolMap.put(channelId, Executors.newSingleThreadExecutor());
+    public void register(final ChannelId channelId) {
+        executorServices.put(channelId, Executors.newSingleThreadExecutor());
     }
     
     /**
-     * Get active single thread pool of current channel.
+     * Get executor service of current channel.
      *
      * @param channelId channel id
-     * @return thread pool
+     * @return executor service of current channel
      */
     public ExecutorService get(final ChannelId channelId) {
-        return threadPoolMap.get(channelId);
+        return executorServices.get(channelId);
     }
     
     /**
-     * Remove thread when channel was closed.
+     * Unregister channel.
      *
      * @param channelId channel id
      */
-    public void remove(final ChannelId channelId) {
-        threadPoolMap.remove(channelId).shutdown();
+    public void unregister(final ChannelId channelId) {
+        executorServices.remove(channelId).shutdown();
     }
 }
