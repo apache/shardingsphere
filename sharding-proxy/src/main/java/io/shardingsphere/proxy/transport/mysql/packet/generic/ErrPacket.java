@@ -25,13 +25,14 @@ import lombok.Getter;
 
 /**
  * ERR packet protocol.
+ * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/packet-ERR_Packet.html">ERR Packet</a>
  * 
  * @author zhangliang
  * @author wangkai
  */
 @Getter
-public class ErrPacket extends MySQLPacket {
+public final class ErrPacket extends MySQLPacket {
     
     private static final int HEADER = 0xff;
     
@@ -51,18 +52,18 @@ public class ErrPacket extends MySQLPacket {
         this.errorMessage = errorMessage;
     }
     
-    public ErrPacket(final int sequenceId, final ServerErrorCode serverErrorCode, final Object... argumentsOfErrorMessage) {
+    public ErrPacket(final int sequenceId, final ServerErrorCode serverErrorCode, final Object... errorMessageArguments) {
         super(sequenceId);
         errorCode = serverErrorCode.getErrorCode();
         sqlState = serverErrorCode.getSqlState();
-        errorMessage = String.format(serverErrorCode.getErrorMessage(), argumentsOfErrorMessage);
+        errorMessage = String.format(serverErrorCode.getErrorMessage(), errorMessageArguments);
     }
     
     public ErrPacket(final MySQLPacketPayload mysqlPacketPayload) {
         super(mysqlPacketPayload.readInt1());
         Preconditions.checkArgument(HEADER == mysqlPacketPayload.readInt1());
         errorCode = mysqlPacketPayload.readInt2();
-        mysqlPacketPayload.readStringFix(1);
+        Preconditions.checkArgument(SQL_STATE_MARKER.equals(mysqlPacketPayload.readStringFix(1)));
         sqlState = mysqlPacketPayload.readStringFix(5);
         errorMessage = mysqlPacketPayload.readStringEOF();
     }

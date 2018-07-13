@@ -26,12 +26,12 @@ import org.apache.commons.codec.digest.DigestUtils;
 import java.util.Arrays;
 
 /**
- * Check authority of user.
+ * Authority handler.
  *
  * @author panjuan
  */
 @Getter
-public class AuthorityHandler {
+public final class AuthorityHandler {
     
     private final AuthPluginData authPluginData;
     

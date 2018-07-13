@@ -35,7 +35,7 @@ import lombok.Getter;
  * @author linjiaqi
  */
 @Getter
-public class HandshakePacket extends MySQLPacket {
+public final class HandshakePacket extends MySQLPacket {
     
     private final int protocolVersion = ServerInfo.PROTOCOL_VERSION;
     

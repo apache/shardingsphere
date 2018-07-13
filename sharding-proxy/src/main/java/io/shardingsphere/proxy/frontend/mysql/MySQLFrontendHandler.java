@@ -37,6 +37,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.handshake.ConnectionIdGene
 import io.shardingsphere.proxy.transport.mysql.packet.handshake.HandshakePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.handshake.HandshakeResponse41Packet;
 import io.shardingsphere.proxy.util.MySQLResultCache;
+import lombok.RequiredArgsConstructor;
 
 /**
  * MySQL frontend handler.
@@ -45,31 +46,28 @@ import io.shardingsphere.proxy.util.MySQLResultCache;
  * @author panjuan
  * @author wangkai
  */
+@RequiredArgsConstructor
 public final class MySQLFrontendHandler extends FrontendHandler {
     
     private final EventLoopGroup eventLoopGroup;
     
-    private final AuthorityHandler proxyAuthorityHandler;
-    
-    public MySQLFrontendHandler(final EventLoopGroup eventLoopGroup) {
-        this.eventLoopGroup = eventLoopGroup;
-        proxyAuthorityHandler = new AuthorityHandler();
-    }
+    private final AuthorityHandler authorityHandler = new AuthorityHandler();
     
     @Override
     protected void handshake(final ChannelHandlerContext context) {
         int connectionId = ConnectionIdGenerator.getInstance().nextId();
         MySQLResultCache.getInstance().putConnection(context.channel().id().asShortText(), connectionId);
-        context.writeAndFlush(new HandshakePacket(connectionId, proxyAuthorityHandler.getAuthPluginData()));
+        context.writeAndFlush(new HandshakePacket(connectionId, authorityHandler.getAuthPluginData()));
     }
     
     @Override
     protected void auth(final ChannelHandlerContext context, final ByteBuf message) {
         try (MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message)) {
             HandshakeResponse41Packet response41 = new HandshakeResponse41Packet(mysqlPacketPayload);
-            if (proxyAuthorityHandler.login(response41.getUsername(), response41.getAuthResponse())) {
+            if (authorityHandler.login(response41.getUsername(), response41.getAuthResponse())) {
                 context.writeAndFlush(new OKPacket(response41.getSequenceId() + 1, 0L, 0L, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
             } else {
+                // TODO localhost should replace to real ip address
                 context.writeAndFlush(new ErrPacket(response41.getSequenceId() + 1, 
                         ServerErrorCode.ER_ACCESS_DENIED_ERROR, response41.getUsername(), "localhost", 0 == response41.getAuthResponse().length ? "NO" : "YES"));
             }
