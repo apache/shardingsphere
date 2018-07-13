@@ -58,11 +58,11 @@ public abstract class BaseDCLIntegrateTest extends SingleIntegrateTest {
         if (Strings.isNullOrEmpty(assertion.getCleanSQLs())) {
             return;
         }
-        try (Statement statement = connection.createStatement()) {
-            for (String each : Splitter.on(";").trimResults().splitToList(assertion.getCleanSQLs())) {
+        for (String each : Splitter.on(";").trimResults().splitToList(assertion.getCleanSQLs())) {
+            try (Statement statement = connection.createStatement()) {
                 statement.execute(each);
+            } catch (final SQLException ignored) {
             }
-        } catch (final SQLException ignored) {
         }
     }
     
@@ -70,11 +70,11 @@ public abstract class BaseDCLIntegrateTest extends SingleIntegrateTest {
         if (Strings.isNullOrEmpty(assertion.getInitSQLs())) {
             return;
         }
-        try (Statement statement = connection.createStatement()) {
-            for (String each : Splitter.on(";").trimResults().splitToList(assertion.getInitSQLs())) {
-                statement.execute(each);
+        for (String each : Splitter.on(";").trimResults().splitToList(assertion.getInitSQLs())) {
+            try (Statement statement = connection.createStatement()) {
+                statement.execute(each); 
+            } catch (final SQLException ignored) { 
             }
-        } catch (final SQLException ignored) {
         }
     }
     
