@@ -42,6 +42,7 @@ import java.sql.SQLException;
 
 /**
  * COM_QUERY command packet.
+ * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-query.html">COM_QUERY</a>
  *
  * @author zhangliang

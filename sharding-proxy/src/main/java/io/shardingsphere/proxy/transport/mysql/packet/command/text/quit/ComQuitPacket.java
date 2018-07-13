@@ -26,6 +26,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 
 /**
  * COM_QUIT command packet.
+ * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-quit.html">COM_QUIT</a>
  *
  * @author zhangliang

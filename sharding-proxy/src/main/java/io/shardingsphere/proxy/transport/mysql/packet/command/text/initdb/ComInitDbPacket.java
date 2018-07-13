@@ -29,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * COM_INIT_DB command packet.
+ * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-init-db.html#packet-COM_INIT_DB">COM_INIT_DB</a>
  *
  * @author zhangliang

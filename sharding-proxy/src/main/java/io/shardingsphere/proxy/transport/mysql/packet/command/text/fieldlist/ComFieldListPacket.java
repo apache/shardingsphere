@@ -43,9 +43,10 @@ import java.sql.SQLException;
 /**
  * COM_FIELD_LIST command packet.
  *
+ * @see <a href="https://dev.mysql.com/doc/internals/en/com-field-list.html">COM_FIELD_LIST</a>
+ * 
  * @author zhangliang
  * @author wangkai
- * @see <a href="https://dev.mysql.com/doc/internals/en/com-field-list.html">COM_FIELD_LIST</a>
  */
 @Slf4j
 public final class ComFieldListPacket extends CommandPacket implements CommandPacketRebuilder {

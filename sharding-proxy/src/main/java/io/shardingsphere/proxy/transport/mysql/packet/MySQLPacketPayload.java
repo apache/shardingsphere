@@ -44,6 +44,7 @@ public final class MySQLPacketPayload implements AutoCloseable {
     
     /**
      * Read 1 byte fixed length integer from byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      * 
      * @return 1 byte fixed length integer
@@ -54,6 +55,7 @@ public final class MySQLPacketPayload implements AutoCloseable {
     
     /**
      * Write 1 byte fixed length integer to byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      * 
      * @param value 1 byte fixed length integer
@@ -64,6 +66,7 @@ public final class MySQLPacketPayload implements AutoCloseable {
     
     /**
      * Read 2 byte fixed length integer from byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      *
      * @return 2 byte fixed length integer
@@ -74,6 +77,7 @@ public final class MySQLPacketPayload implements AutoCloseable {
     
     /**
      * Write 2 byte fixed length integer to byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      *
      * @param value 2 byte fixed length integer
@@ -84,6 +88,7 @@ public final class MySQLPacketPayload implements AutoCloseable {
     
     /**
      * Read 3 byte fixed length integer from byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      *
      * @return 3 byte fixed length integer
@@ -94,6 +99,7 @@ public final class MySQLPacketPayload implements AutoCloseable {
     
     /**
      * Write 3 byte fixed length integer to byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      *
      * @param value 3 byte fixed length integer
@@ -104,6 +110,7 @@ public final class MySQLPacketPayload implements AutoCloseable {
     
     /**
      * Read 4 byte fixed length integer from byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      *
      * @return 4 byte fixed length integer
@@ -114,6 +121,7 @@ public final class MySQLPacketPayload implements AutoCloseable {
     
     /**
      * Write 4 byte fixed length integer to byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      *
      * @param value 4 byte fixed length integer
@@ -125,6 +133,7 @@ public final class MySQLPacketPayload implements AutoCloseable {
     
     /**
      * Read 6 byte fixed length integer from byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      *
      * @return 6 byte fixed length integer
@@ -136,6 +145,7 @@ public final class MySQLPacketPayload implements AutoCloseable {
     
     /**
      * Write 6 byte fixed length integer to byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      *
      * @param value 6 byte fixed length integer
@@ -146,6 +156,7 @@ public final class MySQLPacketPayload implements AutoCloseable {
     
     /**
      * Read 8 byte fixed length integer from byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      *
      * @return 8 byte fixed length integer
@@ -156,6 +167,7 @@ public final class MySQLPacketPayload implements AutoCloseable {
     
     /**
      * Write 8 byte fixed length integer to byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      *
      * @param value 8 byte fixed length integer
@@ -167,6 +179,7 @@ public final class MySQLPacketPayload implements AutoCloseable {
     
     /**
      * Read length encoded integer from byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::LengthEncodedInteger">LengthEncodedInteger</a>
      *
      * @return length encoded integer
@@ -190,6 +203,7 @@ public final class MySQLPacketPayload implements AutoCloseable {
     
     /**
      * Write length encoded integer to byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::LengthEncodedInteger">LengthEncodedInteger</a>
      *
      * @param value length encoded integer
@@ -215,6 +229,7 @@ public final class MySQLPacketPayload implements AutoCloseable {
     
     /**
      * Read fixed length string from byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::FixedLengthString">FixedLengthString</a>
      *
      * @return fixed length string
@@ -240,6 +255,7 @@ public final class MySQLPacketPayload implements AutoCloseable {
     
     /**
      * Write fixed length string to byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::FixedLengthString">FixedLengthString</a>
      *
      * @param value fixed length string
@@ -255,6 +271,7 @@ public final class MySQLPacketPayload implements AutoCloseable {
     
     /**
      * Read fixed length string from byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::FixedLengthString">FixedLengthString</a>
      *
      * @param length length of fixed string
@@ -282,6 +299,7 @@ public final class MySQLPacketPayload implements AutoCloseable {
     
     /**
      * Write variable length string to byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::FixedLengthString">FixedLengthString</a>
      *
      * @param value fixed length string
@@ -292,6 +310,7 @@ public final class MySQLPacketPayload implements AutoCloseable {
     
     /**
      * Write variable length bytes to byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/secure-password-authentication.html#packet-Authentication::Native41">Native41</a>
      *
      * @param value fixed length bytes
@@ -302,6 +321,7 @@ public final class MySQLPacketPayload implements AutoCloseable {
     
     /**
      * Read variable length string from byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::VariableLengthString">FixedLengthString</a>
      *
      * @return variable length string
@@ -313,6 +333,7 @@ public final class MySQLPacketPayload implements AutoCloseable {
     
     /**
      * Write fixed length string to byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::VariableLengthString">FixedLengthString</a>
      *
      * @param value variable length string
@@ -323,6 +344,7 @@ public final class MySQLPacketPayload implements AutoCloseable {
     
     /**
      * Read null terminated string from byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::NulTerminatedString">NulTerminatedString</a>
      *
      * @return null terminated string
@@ -348,6 +370,7 @@ public final class MySQLPacketPayload implements AutoCloseable {
     
     /**
      * Write null terminated string to byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::NulTerminatedString">NulTerminatedString</a>
      *
      * @param value null terminated string
@@ -359,6 +382,7 @@ public final class MySQLPacketPayload implements AutoCloseable {
     
     /**
      * Read rest of packet string from byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::RestOfPacketString">RestOfPacketString</a>
      *
      * @return rest of packet string
@@ -371,6 +395,7 @@ public final class MySQLPacketPayload implements AutoCloseable {
     
     /**
      * Write rest of packet string to byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::RestOfPacketString">RestOfPacketString</a>
      *
      * @param value rest of packet string
@@ -401,6 +426,7 @@ public final class MySQLPacketPayload implements AutoCloseable {
     
     /**
      * Read 4 byte float from byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html#ProtocolBinary::MYSQL_TYPE_FLOAT">MYSQL_TYPE_FLOAT</a>
      *
      * @return 4 byte float
@@ -411,6 +437,7 @@ public final class MySQLPacketPayload implements AutoCloseable {
     
     /**
      * Write 4 byte float to byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html#ProtocolBinary::MYSQL_TYPE_FLOAT">MYSQL_TYPE_FLOAT</a>
      *
      * @param value 4 byte float
@@ -421,6 +448,7 @@ public final class MySQLPacketPayload implements AutoCloseable {
     
     /**
      * Read 8 byte double from byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html#ProtocolBinary::MYSQL_TYPE_DOUBLE">MYSQL_TYPE_DOUBLE</a>
      *
      * @return 8 byte double
@@ -431,6 +459,7 @@ public final class MySQLPacketPayload implements AutoCloseable {
     
     /**
      * Write 8 byte double to byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html#ProtocolBinary::MYSQL_TYPE_DOUBLE">MYSQL_TYPE_DOUBLE</a>
      *
      * @param value 8 byte double
@@ -441,6 +470,7 @@ public final class MySQLPacketPayload implements AutoCloseable {
     
     /**
      * Read date from byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html#ProtocolBinary::MYSQL_TYPE_DATE">MYSQL_TYPE_DATE</a>
      *
      * @return timestamp
@@ -474,6 +504,7 @@ public final class MySQLPacketPayload implements AutoCloseable {
     
     /**
      * Write date to byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html#ProtocolBinary::MYSQL_TYPE_DATE">MYSQL_TYPE_DATE</a>
      *
      * @param timestamp timestamp
@@ -520,6 +551,7 @@ public final class MySQLPacketPayload implements AutoCloseable {
     
     /**
      * Read time from byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html#ProtocolBinary::MYSQL_TYPE_TIME">MYSQL_TYPE_TIME</a>
      *
      * @return timestamp
@@ -552,6 +584,7 @@ public final class MySQLPacketPayload implements AutoCloseable {
     
     /**
      * Write time to byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html#ProtocolBinary::MYSQL_TYPE_TIME">MYSQL_TYPE_TIME</a>
      *
      * @param date date

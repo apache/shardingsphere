@@ -27,6 +27,7 @@ import java.util.Date;
 
 /**
  * Binary protocol value.
+ * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html">Binary Protocol Value</a>
  *
  * @author zhangyonglun
