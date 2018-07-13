@@ -19,39 +19,38 @@ package io.shardingsphere.transaction.xa;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
-import io.shardingsphere.core.transaction.event.WeakXaTransactionEvent;
+import io.shardingsphere.core.transaction.event.TransactionEvent;
+import io.shardingsphere.core.transaction.spi.Transaction;
 import lombok.AllArgsConstructor;
 
-import java.sql.SQLException;
-
 /**
- * Weak-XA Transaction Listener.
+ * XA Transaction Listener.
  *
  * @author zhaojun
  */
 @AllArgsConstructor
-public class WeakXaTransactionListener {
+public class TransactionListener {
     
-    private WeakXaTransaction weakXaTransaction;
+    private Transaction transaction;
     
     /**
-     * Weak-Xa Transaction Event Listener.
+     * Listen event.
      *
-     * @param weakXaTransactionEvent WeakXaTransactionEvent
-     * @throws SQLException SQLException
+     * @param transactionEvent transaction event
+     * @throws Exception
      */
     @Subscribe
     @AllowConcurrentEvents
-    public void listen(final WeakXaTransactionEvent weakXaTransactionEvent) throws SQLException {
-        switch (weakXaTransactionEvent.getTclType()) {
+    public void listen(final TransactionEvent transactionEvent) throws Exception {
+        switch (transactionEvent.getTclType()) {
             case BEGIN:
-                weakXaTransaction.begin(weakXaTransactionEvent);
+                transaction.begin(transactionEvent);
                 break;
             case COMMIT:
-                weakXaTransaction.commit(weakXaTransactionEvent);
+                transaction.commit(transactionEvent);
                 break;
             case ROLLBACK:
-                weakXaTransaction.rollback(weakXaTransactionEvent);
+                transaction.rollback(transactionEvent);
                 break;
             default:
         }

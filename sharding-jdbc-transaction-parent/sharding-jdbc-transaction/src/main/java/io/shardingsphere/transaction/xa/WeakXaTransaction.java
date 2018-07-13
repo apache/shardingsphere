@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.xa;
 
-import io.shardingsphere.core.transaction.event.AbstractTransactionEvent;
+import io.shardingsphere.core.transaction.event.TransactionEvent;
 import io.shardingsphere.core.transaction.event.WeakXaTransactionEvent;
 import io.shardingsphere.core.transaction.spi.Transaction;
 import io.shardingsphere.core.util.EventBusInstance;
@@ -35,11 +35,11 @@ import java.util.LinkedList;
 public class WeakXaTransaction implements Transaction {
     
     static {
-        EventBusInstance.getInstance().register(new WeakXaTransactionListener(new WeakXaTransaction()));
+        EventBusInstance.getInstance().register(new TransactionListener(new WeakXaTransaction()));
     }
     
     @Override
-    public void begin(AbstractTransactionEvent transactionEvent) throws SQLException {
+    public void begin(TransactionEvent transactionEvent) throws SQLException {
         WeakXaTransactionEvent weakXaTransactionEvent = (WeakXaTransactionEvent) transactionEvent;
         for (Connection each : weakXaTransactionEvent.getCachedConnections().values()) {
             each.setAutoCommit(weakXaTransactionEvent.isAutoCommit());
@@ -47,7 +47,7 @@ public class WeakXaTransaction implements Transaction {
     }
     
     @Override
-    public void commit(AbstractTransactionEvent transactionEvent) throws SQLException {
+    public void commit(TransactionEvent transactionEvent) throws SQLException {
         WeakXaTransactionEvent weakXaTransactionEvent = (WeakXaTransactionEvent) transactionEvent;
         Collection<SQLException> exceptions = new LinkedList<>();
         for (Connection each : weakXaTransactionEvent.getCachedConnections().values()) {
@@ -61,7 +61,7 @@ public class WeakXaTransaction implements Transaction {
     }
     
     @Override
-    public void rollback(AbstractTransactionEvent transactionEvent) throws SQLException {
+    public void rollback(TransactionEvent transactionEvent) throws SQLException {
         WeakXaTransactionEvent weakXaTransactionEvent = (WeakXaTransactionEvent) transactionEvent;
         Collection<SQLException> exceptions = new LinkedList<>();
         for (Connection each : weakXaTransactionEvent.getCachedConnections().values()) {

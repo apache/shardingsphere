@@ -29,7 +29,7 @@ import java.util.UUID;
  *
  * @author zhaojun
  */
-public abstract class AbstractTransactionEvent {
+public abstract class TransactionEvent {
     
     @Getter
     private final String id = UUID.randomUUID().toString();

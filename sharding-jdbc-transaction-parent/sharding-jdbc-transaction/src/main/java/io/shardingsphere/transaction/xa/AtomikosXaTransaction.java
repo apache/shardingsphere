@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.xa;
 
-import io.shardingsphere.core.transaction.event.AbstractTransactionEvent;
+import io.shardingsphere.core.transaction.event.TransactionEvent;
 import io.shardingsphere.core.transaction.spi.Transaction;
 
 import javax.transaction.HeuristicMixedException;
@@ -37,17 +37,17 @@ public class AtomikosXaTransaction implements Transaction {
     private static UserTransaction userTransaction = AtomikosUserTransaction.getInstance();
     
     @Override
-    public void begin(AbstractTransactionEvent transactionEvent) throws SystemException, NotSupportedException {
+    public void begin(TransactionEvent transactionEvent) throws SystemException, NotSupportedException {
         userTransaction.begin();
     }
     
     @Override
-    public void commit(AbstractTransactionEvent transactionEvent) throws HeuristicRollbackException, RollbackException, HeuristicMixedException, SystemException {
+    public void commit(TransactionEvent transactionEvent) throws HeuristicRollbackException, RollbackException, HeuristicMixedException, SystemException {
         userTransaction.commit();
     }
     
     @Override
-    public void rollback(AbstractTransactionEvent transactionEvent) throws SystemException {
+    public void rollback(TransactionEvent transactionEvent) throws SystemException {
         userTransaction.rollback();
     }
 }

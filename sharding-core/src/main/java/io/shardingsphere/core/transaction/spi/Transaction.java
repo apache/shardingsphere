@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.transaction.spi;
 
-import io.shardingsphere.core.transaction.event.AbstractTransactionEvent;
+import io.shardingsphere.core.transaction.event.TransactionEvent;
 
 /**
  * Transaction Spi interface.
@@ -31,19 +31,19 @@ public interface Transaction {
      *
      * @throws Exception Exception
      */
-    void begin(AbstractTransactionEvent transactionEvent) throws Exception;
+    void begin(TransactionEvent transactionEvent) throws Exception;
     
     /**
      * Do transaction commit.
      *
      * @throws Exception Exception
      */
-    void commit(AbstractTransactionEvent transactionEvent) throws Exception;
+    void commit(TransactionEvent transactionEvent) throws Exception;
     
     /**
      * Do transaction rollback.
      *
      * @throws Exception Exception
      */
-    void rollback(AbstractTransactionEvent transactionEvent) throws Exception;
+    void rollback(TransactionEvent transactionEvent) throws Exception;
 }

@@ -33,7 +33,7 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
-public class WeakXaTransactionEvent extends AbstractTransactionEvent {
+public class WeakXaTransactionEvent extends TransactionEvent {
     
     private final Map<String, Connection> cachedConnections;
     

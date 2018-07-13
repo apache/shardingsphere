@@ -25,7 +25,8 @@ import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusInstance;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.frontend.ShardingProxy;
-import io.shardingsphere.transaction.xa.XaTransactionListener;
+import io.shardingsphere.transaction.xa.AtomikosXaTransaction;
+import io.shardingsphere.transaction.xa.TransactionListener;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
@@ -93,7 +94,7 @@ public final class Bootstrap {
     
     private static void startWithoutRegistryCenter(final OrchestrationProxyConfiguration config, final int port) throws InterruptedException, MalformedURLException {
         RuleRegistry.getInstance().init(config);
-        EventBusInstance.getInstance().register(new XaTransactionListener());
+        EventBusInstance.getInstance().register(new TransactionListener(new AtomikosXaTransaction()));
         new ShardingProxy().start(port);
     }
     
@@ -103,7 +104,7 @@ public final class Bootstrap {
                 orchestrationFacade.init(localConfig);
             }
             initRuleRegistry(orchestrationFacade.getConfigService());
-            EventBusInstance.getInstance().register(new XaTransactionListener());
+            EventBusInstance.getInstance().register(new TransactionListener(new AtomikosXaTransaction()));
             new ShardingProxy().start(port);
         }
     }
