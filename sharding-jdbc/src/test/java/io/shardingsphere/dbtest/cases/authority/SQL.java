@@ -17,6 +17,11 @@
 
 package io.shardingsphere.dbtest.cases.authority;
 
+/**
+ * Authority SQL xml entry.
+ *
+ * @author panjuan
+ */
 import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlAccessType;
