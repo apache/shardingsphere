@@ -1,135 +1,122 @@
 <integrate-test-cases>
     <dcl-test-case sql-case-id="create_user_with_hostname">
-        <assertion clean-sqls="DROP USER user_dev" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="create_user_without_hostname">
-        <assertion clean-sqls="DROP USER user_dev" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="create_user_identified_by_with_hostname">
-        <assertion clean-sqls="DROP USER user_dev@localhost" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="create_user_identified_by_without_hostname">
-        <assertion clean-sqls="DROP USER user_dev" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="create_user_identified_by_for">
-        <assertion clean-sqls="DROP USER user_dev" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="create_user_password">
-        <assertion clean-sqls="DROP USER user_dev" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="create_login">
-        <assertion clean-sqls="DROP login login_dev" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="create_role">
-        <assertion clean-sqls="DROP role role_dev" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="create_role_identified_by">
-        <assertion clean-sqls="DROP role role_dev" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="create_role_password">
-        <assertion clean-sqls="DROP role role_dev" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="alter_user_identified_without_hostname">
-        <assertion init-sqls="CREATE USER user_dev" clean-sqls="DROP USER user_dev" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="alter_user_identified_with_hostname">
-        <assertion init-sqls="CREATE USER 'user_dev'@'localhost'" clean-sqls="DROP USER 'user_dev'@'localhost'" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="alter_user_account">
-        <assertion init-sqls="CREATE USER user_dev" clean-sqls="DROP USER user_dev" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="alter_login_name">
-        <assertion init-sqls="create login login_dev" clean-sqls="DROP login login_dev_new" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="alter_login_passwd">
-        <assertion init-sqls="create login login_dev" clean-sqls="DROP login login_dev" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="alter_user_name_with_name">
-        <assertion init-sqls="CREATE USER user_dev" clean-sqls="DROP USER user_dev_new" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="alter_user_name_rename">
-        <assertion init-sqls="CREATE USER user_dev password 'passwd_dev'" clean-sqls="DROP USER user_dev_new" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="alter_user_passwd_with_equality">
-        <assertion init-sqls="CREATE USER user_dev" clean-sqls="DROP USER user_dev" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="alter_user_passwd_without_equality">
-        <assertion init-sqls="CREATE USER user_dev" clean-sqls="DROP USER user_dev" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="alter_user_passwd_set">
-        <assertion init-sqls="CREATE USER user_dev password 'passwd_dev'" clean-sqls="DROP USER user_dev" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="alter_role_add_member">
-        <assertion init-sqls="create role role_dev;CREATE USER user_dev" clean-sqls="DROP role role_dev;DROP USER user_dev" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="alter_role_DROP_member">
-        <assertion init-sqls="create role role_dev;CREATE USER user_dev" clean-sqls="DROP role role_dev;DROP USER user_dev" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="deny_user">
-        <assertion init-sqls="DROP USER user_dev" clean-sqls="CREATE USER user_dev" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="DROP_user">
-        <assertion init-sqls="CREATE USER 'user_dev'@'localhost'" db-types="MySQL" />
-        <assertion init-sqls="CREATE USER user_dev identified by passwd_dev" db-types="Oracle" />
-        <assertion init-sqls="CREATE LOGIN login_dev;CREATE USER user_dev FOR LOGIN login_dev" db-types="SQLServer" />
-        <assertion init-sqls="CREATE USER user_dev PASSWORD 'passwd_dev'" db-types="PostgreSQL,H2" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="DROP_user_cascade">
-        <assertion init-sqls="CREATE USER user_dev identified by passwd_dev" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="DROP_role">
-        <assertion init-sqls="CREATE ROLE role_dev" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="DROP_login">
-        <assertion init-sqls="CREATE LOGIN login_dev WITH PASSWORD = 'passwd_dev'" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="rename_user">
-        <assertion init-sqls="CREATE USER 'user_dev'@'localhost'" clean-sqls="DROP USER 'user_dev'@'127.0.0.1'" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="grant_user_without_hostname">
-        <assertion init-sqls="CREATE USER user_dev identified by passwd_dev" db-types="Oracle" clean-sqls="DROP USER user_dev" />
-        <assertion init-sqls="CREATE LOGIN login_dev;CREATE USER user_dev FOR LOGIN login_dev" db-types="SQLServer" clean-sqls="DROP USER user_dev" />
-        <assertion init-sqls="CREATE USER user_dev PASSWORD 'passwd_dev'" db-types="PostgreSQL,H2" clean-sqls="DROP USER user_dev" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="grant_user_with_grant">
-        <assertion init-sqls="CREATE USER user_dev identified by passwd_dev" db-types="Oracle" clean-sqls="DROP USER user_dev" />
-        <assertion init-sqls="CREATE LOGIN login_dev;CREATE USER user_dev FOR LOGIN login_dev" db-types="SQLServer" clean-sqls="DROP USER user_dev" />
-        <assertion init-sqls="CREATE USER user_dev PASSWORD 'passwd_dev'" db-types="PostgreSQL" clean-sqls="DROP USER user_dev" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="grant_role">
-        <assertion init-sqls="CREATE ROLE role_dev;CREATE USER user_dev PASSWORD 'passwd_dev'" clean-sqls="DROP ROLE role_dev;DROP USER user_dev" db-types="SQLServer" />
-        <assertion init-sqls="CREATE ROLE role_dev;CREATE USER user_dev identified by passwd_dev" clean-sqls="DROP ROLE role_dev;DROP USER user_dev" db-types="Oracle" />
-        <assertion init-sqls="CREATE ROLE role_dev;CREATE USER user_dev PASSWORD 'passwd_dev'" clean-sqls="DROP ROLE role_dev;DROP USER user_dev" db-types="PostgreSQL,H2" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="grant_user_with_admin">
-        <assertion init-sqls="CREATE USER user_dev identified by passwd_dev" clean-sqls="DROP USER user_dev" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="grant_user_on_db">
-        <assertion init-sqls="CREATE USER 'user_dev'@'localhost'" clean-sqls="DROP USER 'user_dev'@'localhost'" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="grant_user_with_hostname">
-        <assertion init-sqls="CREATE USER 'user_dev'@'localhost'" clean-sqls="DROP USER 'user_dev'@'localhost'" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="revoke_user_without_hostname">
-        <assertion init-sqls="CREATE USER user_dev identified by passwd_dev" db-types="Oracle" clean-sqls="DROP USER user_dev" />
-        <assertion init-sqls="CREATE LOGIN login_dev;CREATE USER user_dev FOR LOGIN login_dev" db-types="SQLServer" clean-sqls="DROP USER user_dev" />
-        <assertion init-sqls="CREATE USER user_dev PASSWORD 'passwd_dev'" db-types="PostgreSQL,H2" clean-sqls="DROP USER user_dev" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="revoke_role">
-        <assertion init-sqls="CREATE ROLE role_dev;CREATE USER user_dev PASSWORD 'passwd_dev'" clean-sqls="DROP ROLE role_dev;DROP USER user_dev" db-types="SQLServer" />
-        <assertion init-sqls="CREATE ROLE role_dev;CREATE USER user_dev identified by passwd_dev" clean-sqls="DROP ROLE role_dev;DROP USER user_dev" db-types="Oracle" />
-        <assertion init-sqls="CREATE ROLE role_dev;CREATE USER user_dev PASSWORD 'passwd_dev'" clean-sqls="DROP ROLE role_dev;DROP USER user_dev" db-types="PostgreSQL,H2" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="revoke_user_from">
-        <assertion init-sqls="CREATE USER user_dev identified by passwd_dev" db-types="Oracle" clean-sqls="DROP USER user_dev" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="revoke_user_on_db">
-        <assertion init-sqls="CREATE USER 'user_dev'@'localhost'" clean-sqls="DROP USER 'user_dev'@'localhost'" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="revoke_user_with_hostname">
-        <assertion init-sqls="CREATE USER 'user_dev'@'localhost'" clean-sqls="DROP USER 'user_dev'@'localhost'" />
+        <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="revoke_user_with_hostname">
-        <assertion init-sqls="CREATE USER 'user_dev'@'localhost'" clean-sqls="DROP USER 'user_dev'@'localhost'" />
+        <assertion />
     </dcl-test-case>
 </integrate-test-cases>
