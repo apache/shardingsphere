@@ -15,22 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.cases.authority.sql;
+package io.shardingsphere.dbtest.env.authority.sql;
 
+/**
+ * Authority SQL xml entry.
+ *
+ * @author panjuan
+ */
 import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlAttribute;
 
-/**
- * SQL type for authority.
- *
- * @author panjuan
- */
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
-public enum SQLType {
+public final class SQL {
     
-    @XmlEnumValue("init") Init, @XmlEnumValue("clean") Clean
+    @XmlAttribute(name = "content")
+    private String content;
 }

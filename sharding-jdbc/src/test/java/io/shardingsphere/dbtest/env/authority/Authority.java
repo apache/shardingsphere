@@ -15,11 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.cases.authority;
+package io.shardingsphere.dbtest.env.authority;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.dbtest.cases.authority.sql.SQLSet;
-import io.shardingsphere.dbtest.cases.authority.sql.SQLType;
+import io.shardingsphere.dbtest.env.authority.sql.SQLSet;
+import io.shardingsphere.dbtest.env.authority.sql.SQLType;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;

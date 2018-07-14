@@ -18,7 +18,6 @@
 package io.shardingsphere.dbtest.env.authority;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.dbtest.cases.authority.Authority;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
