@@ -23,7 +23,7 @@
         <sql content="DROP USER user_dev" />
         <sql content="DROP USER user_dev_new" />
     </sqlset>
-    <sqlset sql-type="clean" db-types="sqlServer">
+    <sqlset sql-type="clean" db-types="SQLServer">
         <sql content="DROP LOGIN login_dev" />
         <sql content="DROP LOGIN login_dev_new" />
     </sqlset>
