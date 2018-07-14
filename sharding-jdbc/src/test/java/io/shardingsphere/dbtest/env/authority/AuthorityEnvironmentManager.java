@@ -68,7 +68,7 @@ public final class AuthorityEnvironmentManager {
             try {
                 connection.createStatement().execute(each);
             } catch (final SQLException ex) {
-                log.warn("Init SQL: "+ex.getMessage());
+                log.warn("Init SQL: "+ ex.getMessage());
             }
         }
         connection.close();
@@ -89,7 +89,7 @@ public final class AuthorityEnvironmentManager {
             try {
                 connection.createStatement().execute(each);
             } catch (final SQLException ex) {
-                log.warn("Clean SQL: "+ex.getMessage());
+                log.warn("Clean SQL: "+ ex.getMessage());
             }
         }
         connection.close();
