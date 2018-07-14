@@ -21,33 +21,23 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * New parameters bound flag.
+ * Server error code of MySQL.
  * 
- * @see <a href="https://dev.mysql.com/doc/internals/en/com-stmt-execute.html">COM_STMT_EXECUTE</a>
+ * @see <a href="https://dev.mysql.com/doc/refman/5.7/en/error-messages-server.html">error-messages-server</a>
  *
- * @author zhangyonglun
+ * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public enum NewParametersBoundFlag {
+public enum ServerErrorCode {
     
-    PARAMETER_TYPE_EXIST(1),
-    PARAMETER_TYPE_NOT_EXIST(0);
+    ER_ACCESS_DENIED_ERROR(1045, "28000", "Access denied for user '%s'@'%s' (using password: %s)"), 
     
-    private final int value;
+    ER_UNSUPPORTED_COMMAND(9999, "XXXXX", "Unsupported command packet: '%s'");
     
-    /**
-     * Value of.
-     * 
-     * @param value value
-     * @return new parameters bound flag
-     */
-    public static NewParametersBoundFlag valueOf(final int value) {
-        for (NewParametersBoundFlag each : NewParametersBoundFlag.values()) {
-            if (value == each.value) {
-                return each;
-            }
-        }
-        throw new IllegalArgumentException(String.format("Cannot find value '%s' in new parameters bound flag", value));
-    }
+    private final int errorCode;
+    
+    private final String sqlState;
+    
+    private final String errorMessage;
 }

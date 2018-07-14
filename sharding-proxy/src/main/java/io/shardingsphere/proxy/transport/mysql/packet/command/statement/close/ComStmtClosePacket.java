@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * COM_STMT_CLOSE command packet.
+ * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-stmt-close.html">COM_QUERY</a>
  *
  * @author zhangyonglun

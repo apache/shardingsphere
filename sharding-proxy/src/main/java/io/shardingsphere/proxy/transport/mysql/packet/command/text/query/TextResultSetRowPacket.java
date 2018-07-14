@@ -17,16 +17,16 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command.text.query;
 
+import com.google.common.collect.Lists;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import lombok.Getter;
 
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 /**
  * Text result set row packet.
+ * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-query-response.html#packet-ProtocolText::ResultsetRow">ResultsetRow</a>
  *
  * @author zhangliang

@@ -15,38 +15,34 @@
  * </p>
  */
 
-package io.shardingsphere.core.transaction.event;
+package io.shardingsphere.core.transaction.spi;
 
-import com.google.common.base.Optional;
-import io.shardingsphere.core.constant.TCLType;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.UUID;
+import io.shardingsphere.core.transaction.event.TransactionEvent;
 
 /**
- * Abstract Transaction Event.
+ * Hold transaction event for current thread.
  *
  * @author zhaojun
  */
-public abstract class AbstractTransactionEvent {
+public class TransactionEventHolder {
     
-    @Getter
-    private final String id = UUID.randomUUID().toString();
-    
-    @Getter
-    @Setter
-    private TCLType tclType;
-    
-    @Setter
-    private Exception exception;
+    private static Class<? extends TransactionEvent> transactionEvent;
     
     /**
-     * Get exception.
+     * Set transactionEvent.
      *
-     * @return exception
+     * @param clazz class type of TransactionEvent
      */
-    public Optional<? extends Exception> getException() {
-        return Optional.fromNullable(exception);
+    public static synchronized void set(final Class<? extends TransactionEvent> clazz) {
+        transactionEvent = clazz;
+    }
+    
+    /**
+     * Get transactionEvent class type.
+     *
+     * @return transactionEvent class type
+     */
+    public static Class<? extends TransactionEvent> get() {
+        return transactionEvent;
     }
 }

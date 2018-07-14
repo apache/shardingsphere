@@ -24,6 +24,7 @@ import java.sql.Types;
 
 /**
  * Column types.
+ * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-query-response.html#column-type">Column Type</a>
  *
  * @author zhangliang

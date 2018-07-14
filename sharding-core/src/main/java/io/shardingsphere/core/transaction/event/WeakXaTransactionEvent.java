@@ -21,17 +21,24 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.exception.ShardingException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
+import java.sql.Connection;
+import java.util.Map;
 
 /**
- * XA transactionEvent.
+ * Weak-XA transactionEvent.
  *
  * @author zhaojun
  */
 @RequiredArgsConstructor
 @Getter
-public class XaTransactionEvent extends TransactionEvent {
+public class WeakXaTransactionEvent extends TransactionEvent {
     
-    private final String sql;
+    private final Map<String, Connection> cachedConnections;
+    
+    @Setter
+    private boolean autoCommit = true;
     
     /**
      * Get exception.

@@ -17,6 +17,8 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.handshake;
 
+import com.google.common.base.Strings;
+import io.shardingsphere.core.rule.ProxyAuthority;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import lombok.Getter;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -24,34 +26,32 @@ import org.apache.commons.codec.digest.DigestUtils;
 import java.util.Arrays;
 
 /**
- * Check authority of user.
+ * Authority handler.
  *
  * @author panjuan
  */
 @Getter
-public class ProxyAuthorityHandler {
+public final class AuthorityHandler {
     
     private final AuthPluginData authPluginData;
     
-    public ProxyAuthorityHandler() {
+    public AuthorityHandler() {
         authPluginData = new AuthPluginData();
     }
     
     /**
-     * Judge whether it is legal to login into Proxy.
+     * Login into sharding proxy.
      *
      * @param username connection username.
      * @param authResponse connection auth response.
-     * @return legal or illegal.
+     * @return login success or failure.
      */
-    public boolean isLegalForProxyLogin(final String username, final byte[] authResponse) {
-        String configPassword = RuleRegistry.getInstance().getProxyAuthority().getPassword();
-        String configUsername = RuleRegistry.getInstance().getProxyAuthority().getUsername();
-        if (null == configPassword) {
-            return configUsername.equals(username);
+    public boolean login(final String username, final byte[] authResponse) {
+        ProxyAuthority proxyAuthority = RuleRegistry.getInstance().getProxyAuthority();
+        if (Strings.isNullOrEmpty(proxyAuthority.getPassword())) {
+            return proxyAuthority.getUsername().equals(username);
         }
-        byte[] configAuthResponse = getAuthCipherBytes(configPassword);
-        return configUsername.equals(username) && Arrays.equals(configAuthResponse, authResponse);
+        return proxyAuthority.getUsername().equals(username) && Arrays.equals(getAuthCipherBytes(proxyAuthority.getPassword()), authResponse);
     }
     
     private byte[] getAuthCipherBytes(final String password) {

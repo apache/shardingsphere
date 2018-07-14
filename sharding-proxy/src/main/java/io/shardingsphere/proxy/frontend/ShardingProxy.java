@@ -18,7 +18,7 @@
 package io.shardingsphere.proxy.frontend;
 
 import io.netty.channel.WriteBufferWaterMark;
-import io.shardingsphere.proxy.frontend.netty.ServerHandlerInitializer;
+import io.shardingsphere.proxy.frontend.common.netty.ServerHandlerInitializer;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;

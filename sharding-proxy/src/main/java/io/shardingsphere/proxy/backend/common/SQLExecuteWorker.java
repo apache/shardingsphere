@@ -19,7 +19,6 @@ package io.shardingsphere.proxy.backend.common;
 
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
-import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 
@@ -83,7 +82,7 @@ public final class SQLExecuteWorker extends ExecuteWorker implements Callable<Co
         } else {
             affectedRows = statement.executeUpdate(sql);
         }
-        return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+        return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId));
     }
     
     @Override
@@ -92,7 +91,7 @@ public final class SQLExecuteWorker extends ExecuteWorker implements Callable<Co
         if (hasResultSet) {
             return getCommonDatabaseProtocolPackets(statement.getResultSet());
         } else {
-            return new CommandResponsePackets(new OKPacket(1, statement.getUpdateCount(), 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+            return new CommandResponsePackets(new OKPacket(1, statement.getUpdateCount(), 0));
         }
     }
 }

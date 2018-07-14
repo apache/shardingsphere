@@ -26,6 +26,7 @@ import java.util.List;
 
 /**
  * Binary result set row packet.
+ * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-resultset-row.html">Binary Protocol Resultset Row</a>
  *
  * @author zhangyonglun

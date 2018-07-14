@@ -18,14 +18,13 @@
 package io.shardingsphere.proxy;
 
 import com.google.common.base.Preconditions;
-import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusInstance;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.frontend.ShardingProxy;
-import io.shardingsphere.transaction.xa.XaTransactionListener;
+import io.shardingsphere.transaction.xa.AtomikosXaTransaction;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
@@ -73,7 +72,7 @@ public final class Bootstrap {
             OrchestrationProxyConfiguration result = new Yaml(new Constructor(OrchestrationProxyConfiguration.class)).loadAs(inputStreamReader, OrchestrationProxyConfiguration.class);
             Preconditions.checkNotNull(result, String.format("Configuration file `%s` is invalid.", CONFIG_YAML));
             Preconditions.checkState(!result.getDataSources().isEmpty(), "Data sources configuration can not be empty.");
-            Preconditions.checkState(result.hasLocalConfiguration() || null != result.getOrchestration(), 
+            Preconditions.checkState(null != result.getShardingRule() || null != result.getMasterSlaveRule() || null != result.getOrchestration(), 
                     "Configuration invalid, sharding rule, local and orchestration configuration can not be both null.");
             Preconditions.checkNotNull(result.getProxyAuthority().getUsername(), "Authority configuration is invalid.");
             return result;
@@ -93,17 +92,17 @@ public final class Bootstrap {
     
     private static void startWithoutRegistryCenter(final OrchestrationProxyConfiguration config, final int port) throws InterruptedException, MalformedURLException {
         RuleRegistry.getInstance().init(config);
-        EventBusInstance.getInstance().register(new XaTransactionListener());
+        AtomikosXaTransaction.init();
         new ShardingProxy().start(port);
     }
     
     private static void startWithRegistryCenter(final OrchestrationProxyConfiguration localConfig, final int port) throws InterruptedException, MalformedURLException {
         try (OrchestrationFacade orchestrationFacade = new OrchestrationFacade(localConfig.getOrchestration().getOrchestrationConfiguration())) {
-            if (localConfig.hasLocalConfiguration()) {
+            if (null != localConfig.getShardingRule() || null != localConfig.getMasterSlaveRule()) {
                 orchestrationFacade.init(localConfig);
             }
             initRuleRegistry(orchestrationFacade.getConfigService());
-            EventBusInstance.getInstance().register(new XaTransactionListener());
+            AtomikosXaTransaction.init();
             new ShardingProxy().start(port);
         }
     }

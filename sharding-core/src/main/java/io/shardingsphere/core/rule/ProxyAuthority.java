@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * Yam proxy authority.
+ * Proxy authority.
  *
  * @author panjuan
  */

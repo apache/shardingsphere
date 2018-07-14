@@ -18,7 +18,6 @@
 package io.shardingsphere.proxy.transport.mysql.packet.command.text.quit;
 
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
-import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
@@ -27,6 +26,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 
 /**
  * COM_QUIT command packet.
+ * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-quit.html">COM_QUIT</a>
  *
  * @author zhangliang
@@ -39,7 +39,7 @@ public final class ComQuitPacket extends CommandPacket {
     
     @Override
     public CommandResponsePackets execute() {
-        return new CommandResponsePackets(new OKPacket(getSequenceId() + 1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+        return new CommandResponsePackets(new OKPacket(getSequenceId() + 1));
     }
     
     @Override

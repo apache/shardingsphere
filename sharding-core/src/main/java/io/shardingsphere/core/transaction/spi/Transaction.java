@@ -15,34 +15,35 @@
  * </p>
  */
 
-package io.shardingsphere.core.transaction.event;
+package io.shardingsphere.core.transaction.spi;
 
-import com.google.common.base.Optional;
-import io.shardingsphere.core.exception.ShardingException;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import io.shardingsphere.core.transaction.event.TransactionEvent;
 
 /**
- * XA transactionEvent.
+ * Transaction Spi interface.
  *
  * @author zhaojun
  */
-@RequiredArgsConstructor
-@Getter
-public class XaTransactionEvent extends TransactionEvent {
-    
-    private final String sql;
+public interface Transaction {
     
     /**
-     * Get exception.
+     * Do start a user transaction.
      *
-     * @return exception
+     * @throws Exception Exception
      */
-    public Optional<ShardingException> getException() {
-        Optional<? extends Exception> ex = super.getException();
-        if (ex.isPresent()) {
-            return Optional.of((ShardingException) ex.get());
-        }
-        return Optional.absent();
-    }
+    void begin(TransactionEvent transactionEvent) throws Exception;
+    
+    /**
+     * Do transaction commit.
+     *
+     * @throws Exception Exception
+     */
+    void commit(TransactionEvent transactionEvent) throws Exception;
+    
+    /**
+     * Do transaction rollback.
+     *
+     * @throws Exception Exception
+     */
+    void rollback(TransactionEvent transactionEvent) throws Exception;
 }
