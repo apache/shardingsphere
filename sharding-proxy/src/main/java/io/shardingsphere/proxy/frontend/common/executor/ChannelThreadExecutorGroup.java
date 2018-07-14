@@ -21,8 +21,8 @@ import io.netty.channel.ChannelId;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -42,7 +42,7 @@ public final class ChannelThreadExecutorGroup {
     
     private static final ChannelThreadExecutorGroup INSTANCE = new ChannelThreadExecutorGroup();
     
-    private volatile Map<ChannelId, ExecutorService> executorServices = new HashMap<>();
+    private volatile Map<ChannelId, ExecutorService> executorServices = new ConcurrentHashMap<>();
     
     /**
      * Get channel thread executor group.

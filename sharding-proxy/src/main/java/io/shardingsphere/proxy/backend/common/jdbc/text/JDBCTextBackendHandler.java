@@ -15,13 +15,15 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.common;
+package io.shardingsphere.proxy.backend.common.jdbc.text;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.StatementRoutingEngine;
+import io.shardingsphere.proxy.backend.common.ProxyMode;
+import io.shardingsphere.proxy.backend.common.jdbc.JDBCBackendHandler;
 import io.shardingsphere.proxy.backend.mysql.MySQLPacketQueryResult;
 import io.shardingsphere.proxy.backend.resource.ProxyJDBCResource;
 import io.shardingsphere.proxy.backend.resource.ProxyJDBCResourceFactory;
@@ -38,51 +40,59 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
- * SQL execute backend handler.
+ * Text protocol backend handler via JDBC to connect databases.
  *
  * @author zhangliang
  * @author panjuan
  * @author zhaojun
  */
-public final class SQLExecuteBackendHandler extends ExecuteBackendHandler implements BackendHandler {
+public final class JDBCTextBackendHandler extends JDBCBackendHandler {
+   
+    private final DatabaseType databaseType;
     
-    public SQLExecuteBackendHandler(final String sql, final DatabaseType databaseType, final boolean showSQL) {
-        super(sql, databaseType, showSQL);
-        super.setJdbcResource(ProxyJDBCResourceFactory.newResource());
+    private final boolean showSQL;
+    
+    private final RuleRegistry ruleRegistry;
+    
+    public JDBCTextBackendHandler(final String sql, final DatabaseType databaseType, final boolean showSQL) {
+        super(sql, ProxyJDBCResourceFactory.newResource());
+        this.databaseType = databaseType;
+        this.showSQL = showSQL;
+        ruleRegistry = RuleRegistry.getInstance();
     }
     
     @Override
     protected SQLRouteResult doSqlShardingRoute() {
-        StatementRoutingEngine routingEngine = new StatementRoutingEngine(RuleRegistry.getInstance().getShardingRule(),
-                RuleRegistry.getInstance().getShardingMetaData(), getDatabaseType(), isShowSQL(), RuleRegistry.getInstance().getShardingDataSourceMetaData());
+        StatementRoutingEngine routingEngine = new StatementRoutingEngine(
+                ruleRegistry.getShardingRule(), ruleRegistry.getShardingMetaData(), databaseType, showSQL, ruleRegistry.getShardingDataSourceMetaData());
         return routingEngine.route(getSql());
     }
     
     @Override
-    protected Statement prepareResource(final String dataSourceName, final String unitSql, final SQLStatement sqlStatement) throws SQLException {
-        DataSource dataSource = RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName);
+    protected Statement prepareResource(final String dataSourceName, final String unitSQL, final SQLStatement sqlStatement) throws SQLException {
+        DataSource dataSource = ruleRegistry.getDataSourceMap().get(dataSourceName);
         Connection connection = getConnection(dataSource);
-        Statement statement = connection.createStatement();
+        Statement result = connection.createStatement();
         ProxyJDBCResource proxyJDBCResource = (ProxyJDBCResource) getJdbcResource();
         proxyJDBCResource.addConnection(connection);
-        proxyJDBCResource.addStatement(statement);
-        return statement;
+        proxyJDBCResource.addStatement(result);
+        return result;
     }
     
     @Override
-    protected Callable<CommandResponsePackets> newSubmitTask(final Statement statement, final SQLStatement sqlStatement, final String unitSql) {
-        return new SQLExecuteWorker(this, sqlStatement, statement, unitSql);
+    protected Callable<CommandResponsePackets> newSubmitTask(final Statement statement, final SQLStatement sqlStatement, final String unitSQL) {
+        return new JDBCTextExecuteWorker(this, sqlStatement, statement, unitSQL);
     }
     
     @Override
     protected QueryResult newQueryResult(final CommandResponsePackets packet, final int index) {
-        MySQLPacketQueryResult mySQLPacketQueryResult = new MySQLPacketQueryResult(packet);
-        if (ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
-            mySQLPacketQueryResult.setResultSet(getJdbcResource().getResultSets().get(index));
+        MySQLPacketQueryResult result = new MySQLPacketQueryResult(packet);
+        if (ProxyMode.MEMORY_STRICTLY == ruleRegistry.getProxyMode()) {
+            result.setResultSet(getJdbcResource().getResultSets().get(index));
         } else {
-            mySQLPacketQueryResult.setResultList(getResultLists().get(index));
+            result.setResultList(getResultLists().get(index));
         }
-        return mySQLPacketQueryResult;
+        return result;
     }
     
     @Override

@@ -22,7 +22,8 @@ import io.shardingsphere.core.constant.TCLType;
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.transaction.event.XaTransactionEvent;
 import io.shardingsphere.core.util.EventBusInstance;
-import io.shardingsphere.proxy.backend.common.SQLExecuteBackendHandler;
+import io.shardingsphere.proxy.backend.common.BackendHandler;
+import io.shardingsphere.proxy.backend.common.jdbc.text.JDBCTextBackendHandler;
 import io.shardingsphere.proxy.backend.common.SQLPacketsBackendHandler;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
@@ -56,29 +57,20 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
     
     private final String sql;
     
-    private final SQLExecuteBackendHandler sqlExecuteBackendHandler;
-    
-    private final SQLPacketsBackendHandler sqlPacketsBackendHandler;
+    private final BackendHandler backendHandler;
     
     public ComQueryPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload mysqlPacketPayload) {
         super(sequenceId);
         this.connectionId = connectionId;
         sql = mysqlPacketPayload.readStringEOF();
-        if (RuleRegistry.getInstance().isWithoutJdbc()) {
-            sqlExecuteBackendHandler = null;
-            sqlPacketsBackendHandler = new SQLPacketsBackendHandler(this, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
-        } else {
-            sqlPacketsBackendHandler = null;
-            sqlExecuteBackendHandler = new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
-        }
+        backendHandler = getBackendHandler(sql);
     }
     
     public ComQueryPacket(final int sequenceId, final int connectionId, final String sql) {
         super(sequenceId);
         this.connectionId = connectionId;
         this.sql = sql;
-        sqlExecuteBackendHandler = null;
-        sqlPacketsBackendHandler = null;
+        backendHandler = null;
     }
     
     @Override
@@ -96,13 +88,15 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
             }
         } catch (final Exception ex) {
             log.error("doTransactionIntercept Exception", ex);
-            return new CommandResponsePackets(new ErrPacket(1, 0, "", "" + ex.getMessage()));
+            return new CommandResponsePackets(new ErrPacket(1, new SQLException(ex)));
         }
-        if (RuleRegistry.getInstance().isWithoutJdbc()) {
-            return sqlPacketsBackendHandler.execute();
-        } else {
-            return sqlExecuteBackendHandler.execute();
-        }
+        return backendHandler.execute();
+    }
+    
+    private BackendHandler getBackendHandler(final String sql) {
+        return RuleRegistry.getInstance().isWithoutJdbc()
+                ? new SQLPacketsBackendHandler(this, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL())
+                : new JDBCTextBackendHandler(sql, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
     }
     
     /**
@@ -112,7 +106,7 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
      */
     public boolean hasMoreResultValue() {
         try {
-            return RuleRegistry.getInstance().isWithoutJdbc() ? sqlPacketsBackendHandler.hasMoreResultValue() : sqlExecuteBackendHandler.hasMoreResultValue();
+            return backendHandler.hasMoreResultValue();
         } catch (final SQLException ex) {
             return false;
         }
@@ -124,7 +118,7 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
      * @return database protocol packet
      */
     public DatabaseProtocolPacket getResultValue() {
-        return RuleRegistry.getInstance().isWithoutJdbc() ? sqlPacketsBackendHandler.getResultValue() : sqlExecuteBackendHandler.getResultValue();
+        return backendHandler.getResultValue();
     }
     
     @Override

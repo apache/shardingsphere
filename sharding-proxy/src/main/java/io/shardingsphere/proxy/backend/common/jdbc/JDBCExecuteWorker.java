@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.common;
+package io.shardingsphere.proxy.backend.common.jdbc;
 
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
@@ -42,16 +42,16 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
- * Abstract ExecuteWorker class, include SQL and PreparedStatement implement.
- *
+ * Execute worker via JDBC to connect databases.
+ * 
  * @author zhaojun
  */
 @AllArgsConstructor
 @Getter
 @Slf4j
-public abstract class ExecuteWorker implements Callable<CommandResponsePackets> {
+public abstract class JDBCExecuteWorker implements Callable<CommandResponsePackets> {
     
-    private final ExecuteBackendHandler executeBackendHandler;
+    private final JDBCBackendHandler executeBackendHandler;
     
     private final SQLStatement sqlStatement;
     
@@ -61,7 +61,7 @@ public abstract class ExecuteWorker implements Callable<CommandResponsePackets> 
             return execute();
         } catch (SQLException ex) {
             log.error("ExecuteWorker", ex);
-            return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), ex.getSQLState(), ex.getMessage()));
+            return new CommandResponsePackets(new ErrPacket(1, ex));
         } finally {
             MasterVisitedManager.clear();
         }
@@ -79,12 +79,13 @@ public abstract class ExecuteWorker implements Callable<CommandResponsePackets> 
     }
     
     private CommandResponsePackets executeQuery() throws SQLException {
-        if (ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
-            return executeQueryWithStreamResultSet();
-        } else if (ProxyMode.CONNECTION_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
-            return executeQueryWithNonStreamResultSet();
-        } else {
-            return new CommandResponsePackets(new ErrPacket(1, 0, "", "Invalid proxy.mode"));
+        switch (RuleRegistry.getInstance().getProxyMode()) {
+            case MEMORY_STRICTLY:
+                return executeQueryWithStreamResultSet();
+            case CONNECTION_STRICTLY:
+                return executeQueryWithNonStreamResultSet();
+            default:
+                throw new UnsupportedOperationException(RuleRegistry.getInstance().getProxyMode().name());
         }
     }
     

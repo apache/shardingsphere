@@ -15,61 +15,63 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.common;
+package io.shardingsphere.proxy.backend.common.jdbc.statement;
 
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
+import io.shardingsphere.proxy.backend.common.jdbc.JDBCExecuteWorker;
+import io.shardingsphere.proxy.backend.common.ResultList;
+import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.concurrent.Callable;
 
 /**
- * SQL execute worker.
+ * Statement execute worker.
  *
  * @author zhangyonglun
  * @author zhaojun
  */
-public final class SQLExecuteWorker extends ExecuteWorker implements Callable<CommandResponsePackets> {
+public final class JDBCStatementExecuteWorker extends JDBCExecuteWorker implements Callable<CommandResponsePackets> {
     
     private static final Integer FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
     
-    private final Statement statement;
+    private final PreparedStatement preparedStatement;
     
-    private final String sql;
-    
-    public SQLExecuteWorker(final SQLExecuteBackendHandler sqlExecuteBackendHandler, final SQLStatement sqlStatement, final Statement statement, final String sql) {
-        super(sqlExecuteBackendHandler, sqlStatement);
-        this.statement = statement;
-        this.sql = sql;
+    public JDBCStatementExecuteWorker(final JDBCStatementBackendHandler statementExecuteBackendHandler, final SQLStatement sqlStatement, final PreparedStatement preparedStatement) {
+        super(statementExecuteBackendHandler, sqlStatement);
+        this.preparedStatement = preparedStatement;
     }
     
     @Override
     protected CommandResponsePackets executeQueryWithStreamResultSet() throws SQLException {
-        statement.setFetchSize(FETCH_ONE_ROW_A_TIME);
-        ResultSet resultSet = statement.executeQuery(sql);
+        preparedStatement.setFetchSize(FETCH_ONE_ROW_A_TIME);
+        ResultSet resultSet = preparedStatement.executeQuery();
         getExecuteBackendHandler().getJdbcResource().addResultSet(resultSet);
         return getQueryDatabaseProtocolPackets(resultSet);
     }
     
     @Override
     protected CommandResponsePackets executeQueryWithNonStreamResultSet() throws SQLException {
-        try (
-                ResultSet resultSet = statement.executeQuery(sql)
-        ) {
-            ResultList resultList = new ResultList();
-            while (resultSet.next()) {
-                for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
-                    resultList.add(resultSet.getObject(i));
-                }
+        ResultSet resultSet = preparedStatement.executeQuery();
+        ResultList resultList = new ResultList();
+        while (resultSet.next()) {
+            for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
+                resultList.add(resultSet.getObject(i));
             }
-            resultList.setIterator(resultList.getResultList().iterator());
-            getExecuteBackendHandler().getResultLists().add(resultList);
-            return getQueryDatabaseProtocolPackets(resultSet);
         }
+        resultList.setIterator(resultList.getResultList().iterator());
+        getExecuteBackendHandler().getResultLists().add(resultList);
+        return getQueryDatabaseProtocolPackets(resultSet);
+    }
+    
+    @Override
+    protected void setColumnType(final ColumnType columnType) {
+        ((JDBCStatementBackendHandler) getExecuteBackendHandler()).getColumnTypes().add(columnType);
     }
     
     @Override
@@ -77,21 +79,21 @@ public final class SQLExecuteWorker extends ExecuteWorker implements Callable<Co
         int affectedRows;
         long lastInsertId = 0;
         if (getSqlStatement() instanceof InsertStatement) {
-            affectedRows = statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
-            lastInsertId = getGeneratedKey(statement);
+            affectedRows = preparedStatement.executeUpdate();
+            lastInsertId = getGeneratedKey(preparedStatement);
         } else {
-            affectedRows = statement.executeUpdate(sql);
+            affectedRows = preparedStatement.executeUpdate();
         }
         return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId));
     }
     
     @Override
     protected CommandResponsePackets executeCommon() throws SQLException {
-        boolean hasResultSet = statement.execute(sql);
+        boolean hasResultSet = preparedStatement.execute();
         if (hasResultSet) {
-            return getCommonDatabaseProtocolPackets(statement.getResultSet());
+            return getCommonDatabaseProtocolPackets(preparedStatement.getResultSet());
         } else {
-            return new CommandResponsePackets(new OKPacket(1, statement.getUpdateCount(), 0));
+            return new CommandResponsePackets(new OKPacket(1, preparedStatement.getUpdateCount(), 0));
         }
     }
 }

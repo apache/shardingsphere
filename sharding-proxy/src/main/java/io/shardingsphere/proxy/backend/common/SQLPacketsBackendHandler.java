@@ -207,17 +207,12 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
                     sqlStatement, RuleRegistry.getInstance().getShardingMetaData()).merge();
             isMerged = true;
         } catch (final SQLException ex) {
-            return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), ex.getSQLState(), ex.getMessage()));
+            return new CommandResponsePackets(new ErrPacket(1, ex));
         }
         return packets.get(0);
     }
     
-    /**
-     * Has more Result value.
-     *
-     * @return has more result value
-     * @throws SQLException sql exception
-     */
+    @Override
     public boolean hasMoreResultValue() throws SQLException {
         if (!isMerged || !hasMoreResultValueFlag) {
             return false;
@@ -228,11 +223,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
         return true;
     }
     
-    /**
-     * Get result value.
-     *
-     * @return database protocol packet
-     */
+    @Override
     public DatabaseProtocolPacket getResultValue() {
         if (!hasMoreResultValueFlag) {
             return new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
@@ -244,7 +235,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
             }
             return new TextResultSetRowPacket(++currentSequenceId, data);
         } catch (final SQLException ex) {
-            return new ErrPacket(1, ex.getErrorCode(), ex.getSQLState(), ex.getMessage());
+            return new ErrPacket(1, ex);
         }
     }
 }

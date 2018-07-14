@@ -23,6 +23,8 @@ import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import lombok.Getter;
 
+import java.sql.SQLException;
+
 /**
  * ERR packet protocol.
  * 
@@ -57,6 +59,13 @@ public final class ErrPacket extends MySQLPacket {
         errorCode = serverErrorCode.getErrorCode();
         sqlState = serverErrorCode.getSqlState();
         errorMessage = String.format(serverErrorCode.getErrorMessage(), errorMessageArguments);
+    }
+    
+    public ErrPacket(final int sequenceId, final SQLException cause) {
+        super(sequenceId);
+        this.errorCode = cause.getErrorCode();
+        this.sqlState = cause.getSQLState();
+        this.errorMessage = cause.getMessage();
     }
     
     public ErrPacket(final MySQLPacketPayload mysqlPacketPayload) {
