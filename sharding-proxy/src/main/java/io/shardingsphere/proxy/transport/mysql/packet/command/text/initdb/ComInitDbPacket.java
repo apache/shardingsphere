@@ -19,6 +19,7 @@ package io.shardingsphere.proxy.transport.mysql.packet.command.text.initdb;
 
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
@@ -56,7 +57,7 @@ public final class ComInitDbPacket extends CommandPacket {
         if (ShardingConstant.LOGIC_SCHEMA_NAME.equalsIgnoreCase(schemaName)) {
             return new CommandResponsePackets(new OKPacket(getSequenceId() + 1));
         }
-        return new CommandResponsePackets(new ErrPacket(getSequenceId() + 1, 1049, "", String.format("Unknown database '%s'", schemaName)));
+        return new CommandResponsePackets(new ErrPacket(getSequenceId() + 1, ServerErrorCode.ER_BAD_DB_ERROR, schemaName));
     }
     
     @Override

@@ -31,7 +31,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum ServerErrorCode {
     
-    ER_ACCESS_DENIED_ERROR(1045, "28000", "Access denied for user '%s'@'%s' (using password: %s)"), 
+    ER_ACCESS_DENIED_ERROR(1045, "28000", "Access denied for user '%s'@'%s' (using password: %s)"),
+    
+    ER_BAD_DB_ERROR(1049, "42000", "Unknown database '%s'"),
     
     ER_UNSUPPORTED_COMMAND(9999, "XXXXX", "Unsupported command packet: '%s'");
     
