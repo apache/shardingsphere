@@ -45,6 +45,20 @@ public final class GeneralDCLIntegrateTest extends BaseDCLIntegrateTest {
     }
     
     @Test
+    public void assertExecuteUpdate() throws SQLException {
+        if (!getDatabaseTypeEnvironment().isEnabled()) {
+            return;
+        }
+        try (Connection connection = getDataSource().getConnection()) {
+            if (SQLCaseType.Literal == getCaseType()) {
+                connection.createStatement().executeUpdate(getSql());
+            } else {
+                connection.prepareStatement(getSql()).executeUpdate();
+            }
+        }
+    }
+    
+    @Test
     public void assertExecute() throws SQLException {
         if (!getDatabaseTypeEnvironment().isEnabled()) {
             return;
