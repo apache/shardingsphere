@@ -21,9 +21,7 @@ import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.cases.assertion.root.SQLValue;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
-import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.dbtest.env.IntegrateTestEnvironment;
-import io.shardingsphere.dbtest.env.authority.AuthorityEnvironmentManager;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
 import lombok.AccessLevel;
@@ -51,8 +49,6 @@ public abstract class SingleIntegrateTest extends BaseIntegrateTest {
     
     private final String expectedDataFile;
     
-    private final AuthorityEnvironmentManager authorityEnvironmentManager;
-    
     public SingleIntegrateTest(final String sqlCaseId, final String path, final IntegrateTestCaseAssertion assertion, final String shardingRuleType,
                                final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) 
             throws IOException, JAXBException, SQLException, ParseException {
@@ -61,8 +57,6 @@ public abstract class SingleIntegrateTest extends BaseIntegrateTest {
         this.caseType = caseType;
         sql = getSQL(sqlCaseId);
         expectedDataFile = getExpectedDataFile(path, shardingRuleType, databaseTypeEnvironment.getDatabaseType(), assertion.getExpectedDataFile());
-        authorityEnvironmentManager = new AuthorityEnvironmentManager(EnvironmentPath.getAuthorityResourcesPath(shardingRuleType), getDataSource(),
-                getDatabaseTypeEnvironment().getDatabaseType());
     }
     
     private String getSQL(final String sqlCaseId) throws ParseException {

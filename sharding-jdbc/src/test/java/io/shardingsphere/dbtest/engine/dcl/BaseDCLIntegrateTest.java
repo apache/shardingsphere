@@ -21,6 +21,7 @@ import io.shardingsphere.dbtest.cases.assertion.dcl.DCLIntegrateTestCaseAssertio
 import io.shardingsphere.dbtest.engine.SingleIntegrateTest;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
+import io.shardingsphere.dbtest.env.authority.AuthorityEnvironmentManager;
 import io.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
 import io.shardingsphere.test.sql.SQLCaseType;
 import org.junit.After;
@@ -33,23 +34,26 @@ import java.text.ParseException;
 
 public abstract class BaseDCLIntegrateTest extends SingleIntegrateTest {
     
+    private final AuthorityEnvironmentManager authorityEnvironmentManager;
+    
     public BaseDCLIntegrateTest(final String sqlCaseId, final String path, final DCLIntegrateTestCaseAssertion assertion, final String shardingRuleType,
                                 final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
         super(sqlCaseId, path, assertion, shardingRuleType, databaseTypeEnvironment, caseType);
+        authorityEnvironmentManager = new AuthorityEnvironmentManager(EnvironmentPath.getAuthorityResourcesPath(shardingRuleType), getDataSource(), getDatabaseTypeEnvironment().getDatabaseType());
     }
     
     @Before
     public void insertData() throws SQLException, ParseException, IOException, JAXBException {
         if (getDatabaseTypeEnvironment().isEnabled()) {
             new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(getShardingRuleType()), getDataSourceMap()).initialize();
-            getAuthorityEnvironmentManager().initialize();
+            authorityEnvironmentManager.initialize();
         }
     }
     
     @After
     public void cleanData() throws SQLException {
         if (getDatabaseTypeEnvironment().isEnabled()) {
-            getAuthorityEnvironmentManager().clean();
+            authorityEnvironmentManager.clean();
         }
     }
 }
