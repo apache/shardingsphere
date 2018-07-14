@@ -21,11 +21,11 @@ import com.alibaba.fastjson.JSON;
 import io.shardingsphere.transaction.saga.request.Compensation;
 import io.shardingsphere.transaction.saga.request.SagaApi;
 import io.shardingsphere.transaction.saga.request.SagaRequest;
+import io.shardingsphere.transaction.saga.request.SagaRequestNoParents;
 import io.shardingsphere.transaction.saga.request.Transaction;
 import io.shardingsphere.transaction.saga.util.PostSagaRequest;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,9 +68,14 @@ public class SagaSoftTransaction {
             compensationForm.put("SQL", sqlPairs.get(i).getSqlPair().get(1));
             Map<String, Map<String, String>> compensationParams = new HashMap<>();
             compensationParams.put("form", compensationForm);
-            Compensation compensation = new Compensation("put", "/execute", compensationParams);
-            String parent = 0 == i ? "" : transactionId + (i - 1);
-            SagaRequest sagaRequest = new SagaRequest(transactionId + i, "rest", serviceName, Collections.singletonList(parent), transaction, compensation);
+            Compensation compensation = new Compensation("post", "/execute", compensationParams);
+            SagaRequest sagaRequest;
+            if (0 == i) {
+                sagaRequest = new SagaRequestNoParents(transactionId + i, "rest", serviceName, transaction, compensation);
+            } else {
+                // sagaRequest = new SagaRequestWithParents(transactionId + i, "rest", serviceName, Collections.singletonList(transactionId + (i - 1)), transaction, compensation);
+                sagaRequest = new SagaRequestNoParents(transactionId + i, "rest", serviceName, transaction, compensation);
+            }
             sagaRequests.add(sagaRequest);
         }
         SagaApi sagaApi = new SagaApi("BackwardRecovery", sagaRequests);

@@ -17,12 +17,29 @@
 
 package io.shardingsphere.transaction.saga.request;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+import java.util.List;
+
 /**
- * SagaRequestNoParents.
- * @see <a href="https://github.com/apache/incubator-servicecomb-saga/blob/old-saga/docs/api/api.md">Saga API</a>
+ * SagaRequestWithParents.
  *
  * @author zhangyonglun
  */
-
-public interface SagaRequest {
+@AllArgsConstructor
+@Getter
+public class SagaRequestWithParents implements SagaRequest {
+    
+    private final String id;
+    
+    private final String type;
+    
+    private final String serviceName;
+    
+    private final List<String> parents;
+    
+    private final Transaction transaction;
+    
+    private final Compensation compensation;
 }
