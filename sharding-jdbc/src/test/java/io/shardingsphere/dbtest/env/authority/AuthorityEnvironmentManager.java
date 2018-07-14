@@ -54,7 +54,8 @@ public final class AuthorityEnvironmentManager {
     
     /**
      * Initialize data.
-     *
+     * 
+     * @throws SQLException SQL exception
      */
     public void initialize() throws SQLException {
         Collection<String> initSQLs = authority.getInitSQLs(databaseType);
@@ -66,7 +67,7 @@ public final class AuthorityEnvironmentManager {
             try {
                 connection.createStatement().execute(each);
             } catch (final SQLException ex) {
-                log.warn("Init SQL: "+ ex.getMessage());
+                log.warn("Init SQL: " + ex.getMessage());
             }
         }
         connection.close();
@@ -74,7 +75,8 @@ public final class AuthorityEnvironmentManager {
     
     /**
      * Clean data.
-     *
+     * 
+     * @throws SQLException SQL exception
      */
     public void clean() throws SQLException {
         Collection<String> cleanSQLs = authority.getCleanSQLs(databaseType);
@@ -86,7 +88,7 @@ public final class AuthorityEnvironmentManager {
             try {
                 connection.createStatement().execute(each);
             } catch (final SQLException ex) {
-                log.warn("Clean SQL: "+ ex.getMessage());
+                log.warn("Clean SQL: " + ex.getMessage());
             }
         }
         connection.close();
