@@ -17,8 +17,10 @@
 
 package io.shardingsphere.dbtest.env.authority;
 
+import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.dbtest.cases.authority.Authority;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
@@ -34,6 +36,7 @@ import java.util.Collection;
  *
  * @author panjuan
  */
+@Slf4j
 public final class AuthorityEnvironmentManager {
     
     private final Authority authority;
@@ -54,33 +57,41 @@ public final class AuthorityEnvironmentManager {
      * Initialize data.
      *
      */
-    public void initialize() {
+    public void initialize() throws SQLException {
         Collection<String> initSQLs = authority.getInitSQLs(databaseType);
         if (initSQLs.isEmpty()) {
             return;
         }
-        try (Connection connection = dataSource.getConnection()) {
-            for (String each : initSQLs) {
+        Connection connection = dataSource.getConnection();
+        Preconditions.checkState(null != connection, "No available connection.");
+        for (String each : initSQLs) {
+            try {
                 connection.createStatement().execute(each);
+            } catch (final SQLException ex) {
+                log.warn("Init SQL: "+ex.getMessage());
             }
-        } catch (final SQLException ignored) {
         }
+        connection.close();
     }
     
     /**
      * Clean data.
      *
      */
-    public void clean() {
+    public void clean() throws SQLException {
         Collection<String> cleanSQLs = authority.getCleanSQLs(databaseType);
         if (cleanSQLs.isEmpty()) {
             return;
         }
-        try (Connection connection = dataSource.getConnection()) {
-            for (String each : cleanSQLs) {
+        Connection connection = dataSource.getConnection();
+        Preconditions.checkState(null != connection, "No available connection.");
+        for (String each : cleanSQLs) {
+            try {
                 connection.createStatement().execute(each);
+            } catch (final SQLException ex) {
+                log.warn("Clean SQL: "+ex.getMessage());
             }
-        } catch (final SQLException ignored) {
         }
+        connection.close();
     }
 }
