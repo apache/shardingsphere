@@ -42,7 +42,9 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
- * Abstract ExecuteWorker class, include SQL and PreparedStatement implement.
+ * Execute worker.
+ * 
+ * <p>Include SQL and PreparedStatement implement.</p>
  *
  * @author zhaojun
  */
@@ -79,12 +81,13 @@ public abstract class ExecuteWorker implements Callable<CommandResponsePackets> 
     }
     
     private CommandResponsePackets executeQuery() throws SQLException {
-        if (ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
-            return executeQueryWithStreamResultSet();
-        } else if (ProxyMode.CONNECTION_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
-            return executeQueryWithNonStreamResultSet();
-        } else {
-            return new CommandResponsePackets(new ErrPacket(1, 0, "", "Invalid proxy.mode"));
+        switch (RuleRegistry.getInstance().getProxyMode()) {
+            case MEMORY_STRICTLY:
+                return executeQueryWithStreamResultSet();
+            case CONNECTION_STRICTLY:
+                return executeQueryWithNonStreamResultSet();
+            default:
+                throw new UnsupportedOperationException(RuleRegistry.getInstance().getProxyMode().name());
         }
     }
     
