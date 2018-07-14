@@ -19,6 +19,7 @@
     </SQLSet>
     <SQLSet sqlType="clean" db-types="Oracle,H2,SQLServer,PostgreSQL">
         <SQL content="DROP ROLE role_dev" />
+        <SQL content="DROP ROLE role_dev_new" />
         <SQL content="DROP USER user_dev" />
         <SQL content="DROP USER user_dev_new" />
     </SQLSet>
@@ -28,6 +29,7 @@
     </SQLSet>
     <SQLSet sqlType="clean" db-types="MySQL">
         <SQL content="DROP USER user_dev@localhost" />
+        <SQL content="DROP USER user_dev_new@localhost" />
         <SQL content="DROP USER user_dev@127.0.0.1" />
     </SQLSet>
 </authority>
