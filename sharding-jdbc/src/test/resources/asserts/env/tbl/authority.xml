@@ -5,7 +5,7 @@
     <sqlset sql-type="init" db-types="SQLServer">
         <sql content="CREATE LOGIN login_dev"/>
     </sqlset>
-    <sqlset sql-type="init" db-types="SOLServer">
+    <sqlset sql-type="init" db-types="SQLServer">
         <sql content="CREATE USER user_dev FOR LOGIN login_dev"/>
     </sqlset>
     <sqlset sql-type="init" db-types="MySQL">
