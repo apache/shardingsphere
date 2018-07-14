@@ -55,24 +55,30 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
     
-    private final RuleRegistry ruleRegistry;
-    
     private final List<PreparedStatementParameter> preparedStatementParameters;
+    
+    private final DatabaseType databaseType;
+    
+    private final boolean showSQL;
     
     @Getter
     private final List<ColumnType> columnTypes;
     
+    private final RuleRegistry ruleRegistry;
+    
     public JDBCStatementBackendHandler(final List<PreparedStatementParameter> preparedStatementParameters, final int statementId, final DatabaseType databaseType, final boolean showSQL) {
-        super(PreparedStatementRegistry.getInstance().getSQL(statementId), databaseType, showSQL, ProxyJDBCResourceFactory.newPrepareResource());
-        ruleRegistry = RuleRegistry.getInstance();
+        super(PreparedStatementRegistry.getInstance().getSQL(statementId), ProxyJDBCResourceFactory.newPrepareResource());
         this.preparedStatementParameters = preparedStatementParameters;
+        this.databaseType = databaseType;
+        this.showSQL = showSQL;
         columnTypes = new CopyOnWriteArrayList<>();
+        ruleRegistry = RuleRegistry.getInstance();
     }
     
     @Override
     protected SQLRouteResult doSqlShardingRoute() {
         PreparedStatementRoutingEngine routingEngine = new PreparedStatementRoutingEngine(
-                getSql(), ruleRegistry.getShardingRule(), ruleRegistry.getShardingMetaData(), getDatabaseType(), isShowSQL(), ruleRegistry.getShardingDataSourceMetaData());
+                getSql(), ruleRegistry.getShardingRule(), ruleRegistry.getShardingMetaData(), databaseType, showSQL, ruleRegistry.getShardingDataSourceMetaData());
         return routingEngine.route(getComStmtExecuteParameters());
     }
     

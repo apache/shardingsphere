@@ -48,17 +48,23 @@ import java.util.concurrent.Callable;
  */
 public final class JDBCTextBackendHandler extends JDBCBackendHandler {
    
+    private final DatabaseType databaseType;
+    
+    private final boolean showSQL;
+    
     private final RuleRegistry ruleRegistry;
     
     public JDBCTextBackendHandler(final String sql, final DatabaseType databaseType, final boolean showSQL) {
-        super(sql, databaseType, showSQL, ProxyJDBCResourceFactory.newResource());
+        super(sql, ProxyJDBCResourceFactory.newResource());
+        this.databaseType = databaseType;
+        this.showSQL = showSQL;
         ruleRegistry = RuleRegistry.getInstance();
     }
     
     @Override
     protected SQLRouteResult doSqlShardingRoute() {
         StatementRoutingEngine routingEngine = new StatementRoutingEngine(
-                ruleRegistry.getShardingRule(), ruleRegistry.getShardingMetaData(), getDatabaseType(), isShowSQL(), ruleRegistry.getShardingDataSourceMetaData());
+                ruleRegistry.getShardingRule(), ruleRegistry.getShardingMetaData(), databaseType, showSQL, ruleRegistry.getShardingDataSourceMetaData());
         return routingEngine.route(getSql());
     }
     
