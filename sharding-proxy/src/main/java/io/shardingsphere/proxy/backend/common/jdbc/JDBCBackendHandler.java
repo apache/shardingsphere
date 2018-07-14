@@ -37,6 +37,7 @@ import io.shardingsphere.proxy.backend.resource.BaseJDBCResource;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
@@ -104,19 +105,20 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     @Override
     public CommandResponsePackets execute() {
         try {
-            return doExecuteInternal(ruleRegistry.isMasterSlaveOnly() ? doMasterSlaveRoute() : doShardingRoute());
+            return execute(ruleRegistry.isMasterSlaveOnly() ? doMasterSlaveRoute() : doShardingRoute());
         } catch (final Exception ex) {
             log.error("ExecuteBackendHandler", ex);
             return new CommandResponsePackets(new ErrPacket(1, new SQLException(ex)));
         }
     }
     
-    private CommandResponsePackets doExecuteInternal(final SQLRouteResult routeResult) throws SQLException, SystemException {
+    private CommandResponsePackets execute(final SQLRouteResult routeResult) throws SQLException, SystemException {
         if (routeResult.getExecutionUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1));
         }
-        if (isXaDDL(routeResult)) {
-            throw new SQLException("DDL command can't not execute in xa transaction mode.");
+        if (isUnsupportedXA(routeResult.getSqlStatement().getType())) {
+            return new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, 
+                    routeResult.getSqlStatement().getTables().isSingleTable() ? routeResult.getSqlStatement().getTables().getSingleTableName() : "unknown_table"));
         }
         ExecutorService executorService = ruleRegistry.getExecutorService();
         List<Future<CommandResponsePackets>> futureList = new ArrayList<>(1024);
@@ -132,9 +134,9 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         return result;
     }
     
-    private boolean isXaDDL(final SQLRouteResult routeResult) throws SystemException {
-        return TransactionType.XA.equals(ruleRegistry.getTransactionType())
-                && SQLType.DDL.equals(routeResult.getSqlStatement().getType()) && Status.STATUS_NO_TRANSACTION != AtomikosUserTransaction.getInstance().getStatus();
+    // TODO should isolate Atomikos API to SPI
+    private boolean isUnsupportedXA(final SQLType sqlType) throws SystemException {
+        return TransactionType.XA == ruleRegistry.getTransactionType() && SQLType.DDL == sqlType && Status.STATUS_NO_TRANSACTION != AtomikosUserTransaction.getInstance().getStatus();
     }
     
     private SQLRouteResult doMasterSlaveRoute() {
