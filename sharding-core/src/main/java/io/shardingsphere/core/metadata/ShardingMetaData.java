@@ -27,6 +27,7 @@ import io.shardingsphere.core.rule.ShardingDataSourceNames;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -48,6 +49,7 @@ import java.util.concurrent.ExecutionException;
  * @author panjuan
  * @author zhaojun
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
 @Slf4j
@@ -56,10 +58,6 @@ public abstract class ShardingMetaData {
     private final ListeningExecutorService executorService;
     
     private Map<String, TableMetaData> tableMetaDataMap;
-    
-    public ShardingMetaData(final ListeningExecutorService executorService) {
-        this.executorService = executorService;
-    }
     
     /**
      * Initialize sharding metadata.

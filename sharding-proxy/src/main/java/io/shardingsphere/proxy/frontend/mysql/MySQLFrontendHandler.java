@@ -19,7 +19,6 @@ package io.shardingsphere.proxy.frontend.mysql;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.EventLoopGroup;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.proxy.backend.common.ProxyConnectionHolder;
 import io.shardingsphere.proxy.frontend.common.FrontendHandler;
@@ -48,8 +47,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class MySQLFrontendHandler extends FrontendHandler {
     
-    private final EventLoopGroup eventLoopGroup;
-    
     private final AuthorityHandler authorityHandler = new AuthorityHandler();
     
     @Override
@@ -75,7 +72,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
     
     @Override
     protected void executeCommand(final ChannelHandlerContext context, final ByteBuf message) {
-        new ExecutorGroup(eventLoopGroup, context.channel().id()).getExecutorService().execute(new Runnable() {
+        new ExecutorGroup(context.channel().id()).getExecutorService().execute(new Runnable() {
             
             @Override
             public void run() {
