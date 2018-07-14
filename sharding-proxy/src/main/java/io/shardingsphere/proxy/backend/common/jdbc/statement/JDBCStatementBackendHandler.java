@@ -55,24 +55,24 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
     
+    private final RuleRegistry ruleRegistry;
+    
     private final List<PreparedStatementParameter> preparedStatementParameters;
     
     @Getter
     private final List<ColumnType> columnTypes;
     
-    public JDBCStatementBackendHandler(final List<PreparedStatementParameter> preparedStatementParameters, final int statementId,
-                                       final DatabaseType databaseType, final boolean showSQL) {
-        super(PreparedStatementRegistry.getInstance().getSQL(statementId), databaseType, showSQL);
-        super.setJdbcResource(ProxyJDBCResourceFactory.newPrepareResource());
+    public JDBCStatementBackendHandler(final List<PreparedStatementParameter> preparedStatementParameters, final int statementId, final DatabaseType databaseType, final boolean showSQL) {
+        super(PreparedStatementRegistry.getInstance().getSQL(statementId), databaseType, showSQL, ProxyJDBCResourceFactory.newPrepareResource());
+        ruleRegistry = RuleRegistry.getInstance();
         this.preparedStatementParameters = preparedStatementParameters;
         columnTypes = new CopyOnWriteArrayList<>();
     }
     
     @Override
     protected SQLRouteResult doSqlShardingRoute() {
-        PreparedStatementRoutingEngine routingEngine = new PreparedStatementRoutingEngine(getSql(),
-                RuleRegistry.getInstance().getShardingRule(), RuleRegistry.getInstance().getShardingMetaData(),
-                getDatabaseType(), isShowSQL(), RuleRegistry.getInstance().getShardingDataSourceMetaData());
+        PreparedStatementRoutingEngine routingEngine = new PreparedStatementRoutingEngine(
+                getSql(), ruleRegistry.getShardingRule(), ruleRegistry.getShardingMetaData(), getDatabaseType(), isShowSQL(), ruleRegistry.getShardingDataSourceMetaData());
         return routingEngine.route(getComStmtExecuteParameters());
     }
     
@@ -85,15 +85,15 @@ public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
     }
     
     @Override
-    protected Callable<CommandResponsePackets> newSubmitTask(final Statement statement, final SQLStatement sqlStatement, final String unitSql) {
+    protected Callable<CommandResponsePackets> newSubmitTask(final Statement statement, final SQLStatement sqlStatement, final String unitSQL) {
         return new JDBCStatementExecuteWorker(this, sqlStatement, (PreparedStatement) statement);
     }
     
     @Override
-    protected PreparedStatement prepareResource(final String dataSourceName, final String unitSql, final SQLStatement sqlStatement) throws SQLException {
-        DataSource dataSource = RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName);
+    protected PreparedStatement prepareResource(final String dataSourceName, final String unitSQL, final SQLStatement sqlStatement) throws SQLException {
+        DataSource dataSource = ruleRegistry.getDataSourceMap().get(dataSourceName);
         Connection connection = getConnection(dataSource);
-        PreparedStatement result = sqlStatement instanceof InsertStatement ? connection.prepareStatement(unitSql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(unitSql);
+        PreparedStatement result = sqlStatement instanceof InsertStatement ? connection.prepareStatement(unitSQL, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(unitSQL);
         for (int i = 0; i < preparedStatementParameters.size(); i++) {
             result.setObject(i + 1, preparedStatementParameters.get(i).getValue());
         }
@@ -106,7 +106,7 @@ public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
     @Override
     protected QueryResult newQueryResult(final CommandResponsePackets packet, final int index) {
         MySQLPacketStatementExecuteQueryResult result = new MySQLPacketStatementExecuteQueryResult(packet, columnTypes);
-        if (ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
+        if (ProxyMode.MEMORY_STRICTLY == ruleRegistry.getProxyMode()) {
             result.setResultSet(getJdbcResource().getResultSets().get(index));
         } else {
             result.setResultList(getResultLists().get(index));

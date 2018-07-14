@@ -91,17 +91,17 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     private final boolean showSQL;
     
-    @Setter
-    private BaseJDBCResource jdbcResource;
+    private final BaseJDBCResource jdbcResource;
     
     private final List<ResultList> resultLists = new CopyOnWriteArrayList<>();
     
-    public JDBCBackendHandler(final String sql, final DatabaseType databaseType, final boolean showSQL) {
+    public JDBCBackendHandler(final String sql, final DatabaseType databaseType, final boolean showSQL, final BaseJDBCResource jdbcResource) {
         this.sql = sql;
         isMerged = false;
         hasMoreResultValueFlag = true;
         this.databaseType = databaseType;
         this.showSQL = showSQL;
+        this.jdbcResource = jdbcResource;
     }
     
     @Override
@@ -110,7 +110,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
             return doExecuteInternal(RuleRegistry.getInstance().isMasterSlaveOnly() ? doMasterSlaveRoute() : doSqlShardingRoute());
         } catch (final Exception ex) {
             log.error("ExecuteBackendHandler", ex);
-            return new CommandResponsePackets(new ErrPacket(1, 0, "", "" + ex.getMessage()));
+            return new CommandResponsePackets(new ErrPacket(1, new SQLException(ex)));
         }
     }
     
@@ -151,9 +151,9 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     protected abstract SQLRouteResult doSqlShardingRoute();
     
-    protected abstract Statement prepareResource(String dataSourceName, String unitSql, SQLStatement sqlStatement) throws SQLException;
+    protected abstract Statement prepareResource(String dataSourceName, String unitSQL, SQLStatement sqlStatement) throws SQLException;
     
-    protected abstract Callable<CommandResponsePackets> newSubmitTask(Statement statement, SQLStatement sqlStatement, String unitSql);
+    protected abstract Callable<CommandResponsePackets> newSubmitTask(Statement statement, SQLStatement sqlStatement, String unitSQL);
     
     private List<CommandResponsePackets> buildCommandResponsePackets(final List<Future<CommandResponsePackets>> futureList) {
         List<CommandResponsePackets> result = new ArrayList<>();

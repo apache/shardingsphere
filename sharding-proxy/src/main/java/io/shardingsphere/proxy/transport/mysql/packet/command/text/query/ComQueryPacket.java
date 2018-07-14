@@ -88,7 +88,7 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
             }
         } catch (final Exception ex) {
             log.error("doTransactionIntercept Exception", ex);
-            return new CommandResponsePackets(new ErrPacket(1, 0, "", "" + ex.getMessage()));
+            return new CommandResponsePackets(new ErrPacket(1, new SQLException(ex)));
         }
         return backendHandler.execute();
     }
