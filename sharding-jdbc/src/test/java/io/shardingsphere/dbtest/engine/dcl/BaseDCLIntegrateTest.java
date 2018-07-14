@@ -42,12 +42,14 @@ public abstract class BaseDCLIntegrateTest extends SingleIntegrateTest {
     public void insertData() throws SQLException, ParseException, IOException, JAXBException {
         if (getDatabaseTypeEnvironment().isEnabled()) {
             new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(getShardingRuleType()), getDataSourceMap()).initialize();
+            getAuthorityEnvironmentManager().initialize();
         }
-        getAuthorityEnvironmentManager().initialize();
     }
     
     @After
-    public void cleanData() {
-        getAuthorityEnvironmentManager().clean();
+    public void cleanData() throws SQLException {
+        if (getDatabaseTypeEnvironment().isEnabled()) {
+            getAuthorityEnvironmentManager().clean();
+        }
     }
 }
