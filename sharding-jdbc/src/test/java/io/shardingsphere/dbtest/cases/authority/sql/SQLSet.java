@@ -24,6 +24,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -46,6 +47,9 @@ public final class SQLSet {
     private Collection<SQL> SQLs = new LinkedList<>();
     
     private Collection<DatabaseType> getDatabaseTypeList() {
+        if (null == dbTypes) {
+            return Arrays.asList(DatabaseType.MySQL, DatabaseType.Oracle, DatabaseType.H2, DatabaseType.PostgreSQL, DatabaseType.SQLServer);
+        }
         Collection<DatabaseType> result = new LinkedList<>();
         for (String each : dbTypes.split(",")) {
             result.add(DatabaseType.valueOf(each));
