@@ -34,12 +34,9 @@ import java.util.Collection;
 
 public final class GeneralDCLIntegrateTest extends BaseDCLIntegrateTest {
     
-    private final DCLIntegrateTestCaseAssertion assertion;
-    
     public GeneralDCLIntegrateTest(final String sqlCaseId, final String path, final DCLIntegrateTestCaseAssertion assertion, final String shardingRuleType,
                                    final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
         super(sqlCaseId, path, assertion, shardingRuleType, databaseTypeEnvironment, caseType);
-        this.assertion = assertion;
     }
     
     @Parameters(name = "{0} -> Rule:{3} -> {4} -> {5}")
