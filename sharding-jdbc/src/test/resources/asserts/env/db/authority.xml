@@ -1,8 +1,8 @@
 <authority>
-    <sqlset sql-type="init" db-types="Oracle,H2,sqlServer,Postgresql">
+    <sqlset sql-type="init" db-types="Oracle,H2,SQLServer,Postgresql">
         <sql content="CREATE ROLE role_dev"/>
     </sqlset>
-    <sqlset sql-type="init" db-types="sqlServer">
+    <sqlset sql-type="init" db-types="SQLServer">
         <sql content="CREATE LOGIN login_dev"/>
     </sqlset>
     <sqlset sql-type="init" db-types="SOLServer">
@@ -17,7 +17,7 @@
     <sqlset sql-type="init" db-types="H2,Postgresql">
         <sql content="CREATE USER user_dev PASSWORD 'passwd_dev'"/>
     </sqlset>
-    <sqlset sql-type="clean" db-types="Oracle,H2,sqlServer,Postgresql">
+    <sqlset sql-type="clean" db-types="Oracle,H2,SQLServer,Postgresql">
         <sql content="DROP ROLE role_dev" />
         <sql content="DROP ROLE role_dev_new" />
         <sql content="DROP USER user_dev" />
