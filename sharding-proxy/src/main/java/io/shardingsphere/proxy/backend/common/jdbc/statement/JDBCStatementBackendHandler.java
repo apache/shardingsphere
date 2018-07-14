@@ -93,25 +93,25 @@ public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
     protected PreparedStatement prepareResource(final String dataSourceName, final String unitSql, final SQLStatement sqlStatement) throws SQLException {
         DataSource dataSource = RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName);
         Connection connection = getConnection(dataSource);
-        PreparedStatement statement = sqlStatement instanceof InsertStatement ? connection.prepareStatement(unitSql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(unitSql);
+        PreparedStatement result = sqlStatement instanceof InsertStatement ? connection.prepareStatement(unitSql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(unitSql);
         for (int i = 0; i < preparedStatementParameters.size(); i++) {
-            statement.setObject(i + 1, preparedStatementParameters.get(i).getValue());
+            result.setObject(i + 1, preparedStatementParameters.get(i).getValue());
         }
         ProxyPrepareJDBCResource prepareProxyJDBCResource = (ProxyPrepareJDBCResource) getJdbcResource();
         prepareProxyJDBCResource.addConnection(connection);
-        prepareProxyJDBCResource.addPrepareStatement(statement);
-        return statement;
+        prepareProxyJDBCResource.addPrepareStatement(result);
+        return result;
     }
     
     @Override
     protected QueryResult newQueryResult(final CommandResponsePackets packet, final int index) {
-        MySQLPacketStatementExecuteQueryResult mySQLPacketStatementExecuteQueryResult = new MySQLPacketStatementExecuteQueryResult(packet, columnTypes);
+        MySQLPacketStatementExecuteQueryResult result = new MySQLPacketStatementExecuteQueryResult(packet, columnTypes);
         if (ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
-            mySQLPacketStatementExecuteQueryResult.setResultSet(getJdbcResource().getResultSets().get(index));
+            result.setResultSet(getJdbcResource().getResultSets().get(index));
         } else {
-            mySQLPacketStatementExecuteQueryResult.setResultList(getResultLists().get(index));
+            result.setResultList(getResultLists().get(index));
         }
-        return mySQLPacketStatementExecuteQueryResult;
+        return result;
     }
     
     @Override

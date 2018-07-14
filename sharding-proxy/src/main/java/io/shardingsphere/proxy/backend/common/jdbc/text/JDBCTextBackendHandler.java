@@ -64,11 +64,11 @@ public final class JDBCTextBackendHandler extends JDBCBackendHandler {
     protected Statement prepareResource(final String dataSourceName, final String unitSql, final SQLStatement sqlStatement) throws SQLException {
         DataSource dataSource = RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName);
         Connection connection = getConnection(dataSource);
-        Statement statement = connection.createStatement();
+        Statement result = connection.createStatement();
         ProxyJDBCResource proxyJDBCResource = (ProxyJDBCResource) getJdbcResource();
         proxyJDBCResource.addConnection(connection);
-        proxyJDBCResource.addStatement(statement);
-        return statement;
+        proxyJDBCResource.addStatement(result);
+        return result;
     }
     
     @Override
@@ -78,13 +78,13 @@ public final class JDBCTextBackendHandler extends JDBCBackendHandler {
     
     @Override
     protected QueryResult newQueryResult(final CommandResponsePackets packet, final int index) {
-        MySQLPacketQueryResult mySQLPacketQueryResult = new MySQLPacketQueryResult(packet);
+        MySQLPacketQueryResult result = new MySQLPacketQueryResult(packet);
         if (ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
-            mySQLPacketQueryResult.setResultSet(getJdbcResource().getResultSets().get(index));
+            result.setResultSet(getJdbcResource().getResultSets().get(index));
         } else {
-            mySQLPacketQueryResult.setResultList(getResultLists().get(index));
+            result.setResultList(getResultLists().get(index));
         }
-        return mySQLPacketQueryResult;
+        return result;
     }
     
     @Override
