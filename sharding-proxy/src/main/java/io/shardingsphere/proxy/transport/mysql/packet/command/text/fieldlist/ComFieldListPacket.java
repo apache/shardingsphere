@@ -83,10 +83,8 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
         String sql = String.format("SHOW COLUMNS FROM %s FROM %s", table, ShardingConstant.LOGIC_SCHEMA_NAME);
         // TODO use common database type
         backendHandler = getBackendHandler(sql);
-        if (backendHandler.execute().getHeadPacket() instanceof ErrPacket) {
-            return new CommandResponsePackets(new ErrPacket(1, 0, "", ""));
-        }
-        return new CommandResponsePackets(new DummyPacket());
+        DatabaseProtocolPacket headPacket = backendHandler.execute().getHeadPacket();
+        return headPacket instanceof ErrPacket ? new CommandResponsePackets(headPacket) : new CommandResponsePackets(new DummyPacket());
     }
     
     private BackendHandler getBackendHandler(final String sql) {
