@@ -75,6 +75,8 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     private final String sql;
     
+    private final BaseJDBCResource jdbcResource;
+    
     private MergedResult mergedResult;
     
     private int currentSequenceId;
@@ -86,25 +88,23 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     private boolean hasMoreResultValueFlag;
     
-    private final BaseJDBCResource jdbcResource;
+    private final List<ResultList> resultLists;
     
     private final RuleRegistry ruleRegistry;
     
-    private final List<ResultList> resultLists;
-    
     public JDBCBackendHandler(final String sql, final BaseJDBCResource jdbcResource) {
         this.sql = sql;
+        this.jdbcResource = jdbcResource;
         isMerged = false;
         hasMoreResultValueFlag = true;
-        this.jdbcResource = jdbcResource;
-        ruleRegistry = RuleRegistry.getInstance();
         resultLists = new CopyOnWriteArrayList<>();
+        ruleRegistry = RuleRegistry.getInstance();
     }
     
     @Override
     public CommandResponsePackets execute() {
         try {
-            return doExecuteInternal(ruleRegistry.isMasterSlaveOnly() ? doMasterSlaveRoute() : doSqlShardingRoute());
+            return doExecuteInternal(ruleRegistry.isMasterSlaveOnly() ? doMasterSlaveRoute() : doShardingRoute());
         } catch (final Exception ex) {
             log.error("ExecuteBackendHandler", ex);
             return new CommandResponsePackets(new ErrPacket(1, new SQLException(ex)));
@@ -139,14 +139,14 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     private SQLRouteResult doMasterSlaveRoute() {
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
-        SQLRouteResult result = new SQLRouteResult(sqlStatement, null);
-        String dataSourceName = new MasterSlaveRouter(ruleRegistry.getMasterSlaveRule()).route(sqlStatement.getType()).iterator().next();
-        SQLUnit sqlUnit = new SQLUnit(sql, Collections.<List<Object>>emptyList());
-        result.getExecutionUnits().add(new SQLExecutionUnit(dataSourceName, sqlUnit));
+        SQLRouteResult result = new SQLRouteResult(sqlStatement);
+        for (String each : new MasterSlaveRouter(ruleRegistry.getMasterSlaveRule()).route(sqlStatement.getType())) {
+            result.getExecutionUnits().add(new SQLExecutionUnit(each, new SQLUnit(sql, Collections.<List<Object>>emptyList())));
+        }
         return result;
     }
     
-    protected abstract SQLRouteResult doSqlShardingRoute();
+    protected abstract SQLRouteResult doShardingRoute();
     
     protected abstract Statement prepareResource(String dataSourceName, String unitSQL, SQLStatement sqlStatement) throws SQLException;
     

@@ -76,7 +76,7 @@ public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
     }
     
     @Override
-    protected SQLRouteResult doSqlShardingRoute() {
+    protected SQLRouteResult doShardingRoute() {
         PreparedStatementRoutingEngine routingEngine = new PreparedStatementRoutingEngine(
                 getSql(), ruleRegistry.getShardingRule(), ruleRegistry.getShardingMetaData(), databaseType, showSQL, ruleRegistry.getShardingDataSourceMetaData());
         return routingEngine.route(getComStmtExecuteParameters());

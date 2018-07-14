@@ -62,7 +62,7 @@ public final class JDBCTextBackendHandler extends JDBCBackendHandler {
     }
     
     @Override
-    protected SQLRouteResult doSqlShardingRoute() {
+    protected SQLRouteResult doShardingRoute() {
         StatementRoutingEngine routingEngine = new StatementRoutingEngine(
                 ruleRegistry.getShardingRule(), ruleRegistry.getShardingMetaData(), databaseType, showSQL, ruleRegistry.getShardingDataSourceMetaData());
         return routingEngine.route(getSql());
