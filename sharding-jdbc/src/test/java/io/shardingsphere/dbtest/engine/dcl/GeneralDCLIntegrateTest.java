@@ -32,8 +32,6 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Collection;
 
-import static junit.framework.TestCase.fail;
-
 public final class GeneralDCLIntegrateTest extends BaseDCLIntegrateTest {
     
     private final DCLIntegrateTestCaseAssertion assertion;
@@ -50,7 +48,7 @@ public final class GeneralDCLIntegrateTest extends BaseDCLIntegrateTest {
     }
     
     @Test
-    public void assertExecute() {
+    public void assertExecute() throws SQLException {
         if (!getDatabaseTypeEnvironment().isEnabled()) {
             return;
         }
@@ -60,8 +58,6 @@ public final class GeneralDCLIntegrateTest extends BaseDCLIntegrateTest {
             } else {
                 connection.prepareStatement(getSql()).execute();
             }
-        } catch (final SQLException ex) {
-            fail(ex.toString());
         }
     }
 }
