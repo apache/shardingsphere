@@ -19,7 +19,6 @@ package io.shardingsphere.proxy.config;
 
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
-import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
@@ -76,8 +75,6 @@ public final class RuleRegistry {
     
     private ShardingMetaData shardingMetaData;
     
-    private ListeningExecutorService executorService;
-    
     private boolean showSQL;
     
     private ProxyMode proxyMode;
@@ -121,9 +118,10 @@ public final class RuleRegistry {
                 dataSourceConfigurationMap.put(entry.getKey(), entry.getValue());
             }
         }
-        executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(maxWorkingThreads));
         shardingDataSourceMetaData = new ShardingDataSourceMetaData(dataSourceMap, shardingRule, DatabaseType.MySQL);
-        shardingMetaData = new ProxyShardingMetaData(executorService, dataSourceMap);
+        // TODO metadata only as pojo, executor service should out of metadata
+        // TODO executor service leak here, should shutdown original executor service
+        shardingMetaData = new ProxyShardingMetaData(MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(maxWorkingThreads)), dataSourceMap);
         if (!isMasterSlaveOnly()) {
             shardingMetaData.init(shardingRule);
         }
