@@ -21,7 +21,6 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.dbtest.cases.authority.sql.SQLSet;
 import io.shardingsphere.dbtest.cases.authority.sql.SQLType;
 import lombok.Getter;
-import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -34,7 +33,7 @@ import java.util.LinkedList;
  * @author panjuan
  */
 @Getter
-@Setter
+//@Setter
 @XmlRootElement(name = "authority")
 public final class Authority {
     
