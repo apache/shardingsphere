@@ -17,7 +17,6 @@
 
 package io.shardingsphere.dbtest.env.authority;
 
-import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.dbtest.cases.authority.Authority;
 import lombok.extern.slf4j.Slf4j;
