@@ -15,13 +15,15 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.common;
+package io.shardingsphere.proxy.backend.common.jdbc.text;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.StatementRoutingEngine;
+import io.shardingsphere.proxy.backend.common.ProxyMode;
+import io.shardingsphere.proxy.backend.common.jdbc.JDBCBackendHandler;
 import io.shardingsphere.proxy.backend.mysql.MySQLPacketQueryResult;
 import io.shardingsphere.proxy.backend.resource.ProxyJDBCResource;
 import io.shardingsphere.proxy.backend.resource.ProxyJDBCResourceFactory;
@@ -38,17 +40,17 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
- * SQL execute backend handler.
+ * Text protocol backend handler via JDBC to connect databases.
  *
  * @author zhangliang
  * @author panjuan
  * @author zhaojun
  */
-public final class SQLExecuteBackendHandler extends ExecuteBackendHandler implements BackendHandler {
+public final class JDBCTextBackendHandler extends JDBCBackendHandler {
     
-    public SQLExecuteBackendHandler(final String sql, final DatabaseType databaseType, final boolean showSQL) {
+    public JDBCTextBackendHandler(final String sql, final DatabaseType databaseType, final boolean showSQL) {
         super(sql, databaseType, showSQL);
-        super.setJdbcResource(ProxyJDBCResourceFactory.newResource());
+        setJdbcResource(ProxyJDBCResourceFactory.newResource());
     }
     
     @Override
@@ -71,7 +73,7 @@ public final class SQLExecuteBackendHandler extends ExecuteBackendHandler implem
     
     @Override
     protected Callable<CommandResponsePackets> newSubmitTask(final Statement statement, final SQLStatement sqlStatement, final String unitSql) {
-        return new SQLExecuteWorker(this, sqlStatement, statement, unitSql);
+        return new JDBCTextExecuteWorker(this, sqlStatement, statement, unitSql);
     }
     
     @Override

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.common;
+package io.shardingsphere.proxy.backend.common.jdbc;
 
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
@@ -42,18 +42,16 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
- * Execute worker.
+ * Execute worker via JDBC to connect databases.
  * 
- * <p>Include SQL and PreparedStatement implement.</p>
- *
  * @author zhaojun
  */
 @AllArgsConstructor
 @Getter
 @Slf4j
-public abstract class ExecuteWorker implements Callable<CommandResponsePackets> {
+public abstract class JDBCExecuteWorker implements Callable<CommandResponsePackets> {
     
-    private final ExecuteBackendHandler executeBackendHandler;
+    private final JDBCBackendHandler executeBackendHandler;
     
     private final SQLStatement sqlStatement;
     

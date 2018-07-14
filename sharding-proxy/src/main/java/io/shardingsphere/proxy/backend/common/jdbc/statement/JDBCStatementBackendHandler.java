@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.common;
+package io.shardingsphere.proxy.backend.common.jdbc.statement;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.merger.QueryResult;
@@ -23,6 +23,8 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.routing.PreparedStatementRoutingEngine;
 import io.shardingsphere.core.routing.SQLRouteResult;
+import io.shardingsphere.proxy.backend.common.ProxyMode;
+import io.shardingsphere.proxy.backend.common.jdbc.JDBCBackendHandler;
 import io.shardingsphere.proxy.backend.mysql.MySQLPacketStatementExecuteQueryResult;
 import io.shardingsphere.proxy.backend.resource.ProxyJDBCResourceFactory;
 import io.shardingsphere.proxy.backend.resource.ProxyPrepareJDBCResource;
@@ -46,20 +48,20 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Statement execute backend handler.
+ * Statement protocol backend handler via JDBC to connect databases.
  *
  * @author zhangyonglun
  * @author zhaojun
  */
-public final class StatementExecuteBackendHandler extends ExecuteBackendHandler implements BackendHandler {
+public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
     
     private final List<PreparedStatementParameter> preparedStatementParameters;
     
     @Getter
     private final List<ColumnType> columnTypes;
     
-    public StatementExecuteBackendHandler(final List<PreparedStatementParameter> preparedStatementParameters, final int statementId,
-                                          final DatabaseType databaseType, final boolean showSQL) {
+    public JDBCStatementBackendHandler(final List<PreparedStatementParameter> preparedStatementParameters, final int statementId,
+                                       final DatabaseType databaseType, final boolean showSQL) {
         super(PreparedStatementRegistry.getInstance().getSQL(statementId), databaseType, showSQL);
         super.setJdbcResource(ProxyJDBCResourceFactory.newPrepareResource());
         this.preparedStatementParameters = preparedStatementParameters;
@@ -84,7 +86,7 @@ public final class StatementExecuteBackendHandler extends ExecuteBackendHandler 
     
     @Override
     protected Callable<CommandResponsePackets> newSubmitTask(final Statement statement, final SQLStatement sqlStatement, final String unitSql) {
-        return new StatementExecuteWorker(this, sqlStatement, (PreparedStatement) statement);
+        return new JDBCStatementExecuteWorker(this, sqlStatement, (PreparedStatement) statement);
     }
     
     @Override

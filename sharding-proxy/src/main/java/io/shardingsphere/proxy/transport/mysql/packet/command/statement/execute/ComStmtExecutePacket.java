@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.SQLParsingEngine;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.proxy.backend.common.StatementExecuteBackendHandler;
+import io.shardingsphere.proxy.backend.common.jdbc.statement.JDBCStatementBackendHandler;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
@@ -66,7 +66,7 @@ public final class ComStmtExecutePacket extends CommandPacket {
     
     private final List<PreparedStatementParameter> preparedStatementParameters = new ArrayList<>(32);
     
-    private final StatementExecuteBackendHandler statementExecuteBackendHandler;
+    private final JDBCStatementBackendHandler statementExecuteBackendHandler;
     
     public ComStmtExecutePacket(final int sequenceId, final MySQLPacketPayload mysqlPacketPayload) {
         super(sequenceId);
@@ -82,7 +82,7 @@ public final class ComStmtExecutePacket extends CommandPacket {
         }
         newParametersBoundFlag = NewParametersBoundFlag.valueOf(mysqlPacketPayload.readInt1());
         setParameterList(mysqlPacketPayload, numParameters, newParametersBoundFlag);
-        statementExecuteBackendHandler = new StatementExecuteBackendHandler(preparedStatementParameters, statementId, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
+        statementExecuteBackendHandler = new JDBCStatementBackendHandler(preparedStatementParameters, statementId, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
     }
     
     private void setParameterList(final MySQLPacketPayload mysqlPacketPayload, final int numParameters, final NewParametersBoundFlag newParametersBoundFlag) {

@@ -23,7 +23,7 @@ import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.transaction.event.XaTransactionEvent;
 import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.proxy.backend.common.BackendHandler;
-import io.shardingsphere.proxy.backend.common.SQLExecuteBackendHandler;
+import io.shardingsphere.proxy.backend.common.jdbc.text.JDBCTextBackendHandler;
 import io.shardingsphere.proxy.backend.common.SQLPacketsBackendHandler;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
@@ -96,7 +96,7 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
     private BackendHandler getBackendHandler(final String sql) {
         return RuleRegistry.getInstance().isWithoutJdbc()
                 ? new SQLPacketsBackendHandler(this, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL())
-                : new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
+                : new JDBCTextBackendHandler(sql, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
     }
     
     /**

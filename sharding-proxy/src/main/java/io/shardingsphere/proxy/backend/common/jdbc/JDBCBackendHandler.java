@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.common;
+package io.shardingsphere.proxy.backend.common.jdbc;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
@@ -30,6 +30,10 @@ import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
+import io.shardingsphere.proxy.backend.common.BackendHandler;
+import io.shardingsphere.proxy.backend.common.ProxyConnectionHolder;
+import io.shardingsphere.proxy.backend.common.ProxyMode;
+import io.shardingsphere.proxy.backend.common.ResultList;
 import io.shardingsphere.proxy.backend.resource.BaseJDBCResource;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;
@@ -62,13 +66,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 /**
- * Abstract ExecuteBackendHandler for SQL or PrepareStatement.
+ * Backend handler via JDBC to connect databases.
  *
  * @author zhaojun
  */
 @Getter
 @Slf4j
-public abstract class ExecuteBackendHandler implements BackendHandler {
+public abstract class JDBCBackendHandler implements BackendHandler {
     
     private final String sql;
     
@@ -92,7 +96,7 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
     
     private final List<ResultList> resultLists = new CopyOnWriteArrayList<>();
     
-    public ExecuteBackendHandler(final String sql, final DatabaseType databaseType, final boolean showSQL) {
+    public JDBCBackendHandler(final String sql, final DatabaseType databaseType, final boolean showSQL) {
         this.sql = sql;
         isMerged = false;
         hasMoreResultValueFlag = true;
