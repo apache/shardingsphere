@@ -20,7 +20,6 @@ package io.shardingsphere.dbtest.cases.authority;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.dbtest.cases.authority.sql.SQLSet;
 import io.shardingsphere.dbtest.cases.authority.sql.SQLType;
-import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -32,13 +31,11 @@ import java.util.LinkedList;
  * 
  * @author panjuan
  */
-@Getter
-//@Setter
 @XmlRootElement(name = "authority")
 public final class Authority {
     
     @XmlElement(name = "sqlset")
-    private Collection<SQLSet> SQLSets = new LinkedList<>();
+    private Collection<SQLSet> sqlSets = new LinkedList<>();
     
     /**
      * Get init sqls of this data base type.
@@ -46,9 +43,9 @@ public final class Authority {
      * @param databaseType data base type
      * @return init sqls of this data base type
      */
-    public Collection<String> getInitSQLs(DatabaseType databaseType) {
+    public Collection<String> getInitSQLs(final DatabaseType databaseType) {
         Collection<String> result = new LinkedList<>();
-        for (SQLSet each : SQLSets) {
+        for (SQLSet each : sqlSets) {
             result.addAll(each.getAllSQLContent(SQLType.Init, databaseType));
         }
         return result;
@@ -60,9 +57,9 @@ public final class Authority {
      * @param databaseType data base type
      * @return clean sqls of this data base type
      */
-    public Collection<String> getCleanSQLs(DatabaseType databaseType) {
+    public Collection<String> getCleanSQLs(final DatabaseType databaseType) {
         Collection<String> result = new LinkedList<>();
-        for (SQLSet each : SQLSets) {
+        for (SQLSet each : sqlSets) {
             result.addAll(each.getAllSQLContent(SQLType.Clean, databaseType));
         }
         return result;
