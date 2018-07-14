@@ -62,15 +62,15 @@ public final class AuthorityEnvironmentManager {
         if (initSQLs.isEmpty()) {
             return;
         }
-        Connection connection = dataSource.getConnection();
-        for (String each : initSQLs) {
-            try {
-                connection.createStatement().execute(each);
-            } catch (final SQLException ex) {
-                log.warn("Init SQL: " + ex.getMessage());
-            }
+        try (Connection connection = dataSource.getConnection()) {
+            for (String each : initSQLs) {
+                try {
+                    connection.createStatement().execute(each);
+                } catch (final SQLException ex) {
+                    log.warn("Init SQL: " + ex.getMessage());
+                }
+            }    
         }
-        connection.close();
     }
     
     /**
@@ -83,14 +83,14 @@ public final class AuthorityEnvironmentManager {
         if (cleanSQLs.isEmpty()) {
             return;
         }
-        Connection connection = dataSource.getConnection();
-        for (String each : cleanSQLs) {
-            try {
-                connection.createStatement().execute(each);
-            } catch (final SQLException ex) {
-                log.warn("Clean SQL: " + ex.getMessage());
-            }
+        try (Connection connection = dataSource.getConnection()) {
+            for (String each : cleanSQLs) {
+                try {
+                    connection.createStatement().execute(each);
+                } catch (final SQLException ex) {
+                    log.warn("Clean SQL: " + ex.getMessage());
+                }
+            }    
         }
-        connection.close();
     }
 }
