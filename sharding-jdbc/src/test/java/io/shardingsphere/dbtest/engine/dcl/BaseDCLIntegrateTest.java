@@ -17,75 +17,39 @@
 
 package io.shardingsphere.dbtest.engine.dcl;
 
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.dbtest.cases.assertion.dcl.DCLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.engine.SingleIntegrateTest;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
 import io.shardingsphere.test.sql.SQLCaseType;
+import org.junit.After;
 import org.junit.Before;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.ParseException;
-import java.util.Collection;
-import java.util.LinkedList;
 
 public abstract class BaseDCLIntegrateTest extends SingleIntegrateTest {
-    
-    private final DCLIntegrateTestCaseAssertion assertion;
     
     public BaseDCLIntegrateTest(final String sqlCaseId, final String path, final DCLIntegrateTestCaseAssertion assertion, final String shardingRuleType,
                                 final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
         super(sqlCaseId, path, assertion, shardingRuleType, databaseTypeEnvironment, caseType);
-        this.assertion = assertion;
     }
     
     @Before
     public void insertData() throws SQLException, ParseException, IOException, JAXBException {
         if (getDatabaseTypeEnvironment().isEnabled()) {
             new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(getShardingRuleType()), getDataSourceMap()).initialize();
+            getAuthorityEnvironmentManager().initialize();
         }
     }
     
-    protected void cleanEnvironment(final Connection connection) {
-        if (Strings.isNullOrEmpty(assertion.getCleanSQLs())) {
-            return;
+    @After
+    public void cleanData() throws SQLException {
+        if (getDatabaseTypeEnvironment().isEnabled()) {
+            getAuthorityEnvironmentManager().clean();
         }
-        for (String each : Splitter.on(";").trimResults().splitToList(assertion.getCleanSQLs())) {
-            try (Statement statement = connection.createStatement()) {
-                statement.execute(each);
-            } catch (final SQLException ignored) {
-            }
-        }
-    }
-    
-    protected void initEnvironment(final Connection connection) {
-        if (Strings.isNullOrEmpty(assertion.getInitSQLs())) {
-            return;
-        }
-        for (String each : Splitter.on(";").trimResults().splitToList(assertion.getInitSQLs())) {
-            try (Statement statement = connection.createStatement()) {
-                statement.execute(each); 
-            } catch (final SQLException ignored) { 
-            }
-        }
-    }
-    
-    protected boolean isExecuted() {
-        if (Strings.isNullOrEmpty(assertion.getDbTypes())) {
-            return true;
-        }
-        Collection<DatabaseType> databaseTypeList = new LinkedList<>();
-        for (String each : Splitter.on(",").trimResults().splitToList(assertion.getDbTypes())) {
-            databaseTypeList.add(DatabaseType.valueOf(each));
-        }
-        return databaseTypeList.contains(getDatabaseTypeEnvironment().getDatabaseType());
     }
 }

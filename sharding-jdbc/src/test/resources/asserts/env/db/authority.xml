@@ -1,0 +1,35 @@
+<authority>
+    <sqlset sql-type="init" db-types="Oracle,H2,SQLServer,PostgreSQL">
+        <sql content="CREATE ROLE role_dev"/>
+    </sqlset>
+    <sqlset sql-type="init" db-types="SQLServer">
+        <sql content="CREATE LOGIN login_dev"/>
+    </sqlset>
+    <sqlset sql-type="init" db-types="SQLServer">
+        <sql content="CREATE USER user_dev FOR LOGIN login_dev"/>
+    </sqlset>
+    <sqlset sql-type="init" db-types="MySQL">
+        <sql content="CREATE USER user_dev@localhost"/>
+    </sqlset>
+    <sqlset sql-type="init" db-types="Oracle">
+        <sql content="CREATE USER user_dev identified by passwd_dev"/>
+    </sqlset>
+    <sqlset sql-type="init" db-types="H2,PostgreSQL">
+        <sql content="CREATE USER user_dev PASSWORD 'passwd_dev'"/>
+    </sqlset>
+    <sqlset sql-type="clean" db-types="Oracle,H2,SQLServer,PostgreSQL">
+        <sql content="DROP ROLE role_dev" />
+        <sql content="DROP ROLE role_dev_new" />
+        <sql content="DROP USER user_dev" />
+        <sql content="DROP USER user_dev_new" />
+    </sqlset>
+    <sqlset sql-type="clean" db-types="SQLServer">
+        <sql content="DROP LOGIN login_dev" />
+        <sql content="DROP LOGIN login_dev_new" />
+    </sqlset>
+    <sqlset sql-type="clean" db-types="MySQL">
+        <sql content="DROP USER user_dev@localhost" />
+        <sql content="DROP USER user_dev_new@localhost" />
+        <sql content="DROP USER user_dev@127.0.0.1" />
+    </sqlset>
+</authority>

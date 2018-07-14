@@ -15,16 +15,22 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.cases.assertion.dcl;
+package io.shardingsphere.dbtest.cases.authority.sql;
 
-import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
 import lombok.Getter;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlEnumValue;
+
 /**
- * JAXB definition of DCL integrate test case assertion.
+ * SQL type for authority.
  *
  * @author panjuan
  */
 @Getter
-public final class DCLIntegrateTestCaseAssertion extends IntegrateTestCaseAssertion {
+@XmlAccessorType(XmlAccessType.FIELD)
+public enum SQLType {
+    
+    @XmlEnumValue("init") Init, @XmlEnumValue("clean") Clean
 }
