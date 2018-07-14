@@ -63,7 +63,6 @@ public final class AuthorityEnvironmentManager {
             return;
         }
         Connection connection = dataSource.getConnection();
-        Preconditions.checkState(null != connection, "No available connection.");
         for (String each : initSQLs) {
             try {
                 connection.createStatement().execute(each);
@@ -84,7 +83,6 @@ public final class AuthorityEnvironmentManager {
             return;
         }
         Connection connection = dataSource.getConnection();
-        Preconditions.checkState(null != connection, "No available connection.");
         for (String each : cleanSQLs) {
             try {
                 connection.createStatement().execute(each);
