@@ -17,16 +17,20 @@
 
 package io.shardingsphere.dbtest.cases.authority.sql;
 
+import lombok.Getter;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlEnumValue;
+
 /**
  * SQL type for authority.
  *
  * @author panjuan
  */
+@Getter
+@XmlAccessorType(XmlAccessType.FIELD)
 public enum SQLType {
     
-    Init("init"), Clean("clean");
-    
-    private final String sqlTypeName;
-    
-    SQLType(final String sqlTypeName) {this.sqlTypeName = sqlTypeName;}
+    @XmlEnumValue("init") Init, @XmlEnumValue("clean") Clean
 }
