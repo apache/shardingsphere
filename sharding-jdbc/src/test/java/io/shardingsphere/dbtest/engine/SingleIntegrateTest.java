@@ -61,7 +61,7 @@ public abstract class SingleIntegrateTest extends BaseIntegrateTest {
         this.caseType = caseType;
         sql = getSQL(sqlCaseId);
         expectedDataFile = getExpectedDataFile(path, shardingRuleType, databaseTypeEnvironment.getDatabaseType(), assertion.getExpectedDataFile());
-        authorityEnvironmentManager = new AuthorityEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(shardingRuleType), getDataSource(),
+        authorityEnvironmentManager = new AuthorityEnvironmentManager(EnvironmentPath.getAuthorityResourcesPath(shardingRuleType), getDataSource(),
                 getDatabaseTypeEnvironment().getDatabaseType());
     }
     
