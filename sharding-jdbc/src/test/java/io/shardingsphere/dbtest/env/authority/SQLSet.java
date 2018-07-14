@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.env.authority.sql;
+package io.shardingsphere.dbtest.env.authority;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import lombok.Getter;
@@ -41,12 +41,6 @@ public final class SQLSet {
     
     @XmlAttribute(name = "db-types")
     private String dbTypes;
-    
-    @XmlAttribute(name = "sql-type")
-    private SQLType sqlType;
-    
-    @XmlElement(name = "sql")
-    private Collection<SQL> SQLs = new LinkedList<>();
     
     @XmlElementWrapper(name = "user-create")
     @XmlElement(name = "sql")

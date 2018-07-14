@@ -18,7 +18,6 @@
 package io.shardingsphere.dbtest.env.authority;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.dbtest.env.authority.sql.SQLSet;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
