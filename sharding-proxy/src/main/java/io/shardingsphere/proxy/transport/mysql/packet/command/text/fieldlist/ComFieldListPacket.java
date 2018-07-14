@@ -79,8 +79,8 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
     
     @Override
     public CommandResponsePackets execute() {
-        log.debug("table name received for Sharding-Proxy: {}", table);
-        log.debug("field wildcard received for Sharding-Proxy: {}", fieldWildcard);
+        log.debug("Table name received for Sharding-Proxy: {}", table);
+        log.debug("Field wildcard received for Sharding-Proxy: {}", fieldWildcard);
         String sql = String.format("SHOW COLUMNS FROM %s FROM %s", table, ShardingConstant.LOGIC_SCHEMA_NAME);
         // TODO use common database type
         if (RuleRegistry.getInstance().isWithoutJdbc()) {

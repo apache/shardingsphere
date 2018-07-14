@@ -24,5 +24,5 @@ import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
  *
  * @author zhangyonglun
  */
-public class DummyPacket implements DatabaseProtocolPacket {
+public final class DummyPacket implements DatabaseProtocolPacket {
 }

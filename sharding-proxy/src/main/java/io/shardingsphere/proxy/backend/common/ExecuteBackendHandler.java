@@ -204,7 +204,7 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
             mergedResult = MergeEngineFactory.newInstance(RuleRegistry.getInstance().getShardingRule(), queryResults, sqlStatement, RuleRegistry.getInstance().getShardingMetaData()).merge();
             isMerged = true;
         } catch (final SQLException ex) {
-            return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), ex.getSQLState(), ex.getMessage()));
+            return new CommandResponsePackets(new ErrPacket(1, ex));
         }
         return buildPackets(packets);
     }
@@ -259,7 +259,7 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
             }
             return newDatabaseProtocolPacket(++currentSequenceId, data);
         } catch (final SQLException ex) {
-            return new ErrPacket(1, ex.getErrorCode(), ex.getSQLState(), ex.getMessage());
+            return new ErrPacket(1, ex);
         }
     }
     

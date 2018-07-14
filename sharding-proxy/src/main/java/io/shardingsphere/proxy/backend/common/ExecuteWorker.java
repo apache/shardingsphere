@@ -61,7 +61,7 @@ public abstract class ExecuteWorker implements Callable<CommandResponsePackets> 
             return execute();
         } catch (SQLException ex) {
             log.error("ExecuteWorker", ex);
-            return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), ex.getSQLState(), ex.getMessage()));
+            return new CommandResponsePackets(new ErrPacket(1, ex));
         } finally {
             MasterVisitedManager.clear();
         }
