@@ -212,12 +212,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
         return packets.get(0);
     }
     
-    /**
-     * Has more Result value.
-     *
-     * @return has more result value
-     * @throws SQLException sql exception
-     */
+    @Override
     public boolean hasMoreResultValue() throws SQLException {
         if (!isMerged || !hasMoreResultValueFlag) {
             return false;
@@ -228,11 +223,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
         return true;
     }
     
-    /**
-     * Get result value.
-     *
-     * @return database protocol packet
-     */
+    @Override
     public DatabaseProtocolPacket getResultValue() {
         if (!hasMoreResultValueFlag) {
             return new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());

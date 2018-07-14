@@ -226,12 +226,7 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
         return result;
     }
     
-    /**
-     * Has more Result value.
-     *
-     * @return has more result value
-     * @throws SQLException sql exception
-     */
+    @Override
     public boolean hasMoreResultValue() throws SQLException {
         if (!isMerged || !hasMoreResultValueFlag) {
             jdbcResource.clear();
@@ -243,11 +238,7 @@ public abstract class ExecuteBackendHandler implements BackendHandler {
         return true;
     }
     
-    /**
-     * Get result value.
-     *
-     * @return database protocol packet
-     */
+    @Override
     public DatabaseProtocolPacket getResultValue() {
         if (!hasMoreResultValueFlag) {
             return new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
