@@ -68,7 +68,7 @@ public final class JDBCTextBackendHandler extends JDBCBackendHandler {
     
     @Override
     protected Statement prepareResource(final SQLExecutionUnit sqlExecutionUnit, final SQLStatement sqlStatement) throws SQLException {
-        Connection connection = ConnectionManager.getConnection(ruleRegistry.getDataSourceMap().get(sqlExecutionUnit.getDataSource()));
+        Connection connection = ConnectionManager.getConnection(sqlExecutionUnit.getDataSource());
         Statement result = connection.createStatement();
         ProxyJDBCResource proxyJDBCResource = (ProxyJDBCResource) getJdbcResource();
         proxyJDBCResource.addConnection(connection);

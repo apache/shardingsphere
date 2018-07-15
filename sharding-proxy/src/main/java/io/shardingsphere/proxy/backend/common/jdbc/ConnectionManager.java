@@ -36,10 +36,10 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ConnectionManager {
     
-    private static final ThreadLocal<Map<DataSource, Connection>> RESOURCE = new ThreadLocal<Map<DataSource, Connection>>() {
+    private static final ThreadLocal<Map<String, Connection>> RESOURCE = new ThreadLocal<Map<String, Connection>>() {
         
         @Override
-        protected Map<DataSource, Connection> initialValue() {
+        protected Map<String, Connection> initialValue() {
             return new HashMap<>();
         }
     };
@@ -47,19 +47,20 @@ public final class ConnectionManager {
     /**
      * Get connection of current thread datasource.
      *
-     * @param dataSource Datasource
-     * @return Connection
+     * @param dataSourceName data source name
+     * @return connection
      * @throws SQLException SQL exception
      */
-    public static Connection getConnection(final DataSource dataSource) throws SQLException {
+    public static Connection getConnection(final String dataSourceName) throws SQLException {
+        DataSource dataSource = RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName);
         if (ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
             return dataSource.getConnection();
         }
-        return RESOURCE.get().containsKey(dataSource) ? RESOURCE.get().get(dataSource) : RESOURCE.get().put(dataSource, dataSource.getConnection());
+        return RESOURCE.get().containsKey(dataSourceName) ? RESOURCE.get().get(dataSourceName) : RESOURCE.get().put(dataSourceName, dataSource.getConnection());
     }
     
     /**
-     * Clear Connection resource for current thread-local.
+     * Clear connection resource for current thread-local.
      */
     public static void clear() {
         RESOURCE.remove();

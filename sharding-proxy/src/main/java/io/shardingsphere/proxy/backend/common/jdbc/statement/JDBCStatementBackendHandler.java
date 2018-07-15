@@ -95,7 +95,7 @@ public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
     
     @Override
     protected PreparedStatement prepareResource(final SQLExecutionUnit sqlExecutionUnit, final SQLStatement sqlStatement) throws SQLException {
-        Connection connection = ConnectionManager.getConnection(ruleRegistry.getDataSourceMap().get(sqlExecutionUnit.getDataSource()));
+        Connection connection = ConnectionManager.getConnection(sqlExecutionUnit.getDataSource());
         PreparedStatement result = sqlStatement instanceof InsertStatement
                 ? connection.prepareStatement(sqlExecutionUnit.getSqlUnit().getSql(), Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sqlExecutionUnit.getSqlUnit().getSql());
         for (int i = 0; i < preparedStatementParameters.size(); i++) {
