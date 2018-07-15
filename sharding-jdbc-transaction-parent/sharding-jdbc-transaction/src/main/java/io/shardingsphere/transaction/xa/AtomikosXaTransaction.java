@@ -32,7 +32,7 @@ import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
 /**
- * Atomikos XA transaction implement for Transaction spi.
+ * Atomikos XA transaction implement for Transaction SPI.
  *
  * @author zhaojun
  */
@@ -45,21 +45,24 @@ public class AtomikosXaTransaction implements Transaction {
         TransactionEventHolder.set(XaTransactionEvent.class);
     }
     
+    /**
+     * Init.
+     */
     public static void init() {
     }
     
     @Override
-    public void begin(TransactionEvent transactionEvent) throws SystemException, NotSupportedException {
+    public void begin(final TransactionEvent transactionEvent) throws SystemException, NotSupportedException {
         userTransaction.begin();
     }
     
     @Override
-    public void commit(TransactionEvent transactionEvent) throws HeuristicRollbackException, RollbackException, HeuristicMixedException, SystemException {
+    public void commit(final TransactionEvent transactionEvent) throws HeuristicRollbackException, RollbackException, HeuristicMixedException, SystemException {
         userTransaction.commit();
     }
     
     @Override
-    public void rollback(TransactionEvent transactionEvent) throws SystemException {
+    public void rollback(final TransactionEvent transactionEvent) throws SystemException {
         userTransaction.rollback();
     }
 }

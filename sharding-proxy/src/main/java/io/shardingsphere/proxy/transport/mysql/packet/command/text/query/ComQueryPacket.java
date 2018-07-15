@@ -86,7 +86,7 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
             if (doTransactionIntercept()) {
                 return new CommandResponsePackets(new OKPacket(1));
             }
-        } catch (final Exception ex) {
+        } catch (final SystemException ex) {
             return new CommandResponsePackets(new ErrPacket(1, new SQLException(ex)));
         }
         return backendHandler.execute();
@@ -138,7 +138,7 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
         return new ComQueryPacket((int) params[0], (int) params[1], (String) params[2]);
     }
     
-    private boolean doTransactionIntercept() throws Exception {
+    private boolean doTransactionIntercept() throws SystemException {
         boolean result = false;
         if (TransactionType.XA.equals(RuleRegistry.getInstance().getTransactionType())) {
             XaTransactionEvent xaTransactionEvent = new XaTransactionEvent(sql);

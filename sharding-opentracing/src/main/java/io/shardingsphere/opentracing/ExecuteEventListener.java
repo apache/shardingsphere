@@ -36,7 +36,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Listen to the event of sql execution.
+ * Listen to the event of SQL execution.
  * 
  * @author gaohongtao
  * @author wangkai
@@ -46,7 +46,7 @@ public final class ExecuteEventListener {
     
     private static final String SNAPSHOT_DATA_KEY = "OPENTRACING_SNAPSHOT_DATA";
 
-    private static final String OPER_NAME_PREFIX = "/SHARDING-SPHERE/EXECUTE/";
+    private static final String OPERATION_NAME_PREFIX = "/SHARDING-SPHERE/EXECUTE/";
 
     private final ThreadLocal<ActiveSpan> trunkContainer = new ThreadLocal<>();
     
@@ -55,9 +55,9 @@ public final class ExecuteEventListener {
     private final ThreadLocal<ActiveSpan> trunkInBranchContainer = new ThreadLocal<>();
     
     /**
-     * listen overall sql execution event.
+     * Listen overall sql execution event.
      *
-     * @param event Overall sql execution event.
+     * @param event overall sql execution event
      */
     @Subscribe
     @AllowConcurrentEvents
@@ -69,7 +69,7 @@ public final class ExecuteEventListener {
         ActiveSpan activeSpan;
         switch (event.getEventExecutionType()) {
             case BEFORE_EXECUTE:
-                activeSpan = tracer.buildSpan(OPER_NAME_PREFIX + event.getSqlType().name()).withTag(Tags.COMPONENT.getKey(), LocalTags.COMPONENT_NAME)
+                activeSpan = tracer.buildSpan(OPERATION_NAME_PREFIX + event.getSqlType().name()).withTag(Tags.COMPONENT.getKey(), LocalTags.COMPONENT_NAME)
                         .startActive();
                 trunkContainer.set(activeSpan);
                 if (isParallelExecute(event)) {
@@ -103,9 +103,9 @@ public final class ExecuteEventListener {
     }
     
     /**
-     * listen DML execution event.
+     * Listen DML execution event.
      *
-     * @param event DML execution event.
+     * @param event DML execution event
      */
     @Subscribe
     @AllowConcurrentEvents
@@ -114,7 +114,7 @@ public final class ExecuteEventListener {
     }
     
     /**
-     * listen DQL execution event.
+     * Listen DQL execution event.
      *
      * @param event DQL execution event.
      */
@@ -140,7 +140,7 @@ public final class ExecuteEventListener {
                     params = Joiner.on(",").join(event.getParameters());
                 }
                 if (branchContainer.get() == null) {
-                    branchContainer.set(tracer.buildSpan(OPER_NAME_PREFIX + operation).withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
+                    branchContainer.set(tracer.buildSpan(OPERATION_NAME_PREFIX + operation).withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
                             .withTag(Tags.PEER_HOSTNAME.getKey(), event.getDataSource()).withTag(Tags.COMPONENT.getKey(), LocalTags.COMPONENT_NAME)
                             .withTag(Tags.DB_INSTANCE.getKey(), event.getDataSource()).withTag(Tags.DB_TYPE.getKey(), "sql")
                             .withTag(LocalTags.DB_BIND_VARIABLES.getKey(), params)

@@ -34,7 +34,7 @@ import java.util.LinkedList;
  *
  * @author zhaojun
  */
-public class WeakXaTransaction implements Transaction {
+public final class WeakXaTransaction implements Transaction {
     
     static {
         EventBusInstance.getInstance().register(new TransactionListener(new WeakXaTransaction()));
@@ -42,7 +42,7 @@ public class WeakXaTransaction implements Transaction {
     }
     
     @Override
-    public void begin(TransactionEvent transactionEvent) throws SQLException {
+    public void begin(final TransactionEvent transactionEvent) throws SQLException {
         WeakXaTransactionEvent weakXaTransactionEvent = (WeakXaTransactionEvent) transactionEvent;
         for (Connection each : weakXaTransactionEvent.getCachedConnections().values()) {
             each.setAutoCommit(weakXaTransactionEvent.isAutoCommit());
@@ -50,7 +50,7 @@ public class WeakXaTransaction implements Transaction {
     }
     
     @Override
-    public void commit(TransactionEvent transactionEvent) throws SQLException {
+    public void commit(final TransactionEvent transactionEvent) throws SQLException {
         WeakXaTransactionEvent weakXaTransactionEvent = (WeakXaTransactionEvent) transactionEvent;
         Collection<SQLException> exceptions = new LinkedList<>();
         for (Connection each : weakXaTransactionEvent.getCachedConnections().values()) {
@@ -64,7 +64,7 @@ public class WeakXaTransaction implements Transaction {
     }
     
     @Override
-    public void rollback(TransactionEvent transactionEvent) throws SQLException {
+    public void rollback(final TransactionEvent transactionEvent) throws SQLException {
         WeakXaTransactionEvent weakXaTransactionEvent = (WeakXaTransactionEvent) transactionEvent;
         Collection<SQLException> exceptions = new LinkedList<>();
         for (Connection each : weakXaTransactionEvent.getCachedConnections().values()) {
@@ -81,10 +81,10 @@ public class WeakXaTransaction implements Transaction {
         if (exceptions.isEmpty()) {
             return;
         }
-        SQLException ex = new SQLException();
+        SQLException sqlException = new SQLException();
         for (SQLException each : exceptions) {
-            ex.setNextException(each);
+            sqlException.setNextException(each);
         }
-        throw ex;
+        throw sqlException;
     }
 }

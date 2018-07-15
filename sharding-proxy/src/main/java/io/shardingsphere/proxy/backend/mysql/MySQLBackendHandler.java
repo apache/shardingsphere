@@ -63,7 +63,6 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
         mysqlPacketPayload.readInt1();
         int header = mysqlPacketPayload.readInt1();
         mysqlPacketPayload.getByteBuf().resetReaderIndex();
-        
         if (AuthType.UN_AUTH == authType) {
             auth(context, mysqlPacketPayload);
             authType = AuthType.AUTHING;

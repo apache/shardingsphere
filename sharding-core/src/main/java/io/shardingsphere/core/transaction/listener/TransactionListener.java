@@ -21,23 +21,23 @@ import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.transaction.event.TransactionEvent;
 import io.shardingsphere.core.transaction.spi.Transaction;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Transaction Listener.
  *
  * @author zhaojun
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class TransactionListener {
     
-    private Transaction transaction;
+    private final Transaction transaction;
     
     /**
      * Listen event.
      *
      * @param transactionEvent transaction event
-     * @throws Exception
+     * @throws Exception exception
      */
     @Subscribe
     @AllowConcurrentEvents

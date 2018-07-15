@@ -146,8 +146,7 @@ public abstract class BaseIntegrateTest {
     private Map<String, DataSourceMetaData> getDataSourceMetaDataMap() {
         Map<String, DataSourceMetaData> result = new LinkedHashMap<>();
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            result.put(entry.getKey(), DataSourceMetaDataFactory.getDataSourceMetaData
-                    (databaseTypeEnvironment.getDatabaseType(), entry.getValue()));
+            result.put(entry.getKey(), DataSourceMetaDataFactory.getDataSourceMetaData(databaseTypeEnvironment.getDatabaseType(), entry.getValue()));
         }
         return result;
     }

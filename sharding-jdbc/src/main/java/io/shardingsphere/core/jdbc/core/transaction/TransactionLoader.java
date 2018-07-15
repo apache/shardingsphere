@@ -18,6 +18,8 @@
 package io.shardingsphere.core.jdbc.core.transaction;
 
 import io.shardingsphere.core.transaction.spi.Transaction;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.Iterator;
 import java.util.ServiceLoader;
@@ -27,27 +29,16 @@ import java.util.ServiceLoader;
  *
  * @author zhaojun
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TransactionLoader {
-    
-    private TransactionLoader() {
-    }
     
     /**
      * Using ServiceLoader to dynamic load spi transaction.
      *
-     * @return transaction spi
+     * @return transaction SPI
      */
     public static Transaction load() {
-        Transaction result = null;
-        ServiceLoader<Transaction> loader = ServiceLoader.load(Transaction.class);
-        Iterator<Transaction> iterator = loader.iterator();
-        while (iterator.hasNext()) {
-            result = iterator.next();
-            break;
-        }
-        if (null == result) {
-            result = new WeakXaTransaction();
-        }
-        return result;
+        Iterator<Transaction> iterator = ServiceLoader.load(Transaction.class).iterator();
+        return iterator.hasNext() ? iterator.next() : new WeakXaTransaction();
     }
 }

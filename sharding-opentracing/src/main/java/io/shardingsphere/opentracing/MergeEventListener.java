@@ -37,12 +37,12 @@ import java.util.Map;
  */
 public final class MergeEventListener {
     
-    private static final String OPER_NAME_PREFIX = "/SHARDING-SPHERE/MERGE/";
+    private static final String OPERATION_NAME_PREFIX = "/SHARDING-SPHERE/MERGE/";
     
     private final ThreadLocal<ActiveSpan> spanContainer = new ThreadLocal<>();
     
     /**
-     * listen result set merge event.
+     * Listen result set merge event.
      *
      * @param event merge event
      */
@@ -56,7 +56,7 @@ public final class MergeEventListener {
         ActiveSpan activeSpan;
         switch (event.getEventMergeType()) {
             case BEFORE_MERGE:
-                activeSpan = tracer.buildSpan(OPER_NAME_PREFIX)
+                activeSpan = tracer.buildSpan(OPERATION_NAME_PREFIX)
                         .withTag(Tags.COMPONENT.getKey(), LocalTags.COMPONENT_NAME)
                         .startActive();
                 spanContainer.set(activeSpan);

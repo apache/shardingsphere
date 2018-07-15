@@ -29,6 +29,7 @@ public interface Transaction {
     /**
      * Do start a user transaction.
      *
+     * @param transactionEvent transaction event
      * @throws Exception Exception
      */
     void begin(TransactionEvent transactionEvent) throws Exception;
@@ -36,6 +37,7 @@ public interface Transaction {
     /**
      * Do transaction commit.
      *
+     * @param transactionEvent transaction event
      * @throws Exception Exception
      */
     void commit(TransactionEvent transactionEvent) throws Exception;
@@ -43,6 +45,7 @@ public interface Transaction {
     /**
      * Do transaction rollback.
      *
+     * @param transactionEvent transaction event
      * @throws Exception Exception
      */
     void rollback(TransactionEvent transactionEvent) throws Exception;
