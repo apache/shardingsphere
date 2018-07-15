@@ -15,23 +15,26 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.common;
+package io.shardingsphere.proxy.backend.common.jdbc;
 
+import io.shardingsphere.proxy.backend.common.ProxyMode;
+import io.shardingsphere.proxy.config.RuleRegistry;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Hold the connection when proxy mode is CONNECTION_STRICTLY.
+ * Connection manager.
  *
  * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ProxyConnectionHolder {
+public final class ConnectionManager {
     
     private static final ThreadLocal<Map<DataSource, Connection>> RESOURCE = new ThreadLocal<Map<DataSource, Connection>>() {
         
@@ -42,23 +45,17 @@ public final class ProxyConnectionHolder {
     };
     
     /**
-     * Set connection associate with datasource into Thread.
-     *
-     * @param dataSource DataSource
-     * @param connection Connection
-     */
-    public static void setConnection(final DataSource dataSource, final Connection connection) {
-        RESOURCE.get().put(dataSource, connection);
-    }
-    
-    /**
      * Get connection of current thread datasource.
      *
      * @param dataSource Datasource
      * @return Connection
+     * @throws SQLException SQL exception
      */
-    public static Connection getConnection(final DataSource dataSource) {
-        return RESOURCE.get().get(dataSource);
+    public static Connection getConnection(final DataSource dataSource) throws SQLException {
+        if (ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
+            return dataSource.getConnection();
+        }
+        return RESOURCE.get().containsKey(dataSource) ? RESOURCE.get().get(dataSource) : RESOURCE.get().put(dataSource, dataSource.getConnection());
     }
     
     /**

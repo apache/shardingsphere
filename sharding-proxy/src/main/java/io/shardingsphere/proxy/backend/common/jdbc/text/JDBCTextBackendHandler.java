@@ -23,6 +23,7 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.StatementRoutingEngine;
+import io.shardingsphere.proxy.backend.common.jdbc.ConnectionManager;
 import io.shardingsphere.proxy.backend.common.ProxyMode;
 import io.shardingsphere.proxy.backend.common.jdbc.JDBCBackendHandler;
 import io.shardingsphere.proxy.backend.mysql.MySQLPacketQueryResult;
@@ -67,7 +68,7 @@ public final class JDBCTextBackendHandler extends JDBCBackendHandler {
     
     @Override
     protected Statement prepareResource(final SQLExecutionUnit sqlExecutionUnit, final SQLStatement sqlStatement) throws SQLException {
-        Connection connection = getConnection(ruleRegistry.getDataSourceMap().get(sqlExecutionUnit.getDataSource()));
+        Connection connection = ConnectionManager.getConnection(ruleRegistry.getDataSourceMap().get(sqlExecutionUnit.getDataSource()));
         Statement result = connection.createStatement();
         ProxyJDBCResource proxyJDBCResource = (ProxyJDBCResource) getJdbcResource();
         proxyJDBCResource.addConnection(connection);

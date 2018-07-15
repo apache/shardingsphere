@@ -24,6 +24,7 @@ import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.routing.PreparedStatementRoutingEngine;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
+import io.shardingsphere.proxy.backend.common.jdbc.ConnectionManager;
 import io.shardingsphere.proxy.backend.common.ProxyMode;
 import io.shardingsphere.proxy.backend.common.jdbc.JDBCBackendHandler;
 import io.shardingsphere.proxy.backend.mysql.MySQLPacketStatementExecuteQueryResult;
@@ -38,7 +39,6 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute.
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute.PreparedStatementParameter;
 import lombok.Getter;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -95,8 +95,7 @@ public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
     
     @Override
     protected PreparedStatement prepareResource(final SQLExecutionUnit sqlExecutionUnit, final SQLStatement sqlStatement) throws SQLException {
-        DataSource dataSource = ruleRegistry.getDataSourceMap().get(sqlExecutionUnit.getDataSource());
-        Connection connection = getConnection(dataSource);
+        Connection connection = ConnectionManager.getConnection(ruleRegistry.getDataSourceMap().get(sqlExecutionUnit.getDataSource()));
         PreparedStatement result = sqlStatement instanceof InsertStatement
                 ? connection.prepareStatement(sqlExecutionUnit.getSqlUnit().getSql(), Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sqlExecutionUnit.getSqlUnit().getSql());
         for (int i = 0; i < preparedStatementParameters.size(); i++) {

@@ -31,8 +31,6 @@ import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingsphere.proxy.backend.common.BackendHandler;
-import io.shardingsphere.proxy.backend.common.ProxyConnectionHolder;
-import io.shardingsphere.proxy.backend.common.ProxyMode;
 import io.shardingsphere.proxy.backend.common.ResultList;
 import io.shardingsphere.proxy.backend.resource.BaseJDBCResource;
 import io.shardingsphere.proxy.config.RuleRegistry;
@@ -50,10 +48,8 @@ import io.shardingsphere.transaction.xa.AtomikosUserTransaction;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.sql.DataSource;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -260,16 +256,4 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     }
     
     protected abstract DatabaseProtocolPacket newDatabaseProtocolPacket(int sequenceId, List<Object> data);
-    
-    protected final Connection getConnection(final DataSource dataSource) throws SQLException {
-        if (ProxyMode.MEMORY_STRICTLY == ruleRegistry.getProxyMode()) {
-            return dataSource.getConnection();
-        }
-        Connection result = ProxyConnectionHolder.getConnection(dataSource);
-        if (null == result) {
-            result = dataSource.getConnection();
-            ProxyConnectionHolder.setConnection(dataSource, result);
-        }
-        return result;
-    }
 }
