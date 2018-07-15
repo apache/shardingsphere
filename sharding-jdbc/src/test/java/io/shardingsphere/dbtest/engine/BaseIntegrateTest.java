@@ -22,6 +22,8 @@ import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
 import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
+import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataFactory;
 import io.shardingsphere.core.parsing.cache.ParsingResultCache;
 import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
@@ -44,7 +46,9 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TimeZone;
 
 @RunWith(Parameterized.class)
@@ -63,6 +67,8 @@ public abstract class BaseIntegrateTest {
     
     private final DataSource dataSource;
     
+    private final Map<String, DataSource> instanceDataSourceMap;
+    
     static {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     }
@@ -73,9 +79,11 @@ public abstract class BaseIntegrateTest {
         if (databaseTypeEnvironment.isEnabled()) {
             dataSourceMap = createDataSourceMap(shardingRuleType);
             dataSource = createDataSource(dataSourceMap);
+            instanceDataSourceMap = createInstanceDataSourceMap();
         } else {
             dataSourceMap = null;
             dataSource = null;
+            instanceDataSourceMap = null;
         }
     }
     
@@ -108,6 +116,40 @@ public abstract class BaseIntegrateTest {
         return "masterslave".equals(shardingRuleType)
                 ? YamlMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)))
                 : YamlShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)));
+    }
+    
+    private Map<String, DataSource> createInstanceDataSourceMap() {
+        return "masterslave".equals(shardingRuleType) ? dataSourceMap : getShardingInstanceDataSourceMap();
+    }
+    
+    private Map<String, DataSource> getShardingInstanceDataSourceMap() {
+        Map<String, DataSource> result = new LinkedHashMap<>();
+        Map<String, DataSourceMetaData> dataSourceMetaDataMap = getDataSourceMetaDataMap();
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            if (!isExisted(entry.getKey(), result.keySet(), dataSourceMetaDataMap)) {
+                result.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return result;
+    }
+    
+    private boolean isExisted(final String dataSourceName, final Collection<String> existedDataSourceNames,
+                              final Map<String, DataSourceMetaData> dataSourceMetaDataMap) {
+        for (String each : existedDataSourceNames) {
+            if (dataSourceMetaDataMap.get(each).isInSameDatabaseInstance(dataSourceMetaDataMap.get(dataSourceName))) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private Map<String, DataSourceMetaData> getDataSourceMetaDataMap() {
+        Map<String, DataSourceMetaData> result = new LinkedHashMap<>();
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            result.put(entry.getKey(), DataSourceMetaDataFactory.getDataSourceMetaData
+                    (databaseTypeEnvironment.getDatabaseType(), entry.getValue()));
+        }
+        return result;
     }
     
     @BeforeClass
