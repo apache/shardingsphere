@@ -87,8 +87,7 @@ public final class AuthorityEnvironmentManager {
             for (String each : sqls) {
                 try {
                     connection.createStatement().execute(each);
-                } catch (final SQLException ex) {
-                    log.warn("Authority SQL: " + ex.getMessage());
+                } catch (final SQLException ignored) {
                 }
             }
         }
