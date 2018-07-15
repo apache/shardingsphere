@@ -59,18 +59,15 @@ public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
     
     private final DatabaseType databaseType;
     
-    private final boolean showSQL;
-    
     @Getter
     private final List<ColumnType> columnTypes;
     
     private final RuleRegistry ruleRegistry;
     
-    public JDBCStatementBackendHandler(final List<PreparedStatementParameter> preparedStatementParameters, final int statementId, final DatabaseType databaseType, final boolean showSQL) {
+    public JDBCStatementBackendHandler(final List<PreparedStatementParameter> preparedStatementParameters, final int statementId, final DatabaseType databaseType) {
         super(PreparedStatementRegistry.getInstance().getSQL(statementId), ProxyJDBCResourceFactory.newPrepareResource());
         this.preparedStatementParameters = preparedStatementParameters;
         this.databaseType = databaseType;
-        this.showSQL = showSQL;
         columnTypes = new CopyOnWriteArrayList<>();
         ruleRegistry = RuleRegistry.getInstance();
     }
@@ -78,7 +75,7 @@ public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
     @Override
     protected SQLRouteResult doShardingRoute() {
         PreparedStatementRoutingEngine routingEngine = new PreparedStatementRoutingEngine(
-                getSql(), ruleRegistry.getShardingRule(), ruleRegistry.getShardingMetaData(), databaseType, showSQL, ruleRegistry.getShardingDataSourceMetaData());
+                getSql(), ruleRegistry.getShardingRule(), ruleRegistry.getShardingMetaData(), databaseType, ruleRegistry.isShowSQL(), ruleRegistry.getShardingDataSourceMetaData());
         return routingEngine.route(getComStmtExecuteParameters());
     }
     

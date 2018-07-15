@@ -76,8 +76,6 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     
     private final DatabaseType databaseType;
     
-    private final boolean showSQL;
-    
     private MergedResult mergedResult;
     
     private int currentSequenceId;
@@ -88,22 +86,24 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     
     private boolean hasMoreResultValueFlag;
     
-    public SQLPacketsBackendHandler(final CommandPacketRebuilder rebuilder, final DatabaseType databaseType, final boolean showSQL) {
+    private final RuleRegistry ruleRegistry;
+    
+    public SQLPacketsBackendHandler(final CommandPacketRebuilder rebuilder, final DatabaseType databaseType) {
         this.rebuilder = rebuilder;
         this.databaseType = databaseType;
-        this.showSQL = showSQL;
         isMerged = false;
         hasMoreResultValueFlag = true;
+        ruleRegistry = RuleRegistry.getInstance();
     }
     
     @Override
     public CommandResponsePackets execute() {
-        return RuleRegistry.getInstance().isMasterSlaveOnly() ? executeForMasterSlave() : executeForSharding();
+        return ruleRegistry.isMasterSlaveOnly() ? executeForMasterSlave() : executeForSharding();
     }
     
     private CommandResponsePackets executeForMasterSlave() {
         SQLStatement sqlStatement = new SQLJudgeEngine(rebuilder.sql()).judge();
-        String dataSourceName = new MasterSlaveRouter(RuleRegistry.getInstance().getMasterSlaveRule()).route(sqlStatement.getType()).iterator().next();
+        String dataSourceName = new MasterSlaveRouter(ruleRegistry.getMasterSlaveRule()).route(sqlStatement.getType()).iterator().next();
         synchronizedFuture = new SynchronizedFuture<>(1);
         MySQLResultCache.getInstance().putFuture(rebuilder.connectionId(), synchronizedFuture);
         CommandPacket commandPacket = rebuilder.rebuild(rebuilder.sequenceId(), rebuilder.connectionId(), rebuilder.sql());
@@ -119,8 +119,8 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     }
     
     private CommandResponsePackets executeForSharding() {
-        StatementRoutingEngine routingEngine = new StatementRoutingEngine(RuleRegistry.getInstance().getShardingRule(),
-                RuleRegistry.getInstance().getShardingMetaData(), databaseType, showSQL, RuleRegistry.getInstance().getShardingDataSourceMetaData());
+        StatementRoutingEngine routingEngine = new StatementRoutingEngine(
+                ruleRegistry.getShardingRule(), ruleRegistry.getShardingMetaData(), databaseType, ruleRegistry.isShowSQL(), ruleRegistry.getShardingDataSourceMetaData());
         SQLRouteResult routeResult = routingEngine.route(rebuilder.sql());
         if (routeResult.getExecutionUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1));
@@ -203,8 +203,8 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     
     private CommandResponsePackets mergeDQLorDAL(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets, final List<QueryResult> queryResults) {
         try {
-            mergedResult = MergeEngineFactory.newInstance(RuleRegistry.getInstance().getShardingRule(), queryResults,
-                    sqlStatement, RuleRegistry.getInstance().getShardingMetaData()).merge();
+            mergedResult = MergeEngineFactory.newInstance(ruleRegistry.getShardingRule(), queryResults,
+                    sqlStatement, ruleRegistry.getShardingMetaData()).merge();
             isMerged = true;
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex));

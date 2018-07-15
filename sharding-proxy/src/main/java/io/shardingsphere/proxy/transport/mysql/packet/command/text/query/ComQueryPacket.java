@@ -93,9 +93,7 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
     }
     
     private BackendHandler getBackendHandler(final String sql) {
-        return RuleRegistry.getInstance().isWithoutJdbc()
-                ? new SQLPacketsBackendHandler(this, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL())
-                : new JDBCTextBackendHandler(sql, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
+        return RuleRegistry.getInstance().isWithoutJdbc() ? new SQLPacketsBackendHandler(this, DatabaseType.MySQL) : new JDBCTextBackendHandler(sql, DatabaseType.MySQL);
     }
     
     /**

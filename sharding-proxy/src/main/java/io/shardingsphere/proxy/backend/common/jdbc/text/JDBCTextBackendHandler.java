@@ -50,21 +50,18 @@ public final class JDBCTextBackendHandler extends JDBCBackendHandler {
    
     private final DatabaseType databaseType;
     
-    private final boolean showSQL;
-    
     private final RuleRegistry ruleRegistry;
     
-    public JDBCTextBackendHandler(final String sql, final DatabaseType databaseType, final boolean showSQL) {
+    public JDBCTextBackendHandler(final String sql, final DatabaseType databaseType) {
         super(sql, ProxyJDBCResourceFactory.newResource());
         this.databaseType = databaseType;
-        this.showSQL = showSQL;
         ruleRegistry = RuleRegistry.getInstance();
     }
     
     @Override
     protected SQLRouteResult doShardingRoute() {
         StatementRoutingEngine routingEngine = new StatementRoutingEngine(
-                ruleRegistry.getShardingRule(), ruleRegistry.getShardingMetaData(), databaseType, showSQL, ruleRegistry.getShardingDataSourceMetaData());
+                ruleRegistry.getShardingRule(), ruleRegistry.getShardingMetaData(), databaseType, ruleRegistry.isShowSQL(), ruleRegistry.getShardingDataSourceMetaData());
         return routingEngine.route(getSql());
     }
     
