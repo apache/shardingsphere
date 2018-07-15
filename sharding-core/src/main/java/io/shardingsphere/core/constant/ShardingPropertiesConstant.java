@@ -69,6 +69,11 @@ public enum ShardingPropertiesConstant {
     
     PROXY_TRANSACTION_MODE("proxy.transaction.mode", "NONE", String.class),
     
+    /**
+     * Thread pool size of connect database for Sharding-Proxy.
+     * 
+     * <p>Cannot change dynamically, change this value should restart proxy.</p>
+     */
     PROXY_MAX_WORKING_THREADS("proxy.max.working.threads", Runtime.getRuntime().availableProcessors() * 2 + "", int.class);
     
     private final String key;
