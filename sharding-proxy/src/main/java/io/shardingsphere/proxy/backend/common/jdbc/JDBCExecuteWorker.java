@@ -31,7 +31,6 @@ import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -48,7 +47,6 @@ import java.util.concurrent.Callable;
  */
 @AllArgsConstructor
 @Getter
-@Slf4j
 public abstract class JDBCExecuteWorker implements Callable<CommandResponsePackets> {
     
     private final JDBCBackendHandler executeBackendHandler;
@@ -59,8 +57,7 @@ public abstract class JDBCExecuteWorker implements Callable<CommandResponsePacke
     public CommandResponsePackets call() {
         try {
             return execute();
-        } catch (SQLException ex) {
-            log.error("ExecuteWorker", ex);
+        } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex));
         } finally {
             MasterVisitedManager.clear();

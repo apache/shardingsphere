@@ -48,7 +48,6 @@ import io.shardingsphere.proxy.util.ExecutorContext;
 import io.shardingsphere.transaction.xa.AtomikosUserTransaction;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
 import javax.transaction.Status;
@@ -71,7 +70,6 @@ import java.util.concurrent.Future;
  * @author zhaojun
  */
 @Getter
-@Slf4j
 public abstract class JDBCBackendHandler implements BackendHandler {
     
     private final String sql;
@@ -107,7 +105,6 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         try {
             return execute(ruleRegistry.isMasterSlaveOnly() ? doMasterSlaveRoute() : doShardingRoute());
         } catch (final Exception ex) {
-            log.error("ExecuteBackendHandler", ex);
             return new CommandResponsePackets(new ErrPacket(1, new SQLException(ex)));
         }
     }
