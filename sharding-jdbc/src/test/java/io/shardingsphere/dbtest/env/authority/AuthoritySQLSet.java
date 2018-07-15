@@ -36,7 +36,7 @@ import java.util.List;
  * @author panjuan
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class SQLSet {
+public final class AuthoritySQLSet {
     
     @XmlAttribute(name = "db-types")
     private String databaseTypes = "H2,MySQL,Oracle,SQLServer,PostgreSQL";
@@ -52,7 +52,7 @@ public final class SQLSet {
     /**
      * Get all create user sqls.
      *
-     * @param databaseType database type.
+     * @param databaseType database type
      * @return create user sqls
      */
     public Collection<String> getCreateUserSQLs(final DatabaseType databaseType) {
@@ -62,7 +62,7 @@ public final class SQLSet {
     /**
      * Get all drop user sqls.
      *
-     * @param databaseType database type.
+     * @param databaseType database type
      * @return create user sqls
      */
     public Collection<String> getDropUserSQLs(final DatabaseType databaseType) {

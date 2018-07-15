@@ -38,7 +38,7 @@ import java.util.Map;
 @Slf4j
 public final class AuthorityEnvironmentManager {
     
-    private final Authority authority;
+    private final AuthorityEnvironment authorityEnvironment;
     
     private final Map<String, DataSource> instanceDataSourceMap;
     
@@ -46,7 +46,7 @@ public final class AuthorityEnvironmentManager {
     
     public AuthorityEnvironmentManager(final String path, final Map<String, DataSource> instanceDataSourceMap, final DatabaseType databaseType) throws IOException, JAXBException {
         try (FileReader reader = new FileReader(path)) {
-            authority = (Authority) JAXBContext.newInstance(Authority.class).createUnmarshaller().unmarshal(reader);
+            authorityEnvironment = (AuthorityEnvironment) JAXBContext.newInstance(AuthorityEnvironment.class).createUnmarshaller().unmarshal(reader);
         }
         this.instanceDataSourceMap = instanceDataSourceMap;
         this.databaseType = databaseType;
@@ -58,7 +58,7 @@ public final class AuthorityEnvironmentManager {
      * @throws SQLException SQL exception
      */
     public void initialize() throws SQLException {
-        Collection<String> initSQLs = authority.getInitSQLs(databaseType);
+        Collection<String> initSQLs = authorityEnvironment.getInitSQLs(databaseType);
         if (initSQLs.isEmpty()) {
             return;
         }
@@ -73,7 +73,7 @@ public final class AuthorityEnvironmentManager {
      * @throws SQLException SQL exception
      */
     public void clean() throws SQLException {
-        Collection<String> cleanSQLs = authority.getCleanSQLs(databaseType);
+        Collection<String> cleanSQLs = authorityEnvironment.getCleanSQLs(databaseType);
         if (cleanSQLs.isEmpty()) {
             return;
         }

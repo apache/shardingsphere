@@ -30,34 +30,34 @@ import java.util.LinkedList;
  * @author panjuan
  */
 @XmlRootElement(name = "authority")
-public final class Authority {
+public final class AuthorityEnvironment {
     
     @XmlElement(name = "sqlset")
-    private Collection<SQLSet> sqlSets = new LinkedList<>();
+    private Collection<AuthoritySQLSet> sqlSets = new LinkedList<>();
     
     /**
-     * Get init sqls of this data base type.
+     * Get init sqls of this database type.
      *
-     * @param databaseType data base type
+     * @param databaseType database type
      * @return init sqls of this data base type
      */
     public Collection<String> getInitSQLs(final DatabaseType databaseType) {
         Collection<String> result = new LinkedList<>();
-        for (SQLSet each : sqlSets) {
+        for (AuthoritySQLSet each : sqlSets) {
             result.addAll(each.getCreateUserSQLs(databaseType));
         }
         return result;
     }
     
     /**
-     * Get clean sqls of this data base type.
+     * Get clean sqls of this database type.
      *
-     * @param databaseType data base type
-     * @return clean sqls of this data base type
+     * @param databaseType database type
+     * @return clean sqls of this database type
      */
     public Collection<String> getCleanSQLs(final DatabaseType databaseType) {
         Collection<String> result = new LinkedList<>();
-        for (SQLSet each : sqlSets) {
+        for (AuthoritySQLSet each : sqlSets) {
             result.addAll(each.getDropUserSQLs(databaseType));
         }
         return result;
