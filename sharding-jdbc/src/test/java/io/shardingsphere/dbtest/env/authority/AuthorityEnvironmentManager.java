@@ -27,6 +27,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.Map;
 
@@ -85,8 +86,8 @@ public final class AuthorityEnvironmentManager {
     private void executeOnInstanceDataSource(final DataSource dataSource, final Collection<String> sqls) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             for (String each : sqls) {
-                try {
-                    connection.createStatement().execute(each);
+                try (Statement statement = connection.createStatement()) {
+                    statement.execute(each);
                 } catch (final SQLException ignored) {
                 }
             }
