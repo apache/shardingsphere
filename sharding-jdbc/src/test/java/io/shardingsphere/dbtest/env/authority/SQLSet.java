@@ -26,6 +26,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -55,10 +56,7 @@ public final class SQLSet {
      * @return create user sqls
      */
     public Collection<String> getCreateUserSQLs(final DatabaseType databaseType) {
-        if (!getDatabaseTypes().contains(databaseType)) {
-            return new LinkedList<>();
-        }
-        return useCreateSQLs;
+        return getDatabaseTypes().contains(databaseType) ? useCreateSQLs : Collections.<String>emptyList();
     }
     
     /**
@@ -68,10 +66,7 @@ public final class SQLSet {
      * @return create user sqls
      */
     public Collection<String> getDropUserSQLs(final DatabaseType databaseType) {
-        if (!getDatabaseTypes().contains(databaseType)) {
-            return new LinkedList<>();
-        }
-        return useDropSQLs;
+        return getDatabaseTypes().contains(databaseType) ? useDropSQLs : Collections.<String>emptyList();
     }
     
     private Collection<DatabaseType> getDatabaseTypes() {
