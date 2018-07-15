@@ -17,7 +17,6 @@
 
 package io.shardingsphere.proxy.config;
 
-import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.MoreExecutors;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
@@ -44,7 +43,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Sharding rule registry.
@@ -71,10 +70,6 @@ public final class RuleRegistry {
     
     private Map<String, DataSourceParameter> dataSourceConfigurationMap;
     
-    private ProxyAuthority proxyAuthority;
-    
-    private ShardingMetaData shardingMetaData;
-    
     private boolean showSQL;
     
     private ProxyMode proxyMode;
@@ -83,7 +78,11 @@ public final class RuleRegistry {
     
     private int maxWorkingThreads;
     
+    private ProxyAuthority proxyAuthority;
+    
     private ShardingDataSourceMetaData shardingDataSourceMetaData;
+    
+    private ShardingMetaData shardingMetaData;
     
     /**
      * Get instance of sharding rule registry.
@@ -118,15 +117,20 @@ public final class RuleRegistry {
                 dataSourceConfigurationMap.put(entry.getKey(), entry.getValue());
             }
         }
+        proxyAuthority = config.getProxyAuthority();
         shardingDataSourceMetaData = new ShardingDataSourceMetaData(dataSourceMap, shardingRule, DatabaseType.MySQL);
-        // TODO metadata only as pojo, executor service should out of metadata
-        // TODO executor service leak here, should shutdown original executor service
-        shardingMetaData = new ProxyShardingMetaData(MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(maxWorkingThreads)), dataSourceMap);
+    }
+    
+    /**
+     * Initialize rule registry.
+     *
+     * @param executorService executor service
+     */
+    public void initShardingMetaData(final ExecutorService executorService) {
+        shardingMetaData = new ProxyShardingMetaData(MoreExecutors.listeningDecorator(executorService), dataSourceMap);
         if (!isMasterSlaveOnly()) {
             shardingMetaData.init(shardingRule);
         }
-        proxyAuthority = config.getProxyAuthority();
-        Preconditions.checkNotNull(proxyAuthority.getUsername(), "Invalid configuration for proxy authority.");
     }
     
     /**
