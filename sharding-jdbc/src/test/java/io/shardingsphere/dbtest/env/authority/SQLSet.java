@@ -17,15 +17,14 @@
 
 package io.shardingsphere.dbtest.env.authority;
 
+import com.google.common.base.Splitter;
 import io.shardingsphere.core.constant.DatabaseType;
-import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,12 +34,11 @@ import java.util.List;
  *
  * @author panjuan
  */
-@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class SQLSet {
     
     @XmlAttribute(name = "db-types")
-    private String dbTypes;
+    private String databaseTypes = "H2,MySQL,Oracle,SQLServer,PostgreSQL";
     
     @XmlElementWrapper(name = "user-create")
     @XmlElement(name = "sql")
@@ -50,40 +48,37 @@ public final class SQLSet {
     @XmlElement(name = "sql")
     private List<String> useDropSQLs = new LinkedList<>();
     
-    private Collection<DatabaseType> getDatabaseTypeList() {
-        if (null == dbTypes) {
-            return Arrays.asList(DatabaseType.MySQL, DatabaseType.Oracle, DatabaseType.H2, DatabaseType.PostgreSQL, DatabaseType.SQLServer);
-        }
-        Collection<DatabaseType> result = new LinkedList<>();
-        for (String each : dbTypes.split(",")) {
-            result.add(DatabaseType.valueOf(each));
-        }
-        return result;
-    }
-    
     /**
      * Get all create user sqls.
      *
-     * @param databaseType data base type.
+     * @param databaseType database type.
      * @return create user sqls
      */
-    public Collection<String> getCreateUserSQLs(final DatabaseType databaseType ) {
-        if (!getDatabaseTypeList().contains(databaseType)) {
+    public Collection<String> getCreateUserSQLs(final DatabaseType databaseType) {
+        if (!getDatabaseTypes().contains(databaseType)) {
             return new LinkedList<>();
         }
-        return getUseCreateSQLs();
+        return useCreateSQLs;
     }
     
     /**
      * Get all drop user sqls.
      *
-     * @param databaseType data base type.
+     * @param databaseType database type.
      * @return create user sqls
      */
-    public Collection<String> getDropUserSQLs(final DatabaseType databaseType ) {
-        if (!getDatabaseTypeList().contains(databaseType)) {
+    public Collection<String> getDropUserSQLs(final DatabaseType databaseType) {
+        if (!getDatabaseTypes().contains(databaseType)) {
             return new LinkedList<>();
         }
-        return getUseDropSQLs();
+        return useDropSQLs;
+    }
+    
+    private Collection<DatabaseType> getDatabaseTypes() {
+        Collection<DatabaseType> result = new LinkedList<>();
+        for (String each : Splitter.on(",").trimResults().splitToList(databaseTypes)) {
+            result.add(DatabaseType.valueOf(each));
+        }
+        return result;
     }
 }
