@@ -78,8 +78,8 @@ public class SynchronizedFuture<T> implements Future<List<QueryResult>> {
     public List<QueryResult> get(final long timeout, final TimeUnit unit) {
         try {
             latch.await(timeout, unit);
-        } catch (InterruptedException e) {
-            log.error(e.getMessage(), e);
+        } catch (final InterruptedException ex) {
+            log.error(ex.getMessage(), ex);
         }
         return responses;
     }

@@ -167,13 +167,13 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
             byte[] part2 = messageDigest.digest(part1);
             messageDigest.reset();
             messageDigest.update(authPluginData);
-            byte[] authResponse = messageDigest.digest(part2);
-            for (int i = 0; i < authResponse.length; i++) {
-                authResponse[i] = (byte) (authResponse[i] ^ part1[i]);
+            byte[] result = messageDigest.digest(part2);
+            for (int i = 0; i < result.length; i++) {
+                result[i] = (byte) (result[i] ^ part1[i]);
             }
-            return authResponse;
-        } catch (NoSuchAlgorithmException e) {
-            log.error(e.getMessage(), e);
+            return result;
+        } catch (final NoSuchAlgorithmException ex) {
+            log.error(ex.getMessage(), ex);
         }
         return null;
     }

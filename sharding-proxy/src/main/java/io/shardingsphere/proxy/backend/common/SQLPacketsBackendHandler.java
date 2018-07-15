@@ -179,8 +179,8 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
             channel = pool.acquire().get(CONNECT_TIMEOUT, TimeUnit.SECONDS);
             MySQLResultCache.getInstance().putConnection(channel.id().asShortText(), connectionId);
             channel.writeAndFlush(commandPacket);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            log.error(e.getMessage(), e);
+        } catch (final InterruptedException | ExecutionException | TimeoutException ex) {
+            log.error(ex.getMessage(), ex);
         } finally {
             if (null != pool && null != channel) {
                 pool.release(channel);

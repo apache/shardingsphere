@@ -141,8 +141,8 @@ public final class ShardingProxyClient {
             for (int i = 0; i < MAX_CONNECTIONS; i++) {
                 try {
                     channels[i] = pool.acquire().get(CONNECT_TIMEOUT, TimeUnit.SECONDS);
-                } catch (ExecutionException | TimeoutException e) {
-                    log.error(e.getMessage(), e);
+                } catch (final ExecutionException | TimeoutException ex) {
+                    log.error(ex.getMessage(), ex);
                 }
             }
             for (int i = 0; i < MAX_CONNECTIONS; i++) {
