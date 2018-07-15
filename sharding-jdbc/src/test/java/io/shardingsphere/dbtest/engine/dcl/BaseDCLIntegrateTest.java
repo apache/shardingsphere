@@ -39,7 +39,7 @@ public abstract class BaseDCLIntegrateTest extends SingleIntegrateTest {
     public BaseDCLIntegrateTest(final String sqlCaseId, final String path, final DCLIntegrateTestCaseAssertion assertion, final String shardingRuleType,
                                 final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
         super(sqlCaseId, path, assertion, shardingRuleType, databaseTypeEnvironment, caseType);
-        authorityEnvironmentManager = new AuthorityEnvironmentManager(EnvironmentPath.getAuthorityResourcesPath(shardingRuleType), getDataSource(), getDatabaseTypeEnvironment().getDatabaseType());
+        authorityEnvironmentManager = new AuthorityEnvironmentManager(EnvironmentPath.getAuthorityResourcesPath(shardingRuleType), getInstanceDataSourceMap(), getDatabaseTypeEnvironment().getDatabaseType());
     }
     
     @Before

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.cases.authority.sql;
+package io.shardingsphere.dbtest.env.authority;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import lombok.Getter;
@@ -24,9 +24,11 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Authority SQL set xml entry.
@@ -40,11 +42,13 @@ public final class SQLSet {
     @XmlAttribute(name = "db-types")
     private String dbTypes;
     
-    @XmlAttribute(name = "sql-type")
-    private SQLType sqlType;
-    
+    @XmlElementWrapper(name = "user-create")
     @XmlElement(name = "sql")
-    private Collection<SQL> SQLs = new LinkedList<>();
+    private List<String> useCreateSQLs = new LinkedList<>();
+    
+    @XmlElementWrapper(name = "user-drop")
+    @XmlElement(name = "sql")
+    private List<String> useDropSQLs = new LinkedList<>();
     
     private Collection<DatabaseType> getDatabaseTypeList() {
         if (null == dbTypes) {
@@ -58,18 +62,28 @@ public final class SQLSet {
     }
     
     /**
-     * Get all sqls content.
+     * Get all create user sqls.
      *
-     * @return sqls content
+     * @param databaseType data base type.
+     * @return create user sqls
      */
-    public Collection<String> getAllSQLContent(final SQLType sqlType, final DatabaseType databaseType ) {
-        Collection<String> result = new LinkedList<>();
-        if (this.sqlType != sqlType || !getDatabaseTypeList().contains(databaseType)) {
-            return result;
+    public Collection<String> getCreateUserSQLs(final DatabaseType databaseType ) {
+        if (!getDatabaseTypeList().contains(databaseType)) {
+            return new LinkedList<>();
         }
-        for (SQL each : SQLs) {
-            result.add(each.getContent());
+        return getUseCreateSQLs();
+    }
+    
+    /**
+     * Get all drop user sqls.
+     *
+     * @param databaseType data base type.
+     * @return create user sqls
+     */
+    public Collection<String> getDropUserSQLs(final DatabaseType databaseType ) {
+        if (!getDatabaseTypeList().contains(databaseType)) {
+            return new LinkedList<>();
         }
-        return result;
+        return getUseDropSQLs();
     }
 }

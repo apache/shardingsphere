@@ -15,11 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.cases.authority;
+package io.shardingsphere.dbtest.env.authority;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.dbtest.cases.authority.sql.SQLSet;
-import io.shardingsphere.dbtest.cases.authority.sql.SQLType;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -46,7 +44,7 @@ public final class Authority {
     public Collection<String> getInitSQLs(final DatabaseType databaseType) {
         Collection<String> result = new LinkedList<>();
         for (SQLSet each : sqlSets) {
-            result.addAll(each.getAllSQLContent(SQLType.Init, databaseType));
+            result.addAll(each.getCreateUserSQLs(databaseType));
         }
         return result;
     }
@@ -60,7 +58,7 @@ public final class Authority {
     public Collection<String> getCleanSQLs(final DatabaseType databaseType) {
         Collection<String> result = new LinkedList<>();
         for (SQLSet each : sqlSets) {
-            result.addAll(each.getAllSQLContent(SQLType.Clean, databaseType));
+            result.addAll(each.getDropUserSQLs(databaseType));
         }
         return result;
     }
