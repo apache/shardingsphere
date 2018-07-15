@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Authority environment manager.
@@ -39,15 +40,15 @@ public final class AuthorityEnvironmentManager {
     
     private final Authority authority;
     
-    private final DataSource dataSource;
+    private final Map<String, DataSource> instanceDataSourceMap;
     
     private final DatabaseType databaseType;
     
-    public AuthorityEnvironmentManager(final String path, final DataSource dataSource, final DatabaseType databaseType) throws IOException, JAXBException {
+    public AuthorityEnvironmentManager(final String path, final Map<String, DataSource> instanceDataSourceMap, final DatabaseType databaseType) throws IOException, JAXBException {
         try (FileReader reader = new FileReader(path)) {
             authority = (Authority) JAXBContext.newInstance(Authority.class).createUnmarshaller().unmarshal(reader);
         }
-        this.dataSource = dataSource;
+        this.instanceDataSourceMap = instanceDataSourceMap;
         this.databaseType = databaseType;
     }
     
@@ -61,14 +62,8 @@ public final class AuthorityEnvironmentManager {
         if (initSQLs.isEmpty()) {
             return;
         }
-        try (Connection connection = dataSource.getConnection()) {
-            for (String each : initSQLs) {
-                try {
-                    connection.createStatement().execute(each);
-                } catch (final SQLException ex) {
-                    log.warn("Init SQL: " + ex.getMessage());
-                }
-            }    
+        for (DataSource each : instanceDataSourceMap.values()) {
+            executeOnInstanceDataSource(each, initSQLs);
         }
     }
     
@@ -82,14 +77,20 @@ public final class AuthorityEnvironmentManager {
         if (cleanSQLs.isEmpty()) {
             return;
         }
+        for (DataSource each : instanceDataSourceMap.values()) {
+            executeOnInstanceDataSource(each, cleanSQLs);
+        }
+    }
+    
+    private void executeOnInstanceDataSource(final DataSource dataSource, final Collection<String> sqls) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            for (String each : cleanSQLs) {
+            for (String each : sqls) {
                 try {
                     connection.createStatement().execute(each);
                 } catch (final SQLException ex) {
-                    log.warn("Clean SQL: " + ex.getMessage());
+                    log.warn("Authority SQL: " + ex.getMessage());
                 }
-            }    
+            }
         }
     }
 }
