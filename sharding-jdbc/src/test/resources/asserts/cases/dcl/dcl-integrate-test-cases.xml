@@ -68,16 +68,16 @@
     <dcl-test-case sql-case-id="deny_user">
         <assertion />
     </dcl-test-case>
-    <dcl-test-case sql-case-id="DROP_user">
+    <dcl-test-case sql-case-id="drop_user">
         <assertion />
     </dcl-test-case>
-    <dcl-test-case sql-case-id="DROP_user_cascade">
+    <dcl-test-case sql-case-id="drop_user_cascade">
         <assertion />
     </dcl-test-case>
-    <dcl-test-case sql-case-id="DROP_role">
+    <dcl-test-case sql-case-id="drop_role">
         <assertion />
     </dcl-test-case>
-    <dcl-test-case sql-case-id="DROP_login">
+    <dcl-test-case sql-case-id="drop_login">
         <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="rename_user">
