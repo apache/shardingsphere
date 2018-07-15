@@ -17,22 +17,27 @@
 
 package io.shardingsphere.proxy.backend.common;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Hold the connection when proxyMode is CONNECTION_STRICTLY.
+ * Hold the connection when proxy mode is CONNECTION_STRICTLY.
  *
  * @author zhaojun
  */
-public class ProxyConnectionHolder {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ProxyConnectionHolder {
     
     private static final ThreadLocal<Map<DataSource, Connection>> RESOURCE = new ThreadLocal<Map<DataSource, Connection>>() {
+        
         @Override
         protected Map<DataSource, Connection> initialValue() {
-            return new LinkedHashMap<>();
+            return new HashMap<>();
         }
     };
     

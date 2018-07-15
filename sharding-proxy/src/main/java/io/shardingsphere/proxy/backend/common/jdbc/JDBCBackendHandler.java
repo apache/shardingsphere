@@ -17,6 +17,7 @@
 
 package io.shardingsphere.proxy.backend.common.jdbc;
 
+import io.netty.channel.EventLoopGroup;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
@@ -91,6 +92,8 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     private final RuleRegistry ruleRegistry;
     
+    private final EventLoopGroup userGroup;
+    
     public JDBCBackendHandler(final String sql, final BaseJDBCResource jdbcResource) {
         this.sql = sql;
         this.jdbcResource = jdbcResource;
@@ -98,13 +101,16 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         hasMoreResultValueFlag = true;
         resultLists = new CopyOnWriteArrayList<>();
         ruleRegistry = RuleRegistry.getInstance();
+        userGroup = ExecutorContext.getInstance().getUserGroup();
     }
     
     @Override
-    public CommandResponsePackets execute() {
+    public final CommandResponsePackets execute() {
         try {
             return execute(ruleRegistry.isMasterSlaveOnly() ? doMasterSlaveRoute() : doShardingRoute());
-        } catch (final Exception ex) {
+        } catch (final SQLException ex) {
+            return new CommandResponsePackets(new ErrPacket(1, ex));
+        } catch (final SystemException ex) {
             return new CommandResponsePackets(new ErrPacket(1, new SQLException(ex)));
         }
     }
@@ -119,8 +125,8 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         }
         List<Future<CommandResponsePackets>> futureList = new ArrayList<>(1024);
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
-            Statement statement = prepareResource(each.getDataSource(), each.getSqlUnit().getSql(), routeResult.getSqlStatement());
-            futureList.add(ExecutorContext.getInstance().getUserGroup().submit(newSubmitTask(statement, routeResult.getSqlStatement(), each.getSqlUnit().getSql())));
+            Statement statement = prepareResource(each, routeResult.getSqlStatement());
+            futureList.add(userGroup.submit(newSubmitTask(statement, routeResult.getSqlStatement(), each.getSqlUnit().getSql())));
         }
         List<CommandResponsePackets> packets = buildCommandResponsePackets(futureList);
         CommandResponsePackets result = merge(routeResult.getSqlStatement(), packets);
@@ -135,18 +141,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         return TransactionType.XA == ruleRegistry.getTransactionType() && SQLType.DDL == sqlType && Status.STATUS_NO_TRANSACTION != AtomikosUserTransaction.getInstance().getStatus();
     }
     
-    private SQLRouteResult doMasterSlaveRoute() {
-        SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
-        SQLRouteResult result = new SQLRouteResult(sqlStatement);
-        for (String each : new MasterSlaveRouter(ruleRegistry.getMasterSlaveRule()).route(sqlStatement.getType())) {
-            result.getExecutionUnits().add(new SQLExecutionUnit(each, new SQLUnit(sql, Collections.<List<Object>>emptyList())));
-        }
-        return result;
-    }
-    
-    protected abstract SQLRouteResult doShardingRoute();
-    
-    protected abstract Statement prepareResource(String dataSourceName, String unitSQL, SQLStatement sqlStatement) throws SQLException;
+    protected abstract Statement prepareResource(SQLExecutionUnit sqlExecutionUnit, SQLStatement sqlStatement) throws SQLException;
     
     protected abstract Callable<CommandResponsePackets> newSubmitTask(Statement statement, SQLStatement sqlStatement, String unitSQL);
     
@@ -225,8 +220,19 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         return result;
     }
     
+    private SQLRouteResult doMasterSlaveRoute() {
+        SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
+        SQLRouteResult result = new SQLRouteResult(sqlStatement);
+        for (String each : new MasterSlaveRouter(ruleRegistry.getMasterSlaveRule()).route(sqlStatement.getType())) {
+            result.getExecutionUnits().add(new SQLExecutionUnit(each, new SQLUnit(sql, Collections.<List<Object>>emptyList())));
+        }
+        return result;
+    }
+    
+    protected abstract SQLRouteResult doShardingRoute();
+    
     @Override
-    public boolean hasMoreResultValue() throws SQLException {
+    public final boolean hasMoreResultValue() throws SQLException {
         if (!isMerged || !hasMoreResultValueFlag) {
             jdbcResource.clear();
             return false;
@@ -238,7 +244,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     }
     
     @Override
-    public DatabaseProtocolPacket getResultValue() {
+    public final DatabaseProtocolPacket getResultValue() {
         if (!hasMoreResultValueFlag) {
             return new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
         }
@@ -255,16 +261,14 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     protected abstract DatabaseProtocolPacket newDatabaseProtocolPacket(int sequenceId, List<Object> data);
     
-    protected Connection getConnection(final DataSource dataSource) throws SQLException {
-        Connection result;
-        if (ProxyMode.CONNECTION_STRICTLY == ruleRegistry.getProxyMode()) {
-            result = ProxyConnectionHolder.getConnection(dataSource);
-            if (null == result) {
-                result = dataSource.getConnection();
-                ProxyConnectionHolder.setConnection(dataSource, result);
-            }
-        } else {
+    protected final Connection getConnection(final DataSource dataSource) throws SQLException {
+        if (ProxyMode.MEMORY_STRICTLY == ruleRegistry.getProxyMode()) {
+            return dataSource.getConnection();
+        }
+        Connection result = ProxyConnectionHolder.getConnection(dataSource);
+        if (null == result) {
             result = dataSource.getConnection();
+            ProxyConnectionHolder.setConnection(dataSource, result);
         }
         return result;
     }
