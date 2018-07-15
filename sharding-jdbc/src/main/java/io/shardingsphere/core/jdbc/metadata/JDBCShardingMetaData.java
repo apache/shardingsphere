@@ -39,11 +39,11 @@ import java.util.Map;
  */
 @Getter
 public final class JDBCShardingMetaData extends ShardingMetaData {
-
+    
     private final Map<String, DataSource> dataSourceMap;
-
+    
     private final ShardingRule shardingRule;
-
+    
     private final DatabaseType databaseType;
     
     public JDBCShardingMetaData(final ListeningExecutorService executorService, final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType) {
@@ -52,21 +52,18 @@ public final class JDBCShardingMetaData extends ShardingMetaData {
         this.shardingRule = shardingRule;
         this.databaseType = databaseType;
     }
-
+    
     @Override
-    public TableMetaData getTableMetaData(final DataNode dataNode, final ShardingDataSourceNames shardingDataSourceNames,
-                                          final Map<String, Connection> connectionMap) throws SQLException {
+    public TableMetaData getTableMetaData(final DataNode dataNode, final ShardingDataSourceNames shardingDataSourceNames, final Map<String, Connection> connectionMap) throws SQLException {
         String dataSourceName = shardingDataSourceNames.getRawMasterDataSourceName(dataNode.getDataSourceName());
         if (connectionMap.containsKey(dataSourceName)) {
             return ShardingMetaDataHandlerFactory.newInstance(dataNode.getTableName(), databaseType).getTableMetaData(connectionMap.get(dataSourceName));
-        } else {
-            return ShardingMetaDataHandlerFactory.newInstance(dataSourceMap.get(dataSourceName), dataNode.getTableName(), databaseType).getTableMetaData();
         }
+        return ShardingMetaDataHandlerFactory.newInstance(dataSourceMap.get(dataSourceName), dataNode.getTableName(), databaseType).getTableMetaData();
     }
     
     @Override
     public Collection<String> getTableNamesFromDefaultDataSource(final String defaultDataSourceName) throws SQLException {
         return ShardingMetaDataHandlerFactory.newInstance(dataSourceMap.get(defaultDataSourceName), "", databaseType).getTableNamesFromDefaultDataSource();
     }
-
 }

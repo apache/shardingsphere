@@ -87,16 +87,13 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
                 return new CommandResponsePackets(new OKPacket(1));
             }
         } catch (final Exception ex) {
-            log.error("doTransactionIntercept Exception", ex);
             return new CommandResponsePackets(new ErrPacket(1, new SQLException(ex)));
         }
         return backendHandler.execute();
     }
     
     private BackendHandler getBackendHandler(final String sql) {
-        return RuleRegistry.getInstance().isWithoutJdbc()
-                ? new SQLPacketsBackendHandler(this, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL())
-                : new JDBCTextBackendHandler(sql, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
+        return RuleRegistry.getInstance().isWithoutJdbc() ? new SQLPacketsBackendHandler(this, DatabaseType.MySQL) : new JDBCTextBackendHandler(sql, DatabaseType.MySQL);
     }
     
     /**

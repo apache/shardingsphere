@@ -88,9 +88,7 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
     }
     
     private BackendHandler getBackendHandler(final String sql) {
-        return RuleRegistry.getInstance().isWithoutJdbc()
-                ? new SQLPacketsBackendHandler(this, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL())
-                : new JDBCTextBackendHandler(sql, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
+        return RuleRegistry.getInstance().isWithoutJdbc() ? new SQLPacketsBackendHandler(this, DatabaseType.MySQL) : new JDBCTextBackendHandler(sql, DatabaseType.MySQL);
     }
     
     @Override
@@ -104,15 +102,14 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
     
     @Override
     public DatabaseProtocolPacket getResultValue() {
-        DatabaseProtocolPacket result = backendHandler.getResultValue();
+        DatabaseProtocolPacket resultValue = backendHandler.getResultValue();
         if (!backendHandler.isHasMoreResultValueFlag()) {
             return new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
         }
-        if (result instanceof TextResultSetRowPacket) {
-            TextResultSetRowPacket fieldListResponse = (TextResultSetRowPacket) result;
+        if (resultValue instanceof TextResultSetRowPacket) {
+            TextResultSetRowPacket fieldListResponse = (TextResultSetRowPacket) resultValue;
             String columnName = (String) fieldListResponse.getData().get(0);
-            return new ColumnDefinition41Packet(++currentSequenceId, ShardingConstant.LOGIC_SCHEMA_NAME, table, table,
-                columnName, columnName, 100, ColumnType.MYSQL_TYPE_VARCHAR, 0);
+            return new ColumnDefinition41Packet(++currentSequenceId, ShardingConstant.LOGIC_SCHEMA_NAME, table, table, columnName, columnName, 100, ColumnType.MYSQL_TYPE_VARCHAR, 0);
         }
         return new ErrPacket(1, 0, "", "");
     }

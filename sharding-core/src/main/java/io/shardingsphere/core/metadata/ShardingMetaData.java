@@ -28,7 +28,6 @@ import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
@@ -44,20 +43,19 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Abstract Sharding metadata.
+ * Sharding metadata.
  *
  * @author panjuan
  * @author zhaojun
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
 @Slf4j
 public abstract class ShardingMetaData {
     
     private final ListeningExecutorService executorService;
     
-    private Map<String, TableMetaData> tableMetaDataMap;
+    private final Map<String, TableMetaData> tableMetaDataMap = new HashMap<>();
     
     /**
      * Initialize sharding metadata.
@@ -65,20 +63,17 @@ public abstract class ShardingMetaData {
      * @param shardingRule sharding rule
      */
     public void init(final ShardingRule shardingRule) {
-        tableMetaDataMap = new HashMap<>();
         try {
-            Collection<TableRule> tableRules = getTableRules(shardingRule);
-            for (TableRule each : tableRules) {
+            for (TableRule each : getTableRules(shardingRule)) {
                 refresh(each, shardingRule);
             }
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             throw new ShardingException(ex);
         }
     }
     
     private Collection<TableRule> getTableRules(final ShardingRule shardingRule) throws SQLException {
-        Collection<TableRule> result = new LinkedList<>();
-        result.addAll(shardingRule.getTableRules());
+        Collection<TableRule> result = new LinkedList<>(shardingRule.getTableRules());
         String defaultDataSourceName = shardingRule.getShardingDataSourceNames().getDefaultDataSourceName();
         if (!Strings.isNullOrEmpty(defaultDataSourceName)) {
             Collection<String> defaultTableNames = getTableNamesFromDefaultDataSource(shardingRule.getMasterDataSourceName(defaultDataSourceName));
@@ -101,26 +96,26 @@ public abstract class ShardingMetaData {
     /**
      * Refresh each tableMetaData by TableRule.
      *
-     * @param each table rule
+     * @param tableRule table rule
      * @param shardingRule sharding rule
      */
-    public void refresh(final TableRule each, final ShardingRule shardingRule) {
-        refresh(each, shardingRule, Collections.<String, Connection>emptyMap());
+    public void refresh(final TableRule tableRule, final ShardingRule shardingRule) {
+        refresh(tableRule, shardingRule, Collections.<String, Connection>emptyMap());
     }
     
     /**
      * Refresh each tableMetaData by TableRule.
      *
-     * @param each table rule
+     * @param tableRule table rule
      * @param shardingRule sharding rule
      * @param connectionMap connection map passing from sharding connection
      */
-    public void refresh(final TableRule each, final ShardingRule shardingRule, final Map<String, Connection> connectionMap) {
-        tableMetaDataMap.put(each.getLogicTable(), getFinalTableMetaData(each.getLogicTable(), each.getActualDataNodes(), shardingRule.getShardingDataSourceNames(), connectionMap));
+    public void refresh(final TableRule tableRule, final ShardingRule shardingRule, final Map<String, Connection> connectionMap) {
+        tableMetaDataMap.put(tableRule.getLogicTable(), getFinalTableMetaData(tableRule.getLogicTable(), tableRule.getActualDataNodes(), shardingRule.getShardingDataSourceNames(), connectionMap));
     }
     
-    private TableMetaData getFinalTableMetaData(final String logicTableName, final List<DataNode> actualDataNodes,
-                                                final ShardingDataSourceNames shardingDataSourceNames, final Map<String, Connection> connectionMap) {
+    private TableMetaData getFinalTableMetaData(
+            final String logicTableName, final List<DataNode> actualDataNodes, final ShardingDataSourceNames shardingDataSourceNames, final Map<String, Connection> connectionMap) {
         List<TableMetaData> actualTableMetaDataList = getAllActualTableMetaData(actualDataNodes, shardingDataSourceNames, connectionMap);
         for (int i = 0; i < actualTableMetaDataList.size(); i++) {
             if (actualTableMetaDataList.size() - 1 == i) {
@@ -133,17 +128,17 @@ public abstract class ShardingMetaData {
         return new TableMetaData();
     }
     
-    private List<TableMetaData> getAllActualTableMetaData(final List<DataNode> actualDataNodes, final ShardingDataSourceNames shardingDataSourceNames,
-                                                          final Map<String, Connection> connectionMap) {
+    private List<TableMetaData> getAllActualTableMetaData(final List<DataNode> actualDataNodes, final ShardingDataSourceNames shardingDataSourceNames, final Map<String, Connection> connectionMap) {
         List<ListenableFuture<TableMetaData>> result = new ArrayList<>();
         for (final DataNode each : actualDataNodes) {
             result.add(executorService.submit(new Callable<TableMetaData>() {
+                
+                @Override
                 public TableMetaData call() throws Exception {
                     return getTableMetaData(each, shardingDataSourceNames, connectionMap);
                 }
             }));
         }
-        
         try {
             return Futures.allAsList(result).get();
         } catch (final InterruptedException | ExecutionException ex) {
@@ -168,7 +163,7 @@ public abstract class ShardingMetaData {
     }
     
     /**
-     * Judge whether this databaseType is supported.
+     * Judge whether this database type is supported.
      *
      * @return supported or not
      */
