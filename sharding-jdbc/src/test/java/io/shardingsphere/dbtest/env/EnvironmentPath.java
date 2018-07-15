@@ -39,7 +39,7 @@ public final class EnvironmentPath {
     
     private static final String SHARDING_RULE_RESOURCES_PATH = "asserts/env/%s/sharding-rule.yaml";
     
-    private static final String AUTHORITY_RESOURCES_PATH = "asserts/env/com/authority.xml";
+    private static final String AUTHORITY_RESOURCES_PATH = "asserts/env/authority.xml";
     
     /**
      * Get database environment resource File.
