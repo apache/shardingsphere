@@ -62,7 +62,7 @@
     <dcl-test-case sql-case-id="alter_role_add_member">
         <assertion />
     </dcl-test-case>
-    <dcl-test-case sql-case-id="alter_role_DROP_member">
+    <dcl-test-case sql-case-id="alter_role_drop_member">
         <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="deny_user">
