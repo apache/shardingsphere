@@ -43,7 +43,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Abstract Sharding metadata.
+ * Sharding metadata.
  *
  * @author panjuan
  * @author zhaojun
@@ -64,18 +64,16 @@ public abstract class ShardingMetaData {
      */
     public void init(final ShardingRule shardingRule) {
         try {
-            Collection<TableRule> tableRules = getTableRules(shardingRule);
-            for (TableRule each : tableRules) {
+            for (TableRule each : getTableRules(shardingRule)) {
                 refresh(each, shardingRule);
             }
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             throw new ShardingException(ex);
         }
     }
     
     private Collection<TableRule> getTableRules(final ShardingRule shardingRule) throws SQLException {
-        Collection<TableRule> result = new LinkedList<>();
-        result.addAll(shardingRule.getTableRules());
+        Collection<TableRule> result = new LinkedList<>(shardingRule.getTableRules());
         String defaultDataSourceName = shardingRule.getShardingDataSourceNames().getDefaultDataSourceName();
         if (!Strings.isNullOrEmpty(defaultDataSourceName)) {
             Collection<String> defaultTableNames = getTableNamesFromDefaultDataSource(shardingRule.getMasterDataSourceName(defaultDataSourceName));
@@ -108,12 +106,12 @@ public abstract class ShardingMetaData {
     /**
      * Refresh each tableMetaData by TableRule.
      *
-     * @param each table rule
+     * @param tableRule table rule
      * @param shardingRule sharding rule
      * @param connectionMap connection map passing from sharding connection
      */
-    public void refresh(final TableRule each, final ShardingRule shardingRule, final Map<String, Connection> connectionMap) {
-        tableMetaDataMap.put(each.getLogicTable(), getFinalTableMetaData(each.getLogicTable(), each.getActualDataNodes(), shardingRule.getShardingDataSourceNames(), connectionMap));
+    public void refresh(final TableRule tableRule, final ShardingRule shardingRule, final Map<String, Connection> connectionMap) {
+        tableMetaDataMap.put(tableRule.getLogicTable(), getFinalTableMetaData(tableRule.getLogicTable(), tableRule.getActualDataNodes(), shardingRule.getShardingDataSourceNames(), connectionMap));
     }
     
     private TableMetaData getFinalTableMetaData(
@@ -165,7 +163,7 @@ public abstract class ShardingMetaData {
     }
     
     /**
-     * Judge whether this databaseType is supported.
+     * Judge whether this database type is supported.
      *
      * @return supported or not
      */
