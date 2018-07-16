@@ -107,7 +107,8 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
         String dataSourceName = new MasterSlaveRouter(ruleRegistry.getMasterSlaveRule()).route(sqlStatement.getType()).iterator().next();
         synchronizedFuture = new SynchronizedFuture<>(1);
         MySQLResultCache.getInstance().putFuture(rebuilder.connectionId(), synchronizedFuture);
-        executeCommand(dataSourceName, rebuilder.sql());
+        CommandPacket commandPacket = rebuilder.rebuild(rebuilder.sequenceId(), rebuilder.connectionId(), rebuilder.sql());
+        executeCommand(dataSourceName, rebuilder.connectionId(), commandPacket);
         //TODO timeout should be set.
         List<QueryResult> queryResults = synchronizedFuture.get(CONNECT_TIMEOUT, TimeUnit.SECONDS);
         MySQLResultCache.getInstance().deleteFuture(rebuilder.connectionId());
