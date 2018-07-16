@@ -69,7 +69,7 @@ public final class JDBCTextBackendHandler extends JDBCBackendHandler {
     
     @Override
     protected Callable<CommandResponsePackets> createExecuteWorker(final Statement statement, final SQLType sqlType, final boolean isReturnGeneratedKeys, final String actualSQL) {
-        return new JDBCTextExecuteWorker(sqlType, actualSQL, statement, isReturnGeneratedKeys, this);
+        return new JDBCTextExecuteWorker(sqlType, actualSQL, statement, isReturnGeneratedKeys, getJdbcResourceManager(), this);
     }
     
     @Override

@@ -20,6 +20,7 @@ package io.shardingsphere.proxy.backend.common.jdbc.text;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.proxy.backend.common.ResultList;
 import io.shardingsphere.proxy.backend.common.jdbc.JDBCExecuteWorker;
+import io.shardingsphere.proxy.backend.common.jdbc.JDBCResourceManager;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 
@@ -43,8 +44,9 @@ public final class JDBCTextExecuteWorker extends JDBCExecuteWorker {
     
     private final boolean isReturnGeneratedKeys;
     
-    public JDBCTextExecuteWorker(final SQLType sqlType, final String sql, final Statement statement, final boolean isReturnGeneratedKeys, final JDBCTextBackendHandler jdbcTextBackendHandler) {
-        super(sqlType, jdbcTextBackendHandler);
+    public JDBCTextExecuteWorker(final SQLType sqlType, final String sql, final Statement statement, final boolean isReturnGeneratedKeys, 
+                                 final JDBCResourceManager jdbcResourceManager, final JDBCTextBackendHandler jdbcTextBackendHandler) {
+        super(sqlType, jdbcResourceManager, jdbcTextBackendHandler);
         this.statement = statement;
         this.sql = sql;
         this.isReturnGeneratedKeys = isReturnGeneratedKeys;

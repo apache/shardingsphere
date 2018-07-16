@@ -20,6 +20,7 @@ package io.shardingsphere.proxy.backend.common.jdbc.statement;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.proxy.backend.common.ResultList;
 import io.shardingsphere.proxy.backend.common.jdbc.JDBCExecuteWorker;
+import io.shardingsphere.proxy.backend.common.jdbc.JDBCResourceManager;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
@@ -42,9 +43,9 @@ public final class JDBCStatementExecuteWorker extends JDBCExecuteWorker {
     
     private final boolean isReturnGeneratedKeys;
     
-    public JDBCStatementExecuteWorker(
-            final SQLType sqlType, final PreparedStatement preparedStatement, final boolean isReturnGeneratedKeys, final JDBCStatementBackendHandler jdbcStatementBackendHandler) {
-        super(sqlType, jdbcStatementBackendHandler);
+    public JDBCStatementExecuteWorker(final SQLType sqlType, final PreparedStatement preparedStatement, final boolean isReturnGeneratedKeys,
+                                      final JDBCResourceManager jdbcResourceManager, final JDBCStatementBackendHandler jdbcStatementBackendHandler) {
+        super(sqlType, jdbcResourceManager, jdbcStatementBackendHandler);
         this.preparedStatement = preparedStatement;
         this.isReturnGeneratedKeys = isReturnGeneratedKeys;
     }
