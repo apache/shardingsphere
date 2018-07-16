@@ -50,26 +50,15 @@ public final class GeneralDDLIntegrateTest extends BaseDDLIntegrateTest {
     
     @Test
     public void assertExecuteUpdate() throws JAXBException, IOException, SQLException {
-        if (!getDatabaseTypeEnvironment().isEnabled()) {
-            return;
-        }
-        try (Connection connection = getDataSource().getConnection()) {
-            dropTableIfExisted(connection);
-            if (!Strings.isNullOrEmpty(assertion.getInitSql())) {
-                connection.prepareStatement(assertion.getInitSql()).executeUpdate();
-            }
-            if (SQLCaseType.Literal == getCaseType()) {
-                connection.createStatement().executeUpdate(getSql());
-            } else {
-                connection.prepareStatement(getSql()).executeUpdate();
-            }
-            assertMetadata(connection);
-            dropTableIfExisted(connection);
-        }
+        assertExecuteByType(true);
     }
     
     @Test
     public void assertExecute() throws JAXBException, IOException, SQLException {
+        assertExecuteByType(false);
+    }
+
+    private void assertExecuteByType(boolean isExecuteUpdate) throws JAXBException, IOException, SQLException {
         if (!getDatabaseTypeEnvironment().isEnabled()) {
             return;
         }
@@ -78,10 +67,18 @@ public final class GeneralDDLIntegrateTest extends BaseDDLIntegrateTest {
             if (!Strings.isNullOrEmpty(assertion.getInitSql())) {
                 connection.prepareStatement(assertion.getInitSql()).executeUpdate();
             }
-            if (SQLCaseType.Literal == getCaseType()) {
-                connection.createStatement().execute(getSql());
+            if (isExecuteUpdate) {
+                if (SQLCaseType.Literal == getCaseType()) {
+                    connection.createStatement().execute(getSql());
+                } else {
+                    connection.prepareStatement(getSql()).execute();
+                }
             } else {
-                connection.prepareStatement(getSql()).execute();
+                if (SQLCaseType.Literal == getCaseType()) {
+                    connection.createStatement().executeUpdate(getSql());
+                } else {
+                    connection.prepareStatement(getSql()).executeUpdate();
+                }
             }
             assertMetadata(connection);
             dropTableIfExisted(connection);
