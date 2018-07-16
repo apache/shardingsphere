@@ -76,7 +76,7 @@ public final class JDBCTextBackendHandler extends JDBCBackendHandler {
     protected QueryResult newQueryResult(final CommandResponsePackets packet, final int index) {
         MySQLPacketQueryResult result = new MySQLPacketQueryResult(packet);
         if (ProxyMode.MEMORY_STRICTLY == ruleRegistry.getProxyMode()) {
-            result.setResultSet(getJdbcResourceManager().getResultSets().get(index));
+            result.setResultSet(getConnectionManager().getResultSets().get(index));
         } else {
             result.setResultList(getResultLists().get(index));
         }

@@ -17,32 +17,35 @@
 
 package io.shardingsphere.proxy.backend.common.jdbc;
 
+import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.proxy.backend.common.ProxyMode;
 import io.shardingsphere.proxy.config.RuleRegistry;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Connection manager.
  *
  * @author zhaojun
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ConnectionManager {
+public final class ConnectionManager implements AutoCloseable {
     
-    private static final ThreadLocal<Map<String, Connection>> RESOURCE = new ThreadLocal<Map<String, Connection>>() {
-        
-        @Override
-        protected Map<String, Connection> initialValue() {
-            return new HashMap<>();
-        }
-    };
+    private final Map<String, Connection> dataSourceConnectionMap = new HashMap<>();
+    
+    private final Collection<Connection> cachedConnections = new LinkedList<>();
+    
+    @Getter
+    private final List<ResultSet> resultSets = new CopyOnWriteArrayList<>();
     
     /**
      * Get connection of current thread datasource.
@@ -51,18 +54,37 @@ public final class ConnectionManager {
      * @return connection
      * @throws SQLException SQL exception
      */
-    public static Connection getConnection(final String dataSourceName) throws SQLException {
+    public Connection getConnection(final String dataSourceName) throws SQLException {
         DataSource dataSource = RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName);
+        Connection result;
         if (ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
-            return dataSource.getConnection();
+            result = dataSource.getConnection();
+        } else {
+            result = dataSourceConnectionMap.containsKey(dataSourceName) ? dataSourceConnectionMap.get(dataSourceName) : dataSourceConnectionMap.put(dataSourceName, dataSource.getConnection());
         }
-        return RESOURCE.get().containsKey(dataSourceName) ? RESOURCE.get().get(dataSourceName) : RESOURCE.get().put(dataSourceName, dataSource.getConnection());
+        cachedConnections.add(result);
+        return result;
     }
     
     /**
-     * Clear connection resource for current thread-local.
+     * Add new result set to resource manager.
+     *
+     * @param resultSet result set
      */
-    public static void clear() {
-        RESOURCE.remove();
+    public void addResultSet(final ResultSet resultSet) {
+        if (ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
+            resultSets.add(resultSet);
+        }
+    }
+    
+    @Override
+    public void close() {
+        try {
+            for (Connection each : cachedConnections) {
+                each.close();
+            }
+        } catch (final SQLException ignored) {
+        }
+        MasterVisitedManager.clear();
     }
 }

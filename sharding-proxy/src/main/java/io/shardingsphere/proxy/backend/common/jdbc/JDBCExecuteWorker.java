@@ -91,7 +91,7 @@ public abstract class JDBCExecuteWorker implements Callable<CommandResponsePacke
     protected abstract CommandResponsePackets executeCommon() throws SQLException;
     
     protected CommandResponsePackets getQueryDatabaseProtocolPackets(final ResultSet resultSet) throws SQLException {
-        jdbcBackendHandler.getJdbcResourceManager().addResultSet(resultSet);
+        jdbcBackendHandler.getConnectionManager().addResultSet(resultSet);
         CommandResponsePackets result = new CommandResponsePackets();
         int currentSequenceId = 0;
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
