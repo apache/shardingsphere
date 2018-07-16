@@ -89,7 +89,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     private final EventLoopGroup userGroup;
     
-    private final ConnectionManager connectionManager;
+    private final JDBCResourceManager jdbcResourceManager;
     
     public JDBCBackendHandler(final String sql) {
         this.sql = sql;
@@ -98,7 +98,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         resultLists = new CopyOnWriteArrayList<>();
         ruleRegistry = RuleRegistry.getInstance();
         userGroup = ExecutorContext.getInstance().getUserGroup();
-        connectionManager = new ConnectionManager();
+        jdbcResourceManager = new JDBCResourceManager();
     }
     
     @Override
@@ -125,7 +125,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         List<Future<CommandResponsePackets>> futureList = new ArrayList<>(1024);
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             String actualSQL = each.getSqlUnit().getSql();
-            Statement statement = createStatement(connectionManager.getConnection(each.getDataSource()), actualSQL, isReturnGeneratedKeys);
+            Statement statement = createStatement(jdbcResourceManager.getConnection(each.getDataSource()), actualSQL, isReturnGeneratedKeys);
             futureList.add(userGroup.submit(createExecuteWorker(statement, sqlStatement.getType(), isReturnGeneratedKeys, actualSQL)));
         }
         List<CommandResponsePackets> packets = buildCommandResponsePackets(futureList);
@@ -234,7 +234,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     @Override
     public final boolean hasMoreResultValue() throws SQLException {
         if (!isMerged || !hasMoreResultValueFlag) {
-            connectionManager.close();
+            jdbcResourceManager.close();
             return false;
         }
         if (!mergedResult.next()) {

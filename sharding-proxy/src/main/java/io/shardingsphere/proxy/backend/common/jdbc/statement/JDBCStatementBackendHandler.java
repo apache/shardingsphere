@@ -101,7 +101,7 @@ public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
     protected QueryResult newQueryResult(final CommandResponsePackets packet, final int index) {
         MySQLPacketStatementExecuteQueryResult result = new MySQLPacketStatementExecuteQueryResult(packet, columnTypes);
         if (ProxyMode.MEMORY_STRICTLY == ruleRegistry.getProxyMode()) {
-            result.setResultSet(getConnectionManager().getResultSets().get(index));
+            result.setResultSet(getJdbcResourceManager().getResultSets().get(index));
         } else {
             result.setResultList(getResultLists().get(index));
         }

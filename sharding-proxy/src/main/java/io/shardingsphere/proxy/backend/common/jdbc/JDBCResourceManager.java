@@ -34,11 +34,11 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Connection manager.
+ * JDBC resourceManager manager.
  *
  * @author zhaojun
  */
-public final class ConnectionManager implements AutoCloseable {
+public final class JDBCResourceManager implements AutoCloseable {
     
     private final Map<String, Connection> dataSourceConnectionMap = new HashMap<>();
     
