@@ -43,17 +43,22 @@ public final class JDBCStatementExecuteWorker extends JDBCExecuteWorker {
     
     private final boolean isReturnGeneratedKeys;
     
+    private final JDBCResourceManager jdbcResourceManager;
+    
     public JDBCStatementExecuteWorker(final SQLType sqlType, final PreparedStatement preparedStatement, final boolean isReturnGeneratedKeys,
                                       final JDBCResourceManager jdbcResourceManager, final JDBCStatementBackendHandler jdbcStatementBackendHandler) {
-        super(sqlType, jdbcResourceManager, jdbcStatementBackendHandler);
+        super(sqlType, jdbcStatementBackendHandler);
         this.preparedStatement = preparedStatement;
         this.isReturnGeneratedKeys = isReturnGeneratedKeys;
+        this.jdbcResourceManager = jdbcResourceManager;
     }
     
     @Override
     protected CommandResponsePackets executeQueryWithStreamResultSet() throws SQLException {
         preparedStatement.setFetchSize(FETCH_ONE_ROW_A_TIME);
-        return getQueryDatabaseProtocolPackets(preparedStatement.executeQuery());
+        ResultSet resultSet = preparedStatement.executeQuery();
+        jdbcResourceManager.addResultSet(resultSet);
+        return getHeaderPackets(resultSet.getMetaData());
     }
     
     @Override
@@ -61,13 +66,13 @@ public final class JDBCStatementExecuteWorker extends JDBCExecuteWorker {
         ResultSet resultSet = preparedStatement.executeQuery();
         ResultList resultList = new ResultList();
         while (resultSet.next()) {
-            for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
-                resultList.add(resultSet.getObject(i));
+            for (int columnIndex = 1; columnIndex <= resultSet.getMetaData().getColumnCount(); columnIndex++) {
+                resultList.add(resultSet.getObject(columnIndex));
             }
         }
         resultList.setIterator(resultList.getResultList().iterator());
         getJdbcBackendHandler().getResultLists().add(resultList);
-        return getQueryDatabaseProtocolPackets(resultSet);
+        return getHeaderPackets(resultSet.getMetaData());
     }
     
     @Override
@@ -90,6 +95,7 @@ public final class JDBCStatementExecuteWorker extends JDBCExecuteWorker {
     
     @Override
     protected CommandResponsePackets executeCommon() throws SQLException {
+        // TODO here is wrong !!
         boolean hasResultSet = preparedStatement.execute();
         if (hasResultSet) {
             return getCommonDatabaseProtocolPackets(preparedStatement.getResultSet());

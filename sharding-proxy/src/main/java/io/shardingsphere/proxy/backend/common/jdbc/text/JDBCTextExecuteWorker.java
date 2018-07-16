@@ -44,34 +44,37 @@ public final class JDBCTextExecuteWorker extends JDBCExecuteWorker {
     
     private final boolean isReturnGeneratedKeys;
     
+    private final JDBCResourceManager jdbcResourceManager;
+    
     public JDBCTextExecuteWorker(final SQLType sqlType, final String sql, final Statement statement, final boolean isReturnGeneratedKeys, 
                                  final JDBCResourceManager jdbcResourceManager, final JDBCTextBackendHandler jdbcTextBackendHandler) {
-        super(sqlType, jdbcResourceManager, jdbcTextBackendHandler);
+        super(sqlType, jdbcTextBackendHandler);
         this.statement = statement;
         this.sql = sql;
         this.isReturnGeneratedKeys = isReturnGeneratedKeys;
+        this.jdbcResourceManager = jdbcResourceManager;
     }
     
     @Override
     protected CommandResponsePackets executeQueryWithStreamResultSet() throws SQLException {
         statement.setFetchSize(FETCH_ONE_ROW_A_TIME);
-        return getQueryDatabaseProtocolPackets(statement.executeQuery(sql));
+        ResultSet resultSet = statement.executeQuery(sql);
+        jdbcResourceManager.addResultSet(resultSet);
+        return getHeaderPackets(resultSet.getMetaData());
     }
     
     @Override
     protected CommandResponsePackets executeQueryWithMemoryResultSet() throws SQLException {
-        try (
-                ResultSet resultSet = statement.executeQuery(sql)
-        ) {
+        try (ResultSet resultSet = statement.executeQuery(sql)) {
             ResultList resultList = new ResultList();
             while (resultSet.next()) {
-                for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
-                    resultList.add(resultSet.getObject(i));
+                for (int columnIndex = 1; columnIndex <= resultSet.getMetaData().getColumnCount(); columnIndex++) {
+                    resultList.add(resultSet.getObject(columnIndex));
                 }
             }
             resultList.setIterator(resultList.getResultList().iterator());
             getJdbcBackendHandler().getResultLists().add(resultList);
-            return getQueryDatabaseProtocolPackets(resultSet);
+            return getHeaderPackets(resultSet.getMetaData());
         }
     }
     

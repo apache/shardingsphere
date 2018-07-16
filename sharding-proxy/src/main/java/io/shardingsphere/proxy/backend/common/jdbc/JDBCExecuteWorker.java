@@ -50,8 +50,6 @@ public abstract class JDBCExecuteWorker implements Callable<CommandResponsePacke
     
     private final SQLType sqlType;
     
-    private final JDBCResourceManager jdbcResourceManager;
-    
     @Getter
     private final JDBCBackendHandler jdbcBackendHandler;
     
@@ -75,6 +73,7 @@ public abstract class JDBCExecuteWorker implements Callable<CommandResponsePacke
             case DDL:
                 return executeUpdate();
             default:
+                // TODO when go to here? can DCL and TCL use executeUpdate? 
                 return executeCommon();
         }
     }
@@ -91,21 +90,17 @@ public abstract class JDBCExecuteWorker implements Callable<CommandResponsePacke
     
     protected abstract CommandResponsePackets executeCommon() throws SQLException;
     
-    protected CommandResponsePackets getQueryDatabaseProtocolPackets(final ResultSet resultSet) throws SQLException {
-        jdbcResourceManager.addResultSet(resultSet);
+    protected final CommandResponsePackets getHeaderPackets(final ResultSetMetaData resultSetMetaData) throws SQLException {
         int currentSequenceId = 0;
-        ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         int columnCount = resultSetMetaData.getColumnCount();
         jdbcBackendHandler.setColumnCount(columnCount);
         if (0 == columnCount) {
             return new CommandResponsePackets(new OKPacket(++currentSequenceId));
         }
         CommandResponsePackets result = new CommandResponsePackets(new FieldCountPacket(++currentSequenceId, columnCount));
-        for (int i = 1; i <= columnCount; i++) {
-            setColumnType(ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(i)));
-            result.addPacket(new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData.getSchemaName(i), resultSetMetaData.getTableName(i),
-                    resultSetMetaData.getTableName(i), resultSetMetaData.getColumnLabel(i), resultSetMetaData.getColumnName(i),
-                    resultSetMetaData.getColumnDisplaySize(i), ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(i)), 0));
+        for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+            setColumnType(ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(columnIndex)));
+            result.addPacket(new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData, columnIndex));
         }
         result.addPacket(new EofPacket(++currentSequenceId));
         return result;
@@ -114,27 +109,23 @@ public abstract class JDBCExecuteWorker implements Callable<CommandResponsePacke
     protected void setColumnType(final ColumnType columnType) {
     }
     
-    protected CommandResponsePackets getCommonDatabaseProtocolPackets(final ResultSet resultSet) throws SQLException {
-        CommandResponsePackets result = new CommandResponsePackets();
+    protected final CommandResponsePackets getCommonDatabaseProtocolPackets(final ResultSet resultSet) throws SQLException {
         int currentSequenceId = 0;
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         int columnCount = resultSetMetaData.getColumnCount();
         jdbcBackendHandler.setColumnCount(columnCount);
         if (0 == columnCount) {
-            result.addPacket(new OKPacket(++currentSequenceId));
-            return result;
+            return new CommandResponsePackets(new OKPacket(++currentSequenceId));
         }
-        result.addPacket(new FieldCountPacket(++currentSequenceId, columnCount));
-        for (int i = 1; i <= columnCount; i++) {
-            result.addPacket(new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData.getSchemaName(i), resultSetMetaData.getTableName(i),
-                    resultSetMetaData.getTableName(i), resultSetMetaData.getColumnLabel(i), resultSetMetaData.getColumnName(i),
-                    resultSetMetaData.getColumnDisplaySize(i), ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(i)), 0));
+        CommandResponsePackets result = new CommandResponsePackets(new FieldCountPacket(++currentSequenceId, columnCount));
+        for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+            result.addPacket(new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData, columnIndex));
         }
         result.addPacket(new EofPacket(++currentSequenceId));
         while (resultSet.next()) {
             List<Object> data = new ArrayList<>(columnCount);
-            for (int i = 1; i <= columnCount; i++) {
-                data.add(resultSet.getObject(i));
+            for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+                data.add(resultSet.getObject(columnIndex));
             }
             result.addPacket(new TextResultSetRowPacket(++currentSequenceId, data));
         }
@@ -142,7 +133,7 @@ public abstract class JDBCExecuteWorker implements Callable<CommandResponsePacke
         return result;
     }
     
-    protected long getGeneratedKey(final Statement statement) throws SQLException {
+    protected final long getGeneratedKey(final Statement statement) throws SQLException {
         long result = 0;
         ResultSet resultSet = statement.getGeneratedKeys();
         if (resultSet.next()) {
