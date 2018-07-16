@@ -27,7 +27,7 @@
         <assertion init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="create_index.xml" />
     </ddl-test-case>
     
-    <ddl-test-case sql-case-id="create_unique_index" init-sql="CREATE TABLE t_log(id int, status varchar(10))">
+    <ddl-test-case sql-case-id="create_unique_index">
         <assertion init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="create_unique_index.xml" />
     </ddl-test-case>
     
