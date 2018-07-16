@@ -50,9 +50,9 @@ import java.util.concurrent.Callable;
 @Getter
 public abstract class JDBCExecuteWorker implements Callable<CommandResponsePackets> {
     
-    private final JDBCBackendHandler jdbcBackendHandler;
-    
     private final SQLType sqlType;
+    
+    private final JDBCBackendHandler jdbcBackendHandler;
     
     @Override
     public CommandResponsePackets call() {

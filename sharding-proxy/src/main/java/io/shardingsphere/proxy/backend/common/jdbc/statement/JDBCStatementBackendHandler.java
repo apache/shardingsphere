@@ -84,8 +84,8 @@ public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
     }
     
     @Override
-    protected Callable<CommandResponsePackets> newSubmitTask(final Statement statement, final SQLType sqlType, final boolean isReturnGeneratedKeys, final String actualSQL) {
-        return new JDBCStatementExecuteWorker(this, sqlType, isReturnGeneratedKeys, (PreparedStatement) statement);
+    protected Callable<CommandResponsePackets> createExecuteWorker(final Statement statement, final SQLType sqlType, final boolean isReturnGeneratedKeys, final String actualSQL) {
+        return new JDBCStatementExecuteWorker(sqlType, (PreparedStatement) statement, isReturnGeneratedKeys, this);
     }
     
     @Override
