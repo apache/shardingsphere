@@ -71,10 +71,12 @@ public enum ShardingPropertiesConstant {
     
     /**
      * Thread pool size of connect database for Sharding-Proxy.
-     * 
+     *
      * <p>Cannot change dynamically, change this value should restart proxy.</p>
      */
-    PROXY_MAX_WORKING_THREADS("proxy.max.working.threads", Runtime.getRuntime().availableProcessors() * 2 + "", int.class);
+    PROXY_MAX_WORKING_THREADS("proxy.max.working.threads", Runtime.getRuntime().availableProcessors() * 2 + "", int.class),
+    
+    PROXY_BACKEND_USE_NIO("proxy.backend.use.nio", Boolean.FALSE.toString(), boolean.class);
     
     private final String key;
     

@@ -60,8 +60,6 @@ public final class RuleRegistry {
     
     private static final RuleRegistry INSTANCE = new RuleRegistry();
     
-    private final boolean withoutJdbc = false;
-    
     private ShardingRule shardingRule;
     
     private MasterSlaveRule masterSlaveRule;
@@ -77,6 +75,8 @@ public final class RuleRegistry {
     private TransactionType transactionType;
     
     private int maxWorkingThreads;
+    
+    private boolean proxyBackendUseNio;
     
     private ProxyAuthority proxyAuthority;
     
@@ -105,6 +105,7 @@ public final class RuleRegistry {
         proxyMode = ProxyMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_MODE));
         transactionType = TransactionType.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_MODE));
         maxWorkingThreads = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_MAX_WORKING_THREADS);
+        proxyBackendUseNio = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO);
         shardingRule = new ShardingRule(
                 null == config.getShardingRule() ? new ShardingRuleConfiguration() : config.getShardingRule().getShardingRuleConfiguration(), config.getDataSources().keySet());
         if (null != config.getMasterSlaveRule()) {
@@ -112,7 +113,7 @@ public final class RuleRegistry {
         }
         dataSourceMap = ProxyRawDataSourceFactory.create(transactionType, config);
         dataSourceConfigurationMap = new HashMap<>(128, 1);
-        if (withoutJdbc) {
+        if (proxyBackendUseNio) {
             for (Entry<String, DataSourceParameter> entry : config.getDataSources().entrySet()) {
                 dataSourceConfigurationMap.put(entry.getKey(), entry.getValue());
             }

@@ -37,5 +37,5 @@ public abstract class CommandResponsePacketsHandler extends ChannelInboundHandle
     
     protected abstract void errPacket(ChannelHandlerContext context, MySQLPacketPayload mysqlPacketPayload);
     
-    protected abstract void commonPacket(MySQLPacketPayload mysqlPacketPayload);
+    protected abstract void commonPacket(ChannelHandlerContext context, MySQLPacketPayload mysqlPacketPayload);
 }
