@@ -117,14 +117,16 @@ public abstract class JDBCBackendHandler implements BackendHandler {
             return new CommandResponsePackets(new OKPacket(1));
         }
         SQLStatement sqlStatement = routeResult.getSqlStatement();
+        boolean isReturnGeneratedKeys = sqlStatement instanceof InsertStatement;
         if (isUnsupportedXA(sqlStatement.getType())) {
             return new CommandResponsePackets(new ErrPacket(1, 
                     ServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "unknown_table"));
         }
         List<Future<CommandResponsePackets>> futureList = new ArrayList<>(1024);
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
-            Statement statement = createStatement(ConnectionManager.getConnection(each.getDataSource()), each.getSqlUnit().getSql(), sqlStatement instanceof InsertStatement);
-            futureList.add(userGroup.submit(newSubmitTask(statement, sqlStatement, each.getSqlUnit().getSql())));
+            String actualSQL = each.getSqlUnit().getSql();
+            Statement statement = createStatement(ConnectionManager.getConnection(each.getDataSource()), actualSQL, isReturnGeneratedKeys);
+            futureList.add(userGroup.submit(newSubmitTask(statement, sqlStatement.getType(), isReturnGeneratedKeys, actualSQL)));
         }
         List<CommandResponsePackets> packets = buildCommandResponsePackets(futureList);
         CommandResponsePackets result = merge(sqlStatement, packets);
@@ -141,7 +143,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     protected abstract Statement createStatement(Connection connection, String actualSQL, boolean isReturnGeneratedKeys) throws SQLException;
     
-    protected abstract Callable<CommandResponsePackets> newSubmitTask(Statement statement, SQLStatement sqlStatement, String unitSQL);
+    protected abstract Callable<CommandResponsePackets> newSubmitTask(Statement statement, SQLType sqlType, boolean isReturnGeneratedKeys, String actualSQL);
     
     private List<CommandResponsePackets> buildCommandResponsePackets(final List<Future<CommandResponsePackets>> futureList) {
         List<CommandResponsePackets> result = new ArrayList<>();

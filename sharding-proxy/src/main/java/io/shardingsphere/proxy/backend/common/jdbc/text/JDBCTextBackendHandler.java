@@ -18,6 +18,7 @@
 package io.shardingsphere.proxy.backend.common.jdbc.text;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.routing.SQLRouteResult;
@@ -68,8 +69,8 @@ public final class JDBCTextBackendHandler extends JDBCBackendHandler {
     }
     
     @Override
-    protected Callable<CommandResponsePackets> newSubmitTask(final Statement statement, final SQLStatement sqlStatement, final String unitSQL) {
-        return new JDBCTextExecuteWorker(this, sqlStatement, statement, unitSQL);
+    protected Callable<CommandResponsePackets> newSubmitTask(final Statement statement, final SQLType sqlType, final boolean isReturnGeneratedKeys, final String actualSQL) {
+        return new JDBCTextExecuteWorker(this, sqlType, isReturnGeneratedKeys, statement, actualSQL);
     }
     
     @Override
