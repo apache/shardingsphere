@@ -220,7 +220,7 @@ public final class SQLRewriteEngine {
         orderByLiterals.append(" ").append(DefaultKeyword.ORDER).append(" ").append(DefaultKeyword.BY).append(" ");
         int i = 0;
         for (OrderItem each : selectStatement.getOrderByItems()) {
-            String columnLabel = SQLUtil.getOriginalValue(each.getColumnLabel(), databaseType);
+            String columnLabel = Strings.isNullOrEmpty(each.getColumnLabel()) ? String.valueOf(each.getIndex()) : SQLUtil.getOriginalValue(each.getColumnLabel(), databaseType);
             if (0 == i) {
                 orderByLiterals.append(columnLabel).append(" ").append(each.getOrderDirection().name());
             } else {

@@ -54,7 +54,7 @@ public final class ShowTablesMergedResult extends MemoryMergedResult {
     private final ShardingMetaData shardingMetaData;
     
     static {
-        LABEL_AND_INDEX_MAP.put("Tables_in_" + ShardingConstant.LOGIC_SCHEMA_NAME, 1); 
+        LABEL_AND_INDEX_MAP.put("Tables_in_" + ShardingConstant.LOGIC_SCHEMA_NAME, 1);
     }
     
     public ShowTablesMergedResult(final ShardingRule shardingRule, final List<QueryResult> queryResults, final ShardingMetaData shardingMetaData) throws SQLException {
@@ -72,11 +72,7 @@ public final class ShowTablesMergedResult extends MemoryMergedResult {
                 String actualTableName = memoryResultSetRow.getCell(1).toString();
                 Optional<TableRule> tableRule = shardingRule.tryFindTableRuleByActualTable(actualTableName);
                 if (!tableRule.isPresent()) {
-                    if (shardingMetaData.getTableMetaDataMap().keySet().contains(actualTableName) && tableNames.add(actualTableName)) {
-                        result.add(memoryResultSetRow);
-                    } else if (!shardingMetaData.isSupportedDatabaseType() && tableNames.add(actualTableName)) {
-                        result.add(memoryResultSetRow);
-                    }
+                    addMemoryQueryResultRows(result, memoryResultSetRow, actualTableName);
                 } else if (tableNames.add(tableRule.get().getLogicTable())) {
                     memoryResultSetRow.setCell(1, tableRule.get().getLogicTable());
                     result.add(memoryResultSetRow);
@@ -87,6 +83,13 @@ public final class ShowTablesMergedResult extends MemoryMergedResult {
             setCurrentResultSetRow(result.get(0));
         }
         return result.iterator();
+    }
+    
+    private void addMemoryQueryResultRows(final List<MemoryQueryResultRow> result, final MemoryQueryResultRow memoryResultSetRow, final String actualTableName) {
+        if ((shardingMetaData.getTableMetaDataMap().isEmpty() || shardingMetaData.getTableMetaDataMap().keySet().contains(actualTableName)
+                || !shardingMetaData.isSupportedDatabaseType()) && tableNames.add(actualTableName)) {
+            result.add(memoryResultSetRow);
+        }
     }
     
     @Override

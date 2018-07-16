@@ -17,13 +17,10 @@
 
 package io.shardingsphere.core.rewrite;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.optimizer.condition.ShardingCondition;
 import io.shardingsphere.core.optimizer.insert.InsertShardingCondition;
-import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
@@ -33,7 +30,6 @@ import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.core.routing.type.TableUnit;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.rule.TableRule;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -109,7 +105,7 @@ public final class SQLBuilder {
             if (each instanceof TablePlaceholder) {
                 appendTablePlaceholder(logicTableName, actualTableName, result);
             } else if (each instanceof SchemaPlaceholder) {
-                appendSchemaPlaceholder(shardingRule, shardingDataSourceMetaData, (SchemaPlaceholder) each, actualTableName, result);
+                appendSchemaPlaceholder(shardingRule, shardingDataSourceMetaData, actualTableName, result);
             } else if (each instanceof IndexPlaceholder) {
                 appendIndexPlaceholder((IndexPlaceholder) each, actualTableName, result);
             } else if (each instanceof InsertValuesPlaceholder) {
@@ -126,14 +122,9 @@ public final class SQLBuilder {
         stringBuilder.append(null == actualTableName ? logicTableName : actualTableName);
     }
     
-    private void appendSchemaPlaceholder(final ShardingRule shardingRule, final ShardingDataSourceMetaData shardingDataSourceMetaData, 
-                                         final SchemaPlaceholder schemaPlaceholder, final String actualTableName, final StringBuilder stringBuilder) {
-        Optional<TableRule> tableRule = shardingRule.tryFindTableRuleByActualTable(actualTableName);
-        if (!tableRule.isPresent() && Strings.isNullOrEmpty(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName())) {
-            throw new ShardingException("Cannot found schema name '%s' in sharding rule.", schemaPlaceholder.getLogicSchemaName());
-        }
-        Preconditions.checkState(tableRule.isPresent());
-        stringBuilder.append(shardingDataSourceMetaData.getActualSchemaName(tableRule.get().getActualDatasourceNames().iterator().next()));
+    private void appendSchemaPlaceholder(final ShardingRule shardingRule, final ShardingDataSourceMetaData shardingDataSourceMetaData,
+                                         final String actualTableName, final StringBuilder stringBuilder) {
+        stringBuilder.append(shardingDataSourceMetaData.getActualSchemaName(shardingRule.getActualDataSourceNameByActualTableName(actualTableName)));
     }
     
     private void appendIndexPlaceholder(final IndexPlaceholder indexPlaceholder, final String actualTableName, final StringBuilder stringBuilder) {
