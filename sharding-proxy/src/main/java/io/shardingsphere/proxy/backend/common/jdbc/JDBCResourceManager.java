@@ -15,43 +15,25 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.resource;
+package io.shardingsphere.proxy.backend.common.jdbc;
 
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import lombok.Getter;
-import lombok.Setter;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Abstract proxy-jdbc-resource.
+ * JDBC resource manager.
  *
  * @author zhaojun
  */
 @Getter
-@Setter
-public abstract class BaseJDBCResource {
+public final class JDBCResourceManager {
     
-    private List<Connection> connections;
-    
-    private List<ResultSet> resultSets;
-    
-    public BaseJDBCResource(final List<Connection> connections, final List<ResultSet> resultSets) {
-        this.connections = connections;
-        this.resultSets = resultSets;
-    }
-    
-    /**
-     * Add new connection to resource manager.
-     *
-     * @param connection Connection
-     */
-    public void addConnection(final Connection connection) {
-        connections.add(connection);
-    }
+    private final List<ResultSet> resultSets = new CopyOnWriteArrayList<>();
     
     /**
      * Add new resultSet to resource manager.
@@ -68,20 +50,11 @@ public abstract class BaseJDBCResource {
      * @throws SQLException SQLException
      */
     public void clear() throws SQLException {
-        if (null != connections) {
-            for (Connection each : connections) {
-                if (!each.isClosed()) {
-                    each.close();
-                }
+        for (ResultSet each : resultSets) {
+            if (!each.getStatement().getConnection().isClosed()) {
+                each.getStatement().getConnection().close();
             }
-        }
-        if (null != resultSets) {
-            for (ResultSet each : resultSets) {
-                if (!each.isClosed()) {
-                    each.close();
-                }
-                MasterVisitedManager.clear();
-            }
+            MasterVisitedManager.clear();
         }
     }
 }

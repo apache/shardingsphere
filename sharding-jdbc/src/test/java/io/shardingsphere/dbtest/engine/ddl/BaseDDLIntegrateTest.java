@@ -21,6 +21,7 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.dbtest.cases.assertion.ddl.DDLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.cases.dataset.DataSet;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetColumn;
+import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetIndex;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
 import io.shardingsphere.dbtest.engine.SingleIntegrateTest;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
@@ -77,16 +78,20 @@ public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
         }
         String tableName = assertion.getTable();
         List<DataSetColumn> actualColumns = getActualColumns(connection, tableName);
-        assertMetadata(actualColumns, expected.findMetadata(tableName));
+        List<DataSetIndex> actualIndexes = getActualIndexes(connection, tableName);
+        assertMetadata(actualColumns, actualIndexes, expected.findMetadata(tableName));
     }
     
-    private void assertMetadata(final List<DataSetColumn> actual, final DataSetMetadata expected) {
+    private void assertMetadata(final List<DataSetColumn> actualColumns, List<DataSetIndex> actualIndexes, final DataSetMetadata expected) {
         for (DataSetColumn each : expected.getColumns()) {
-            assertMetadata(actual, each);
+            assertColumnMetadata(actualColumns, each);
+        }
+        for (DataSetIndex each : expected.getIndexes()) {
+            assertIndexMetadata(actualIndexes, each);
         }
     }
     
-    private void assertMetadata(final List<DataSetColumn> actual, final DataSetColumn expect) {
+    private void assertColumnMetadata(final List<DataSetColumn> actual, final DataSetColumn expect) {
         for (DataSetColumn each : actual) {
             if (expect.getName().equals(each.getName())) {
                 if (DatabaseType.MySQL == databaseType && "integer".equals(expect.getType())) {
@@ -99,7 +104,15 @@ public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
             }
         }
     }
-    
+
+    private void assertIndexMetadata(final List<DataSetIndex> actual, final DataSetIndex expect) {
+        for (DataSetIndex each : actual) {
+            if (expect.getName().equals(each.getName())) {
+                assertThat(each.isUnique(), is(expect.isUnique()));
+            }
+        }
+    }
+
     private List<DataSetColumn> getActualColumns(final Connection connection, final String tableName) throws SQLException {
         DatabaseMetaData metaData = connection.getMetaData();
         boolean isTableExisted = metaData.getTables(null, null, tableName, new String[] {"TABLE"}).next();
@@ -117,7 +130,22 @@ public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
             return result;
         }
     }
-    
+
+    private List<DataSetIndex> getActualIndexes(final Connection connection, final String tableName) throws SQLException {
+        DatabaseMetaData metaData = connection.getMetaData();
+        try (ResultSet resultSet = metaData.getIndexInfo(null, null, tableName, false, false)) {
+            List<DataSetIndex> result = new LinkedList<>();
+            while (resultSet.next()) {
+                DataSetIndex each = new DataSetIndex();
+                each.setName(resultSet.getString("INDEX_NAME"));
+                each.setUnique(!resultSet.getBoolean("NON_UNIQUE"));
+                each.setColumns(resultSet.getString("COLUMN_NAME"));
+                result.add(each);
+            }
+            return result;
+        }
+    }
+
     protected void dropTableIfExisted(final Connection connection) {
         try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DROP TABLE %s", assertion.getTable()))) {
             preparedStatement.executeUpdate();

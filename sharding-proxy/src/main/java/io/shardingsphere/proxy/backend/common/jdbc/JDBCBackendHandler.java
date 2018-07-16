@@ -26,13 +26,13 @@ import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.parsing.SQLJudgeEngine;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingsphere.proxy.backend.common.BackendHandler;
 import io.shardingsphere.proxy.backend.common.ResultList;
-import io.shardingsphere.proxy.backend.resource.BaseJDBCResource;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
@@ -50,6 +50,7 @@ import lombok.Setter;
 
 import javax.transaction.Status;
 import javax.transaction.SystemException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -71,7 +72,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     private final String sql;
     
-    private final BaseJDBCResource jdbcResource;
+    private final JDBCResourceManager jdbcResourceManager;
     
     private MergedResult mergedResult;
     
@@ -90,9 +91,9 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     private final EventLoopGroup userGroup;
     
-    public JDBCBackendHandler(final String sql, final BaseJDBCResource jdbcResource) {
+    public JDBCBackendHandler(final String sql) {
         this.sql = sql;
-        this.jdbcResource = jdbcResource;
+        jdbcResourceManager = new JDBCResourceManager();
         isMerged = false;
         hasMoreResultValueFlag = true;
         resultLists = new CopyOnWriteArrayList<>();
@@ -121,7 +122,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         }
         List<Future<CommandResponsePackets>> futureList = new ArrayList<>(1024);
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
-            Statement statement = prepareResource(each, routeResult.getSqlStatement());
+            Statement statement = createStatement(ConnectionManager.getConnection(each.getDataSource()), each.getSqlUnit().getSql(), routeResult.getSqlStatement() instanceof InsertStatement);
             futureList.add(userGroup.submit(newSubmitTask(statement, routeResult.getSqlStatement(), each.getSqlUnit().getSql())));
         }
         List<CommandResponsePackets> packets = buildCommandResponsePackets(futureList);
@@ -137,7 +138,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         return TransactionType.XA == ruleRegistry.getTransactionType() && SQLType.DDL == sqlType && Status.STATUS_NO_TRANSACTION != AtomikosUserTransaction.getInstance().getStatus();
     }
     
-    protected abstract Statement prepareResource(SQLExecutionUnit sqlExecutionUnit, SQLStatement sqlStatement) throws SQLException;
+    protected abstract Statement createStatement(Connection connection, String actualSQL, boolean isReturnGeneratedKeys) throws SQLException;
     
     protected abstract Callable<CommandResponsePackets> newSubmitTask(Statement statement, SQLStatement sqlStatement, String unitSQL);
     
@@ -230,7 +231,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     @Override
     public final boolean hasMoreResultValue() throws SQLException {
         if (!isMerged || !hasMoreResultValueFlag) {
-            jdbcResource.clear();
+            jdbcResourceManager.clear();
             return false;
         }
         if (!mergedResult.next()) {
