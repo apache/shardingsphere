@@ -17,17 +17,15 @@
 
 package io.shardingsphere.proxy.backend.common.jdbc.text;
 
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
-import io.shardingsphere.proxy.backend.common.jdbc.JDBCExecuteWorker;
+import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.proxy.backend.common.ResultList;
+import io.shardingsphere.proxy.backend.common.jdbc.JDBCExecuteWorker;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.concurrent.Callable;
 
 /**
  * SQL execute worker.
@@ -35,7 +33,7 @@ import java.util.concurrent.Callable;
  * @author zhangyonglun
  * @author zhaojun
  */
-public final class JDBCTextExecuteWorker extends JDBCExecuteWorker implements Callable<CommandResponsePackets> {
+public final class JDBCTextExecuteWorker extends JDBCExecuteWorker {
     
     private static final Integer FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
     
@@ -43,22 +41,23 @@ public final class JDBCTextExecuteWorker extends JDBCExecuteWorker implements Ca
     
     private final String sql;
     
-    public JDBCTextExecuteWorker(final JDBCTextBackendHandler sqlExecuteBackendHandler, final SQLStatement sqlStatement, final Statement statement, final String sql) {
-        super(sqlExecuteBackendHandler, sqlStatement);
+    private final boolean isReturnGeneratedKeys;
+    
+    public JDBCTextExecuteWorker(final SQLType sqlType, final String sql, final Statement statement, final boolean isReturnGeneratedKeys, final JDBCTextBackendHandler jdbcTextBackendHandler) {
+        super(sqlType, jdbcTextBackendHandler);
         this.statement = statement;
         this.sql = sql;
+        this.isReturnGeneratedKeys = isReturnGeneratedKeys;
     }
     
     @Override
     protected CommandResponsePackets executeQueryWithStreamResultSet() throws SQLException {
         statement.setFetchSize(FETCH_ONE_ROW_A_TIME);
-        ResultSet resultSet = statement.executeQuery(sql);
-        getExecuteBackendHandler().getJdbcResourceManager().addResultSet(resultSet);
-        return getQueryDatabaseProtocolPackets(resultSet);
+        return getQueryDatabaseProtocolPackets(statement.executeQuery(sql));
     }
     
     @Override
-    protected CommandResponsePackets executeQueryWithNonStreamResultSet() throws SQLException {
+    protected CommandResponsePackets executeQueryWithMemoryResultSet() throws SQLException {
         try (
                 ResultSet resultSet = statement.executeQuery(sql)
         ) {
@@ -69,7 +68,7 @@ public final class JDBCTextExecuteWorker extends JDBCExecuteWorker implements Ca
                 }
             }
             resultList.setIterator(resultList.getResultList().iterator());
-            getExecuteBackendHandler().getResultLists().add(resultList);
+            getJdbcBackendHandler().getResultLists().add(resultList);
             return getQueryDatabaseProtocolPackets(resultSet);
         }
     }
@@ -78,7 +77,7 @@ public final class JDBCTextExecuteWorker extends JDBCExecuteWorker implements Ca
     protected CommandResponsePackets executeUpdate() throws SQLException {
         int affectedRows;
         long lastInsertId = 0;
-        if (getSqlStatement() instanceof InsertStatement) {
+        if (isReturnGeneratedKeys) {
             affectedRows = statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
             lastInsertId = getGeneratedKey(statement);
         } else {

@@ -17,8 +17,9 @@
 
 package io.shardingsphere.proxy.backend.common.jdbc;
 
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
+import io.shardingsphere.proxy.backend.common.ProxyMode;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
@@ -46,12 +47,12 @@ import java.util.concurrent.Callable;
  * @author zhaojun
  */
 @AllArgsConstructor
-@Getter
 public abstract class JDBCExecuteWorker implements Callable<CommandResponsePackets> {
     
-    private final JDBCBackendHandler executeBackendHandler;
+    private final SQLType sqlType;
     
-    private final SQLStatement sqlStatement;
+    @Getter
+    private final JDBCBackendHandler jdbcBackendHandler;
     
     @Override
     public CommandResponsePackets call() {
@@ -65,10 +66,12 @@ public abstract class JDBCExecuteWorker implements Callable<CommandResponsePacke
     }
     
     private CommandResponsePackets execute() throws SQLException {
-        switch (sqlStatement.getType()) {
-            case DQL: case DAL:
+        switch (sqlType) {
+            case DQL:
+            case DAL:
                 return executeQuery();
-            case DML: case DDL:
+            case DML:
+            case DDL:
                 return executeUpdate();
             default:
                 return executeCommon();
@@ -76,30 +79,24 @@ public abstract class JDBCExecuteWorker implements Callable<CommandResponsePacke
     }
     
     private CommandResponsePackets executeQuery() throws SQLException {
-        switch (RuleRegistry.getInstance().getProxyMode()) {
-            case MEMORY_STRICTLY:
-                return executeQueryWithStreamResultSet();
-            case CONNECTION_STRICTLY:
-                return executeQueryWithNonStreamResultSet();
-            default:
-                throw new UnsupportedOperationException(RuleRegistry.getInstance().getProxyMode().name());
-        }
+        return ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode() ? executeQueryWithStreamResultSet() : executeQueryWithMemoryResultSet();
     }
     
     protected abstract CommandResponsePackets executeQueryWithStreamResultSet() throws SQLException;
     
-    protected abstract CommandResponsePackets executeQueryWithNonStreamResultSet() throws SQLException;
+    protected abstract CommandResponsePackets executeQueryWithMemoryResultSet() throws SQLException;
     
     protected abstract CommandResponsePackets executeUpdate() throws SQLException;
     
     protected abstract CommandResponsePackets executeCommon() throws SQLException;
     
     protected CommandResponsePackets getQueryDatabaseProtocolPackets(final ResultSet resultSet) throws SQLException {
+        jdbcBackendHandler.getJdbcResourceManager().addResultSet(resultSet);
         CommandResponsePackets result = new CommandResponsePackets();
         int currentSequenceId = 0;
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         int columnCount = resultSetMetaData.getColumnCount();
-        executeBackendHandler.setColumnCount(columnCount);
+        jdbcBackendHandler.setColumnCount(columnCount);
         if (0 == columnCount) {
             result.addPacket(new OKPacket(++currentSequenceId));
             return result;
@@ -123,7 +120,7 @@ public abstract class JDBCExecuteWorker implements Callable<CommandResponsePacke
         int currentSequenceId = 0;
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         int columnCount = resultSetMetaData.getColumnCount();
-        executeBackendHandler.setColumnCount(columnCount);
+        jdbcBackendHandler.setColumnCount(columnCount);
         if (0 == columnCount) {
             result.addPacket(new OKPacket(++currentSequenceId));
             return result;
