@@ -365,7 +365,7 @@ public final class ShardingRule {
      * @param dataSourceName data source name
      * @return master slave rule name
      */
-    public Optional<String> getMasterSlaveRuleNameOptional(final String dataSourceName) {
+    public Optional<String> tryFindMasterSlaveRuleName(final String dataSourceName) {
         if (masterSlaveRules.isEmpty()) {
             return Optional.absent();
         }
