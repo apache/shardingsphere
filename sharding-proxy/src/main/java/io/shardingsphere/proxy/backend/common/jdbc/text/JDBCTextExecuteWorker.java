@@ -81,12 +81,13 @@ public final class JDBCTextExecuteWorker extends JDBCExecuteWorker {
     @Override
     protected CommandResponsePackets executeUpdate() throws SQLException {
         int affectedRows;
-        long lastInsertId = 0;
+        long lastInsertId;
         if (isReturnGeneratedKeys) {
             affectedRows = statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
             lastInsertId = getGeneratedKey(statement);
         } else {
             affectedRows = statement.executeUpdate(sql);
+            lastInsertId = 0;
         }
         return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId));
     }

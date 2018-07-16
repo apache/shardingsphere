@@ -134,11 +134,7 @@ public abstract class JDBCExecuteWorker implements Callable<CommandResponsePacke
     }
     
     protected final long getGeneratedKey(final Statement statement) throws SQLException {
-        long result = 0;
         ResultSet resultSet = statement.getGeneratedKeys();
-        if (resultSet.next()) {
-            result = resultSet.getLong(1);
-        }
-        return result;
+        return resultSet.next() ? resultSet.getLong(1) : 0L;
     }
 }
