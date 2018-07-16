@@ -21,9 +21,9 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.optimizer.condition.ShardingCondition;
 import io.shardingsphere.core.optimizer.insert.InsertShardingCondition;
-import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
@@ -129,8 +129,12 @@ public final class SQLBuilder {
     private void appendSchemaPlaceholder(final ShardingRule shardingRule, final ShardingDataSourceMetaData shardingDataSourceMetaData, 
                                          final SchemaPlaceholder schemaPlaceholder, final String actualTableName, final StringBuilder stringBuilder) {
         Optional<TableRule> tableRule = shardingRule.tryFindTableRuleByActualTable(actualTableName);
-        if (!tableRule.isPresent() && Strings.isNullOrEmpty(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName())) {
-            throw new ShardingException("Cannot found schema name '%s' in sharding rule.", schemaPlaceholder.getLogicSchemaName());
+        if (!tableRule.isPresent()) {
+            if (Strings.isNullOrEmpty(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName())) {
+                throw new ShardingException("Cannot found schema name '%s' in sharding rule.", schemaPlaceholder.getLogicSchemaName());
+            } else {
+                tableRule = Optional.fromNullable(shardingRule.getTableRule(actualTableName));
+            }
         }
         Preconditions.checkState(tableRule.isPresent());
         stringBuilder.append(shardingDataSourceMetaData.getActualSchemaName(tableRule.get().getActualDatasourceNames().iterator().next()));
