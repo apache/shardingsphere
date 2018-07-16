@@ -392,6 +392,6 @@ public final class ShardingRule {
         if (!Strings.isNullOrEmpty(getShardingDataSourceNames().getDefaultDataSourceName())) {
             return getShardingDataSourceNames().getDefaultDataSourceName();
         }
-        throw new ShardingException("Cannot found actual schema name of '%s' in sharding rule.", actualTableName);
+        throw new ShardingException("Cannot found actual data source name of '%s' in sharding rule.", actualTableName);
     }
 }
