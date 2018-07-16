@@ -119,7 +119,4 @@
     <dcl-test-case sql-case-id="revoke_user_with_hostname">
         <assertion />
     </dcl-test-case>
-    <dcl-test-case sql-case-id="revoke_user_with_hostname">
-        <assertion />
-    </dcl-test-case>
 </integrate-test-cases>
