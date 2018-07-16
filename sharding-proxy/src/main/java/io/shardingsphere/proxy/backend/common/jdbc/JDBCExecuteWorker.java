@@ -79,12 +79,12 @@ public abstract class JDBCExecuteWorker implements Callable<CommandResponsePacke
     }
     
     private CommandResponsePackets executeQuery() throws SQLException {
-        return ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode() ? executeQueryWithStreamResultSet() : executeQueryWithMemoryResultSet();
+        return ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode() ? executeQueryWithMemoryStrictlyMode() : executeQueryWithConnectionStrictlyMode();
     }
     
-    protected abstract CommandResponsePackets executeQueryWithStreamResultSet() throws SQLException;
+    protected abstract CommandResponsePackets executeQueryWithMemoryStrictlyMode() throws SQLException;
     
-    protected abstract CommandResponsePackets executeQueryWithMemoryResultSet() throws SQLException;
+    protected abstract CommandResponsePackets executeQueryWithConnectionStrictlyMode() throws SQLException;
     
     protected abstract CommandResponsePackets executeUpdate() throws SQLException;
     

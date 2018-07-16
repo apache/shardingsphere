@@ -54,7 +54,7 @@ public final class JDBCStatementExecuteWorker extends JDBCExecuteWorker {
     }
     
     @Override
-    protected CommandResponsePackets executeQueryWithStreamResultSet() throws SQLException {
+    protected CommandResponsePackets executeQueryWithMemoryStrictlyMode() throws SQLException {
         preparedStatement.setFetchSize(FETCH_ONE_ROW_A_TIME);
         ResultSet resultSet = preparedStatement.executeQuery();
         jdbcResourceManager.addResultSet(resultSet);
@@ -62,7 +62,7 @@ public final class JDBCStatementExecuteWorker extends JDBCExecuteWorker {
     }
     
     @Override
-    protected CommandResponsePackets executeQueryWithMemoryResultSet() throws SQLException {
+    protected CommandResponsePackets executeQueryWithConnectionStrictlyMode() throws SQLException {
         ResultSet resultSet = preparedStatement.executeQuery();
         ResultList resultList = new ResultList();
         while (resultSet.next()) {
