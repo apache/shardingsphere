@@ -125,7 +125,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             String actualSQL = each.getSqlUnit().getSql();
             Statement statement = createStatement(jdbcResourceManager.getConnection(each.getDataSource()), actualSQL, isReturnGeneratedKeys);
-            futureList.add(userGroup.submit(createExecuteWorker(statement, sqlStatement.getType(), isReturnGeneratedKeys, actualSQL)));
+            futureList.add(userGroup.submit(createExecuteWorker(statement, isReturnGeneratedKeys, actualSQL)));
         }
         List<CommandResponsePackets> packets = buildCommandResponsePackets(futureList);
         CommandResponsePackets result = merge(sqlStatement, packets);
@@ -142,7 +142,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     protected abstract Statement createStatement(Connection connection, String actualSQL, boolean isReturnGeneratedKeys) throws SQLException;
     
-    protected abstract Callable<CommandResponsePackets> createExecuteWorker(Statement statement, SQLType sqlType, boolean isReturnGeneratedKeys, String actualSQL);
+    protected abstract Callable<CommandResponsePackets> createExecuteWorker(Statement statement, boolean isReturnGeneratedKeys, String actualSQL);
     
     private List<CommandResponsePackets> buildCommandResponsePackets(final List<Future<CommandResponsePackets>> futureList) {
         List<CommandResponsePackets> result = new ArrayList<>();

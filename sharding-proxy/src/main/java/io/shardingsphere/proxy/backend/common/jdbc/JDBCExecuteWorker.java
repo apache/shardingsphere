@@ -17,15 +17,14 @@
 
 package io.shardingsphere.proxy.backend.common.jdbc;
 
-import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.proxy.backend.common.ProxyMode;
+import io.shardingsphere.proxy.backend.common.ResultList;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextResultSetRowPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
@@ -36,19 +35,24 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
  * Execute worker via JDBC to connect databases.
  * 
  * @author zhaojun
+ * @author zhangliang
  */
 @RequiredArgsConstructor
 public abstract class JDBCExecuteWorker implements Callable<CommandResponsePackets> {
     
-    private final SQLType sqlType;
+    private static final Integer FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
+    
+    private final Statement statement;
+    
+    private final boolean isReturnGeneratedKeys;
+    
+    private final JDBCResourceManager jdbcResourceManager;
     
     @Getter
     private final JDBCBackendHandler jdbcBackendHandler;
@@ -60,37 +64,38 @@ public abstract class JDBCExecuteWorker implements Callable<CommandResponsePacke
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex));
         } finally {
+            // TODO confirm here, maybe can remove
             MasterVisitedManager.clear();
         }
     }
     
     private CommandResponsePackets execute() throws SQLException {
-        switch (sqlType) {
-            case DQL:
-            case DAL:
-                return executeQuery();
-            case DML:
-            case DDL:
-                return executeUpdate();
-            default:
-                // TODO when go to here? can DCL and TCL use executeUpdate? 
-                return executeCommon();
+        if (ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
+            statement.setFetchSize(FETCH_ONE_ROW_A_TIME);
+        }
+        if (executeSQL()) {
+            ResultSet resultSet = statement.getResultSet();
+            if (ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
+                jdbcResourceManager.addResultSet(resultSet);
+            } else {
+                ResultList resultList = new ResultList();
+                while (resultSet.next()) {
+                    for (int columnIndex = 1; columnIndex <= resultSet.getMetaData().getColumnCount(); columnIndex++) {
+                        resultList.add(resultSet.getObject(columnIndex));
+                    }
+                }
+                resultList.setIterator(resultList.getResultList().iterator());
+                getJdbcBackendHandler().getResultLists().add(resultList);
+            }
+            return getHeaderPackets(resultSet.getMetaData());
+        } else {
+            return new CommandResponsePackets(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey() : 0));
         }
     }
     
-    private CommandResponsePackets executeQuery() throws SQLException {
-        return ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode() ? executeQueryWithMemoryStrictlyMode() : executeQueryWithConnectionStrictlyMode();
-    }
+    protected abstract boolean executeSQL() throws SQLException;
     
-    protected abstract CommandResponsePackets executeQueryWithMemoryStrictlyMode() throws SQLException;
-    
-    protected abstract CommandResponsePackets executeQueryWithConnectionStrictlyMode() throws SQLException;
-    
-    protected abstract CommandResponsePackets executeUpdate() throws SQLException;
-    
-    protected abstract CommandResponsePackets executeCommon() throws SQLException;
-    
-    protected final CommandResponsePackets getHeaderPackets(final ResultSetMetaData resultSetMetaData) throws SQLException {
+    private CommandResponsePackets getHeaderPackets(final ResultSetMetaData resultSetMetaData) throws SQLException {
         int currentSequenceId = 0;
         int columnCount = resultSetMetaData.getColumnCount();
         jdbcBackendHandler.setColumnCount(columnCount);
@@ -106,34 +111,11 @@ public abstract class JDBCExecuteWorker implements Callable<CommandResponsePacke
         return result;
     }
     
+    // TODO why only prepareStatement need this?
     protected void setColumnType(final ColumnType columnType) {
     }
     
-    protected final CommandResponsePackets getCommonDatabaseProtocolPackets(final ResultSet resultSet) throws SQLException {
-        int currentSequenceId = 0;
-        ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-        int columnCount = resultSetMetaData.getColumnCount();
-        jdbcBackendHandler.setColumnCount(columnCount);
-        if (0 == columnCount) {
-            return new CommandResponsePackets(new OKPacket(++currentSequenceId));
-        }
-        CommandResponsePackets result = new CommandResponsePackets(new FieldCountPacket(++currentSequenceId, columnCount));
-        for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            result.addPacket(new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData, columnIndex));
-        }
-        result.addPacket(new EofPacket(++currentSequenceId));
-        while (resultSet.next()) {
-            List<Object> data = new ArrayList<>(columnCount);
-            for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-                data.add(resultSet.getObject(columnIndex));
-            }
-            result.addPacket(new TextResultSetRowPacket(++currentSequenceId, data));
-        }
-        result.addPacket(new EofPacket(++currentSequenceId));
-        return result;
-    }
-    
-    protected final long getGeneratedKey(final Statement statement) throws SQLException {
+    private long getGeneratedKey() throws SQLException {
         ResultSet resultSet = statement.getGeneratedKeys();
         return resultSet.next() ? resultSet.getLong(1) : 0L;
     }

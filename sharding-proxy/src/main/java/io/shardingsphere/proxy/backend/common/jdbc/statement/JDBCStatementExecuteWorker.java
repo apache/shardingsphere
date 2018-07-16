@@ -17,16 +17,11 @@
 
 package io.shardingsphere.proxy.backend.common.jdbc.statement;
 
-import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.proxy.backend.common.ResultList;
 import io.shardingsphere.proxy.backend.common.jdbc.JDBCExecuteWorker;
 import io.shardingsphere.proxy.backend.common.jdbc.JDBCResourceManager;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
-import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -34,74 +29,25 @@ import java.sql.SQLException;
  *
  * @author zhangyonglun
  * @author zhaojun
+ * @author zhangliang
  */
 public final class JDBCStatementExecuteWorker extends JDBCExecuteWorker {
     
-    private static final Integer FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
-    
     private final PreparedStatement preparedStatement;
     
-    private final boolean isReturnGeneratedKeys;
-    
-    private final JDBCResourceManager jdbcResourceManager;
-    
-    public JDBCStatementExecuteWorker(final SQLType sqlType, final PreparedStatement preparedStatement, final boolean isReturnGeneratedKeys,
+    public JDBCStatementExecuteWorker(final PreparedStatement preparedStatement, final boolean isReturnGeneratedKeys,
                                       final JDBCResourceManager jdbcResourceManager, final JDBCStatementBackendHandler jdbcStatementBackendHandler) {
-        super(sqlType, jdbcStatementBackendHandler);
+        super(preparedStatement, isReturnGeneratedKeys, jdbcResourceManager, jdbcStatementBackendHandler);
         this.preparedStatement = preparedStatement;
-        this.isReturnGeneratedKeys = isReturnGeneratedKeys;
-        this.jdbcResourceManager = jdbcResourceManager;
     }
     
     @Override
-    protected CommandResponsePackets executeQueryWithMemoryStrictlyMode() throws SQLException {
-        preparedStatement.setFetchSize(FETCH_ONE_ROW_A_TIME);
-        ResultSet resultSet = preparedStatement.executeQuery();
-        jdbcResourceManager.addResultSet(resultSet);
-        return getHeaderPackets(resultSet.getMetaData());
-    }
-    
-    @Override
-    protected CommandResponsePackets executeQueryWithConnectionStrictlyMode() throws SQLException {
-        ResultSet resultSet = preparedStatement.executeQuery();
-        ResultList resultList = new ResultList();
-        while (resultSet.next()) {
-            for (int columnIndex = 1; columnIndex <= resultSet.getMetaData().getColumnCount(); columnIndex++) {
-                resultList.add(resultSet.getObject(columnIndex));
-            }
-        }
-        resultList.setIterator(resultList.getResultList().iterator());
-        getJdbcBackendHandler().getResultLists().add(resultList);
-        return getHeaderPackets(resultSet.getMetaData());
+    protected boolean executeSQL() throws SQLException {
+        return preparedStatement.execute();
     }
     
     @Override
     protected void setColumnType(final ColumnType columnType) {
         ((JDBCStatementBackendHandler) getJdbcBackendHandler()).getColumnTypes().add(columnType);
-    }
-    
-    @Override
-    protected CommandResponsePackets executeUpdate() throws SQLException {
-        int affectedRows;
-        long lastInsertId;
-        if (isReturnGeneratedKeys) {
-            affectedRows = preparedStatement.executeUpdate();
-            lastInsertId = getGeneratedKey(preparedStatement);
-        } else {
-            affectedRows = preparedStatement.executeUpdate();
-            lastInsertId = 0;
-        }
-        return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId));
-    }
-    
-    @Override
-    protected CommandResponsePackets executeCommon() throws SQLException {
-        // TODO here is wrong !!
-        boolean hasResultSet = preparedStatement.execute();
-        if (hasResultSet) {
-            return getCommonDatabaseProtocolPackets(preparedStatement.getResultSet());
-        } else {
-            return new CommandResponsePackets(new OKPacket(1, preparedStatement.getUpdateCount(), 0));
-        }
     }
 }

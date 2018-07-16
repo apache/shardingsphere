@@ -18,7 +18,6 @@
 package io.shardingsphere.proxy.backend.common.jdbc.statement;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.routing.PreparedStatementRoutingEngine;
 import io.shardingsphere.core.routing.SQLRouteResult;
@@ -84,8 +83,8 @@ public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
     }
     
     @Override
-    protected Callable<CommandResponsePackets> createExecuteWorker(final Statement statement, final SQLType sqlType, final boolean isReturnGeneratedKeys, final String actualSQL) {
-        return new JDBCStatementExecuteWorker(sqlType, (PreparedStatement) statement, isReturnGeneratedKeys, getJdbcResourceManager(), this);
+    protected Callable<CommandResponsePackets> createExecuteWorker(final Statement statement, final boolean isReturnGeneratedKeys, final String actualSQL) {
+        return new JDBCStatementExecuteWorker((PreparedStatement) statement, isReturnGeneratedKeys, getJdbcResourceManager(), this);
     }
     
     @Override
