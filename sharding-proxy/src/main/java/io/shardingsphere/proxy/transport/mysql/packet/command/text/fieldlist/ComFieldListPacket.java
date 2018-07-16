@@ -20,13 +20,12 @@ package io.shardingsphere.proxy.transport.mysql.packet.command.text.fieldlist;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.proxy.backend.common.BackendHandler;
-import io.shardingsphere.proxy.backend.common.jdbc.text.JDBCTextBackendHandler;
 import io.shardingsphere.proxy.backend.common.SQLPacketsBackendHandler;
+import io.shardingsphere.proxy.backend.common.jdbc.text.JDBCTextBackendHandler;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
-import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
@@ -104,7 +103,7 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
     public DatabaseProtocolPacket getResultValue() {
         DatabaseProtocolPacket resultValue = backendHandler.getResultValue();
         if (!backendHandler.isHasMoreResultValueFlag()) {
-            return new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
+            return new EofPacket(++currentSequenceId);
         }
         if (resultValue instanceof TextResultSetRowPacket) {
             TextResultSetRowPacket fieldListResponse = (TextResultSetRowPacket) resultValue;

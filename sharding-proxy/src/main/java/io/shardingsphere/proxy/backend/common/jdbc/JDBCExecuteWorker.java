@@ -22,7 +22,6 @@ import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.proxy.backend.common.ProxyMode;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
-import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
@@ -30,8 +29,8 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextRes
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -46,10 +45,12 @@ import java.util.concurrent.Callable;
  * 
  * @author zhaojun
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 public abstract class JDBCExecuteWorker implements Callable<CommandResponsePackets> {
     
     private final SQLType sqlType;
+    
+    private final JDBCResourceManager jdbcResourceManager;
     
     @Getter
     private final JDBCBackendHandler jdbcBackendHandler;
@@ -91,24 +92,22 @@ public abstract class JDBCExecuteWorker implements Callable<CommandResponsePacke
     protected abstract CommandResponsePackets executeCommon() throws SQLException;
     
     protected CommandResponsePackets getQueryDatabaseProtocolPackets(final ResultSet resultSet) throws SQLException {
-        jdbcBackendHandler.getJdbcResourceManager().addResultSet(resultSet);
-        CommandResponsePackets result = new CommandResponsePackets();
+        jdbcResourceManager.addResultSet(resultSet);
         int currentSequenceId = 0;
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         int columnCount = resultSetMetaData.getColumnCount();
         jdbcBackendHandler.setColumnCount(columnCount);
         if (0 == columnCount) {
-            result.addPacket(new OKPacket(++currentSequenceId));
-            return result;
+            return new CommandResponsePackets(new OKPacket(++currentSequenceId));
         }
-        result.addPacket(new FieldCountPacket(++currentSequenceId, columnCount));
+        CommandResponsePackets result = new CommandResponsePackets(new FieldCountPacket(++currentSequenceId, columnCount));
         for (int i = 1; i <= columnCount; i++) {
             setColumnType(ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(i)));
             result.addPacket(new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData.getSchemaName(i), resultSetMetaData.getTableName(i),
                     resultSetMetaData.getTableName(i), resultSetMetaData.getColumnLabel(i), resultSetMetaData.getColumnName(i),
                     resultSetMetaData.getColumnDisplaySize(i), ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(i)), 0));
         }
-        result.addPacket(new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
+        result.addPacket(new EofPacket(++currentSequenceId));
         return result;
     }
     
@@ -131,7 +130,7 @@ public abstract class JDBCExecuteWorker implements Callable<CommandResponsePacke
                     resultSetMetaData.getTableName(i), resultSetMetaData.getColumnLabel(i), resultSetMetaData.getColumnName(i),
                     resultSetMetaData.getColumnDisplaySize(i), ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(i)), 0));
         }
-        result.addPacket(new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
+        result.addPacket(new EofPacket(++currentSequenceId));
         while (resultSet.next()) {
             List<Object> data = new ArrayList<>(columnCount);
             for (int i = 1; i <= columnCount; i++) {
@@ -139,7 +138,7 @@ public abstract class JDBCExecuteWorker implements Callable<CommandResponsePacke
             }
             result.addPacket(new TextResultSetRowPacket(++currentSequenceId, data));
         }
-        result.addPacket(new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
+        result.addPacket(new EofPacket(++currentSequenceId));
         return result;
     }
     
