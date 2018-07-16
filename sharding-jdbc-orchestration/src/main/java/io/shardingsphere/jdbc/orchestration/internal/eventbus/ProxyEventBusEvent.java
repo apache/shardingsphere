@@ -20,6 +20,7 @@ package io.shardingsphere.jdbc.orchestration.internal.eventbus;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 
@@ -28,15 +29,11 @@ import java.util.Map;
  *
  * @author panjuan
  */
+@RequiredArgsConstructor
 @Getter
 public final class ProxyEventBusEvent {
     
-    private final Map<String, DataSourceParameter> dataSourceParameterMap;
+    private final Map<String, DataSourceParameter> dataSources;
     
-    private final OrchestrationProxyConfiguration orchestrationProxyConfig;
-    
-    public ProxyEventBusEvent(final Map<String, DataSourceParameter> dataSourceParameterMap, final OrchestrationProxyConfiguration orchestrationProxyConfig) {
-        this.dataSourceParameterMap = dataSourceParameterMap;
-        this.orchestrationProxyConfig = orchestrationProxyConfig;
-    }
+    private final OrchestrationProxyConfiguration orchestrationConfig;
 }

@@ -38,9 +38,6 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 public abstract class IntegrateTestCaseAssertion {
     
-    @XmlAttribute(name = "sharding-rule-type")
-    private String shardingRuleType;
-    
     @XmlAttribute(name = "expected-data-file")
     private String expectedDataFile;
     
@@ -64,10 +61,5 @@ public abstract class IntegrateTestCaseAssertion {
             result.add(new SQLValue(parameterPair.get(0), parameterPair.get(1), ++count));
         }
         return result;
-    }
-    
-    @Override
-    public String toString() {
-        return String.format("Rule:%s", shardingRuleType);
     }
 }

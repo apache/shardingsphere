@@ -34,6 +34,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 public final class ClientHandlerInitializer extends ChannelInitializer<Channel> {
+    
     private final DataSourceConfig dataSourceConfig;
     
     @Override

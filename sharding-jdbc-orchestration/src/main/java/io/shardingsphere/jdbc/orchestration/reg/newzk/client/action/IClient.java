@@ -19,7 +19,7 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.action;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.ZKTransaction;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -40,14 +40,15 @@ public interface IClient extends IAction, IGroupAction {
     void start() throws IOException, InterruptedException;
     
     /**
-     * block until connected.
+     * start until out.
      *
      * @param wait wait
      * @param units units
      * @return connected
+     * @throws IOException IO Exception
      * @throws InterruptedException InterruptedException
      */
-    boolean blockUntilConnected(int wait, TimeUnit units) throws InterruptedException;
+    boolean start(int wait, TimeUnit units) throws IOException, InterruptedException;
     
     /**
      * close.
@@ -81,7 +82,7 @@ public interface IClient extends IAction, IGroupAction {
      *
      * @return ZKTransaction
      */
-    ZKTransaction transaction();
+    BaseTransaction transaction();
     /*
     void createNamespace();
     void deleteNamespace();

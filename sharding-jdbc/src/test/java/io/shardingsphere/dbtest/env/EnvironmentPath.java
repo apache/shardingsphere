@@ -27,16 +27,19 @@ import static org.junit.Assert.assertNotNull;
 /**
  * Environment path.
  * 
- * @author zhangliang 
+ * @author zhangliang
+ * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EnvironmentPath {
     
     private static final String DATABASE_ENVIRONMENT_RESOURCES_PATH = "asserts/env/%s/schema.xml";
     
-    private static final String DATA_INITIALIZE_RESOURCES_PATH = "asserts/env/%s/data-init.xml";
+    private static final String DATA_INITIALIZE_RESOURCES_PATH = "asserts/env/%s/dataset.xml";
     
     private static final String SHARDING_RULE_RESOURCES_PATH = "asserts/env/%s/sharding-rule.yaml";
+    
+    private static final String AUTHORITY_RESOURCES_PATH = "asserts/env/authority.xml";
     
     /**
      * Get database environment resource File.
@@ -72,5 +75,15 @@ public final class EnvironmentPath {
         URL resourceURL = EnvironmentPath.class.getClassLoader().getResource(String.format(resourcePath, shardingRuleType));
         assertNotNull(resourceURL);
         return resourceURL.getFile();
+    }
+    
+    /**
+     * Get authority resource File.
+     *
+     * @param shardingRuleType Sharding rule type
+     * @return authority resource file
+     */
+    public static String getAuthorityResourcesPath(final String shardingRuleType) {
+        return getResourceFile(AUTHORITY_RESOURCES_PATH, shardingRuleType);
     }
 }

@@ -33,7 +33,7 @@ import java.util.List;
 @Getter
 @EqualsAndHashCode(of = { "sql" })
 @ToString
-public class SQLUnit {
+public final class SQLUnit {
     
     private final String sql;
     

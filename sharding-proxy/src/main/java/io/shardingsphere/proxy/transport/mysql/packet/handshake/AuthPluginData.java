@@ -37,17 +37,21 @@ public final class AuthPluginData {
     
     private final byte[] authPluginDataPart2;
     
-    private final byte[] authPluginData;
-    
     public AuthPluginData() {
-        authPluginDataPart1 = RandomGenerator.getInstance().generateRandomBytes(8);
-        authPluginDataPart2 = RandomGenerator.getInstance().generateRandomBytes(12);
-        authPluginData = Bytes.concat(authPluginDataPart1, authPluginDataPart2);
+        this(RandomGenerator.getInstance().generateRandomBytes(8), RandomGenerator.getInstance().generateRandomBytes(12));
     }
     
     public AuthPluginData(final byte[] authPluginDataPart1, final byte[] authPluginDataPart2) {
         this.authPluginDataPart1 = authPluginDataPart1;
         this.authPluginDataPart2 = authPluginDataPart2;
-        authPluginData = Bytes.concat(this.authPluginDataPart1, this.authPluginDataPart2);
+    }
+    
+    /**
+     * Get auth plugin data.
+     * 
+     * @return auth plugin data
+     */
+    public byte[] getAuthPluginData() {
+        return Bytes.concat(authPluginDataPart1, authPluginDataPart2);
     }
 }

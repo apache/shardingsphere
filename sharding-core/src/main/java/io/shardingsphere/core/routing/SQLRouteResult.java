@@ -42,6 +42,10 @@ public final class SQLRouteResult {
     private final GeneratedKey generatedKey;
     
     private final Set<SQLExecutionUnit> executionUnits = new LinkedHashSet<>();
+    
+    public SQLRouteResult(final SQLStatement sqlStatement) {
+        this(sqlStatement, null);
+    }
 
     /**
      * whether SQLRouteResult can refresh table metadata.

@@ -27,7 +27,8 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class DataSourceConfig {
+public final class DataSourceConfig {
+    
     private final String ip;
     
     private final int port;

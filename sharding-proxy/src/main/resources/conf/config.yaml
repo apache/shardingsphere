@@ -62,20 +62,10 @@
 #    # CONNECTION_STRICTLY: Proxy will release connections after get the overall rows from the ResultSet.
 #    #                      Meanwhile, the cost of the memory will be increased.
 #    proxy.mode: MEMORY_STRICTLY
+#    proxy.transaction.mode: NONE
+#    proxy.max.working.threads: 16
 #    sql.show: false
-#
-#proxyAuthority:
-#  username: root
-#  password: root
-#
-#maxWorkingThreads: 200
-#
-#orchestration:
-#  name: demo_yaml_proxy
-#  overwrite: true
-#  zookeeper:
-#    namespace: orchestration-yaml-demo
-#    serverLists: localhost:2181
+
 
 # The example of master-slave rule.
 
@@ -103,16 +93,10 @@
 #  masterDataSourceName: ds_0
 #  slaveDataSourceNames:
 #    - ds_1
-#
+
+
+# Common configuration for auth.
+
 #proxyAuthority:
 #  username: root
 #  password: root
-#
-#maxWorkingThreads: 200
-#
-#orchestration:
-#  name: demo_yaml_proxy
-#  overwrite: true
-#  zookeeper:
-#    namespace: orchestration-yaml-demo
-#    serverLists: localhost:2181

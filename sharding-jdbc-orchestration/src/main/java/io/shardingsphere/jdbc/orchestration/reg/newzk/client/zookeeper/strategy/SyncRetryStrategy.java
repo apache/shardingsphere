@@ -44,7 +44,7 @@ public class SyncRetryStrategy extends UsualStrategy {
     public SyncRetryStrategy(final IProvider provider, final DelayRetryPolicy delayRetryPolicy) {
         super(provider);
         if (delayRetryPolicy == null) {
-            LOGGER.warn("Callable constructor context's delayRetryPolicy is null");
+            LOGGER.info("Callable constructor context's delayRetryPolicy is null");
             this.delayRetryPolicy = DelayRetryPolicy.newNoInitDelayPolicy();
         } else {
             this.delayRetryPolicy = delayRetryPolicy;

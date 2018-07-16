@@ -26,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author lidongbo
  */
 public class Connection {
+    
     //is need reset
     private static final Map<Integer, Boolean> EXCEPTION_RESETS = new ConcurrentHashMap<>();
 
@@ -37,27 +38,26 @@ public class Connection {
     }
     
     /**
-     * need retry.
+     * Need retry.
      *
-     * @param e e
+     * @param keeperException keeper exception
      * @return need retry
-     * @throws KeeperException Zookeeper Exception
      */
-    public static boolean needRetry(final KeeperException e) throws KeeperException {
-        return EXCEPTION_RESETS.containsKey(e.code().intValue());
+    public static boolean needRetry(final KeeperException keeperException) {
+        return EXCEPTION_RESETS.containsKey(keeperException.code().intValue());
     }
     
     /**
      * need reset.
      *
-     * @param e e
+     * @param keeperException keeper exception
      * @return need reset
-     * @throws KeeperException Zookeeper Exception
+     * @throws KeeperException zookeeper exception
      */
-    public static boolean needReset(final KeeperException e) throws KeeperException {
-        int code = e.code().intValue();
+    public static boolean needReset(final KeeperException keeperException) throws KeeperException {
+        int code = keeperException.code().intValue();
         if (!EXCEPTION_RESETS.containsKey(code)) {
-            throw e;
+            throw keeperException;
         }
         return EXCEPTION_RESETS.get(code);
     }

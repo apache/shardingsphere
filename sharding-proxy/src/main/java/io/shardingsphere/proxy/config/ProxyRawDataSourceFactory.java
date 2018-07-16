@@ -18,7 +18,7 @@
 package io.shardingsphere.proxy.config;
 
 import io.shardingsphere.core.constant.TransactionType;
-import io.shardingsphere.proxy.yaml.YamlProxyConfiguration;
+import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -28,7 +28,7 @@ import java.util.Map;
  *
  * @author zhaojun
  */
-public class ProxyRawDataSourceFactory {
+public final class ProxyRawDataSourceFactory {
     
     /**
      * Crate raw datasource Map by transaction type.
@@ -37,7 +37,7 @@ public class ProxyRawDataSourceFactory {
      * @param yamlProxyConfiguration yaml proxy configuration
      * @return raw datasource map
      */
-    public static Map<String, DataSource> create(final TransactionType transactionType, final YamlProxyConfiguration yamlProxyConfiguration) {
+    public static Map<String, DataSource> create(final TransactionType transactionType, final OrchestrationProxyConfiguration yamlProxyConfiguration) {
         switch (transactionType) {
             case XA:
                 return new XaProxyRawDataSource(yamlProxyConfiguration.getDataSources()).build();

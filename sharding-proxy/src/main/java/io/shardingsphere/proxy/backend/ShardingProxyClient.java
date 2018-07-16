@@ -17,15 +17,7 @@
 
 package io.shardingsphere.proxy.backend;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 import com.google.common.collect.Maps;
-
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
@@ -47,6 +39,13 @@ import io.shardingsphere.proxy.config.RuleRegistry;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 /**
  * Sharding-Proxy Client.
  *
@@ -55,6 +54,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public final class ShardingProxyClient {
+    
     private static final ShardingProxyClient INSTANCE = new ShardingProxyClient();
     
     private static final int WORKER_MAX_THREADS = Runtime.getRuntime().availableProcessors();
@@ -135,15 +135,14 @@ public final class ShardingProxyClient {
                 return new FixedChannelPool(bootstrap.remoteAddress(dataSourceConfig.getIp(), dataSourceConfig.getPort()), new NettyChannelPoolHandler(dataSourceConfig), MAX_CONNECTIONS);
             }
         };
-        
         for (String each : dataSourceConfigMap.keySet()) {
             SimpleChannelPool pool = poolMap.get(each);
             Channel[] channels = new Channel[MAX_CONNECTIONS];
             for (int i = 0; i < MAX_CONNECTIONS; i++) {
                 try {
                     channels[i] = pool.acquire().get(CONNECT_TIMEOUT, TimeUnit.SECONDS);
-                } catch (ExecutionException | TimeoutException e) {
-                    log.error(e.getMessage(), e);
+                } catch (final ExecutionException | TimeoutException ex) {
+                    log.error(ex.getMessage(), ex);
                 }
             }
             for (int i = 0; i < MAX_CONNECTIONS; i++) {

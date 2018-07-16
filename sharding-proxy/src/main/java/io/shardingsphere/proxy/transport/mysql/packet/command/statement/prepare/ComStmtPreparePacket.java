@@ -37,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * COM_STMT_PREPARE command packet.
+ * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-stmt-prepare.html">COM_STMT_PREPARE</a>
  *
  * @author zhangliang

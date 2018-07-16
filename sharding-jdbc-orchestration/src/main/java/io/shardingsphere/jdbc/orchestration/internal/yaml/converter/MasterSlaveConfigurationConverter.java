@@ -37,7 +37,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MasterSlaveConfigurationConverter {
     
-    private static final Yaml yaml = new Yaml(new DefaultConfigurationRepresenter());
+    private static final Yaml YAML = new Yaml(new DefaultConfigurationRepresenter());
     
     /**
      * Convert masterSlaveRuleConfiguration to yaml string.
@@ -55,11 +55,11 @@ public class MasterSlaveConfigurationConverter {
     /**
      * Convert master slave rule configuration string to master slave rule configuration.
      *
-     * @param masteSlaveRuleConfigYamlString master slave rule configuration string
+     * @param masterSlaveRuleConfigYamlString master slave rule configuration string
      * @return master slave rule configuration
      */
-    public static MasterSlaveRuleConfiguration masterSlaveRuleConfigFromYaml(final String masteSlaveRuleConfigYamlString) {
-        return yaml.loadAs(masteSlaveRuleConfigYamlString, YamlMasterSlaveRuleConfiguration.class).getMasterSlaveRuleConfiguration();
+    public static MasterSlaveRuleConfiguration masterSlaveRuleConfigFromYaml(final String masterSlaveRuleConfigYamlString) {
+        return YAML.loadAs(masterSlaveRuleConfigYamlString, YamlMasterSlaveRuleConfiguration.class).getMasterSlaveRuleConfiguration();
     }
     
     /**
@@ -69,7 +69,7 @@ public class MasterSlaveConfigurationConverter {
      * @return config map string
      */
     public static String configMapToYaml(final Map<String, Object> configMap) {
-        return yaml.dumpAsMap(configMap);
+        return YAML.dumpAsMap(configMap);
     }
     
     /**
@@ -80,6 +80,6 @@ public class MasterSlaveConfigurationConverter {
      */
     @SuppressWarnings("unchecked")
     public static Map<String, Object> configMapFromYaml(final String configMapYamlString) {
-        return (Map<String, Object>) yaml.load(configMapYamlString);
+        return (Map<String, Object>) YAML.load(configMapYamlString);
     }
 }

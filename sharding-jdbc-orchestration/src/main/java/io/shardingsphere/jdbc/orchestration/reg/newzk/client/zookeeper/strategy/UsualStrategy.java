@@ -20,7 +20,6 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseStrategy;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -173,8 +172,8 @@ public class UsualStrategy extends BaseStrategy {
             this.deleteOnlyCurrent(path);
             this.deleteRecursively(superPath);
         } catch (KeeperException.NotEmptyException e) {
-            LOGGER.warn("deleteRecursively exist children:{},e:{}", path, e.getMessage());
-            LOGGER.info("deleteRecursively {} exist other children:{}", path, this.getChildren(path));
+            LOGGER.info("deleteRecursively exist children:{},e:{}", path, e.getMessage());
+            LOGGER.debug("deleteRecursively {} exist other children:{}", path, this.getChildren(path));
         }
     }
 }

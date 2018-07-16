@@ -52,4 +52,6 @@ public final class Constants {
     public static final int NODE_ELECTION_RETRY = 3;
     
     public static final String CLIENT_ID = "1";
+    
+    public static final boolean WATCHED = true;
 }

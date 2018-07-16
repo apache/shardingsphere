@@ -17,16 +17,7 @@
 
 package io.shardingsphere.proxy.backend.mysql;
 
-import java.io.InputStream;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-
 import com.google.common.collect.Lists;
-
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
@@ -37,6 +28,14 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextRes
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+
+import java.io.InputStream;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * MySQL packet query result.
@@ -145,8 +144,8 @@ public final class MySQLQueryResult implements QueryResult {
     private void put(final MySQLPacket mysqlPacket) {
         try {
             resultSet.put(mysqlPacket);
-        } catch (InterruptedException e) {
-            log.error(e.getMessage(), e);
+        } catch (final InterruptedException ex) {
+            log.error(ex.getMessage(), ex);
         }
     }
     
@@ -155,9 +154,9 @@ public final class MySQLQueryResult implements QueryResult {
         try {
             MySQLPacket mysqlPacket = resultSet.take();
             currentRow = (mysqlPacket instanceof TextResultSetRowPacket) ? (TextResultSetRowPacket) mysqlPacket : null;
-            return currentRow == null ? false : true;
-        } catch (InterruptedException e) {
-            log.error(e.getMessage(), e);
+            return null != currentRow;
+        } catch (final InterruptedException ex) {
+            log.error(ex.getMessage(), ex);
         }
         return false;
     }

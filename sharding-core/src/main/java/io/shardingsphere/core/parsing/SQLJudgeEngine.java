@@ -33,9 +33,12 @@ import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTablesS
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingException;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
+import io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
+import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +47,7 @@ import lombok.RequiredArgsConstructor;
  * SQL judge engine.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 public final class SQLJudgeEngine {
@@ -51,7 +55,7 @@ public final class SQLJudgeEngine {
     private final String sql;
     
     /**
-     * judge SQL Type only.
+     * Judge SQL type only.
      *
      * @return SQL statement
      */
@@ -61,48 +65,33 @@ public final class SQLJudgeEngine {
         while (true) {
             TokenType tokenType = lexerEngine.getCurrentToken().getType();
             if (tokenType instanceof Keyword) {
-                if (isDQL(tokenType)) {
+                if (DQLStatement.isDQL(tokenType)) {
                     return getDQLStatement();
                 }
-                if (isDML(tokenType)) {
+                if (DMLStatement.isDML(tokenType)) {
                     return getDMLStatement(tokenType);
                 }
-                if (isDDL(tokenType)) {
-                    return getDDLStatement();
-                }
-                if (isTCL(tokenType)) {
+                if (TCLStatement.isTCL(tokenType)) {
                     return getTCLStatement();
                 }
-                if (isDAL(tokenType)) {
+                if (DALStatement.isDAL(tokenType)) {
                     return getDALStatement(tokenType, lexerEngine);
                 }
+                lexerEngine.nextToken();
+                TokenType secondaryTokenType = lexerEngine.getCurrentToken().getType();
+                if (DDLStatement.isDDL(tokenType, secondaryTokenType)) {
+                    return getDDLStatement();
+                }
+                if (DCLStatement.isDCL(tokenType, secondaryTokenType)) {
+                    return getDCLStatement();
+                }
+            } else {
+                lexerEngine.nextToken();
             }
             if (tokenType instanceof Assist && Assist.END == tokenType) {
                 throw new SQLParsingException("Unsupported SQL statement: [%s]", sql);
             }
-            lexerEngine.nextToken();
         }
-    }
-    
-    private boolean isDQL(final TokenType tokenType) {
-        return DefaultKeyword.SELECT == tokenType;
-    }
-    
-    private boolean isDML(final TokenType tokenType) {
-        return DefaultKeyword.INSERT == tokenType || DefaultKeyword.UPDATE == tokenType || DefaultKeyword.DELETE == tokenType;
-    }
-    
-    private boolean isDDL(final TokenType tokenType) {
-        return DefaultKeyword.CREATE == tokenType || DefaultKeyword.ALTER == tokenType || DefaultKeyword.DROP == tokenType || DefaultKeyword.TRUNCATE == tokenType;
-    }
-    
-    private boolean isTCL(final TokenType tokenType) {
-        return DefaultKeyword.SET == tokenType || DefaultKeyword.COMMIT == tokenType || DefaultKeyword.ROLLBACK == tokenType
-                || DefaultKeyword.SAVEPOINT == tokenType || DefaultKeyword.BEGIN == tokenType;
-    }
-    
-    private boolean isDAL(final TokenType tokenType) {
-        return DefaultKeyword.USE == tokenType || DefaultKeyword.DESC == tokenType || MySQLKeyword.DESCRIBE == tokenType || MySQLKeyword.SHOW == tokenType;
     }
     
     private SQLStatement getDQLStatement() {
@@ -118,6 +107,10 @@ public final class SQLJudgeEngine {
     
     private SQLStatement getDDLStatement() {
         return new DDLStatement();
+    }
+    
+    private SQLStatement getDCLStatement() {
+        return new DCLStatement();
     }
     
     private SQLStatement getTCLStatement() {

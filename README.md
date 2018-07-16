@@ -1,4 +1,4 @@
-# [Sharding-Sphere - Distributed database middleware ecosphere](http://shardingsphere.io/)
+# [Sharding-Sphere - Distributed Database Middleware Ecosphere](http://shardingsphere.io/)
 
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![Gitter](https://badges.gitter.im/shardingsphere/shardingsphere.svg)](https://gitter.im/shardingsphere/Lobby)
@@ -18,10 +18,11 @@
 
 ## Overview
 
-Sharding-Sphere is an open-sourced distributed database middleware solution suite, which is composite by Sharding-JDBC, Sharding-Proxy and Sharding-Sidecar. Those 3 projects provide consistent features which include data sharding, read-write splitting, orchestration and B.A.S.E transaction. They can suitable for various scenario.
+Sharding-Sphere is an open source distributed database middleware solution suite, which consists of Sharding-JDBC, Sharding-Proxy and Sharding-Sidecar. These three sub-projects are suitable for various scenarios and provide consistent functions including data sharding, distributed transaction and database orchestration.
 
-Sharding-Sphere is a Relational Database Middleware which reuse capacity of original databases (such as: compute, storage), but make best simplicity and efficiency on distribute environment. Sharding-Sphere do not want implement a new database.
-It can cooperate with NoSQL and NewSQL. NoSQL and NewSQL are good exploration for technology, they are care about what’s going to change. There is another theory which is care about what’s not going to change. Relational Database still is the biggest percentage of market share, it is difficult to estimate trendy in future. So we are focus about how to enhance with Relational Database now.
+As a Relational Database Middleware, rather than implementing a new database, Sharding-Sphere is aimed at making the most of original capacities of database (like compute and storage) and making it simpler and more efficient on distribute environment. 
+It can cooperate with NoSQL and NewSQL, which keep staying in the cutting edge of technology and recommendable. Meanwhile, Sharding-Sphere focuses on technologies remaining stable and changeless so as to grasp the intrinsic quality. 
+Relational Database is still the cornerstone of core business in enterprises and possesses huge market share. It is difficult to estimate trendy in future and now we focus on how to enhance the capacity of Sharding-Sphere with Relational Database.
 
 ![Sharding-Sphere Score](http://ovfotjrsi.bkt.clouddn.com/sphere_scope_en.png)
 
@@ -29,11 +30,12 @@ It can cooperate with NoSQL and NewSQL. NoSQL and NewSQL are good exploration fo
 
 [![Maven Status](https://maven-badges.herokuapp.com/maven-central/io.shardingsphere/sharding-jdbc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.shardingsphere/sharding-jdbc)
 
-Use JDBC connect databases without redirect cost for java application, best performance for production.
+Sharding-JDBC is positioned as a lightweight Java framework that provides Sharding service in the JDBC layer. 
+It directly connects to databases to provide services in the form of jar, with no additional deployment and dependencies, and it can be understood as an enhanced version of the JDBC driver, fully compliant with JDBC and various ORM frameworks.
 
-* ORM compatible. JPA, Hibernate, Mybatis, Spring JDBC Template or JDBC supported.
-* Connection-pool compatible. DBCP, C3P0, BoneCP, Druid supported.
-* Multi SQL-based databases compatible. Any Database supported theoretically. Support MySQL, Oracle, SQLServer and PostgreSQL right now.
+* It is compliant with any Java-based ORM framework, such as JPA, Hibernate, Mybatis and Spring JDBC Template; or you can use JDBC directly.
+* It is suitable for connection-pool based on any third party, such as DBCP, C3P0, BoneCP, Druid, HikariCP and so on.
+* It supports databases implementing JDBC specification. Supporting MySQL, Oracle, SQLServer and PostgreSQL right now.
 
 ![Sharding-JDBC Architecture](http://ovfotjrsi.bkt.clouddn.com/sharding-jdbc-brief.png)
 
@@ -42,19 +44,21 @@ Use JDBC connect databases without redirect cost for java application, best perf
 [![Download](https://img.shields.io/badge/release-download-orange.svg)](https://github.com/sharding-sphere/sharding-sphere-doc/raw/master/dist/sharding-proxy-3.0.0.M1.tar.gz)
 [![Docker Pulls](https://img.shields.io/docker/pulls/shardingsphere/sharding-proxy.svg)](https://store.docker.com/community/images/shardingsphere/sharding-proxy)
 
-It is a database proxy. Deploy as a stateless server, support MySQL protocol for now.
+Sharding-Proxy is positioned as a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages. 
+At present, we provide Sharding-Proxy for MySQL, and you can use any clients compatible with MySQL protocol (such as MySQL Command Client, MySQL Workbench, etc.) to manipulate data.
 
-* Use standard MySQL protocol, application do not care about whether proxy or real MySQL.
-* Any MySQL command line and UI workbench supported in theoretically. MySQL Workbench are fully compatible right now.
+* It is transparent to application, which can be used as MySQL.
+* It is suitable for any clients compatible with MySQL protocol.
 
 ![Sharding-Proxy Architecture](http://ovfotjrsi.bkt.clouddn.com/sharding-proxy-brief_v2.png)
 
 ### Sharding-Sidecar(TBD)
 
-It can mesh interactions between applications and databases, must run in Kubernetes or Mesos environment.
-It is a centre-less solution, can support any languages, we call it as `Database Mesh`.
+It is positioned as cloud native database agent of Kubernetes or Mesos environment, in charge of all database access in the form of DaemonSet. 
+Through a centre-less and zero-cost solution, it provides mesh layer interacting with database. We call it `Database Mesh`.
 
-Database Mesh is focused on how to connect the distributed data-access-layer and databases together. It pays more attention on interaction, which means the messy interaction among the applications and databases will be effectively orchestrate. By using Database Mesh, applications and databases will form a large grid system, and they just need to be put into the right position on grid system accordingly.
+Database Mesh emphasizes how to connect distributed data-access-layer with databases. It pays more attention to interaction, which means the messy interaction between applications and databases will be effectively orchestrated. 
+By using Database Mesh, applications and databases will form a large grid system, where they just need to be put into the right position accordingly. They are all governed by mesh layer.
 
 ![Sharding-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sharding-sidecar-brief.png)
 
@@ -72,27 +76,22 @@ Database Mesh is focused on how to connect the distributed data-access-layer and
 ### Data sharding
 
 * Both databases and tables sharding.
+* Read-write splitting supported.
 * Aggregation functions, GROUP BY, ORDER BY, LIMIT, OR, and JOIN DQL supported.
-* DML, DDL, TCL and database administrator command supported.
+* DML, DDL, TCL and database management command supported.
 * Sharding operator `=`, `BETWEEN` and `IN` supported.
 * Sharding algorithm customization and inline expression supported.
-* Force route by hint.
-* Distributed sequence.
+* Forced route based on hint.
+* Distributed primary key.
 
-### Read-write splitting
+### Transaction
 
-* Multiple slaves replica. 
-* Data consistency guarantee in same thread.
-* Mix read-write splitting and data sharding.
-* Force route by hint.
+* XA transaction supported.
+* Best-Effort-Delivery transaction supported.
+* Try-Confirm-Cancel transaction (TBD) supported.
 
-### BASE Transaction
+### Database Orchestration
 
-* Best efforts delivery transaction.
-* Try confirm cancel transaction (TBD).
-
-### Orchestration
-
-* Configuration center, can refresh dynamically.
-* Circuit breaker.
+* Configuration center dynamic configuration supported.
+* Circuit breaker supported.
 * Open tracing supported.

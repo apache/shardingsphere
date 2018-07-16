@@ -49,29 +49,11 @@ public final class CommandResponsePackets {
     }
     
     /**
-     * Add packets.
-     *
-     * @param databaseProtocolPackets database protocol packets
-     */
-    public void addPackets(final Collection<DatabaseProtocolPacket> databaseProtocolPackets) {
-        databaseProtocolPackets.addAll(databaseProtocolPackets);
-    }
-    
-    /**
      * Get head packet.
      *
      * @return head database protocol packet
      */
     public DatabaseProtocolPacket getHeadPacket() {
         return databaseProtocolPackets.iterator().next();
-    }
-    
-    /**
-     * Size of databaseProtocolPackets.
-     *
-     * @return size
-     */
-    public int size() {
-        return databaseProtocolPackets.size();
     }
 }

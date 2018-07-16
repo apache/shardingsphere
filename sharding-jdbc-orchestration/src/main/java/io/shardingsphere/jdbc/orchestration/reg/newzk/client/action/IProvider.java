@@ -18,7 +18,7 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.action;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.election.LeaderElection;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.ZKTransaction;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -171,19 +171,14 @@ public interface IProvider {
     void executeContention(LeaderElection election) throws KeeperException, InterruptedException;
     
     /**
-     * only create target node.
-     *
-     * @param key key
-     * @param value value
-     * @param createMode createMode
-     * @param transaction transaction
-     * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
-     */
-    void createInTransaction(String key, String value, CreateMode createMode, ZKTransaction transaction) throws KeeperException, InterruptedException;
-    
-    /**
      * reset connection.
      */
     void resetConnection();
+    
+    /**
+     * create transaction.
+     *
+     * @return BaseTransaction
+     */
+    BaseTransaction transaction();
 }

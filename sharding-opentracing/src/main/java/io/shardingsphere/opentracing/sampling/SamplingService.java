@@ -17,6 +17,9 @@
 
 package io.shardingsphere.opentracing.sampling;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -25,10 +28,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.TimeUnit;
 
 /**
- * samping control service.
+ * Sampling control service.
  *
  * @author chenqingyang
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SamplingService {
     
     private static final SamplingService INSTANCE = new SamplingService();
@@ -40,10 +44,6 @@ public final class SamplingService {
     private volatile AtomicInteger samplingCount;
     
     private volatile ScheduledFuture<?> scheduledFuture;
-    
-    private SamplingService() {
-        
-    }
     
     /**
      * Get sampling service instance.
@@ -68,6 +68,7 @@ public final class SamplingService {
             on = true;
             this.resetSamplingFactor();
             ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+                
                 private final AtomicInteger threadIndex = new AtomicInteger(0);
                 
                 @Override
@@ -79,6 +80,7 @@ public final class SamplingService {
                 }
             });
             scheduledFuture = service.scheduleAtFixedRate(new Runnable() {
+                
                 @Override
                 public void run() {
                     resetSamplingFactor();
@@ -93,13 +95,7 @@ public final class SamplingService {
      * @return true, if sampling mechanism is on.
      */
     public boolean trySampling() {
-        if (on) {
-            int factor = samplingCount.get();
-            if (factor > sampleNumPM) {
-                return false;
-            }
-        }
-        return true;
+        return !on || samplingCount.get() <= sampleNumPM;
     }
     
     /**
@@ -109,7 +105,6 @@ public final class SamplingService {
         if (on) {
             samplingCount.getAndIncrement();
         }
-        
     }
     
     private void resetSamplingFactor() {

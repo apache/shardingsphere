@@ -17,9 +17,6 @@
 
 package io.shardingsphere.proxy.backend.mysql;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.shardingsphere.proxy.backend.common.CommandResponsePacketsHandler;
@@ -40,6 +37,9 @@ import io.shardingsphere.proxy.util.MySQLResultCache;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 /**
  * Backend handler.
  *
@@ -49,6 +49,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class MySQLBackendHandler extends CommandResponsePacketsHandler {
+    
     private final DataSourceConfig dataSourceConfig;
     
     private AuthType authType = AuthType.UN_AUTH;
@@ -62,7 +63,6 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
         mysqlPacketPayload.readInt1();
         int header = mysqlPacketPayload.readInt1();
         mysqlPacketPayload.getByteBuf().resetReaderIndex();
-        
         if (AuthType.UN_AUTH == authType) {
             auth(context, mysqlPacketPayload);
             authType = AuthType.AUTHING;
@@ -100,7 +100,7 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
             MySQLResultCache.getInstance().putConnection(context.channel().id().asShortText(), handshakePacket.getConnectionId());
             context.writeAndFlush(handshakeResponse41Packet);
         } finally {
-            mysqlPacketPayload.getByteBuf().release();
+            mysqlPacketPayload.close();
         }
     }
     
@@ -112,7 +112,7 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
             setResponse(context);
         } finally {
             mysqlQueryResult = null;
-            mysqlPacketPayload.getByteBuf().release();
+            mysqlPacketPayload.close();
         }
     }
     
@@ -124,7 +124,7 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
             setResponse(context);
         } finally {
             mysqlQueryResult = null;
-            mysqlPacketPayload.getByteBuf().release();
+            mysqlPacketPayload.close();
         }
     }
     
@@ -134,7 +134,7 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
         if (mysqlQueryResult.isColumnFinished()) {
             mysqlQueryResult.setRowFinished(eofPacket);
             mysqlQueryResult = null;
-            mysqlPacketPayload.getByteBuf().release();
+            mysqlPacketPayload.close();
         } else {
             mysqlQueryResult.setColumnFinished(eofPacket);
             setResponse(context);
@@ -166,13 +166,13 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
             byte[] part2 = messageDigest.digest(part1);
             messageDigest.reset();
             messageDigest.update(authPluginData);
-            byte[] authResponse = messageDigest.digest(part2);
-            for (int i = 0; i < authResponse.length; i++) {
-                authResponse[i] = (byte) (authResponse[i] ^ part1[i]);
+            byte[] result = messageDigest.digest(part2);
+            for (int i = 0; i < result.length; i++) {
+                result[i] = (byte) (result[i] ^ part1[i]);
             }
-            return authResponse;
-        } catch (NoSuchAlgorithmException e) {
-            log.error(e.getMessage(), e);
+            return result;
+        } catch (final NoSuchAlgorithmException ex) {
+            log.error(ex.getMessage(), ex);
         }
         return null;
     }

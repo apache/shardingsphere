@@ -32,6 +32,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +64,7 @@ public abstract class AbstractStatementParserTest {
     
     protected final ShardingMetaData createShardingMetaData() {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>();
-        tableMetaDataMap.put("TABLE_XXX", getTableMetaData(new ArrayList<String>(){{add("field1");add("field2");}}));
+        tableMetaDataMap.put("TABLE_XXX", getTableMetaData(Arrays.asList("field1", "field2")));
         ShardingMetaData shardingMetaData = mock(ShardingMetaData.class);
         when(shardingMetaData.getTableMetaDataMap()).thenReturn(tableMetaDataMap);
         return shardingMetaData;

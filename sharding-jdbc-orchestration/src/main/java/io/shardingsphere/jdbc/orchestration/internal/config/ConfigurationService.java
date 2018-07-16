@@ -68,42 +68,6 @@ public final class ConfigurationService {
         persistShardingProperties(props, isOverwrite);
     }
     
-    /**
-     * Adjust has data source configuration or not in registry center.
-     *
-     * @return has data source configuration or not
-     */
-    public boolean hasDataSourceConfiguration() {
-        return regCenter.isExisted(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH));
-    }
-    
-    /**
-     * Adjust has sharding rule configuration or not in registry center.
-     *
-     * @return has sharding rule configuration or not
-     */
-    public boolean hasShardingRuleConfiguration() {
-        return regCenter.isExisted(configNode.getFullPath(ConfigurationNode.SHARDING_RULE_NODE_PATH));
-    }
-    
-    /**
-     * Adjust has sharding config map or not in registry center.
-     *
-     * @return has sharding config map or not
-     */
-    public boolean hasShardingConfigMap() {
-        return regCenter.isExisted(configNode.getFullPath(ConfigurationNode.SHARDING_CONFIG_MAP_NODE_PATH));
-    }
-    
-    /**
-     * Adjust has sharding properties or not in registry center.
-     *
-     * @return has sharding properties or not
-     */
-    public boolean hasShardingProperties() {
-        return regCenter.isExisted(configNode.getFullPath(ConfigurationNode.SHARDING_PROPS_NODE_PATH));
-    }
-    
     private void persistDataSourceConfiguration(final Map<String, DataSource> dataSourceMap, final boolean isOverwrite) {
         if (isOverwrite || !hasDataSourceConfiguration()) {
             regCenter.persist(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH), DataSourceConverter.dataSourceMapToYaml(dataSourceMap));
@@ -116,10 +80,18 @@ public final class ConfigurationService {
         }
     }
     
+    private boolean hasDataSourceConfiguration() {
+        return regCenter.isExisted(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH));
+    }
+    
     private void persistShardingRuleConfiguration(final ShardingRuleConfiguration shardingRuleConfig, final boolean isOverwrite) {
         if (isOverwrite || !hasShardingRuleConfiguration()) {
             regCenter.persist(configNode.getFullPath(ConfigurationNode.SHARDING_RULE_NODE_PATH), ShardingConfigurationConverter.shardingRuleConfigToYaml(shardingRuleConfig));
         }
+    }
+    
+    private boolean hasShardingRuleConfiguration() {
+        return regCenter.isExisted(configNode.getFullPath(ConfigurationNode.SHARDING_RULE_NODE_PATH));
     }
     
     private void persistShardingConfigMap(final Map<String, Object> configMap, final boolean isOverwrite) {
@@ -128,10 +100,18 @@ public final class ConfigurationService {
         }
     }
     
+    private boolean hasShardingConfigMap() {
+        return regCenter.isExisted(configNode.getFullPath(ConfigurationNode.SHARDING_CONFIG_MAP_NODE_PATH));
+    }
+    
     private void persistShardingProperties(final Properties props, final boolean isOverwrite) {
         if (isOverwrite || !hasShardingProperties()) {
             regCenter.persist(configNode.getFullPath(ConfigurationNode.SHARDING_PROPS_NODE_PATH), ShardingConfigurationConverter.propertiesToYaml(props));
         }
+    }
+    
+    private boolean hasShardingProperties() {
+        return regCenter.isExisted(configNode.getFullPath(ConfigurationNode.SHARDING_PROPS_NODE_PATH));
     }
     
     /**
@@ -149,34 +129,24 @@ public final class ConfigurationService {
         persistMasterSlaveConfigMap(configMap, isOverwrite);
     }
     
-    /**
-     * Adjust has master-slave rule configuration or not in registry center.
-     *
-     * @return has master-slave rule configuration or not
-     */
-    public boolean hasMasterSlaveRuleConfiguration() {
-        return regCenter.isExisted(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH));
-    }
-    
-    /**
-     * Adjust has master-slave config map or not in registry center.
-     *
-     * @return has master-slave config map or not
-     */
-    public boolean hasMasterSlaveConfigMap() {
-        return regCenter.isExisted(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_CONFIG_MAP_NODE_PATH));
-    }
-    
     private void persistMasterSlaveRuleConfiguration(final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isOverwrite) {
         if (isOverwrite || !hasMasterSlaveRuleConfiguration()) {
             regCenter.persist(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH), MasterSlaveConfigurationConverter.masterSlaveRuleConfigToYaml(masterSlaveRuleConfig));
         }
     }
     
+    private boolean hasMasterSlaveRuleConfiguration() {
+        return regCenter.isExisted(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH));
+    }
+    
     private void persistMasterSlaveConfigMap(final Map<String, Object> configMap, final boolean isOverwrite) {
         if (isOverwrite || !hasMasterSlaveConfigMap()) {
             regCenter.persist(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_CONFIG_MAP_NODE_PATH), MasterSlaveConfigurationConverter.configMapToYaml(configMap));
         }
+    }
+    
+    private boolean hasMasterSlaveConfigMap() {
+        return regCenter.isExisted(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_CONFIG_MAP_NODE_PATH));
     }
     
     /**
@@ -210,11 +180,11 @@ public final class ConfigurationService {
     }
     
     /**
-     * Load data source parameter.
+     * Load data sources.
      *
-     * @return data source parameter map
+     * @return data sources map
      */
-    public Map<String, DataSourceParameter> loadDataSourceParameter() {
+    public Map<String, DataSourceParameter> loadDataSources() {
         return DataSourceParameterConverter.dataSourceParameterMapFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH)));
     }
     

@@ -19,16 +19,19 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IExecStrategy;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.ITransactionProvider;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseContext;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseProvider;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.provider.TransactionProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ClientContext;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.AsyncRetryStrategy;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.ContentionStrategy;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.SyncRetryStrategy;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.TransactionContendStrategy;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.UsualStrategy;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.ZKTransaction;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
 import lombok.Getter;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
@@ -37,7 +40,6 @@ import org.apache.zookeeper.Watcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -50,19 +52,11 @@ public class UsualClient extends BaseClient {
     
     private final Map<StrategyType, IExecStrategy> strategies = new ConcurrentHashMap<>();
     
-    private final boolean watched = true;
-    
     @Getter
     private IExecStrategy strategy;
     
-    UsualClient(final BaseContext context) {
+    protected UsualClient(final BaseContext context) {
         super(context);
-    }
-
-    @Override
-    public void start() throws IOException, InterruptedException {
-        super.start();
-        useExecStrategy(StrategyType.USUAL);
     }
     
     @Override
@@ -79,13 +73,16 @@ public class UsualClient extends BaseClient {
             return;
         }
         
-        IProvider provider = new BaseProvider(getRootNode(), getHolder(), watched, getAuthorities());
+        ITransactionProvider provider = new TransactionProvider(getRootNode(), getHolder(), Constants.WATCHED, getAuthorities());
         switch (strategyType) {
             case USUAL:
                 strategy = new UsualStrategy(provider);
                 break;
             case CONTEND:
                 strategy = new ContentionStrategy(provider);
+                break;
+            case TRANSACTION_CONTEND:
+                strategy = new TransactionContendStrategy(provider);
                 break;
             case SYNC_RETRY:
                 strategy = new SyncRetryStrategy(provider, ((ClientContext) getContext()).getDelayRetryPolicy());
@@ -191,7 +188,7 @@ public class UsualClient extends BaseClient {
     }
     
     @Override
-    public ZKTransaction transaction() {
-        return new ZKTransaction(getRootNode(), getHolder());
+    public BaseTransaction transaction() {
+        return strategy.transaction();
     }
 }

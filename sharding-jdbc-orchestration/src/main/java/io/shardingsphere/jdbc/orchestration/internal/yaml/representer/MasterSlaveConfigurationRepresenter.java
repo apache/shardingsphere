@@ -37,11 +37,12 @@ import java.util.Set;
  */
 public class MasterSlaveConfigurationRepresenter extends Representer {
     
-    private static Collection<String> eliminatedPropertyNames;
+    private static Collection<String> eliminatedPropertyNames = new HashSet<>();
     
     static {
-        eliminatedPropertyNames = new HashSet<String>() { { add("configMap");} }; }
-        
+        eliminatedPropertyNames.add("configMap");
+    }
+    
     public MasterSlaveConfigurationRepresenter() {
         super();
         this.nullRepresenter = new NullRepresent();
