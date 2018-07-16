@@ -20,11 +20,8 @@ package io.shardingsphere.proxy.backend.common.jdbc;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import lombok.Getter;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -36,29 +33,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Getter
 public final class JDBCResourceManager {
     
-    private final List<Connection> connections = new ArrayList<>();
-    
-    private final List<Statement> statements = new ArrayList<>();
-    
     private final List<ResultSet> resultSets = new CopyOnWriteArrayList<>();
-    
-    /**
-     * Add new connection to resource manager.
-     *
-     * @param connection Connection
-     */
-    public void addConnection(final Connection connection) {
-        connections.add(connection);
-    }
-    
-    /**
-     * Add statement to resource manager.
-     *
-     * @param statement statement
-     */
-    public void addStatement(final Statement statement) {
-        statements.add(statement);
-    }
     
     /**
      * Add new resultSet to resource manager.
@@ -75,14 +50,9 @@ public final class JDBCResourceManager {
      * @throws SQLException SQLException
      */
     public void clear() throws SQLException {
-        for (Connection each : connections) {
-            if (!each.isClosed()) {
-                each.close();
-            }
-        }
         for (ResultSet each : resultSets) {
-            if (!each.isClosed()) {
-                each.close();
+            if (!each.getStatement().getConnection().isClosed()) {
+                each.getStatement().getConnection().close();
             }
             MasterVisitedManager.clear();
         }

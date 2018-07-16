@@ -63,11 +63,8 @@ public final class JDBCTextBackendHandler extends JDBCBackendHandler {
     }
     
     @Override
-    protected Statement prepareResource(final Connection connection, final String actualSQL, final SQLStatement sqlStatement) throws SQLException {
-        Statement result = connection.createStatement();
-        getJdbcResourceManager().addConnection(connection);
-        getJdbcResourceManager().addStatement(result);
-        return result;
+    protected Statement createStatement(final Connection connection, final String actualSQL, final boolean isReturnGeneratedKeys) throws SQLException {
+        return connection.createStatement();
     }
     
     @Override

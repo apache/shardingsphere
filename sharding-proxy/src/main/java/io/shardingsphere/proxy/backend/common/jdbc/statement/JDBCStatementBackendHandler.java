@@ -20,7 +20,6 @@ package io.shardingsphere.proxy.backend.common.jdbc.statement;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.routing.PreparedStatementRoutingEngine;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.proxy.backend.common.ProxyMode;
@@ -90,13 +89,11 @@ public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
     }
     
     @Override
-    protected PreparedStatement prepareResource(final Connection connection, final String actualSQL, final SQLStatement sqlStatement) throws SQLException {
-        PreparedStatement result = sqlStatement instanceof InsertStatement ? connection.prepareStatement(actualSQL, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(actualSQL);
+    protected PreparedStatement createStatement(final Connection connection, final String actualSQL, final boolean isReturnGeneratedKeys) throws SQLException {
+        PreparedStatement result = isReturnGeneratedKeys ? connection.prepareStatement(actualSQL, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(actualSQL);
         for (int i = 0; i < preparedStatementParameters.size(); i++) {
             result.setObject(i + 1, preparedStatementParameters.get(i).getValue());
         }
-        getJdbcResourceManager().addConnection(connection);
-        getJdbcResourceManager().addStatement(result);
         return result;
     }
     
