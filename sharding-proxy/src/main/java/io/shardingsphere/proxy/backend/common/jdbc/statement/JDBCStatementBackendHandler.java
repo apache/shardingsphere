@@ -26,8 +26,6 @@ import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.proxy.backend.common.ProxyMode;
 import io.shardingsphere.proxy.backend.common.jdbc.JDBCBackendHandler;
 import io.shardingsphere.proxy.backend.mysql.MySQLPacketStatementExecuteQueryResult;
-import io.shardingsphere.proxy.backend.resource.ProxyJDBCResourceFactory;
-import io.shardingsphere.proxy.backend.resource.ProxyPrepareJDBCResource;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
@@ -64,7 +62,7 @@ public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
     private final RuleRegistry ruleRegistry;
     
     public JDBCStatementBackendHandler(final List<PreparedStatementParameter> preparedStatementParameters, final int statementId, final DatabaseType databaseType) {
-        super(PreparedStatementRegistry.getInstance().getSQL(statementId), ProxyJDBCResourceFactory.newPrepareResource());
+        super(PreparedStatementRegistry.getInstance().getSQL(statementId));
         this.preparedStatementParameters = preparedStatementParameters;
         this.databaseType = databaseType;
         columnTypes = new CopyOnWriteArrayList<>();
@@ -97,9 +95,8 @@ public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
         for (int i = 0; i < preparedStatementParameters.size(); i++) {
             result.setObject(i + 1, preparedStatementParameters.get(i).getValue());
         }
-        ProxyPrepareJDBCResource prepareProxyJDBCResource = (ProxyPrepareJDBCResource) getJdbcResource();
-        prepareProxyJDBCResource.addConnection(connection);
-        prepareProxyJDBCResource.addPrepareStatement(result);
+        getJdbcResourceManager().addConnection(connection);
+        getJdbcResourceManager().addStatement(result);
         return result;
     }
     
@@ -107,7 +104,7 @@ public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
     protected QueryResult newQueryResult(final CommandResponsePackets packet, final int index) {
         MySQLPacketStatementExecuteQueryResult result = new MySQLPacketStatementExecuteQueryResult(packet, columnTypes);
         if (ProxyMode.MEMORY_STRICTLY == ruleRegistry.getProxyMode()) {
-            result.setResultSet(getJdbcResource().getResultSets().get(index));
+            result.setResultSet(getJdbcResourceManager().getResultSets().get(index));
         } else {
             result.setResultList(getResultLists().get(index));
         }

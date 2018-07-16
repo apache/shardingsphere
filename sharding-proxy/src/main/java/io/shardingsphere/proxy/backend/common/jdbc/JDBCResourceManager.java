@@ -15,34 +15,32 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.resource;
+package io.shardingsphere.proxy.backend.common.jdbc;
 
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Abstract proxy-jdbc-resource.
+ * JDBC resource manager.
  *
  * @author zhaojun
  */
 @Getter
-@Setter
-public abstract class BaseJDBCResource {
+public final class JDBCResourceManager {
     
-    private List<Connection> connections;
+    private final List<Connection> connections = new ArrayList<>();
     
-    private List<ResultSet> resultSets;
+    private final List<Statement> statements = new ArrayList<>();
     
-    public BaseJDBCResource(final List<Connection> connections, final List<ResultSet> resultSets) {
-        this.connections = connections;
-        this.resultSets = resultSets;
-    }
+    private final List<ResultSet> resultSets = new CopyOnWriteArrayList<>();
     
     /**
      * Add new connection to resource manager.
@@ -51,6 +49,15 @@ public abstract class BaseJDBCResource {
      */
     public void addConnection(final Connection connection) {
         connections.add(connection);
+    }
+    
+    /**
+     * Add statement to resource manager.
+     *
+     * @param statement statement
+     */
+    public void addStatement(final Statement statement) {
+        statements.add(statement);
     }
     
     /**
@@ -68,20 +75,16 @@ public abstract class BaseJDBCResource {
      * @throws SQLException SQLException
      */
     public void clear() throws SQLException {
-        if (null != connections) {
-            for (Connection each : connections) {
-                if (!each.isClosed()) {
-                    each.close();
-                }
+        for (Connection each : connections) {
+            if (!each.isClosed()) {
+                each.close();
             }
         }
-        if (null != resultSets) {
-            for (ResultSet each : resultSets) {
-                if (!each.isClosed()) {
-                    each.close();
-                }
-                MasterVisitedManager.clear();
+        for (ResultSet each : resultSets) {
+            if (!each.isClosed()) {
+                each.close();
             }
+            MasterVisitedManager.clear();
         }
     }
 }

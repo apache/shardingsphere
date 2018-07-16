@@ -32,7 +32,6 @@ import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingsphere.proxy.backend.common.BackendHandler;
 import io.shardingsphere.proxy.backend.common.ResultList;
-import io.shardingsphere.proxy.backend.resource.BaseJDBCResource;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
@@ -72,7 +71,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     private final String sql;
     
-    private final BaseJDBCResource jdbcResource;
+    private final JDBCResourceManager jdbcResourceManager;
     
     private MergedResult mergedResult;
     
@@ -91,9 +90,9 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     private final EventLoopGroup userGroup;
     
-    public JDBCBackendHandler(final String sql, final BaseJDBCResource jdbcResource) {
+    public JDBCBackendHandler(final String sql) {
         this.sql = sql;
-        this.jdbcResource = jdbcResource;
+        jdbcResourceManager = new JDBCResourceManager();
         isMerged = false;
         hasMoreResultValueFlag = true;
         resultLists = new CopyOnWriteArrayList<>();
@@ -231,7 +230,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     @Override
     public final boolean hasMoreResultValue() throws SQLException {
         if (!isMerged || !hasMoreResultValueFlag) {
-            jdbcResource.clear();
+            jdbcResourceManager.clear();
             return false;
         }
         if (!mergedResult.next()) {
