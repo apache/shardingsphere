@@ -18,6 +18,8 @@
 package io.shardingsphere.proxy.backend.common.jdbc;
 
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
+import io.shardingsphere.proxy.backend.common.ProxyMode;
+import io.shardingsphere.proxy.config.RuleRegistry;
 import lombok.Getter;
 
 import java.sql.ResultSet;
@@ -41,7 +43,9 @@ public final class JDBCResourceManager {
      * @param resultSet result set
      */
     public void addResultSet(final ResultSet resultSet) {
-        resultSets.add(resultSet);
+        if (ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
+            resultSets.add(resultSet);
+        }
     }
     
     /**

@@ -52,9 +52,7 @@ public final class JDBCStatementExecuteWorker extends JDBCExecuteWorker {
     @Override
     protected CommandResponsePackets executeQueryWithStreamResultSet() throws SQLException {
         preparedStatement.setFetchSize(FETCH_ONE_ROW_A_TIME);
-        ResultSet resultSet = preparedStatement.executeQuery();
-        getJdbcBackendHandler().getJdbcResourceManager().addResultSet(resultSet);
-        return getQueryDatabaseProtocolPackets(resultSet);
+        return getQueryDatabaseProtocolPackets(preparedStatement.executeQuery());
     }
     
     @Override

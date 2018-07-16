@@ -47,11 +47,11 @@ import java.util.concurrent.Callable;
  * @author zhaojun
  */
 @AllArgsConstructor
-@Getter
 public abstract class JDBCExecuteWorker implements Callable<CommandResponsePackets> {
     
     private final SQLType sqlType;
     
+    @Getter
     private final JDBCBackendHandler jdbcBackendHandler;
     
     @Override
@@ -91,6 +91,7 @@ public abstract class JDBCExecuteWorker implements Callable<CommandResponsePacke
     protected abstract CommandResponsePackets executeCommon() throws SQLException;
     
     protected CommandResponsePackets getQueryDatabaseProtocolPackets(final ResultSet resultSet) throws SQLException {
+        jdbcBackendHandler.getJdbcResourceManager().addResultSet(resultSet);
         CommandResponsePackets result = new CommandResponsePackets();
         int currentSequenceId = 0;
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
