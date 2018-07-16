@@ -50,6 +50,7 @@ import lombok.Setter;
 
 import javax.transaction.Status;
 import javax.transaction.SystemException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -121,7 +122,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         }
         List<Future<CommandResponsePackets>> futureList = new ArrayList<>(1024);
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
-            Statement statement = prepareResource(each, routeResult.getSqlStatement());
+            Statement statement = prepareResource(ConnectionManager.getConnection(each.getDataSource()), each.getSqlUnit().getSql(), routeResult.getSqlStatement());
             futureList.add(userGroup.submit(newSubmitTask(statement, routeResult.getSqlStatement(), each.getSqlUnit().getSql())));
         }
         List<CommandResponsePackets> packets = buildCommandResponsePackets(futureList);
@@ -137,7 +138,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         return TransactionType.XA == ruleRegistry.getTransactionType() && SQLType.DDL == sqlType && Status.STATUS_NO_TRANSACTION != AtomikosUserTransaction.getInstance().getStatus();
     }
     
-    protected abstract Statement prepareResource(SQLExecutionUnit sqlExecutionUnit, SQLStatement sqlStatement) throws SQLException;
+    protected abstract Statement prepareResource(Connection connection, String actualSQL, SQLStatement sqlStatement) throws SQLException;
     
     protected abstract Callable<CommandResponsePackets> newSubmitTask(Statement statement, SQLStatement sqlStatement, String unitSQL);
     

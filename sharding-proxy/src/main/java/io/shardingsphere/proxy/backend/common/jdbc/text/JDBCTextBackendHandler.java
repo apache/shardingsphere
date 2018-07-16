@@ -20,10 +20,8 @@ package io.shardingsphere.proxy.backend.common.jdbc.text;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.StatementRoutingEngine;
-import io.shardingsphere.proxy.backend.common.jdbc.ConnectionManager;
 import io.shardingsphere.proxy.backend.common.ProxyMode;
 import io.shardingsphere.proxy.backend.common.jdbc.JDBCBackendHandler;
 import io.shardingsphere.proxy.backend.mysql.MySQLPacketQueryResult;
@@ -67,8 +65,7 @@ public final class JDBCTextBackendHandler extends JDBCBackendHandler {
     }
     
     @Override
-    protected Statement prepareResource(final SQLExecutionUnit sqlExecutionUnit, final SQLStatement sqlStatement) throws SQLException {
-        Connection connection = ConnectionManager.getConnection(sqlExecutionUnit.getDataSource());
+    protected Statement prepareResource(final Connection connection, final String actualSQL, final SQLStatement sqlStatement) throws SQLException {
         Statement result = connection.createStatement();
         ProxyJDBCResource proxyJDBCResource = (ProxyJDBCResource) getJdbcResource();
         proxyJDBCResource.addConnection(connection);
