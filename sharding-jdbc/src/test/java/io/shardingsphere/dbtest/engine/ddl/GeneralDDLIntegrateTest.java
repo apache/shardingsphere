@@ -65,7 +65,9 @@ public final class GeneralDDLIntegrateTest extends BaseDDLIntegrateTest {
         try (Connection connection = getDataSource().getConnection()) {
             dropTableIfExisted(connection);
             if (!Strings.isNullOrEmpty(assertion.getInitSql())) {
-                connection.prepareStatement(assertion.getInitSql()).executeUpdate();
+                for (String sql : assertion.getInitSql().split(";")) {
+                    connection.prepareStatement(sql).executeUpdate();
+                }
             }
             if (isExecuteUpdate) {
                 if (SQLCaseType.Literal == getCaseType()) {
