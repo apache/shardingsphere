@@ -73,24 +73,23 @@ public abstract class JDBCExecuteWorker implements Callable<CommandResponsePacke
         if (ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
             statement.setFetchSize(FETCH_ONE_ROW_A_TIME);
         }
-        if (executeSQL()) {
-            ResultSet resultSet = statement.getResultSet();
-            if (ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
-                jdbcResourceManager.addResultSet(resultSet);
-            } else {
-                ResultList resultList = new ResultList();
-                while (resultSet.next()) {
-                    for (int columnIndex = 1; columnIndex <= resultSet.getMetaData().getColumnCount(); columnIndex++) {
-                        resultList.add(resultSet.getObject(columnIndex));
-                    }
-                }
-                resultList.setIterator(resultList.getResultList().iterator());
-                getJdbcBackendHandler().getResultLists().add(resultList);
-            }
-            return getHeaderPackets(resultSet.getMetaData());
-        } else {
+        if (!executeSQL()) {
             return new CommandResponsePackets(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey() : 0));
         }
+        ResultSet resultSet = statement.getResultSet();
+        jdbcResourceManager.addResultSet(resultSet);
+        if (ProxyMode.CONNECTION_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
+            ResultList resultList = new ResultList();
+            while (resultSet.next()) {
+                for (int columnIndex = 1; columnIndex <= resultSet.getMetaData().getColumnCount(); columnIndex++) {
+                    resultList.add(resultSet.getObject(columnIndex));
+                }
+            }
+            // TODO why set twice?
+            resultList.setIterator(resultList.getResultList().iterator());
+            jdbcBackendHandler.getResultLists().add(resultList);
+        }
+        return getHeaderPackets(resultSet.getMetaData());
     }
     
     protected abstract boolean executeSQL() throws SQLException;
