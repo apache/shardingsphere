@@ -116,17 +116,18 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         if (routeResult.getExecutionUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1));
         }
-        if (isUnsupportedXA(routeResult.getSqlStatement().getType())) {
-            return new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, 
-                    routeResult.getSqlStatement().getTables().isSingleTable() ? routeResult.getSqlStatement().getTables().getSingleTableName() : "unknown_table"));
+        SQLStatement sqlStatement = routeResult.getSqlStatement();
+        if (isUnsupportedXA(sqlStatement.getType())) {
+            return new CommandResponsePackets(new ErrPacket(1, 
+                    ServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "unknown_table"));
         }
         List<Future<CommandResponsePackets>> futureList = new ArrayList<>(1024);
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
-            Statement statement = createStatement(ConnectionManager.getConnection(each.getDataSource()), each.getSqlUnit().getSql(), routeResult.getSqlStatement() instanceof InsertStatement);
-            futureList.add(userGroup.submit(newSubmitTask(statement, routeResult.getSqlStatement(), each.getSqlUnit().getSql())));
+            Statement statement = createStatement(ConnectionManager.getConnection(each.getDataSource()), each.getSqlUnit().getSql(), sqlStatement instanceof InsertStatement);
+            futureList.add(userGroup.submit(newSubmitTask(statement, sqlStatement, each.getSqlUnit().getSql())));
         }
         List<CommandResponsePackets> packets = buildCommandResponsePackets(futureList);
-        CommandResponsePackets result = merge(routeResult.getSqlStatement(), packets);
+        CommandResponsePackets result = merge(sqlStatement, packets);
         if (!ruleRegistry.isMasterSlaveOnly()) {
             ProxyShardingRefreshHandler.build(routeResult).execute();
         }
