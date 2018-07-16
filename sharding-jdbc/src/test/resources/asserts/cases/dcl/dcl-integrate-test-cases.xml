@@ -68,7 +68,10 @@
     <dcl-test-case sql-case-id="deny_user">
         <assertion />
     </dcl-test-case>
-    <dcl-test-case sql-case-id="drop_user">
+    <dcl-test-case sql-case-id="drop_user_without_hostname">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="drop_user_with_hostname">
         <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="drop_user_cascade">
