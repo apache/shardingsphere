@@ -26,18 +26,16 @@ import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.parsing.SQLJudgeEngine;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingsphere.proxy.backend.common.BackendHandler;
-import io.shardingsphere.proxy.backend.common.ResultList;
-import io.shardingsphere.proxy.backend.resource.BaseJDBCResource;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
-import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
@@ -50,6 +48,7 @@ import lombok.Setter;
 
 import javax.transaction.Status;
 import javax.transaction.SystemException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -71,8 +70,6 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     private final String sql;
     
-    private final BaseJDBCResource jdbcResource;
-    
     private MergedResult mergedResult;
     
     private int currentSequenceId;
@@ -84,20 +81,21 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     private boolean hasMoreResultValueFlag;
     
-    private final List<ResultList> resultLists;
+    private final List<QueryResult> queryResults = new CopyOnWriteArrayList<>();
     
     private final RuleRegistry ruleRegistry;
     
     private final EventLoopGroup userGroup;
     
-    public JDBCBackendHandler(final String sql, final BaseJDBCResource jdbcResource) {
+    private final JDBCResourceManager jdbcResourceManager;
+    
+    public JDBCBackendHandler(final String sql) {
         this.sql = sql;
-        this.jdbcResource = jdbcResource;
         isMerged = false;
         hasMoreResultValueFlag = true;
-        resultLists = new CopyOnWriteArrayList<>();
         ruleRegistry = RuleRegistry.getInstance();
         userGroup = ExecutorContext.getInstance().getUserGroup();
+        jdbcResourceManager = new JDBCResourceManager();
     }
     
     @Override
@@ -106,8 +104,8 @@ public abstract class JDBCBackendHandler implements BackendHandler {
             return execute(ruleRegistry.isMasterSlaveOnly() ? doMasterSlaveRoute() : doShardingRoute());
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex));
-        } catch (final SystemException ex) {
-            return new CommandResponsePackets(new ErrPacket(1, new SQLException(ex)));
+        } catch (final SystemException | ShardingException ex) {
+            return new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
         }
     }
     
@@ -115,17 +113,20 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         if (routeResult.getExecutionUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1));
         }
-        if (isUnsupportedXA(routeResult.getSqlStatement().getType())) {
-            return new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, 
-                    routeResult.getSqlStatement().getTables().isSingleTable() ? routeResult.getSqlStatement().getTables().getSingleTableName() : "unknown_table"));
+        SQLStatement sqlStatement = routeResult.getSqlStatement();
+        boolean isReturnGeneratedKeys = sqlStatement instanceof InsertStatement;
+        if (isUnsupportedXA(sqlStatement.getType())) {
+            return new CommandResponsePackets(new ErrPacket(1, 
+                    ServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "unknown_table"));
         }
         List<Future<CommandResponsePackets>> futureList = new ArrayList<>(1024);
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
-            Statement statement = prepareResource(each, routeResult.getSqlStatement());
-            futureList.add(userGroup.submit(newSubmitTask(statement, routeResult.getSqlStatement(), each.getSqlUnit().getSql())));
+            String actualSQL = each.getSqlUnit().getSql();
+            Statement statement = createStatement(jdbcResourceManager.getConnection(each.getDataSource()), actualSQL, isReturnGeneratedKeys);
+            futureList.add(userGroup.submit(createExecuteWorker(statement, isReturnGeneratedKeys, actualSQL)));
         }
         List<CommandResponsePackets> packets = buildCommandResponsePackets(futureList);
-        CommandResponsePackets result = merge(routeResult.getSqlStatement(), packets);
+        CommandResponsePackets result = merge(sqlStatement, packets);
         if (!ruleRegistry.isMasterSlaveOnly()) {
             ProxyShardingRefreshHandler.build(routeResult).execute();
         }
@@ -137,9 +138,9 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         return TransactionType.XA == ruleRegistry.getTransactionType() && SQLType.DDL == sqlType && Status.STATUS_NO_TRANSACTION != AtomikosUserTransaction.getInstance().getStatus();
     }
     
-    protected abstract Statement prepareResource(SQLExecutionUnit sqlExecutionUnit, SQLStatement sqlStatement) throws SQLException;
+    protected abstract Statement createStatement(Connection connection, String actualSQL, boolean isReturnGeneratedKeys) throws SQLException;
     
-    protected abstract Callable<CommandResponsePackets> newSubmitTask(Statement statement, SQLStatement sqlStatement, String unitSQL);
+    protected abstract Callable<CommandResponsePackets> createExecuteWorker(Statement statement, boolean isReturnGeneratedKeys, String actualSQL);
     
     private List<CommandResponsePackets> buildCommandResponsePackets(final List<Future<CommandResponsePackets>> futureList) {
         List<CommandResponsePackets> result = new ArrayList<>();
@@ -186,10 +187,6 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     }
     
     private CommandResponsePackets mergeDQLorDAL(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets) {
-        List<QueryResult> queryResults = new ArrayList<>(packets.size());
-        for (int i = 0; i < packets.size(); i++) {
-            queryResults.add(newQueryResult(packets.get(i), i));
-        }
         try {
             mergedResult = MergeEngineFactory.newInstance(ruleRegistry.getShardingRule(), queryResults, sqlStatement, ruleRegistry.getShardingMetaData()).merge();
             isMerged = true;
@@ -230,7 +227,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     @Override
     public final boolean hasMoreResultValue() throws SQLException {
         if (!isMerged || !hasMoreResultValueFlag) {
-            jdbcResource.clear();
+            jdbcResourceManager.close();
             return false;
         }
         if (!mergedResult.next()) {
@@ -242,7 +239,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     @Override
     public final DatabaseProtocolPacket getResultValue() {
         if (!hasMoreResultValueFlag) {
-            return new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
+            return new EofPacket(++currentSequenceId);
         }
         try {
             List<Object> data = new ArrayList<>(columnCount);

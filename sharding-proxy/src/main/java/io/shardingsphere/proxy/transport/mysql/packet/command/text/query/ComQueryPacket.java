@@ -23,11 +23,12 @@ import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.transaction.event.XaTransactionEvent;
 import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.proxy.backend.common.BackendHandler;
-import io.shardingsphere.proxy.backend.common.jdbc.text.JDBCTextBackendHandler;
 import io.shardingsphere.proxy.backend.common.SQLPacketsBackendHandler;
+import io.shardingsphere.proxy.backend.common.jdbc.text.JDBCTextBackendHandler;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
@@ -87,7 +88,7 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
                 return new CommandResponsePackets(new OKPacket(1));
             }
         } catch (final SystemException ex) {
-            return new CommandResponsePackets(new ErrPacket(1, new SQLException(ex)));
+            return new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
         }
         return backendHandler.execute();
     }
