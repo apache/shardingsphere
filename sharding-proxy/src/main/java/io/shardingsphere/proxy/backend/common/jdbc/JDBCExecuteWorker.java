@@ -79,8 +79,9 @@ public abstract class JDBCExecuteWorker implements Callable<CommandResponsePacke
             return new CommandResponsePackets(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey() : 0));
         }
         ResultSet resultSet = statement.getResultSet();
-        jdbcResourceManager.addResultSet(resultSet);
-        if (ProxyMode.CONNECTION_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
+        if (ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
+            jdbcResourceManager.addResultSet(resultSet);
+        } else {
             List<Object> resultData = new CopyOnWriteArrayList<>();
             while (resultSet.next()) {
                 for (int columnIndex = 1; columnIndex <= resultSet.getMetaData().getColumnCount(); columnIndex++) {

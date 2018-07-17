@@ -72,9 +72,7 @@ public final class JDBCResourceManager implements AutoCloseable {
      * @param resultSet result set
      */
     public void addResultSet(final ResultSet resultSet) {
-        if (ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
-            resultSets.add(resultSet);
-        }
+        resultSets.add(resultSet);
     }
     
     @Override
