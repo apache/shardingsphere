@@ -19,27 +19,17 @@ package io.shardingsphere.proxy.backend.common;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * Result list.
+ * 
+ * @author zhangyonglun 
+ */
 public final class ResultList {
     
-    private final List<Object> resultList = new CopyOnWriteArrayList<>();
+    private final Iterator<Object> iterator;
     
-    private Iterator<Object> iterator;
-    
-    /**
-     * Add object.
-     *
-     * @param object object to add
-     */
-    public void add(final Object object) {
-        resultList.add(object);
-    }
-    
-    /**
-     * Iterator.
-     */
-    public void iterator() {
+    public ResultList(final List<Object> resultList) {
         iterator = resultList.iterator();
     }
     

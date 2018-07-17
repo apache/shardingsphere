@@ -35,7 +35,9 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Execute worker via JDBC to connect databases.
@@ -79,14 +81,13 @@ public abstract class JDBCExecuteWorker implements Callable<CommandResponsePacke
         ResultSet resultSet = statement.getResultSet();
         jdbcResourceManager.addResultSet(resultSet);
         if (ProxyMode.CONNECTION_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
-            ResultList resultList = new ResultList();
+            List<Object> resultData = new CopyOnWriteArrayList<>();
             while (resultSet.next()) {
                 for (int columnIndex = 1; columnIndex <= resultSet.getMetaData().getColumnCount(); columnIndex++) {
-                    resultList.add(resultSet.getObject(columnIndex));
+                    resultData.add(resultSet.getObject(columnIndex));
                 }
             }
-            resultList.iterator();
-            jdbcBackendHandler.getResultLists().add(resultList);
+            jdbcBackendHandler.getResultLists().add(new ResultList(resultData));
         }
         return getHeaderPackets(resultSet.getMetaData());
     }
