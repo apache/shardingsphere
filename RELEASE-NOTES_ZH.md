@@ -36,6 +36,7 @@
 1. [ISSUE #806](https://github.com/sharding-sphere/sharding-sphere/issues/806) `NOT IN`解析异常
 1. [ISSUE #827](https://github.com/sharding-sphere/sharding-sphere/issues/827) 将`SELECT * FROM table WHERE id IN ()`这种SQL跳出死循环
 1. [ISSUE #919](https://github.com/sharding-sphere/sharding-sphere/issues/919) 使用Groovy解析行表达式可能导致内存泄漏
+1. [ISSUE #1015](https://github.com/sharding-sphere/sharding-sphere/issues/1015) 支持使用`SELECT id, COUNT(*) FROM table GROUP BY 1,2`
 
 ## 2.0.3
 
