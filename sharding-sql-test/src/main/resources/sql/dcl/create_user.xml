@@ -9,5 +9,5 @@
     <sql-case id="create_login" value="CREATE LOGIN login_dev_new WITH PASSWORD = 'passwd_dev'" db-types="SQLServer" />
     <sql-case id="create_role" value="CREATE ROLE role_dev_new" db-types="SQLServer,Oracle,PostgreSQL,H2" />
     <sql-case id="create_role_identified_by" value="CREATE ROLE role_dev_new identified by dev_passwd" db-types="Oracle" />
-    <sql-case id="create_role_password" value="CREATE ROLE role_dev_new PASSWORD passwd_dev" db-types="PostgreSQL" />
+    <sql-case id="create_role_password" value="CREATE ROLE role_dev_new PASSWORD 'passwd_dev'" db-types="PostgreSQL" />
 </sql-cases>
