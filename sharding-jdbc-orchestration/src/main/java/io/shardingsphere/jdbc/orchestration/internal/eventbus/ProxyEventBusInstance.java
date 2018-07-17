@@ -27,7 +27,8 @@ import lombok.NoArgsConstructor;
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ProxyEventBusInstance {
+public final class ProxyEventBusInstance {
+    
     private static final EventBus INSTANCE = new EventBus();
     
     /**

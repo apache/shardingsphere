@@ -24,6 +24,7 @@ import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.keygen.DefaultKeyGenerator;
 import io.shardingsphere.core.keygen.KeyGenerator;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
@@ -44,6 +45,7 @@ import java.util.TreeSet;
  * 
  * @author zhangliang
  * @author maxiaoguang
+ * @author panjuan
  */
 @Getter
 public final class ShardingRule {
@@ -356,5 +358,40 @@ public final class ShardingRule {
             }
         }
         return masterSlaveRuleName;
+    }
+    
+    /**
+     * Get master slave rule name optional.
+     *
+     * @param dataSourceName data source name
+     * @return master slave rule name
+     */
+    public Optional<String> tryFindMasterSlaveRuleName(final String dataSourceName) {
+        if (masterSlaveRules.isEmpty()) {
+            return Optional.absent();
+        }
+        for (MasterSlaveRule each : masterSlaveRules) {
+            if (each.containDataSourceName(dataSourceName)) {
+                return Optional.fromNullable(each.getName());
+            }
+        }
+        return Optional.absent();
+    }
+    
+    /**
+     * Get actual data source name by actual table name.
+     *
+     * @param actualTableName actual table name
+     * @return actual data source name
+     */
+    public String getActualDataSourceNameByActualTableName(final String actualTableName) {
+        Optional<TableRule> tableRule = tryFindTableRuleByActualTable(actualTableName);
+        if (tableRule.isPresent()) {
+            return tableRule.get().getActualDatasourceNames().iterator().next();
+        }
+        if (!Strings.isNullOrEmpty(getShardingDataSourceNames().getDefaultDataSourceName())) {
+            return getShardingDataSourceNames().getDefaultDataSourceName();
+        }
+        throw new ShardingException("Cannot found actual data source name of '%s' in sharding rule.", actualTableName);
     }
 }

@@ -21,6 +21,8 @@ import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.io.Serializable;
+
 /**
  * Prepared statement parameter header.
  *
@@ -28,7 +30,9 @@ import lombok.Getter;
  */
 @AllArgsConstructor
 @Getter
-public class PreparedStatementParameterHeader {
+public class PreparedStatementParameterHeader implements Serializable {
+    
+    private static final long serialVersionUID = -672589695838350689L;
     
     private final ColumnType columnType;
     

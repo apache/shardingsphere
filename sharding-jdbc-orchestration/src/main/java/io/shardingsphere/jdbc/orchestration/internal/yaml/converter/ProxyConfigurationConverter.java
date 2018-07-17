@@ -32,7 +32,7 @@ import org.yaml.snakeyaml.Yaml;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ProxyConfigurationConverter {
     
-    private static final Yaml yaml = new Yaml(new DefaultConfigurationRepresenter());
+    private static final Yaml YAML = new Yaml(new DefaultConfigurationRepresenter());
     
     /**
      * Convert yaml proxy configuration to yaml string.
@@ -52,6 +52,6 @@ public final class ProxyConfigurationConverter {
      * @return Yaml proxy configuration
      */
     public static OrchestrationProxyConfiguration proxyConfigFromYaml(final String yamlProxyConfigYamlString) {
-        return yaml.loadAs(yamlProxyConfigYamlString, OrchestrationProxyConfiguration.class);
+        return YAML.loadAs(yamlProxyConfigYamlString, OrchestrationProxyConfiguration.class);
     }
 }

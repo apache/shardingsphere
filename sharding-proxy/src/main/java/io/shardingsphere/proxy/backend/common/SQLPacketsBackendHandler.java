@@ -37,7 +37,6 @@ import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
-import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextResultSetRowPacket;
@@ -67,6 +66,7 @@ import java.util.concurrent.TimeoutException;
 @Slf4j
 @Getter
 public final class SQLPacketsBackendHandler implements BackendHandler {
+    
     private static final int CONNECT_TIMEOUT = 30;
     
     private SynchronizedFuture<List<QueryResult>> synchronizedFuture;
@@ -74,8 +74,6 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     private final CommandPacketRebuilder rebuilder;
     
     private final DatabaseType databaseType;
-    
-    private final boolean showSQL;
     
     private MergedResult mergedResult;
     
@@ -87,36 +85,31 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     
     private boolean hasMoreResultValueFlag;
     
-    public SQLPacketsBackendHandler(final CommandPacketRebuilder rebuilder, final DatabaseType databaseType, final boolean showSQL) {
+    private final RuleRegistry ruleRegistry;
+    
+    public SQLPacketsBackendHandler(final CommandPacketRebuilder rebuilder, final DatabaseType databaseType) {
         this.rebuilder = rebuilder;
         this.databaseType = databaseType;
-        this.showSQL = showSQL;
         isMerged = false;
         hasMoreResultValueFlag = true;
+        ruleRegistry = RuleRegistry.getInstance();
     }
     
     @Override
     public CommandResponsePackets execute() {
-        if (RuleRegistry.getInstance().isOnlyMasterSlave()) {
-            return executeForMasterSlave();
-        } else {
-            return executeForSharding();
-        }
+        return ruleRegistry.isMasterSlaveOnly() ? executeForMasterSlave() : executeForSharding();
     }
     
-    protected CommandResponsePackets executeForMasterSlave() {
-        MasterSlaveRouter masterSlaveRouter = new MasterSlaveRouter(RuleRegistry.getInstance().getMasterSlaveRule());
+    private CommandResponsePackets executeForMasterSlave() {
         SQLStatement sqlStatement = new SQLJudgeEngine(rebuilder.sql()).judge();
-        String dataSourceName = masterSlaveRouter.route(sqlStatement.getType()).iterator().next();
-        
+        String dataSourceName = new MasterSlaveRouter(ruleRegistry.getMasterSlaveRule()).route(sqlStatement.getType()).iterator().next();
         synchronizedFuture = new SynchronizedFuture<>(1);
         MySQLResultCache.getInstance().putFuture(rebuilder.connectionId(), synchronizedFuture);
-        CommandPacket commandPacket = rebuilder.rebuild(new Object[]{rebuilder.sequenceId(), rebuilder.connectionId(), rebuilder.sql()});
+        CommandPacket commandPacket = rebuilder.rebuild(rebuilder.sequenceId(), rebuilder.connectionId(), rebuilder.sql());
         executeCommand(dataSourceName, rebuilder.connectionId(), commandPacket);
         //TODO timeout should be set.
         List<QueryResult> queryResults = synchronizedFuture.get(CONNECT_TIMEOUT, TimeUnit.SECONDS);
         MySQLResultCache.getInstance().deleteFuture(rebuilder.connectionId());
-        
         List<CommandResponsePackets> packets = new LinkedList<>();
         for (QueryResult each : queryResults) {
             packets.add(((MySQLQueryResult) each).getCommandResponsePackets());
@@ -124,17 +117,17 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
         return merge(sqlStatement, packets, queryResults);
     }
     
-    protected CommandResponsePackets executeForSharding() {
-        StatementRoutingEngine routingEngine = new StatementRoutingEngine(RuleRegistry.getInstance().getShardingRule(), RuleRegistry.getInstance().getShardingMetaData(), databaseType, showSQL);
+    private CommandResponsePackets executeForSharding() {
+        StatementRoutingEngine routingEngine = new StatementRoutingEngine(
+                ruleRegistry.getShardingRule(), ruleRegistry.getShardingMetaData(), databaseType, ruleRegistry.isShowSQL(), ruleRegistry.getShardingDataSourceMetaData());
         SQLRouteResult routeResult = routingEngine.route(rebuilder.sql());
         if (routeResult.getExecutionUnits().isEmpty()) {
-            return new CommandResponsePackets(new OKPacket(1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+            return new CommandResponsePackets(new OKPacket(1));
         }
-        
         synchronizedFuture = new SynchronizedFuture<>(routeResult.getExecutionUnits().size());
         MySQLResultCache.getInstance().putFuture(rebuilder.connectionId(), synchronizedFuture);
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
-            CommandPacket commandPacket = rebuilder.rebuild(new Object[]{rebuilder.sequenceId(), rebuilder.connectionId(), each.getSqlUnit().getSql()});
+            CommandPacket commandPacket = rebuilder.rebuild(rebuilder.sequenceId(), rebuilder.connectionId(), each.getSqlUnit().getSql());
             executeCommand(each.getDataSource(), rebuilder.connectionId(), commandPacket);
         }
         //TODO timeout should be set.
@@ -144,21 +137,20 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
         List<CommandResponsePackets> packets = Lists.newArrayListWithCapacity(queryResults.size());
         for (QueryResult each : queryResults) {
             MySQLQueryResult queryResult = (MySQLQueryResult) each;
-            if (currentSequenceId == 0) {
+            if (0 == currentSequenceId) {
                 currentSequenceId = queryResult.getCurrentSequenceId();
             }
-            if (columnCount == 0) {
+            if (0 == columnCount) {
                 columnCount = queryResult.getColumnCount();
             }
             packets.add(queryResult.getCommandResponsePackets());
         }
-        
         CommandResponsePackets result = merge(routeResult.getSqlStatement(), packets, queryResults);
         ProxyShardingRefreshHandler.build(routeResult).execute();
         return result;
     }
     
-    protected CommandResponsePackets merge(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets, final List<QueryResult> queryResults) {
+    private CommandResponsePackets merge(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets, final List<QueryResult> queryResults) {
         CommandResponsePackets headPackets = new CommandResponsePackets();
         for (CommandResponsePackets each : packets) {
             headPackets.addPacket(each.getHeadPacket());
@@ -186,8 +178,8 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
             channel = pool.acquire().get(CONNECT_TIMEOUT, TimeUnit.SECONDS);
             MySQLResultCache.getInstance().putConnection(channel.id().asShortText(), connectionId);
             channel.writeAndFlush(commandPacket);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            log.error(e.getMessage(), e);
+        } catch (final InterruptedException | ExecutionException | TimeoutException ex) {
+            log.error(ex.getMessage(), ex);
         } finally {
             if (null != pool && null != channel) {
                 pool.release(channel);
@@ -205,26 +197,21 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
                 lastInsertId = okPacket.getLastInsertId();
             }
         }
-        return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+        return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId));
     }
     
     private CommandResponsePackets mergeDQLorDAL(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets, final List<QueryResult> queryResults) {
         try {
-            mergedResult = MergeEngineFactory.newInstance(RuleRegistry.getInstance().getShardingRule(), queryResults,
-                    sqlStatement, RuleRegistry.getInstance().getShardingMetaData()).merge();
+            mergedResult = MergeEngineFactory.newInstance(ruleRegistry.getShardingRule(), queryResults,
+                    sqlStatement, ruleRegistry.getShardingMetaData()).merge();
             isMerged = true;
         } catch (final SQLException ex) {
-            return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage()));
+            return new CommandResponsePackets(new ErrPacket(1, ex));
         }
         return packets.get(0);
     }
     
-    /**
-     * Has more Result value.
-     *
-     * @return has more result value
-     * @throws SQLException sql exception
-     */
+    @Override
     public boolean hasMoreResultValue() throws SQLException {
         if (!isMerged || !hasMoreResultValueFlag) {
             return false;
@@ -235,14 +222,10 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
         return true;
     }
     
-    /**
-     * Get result value.
-     *
-     * @return database protocol packet
-     */
+    @Override
     public DatabaseProtocolPacket getResultValue() {
         if (!hasMoreResultValueFlag) {
-            return new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
+            return new EofPacket(++currentSequenceId);
         }
         try {
             List<Object> data = new ArrayList<>(columnCount);
@@ -251,7 +234,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
             }
             return new TextResultSetRowPacket(++currentSequenceId, data);
         } catch (final SQLException ex) {
-            return new ErrPacket(1, ex.getErrorCode(), "", ex.getSQLState(), ex.getMessage());
+            return new ErrPacket(1, ex);
         }
     }
 }

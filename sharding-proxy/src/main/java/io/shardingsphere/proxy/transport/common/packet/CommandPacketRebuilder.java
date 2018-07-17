@@ -20,30 +20,30 @@ package io.shardingsphere.proxy.transport.common.packet;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 
 /**
- * CommandPacket Rebuilder.
+ * Command packet rebuilder.
  *
  * @author linjiaqi
  */
 public interface CommandPacketRebuilder {
     
     /**
-     * get connectionId.
+     * Get connection id.
      * 
-     * @return connectionId
+     * @return connection id
      */
     int connectionId();
     
     /**
-     * get sequenceId.
+     * Get sequence id.
      * 
-     * @return sequenceId
+     * @return sequence id
      */
     int sequenceId();
     
     /**
-     * get sql.
+     * Get SQL.
      * 
-     * @return sql
+     * @return SQL
      */
     String sql();
     
@@ -51,7 +51,7 @@ public interface CommandPacketRebuilder {
      * CommandPacket rebuild by params.
      * 
      * @param params rebuild params
-     * @return rebuild CommandPacket
+     * @return rebuild command packet
      */
     CommandPacket rebuild(Object... params);
 }

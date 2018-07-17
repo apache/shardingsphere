@@ -9,6 +9,8 @@
 1. [ISSUE #290](https://github.com/sharding-sphere/sharding-sphere/issues/290) 支持批量INSERT语句
 1. [ISSUE #501](https://github.com/sharding-sphere/sharding-sphere/issues/501) 支持OR语句
 1. [ISSUE #862](https://github.com/sharding-sphere/sharding-sphere/issues/862) 支持在Cloud端进行数据治理
+1. [ISSUE #980](https://github.com/sharding-sphere/sharding-sphere/issues/980) 支持DCL语句
+1. [ISSUE #936](https://github.com/sharding-sphere/sharding-sphere/issues/936) 支持Proxy使用注册中心
 
 ### 功能提升
 
@@ -23,6 +25,7 @@
 1. [ISSUE #720](https://github.com/sharding-sphere/sharding-sphere/issues/720) 支持Spring bean的方式在命名空间中注入分片算法对象
 1. [ISSUE #773](https://github.com/sharding-sphere/sharding-sphere/issues/773) 支持不包含列名的INSERT语句的分片与自增主键
 1. [ISSUE #916](https://github.com/sharding-sphere/sharding-sphere/issues/916) 支持Sharding Proxy的登录权限认证
+1. [ISSUE #935](https://github.com/sharding-sphere/sharding-sphere/issues/935) 取代JSON格式，而将Yaml格式的配置文件存储在注册中心
 
 ### 缺陷修正
 

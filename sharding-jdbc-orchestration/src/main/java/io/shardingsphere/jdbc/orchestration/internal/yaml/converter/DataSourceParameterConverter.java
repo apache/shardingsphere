@@ -33,7 +33,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourceParameterConverter {
     
-    private static final Yaml yaml = new Yaml(new DefaultConfigurationRepresenter());
+    private static final Yaml YAML = new Yaml(new DefaultConfigurationRepresenter());
     
     /**
      * Convert data source parameter map to Yaml string.
@@ -42,7 +42,7 @@ public final class DataSourceParameterConverter {
      * @return Yaml string
      */
     public static String dataSourceParameterMapToYaml(final Map<String, DataSourceParameter> dataSourceParameterMap) {
-        return yaml.dumpAsMap(dataSourceParameterMap);
+        return YAML.dumpAsMap(dataSourceParameterMap);
     }
     
     /**
@@ -53,7 +53,6 @@ public final class DataSourceParameterConverter {
      */
     @SuppressWarnings("unchecked")
     public static Map<String, DataSourceParameter> dataSourceParameterMapFromYaml(final String dataSourceParameterMapYamlString) {
-        return (Map<String, DataSourceParameter>) yaml.load(dataSourceParameterMapYamlString);
-    
+        return (Map<String, DataSourceParameter>) YAML.load(dataSourceParameterMapYamlString);
     }
 }

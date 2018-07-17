@@ -1,23 +1,26 @@
-<datasets>
-    <columns values="max_order_id, user_id" />
-    <dataset values="1001, 10" />
-    <dataset values="1101, 11" />
-    <dataset values="1201, 12" />
-    <dataset values="1301, 13" />
-    <dataset values="1401, 14" />
-    <dataset values="1501, 15" />
-    <dataset values="1601, 16" />
-    <dataset values="1701, 17" />
-    <dataset values="1801, 18" />
-    <dataset values="1901, 19" />
-    <dataset values="2001, 20" />
-    <dataset values="2101, 21" />
-    <dataset values="2201, 22" />
-    <dataset values="2301, 23" />
-    <dataset values="2401, 24" />
-    <dataset values="2501, 25" />
-    <dataset values="2601, 26" />
-    <dataset values="2701, 27" />
-    <dataset values="2801, 28" />
-    <dataset values="2901, 29" />
-</datasets>
+<dataset>
+    <metadata>
+        <column name="max_order_id" />
+        <column name="user_id" />
+    </metadata>
+    <row values="1001, 10" />
+    <row values="1101, 11" />
+    <row values="1201, 12" />
+    <row values="1301, 13" />
+    <row values="1401, 14" />
+    <row values="1501, 15" />
+    <row values="1601, 16" />
+    <row values="1701, 17" />
+    <row values="1801, 18" />
+    <row values="1901, 19" />
+    <row values="2001, 20" />
+    <row values="2101, 21" />
+    <row values="2201, 22" />
+    <row values="2301, 23" />
+    <row values="2401, 24" />
+    <row values="2501, 25" />
+    <row values="2601, 26" />
+    <row values="2701, 27" />
+    <row values="2801, 28" />
+    <row values="2901, 29" />
+</dataset>

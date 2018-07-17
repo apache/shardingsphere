@@ -18,17 +18,15 @@
 package io.shardingsphere.proxy.backend.common;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-@NoArgsConstructor
 @Getter
 @Setter
-public class ResultList {
+public final class ResultList {
     
     private final List<Object> resultList = new CopyOnWriteArrayList<>();
     

@@ -24,6 +24,7 @@ import lombok.Getter;
 
 /**
  * Handshake response above MySQL 4.1 packet protocol.
+ * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/connection-phase-packets.html#packet-Protocol::HandshakeResponse41">HandshakeResponse41</a>
  * 
  * @author zhangliang
@@ -55,8 +56,8 @@ public final class HandshakeResponse41Packet extends MySQLPacket {
         readDatabase(mysqlPacketPayload);
     }
     
-    public HandshakeResponse41Packet(final int sequenceId, final int capabilityFlags, final int maxPacketSize, final int characterSet, final String username, final byte[] authResponse, final String
-            database) {
+    public HandshakeResponse41Packet(
+            final int sequenceId, final int capabilityFlags, final int maxPacketSize, final int characterSet, final String username, final byte[] authResponse, final String database) {
         super(sequenceId);
         this.capabilityFlags = capabilityFlags;
         this.maxPacketSize = maxPacketSize;
@@ -67,7 +68,6 @@ public final class HandshakeResponse41Packet extends MySQLPacket {
     }
     
     private void readAuthResponse(final MySQLPacketPayload mysqlPacketPayload) {
-        
         if (0 != (capabilityFlags & CapabilityFlag.CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA.getValue())) {
             authResponse = mysqlPacketPayload.readStringLenencByBytes();
         } else if (0 != (capabilityFlags & CapabilityFlag.CLIENT_SECURE_CONNECTION.getValue())) {

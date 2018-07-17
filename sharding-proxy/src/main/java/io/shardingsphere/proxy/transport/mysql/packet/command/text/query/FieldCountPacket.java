@@ -23,6 +23,7 @@ import lombok.Getter;
 
 /**
  * COM_QUERY response field count packet.
+ * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-query-response.html">COM_QUERY field count</a>
  *
  * @author zhangliang

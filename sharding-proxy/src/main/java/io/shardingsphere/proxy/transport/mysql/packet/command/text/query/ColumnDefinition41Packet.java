@@ -24,8 +24,12 @@ import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import lombok.Getter;
 
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+
 /**
  * Column definition above MySQL 4.1 packet protocol.
+ * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-query-response.html#packet-Protocol::ColumnDefinition41">ColumnDefinition41</a>
  *
  * @author zhangliang
@@ -56,6 +60,12 @@ public final class ColumnDefinition41Packet extends MySQLPacket {
     private final ColumnType columnType;
     
     private final int decimals;
+    
+    public ColumnDefinition41Packet(final int sequenceId, final ResultSetMetaData resultSetMetaData, final int columnIndex) throws SQLException {
+        this(sequenceId, resultSetMetaData.getSchemaName(columnIndex), resultSetMetaData.getTableName(columnIndex), resultSetMetaData.getTableName(columnIndex), 
+                resultSetMetaData.getColumnLabel(columnIndex), resultSetMetaData.getColumnName(columnIndex), resultSetMetaData.getColumnDisplaySize(columnIndex), 
+                ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(columnIndex)), 0);
+    }
     
     public ColumnDefinition41Packet(final int sequenceId, final String schema, final String table, final String orgTable, 
                                     final String name, final String orgName, final int columnLength, final ColumnType columnType, final int decimals) {

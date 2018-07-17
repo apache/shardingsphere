@@ -18,6 +18,7 @@
 package io.shardingsphere.proxy.transport.mysql.packet.command;
 
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 
@@ -28,14 +29,6 @@ import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
  */
 public final class UnsupportedCommandPacket extends CommandPacket {
     
-    private static final int ERROR_CODE = 0xcc;
-    
-    private static final String SQL_STATE_MARKER = "x";
-    
-    private static final String SQL_STATE = "xxxxx";
-    
-    private static final String ERROR_MESSAGE = "Unsupported command packet '%s'.";
-    
     private final CommandPacketType type;
     
     public UnsupportedCommandPacket(final int sequenceId, final CommandPacketType type) {
@@ -45,7 +38,7 @@ public final class UnsupportedCommandPacket extends CommandPacket {
     
     @Override
     public CommandResponsePackets execute() {
-        return new CommandResponsePackets(new ErrPacket(getSequenceId() + 1, ERROR_CODE, SQL_STATE_MARKER, SQL_STATE, String.format(ERROR_MESSAGE, type)));
+        return new CommandResponsePackets(new ErrPacket(getSequenceId() + 1, ServerErrorCode.ER_UNSUPPORTED_COMMAND, type));
     }
     
     @Override

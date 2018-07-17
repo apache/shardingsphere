@@ -56,7 +56,7 @@ public class DataSourceRepresenter extends Representer {
     }
     
     @Override
-    protected Set<Property> getProperties(final Class<? extends Object> type) {
+    protected Set<Property> getProperties(final Class<?> type) {
         Set<Property> propertySet;
         try {
             propertySet = super.getProperties(type);

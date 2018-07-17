@@ -17,18 +17,20 @@
 
 package io.shardingsphere.dbtest;
 
-import io.shardingsphere.dbtest.engine.DDLIntegrateTest;
-import io.shardingsphere.dbtest.engine.DMLIntegrateTest;
-import io.shardingsphere.dbtest.engine.DQLIntegrateTest;
+import io.shardingsphere.dbtest.engine.dcl.AllDCLTests;
+import io.shardingsphere.dbtest.engine.ddl.AllDDLTests;
+import io.shardingsphere.dbtest.engine.dml.AllDMLTests;
+import io.shardingsphere.dbtest.engine.dql.AllDQLTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        DDLIntegrateTest.class,
-        DMLIntegrateTest.class,
-        DQLIntegrateTest.class
-    })
+        AllDQLTests.class,
+        AllDMLTests.class,
+        AllDDLTests.class,
+        AllDCLTests.class
+})
 public class AllIntegrateTests {
 }
