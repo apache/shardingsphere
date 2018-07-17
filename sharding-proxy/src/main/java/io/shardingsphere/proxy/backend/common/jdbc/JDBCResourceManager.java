@@ -60,7 +60,10 @@ public final class JDBCResourceManager implements AutoCloseable {
         if (ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
             result = dataSource.getConnection();
         } else {
-            result = dataSourceConnectionMap.containsKey(dataSourceName) ? dataSourceConnectionMap.get(dataSourceName) : dataSourceConnectionMap.put(dataSourceName, dataSource.getConnection());
+            if (!dataSourceConnectionMap.containsKey(dataSourceName)) {
+                dataSourceConnectionMap.put(dataSourceName, dataSource.getConnection());
+            }
+            result = dataSourceConnectionMap.get(dataSourceName);
         }
         cachedConnections.add(result);
         return result;

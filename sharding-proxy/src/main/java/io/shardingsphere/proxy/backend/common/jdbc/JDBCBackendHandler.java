@@ -32,7 +32,6 @@ import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingsphere.proxy.backend.common.BackendHandler;
-import io.shardingsphere.proxy.backend.common.ResultList;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
@@ -82,7 +81,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     private boolean hasMoreResultValueFlag;
     
-    private final List<ResultList> resultLists;
+    private final List<QueryResult> queryResults = new CopyOnWriteArrayList<>();
     
     private final RuleRegistry ruleRegistry;
     
@@ -94,7 +93,6 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         this.sql = sql;
         isMerged = false;
         hasMoreResultValueFlag = true;
-        resultLists = new CopyOnWriteArrayList<>();
         ruleRegistry = RuleRegistry.getInstance();
         userGroup = ExecutorContext.getInstance().getUserGroup();
         jdbcResourceManager = new JDBCResourceManager();
@@ -189,10 +187,6 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     }
     
     private CommandResponsePackets mergeDQLorDAL(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets) {
-        List<QueryResult> queryResults = new ArrayList<>(packets.size());
-        for (int i = 0; i < packets.size(); i++) {
-            queryResults.add(newQueryResult(packets.get(i), i));
-        }
         try {
             mergedResult = MergeEngineFactory.newInstance(ruleRegistry.getShardingRule(), queryResults, sqlStatement, ruleRegistry.getShardingMetaData()).merge();
             isMerged = true;

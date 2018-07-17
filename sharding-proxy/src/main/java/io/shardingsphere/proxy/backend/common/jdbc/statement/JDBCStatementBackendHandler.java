@@ -21,7 +21,6 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.routing.PreparedStatementRoutingEngine;
 import io.shardingsphere.core.routing.SQLRouteResult;
-import io.shardingsphere.proxy.backend.common.ProxyMode;
 import io.shardingsphere.proxy.backend.common.jdbc.JDBCBackendHandler;
 import io.shardingsphere.proxy.backend.mysql.MySQLPacketStatementExecuteQueryResult;
 import io.shardingsphere.proxy.config.RuleRegistry;
@@ -98,13 +97,7 @@ public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
     
     @Override
     protected QueryResult newQueryResult(final CommandResponsePackets packet, final int index) {
-        MySQLPacketStatementExecuteQueryResult result = new MySQLPacketStatementExecuteQueryResult(packet, columnTypes);
-        if (ProxyMode.MEMORY_STRICTLY == ruleRegistry.getProxyMode()) {
-            result.setResultSet(getJdbcResourceManager().getResultSets().get(index));
-        } else {
-            result.setResultList(getResultLists().get(index));
-        }
-        return result;
+        return new MySQLPacketStatementExecuteQueryResult(packet, columnTypes);
     }
     
     @Override
