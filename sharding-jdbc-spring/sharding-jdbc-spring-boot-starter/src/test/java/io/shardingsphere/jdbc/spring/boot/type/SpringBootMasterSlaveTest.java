@@ -53,6 +53,8 @@ public class SpringBootMasterSlaveTest {
         }
         Map<String, Object> configMap = new ConcurrentHashMap<>();
         configMap.put("key1", "value1");
+        configMap.put("key2", "value1");
+        configMap.put("username", "root");
         assertThat(ConfigMapContext.getInstance().getMasterSlaveConfig(), is(configMap));
     }
 }
