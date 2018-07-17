@@ -17,7 +17,6 @@
 
 package io.shardingsphere.proxy.backend.common.jdbc;
 
-import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.proxy.backend.common.ProxyMode;
 import io.shardingsphere.proxy.backend.common.ResultList;
 import io.shardingsphere.proxy.config.RuleRegistry;
@@ -65,9 +64,6 @@ public abstract class JDBCExecuteWorker implements Callable<CommandResponsePacke
             return execute();
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex));
-        } finally {
-            // TODO confirm here, maybe can remove
-            MasterVisitedManager.clear();
         }
     }
     
@@ -80,7 +76,7 @@ public abstract class JDBCExecuteWorker implements Callable<CommandResponsePacke
         }
         ResultSet resultSet = statement.getResultSet();
         if (ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
-            jdbcResourceManager.addResultSet(resultSet);
+            jdbcResourceManager.addResultSet(resultSet);    
         } else {
             List<Object> resultData = new CopyOnWriteArrayList<>();
             while (resultSet.next()) {
