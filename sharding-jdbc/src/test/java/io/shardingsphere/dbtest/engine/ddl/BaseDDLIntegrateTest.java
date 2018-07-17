@@ -69,7 +69,7 @@ public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
     }
     
     protected void assertMetadata(final Connection connection) throws IOException, JAXBException, SQLException {
-        // TODO case for drop (index) and truncate, add assert later
+        // TODO drop index assertion
         if (null == assertion.getExpectedDataFile()) {
             return;
         }
