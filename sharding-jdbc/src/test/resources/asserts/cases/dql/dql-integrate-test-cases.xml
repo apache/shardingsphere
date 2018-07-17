@@ -82,6 +82,10 @@
     <dql-test-case sql-case-id="select_count_with_sub">
         <assertion expected-data-file="select_count_with_sub.xml" />
     </dql-test-case>
+
+    <dql-test-case sql-case-id="select_count_with_sub_with_whitespace">
+        <assertion expected-data-file="select_count_with_sub_with_whitespace.xml" />
+    </dql-test-case>
     
     <dql-test-case sql-case-id="select_max">
         <assertion expected-data-file="select_max.xml" />
