@@ -45,6 +45,6 @@ public final class JDBCTextExecuteWorker extends JDBCExecuteWorker {
     
     @Override
     protected boolean executeSQL() throws SQLException {
-        return statement.execute(sql);
+        return statement.execute(sql, isReturnGeneratedKeys() ? Statement.RETURN_GENERATED_KEYS : Statement.NO_GENERATED_KEYS);
     }
 }

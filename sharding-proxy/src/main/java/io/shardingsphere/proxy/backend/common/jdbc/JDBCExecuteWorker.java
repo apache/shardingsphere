@@ -50,6 +50,7 @@ public abstract class JDBCExecuteWorker implements Callable<CommandResponsePacke
     
     private final Statement statement;
     
+    @Getter
     private final boolean isReturnGeneratedKeys;
     
     private final JDBCResourceManager jdbcResourceManager;
