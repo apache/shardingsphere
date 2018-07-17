@@ -90,7 +90,7 @@ public class Holder {
                 processConnection(event);
                 processGlobalListener(event);
                 // todo filter event type or path, add watch
-                // reWatch(event);
+                //reWatch(event);
                 if (event.getType() == Event.EventType.None) {
                     return;
                 }
@@ -167,6 +167,13 @@ public class Holder {
      */
     public void close() {
         try {
+            zooKeeper.register(new Watcher() {
+                
+                @Override
+                public void process(final WatchedEvent watchedEvent) {
+        
+                }
+            });
             zooKeeper.close();
             connected = false;
             LOGGER.debug("zk closed");
