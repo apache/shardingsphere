@@ -12,10 +12,10 @@
     <parser-result sql-case-id="revoke_user_from" />
     <parser-result sql-case-id="revoke_user_with_hostname_on_db">
         <tables>
-            <table name="t_order" />
+            <table name="*" />
         </tables>
         <tokens>
-            <table-token begin-position="25" original-literals="t_order" />
+            <table-token begin-position="25" original-literals="*" />
         </tokens>
     </parser-result>
     <parser-result sql-case-id="revoke_user_with_hostname" />
