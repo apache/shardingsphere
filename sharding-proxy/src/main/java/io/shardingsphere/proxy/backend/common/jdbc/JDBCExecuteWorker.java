@@ -50,7 +50,6 @@ public abstract class JDBCExecuteWorker implements Callable<CommandResponsePacke
     
     private final Statement statement;
     
-    @Getter
     private final boolean isReturnGeneratedKeys;
     
     private final JDBCResourceManager jdbcResourceManager;
@@ -74,7 +73,7 @@ public abstract class JDBCExecuteWorker implements Callable<CommandResponsePacke
         if (ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
             statement.setFetchSize(FETCH_ONE_ROW_A_TIME);
         }
-        if (!executeSQL()) {
+        if (!executeSQL(isReturnGeneratedKeys)) {
             return new CommandResponsePackets(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey() : 0));
         }
         ResultSet resultSet = statement.getResultSet();
@@ -86,14 +85,13 @@ public abstract class JDBCExecuteWorker implements Callable<CommandResponsePacke
                     resultList.add(resultSet.getObject(columnIndex));
                 }
             }
-            // TODO why set twice?
-            resultList.setIterator(resultList.getResultList().iterator());
+            resultList.iterator();
             jdbcBackendHandler.getResultLists().add(resultList);
         }
         return getHeaderPackets(resultSet.getMetaData());
     }
     
-    protected abstract boolean executeSQL() throws SQLException;
+    protected abstract boolean executeSQL(boolean isReturnGeneratedKeys) throws SQLException;
     
     private CommandResponsePackets getHeaderPackets(final ResultSetMetaData resultSetMetaData) throws SQLException {
         int currentSequenceId = 0;

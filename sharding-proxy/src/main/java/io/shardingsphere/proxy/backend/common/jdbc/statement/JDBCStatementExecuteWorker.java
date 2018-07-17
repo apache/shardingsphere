@@ -42,7 +42,7 @@ public final class JDBCStatementExecuteWorker extends JDBCExecuteWorker {
     }
     
     @Override
-    protected boolean executeSQL() throws SQLException {
+    protected boolean executeSQL(final boolean isReturnGeneratedKeys) throws SQLException {
         return preparedStatement.execute();
     }
     

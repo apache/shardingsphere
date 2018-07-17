@@ -17,15 +17,10 @@
 
 package io.shardingsphere.proxy.backend.common;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-@Getter
-@Setter
 public final class ResultList {
     
     private final List<Object> resultList = new CopyOnWriteArrayList<>();
@@ -39,6 +34,13 @@ public final class ResultList {
      */
     public void add(final Object object) {
         resultList.add(object);
+    }
+    
+    /**
+     * Iterator.
+     */
+    public void iterator() {
+        iterator = resultList.iterator();
     }
     
     /**
