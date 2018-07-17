@@ -18,9 +18,6 @@
 package io.shardingsphere.proxy.backend.mysql;
 
 import io.shardingsphere.core.merger.QueryResult;
-import io.shardingsphere.proxy.backend.common.ProxyMode;
-import io.shardingsphere.proxy.backend.common.ResultList;
-import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
@@ -31,7 +28,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.io.InputStream;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -57,9 +53,7 @@ public final class MySQLPacketStatementExecuteQueryResult implements QueryResult
     
     private final Map<String, Integer> columnLabelAndIndexMap;
     
-    private ResultSet resultSet;
-    
-    private ResultList resultList;
+    private QueryResult queryResult;
     
     private int currentSequenceId;
     
@@ -80,37 +74,15 @@ public final class MySQLPacketStatementExecuteQueryResult implements QueryResult
     
     @Override
     public boolean next() throws SQLException {
-        if (ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
-            return nextForStreamResultSet();
-        } else {
-            return nextForNoneStreamResultList();
-        }
-    }
-    
-    private boolean nextForStreamResultSet() throws SQLException {
-        if (resultSet.next()) {
+        if (queryResult.next()) {
             List<Object> data = new ArrayList<>(columnCount);
             for (int i = 1; i <= columnCount; i++) {
-                data.add(resultSet.getObject(i));
+                data.add(queryResult.getValue(i, Object.class));
             }
             currentRow = new BinaryResultSetRowPacket(++currentSequenceId, columnCount, data, columnTypes);
             return true;
         }
         return false;
-    }
-    
-    private boolean nextForNoneStreamResultList() {
-        if (!resultList.hasNext()) {
-            return false;
-        }
-        List<Object> data = new ArrayList<>(columnCount);
-        for (int i = 1; i <= columnCount; i++) {
-            if (resultList.hasNext()) {
-                data.add(resultList.next());
-            }
-        }
-        currentRow = new BinaryResultSetRowPacket(++currentSequenceId, columnCount, data, columnTypes);
-        return true;
     }
     
     @Override
