@@ -17,13 +17,9 @@
 
 package io.shardingsphere.proxy.backend.common.jdbc.text;
 
-import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.proxy.backend.common.ResultList;
 import io.shardingsphere.proxy.backend.common.jdbc.JDBCExecuteWorker;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
-import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
+import io.shardingsphere.proxy.backend.common.jdbc.JDBCResourceManager;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -32,67 +28,23 @@ import java.sql.Statement;
  *
  * @author zhangyonglun
  * @author zhaojun
+ * @author zhangliang
  */
 public final class JDBCTextExecuteWorker extends JDBCExecuteWorker {
-    
-    private static final Integer FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
     
     private final Statement statement;
     
     private final String sql;
     
-    private final boolean isReturnGeneratedKeys;
-    
-    public JDBCTextExecuteWorker(final SQLType sqlType, final String sql, final Statement statement, final boolean isReturnGeneratedKeys, final JDBCTextBackendHandler jdbcTextBackendHandler) {
-        super(sqlType, jdbcTextBackendHandler);
+    public JDBCTextExecuteWorker(final String sql, final Statement statement, final boolean isReturnGeneratedKeys, 
+                                 final JDBCResourceManager jdbcResourceManager, final JDBCTextBackendHandler jdbcTextBackendHandler) {
+        super(statement, isReturnGeneratedKeys, jdbcResourceManager, jdbcTextBackendHandler);
         this.statement = statement;
         this.sql = sql;
-        this.isReturnGeneratedKeys = isReturnGeneratedKeys;
     }
     
     @Override
-    protected CommandResponsePackets executeQueryWithStreamResultSet() throws SQLException {
-        statement.setFetchSize(FETCH_ONE_ROW_A_TIME);
-        return getQueryDatabaseProtocolPackets(statement.executeQuery(sql));
-    }
-    
-    @Override
-    protected CommandResponsePackets executeQueryWithMemoryResultSet() throws SQLException {
-        try (
-                ResultSet resultSet = statement.executeQuery(sql)
-        ) {
-            ResultList resultList = new ResultList();
-            while (resultSet.next()) {
-                for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
-                    resultList.add(resultSet.getObject(i));
-                }
-            }
-            resultList.setIterator(resultList.getResultList().iterator());
-            getJdbcBackendHandler().getResultLists().add(resultList);
-            return getQueryDatabaseProtocolPackets(resultSet);
-        }
-    }
-    
-    @Override
-    protected CommandResponsePackets executeUpdate() throws SQLException {
-        int affectedRows;
-        long lastInsertId = 0;
-        if (isReturnGeneratedKeys) {
-            affectedRows = statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
-            lastInsertId = getGeneratedKey(statement);
-        } else {
-            affectedRows = statement.executeUpdate(sql);
-        }
-        return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId));
-    }
-    
-    @Override
-    protected CommandResponsePackets executeCommon() throws SQLException {
-        boolean hasResultSet = statement.execute(sql);
-        if (hasResultSet) {
-            return getCommonDatabaseProtocolPackets(statement.getResultSet());
-        } else {
-            return new CommandResponsePackets(new OKPacket(1, statement.getUpdateCount(), 0));
-        }
+    protected boolean executeSQL(final boolean isReturnGeneratedKeys) throws SQLException {
+        return statement.execute(sql, isReturnGeneratedKeys ? Statement.RETURN_GENERATED_KEYS : Statement.NO_GENERATED_KEYS);
     }
 }

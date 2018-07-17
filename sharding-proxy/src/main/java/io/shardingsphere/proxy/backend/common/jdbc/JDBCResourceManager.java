@@ -22,43 +22,67 @@ import io.shardingsphere.proxy.backend.common.ProxyMode;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import lombok.Getter;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * JDBC resource manager.
+ * JDBC resourceManager manager.
  *
  * @author zhaojun
  */
-@Getter
-public final class JDBCResourceManager {
+public final class JDBCResourceManager implements AutoCloseable {
     
+    private final Map<String, Connection> dataSourceConnectionMap = new HashMap<>();
+    
+    private final Collection<Connection> cachedConnections = new LinkedList<>();
+    
+    @Getter
     private final List<ResultSet> resultSets = new CopyOnWriteArrayList<>();
     
     /**
-     * Add new resultSet to resource manager.
+     * Get connection of current thread datasource.
+     *
+     * @param dataSourceName data source name
+     * @return connection
+     * @throws SQLException SQL exception
+     */
+    public Connection getConnection(final String dataSourceName) throws SQLException {
+        DataSource dataSource = RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName);
+        Connection result;
+        if (ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
+            result = dataSource.getConnection();
+        } else {
+            result = dataSourceConnectionMap.containsKey(dataSourceName) ? dataSourceConnectionMap.get(dataSourceName) : dataSourceConnectionMap.put(dataSourceName, dataSource.getConnection());
+        }
+        cachedConnections.add(result);
+        return result;
+    }
+    
+    /**
+     * Add new result set to resource manager.
      *
      * @param resultSet result set
      */
     public void addResultSet(final ResultSet resultSet) {
-        if (ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
-            resultSets.add(resultSet);
-        }
+        resultSets.add(resultSet);
     }
     
-    /**
-     * Clear all usable proxy resource in current thread.
-     *
-     * @throws SQLException SQLException
-     */
-    public void clear() throws SQLException {
-        for (ResultSet each : resultSets) {
-            if (!each.getStatement().getConnection().isClosed()) {
-                each.getStatement().getConnection().close();
+    @Override
+    public void close() {
+        try {
+            for (Connection each : cachedConnections) {
+                each.close();
             }
-            MasterVisitedManager.clear();
+        } catch (final SQLException ignored) {
         }
+        MasterVisitedManager.clear();
     }
 }

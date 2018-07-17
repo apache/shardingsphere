@@ -37,7 +37,6 @@ import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
-import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
@@ -72,8 +71,6 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     private final String sql;
     
-    private final JDBCResourceManager jdbcResourceManager;
-    
     private MergedResult mergedResult;
     
     private int currentSequenceId;
@@ -91,14 +88,16 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     private final EventLoopGroup userGroup;
     
+    private final JDBCResourceManager jdbcResourceManager;
+    
     public JDBCBackendHandler(final String sql) {
         this.sql = sql;
-        jdbcResourceManager = new JDBCResourceManager();
         isMerged = false;
         hasMoreResultValueFlag = true;
         resultLists = new CopyOnWriteArrayList<>();
         ruleRegistry = RuleRegistry.getInstance();
         userGroup = ExecutorContext.getInstance().getUserGroup();
+        jdbcResourceManager = new JDBCResourceManager();
     }
     
     @Override
@@ -107,8 +106,8 @@ public abstract class JDBCBackendHandler implements BackendHandler {
             return execute(ruleRegistry.isMasterSlaveOnly() ? doMasterSlaveRoute() : doShardingRoute());
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex));
-        } catch (final SystemException ex) {
-            return new CommandResponsePackets(new ErrPacket(1, new SQLException(ex)));
+        } catch (final SystemException | ShardingException ex) {
+            return new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
         }
     }
     
@@ -125,8 +124,8 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         List<Future<CommandResponsePackets>> futureList = new ArrayList<>(1024);
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             String actualSQL = each.getSqlUnit().getSql();
-            Statement statement = createStatement(ConnectionManager.getConnection(each.getDataSource()), actualSQL, isReturnGeneratedKeys);
-            futureList.add(userGroup.submit(createExecuteWorker(statement, sqlStatement.getType(), isReturnGeneratedKeys, actualSQL)));
+            Statement statement = createStatement(jdbcResourceManager.getConnection(each.getDataSource()), actualSQL, isReturnGeneratedKeys);
+            futureList.add(userGroup.submit(createExecuteWorker(statement, isReturnGeneratedKeys, actualSQL)));
         }
         List<CommandResponsePackets> packets = buildCommandResponsePackets(futureList);
         CommandResponsePackets result = merge(sqlStatement, packets);
@@ -143,7 +142,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     protected abstract Statement createStatement(Connection connection, String actualSQL, boolean isReturnGeneratedKeys) throws SQLException;
     
-    protected abstract Callable<CommandResponsePackets> createExecuteWorker(Statement statement, SQLType sqlType, boolean isReturnGeneratedKeys, String actualSQL);
+    protected abstract Callable<CommandResponsePackets> createExecuteWorker(Statement statement, boolean isReturnGeneratedKeys, String actualSQL);
     
     private List<CommandResponsePackets> buildCommandResponsePackets(final List<Future<CommandResponsePackets>> futureList) {
         List<CommandResponsePackets> result = new ArrayList<>();
@@ -234,7 +233,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     @Override
     public final boolean hasMoreResultValue() throws SQLException {
         if (!isMerged || !hasMoreResultValueFlag) {
-            jdbcResourceManager.clear();
+            jdbcResourceManager.close();
             return false;
         }
         if (!mergedResult.next()) {
@@ -246,7 +245,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     @Override
     public final DatabaseProtocolPacket getResultValue() {
         if (!hasMoreResultValueFlag) {
-            return new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
+            return new EofPacket(++currentSequenceId);
         }
         try {
             List<Object> data = new ArrayList<>(columnCount);

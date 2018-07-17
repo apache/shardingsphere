@@ -71,15 +71,15 @@ public final class GeneralDDLIntegrateTest extends BaseDDLIntegrateTest {
             }
             if (isExecuteUpdate) {
                 if (SQLCaseType.Literal == getCaseType()) {
-                    connection.createStatement().execute(getSql());
-                } else {
-                    connection.prepareStatement(getSql()).execute();
-                }
-            } else {
-                if (SQLCaseType.Literal == getCaseType()) {
                     connection.createStatement().executeUpdate(getSql());
                 } else {
                     connection.prepareStatement(getSql()).executeUpdate();
+                }
+            } else {
+                if (SQLCaseType.Literal == getCaseType()) {
+                    connection.createStatement().execute(getSql());
+                } else {
+                    connection.prepareStatement(getSql()).execute();
                 }
             }
             assertMetadata(connection);

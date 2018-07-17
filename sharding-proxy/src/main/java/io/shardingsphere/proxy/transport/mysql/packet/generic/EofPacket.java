@@ -18,6 +18,7 @@
 package io.shardingsphere.proxy.transport.mysql.packet.generic;
 
 import com.google.common.base.Preconditions;
+import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import lombok.Getter;
@@ -38,6 +39,10 @@ public final class EofPacket extends MySQLPacket {
     private final int warnings;
     
     private final int statusFlags;
+    
+    public EofPacket(final int sequenceId) {
+        this(sequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
+    }
     
     public EofPacket(final int sequenceId, final int warnings, final int statusFlags) {
         super(sequenceId);

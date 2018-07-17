@@ -17,39 +17,43 @@
 
 package io.shardingsphere.proxy.backend.common.jdbc;
 
-import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.proxy.backend.common.ProxyMode;
+import io.shardingsphere.proxy.backend.common.ResultList;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
-import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextResultSetRowPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Execute worker via JDBC to connect databases.
  * 
  * @author zhaojun
+ * @author zhangliang
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 public abstract class JDBCExecuteWorker implements Callable<CommandResponsePackets> {
     
-    private final SQLType sqlType;
+    private static final Integer FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
+    
+    private final Statement statement;
+    
+    private final boolean isReturnGeneratedKeys;
+    
+    private final JDBCResourceManager jdbcResourceManager;
     
     @Getter
     private final JDBCBackendHandler jdbcBackendHandler;
@@ -60,95 +64,55 @@ public abstract class JDBCExecuteWorker implements Callable<CommandResponsePacke
             return execute();
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex));
-        } finally {
-            MasterVisitedManager.clear();
         }
     }
     
     private CommandResponsePackets execute() throws SQLException {
-        switch (sqlType) {
-            case DQL:
-            case DAL:
-                return executeQuery();
-            case DML:
-            case DDL:
-                return executeUpdate();
-            default:
-                return executeCommon();
+        if (ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
+            statement.setFetchSize(FETCH_ONE_ROW_A_TIME);
         }
+        if (!executeSQL(isReturnGeneratedKeys)) {
+            return new CommandResponsePackets(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey() : 0));
+        }
+        ResultSet resultSet = statement.getResultSet();
+        if (ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
+            jdbcResourceManager.addResultSet(resultSet);    
+        } else {
+            List<Object> resultData = new CopyOnWriteArrayList<>();
+            while (resultSet.next()) {
+                for (int columnIndex = 1; columnIndex <= resultSet.getMetaData().getColumnCount(); columnIndex++) {
+                    resultData.add(resultSet.getObject(columnIndex));
+                }
+            }
+            jdbcBackendHandler.getResultLists().add(new ResultList(resultData));
+        }
+        return getHeaderPackets(resultSet.getMetaData());
     }
     
-    private CommandResponsePackets executeQuery() throws SQLException {
-        return ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode() ? executeQueryWithStreamResultSet() : executeQueryWithMemoryResultSet();
-    }
+    protected abstract boolean executeSQL(boolean isReturnGeneratedKeys) throws SQLException;
     
-    protected abstract CommandResponsePackets executeQueryWithStreamResultSet() throws SQLException;
-    
-    protected abstract CommandResponsePackets executeQueryWithMemoryResultSet() throws SQLException;
-    
-    protected abstract CommandResponsePackets executeUpdate() throws SQLException;
-    
-    protected abstract CommandResponsePackets executeCommon() throws SQLException;
-    
-    protected CommandResponsePackets getQueryDatabaseProtocolPackets(final ResultSet resultSet) throws SQLException {
-        jdbcBackendHandler.getJdbcResourceManager().addResultSet(resultSet);
-        CommandResponsePackets result = new CommandResponsePackets();
+    private CommandResponsePackets getHeaderPackets(final ResultSetMetaData resultSetMetaData) throws SQLException {
         int currentSequenceId = 0;
-        ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         int columnCount = resultSetMetaData.getColumnCount();
         jdbcBackendHandler.setColumnCount(columnCount);
         if (0 == columnCount) {
-            result.addPacket(new OKPacket(++currentSequenceId));
-            return result;
+            return new CommandResponsePackets(new OKPacket(++currentSequenceId));
         }
-        result.addPacket(new FieldCountPacket(++currentSequenceId, columnCount));
-        for (int i = 1; i <= columnCount; i++) {
-            setColumnType(ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(i)));
-            result.addPacket(new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData.getSchemaName(i), resultSetMetaData.getTableName(i),
-                    resultSetMetaData.getTableName(i), resultSetMetaData.getColumnLabel(i), resultSetMetaData.getColumnName(i),
-                    resultSetMetaData.getColumnDisplaySize(i), ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(i)), 0));
+        CommandResponsePackets result = new CommandResponsePackets(new FieldCountPacket(++currentSequenceId, columnCount));
+        for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+            setColumnType(ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(columnIndex)));
+            result.addPacket(new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData, columnIndex));
         }
-        result.addPacket(new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
+        result.addPacket(new EofPacket(++currentSequenceId));
         return result;
     }
     
+    // TODO why only prepareStatement need this?
     protected void setColumnType(final ColumnType columnType) {
     }
     
-    protected CommandResponsePackets getCommonDatabaseProtocolPackets(final ResultSet resultSet) throws SQLException {
-        CommandResponsePackets result = new CommandResponsePackets();
-        int currentSequenceId = 0;
-        ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-        int columnCount = resultSetMetaData.getColumnCount();
-        jdbcBackendHandler.setColumnCount(columnCount);
-        if (0 == columnCount) {
-            result.addPacket(new OKPacket(++currentSequenceId));
-            return result;
-        }
-        result.addPacket(new FieldCountPacket(++currentSequenceId, columnCount));
-        for (int i = 1; i <= columnCount; i++) {
-            result.addPacket(new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData.getSchemaName(i), resultSetMetaData.getTableName(i),
-                    resultSetMetaData.getTableName(i), resultSetMetaData.getColumnLabel(i), resultSetMetaData.getColumnName(i),
-                    resultSetMetaData.getColumnDisplaySize(i), ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(i)), 0));
-        }
-        result.addPacket(new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
-        while (resultSet.next()) {
-            List<Object> data = new ArrayList<>(columnCount);
-            for (int i = 1; i <= columnCount; i++) {
-                data.add(resultSet.getObject(i));
-            }
-            result.addPacket(new TextResultSetRowPacket(++currentSequenceId, data));
-        }
-        result.addPacket(new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
-        return result;
-    }
-    
-    protected long getGeneratedKey(final Statement statement) throws SQLException {
-        long result = 0;
+    private long getGeneratedKey() throws SQLException {
         ResultSet resultSet = statement.getGeneratedKeys();
-        if (resultSet.next()) {
-            result = resultSet.getLong(1);
-        }
-        return result;
+        return resultSet.next() ? resultSet.getLong(1) : 0L;
     }
 }

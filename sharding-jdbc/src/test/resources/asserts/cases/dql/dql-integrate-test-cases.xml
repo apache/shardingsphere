@@ -158,6 +158,10 @@
     <dql-test-case sql-case-id="select_group_by_with_key_word_alias">
         <assertion expected-data-file="select_group_by_with_key_word_alias.xml" />
     </dql-test-case>
+
+    <dql-test-case sql-case-id="select_group_by_with_count_without_column_name">
+        <assertion expected-data-file="select_group_by_with_count_without_column_name.xml" />
+    </dql-test-case>
     
     <!--<dql-test-case sql-case-id="select_group_by_with_date_function">-->
         <!--<assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1000:int, 1100:int" expected-data-file="select_group_by_with_date_function.xml" />-->

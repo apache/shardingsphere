@@ -20,13 +20,13 @@ package io.shardingsphere.proxy.transport.mysql.packet.command.text.fieldlist;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.proxy.backend.common.BackendHandler;
-import io.shardingsphere.proxy.backend.common.jdbc.text.JDBCTextBackendHandler;
 import io.shardingsphere.proxy.backend.common.SQLPacketsBackendHandler;
+import io.shardingsphere.proxy.backend.common.jdbc.text.JDBCTextBackendHandler;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
-import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
+import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
@@ -45,7 +45,7 @@ import java.sql.SQLException;
  * COM_FIELD_LIST command packet.
  *
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-field-list.html">COM_FIELD_LIST</a>
- *
+ * 
  * @author zhangliang
  * @author wangkai
  */
@@ -111,14 +111,14 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
     public DatabaseProtocolPacket getResultValue() {
         DatabaseProtocolPacket resultValue = backendHandler.getResultValue();
         if (!backendHandler.isHasMoreResultValueFlag()) {
-            return new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
+            return new EofPacket(++currentSequenceId);
         }
         if (resultValue instanceof TextResultSetRowPacket) {
             TextResultSetRowPacket fieldListResponse = (TextResultSetRowPacket) resultValue;
             String columnName = (String) fieldListResponse.getData().get(0);
             return new ColumnDefinition41Packet(++currentSequenceId, ShardingConstant.LOGIC_SCHEMA_NAME, table, table, columnName, columnName, 100, ColumnType.MYSQL_TYPE_VARCHAR, 0);
         }
-        return new ErrPacket(1, 0, "", "");
+        return new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, "");
     }
     
     @Override

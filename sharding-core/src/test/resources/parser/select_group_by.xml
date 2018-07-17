@@ -252,4 +252,22 @@
             <order-by-column name="key" alias="key" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
+
+    <parser-result sql-case-id="select_group_by_with_count_without_column_name">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="53" original-literals="t_order" />
+        </tokens>
+        <aggregation-select-items>
+            <aggregation-select-item type="COUNT" inner-expression="(order_id)" alias="orders_count" />
+        </aggregation-select-items>
+        <group-by-columns>
+            <group-by-column index="2" order-direction="ASC" />
+        </group-by-columns>
+        <order-by-columns>
+            <order-by-column index="2" order-direction="ASC" />
+        </order-by-columns>
+    </parser-result>
 </parser-result-sets>
