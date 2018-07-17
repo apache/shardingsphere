@@ -85,8 +85,7 @@ public abstract class JDBCExecuteWorker implements Callable<CommandResponsePacke
                     resultList.add(resultSet.getObject(columnIndex));
                 }
             }
-            // TODO why set twice?
-            resultList.setIterator(resultList.getResultList().iterator());
+            resultList.setIterator();
             jdbcBackendHandler.getResultLists().add(resultList);
         }
         return getHeaderPackets(resultSet.getMetaData());

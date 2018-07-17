@@ -42,6 +42,13 @@ public final class ResultList {
     }
     
     /**
+     * Set iterator.
+     */
+    public void setIterator() {
+        iterator = resultList.iterator();
+    }
+    
+    /**
      * Has next.
      *
      * @return has next
