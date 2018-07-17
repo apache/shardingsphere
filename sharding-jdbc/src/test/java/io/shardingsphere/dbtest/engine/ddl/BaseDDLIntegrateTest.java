@@ -46,6 +46,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
     
@@ -79,6 +80,11 @@ public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
         String tableName = assertion.getTable();
         List<DataSetColumn> actualColumns = getActualColumns(connection, tableName);
         List<DataSetIndex> actualIndexes = getActualIndexes(connection, tableName);
+        if (actualColumns.isEmpty() || actualIndexes.isEmpty()) {
+            assertIfDropTable(actualColumns);
+            assertIfDropIndex(actualIndexes);
+            return;
+        }
         assertMetadata(actualColumns, actualIndexes, expected.findMetadata(tableName));
     }
     
@@ -90,7 +96,19 @@ public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
             assertIndexMetadata(actualIndexes, each);
         }
     }
-    
+
+    private void assertIfDropTable(List<DataSetColumn> actualColumns) {
+        if (getSql().startsWith("DROP TABLE")) {
+            assertTrue(actualColumns.isEmpty());
+        }
+    }
+
+    private void assertIfDropIndex(List<DataSetIndex> actualIndexes) {
+        if (getSql().startsWith("DROP INDEX")) {
+            assertTrue(actualIndexes.isEmpty());
+        }
+    }
+
     private void assertColumnMetadata(final List<DataSetColumn> actual, final DataSetColumn expect) {
         for (DataSetColumn each : actual) {
             if (expect.getName().equals(each.getName())) {
