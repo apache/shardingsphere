@@ -18,11 +18,9 @@
 package io.shardingsphere.proxy.backend.common.jdbc.statement;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.routing.PreparedStatementRoutingEngine;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.proxy.backend.common.jdbc.JDBCBackendHandler;
-import io.shardingsphere.proxy.backend.mysql.MySQLPacketStatementExecuteQueryResult;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
@@ -83,7 +81,7 @@ public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
     
     @Override
     protected Callable<CommandResponsePackets> createExecuteWorker(final Statement statement, final boolean isReturnGeneratedKeys, final String actualSQL) {
-        return new JDBCStatementExecuteWorker((PreparedStatement) statement, isReturnGeneratedKeys, getJdbcResourceManager(), this);
+        return new JDBCStatementExecuteWorker((PreparedStatement) statement, isReturnGeneratedKeys, this);
     }
     
     @Override
@@ -93,11 +91,6 @@ public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
             result.setObject(i + 1, preparedStatementParameters.get(i).getValue());
         }
         return result;
-    }
-    
-    @Override
-    protected QueryResult newQueryResult(final CommandResponsePackets packet, final int index) {
-        return new MySQLPacketStatementExecuteQueryResult(packet, columnTypes);
     }
     
     @Override

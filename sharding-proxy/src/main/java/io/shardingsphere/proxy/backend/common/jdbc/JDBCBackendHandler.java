@@ -87,7 +87,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     private final EventLoopGroup userGroup;
     
-    private final JDBCResourceManager jdbcResourceManager;
+    private final ConnectionManager connectionManager;
     
     public JDBCBackendHandler(final String sql) {
         this.sql = sql;
@@ -95,7 +95,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         hasMoreResultValueFlag = true;
         ruleRegistry = RuleRegistry.getInstance();
         userGroup = ExecutorContext.getInstance().getUserGroup();
-        jdbcResourceManager = new JDBCResourceManager();
+        connectionManager = new ConnectionManager();
     }
     
     @Override
@@ -122,7 +122,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         List<Future<CommandResponsePackets>> futureList = new ArrayList<>(1024);
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             String actualSQL = each.getSqlUnit().getSql();
-            Statement statement = createStatement(jdbcResourceManager.getConnection(each.getDataSource()), actualSQL, isReturnGeneratedKeys);
+            Statement statement = createStatement(connectionManager.getConnection(each.getDataSource()), actualSQL, isReturnGeneratedKeys);
             futureList.add(userGroup.submit(createExecuteWorker(statement, isReturnGeneratedKeys, actualSQL)));
         }
         List<CommandResponsePackets> packets = buildCommandResponsePackets(futureList);
@@ -196,8 +196,6 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         return buildPackets(packets);
     }
     
-    protected abstract QueryResult newQueryResult(CommandResponsePackets packet, int index);
-    
     private CommandResponsePackets buildPackets(final List<CommandResponsePackets> packets) {
         CommandResponsePackets result = new CommandResponsePackets();
         Iterator<DatabaseProtocolPacket> databaseProtocolPacketsSampling = packets.iterator().next().getDatabaseProtocolPackets().iterator();
@@ -227,7 +225,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     @Override
     public final boolean hasMoreResultValue() throws SQLException {
         if (!isMerged || !hasMoreResultValueFlag) {
-            jdbcResourceManager.close();
+            connectionManager.close();
             return false;
         }
         if (!mergedResult.next()) {
