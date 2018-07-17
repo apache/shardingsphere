@@ -37,6 +37,7 @@
 1. [ISSUE #827](https://github.com/sharding-sphere/sharding-sphere/issues/827) Fix endless loop for bad SQL like `SELECT * FROM table WHERE id IN ()`
 1. [ISSUE #919](https://github.com/sharding-sphere/sharding-sphere/issues/919) Use groovy to parse inline expression may cause memory leak
 1. [ISSUE #1011](https://github.com/sharding-sphere/sharding-sphere/issues/1011) Can't resolve placeholder in spring boot configuration yaml
+1. [ISSUE #1015](https://github.com/sharding-sphere/sharding-sphere/issues/1015) Support the statement of `SELECT id, COUNT(*) FROM table GROUP BY 1,2`
 
 ## 2.0.3
 
