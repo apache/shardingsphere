@@ -23,6 +23,18 @@
             <aggregation-select-item type="COUNT" inner-expression="(*)" alias="orders_count" />
         </aggregation-select-items>
     </parser-result>
+
+    <parser-result sql-case-id="select_count_with_sub">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="37" original-literals="t_order" />
+        </tokens>
+        <aggregation-select-items>
+            <aggregation-select-item type="COUNT" inner-expression="(*)" alias="orders_count" />
+        </aggregation-select-items>
+    </parser-result>
     
     <parser-result sql-case-id="select_max">
         <tables>
