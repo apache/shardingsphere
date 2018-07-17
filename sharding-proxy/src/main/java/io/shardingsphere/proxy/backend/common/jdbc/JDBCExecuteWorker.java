@@ -35,6 +35,8 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
@@ -86,16 +88,18 @@ public abstract class JDBCExecuteWorker implements Callable<CommandResponsePacke
             return new CommandResponsePackets(new OKPacket(++currentSequenceId));
         }
         CommandResponsePackets result = new CommandResponsePackets(new FieldCountPacket(++currentSequenceId, columnCount));
+        List<ColumnType> columnTypes = new ArrayList<>(128);
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            setColumnType(ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(columnIndex)));
+            columnTypes.add(ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(columnIndex)));
             result.addPacket(new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData, columnIndex));
         }
+        setColumnTypes(columnTypes);
         result.addPacket(new EofPacket(++currentSequenceId));
         return result;
     }
     
     // TODO why only prepareStatement need this?
-    protected void setColumnType(final ColumnType columnType) {
+    protected void setColumnTypes(final List<ColumnType> columnTypes) {
     }
     
     private long getGeneratedKey() throws SQLException {

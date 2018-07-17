@@ -28,7 +28,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePac
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.PreparedStatementRegistry;
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute.BinaryResultSetRowPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute.PreparedStatementParameter;
-import lombok.Getter;
+import lombok.Setter;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -37,7 +37,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Statement protocol backend handler via JDBC to connect databases.
@@ -51,8 +50,8 @@ public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
     
     private final DatabaseType databaseType;
     
-    @Getter
-    private final List<ColumnType> columnTypes;
+    @Setter
+    private List<ColumnType> columnTypes;
     
     private final RuleRegistry ruleRegistry;
     
@@ -60,7 +59,6 @@ public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
         super(PreparedStatementRegistry.getInstance().getSQL(statementId));
         this.preparedStatementParameters = preparedStatementParameters;
         this.databaseType = databaseType;
-        columnTypes = new CopyOnWriteArrayList<>();
         ruleRegistry = RuleRegistry.getInstance();
     }
     
