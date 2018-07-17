@@ -39,7 +39,6 @@ import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextResultSetRowPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
@@ -51,7 +50,10 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -66,8 +68,6 @@ import java.util.concurrent.TimeoutException;
 @Slf4j
 @Getter
 public final class SQLPacketsBackendHandler implements BackendHandler {
-    
-    private static final int CONNECT_TIMEOUT = 30;
     
     private final CommandPacketRebuilder rebuilder;
     
@@ -108,8 +108,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
         synchronizedFuture = new SynchronizedFuture<>(1);
         MySQLResultCache.getInstance().putFuture(rebuilder.connectionId(), synchronizedFuture);
         executeCommand(dataSourceName, rebuilder.sql());
-        //TODO timeout should be set.
-        List<QueryResult> queryResults = synchronizedFuture.get(CONNECT_TIMEOUT, TimeUnit.SECONDS);
+        List<QueryResult> queryResults = synchronizedFuture.get(ruleRegistry.getProxyBackendConnectionTimeout(), TimeUnit.SECONDS);
         MySQLResultCache.getInstance().deleteFuture(rebuilder.connectionId());
         List<CommandResponsePackets> packets = new LinkedList<>();
         for (QueryResult each : queryResults) {
@@ -130,8 +129,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             executeCommand(each.getDataSource(), each.getSqlUnit().getSql());
         }
-        //TODO timeout should be set.
-        List<QueryResult> queryResults = synchronizedFuture.get(CONNECT_TIMEOUT, TimeUnit.SECONDS);
+        List<QueryResult> queryResults = synchronizedFuture.get(ruleRegistry.getProxyBackendConnectionTimeout(), TimeUnit.SECONDS);
         MySQLResultCache.getInstance().deleteFuture(rebuilder.connectionId());
         
         List<CommandResponsePackets> packets = Lists.newArrayListWithCapacity(queryResults.size());
@@ -156,8 +154,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
                 channelsMap.put(dataSourceName, Lists.<Channel>newArrayList());
             }
             SimpleChannelPool pool = ShardingProxyClient.getInstance().getPoolMap().get(dataSourceName);
-            //TODO timeout should be set.
-            Channel channel = pool.acquire().get(CONNECT_TIMEOUT, TimeUnit.SECONDS);
+            Channel channel = pool.acquire().get(ruleRegistry.getProxyBackendConnectionTimeout(), TimeUnit.SECONDS);
             channelsMap.get(dataSourceName).add(channel);
             MySQLResultCache.getInstance().putConnection(channel.id().asShortText(), rebuilder.connectionId());
             channel.writeAndFlush(rebuilder.rebuild(rebuilder.sequenceId(), rebuilder.connectionId(), sql));

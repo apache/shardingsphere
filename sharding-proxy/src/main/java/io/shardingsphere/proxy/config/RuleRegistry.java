@@ -78,6 +78,10 @@ public final class RuleRegistry {
     
     private boolean proxyBackendUseNio;
     
+    private int proxyBackendSimpleDbConnections;
+    
+    private int proxyBackendConnectionTimeout;
+    
     private ProxyAuthority proxyAuthority;
     
     private ShardingDataSourceMetaData shardingDataSourceMetaData;
@@ -106,6 +110,8 @@ public final class RuleRegistry {
         transactionType = TransactionType.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_MODE));
         maxWorkingThreads = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_MAX_WORKING_THREADS);
         proxyBackendUseNio = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO);
+        proxyBackendSimpleDbConnections = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_SIMPLE_DB_CONNECTIONS);
+        proxyBackendConnectionTimeout = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT);
         shardingRule = new ShardingRule(
                 null == config.getShardingRule() ? new ShardingRuleConfiguration() : config.getShardingRule().getShardingRuleConfiguration(), config.getDataSources().keySet());
         if (null != config.getMasterSlaveRule()) {
