@@ -20,18 +20,14 @@ package io.shardingsphere.proxy.backend.common.jdbc;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.proxy.backend.common.ProxyMode;
 import io.shardingsphere.proxy.config.RuleRegistry;
-import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Connection manager.
@@ -43,9 +39,6 @@ public final class ConnectionManager implements AutoCloseable {
     private final Map<String, Connection> dataSourceConnectionMap = new HashMap<>();
     
     private final Collection<Connection> cachedConnections = new LinkedList<>();
-    
-    @Getter
-    private final List<ResultSet> resultSets = new CopyOnWriteArrayList<>();
     
     /**
      * Get connection of current thread datasource.
