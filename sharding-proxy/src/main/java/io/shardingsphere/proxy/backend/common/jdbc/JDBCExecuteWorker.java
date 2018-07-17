@@ -18,7 +18,8 @@
 package io.shardingsphere.proxy.backend.common.jdbc;
 
 import io.shardingsphere.proxy.backend.common.ProxyMode;
-import io.shardingsphere.proxy.backend.common.ResultList;
+import io.shardingsphere.proxy.backend.common.jdbc.resultset.MemoryQueryResult;
+import io.shardingsphere.proxy.backend.common.jdbc.resultset.StreamQueryResult;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
@@ -37,7 +38,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Execute worker via JDBC to connect databases.
@@ -53,8 +53,6 @@ public abstract class JDBCExecuteWorker implements Callable<CommandResponsePacke
     private final Statement statement;
     
     private final boolean isReturnGeneratedKeys;
-    
-    private final JDBCResourceManager jdbcResourceManager;
     
     @Getter
     private final JDBCBackendHandler jdbcBackendHandler;
@@ -76,17 +74,7 @@ public abstract class JDBCExecuteWorker implements Callable<CommandResponsePacke
             return new CommandResponsePackets(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey() : 0));
         }
         ResultSet resultSet = statement.getResultSet();
-        if (ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
-            jdbcResourceManager.addResultSet(resultSet);    
-        } else {
-            List<Object> resultData = new CopyOnWriteArrayList<>();
-            while (resultSet.next()) {
-                for (int columnIndex = 1; columnIndex <= resultSet.getMetaData().getColumnCount(); columnIndex++) {
-                    resultData.add(resultSet.getObject(columnIndex));
-                }
-            }
-            jdbcBackendHandler.getResultLists().add(new ResultList(resultData));
-        }
+        jdbcBackendHandler.getQueryResults().add(ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode() ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet));
         return getHeaderPackets(resultSet.getMetaData());
     }
     

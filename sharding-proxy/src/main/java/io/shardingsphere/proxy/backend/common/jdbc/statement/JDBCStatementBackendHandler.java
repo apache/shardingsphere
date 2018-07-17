@@ -18,12 +18,9 @@
 package io.shardingsphere.proxy.backend.common.jdbc.statement;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.routing.PreparedStatementRoutingEngine;
 import io.shardingsphere.core.routing.SQLRouteResult;
-import io.shardingsphere.proxy.backend.common.ProxyMode;
 import io.shardingsphere.proxy.backend.common.jdbc.JDBCBackendHandler;
-import io.shardingsphere.proxy.backend.mysql.MySQLPacketStatementExecuteQueryResult;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
@@ -82,7 +79,7 @@ public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
     
     @Override
     protected Callable<CommandResponsePackets> createExecuteWorker(final Statement statement, final boolean isReturnGeneratedKeys, final String actualSQL) {
-        return new JDBCStatementExecuteWorker((PreparedStatement) statement, isReturnGeneratedKeys, getJdbcResourceManager(), this);
+        return new JDBCStatementExecuteWorker((PreparedStatement) statement, isReturnGeneratedKeys, this);
     }
     
     @Override
@@ -90,17 +87,6 @@ public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
         PreparedStatement result = isReturnGeneratedKeys ? connection.prepareStatement(actualSQL, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(actualSQL);
         for (int i = 0; i < preparedStatementParameters.size(); i++) {
             result.setObject(i + 1, preparedStatementParameters.get(i).getValue());
-        }
-        return result;
-    }
-    
-    @Override
-    protected QueryResult newQueryResult(final CommandResponsePackets packet, final int index) {
-        MySQLPacketStatementExecuteQueryResult result = new MySQLPacketStatementExecuteQueryResult(packet, columnTypes);
-        if (ProxyMode.MEMORY_STRICTLY == ruleRegistry.getProxyMode()) {
-            result.setResultSet(getJdbcResourceManager().getResultSets().get(index));
-        } else {
-            result.setResultList(getResultLists().get(index));
         }
         return result;
     }

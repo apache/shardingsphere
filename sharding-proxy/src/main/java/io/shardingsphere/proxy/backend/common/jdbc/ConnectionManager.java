@@ -34,11 +34,11 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * JDBC resourceManager manager.
+ * Connection manager.
  *
  * @author zhaojun
  */
-public final class JDBCResourceManager implements AutoCloseable {
+public final class ConnectionManager implements AutoCloseable {
     
     private final Map<String, Connection> dataSourceConnectionMap = new HashMap<>();
     
@@ -60,19 +60,13 @@ public final class JDBCResourceManager implements AutoCloseable {
         if (ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
             result = dataSource.getConnection();
         } else {
-            result = dataSourceConnectionMap.containsKey(dataSourceName) ? dataSourceConnectionMap.get(dataSourceName) : dataSourceConnectionMap.put(dataSourceName, dataSource.getConnection());
+            if (!dataSourceConnectionMap.containsKey(dataSourceName)) {
+                dataSourceConnectionMap.put(dataSourceName, dataSource.getConnection());
+            }
+            result = dataSourceConnectionMap.get(dataSourceName);
         }
         cachedConnections.add(result);
         return result;
-    }
-    
-    /**
-     * Add new result set to resource manager.
-     *
-     * @param resultSet result set
-     */
-    public void addResultSet(final ResultSet resultSet) {
-        resultSets.add(resultSet);
     }
     
     @Override

@@ -32,7 +32,6 @@ import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingsphere.proxy.backend.common.BackendHandler;
-import io.shardingsphere.proxy.backend.common.ResultList;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
@@ -82,22 +81,21 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     private boolean hasMoreResultValueFlag;
     
-    private final List<ResultList> resultLists;
+    private final List<QueryResult> queryResults = new CopyOnWriteArrayList<>();
     
     private final RuleRegistry ruleRegistry;
     
     private final EventLoopGroup userGroup;
     
-    private final JDBCResourceManager jdbcResourceManager;
+    private final ConnectionManager connectionManager;
     
     public JDBCBackendHandler(final String sql) {
         this.sql = sql;
         isMerged = false;
         hasMoreResultValueFlag = true;
-        resultLists = new CopyOnWriteArrayList<>();
         ruleRegistry = RuleRegistry.getInstance();
         userGroup = ExecutorContext.getInstance().getUserGroup();
-        jdbcResourceManager = new JDBCResourceManager();
+        connectionManager = new ConnectionManager();
     }
     
     @Override
@@ -124,7 +122,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         List<Future<CommandResponsePackets>> futureList = new ArrayList<>(1024);
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             String actualSQL = each.getSqlUnit().getSql();
-            Statement statement = createStatement(jdbcResourceManager.getConnection(each.getDataSource()), actualSQL, isReturnGeneratedKeys);
+            Statement statement = createStatement(connectionManager.getConnection(each.getDataSource()), actualSQL, isReturnGeneratedKeys);
             futureList.add(userGroup.submit(createExecuteWorker(statement, isReturnGeneratedKeys, actualSQL)));
         }
         List<CommandResponsePackets> packets = buildCommandResponsePackets(futureList);
@@ -189,10 +187,6 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     }
     
     private CommandResponsePackets mergeDQLorDAL(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets) {
-        List<QueryResult> queryResults = new ArrayList<>(packets.size());
-        for (int i = 0; i < packets.size(); i++) {
-            queryResults.add(newQueryResult(packets.get(i), i));
-        }
         try {
             mergedResult = MergeEngineFactory.newInstance(ruleRegistry.getShardingRule(), queryResults, sqlStatement, ruleRegistry.getShardingMetaData()).merge();
             isMerged = true;
@@ -201,8 +195,6 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         }
         return buildPackets(packets);
     }
-    
-    protected abstract QueryResult newQueryResult(CommandResponsePackets packet, int index);
     
     private CommandResponsePackets buildPackets(final List<CommandResponsePackets> packets) {
         CommandResponsePackets result = new CommandResponsePackets();
@@ -233,7 +225,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     @Override
     public final boolean hasMoreResultValue() throws SQLException {
         if (!isMerged || !hasMoreResultValueFlag) {
-            jdbcResourceManager.close();
+            connectionManager.close();
             return false;
         }
         if (!mergedResult.next()) {

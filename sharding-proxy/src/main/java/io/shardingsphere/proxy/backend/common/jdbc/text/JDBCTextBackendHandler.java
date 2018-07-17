@@ -18,12 +18,9 @@
 package io.shardingsphere.proxy.backend.common.jdbc.text;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.StatementRoutingEngine;
-import io.shardingsphere.proxy.backend.common.ProxyMode;
 import io.shardingsphere.proxy.backend.common.jdbc.JDBCBackendHandler;
-import io.shardingsphere.proxy.backend.mysql.MySQLPacketQueryResult;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
@@ -68,18 +65,7 @@ public final class JDBCTextBackendHandler extends JDBCBackendHandler {
     
     @Override
     protected Callable<CommandResponsePackets> createExecuteWorker(final Statement statement, final boolean isReturnGeneratedKeys, final String actualSQL) {
-        return new JDBCTextExecuteWorker(actualSQL, statement, isReturnGeneratedKeys, getJdbcResourceManager(), this);
-    }
-    
-    @Override
-    protected QueryResult newQueryResult(final CommandResponsePackets packet, final int index) {
-        MySQLPacketQueryResult result = new MySQLPacketQueryResult(packet);
-        if (ProxyMode.MEMORY_STRICTLY == ruleRegistry.getProxyMode()) {
-            result.setResultSet(getJdbcResourceManager().getResultSets().get(index));
-        } else {
-            result.setResultList(getResultLists().get(index));
-        }
-        return result;
+        return new JDBCTextExecuteWorker(actualSQL, statement, isReturnGeneratedKeys, this);
     }
     
     @Override

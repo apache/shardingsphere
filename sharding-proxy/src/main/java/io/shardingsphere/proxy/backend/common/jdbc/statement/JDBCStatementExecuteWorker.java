@@ -18,7 +18,6 @@
 package io.shardingsphere.proxy.backend.common.jdbc.statement;
 
 import io.shardingsphere.proxy.backend.common.jdbc.JDBCExecuteWorker;
-import io.shardingsphere.proxy.backend.common.jdbc.JDBCResourceManager;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 
 import java.sql.PreparedStatement;
@@ -36,9 +35,8 @@ public final class JDBCStatementExecuteWorker extends JDBCExecuteWorker {
     
     private final PreparedStatement preparedStatement;
     
-    public JDBCStatementExecuteWorker(final PreparedStatement preparedStatement, final boolean isReturnGeneratedKeys,
-                                      final JDBCResourceManager jdbcResourceManager, final JDBCStatementBackendHandler jdbcStatementBackendHandler) {
-        super(preparedStatement, isReturnGeneratedKeys, jdbcResourceManager, jdbcStatementBackendHandler);
+    public JDBCStatementExecuteWorker(final PreparedStatement preparedStatement, final boolean isReturnGeneratedKeys, final JDBCStatementBackendHandler jdbcStatementBackendHandler) {
+        super(preparedStatement, isReturnGeneratedKeys, jdbcStatementBackendHandler);
         this.preparedStatement = preparedStatement;
     }
     
