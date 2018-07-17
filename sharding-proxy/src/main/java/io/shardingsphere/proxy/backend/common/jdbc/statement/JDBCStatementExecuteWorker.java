@@ -23,6 +23,7 @@ import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Statement execute worker.
@@ -47,7 +48,7 @@ public final class JDBCStatementExecuteWorker extends JDBCExecuteWorker {
     }
     
     @Override
-    protected void setColumnType(final ColumnType columnType) {
-        ((JDBCStatementBackendHandler) getJdbcBackendHandler()).getColumnTypes().add(columnType);
+    protected void setColumnTypes(final List<ColumnType> columnTypes) {
+        ((JDBCStatementBackendHandler) getJdbcBackendHandler()).setColumnTypes(columnTypes);
     }
 }
