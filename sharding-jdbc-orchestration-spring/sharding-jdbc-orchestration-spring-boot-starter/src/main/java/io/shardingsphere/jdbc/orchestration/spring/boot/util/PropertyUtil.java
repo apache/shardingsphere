@@ -20,7 +20,11 @@ package io.shardingsphere.jdbc.orchestration.spring.boot.util;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.springframework.beans.factory.config.PlaceholderConfigurerSupport;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertyResolver;
 
@@ -55,7 +59,8 @@ public class PropertyUtil {
                 return (T) v2(environment, prefix, targetClass);
         }
     }
-    
+
+    @SuppressWarnings("unchecked")
     private static Object v1(final Environment environment, final String prefix) {
         try {
             Class<?> resolverClass = Class.forName("org.springframework.boot.bind.RelaxedPropertyResolver");
@@ -63,7 +68,21 @@ public class PropertyUtil {
             Method getSubPropertiesMethod = resolverClass.getDeclaredMethod("getSubProperties", String.class);
             Object resolverObject = resolverConstructor.newInstance(environment);
             String prefixParam = prefix.endsWith(".") ? prefix : prefix + ".";
-            return getSubPropertiesMethod.invoke(resolverObject, prefixParam);
+            Method getPropertyMethod = resolverClass.getDeclaredMethod("getProperty", String.class);
+            Map<String, Object> dataSourceProps = (Map<String, Object>) getSubPropertiesMethod.invoke(resolverObject, prefixParam);
+            Map<String, Object> propertiesWithPlaceholderResolved = new HashMap<>();
+            for (Map.Entry<String, Object> entry : dataSourceProps.entrySet()) {
+                String key = entry.getKey();
+                Object value = entry.getValue();
+                if (value instanceof String && ((String) value).contains(
+                        PlaceholderConfigurerSupport.DEFAULT_PLACEHOLDER_PREFIX)) {
+                    String resolvedValue = (String) getPropertyMethod.invoke(resolverObject, prefixParam + key);
+                    propertiesWithPlaceholderResolved.put(key, resolvedValue);
+                } else {
+                    propertiesWithPlaceholderResolved.put(key, value);
+                }
+            }
+            return Collections.unmodifiableMap(propertiesWithPlaceholderResolved);
         } catch (final ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
                 | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
             throw new ShardingException(ex.getMessage(), ex);

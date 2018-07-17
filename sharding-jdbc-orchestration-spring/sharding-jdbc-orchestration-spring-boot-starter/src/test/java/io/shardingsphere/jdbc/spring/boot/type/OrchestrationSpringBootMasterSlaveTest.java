@@ -57,9 +57,12 @@ public class OrchestrationSpringBootMasterSlaveTest {
         assertTrue(dataSource instanceof MasterSlaveDataSource);
         for (DataSource each : ((MasterSlaveDataSource) dataSource).getAllDataSources().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
+            assertThat(((BasicDataSource) each).getUsername(), is("root"));
         }
         Map<String, Object> configMap = new ConcurrentHashMap<>();
         configMap.put("key1", "value1");
+        configMap.put("key2", "value1");
+        configMap.put("username", "root");
         assertThat(ConfigMapContext.getInstance().getMasterSlaveConfig(), is(configMap));
     }
 }
