@@ -26,6 +26,7 @@ import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
+import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
@@ -110,7 +111,7 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
             String columnName = (String) fieldListResponse.getData().get(0);
             return new ColumnDefinition41Packet(++currentSequenceId, ShardingConstant.LOGIC_SCHEMA_NAME, table, table, columnName, columnName, 100, ColumnType.MYSQL_TYPE_VARCHAR, 0);
         }
-        return new ErrPacket(1, 0, "", "");
+        return new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, "");
     }
     
     @Override

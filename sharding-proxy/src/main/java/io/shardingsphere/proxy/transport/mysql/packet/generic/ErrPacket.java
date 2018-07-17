@@ -46,26 +46,19 @@ public final class ErrPacket extends MySQLPacket {
     
     private final String errorMessage;
     
-    @Deprecated
-    public ErrPacket(final int sequenceId, final int errorCode, final String sqlState, final String errorMessage) {
+    public ErrPacket(final int sequenceId, final ServerErrorCode serverErrorCode, final Object... errorMessageArguments) {
+        this(sequenceId, serverErrorCode.getErrorCode(), serverErrorCode.getSqlState(), String.format(serverErrorCode.getErrorMessage(), errorMessageArguments));
+    }
+    
+    public ErrPacket(final int sequenceId, final SQLException cause) {
+        this(sequenceId, cause.getErrorCode(), cause.getSQLState(), cause.getMessage());
+    }
+    
+    private ErrPacket(final int sequenceId, final int errorCode, final String sqlState, final String errorMessage) {
         super(sequenceId);
         this.errorCode = errorCode;
         this.sqlState = sqlState;
         this.errorMessage = errorMessage;
-    }
-    
-    public ErrPacket(final int sequenceId, final ServerErrorCode serverErrorCode, final Object... errorMessageArguments) {
-        super(sequenceId);
-        errorCode = serverErrorCode.getErrorCode();
-        sqlState = serverErrorCode.getSqlState();
-        errorMessage = String.format(serverErrorCode.getErrorMessage(), errorMessageArguments);
-    }
-    
-    public ErrPacket(final int sequenceId, final SQLException cause) {
-        super(sequenceId);
-        this.errorCode = cause.getErrorCode();
-        this.sqlState = cause.getSQLState();
-        this.errorMessage = cause.getMessage();
     }
     
     public ErrPacket(final MySQLPacketPayload mysqlPacketPayload) {

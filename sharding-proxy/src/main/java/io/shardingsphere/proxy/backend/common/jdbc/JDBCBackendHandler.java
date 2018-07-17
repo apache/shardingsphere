@@ -106,8 +106,8 @@ public abstract class JDBCBackendHandler implements BackendHandler {
             return execute(ruleRegistry.isMasterSlaveOnly() ? doMasterSlaveRoute() : doShardingRoute());
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex));
-        } catch (final SystemException ex) {
-            return new CommandResponsePackets(new ErrPacket(1, new SQLException(ex)));
+        } catch (final SystemException | ShardingException ex) {
+            return new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
         }
     }
     
