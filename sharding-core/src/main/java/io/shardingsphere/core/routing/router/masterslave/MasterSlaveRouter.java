@@ -32,6 +32,7 @@ import java.util.Collections;
  * Master slave router interface.
  * 
  * @author zhangiang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 public final class MasterSlaveRouter {
