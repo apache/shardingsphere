@@ -140,10 +140,6 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         return TransactionType.XA == ruleRegistry.getTransactionType() && SQLType.DDL == sqlType && Status.STATUS_NO_TRANSACTION != AtomikosUserTransaction.getInstance().getStatus();
     }
     
-    protected abstract Statement createStatement(Connection connection, String actualSQL, boolean isReturnGeneratedKeys) throws SQLException;
-    
-    protected abstract JDBCExecuteWorker createExecuteWorker(Statement statement, boolean isReturnGeneratedKeys, String actualSQL);
-    
     private List<Future<JDBCExecuteResponse>> asyncExecute(final boolean isReturnGeneratedKeys, final Collection<SQLExecutionUnit> sqlExecutionUnits) throws SQLException {
         List<Future<JDBCExecuteResponse>> result = new LinkedList<>();
         for (SQLExecutionUnit each : sqlExecutionUnits) {
@@ -165,6 +161,10 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         Statement statement = createStatement(connectionManager.getConnection(sqlExecutionUnit.getDataSource()), actualSQL, isReturnGeneratedKeys);
         return createExecuteWorker(statement, isReturnGeneratedKeys, actualSQL).execute();
     }
+    
+    protected abstract Statement createStatement(Connection connection, String actualSQL, boolean isReturnGeneratedKeys) throws SQLException;
+    
+    protected abstract JDBCExecuteWorker createExecuteWorker(Statement statement, boolean isReturnGeneratedKeys, String actualSQL);
     
     private List<CommandResponsePackets> buildCommandResponsePackets(final JDBCExecuteResponse firstJDBCExecuteResponse, final List<Future<JDBCExecuteResponse>> futureList) {
         List<CommandResponsePackets> result = new ArrayList<>(futureList.size() + 1);

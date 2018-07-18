@@ -48,11 +48,11 @@ public final class SQLRouteResult {
     }
 
     /**
-     * whether SQLRouteResult can refresh table metadata.
+     * Whether SQL route result can refresh table meta data.
      *
-     * @return boolean
+     * @return SQL route result can refresh table meta data or not
      */
     public boolean canRefreshMetaData() {
-        return SQLType.DDL.equals(sqlStatement.getType()) && !sqlStatement.getTables().isEmpty();
+        return SQLType.DDL == sqlStatement.getType() && !sqlStatement.getTables().isEmpty();
     }
 }
