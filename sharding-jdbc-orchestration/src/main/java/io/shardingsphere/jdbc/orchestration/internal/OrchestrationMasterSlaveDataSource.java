@@ -58,7 +58,7 @@ public class OrchestrationMasterSlaveDataSource extends MasterSlaveDataSource im
      * Initialize for master-slave orchestration.
      */
     public void init() {
-        orchestrationFacade.init(dataSourceMap, masterSlaveRuleConfig, configMap, this);
+        orchestrationFacade.init(dataSourceMap, masterSlaveRuleConfig, configMap, props, this);
     }
     
     @Override
