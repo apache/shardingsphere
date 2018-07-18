@@ -23,6 +23,16 @@
     <sqlset db-types="MySQL">
         <user-create>
             <sql>CREATE USER user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on master_db_0.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on master_db_1.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on master_db_2.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on master_db_3.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on master_db_4.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on master_db_5.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on master_db_6.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on master_db_7.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on master_db_8.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on master_db_9.* to user_dev@localhost</sql>
         </user-create>
         <user-drop>
             <sql>DROP USER user_dev@localhost</sql>

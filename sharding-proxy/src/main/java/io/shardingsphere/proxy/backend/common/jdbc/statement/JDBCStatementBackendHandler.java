@@ -18,19 +18,15 @@
 package io.shardingsphere.proxy.backend.common.jdbc.statement;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.routing.PreparedStatementRoutingEngine;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.proxy.backend.common.jdbc.JDBCBackendHandler;
-import io.shardingsphere.proxy.backend.mysql.MySQLPacketStatementExecuteQueryResult;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.PreparedStatementRegistry;
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute.BinaryResultSetRowPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute.PreparedStatementParameter;
-import lombok.Getter;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -38,8 +34,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Statement protocol backend handler via JDBC to connect databases.
@@ -53,16 +47,12 @@ public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
     
     private final DatabaseType databaseType;
     
-    @Getter
-    private final List<ColumnType> columnTypes;
-    
     private final RuleRegistry ruleRegistry;
     
     public JDBCStatementBackendHandler(final List<PreparedStatementParameter> preparedStatementParameters, final int statementId, final DatabaseType databaseType) {
         super(PreparedStatementRegistry.getInstance().getSQL(statementId));
         this.preparedStatementParameters = preparedStatementParameters;
         this.databaseType = databaseType;
-        columnTypes = new CopyOnWriteArrayList<>();
         ruleRegistry = RuleRegistry.getInstance();
     }
     
@@ -82,8 +72,8 @@ public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
     }
     
     @Override
-    protected Callable<CommandResponsePackets> createExecuteWorker(final Statement statement, final boolean isReturnGeneratedKeys, final String actualSQL) {
-        return new JDBCStatementExecuteWorker((PreparedStatement) statement, isReturnGeneratedKeys, getJdbcResourceManager(), this);
+    protected JDBCStatementExecuteWorker createExecuteWorker(final Statement statement, final boolean isReturnGeneratedKeys, final String actualSQL) {
+        return new JDBCStatementExecuteWorker((PreparedStatement) statement, isReturnGeneratedKeys);
     }
     
     @Override
@@ -96,12 +86,7 @@ public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
     }
     
     @Override
-    protected QueryResult newQueryResult(final CommandResponsePackets packet, final int index) {
-        return new MySQLPacketStatementExecuteQueryResult(packet, columnTypes);
-    }
-    
-    @Override
-    protected DatabaseProtocolPacket newDatabaseProtocolPacket(final int sequenceId, final List<Object> data) {
+    protected DatabaseProtocolPacket newDatabaseProtocolPacket(final int sequenceId, final List<Object> data, final List<ColumnType> columnTypes) {
         return new BinaryResultSetRowPacket(sequenceId, getColumnCount(), data, columnTypes);
     }
 }

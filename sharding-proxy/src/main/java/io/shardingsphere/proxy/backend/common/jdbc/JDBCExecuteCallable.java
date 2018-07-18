@@ -15,16 +15,25 @@
  * </p>
  */
 
-package io.shardingsphere.dbtest.engine.dql;
+package io.shardingsphere.proxy.backend.common.jdbc;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import lombok.RequiredArgsConstructor;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        GeneralDQLIntegrateTest.class, 
-        AdditionalDQLIntegrateTest.class
-    })
-public class AllDQLTests {
+import java.util.concurrent.Callable;
+
+/**
+ * Execute callable via JDBC to connect databases.
+ * 
+ * @author zhaojun
+ * @author zhangliang
+ */
+@RequiredArgsConstructor
+public class JDBCExecuteCallable implements Callable<JDBCExecuteResponse> {
+    
+    private final JDBCExecuteWorker jdbcExecuteWorker;
+    
+    @Override
+    public JDBCExecuteResponse call() {
+        return jdbcExecuteWorker.execute();
+    }
 }

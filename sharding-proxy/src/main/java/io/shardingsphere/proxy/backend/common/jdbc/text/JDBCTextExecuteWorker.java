@@ -18,7 +18,6 @@
 package io.shardingsphere.proxy.backend.common.jdbc.text;
 
 import io.shardingsphere.proxy.backend.common.jdbc.JDBCExecuteWorker;
-import io.shardingsphere.proxy.backend.common.jdbc.JDBCResourceManager;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -36,9 +35,8 @@ public final class JDBCTextExecuteWorker extends JDBCExecuteWorker {
     
     private final String sql;
     
-    public JDBCTextExecuteWorker(final String sql, final Statement statement, final boolean isReturnGeneratedKeys, 
-                                 final JDBCResourceManager jdbcResourceManager, final JDBCTextBackendHandler jdbcTextBackendHandler) {
-        super(statement, isReturnGeneratedKeys, jdbcResourceManager, jdbcTextBackendHandler);
+    public JDBCTextExecuteWorker(final String sql, final Statement statement, final boolean isReturnGeneratedKeys) {
+        super(statement, isReturnGeneratedKeys);
         this.statement = statement;
         this.sql = sql;
     }
