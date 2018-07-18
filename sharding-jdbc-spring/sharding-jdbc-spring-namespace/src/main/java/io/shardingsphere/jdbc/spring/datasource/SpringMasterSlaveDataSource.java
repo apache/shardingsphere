@@ -26,6 +26,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Master-slave datasource for spring namespace.
@@ -35,13 +36,13 @@ import java.util.Map;
 public class SpringMasterSlaveDataSource extends MasterSlaveDataSource {
     
     public SpringMasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final String name, final String masterDataSourceName, final Collection<String> slaveDataSourceNames, 
-                                       final MasterSlaveLoadBalanceAlgorithm strategy, final Map<String, Object> configMap) throws SQLException {
-        super(dataSourceMap, getMasterSlaveRuleConfiguration(name, masterDataSourceName, slaveDataSourceNames, strategy), configMap);
+                                       final MasterSlaveLoadBalanceAlgorithm strategy, final Map<String, Object> configMap, final Properties props) throws SQLException {
+        super(dataSourceMap, getMasterSlaveRuleConfiguration(name, masterDataSourceName, slaveDataSourceNames, strategy), configMap, props);
     }
     
     public SpringMasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final String name, final String masterDataSourceName, final Collection<String> slaveDataSourceNames, 
-                                       final MasterSlaveLoadBalanceAlgorithmType strategyType, final Map<String, Object> configMap) throws SQLException {
-        super(dataSourceMap, getMasterSlaveRuleConfiguration(name, masterDataSourceName, slaveDataSourceNames, null == strategyType ? null : strategyType.getAlgorithm()), configMap);
+                                       final MasterSlaveLoadBalanceAlgorithmType strategyType, final Map<String, Object> configMap, final Properties props) throws SQLException {
+        super(dataSourceMap, getMasterSlaveRuleConfiguration(name, masterDataSourceName, slaveDataSourceNames, null == strategyType ? null : strategyType.getAlgorithm()), configMap, props);
     }
     
     private static MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration(
