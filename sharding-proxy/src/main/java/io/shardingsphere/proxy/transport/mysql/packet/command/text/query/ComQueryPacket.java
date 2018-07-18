@@ -44,7 +44,7 @@ import java.sql.SQLException;
 
 /**
  * COM_QUERY command packet.
- * 
+ *
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-query.html">COM_QUERY</a>
  *
  * @author zhangliang
@@ -94,7 +94,7 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
     }
     
     private BackendHandler getBackendHandler(final String sql) {
-        return RuleRegistry.getInstance().isWithoutJdbc() ? new SQLPacketsBackendHandler(this, DatabaseType.MySQL) : new JDBCTextBackendHandler(sql, DatabaseType.MySQL);
+        return RuleRegistry.getInstance().isProxyBackendUseNio() ? new SQLPacketsBackendHandler(this, DatabaseType.MySQL) : new JDBCTextBackendHandler(sql, DatabaseType.MySQL);
     }
     
     /**

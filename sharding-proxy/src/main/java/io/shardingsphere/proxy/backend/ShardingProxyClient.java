@@ -59,9 +59,9 @@ public final class ShardingProxyClient {
     
     private static final int WORKER_MAX_THREADS = Runtime.getRuntime().availableProcessors();
     
-    private static final int MAX_CONNECTIONS = 10;
+    private static final int MAX_CONNECTIONS = RuleRegistry.getInstance().getProxyBackendSimpleDbConnections();
     
-    private static final int CONNECT_TIMEOUT = 30;
+    private static final int CONNECTION_TIMEOUT = RuleRegistry.getInstance().getProxyBackendConnectionTimeout();
     
     private EventLoopGroup workerGroup;
     
@@ -131,7 +131,6 @@ public final class ShardingProxyClient {
             @Override
             protected SimpleChannelPool newPool(final String datasourceName) {
                 DataSourceConfig dataSourceConfig = dataSourceConfigMap.get(datasourceName);
-                //TODO maxConnection should be set.
                 return new FixedChannelPool(bootstrap.remoteAddress(dataSourceConfig.getIp(), dataSourceConfig.getPort()), new NettyChannelPoolHandler(dataSourceConfig), MAX_CONNECTIONS);
             }
         };
@@ -140,7 +139,7 @@ public final class ShardingProxyClient {
             Channel[] channels = new Channel[MAX_CONNECTIONS];
             for (int i = 0; i < MAX_CONNECTIONS; i++) {
                 try {
-                    channels[i] = pool.acquire().get(CONNECT_TIMEOUT, TimeUnit.SECONDS);
+                    channels[i] = pool.acquire().get(CONNECTION_TIMEOUT, TimeUnit.SECONDS);
                 } catch (final ExecutionException | TimeoutException ex) {
                     log.error(ex.getMessage(), ex);
                 }
