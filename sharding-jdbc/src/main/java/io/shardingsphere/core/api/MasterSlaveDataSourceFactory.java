@@ -25,11 +25,13 @@ import lombok.NoArgsConstructor;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Master-slave data source factory.
  * 
- * @author zhangliang 
+ * @author zhangliang
+ * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MasterSlaveDataSourceFactory {
@@ -40,11 +42,12 @@ public final class MasterSlaveDataSourceFactory {
      * @param dataSourceMap data source map
      * @param masterSlaveRuleConfig master-slave rule configuration
      * @param configMap configuration map
+     * @param props props
      * @return master-slave data source
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(
-            final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Map<String, Object> configMap) throws SQLException {
-        return new MasterSlaveDataSource(dataSourceMap, masterSlaveRuleConfig, configMap);
+            final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Map<String, Object> configMap, final Properties props) throws SQLException {
+        return new MasterSlaveDataSource(dataSourceMap, masterSlaveRuleConfig, configMap, props);
     }
 }
