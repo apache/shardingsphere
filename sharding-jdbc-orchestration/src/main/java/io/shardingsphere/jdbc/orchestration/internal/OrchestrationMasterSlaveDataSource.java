@@ -30,6 +30,7 @@ import java.util.Properties;
  * Orchestration master-slave datasource.
  *
  * @author caohao
+ * @author panjuan
  */
 @Slf4j
 public class OrchestrationMasterSlaveDataSource extends MasterSlaveDataSource implements AutoCloseable {
