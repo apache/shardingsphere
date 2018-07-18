@@ -21,6 +21,7 @@ import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.parsing.SQLJudgeEngine;
 import io.shardingsphere.core.rule.MasterSlaveRule;
+import io.shardingsphere.core.util.SQLLogger;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
@@ -37,24 +38,24 @@ public final class MasterSlaveRouter {
     
     private final MasterSlaveRule masterSlaveRule;
     
+    private final boolean showSQL;
+    
     /**
      * Route Master slave.
      *
      * @param sql SQL
      * @return data source names
      */
+    // TODO for multiple masters may return more than one data source
     public Collection<String> route(final String sql) {
-        return route(new SQLJudgeEngine(sql).judge().getType());
+        Collection<String> result = route(new SQLJudgeEngine(sql).judge().getType());
+        if (showSQL) {
+            SQLLogger.logSQL(sql, result);
+        }
+        return result;
     }
     
-    /**
-     * Route Master slave.
-     * 
-     * @param sqlType SQL type
-     * @return data source names
-     */
-    // TODO for multiple masters may return more than one data source
-    public Collection<String> route(final SQLType sqlType) {
+    private Collection<String> route(final SQLType sqlType) {
         if (isMasterRoute(sqlType)) {
             MasterVisitedManager.setMasterVisited();
             return Collections.singletonList(masterSlaveRule.getMasterDataSourceName());
