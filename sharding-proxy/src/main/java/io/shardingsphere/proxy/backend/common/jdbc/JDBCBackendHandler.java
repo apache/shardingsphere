@@ -17,6 +17,7 @@
 
 package io.shardingsphere.proxy.backend.common.jdbc;
 
+import com.google.common.collect.Lists;
 import io.netty.channel.EventLoopGroup;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.TransactionType;
@@ -52,10 +53,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -119,18 +121,33 @@ public abstract class JDBCBackendHandler implements BackendHandler {
             return new CommandResponsePackets(new ErrPacket(1, 
                     ServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "unknown_table"));
         }
-        List<Future<CommandResponsePackets>> futureList = new ArrayList<>(1024);
-        for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
-            String actualSQL = each.getSqlUnit().getSql();
-            Statement statement = createStatement(connectionManager.getConnection(each.getDataSource()), actualSQL, isReturnGeneratedKeys);
-            futureList.add(userGroup.submit(createExecuteWorker(statement, isReturnGeneratedKeys, actualSQL)));
-        }
-        List<CommandResponsePackets> packets = buildCommandResponsePackets(futureList);
+        Iterator<SQLExecutionUnit> sqlExecutionUnits = routeResult.getExecutionUnits().iterator();
+        SQLExecutionUnit firstSQLExecutionUnit = sqlExecutionUnits.next();
+        List<Future<CommandResponsePackets>> futureList = asyncExecute(isReturnGeneratedKeys, Lists.newArrayList(sqlExecutionUnits));
+        CommandResponsePackets firstCommandResponsePackets = syncExecute(isReturnGeneratedKeys, firstSQLExecutionUnit);
+        List<CommandResponsePackets> packets = buildCommandResponsePackets(firstCommandResponsePackets, futureList);
         CommandResponsePackets result = merge(sqlStatement, packets);
         if (!ruleRegistry.isMasterSlaveOnly()) {
             ProxyShardingRefreshHandler.build(routeResult).execute();
         }
         return result;
+    }
+    
+    private List<Future<CommandResponsePackets>> asyncExecute(final boolean isReturnGeneratedKeys, final Collection<SQLExecutionUnit> sqlExecutionUnits) throws SQLException {
+        List<Future<CommandResponsePackets>> result = new LinkedList<>();
+        for (SQLExecutionUnit each : sqlExecutionUnits) {
+            String actualSQL = each.getSqlUnit().getSql();
+            Statement statement = createStatement(connectionManager.getConnection(each.getDataSource()), actualSQL, isReturnGeneratedKeys);
+            result.add(userGroup.submit(createExecuteWorker(statement, isReturnGeneratedKeys, actualSQL)));
+        }
+        return result;
+    }
+    
+    private CommandResponsePackets syncExecute(final boolean isReturnGeneratedKeys, final SQLExecutionUnit firstSQLExecutionUnit) throws SQLException {
+        String actualSQL = firstSQLExecutionUnit.getSqlUnit().getSql();
+        Statement statement = createStatement(connectionManager.getConnection(firstSQLExecutionUnit.getDataSource()), actualSQL, isReturnGeneratedKeys);
+        JDBCExecuteWorker executeWorker = createExecuteWorker(statement, isReturnGeneratedKeys, actualSQL);
+        return executeWorker.call();
     }
     
     // TODO should isolate Atomikos API to SPI
@@ -140,9 +157,9 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     protected abstract Statement createStatement(Connection connection, String actualSQL, boolean isReturnGeneratedKeys) throws SQLException;
     
-    protected abstract Callable<CommandResponsePackets> createExecuteWorker(Statement statement, boolean isReturnGeneratedKeys, String actualSQL);
+    protected abstract JDBCExecuteWorker createExecuteWorker(Statement statement, boolean isReturnGeneratedKeys, String actualSQL);
     
-    private List<CommandResponsePackets> buildCommandResponsePackets(final List<Future<CommandResponsePackets>> futureList) {
+    private List<CommandResponsePackets> buildCommandResponsePackets(final CommandResponsePackets firstCommandResponsePackets, final List<Future<CommandResponsePackets>> futureList) {
         List<CommandResponsePackets> result = new ArrayList<>();
         for (Future<CommandResponsePackets> each : futureList) {
             try {
@@ -151,6 +168,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
                 throw new ShardingException(ex.getMessage(), ex);
             }
         }
+        result.add(firstCommandResponsePackets);
         return result;
     }
     
