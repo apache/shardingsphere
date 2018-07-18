@@ -19,6 +19,8 @@ package io.shardingsphere.core.jdbc.core.datasource;
 
 import io.shardingsphere.core.api.ConfigMapContext;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.core.constant.ShardingProperties;
+import io.shardingsphere.core.constant.ShardingPropertiesConstant;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.connection.MasterSlaveConnection;
 import io.shardingsphere.core.rule.MasterSlaveRule;
@@ -30,6 +32,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Database that support master-slave.
@@ -43,13 +46,17 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     private MasterSlaveRule masterSlaveRule;
     
-    public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Map<String, Object> configMap) throws SQLException {
+    private ShardingProperties shardingProperties;
+    
+    public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
+                                 final Map<String, Object> configMap, final Properties props) throws SQLException {
         super(getAllDataSources(dataSourceMap, masterSlaveRuleConfig.getMasterDataSourceName(), masterSlaveRuleConfig.getSlaveDataSourceNames()));
         this.dataSourceMap = dataSourceMap;
         this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getMasterSlaveConfig().putAll(configMap);
         }
+        shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
     }
     
     private static Collection<DataSource> getAllDataSources(final Map<String, DataSource> dataSourceMap, final String masterDataSourceName, final Collection<String> slaveDataSourceNames) {
@@ -89,5 +96,14 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     @Override
     public MasterSlaveConnection getConnection() {
         return new MasterSlaveConnection(this);
+    }
+    
+    /**
+     * Show SQL or not.
+     *
+     * @return show SQL or not
+     */
+    public boolean showSQL() {
+        return shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
     }
 }
