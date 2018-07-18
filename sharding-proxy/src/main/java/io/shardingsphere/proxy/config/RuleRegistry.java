@@ -99,7 +99,7 @@ public final class RuleRegistry {
      * @param config yaml proxy configuration
      */
     public synchronized void init(final OrchestrationProxyConfiguration config) {
-        Properties properties = null == config.getShardingRule() ? new Properties() : config.getShardingRule().getProps();
+        Properties properties = null == config.getShardingRule() ? config.getMasterSlaveRule().getProps() : config.getShardingRule().getProps();
         ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
         showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         proxyMode = ProxyMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_MODE));
