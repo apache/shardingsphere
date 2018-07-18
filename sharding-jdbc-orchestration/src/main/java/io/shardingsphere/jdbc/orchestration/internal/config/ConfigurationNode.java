@@ -51,6 +51,8 @@ public final class ConfigurationNode {
     
     public static final String MASTER_SLAVE_CONFIG_MAP_NODE_PATH = MASTER_SLAVE_NODE_PATH + CONFIG_MAP_NODE_PATH;
     
+    public static final String MASTER_SLAVE_PROPS_NODE_PATH = MASTER_SLAVE_NODE_PATH + "/props";
+    
     public static final String PROXY_RULE_NODE_PATH = PROXY_NODE_PATH + RULE_NODE_PATH;
     
     private final String name;
