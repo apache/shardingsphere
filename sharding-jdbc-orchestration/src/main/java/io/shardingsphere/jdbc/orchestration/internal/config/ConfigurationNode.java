@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
  * Data configuration node.
  *
  * @author caohao
+ * @author panjuan
  */
 @RequiredArgsConstructor
 public final class ConfigurationNode {
