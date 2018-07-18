@@ -18,11 +18,9 @@
 package io.shardingsphere.proxy.backend.common.jdbc.statement;
 
 import io.shardingsphere.proxy.backend.common.jdbc.JDBCExecuteWorker;
-import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.List;
 
 /**
  * Statement execute worker.
@@ -43,10 +41,5 @@ public final class JDBCStatementExecuteWorker extends JDBCExecuteWorker {
     @Override
     protected boolean executeSQL(final boolean isReturnGeneratedKeys) throws SQLException {
         return preparedStatement.execute();
-    }
-    
-    @Override
-    protected void setColumnTypes(final List<ColumnType> columnTypes) {
-        ((JDBCStatementBackendHandler) getJdbcBackendHandler()).setColumnTypes(columnTypes);
     }
 }

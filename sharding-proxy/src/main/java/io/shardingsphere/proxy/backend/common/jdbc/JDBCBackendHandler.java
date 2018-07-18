@@ -36,8 +36,10 @@ import io.shardingsphere.proxy.backend.common.BackendHandler;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
@@ -78,6 +80,8 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     @Setter
     private int columnCount;
+    
+    private List<ColumnType> columnTypes;
     
     private boolean isMerged;
     
@@ -147,7 +151,14 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         String actualSQL = firstSQLExecutionUnit.getSqlUnit().getSql();
         Statement statement = createStatement(connectionManager.getConnection(firstSQLExecutionUnit.getDataSource()), actualSQL, isReturnGeneratedKeys);
         JDBCExecuteWorker executeWorker = createExecuteWorker(statement, isReturnGeneratedKeys, actualSQL);
-        return executeWorker.call();
+        CommandResponsePackets result = executeWorker.call();
+        columnTypes = new ArrayList<>(result.getDatabaseProtocolPackets().size());
+        for (DatabaseProtocolPacket each : result.getDatabaseProtocolPackets()) {
+            if (each instanceof ColumnDefinition41Packet) {
+                columnTypes.add(((ColumnDefinition41Packet) each).getColumnType());
+            }
+        }
+        return result;
     }
     
     // TODO should isolate Atomikos API to SPI
@@ -262,11 +273,11 @@ public abstract class JDBCBackendHandler implements BackendHandler {
             for (int i = 1; i <= columnCount; i++) {
                 data.add(mergedResult.getValue(i, Object.class));
             }
-            return newDatabaseProtocolPacket(++currentSequenceId, data);
+            return newDatabaseProtocolPacket(++currentSequenceId, data, columnTypes);
         } catch (final SQLException ex) {
             return new ErrPacket(1, ex);
         }
     }
     
-    protected abstract DatabaseProtocolPacket newDatabaseProtocolPacket(int sequenceId, List<Object> data);
+    protected abstract DatabaseProtocolPacket newDatabaseProtocolPacket(int sequenceId, List<Object> data, List<ColumnType> columnTypes);
 }

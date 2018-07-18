@@ -21,7 +21,6 @@ import io.shardingsphere.proxy.backend.common.ProxyMode;
 import io.shardingsphere.proxy.backend.common.jdbc.resultset.MemoryQueryResult;
 import io.shardingsphere.proxy.backend.common.jdbc.resultset.StreamQueryResult;
 import io.shardingsphere.proxy.config.RuleRegistry;
-import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
@@ -35,8 +34,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
@@ -80,6 +77,11 @@ public abstract class JDBCExecuteWorker implements Callable<CommandResponsePacke
     
     protected abstract boolean executeSQL(boolean isReturnGeneratedKeys) throws SQLException;
     
+    private long getGeneratedKey() throws SQLException {
+        ResultSet resultSet = statement.getGeneratedKeys();
+        return resultSet.next() ? resultSet.getLong(1) : 0L;
+    }
+    
     private CommandResponsePackets getHeaderPackets(final ResultSetMetaData resultSetMetaData) throws SQLException {
         int currentSequenceId = 0;
         int columnCount = resultSetMetaData.getColumnCount();
@@ -88,22 +90,10 @@ public abstract class JDBCExecuteWorker implements Callable<CommandResponsePacke
             return new CommandResponsePackets(new OKPacket(++currentSequenceId));
         }
         CommandResponsePackets result = new CommandResponsePackets(new FieldCountPacket(++currentSequenceId, columnCount));
-        List<ColumnType> columnTypes = new ArrayList<>(128);
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            columnTypes.add(ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(columnIndex)));
             result.addPacket(new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData, columnIndex));
         }
-        setColumnTypes(columnTypes);
         result.addPacket(new EofPacket(++currentSequenceId));
         return result;
-    }
-    
-    // TODO why only prepareStatement need this?
-    protected void setColumnTypes(final List<ColumnType> columnTypes) {
-    }
-    
-    private long getGeneratedKey() throws SQLException {
-        ResultSet resultSet = statement.getGeneratedKeys();
-        return resultSet.next() ? resultSet.getLong(1) : 0L;
     }
 }

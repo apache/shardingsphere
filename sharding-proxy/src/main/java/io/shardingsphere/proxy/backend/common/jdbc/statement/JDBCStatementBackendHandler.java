@@ -27,7 +27,6 @@ import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.PreparedStatementRegistry;
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute.BinaryResultSetRowPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute.PreparedStatementParameter;
-import lombok.Setter;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -47,9 +46,6 @@ public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
     private final List<PreparedStatementParameter> preparedStatementParameters;
     
     private final DatabaseType databaseType;
-    
-    @Setter
-    private List<ColumnType> columnTypes;
     
     private final RuleRegistry ruleRegistry;
     
@@ -90,7 +86,7 @@ public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
     }
     
     @Override
-    protected DatabaseProtocolPacket newDatabaseProtocolPacket(final int sequenceId, final List<Object> data) {
+    protected DatabaseProtocolPacket newDatabaseProtocolPacket(final int sequenceId, final List<Object> data, final List<ColumnType> columnTypes) {
         return new BinaryResultSetRowPacket(sequenceId, getColumnCount(), data, columnTypes);
     }
 }
