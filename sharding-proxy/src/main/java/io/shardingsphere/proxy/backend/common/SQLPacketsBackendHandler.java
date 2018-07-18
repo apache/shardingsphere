@@ -101,8 +101,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     }
     
     private CommandResponsePackets executeForMasterSlave() {
-        SQLStatement sqlStatement = new SQLJudgeEngine(rebuilder.sql()).judge();
-        String dataSourceName = new MasterSlaveRouter(ruleRegistry.getMasterSlaveRule()).route(sqlStatement.getType()).iterator().next();
+        String dataSourceName = new MasterSlaveRouter(ruleRegistry.getMasterSlaveRule(), ruleRegistry.isShowSQL()).route(rebuilder.sql()).iterator().next();
         synchronizedFuture = new SynchronizedFuture<>(1);
         MySQLResultCache.getInstance().putFuture(rebuilder.connectionId(), synchronizedFuture);
         CommandPacket commandPacket = rebuilder.rebuild(rebuilder.sequenceId(), rebuilder.connectionId(), rebuilder.sql());
@@ -114,7 +113,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
         for (QueryResult each : queryResults) {
             packets.add(((MySQLQueryResult) each).getCommandResponsePackets());
         }
-        return merge(sqlStatement, packets, queryResults);
+        return merge(new SQLJudgeEngine(rebuilder.sql()).judge(), packets, queryResults);
     }
     
     private CommandResponsePackets executeForSharding() {
