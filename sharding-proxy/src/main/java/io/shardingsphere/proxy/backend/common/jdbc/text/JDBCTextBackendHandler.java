@@ -64,7 +64,7 @@ public final class JDBCTextBackendHandler extends JDBCBackendHandler {
     
     @Override
     protected JDBCTextExecuteWorker createExecuteWorker(final Statement statement, final boolean isReturnGeneratedKeys, final String actualSQL) {
-        return new JDBCTextExecuteWorker(actualSQL, statement, isReturnGeneratedKeys, this);
+        return new JDBCTextExecuteWorker(actualSQL, statement, isReturnGeneratedKeys);
     }
     
     @Override

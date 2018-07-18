@@ -35,8 +35,8 @@ public final class JDBCTextExecuteWorker extends JDBCExecuteWorker {
     
     private final String sql;
     
-    public JDBCTextExecuteWorker(final String sql, final Statement statement, final boolean isReturnGeneratedKeys, final JDBCTextBackendHandler jdbcTextBackendHandler) {
-        super(statement, isReturnGeneratedKeys, jdbcTextBackendHandler);
+    public JDBCTextExecuteWorker(final String sql, final Statement statement, final boolean isReturnGeneratedKeys) {
+        super(statement, isReturnGeneratedKeys);
         this.statement = statement;
         this.sql = sql;
     }

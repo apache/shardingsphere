@@ -33,8 +33,8 @@ public final class JDBCStatementExecuteWorker extends JDBCExecuteWorker {
     
     private final PreparedStatement preparedStatement;
     
-    public JDBCStatementExecuteWorker(final PreparedStatement preparedStatement, final boolean isReturnGeneratedKeys, final JDBCStatementBackendHandler jdbcStatementBackendHandler) {
-        super(preparedStatement, isReturnGeneratedKeys, jdbcStatementBackendHandler);
+    public JDBCStatementExecuteWorker(final PreparedStatement preparedStatement, final boolean isReturnGeneratedKeys) {
+        super(preparedStatement, isReturnGeneratedKeys);
         this.preparedStatement = preparedStatement;
     }
     
