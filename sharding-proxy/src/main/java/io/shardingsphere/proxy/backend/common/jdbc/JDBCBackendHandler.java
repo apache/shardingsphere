@@ -58,7 +58,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -72,6 +72,14 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     private final String sql;
     
+    private final RuleRegistry ruleRegistry;
+    
+    private final EventLoopGroup userGroup;
+    
+    private final ConnectionManager connectionManager;
+    
+    private final List<QueryResult> queryResults;
+    
     private MergedResult mergedResult;
     
     private int currentSequenceId;
@@ -84,21 +92,14 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     private boolean hasMoreResultValueFlag;
     
-    private final List<QueryResult> queryResults = new CopyOnWriteArrayList<>();
-    
-    private final RuleRegistry ruleRegistry;
-    
-    private final EventLoopGroup userGroup;
-    
-    private final ConnectionManager connectionManager;
-    
     public JDBCBackendHandler(final String sql) {
         this.sql = sql;
-        isMerged = false;
-        hasMoreResultValueFlag = true;
         ruleRegistry = RuleRegistry.getInstance();
         userGroup = ExecutorContext.getInstance().getUserGroup();
         connectionManager = new ConnectionManager();
+        queryResults = new LinkedList<>();
+        isMerged = false;
+        hasMoreResultValueFlag = true;
     }
     
     @Override
@@ -125,34 +126,13 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         Iterator<SQLExecutionUnit> sqlExecutionUnits = routeResult.getExecutionUnits().iterator();
         SQLExecutionUnit firstSQLExecutionUnit = sqlExecutionUnits.next();
         List<Future<JDBCExecuteResponse>> futureList = asyncExecute(isReturnGeneratedKeys, Lists.newArrayList(sqlExecutionUnits));
-        CommandResponsePackets firstCommandResponsePackets = syncExecute(isReturnGeneratedKeys, firstSQLExecutionUnit);
-        List<CommandResponsePackets> packets = buildCommandResponsePackets(firstCommandResponsePackets, futureList);
+        JDBCExecuteResponse firstJDBCExecuteResponse = syncExecute(isReturnGeneratedKeys, firstSQLExecutionUnit);
+        List<CommandResponsePackets> packets = buildCommandResponsePackets(firstJDBCExecuteResponse, futureList);
         CommandResponsePackets result = merge(sqlStatement, packets);
         if (!ruleRegistry.isMasterSlaveOnly()) {
             ProxyShardingRefreshHandler.build(routeResult).execute();
         }
         return result;
-    }
-    
-    private List<Future<JDBCExecuteResponse>> asyncExecute(final boolean isReturnGeneratedKeys, final Collection<SQLExecutionUnit> sqlExecutionUnits) throws SQLException {
-        List<Future<JDBCExecuteResponse>> result = new LinkedList<>();
-        for (SQLExecutionUnit each : sqlExecutionUnits) {
-            String actualSQL = each.getSqlUnit().getSql();
-            Statement statement = createStatement(connectionManager.getConnection(each.getDataSource()), actualSQL, isReturnGeneratedKeys);
-            result.add(userGroup.submit(new JDBCExecuteCallable(createExecuteWorker(statement, isReturnGeneratedKeys, actualSQL))));
-        }
-        return result;
-    }
-    
-    private CommandResponsePackets syncExecute(final boolean isReturnGeneratedKeys, final SQLExecutionUnit firstSQLExecutionUnit) throws SQLException {
-        String actualSQL = firstSQLExecutionUnit.getSqlUnit().getSql();
-        Statement statement = createStatement(connectionManager.getConnection(firstSQLExecutionUnit.getDataSource()), actualSQL, isReturnGeneratedKeys);
-        JDBCExecuteWorker executeWorker = createExecuteWorker(statement, isReturnGeneratedKeys, actualSQL);
-        JDBCExecuteResponse result = executeWorker.execute();
-        columnCount = result.getColumnCount();
-        columnTypes = result.getColumnTypes();
-        queryResults.add(result.getQueryResult());
-        return result.getCommandResponsePackets();
     }
     
     // TODO should isolate Atomikos API to SPI
@@ -164,8 +144,34 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     protected abstract JDBCExecuteWorker createExecuteWorker(Statement statement, boolean isReturnGeneratedKeys, String actualSQL);
     
-    private List<CommandResponsePackets> buildCommandResponsePackets(final CommandResponsePackets firstCommandResponsePackets, final List<Future<JDBCExecuteResponse>> futureList) {
-        List<CommandResponsePackets> result = new ArrayList<>();
+    private List<Future<JDBCExecuteResponse>> asyncExecute(final boolean isReturnGeneratedKeys, final Collection<SQLExecutionUnit> sqlExecutionUnits) throws SQLException {
+        List<Future<JDBCExecuteResponse>> result = new LinkedList<>();
+        for (SQLExecutionUnit each : sqlExecutionUnits) {
+            final String actualSQL = each.getSqlUnit().getSql();
+            final Statement statement = createStatement(connectionManager.getConnection(each.getDataSource()), actualSQL, isReturnGeneratedKeys);
+            result.add(userGroup.submit(new Callable<JDBCExecuteResponse>() {
+                
+                @Override
+                public JDBCExecuteResponse call() {
+                    return createExecuteWorker(statement, isReturnGeneratedKeys, actualSQL).execute();
+                }
+            }));
+        }
+        return result;
+    }
+    
+    private JDBCExecuteResponse syncExecute(final boolean isReturnGeneratedKeys, final SQLExecutionUnit sqlExecutionUnit) throws SQLException {
+        String actualSQL = sqlExecutionUnit.getSqlUnit().getSql();
+        Statement statement = createStatement(connectionManager.getConnection(sqlExecutionUnit.getDataSource()), actualSQL, isReturnGeneratedKeys);
+        return createExecuteWorker(statement, isReturnGeneratedKeys, actualSQL).execute();
+    }
+    
+    private List<CommandResponsePackets> buildCommandResponsePackets(final JDBCExecuteResponse firstJDBCExecuteResponse, final List<Future<JDBCExecuteResponse>> futureList) {
+        List<CommandResponsePackets> result = new ArrayList<>(futureList.size() + 1);
+        result.add(firstJDBCExecuteResponse.getCommandResponsePackets());
+        columnCount = firstJDBCExecuteResponse.getColumnCount();
+        columnTypes = firstJDBCExecuteResponse.getColumnTypes();
+        queryResults.add(firstJDBCExecuteResponse.getQueryResult());
         for (Future<JDBCExecuteResponse> each : futureList) {
             try {
                 JDBCExecuteResponse executeResponse = each.get();
@@ -175,7 +181,6 @@ public abstract class JDBCBackendHandler implements BackendHandler {
                 throw new ShardingException(ex.getMessage(), ex);
             }
         }
-        result.add(firstCommandResponsePackets);
         return result;
     }
     
