@@ -121,12 +121,12 @@ public final class SQLRewriteEngineTest {
     public void assertRewriteForOrderByAndGroupByDerivedColumns() {
         selectStatement.getSqlTokens().add(new TableToken(18, 0, "table_x"));
         ItemsToken itemsToken = new ItemsToken(12);
-        itemsToken.getItems().addAll(Arrays.asList("x.id as ORDER_BY_DERIVED_0", "x.name as GROUP_BY_DERIVED_0"));
+        itemsToken.getItems().addAll(Arrays.asList("x.id as GROUP_BY_DERIVED_0", "x.name as ORDER_BY_DERIVED_0"));
         selectStatement.getSqlTokens().add(itemsToken);
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
                 "SELECT x.age FROM table_x x GROUP BY x.id ORDER BY x.name", DatabaseType.MySQL, selectStatement, null, Collections.emptyList());
         assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, null, shardingDataSourceMetaData).getSql(), is(
-                "SELECT x.age, x.id as ORDER_BY_DERIVED_0, x.name as GROUP_BY_DERIVED_0 FROM table_1 x GROUP BY x.id ORDER BY x.name"));
+                "SELECT x.age, x.id as GROUP_BY_DERIVED_0, x.name as ORDER_BY_DERIVED_0 FROM table_1 x GROUP BY x.id ORDER BY x.name"));
     }
     
     @Test
@@ -153,9 +153,9 @@ public final class SQLRewriteEngineTest {
         insertStatement.getSqlTokens().add(itemsToken);
         insertStatement.getSqlTokens().add(new InsertValuesToken(39, "table_x"));
         InsertShardingCondition shardingCondition = new InsertShardingCondition("(?, ?, ?)", parameters);
-        shardingCondition.getDataNodes().add(new DataNode("db0.table_x"));
+        shardingCondition.getDataNodes().add(new DataNode("db0.table_1"));
         TableUnit tableUnit = new TableUnit("db0");
-        tableUnit.getRoutingTables().add(new RoutingTable("table_x", "table_x"));
+        tableUnit.getRoutingTables().add(new RoutingTable("table_x", "table_1"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "INSERT INTO table_x (name, age) VALUES (?, ?)", 
                 DatabaseType.MySQL, insertStatement, new ShardingConditions(Collections.<ShardingCondition>singletonList(shardingCondition)), parameters);
         assertThat(rewriteEngine.rewrite(true).toSQL(tableUnit, tableTokens, null, shardingDataSourceMetaData).getSql(), is("INSERT INTO table_1 (name, age, id) VALUES (?, ?, ?)"));
@@ -178,9 +178,9 @@ public final class SQLRewriteEngineTest {
         insertStatement.getSqlTokens().add(new InsertColumnToken(21, ")"));
         insertStatement.getSqlTokens().add(new InsertValuesToken(29, "table_x"));
         InsertShardingCondition shardingCondition = new InsertShardingCondition("(?, ?)", parameters);
-        shardingCondition.getDataNodes().add(new DataNode("db0.table_x"));
+        shardingCondition.getDataNodes().add(new DataNode("db0.table_1"));
         TableUnit tableUnit = new TableUnit("db0");
-        tableUnit.getRoutingTables().add(new RoutingTable("table_x", "table_x"));
+        tableUnit.getRoutingTables().add(new RoutingTable("table_x", "table_1"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
                 "INSERT INTO `table_x` VALUES (?)", DatabaseType.MySQL, insertStatement, new ShardingConditions(Collections.<ShardingCondition>singletonList(shardingCondition)), parameters);
         assertThat(rewriteEngine.rewrite(true).toSQL(tableUnit, tableTokens, null, shardingDataSourceMetaData).getSql(), is("INSERT INTO table_1(name, id) VALUES (?, ?)"));
@@ -200,9 +200,9 @@ public final class SQLRewriteEngineTest {
         insertStatement.getSqlTokens().add(new InsertColumnToken(21, ")"));
         insertStatement.getSqlTokens().add(new InsertValuesToken(29, "table_x"));
         InsertShardingCondition shardingCondition = new InsertShardingCondition("(10, 1)", Collections.emptyList());
-        shardingCondition.getDataNodes().add(new DataNode("db0.table_x"));
+        shardingCondition.getDataNodes().add(new DataNode("db0.table_1"));
         TableUnit tableUnit = new TableUnit("db0");
-        tableUnit.getRoutingTables().add(new RoutingTable("table_x", "table_x"));
+        tableUnit.getRoutingTables().add(new RoutingTable("table_x", "table_1"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "INSERT INTO `table_x` VALUES (10)", 
                 DatabaseType.MySQL, insertStatement, new ShardingConditions(Collections.<ShardingCondition>singletonList(shardingCondition)), Collections.emptyList());
         assertThat(rewriteEngine.rewrite(true).toSQL(tableUnit, tableTokens, null, shardingDataSourceMetaData).getSql(), is("INSERT INTO table_1(name, id) VALUES (10, 1)"));
@@ -225,9 +225,9 @@ public final class SQLRewriteEngineTest {
         insertStatement.getSqlTokens().add(new InsertColumnToken(21, ")"));
         insertStatement.getSqlTokens().add(new InsertValuesToken(29, "table_x"));
         InsertShardingCondition shardingCondition = new InsertShardingCondition("(10, 1)", parameters);
-        shardingCondition.getDataNodes().add(new DataNode("db0.table_x"));
+        shardingCondition.getDataNodes().add(new DataNode("db0.table_1"));
         TableUnit tableUnit = new TableUnit("db0");
-        tableUnit.getRoutingTables().add(new RoutingTable("table_x", "table_x"));
+        tableUnit.getRoutingTables().add(new RoutingTable("table_x", "table_1"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
                 "INSERT INTO `table_x` VALUES (10, 1)", DatabaseType.MySQL, insertStatement, new ShardingConditions(Collections.<ShardingCondition>singletonList(shardingCondition)), parameters);
         assertThat(rewriteEngine.rewrite(true).toSQL(tableUnit, tableTokens, null, shardingDataSourceMetaData).getSql(), is("INSERT INTO table_1(name, id) VALUES (10, 1)"));
@@ -250,9 +250,9 @@ public final class SQLRewriteEngineTest {
         insertStatement.getSqlTokens().add(new InsertColumnToken(21, ")"));
         insertStatement.getSqlTokens().add(new InsertValuesToken(29, "table_x"));
         InsertShardingCondition shardingCondition = new InsertShardingCondition("(?, ?)", parameters);
-        shardingCondition.getDataNodes().add(new DataNode("db0.table_x"));
+        shardingCondition.getDataNodes().add(new DataNode("db0.table_1"));
         TableUnit tableUnit = new TableUnit("db0");
-        tableUnit.getRoutingTables().add(new RoutingTable("table_x", "table_x"));
+        tableUnit.getRoutingTables().add(new RoutingTable("table_x", "table_1"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
                 "INSERT INTO `table_x` VALUES (?, ?)", DatabaseType.MySQL, insertStatement, new ShardingConditions(Collections.<ShardingCondition>singletonList(shardingCondition)), parameters);
         assertThat(rewriteEngine.rewrite(true).toSQL(tableUnit, tableTokens, null, shardingDataSourceMetaData).getSql(), is("INSERT INTO table_1(name, id) VALUES (?, ?)"));

@@ -23,14 +23,13 @@ import io.shardingsphere.core.routing.StatementRoutingEngine;
 import io.shardingsphere.proxy.backend.common.jdbc.JDBCBackendHandler;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextResultSetRowPacket;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 /**
  * Text protocol backend handler via JDBC to connect databases.
@@ -64,12 +63,12 @@ public final class JDBCTextBackendHandler extends JDBCBackendHandler {
     }
     
     @Override
-    protected Callable<CommandResponsePackets> createExecuteWorker(final Statement statement, final boolean isReturnGeneratedKeys, final String actualSQL) {
-        return new JDBCTextExecuteWorker(actualSQL, statement, isReturnGeneratedKeys, this);
+    protected JDBCTextExecuteWorker createExecuteWorker(final Statement statement, final boolean isReturnGeneratedKeys, final String actualSQL) {
+        return new JDBCTextExecuteWorker(actualSQL, statement, isReturnGeneratedKeys);
     }
     
     @Override
-    protected DatabaseProtocolPacket newDatabaseProtocolPacket(final int sequenceId, final List<Object> data) {
+    protected DatabaseProtocolPacket newDatabaseProtocolPacket(final int sequenceId, final List<Object> data, final List<ColumnType> columnTypes) {
         return new TextResultSetRowPacket(sequenceId, data);
     }
 }

@@ -17,6 +17,7 @@
 
 package io.shardingsphere.proxy.backend.common.jdbc;
 
+import com.google.common.collect.Lists;
 import io.netty.channel.EventLoopGroup;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.TransactionType;
@@ -35,6 +36,7 @@ import io.shardingsphere.proxy.backend.common.BackendHandler;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
@@ -44,7 +46,6 @@ import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.proxy.util.ExecutorContext;
 import io.shardingsphere.transaction.xa.AtomikosUserTransaction;
 import lombok.Getter;
-import lombok.Setter;
 
 import javax.transaction.Status;
 import javax.transaction.SystemException;
@@ -52,11 +53,12 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -70,32 +72,34 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     private final String sql;
     
-    private MergedResult mergedResult;
-    
-    private int currentSequenceId;
-    
-    @Setter
-    private int columnCount;
-    
-    private boolean isMerged;
-    
-    private boolean hasMoreResultValueFlag;
-    
-    private final List<QueryResult> queryResults = new CopyOnWriteArrayList<>();
-    
     private final RuleRegistry ruleRegistry;
     
     private final EventLoopGroup userGroup;
     
     private final ConnectionManager connectionManager;
     
+    private final List<QueryResult> queryResults;
+    
+    private MergedResult mergedResult;
+    
+    private int currentSequenceId;
+    
+    private int columnCount;
+    
+    private List<ColumnType> columnTypes;
+    
+    private boolean isMerged;
+    
+    private boolean hasMoreResultValueFlag;
+    
     public JDBCBackendHandler(final String sql) {
         this.sql = sql;
-        isMerged = false;
-        hasMoreResultValueFlag = true;
         ruleRegistry = RuleRegistry.getInstance();
         userGroup = ExecutorContext.getInstance().getUserGroup();
         connectionManager = new ConnectionManager();
+        queryResults = new LinkedList<>();
+        isMerged = false;
+        hasMoreResultValueFlag = true;
     }
     
     @Override
@@ -119,13 +123,11 @@ public abstract class JDBCBackendHandler implements BackendHandler {
             return new CommandResponsePackets(new ErrPacket(1, 
                     ServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "unknown_table"));
         }
-        List<Future<CommandResponsePackets>> futureList = new ArrayList<>(1024);
-        for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
-            String actualSQL = each.getSqlUnit().getSql();
-            Statement statement = createStatement(connectionManager.getConnection(each.getDataSource()), actualSQL, isReturnGeneratedKeys);
-            futureList.add(userGroup.submit(createExecuteWorker(statement, isReturnGeneratedKeys, actualSQL)));
-        }
-        List<CommandResponsePackets> packets = buildCommandResponsePackets(futureList);
+        Iterator<SQLExecutionUnit> sqlExecutionUnits = routeResult.getExecutionUnits().iterator();
+        SQLExecutionUnit firstSQLExecutionUnit = sqlExecutionUnits.next();
+        List<Future<JDBCExecuteResponse>> futureList = asyncExecute(isReturnGeneratedKeys, Lists.newArrayList(sqlExecutionUnits));
+        JDBCExecuteResponse firstJDBCExecuteResponse = syncExecute(isReturnGeneratedKeys, firstSQLExecutionUnit);
+        List<CommandResponsePackets> packets = buildCommandResponsePackets(firstJDBCExecuteResponse, futureList);
         CommandResponsePackets result = merge(sqlStatement, packets);
         if (!ruleRegistry.isMasterSlaveOnly()) {
             ProxyShardingRefreshHandler.build(routeResult).execute();
@@ -140,13 +142,41 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     protected abstract Statement createStatement(Connection connection, String actualSQL, boolean isReturnGeneratedKeys) throws SQLException;
     
-    protected abstract Callable<CommandResponsePackets> createExecuteWorker(Statement statement, boolean isReturnGeneratedKeys, String actualSQL);
+    protected abstract JDBCExecuteWorker createExecuteWorker(Statement statement, boolean isReturnGeneratedKeys, String actualSQL);
     
-    private List<CommandResponsePackets> buildCommandResponsePackets(final List<Future<CommandResponsePackets>> futureList) {
-        List<CommandResponsePackets> result = new ArrayList<>();
-        for (Future<CommandResponsePackets> each : futureList) {
+    private List<Future<JDBCExecuteResponse>> asyncExecute(final boolean isReturnGeneratedKeys, final Collection<SQLExecutionUnit> sqlExecutionUnits) throws SQLException {
+        List<Future<JDBCExecuteResponse>> result = new LinkedList<>();
+        for (SQLExecutionUnit each : sqlExecutionUnits) {
+            final String actualSQL = each.getSqlUnit().getSql();
+            final Statement statement = createStatement(connectionManager.getConnection(each.getDataSource()), actualSQL, isReturnGeneratedKeys);
+            result.add(userGroup.submit(new Callable<JDBCExecuteResponse>() {
+                
+                @Override
+                public JDBCExecuteResponse call() {
+                    return createExecuteWorker(statement, isReturnGeneratedKeys, actualSQL).execute();
+                }
+            }));
+        }
+        return result;
+    }
+    
+    private JDBCExecuteResponse syncExecute(final boolean isReturnGeneratedKeys, final SQLExecutionUnit sqlExecutionUnit) throws SQLException {
+        String actualSQL = sqlExecutionUnit.getSqlUnit().getSql();
+        Statement statement = createStatement(connectionManager.getConnection(sqlExecutionUnit.getDataSource()), actualSQL, isReturnGeneratedKeys);
+        return createExecuteWorker(statement, isReturnGeneratedKeys, actualSQL).execute();
+    }
+    
+    private List<CommandResponsePackets> buildCommandResponsePackets(final JDBCExecuteResponse firstJDBCExecuteResponse, final List<Future<JDBCExecuteResponse>> futureList) {
+        List<CommandResponsePackets> result = new ArrayList<>(futureList.size() + 1);
+        result.add(firstJDBCExecuteResponse.getCommandResponsePackets());
+        columnCount = firstJDBCExecuteResponse.getColumnCount();
+        columnTypes = firstJDBCExecuteResponse.getColumnTypes();
+        queryResults.add(firstJDBCExecuteResponse.getQueryResult());
+        for (Future<JDBCExecuteResponse> each : futureList) {
             try {
-                result.add(each.get());
+                JDBCExecuteResponse executeResponse = each.get();
+                result.add(executeResponse.getCommandResponsePackets());
+                queryResults.add(executeResponse.getQueryResult());
             } catch (final InterruptedException | ExecutionException ex) {
                 throw new ShardingException(ex.getMessage(), ex);
             }
@@ -244,11 +274,11 @@ public abstract class JDBCBackendHandler implements BackendHandler {
             for (int i = 1; i <= columnCount; i++) {
                 data.add(mergedResult.getValue(i, Object.class));
             }
-            return newDatabaseProtocolPacket(++currentSequenceId, data);
+            return newDatabaseProtocolPacket(++currentSequenceId, data, columnTypes);
         } catch (final SQLException ex) {
             return new ErrPacket(1, ex);
         }
     }
     
-    protected abstract DatabaseProtocolPacket newDatabaseProtocolPacket(int sequenceId, List<Object> data);
+    protected abstract DatabaseProtocolPacket newDatabaseProtocolPacket(int sequenceId, List<Object> data, List<ColumnType> columnTypes);
 }
