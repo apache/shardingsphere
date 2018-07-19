@@ -36,6 +36,7 @@ import java.util.Properties;
  *
  * @author zhangliang
  * @author caohao
+ * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OrchestrationMasterSlaveDataSourceFactory {
