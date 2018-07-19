@@ -63,12 +63,12 @@ public final class ShardingProxyClient {
     
     private static final int CONNECTION_TIMEOUT = RuleRegistry.getInstance().getProxyBackendConnectionTimeout();
     
+    private final Map<String, DataSourceConfig> dataSourceConfigMap = Maps.newHashMap();
+    
     private EventLoopGroup workerGroup;
     
     @Getter
     private ChannelPoolMap<String, SimpleChannelPool> poolMap;
-    
-    private Map<String, DataSourceConfig> dataSourceConfigMap = Maps.newHashMap();
     
     /**
      * Start Sharding-Proxy.

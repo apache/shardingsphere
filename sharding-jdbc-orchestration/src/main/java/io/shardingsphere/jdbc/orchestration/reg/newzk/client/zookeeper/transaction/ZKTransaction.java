@@ -17,16 +17,15 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction;
 
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.Holder;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.OpResult;
 import org.apache.zookeeper.Transaction;
 import org.apache.zookeeper.data.ACL;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -36,9 +35,8 @@ import java.util.List;
  * @author lidongbo
  * @since zookeeper 3.4.0
  */
+@Slf4j
 public class ZKTransaction extends BaseTransaction {
-    
-    private static final Logger LOGGER = LoggerFactory.getLogger(ZKTransaction.class);
     
     private final Transaction transaction;
     
@@ -47,13 +45,13 @@ public class ZKTransaction extends BaseTransaction {
     public ZKTransaction(final String root, final Holder holder) {
         transaction = holder.getZooKeeper().transaction();
         rootNode = root;
-        LOGGER.debug("ZKTransaction root:{}", rootNode);
+        log.debug("ZKTransaction root:{}", rootNode);
     }
     
     @Override
     public ZKTransaction create(final String path, final byte[] data, final List<ACL> acl, final CreateMode createMode) {
         this.transaction.create(PathUtil.getRealPath(rootNode, path), data, acl, createMode);
-        LOGGER.debug("wait create:{},data:{},acl:{},createMode:{}", path, data, acl, createMode);
+        log.debug("wait create:{},data:{},acl:{},createMode:{}", path, data, acl, createMode);
         return this;
     }
     
@@ -65,7 +63,7 @@ public class ZKTransaction extends BaseTransaction {
     @Override
     public ZKTransaction delete(final String path, final int version) {
         this.transaction.delete(PathUtil.getRealPath(rootNode, path), version);
-        LOGGER.debug("wait delete:{}", path);
+        log.debug("wait delete:{}", path);
         return this;
     }
     
@@ -77,7 +75,7 @@ public class ZKTransaction extends BaseTransaction {
     @Override
     public ZKTransaction check(final String path, final int version) {
         this.transaction.check(PathUtil.getRealPath(rootNode, path), version);
-        LOGGER.debug("wait check:{}", path);
+        log.debug("wait check:{}", path);
         return this;
     }
     
@@ -89,13 +87,13 @@ public class ZKTransaction extends BaseTransaction {
     @Override
     public ZKTransaction setData(final String path, final byte[] data, final int version) {
         this.transaction.setData(PathUtil.getRealPath(rootNode, path), data, version);
-        LOGGER.debug("wait setData:{},data:{}", path, data);
+        log.debug("wait setData:{},data:{}", path, data);
         return this;
     }
     
     @Override
     public List<OpResult> commit() throws InterruptedException, KeeperException {
-        LOGGER.debug("ZKTransaction commit");
+        log.debug("ZKTransaction commit");
         return this.transaction.commit();
     }
 }

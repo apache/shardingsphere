@@ -20,20 +20,18 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Connection;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.KeeperException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /*
  * Sync retry call.
- * todo Split up into two classes, one use exec() and other use getResult()
+ * // todo Split up into two classes, one use exec() and other use getResult()
  *
  * @author lidongbo
  */
+@Slf4j
 public abstract class RetryCallable<T> {
     
-    private static final Logger LOGGER = LoggerFactory.getLogger(RetryCallable.class);
-
     private final DelayPolicyExecutor delayPolicyExecutor;
     
     private final IProvider provider;
@@ -78,7 +76,7 @@ public abstract class RetryCallable<T> {
         try {
             call();
         } catch (final KeeperException ex) {
-            LOGGER.warn("exec KeeperException:{}", ex.getMessage());
+            log.warn("exec KeeperException:{}", ex.getMessage());
             delayPolicyExecutor.next();
             if (Connection.needReset(ex)) {
                 provider.resetConnection();
@@ -91,11 +89,11 @@ public abstract class RetryCallable<T> {
         for (;;) {
             long delay = delayPolicyExecutor.getNextTick() - System.currentTimeMillis();
             if (delay > 0) {
-                LOGGER.debug("exec delay:{}", delay);
+                log.debug("exec delay:{}", delay);
                 Thread.sleep(delay);
             } else {
                 if (delayPolicyExecutor.hasNext()) {
-                    LOGGER.debug("exec hasNext");
+                    log.debug("exec hasNext");
                     exec();
                 }
                 break;

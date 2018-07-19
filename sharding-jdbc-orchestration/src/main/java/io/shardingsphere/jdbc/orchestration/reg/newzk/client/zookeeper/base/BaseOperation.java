@@ -20,12 +20,10 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayPolicyExecutor;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Connection;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.KeeperException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
@@ -35,11 +33,10 @@ import java.util.concurrent.TimeUnit;
  *
  * @author lidongbo
  */
-@Getter(value = AccessLevel.PROTECTED)
+@Slf4j
 public abstract class BaseOperation implements Delayed {
     
-    private static final Logger LOGGER = LoggerFactory.getLogger(BaseOperation.class);
-    
+    @Getter
     private final IProvider provider;
     
     @Setter
@@ -52,7 +49,7 @@ public abstract class BaseOperation implements Delayed {
     @Override
     public long getDelay(final TimeUnit unit) {
         long absoluteBlock = this.delayPolicyExecutor.getNextTick() - System.currentTimeMillis();
-        LOGGER.debug("queue getDelay block:{}", absoluteBlock);
+        log.debug("queue getDelay block:{}", absoluteBlock);
         return unit.convert(absoluteBlock, TimeUnit.MILLISECONDS);
     }
     

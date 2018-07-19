@@ -22,11 +22,10 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.WatcherCreator;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /*
  * Competition of node write permission.
@@ -34,9 +33,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author lidongbo
  */
+@Slf4j
 public abstract class LeaderElection {
-    
-    private static final Logger LOGGER = LoggerFactory.getLogger(LeaderElection.class);
     
     private boolean done;
     
@@ -53,7 +51,7 @@ public abstract class LeaderElection {
             provider.create(node, ZookeeperConstants.CLIENT_ID, CreateMode.EPHEMERAL);
             success = true;
         } catch (final KeeperException.NodeExistsException ex) {
-            LOGGER.info("contend not success");
+            log.info("contend not success");
             // TODO or changing_key node value == current client id
             provider.exists(node, WatcherCreator.deleteWatcher(zookeeperEventListener));
         }
@@ -78,14 +76,14 @@ public abstract class LeaderElection {
                 try {
                     retryCount--;
                     if (retryCount < 0) {
-                        LOGGER.info("Election node exceed retry count");
+                        log.info("Election node exceed retry count");
                         return;
                     }
                     executeContention(realNode, provider);
                     // CHECKSTYLE:OFF
                 } catch (final Exception ex){
                     // CHECKSTYLE:ON
-                    LOGGER.error("Listener Exception executeContention:{}", ex.getMessage(), ex);
+                    log.error("Listener Exception executeContention:{}", ex.getMessage(), ex);
                 }
             }
         });
@@ -98,7 +96,7 @@ public abstract class LeaderElection {
                 // CHECKSTYLE:OFF
             } catch (final Exception ex){
                 // CHECKSTYLE:ON
-                LOGGER.error("action Exception executeContention:{}", ex.getMessage(), ex);
+                log.error("action Exception executeContention:{}", ex.getMessage(), ex);
             }
             provider.delete(contendNode);
         }
@@ -112,7 +110,7 @@ public abstract class LeaderElection {
             try {
                 Thread.sleep(10L);
             } catch (final InterruptedException ex) {
-                LOGGER.error("waitDone:{}", ex.getMessage(), ex);
+                log.error("waitDone:{}", ex.getMessage(), ex);
             }
         }
     }

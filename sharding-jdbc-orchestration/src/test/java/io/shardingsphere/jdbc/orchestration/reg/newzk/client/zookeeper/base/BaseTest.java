@@ -23,11 +23,11 @@ import org.apache.zookeeper.KeeperException;
 public class BaseTest {
     
     protected void createRootOnly(final IClient client) throws KeeperException, InterruptedException {
-        ((BaseClient)client).createNamespace();
+        ((BaseClient) client).createNamespace();
     }
     
     protected void deleteRoot(final IClient client) throws KeeperException, InterruptedException {
-        ((BaseClient)client).deleteNamespace();
+        ((BaseClient) client).deleteNamespace();
     }
     
     protected void sleep(final long tick) {

@@ -18,8 +18,7 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseOperation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.ExecutorService;
@@ -34,9 +33,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author lidongbo
  */
+@Slf4j
 public final class RetryThread extends Thread {
-    
-    private static final Logger LOGGER = LoggerFactory.getLogger(RetryThread.class);
     
     private final int corePoolSize = Runtime.getRuntime().availableProcessors();
     
@@ -61,7 +59,7 @@ public final class RetryThread extends Thread {
                 Thread thread = new Thread(r);
                 thread.setDaemon(true);
                 thread.setName("zk-retry-" + threadIndex.incrementAndGet());
-                LOGGER.debug("new thread:{}", thread.getName());
+                log.debug("new thread:{}", thread.getName());
                 return thread;
             }
         });
@@ -70,14 +68,14 @@ public final class RetryThread extends Thread {
 
     @Override
     public void run() {
-        LOGGER.debug("RetryThread start");
+        log.debug("RetryThread start");
         for (;;) {
             final BaseOperation operation;
             try {
                 operation = queue.take();
-                LOGGER.debug("take operation:{}", operation.toString());
+                log.debug("take operation:{}", operation.toString());
             } catch (final InterruptedException ex) {
-                LOGGER.error("retry interrupt ex:{}", ex.getMessage());
+                log.error("retry interrupt ex:{}", ex.getMessage());
                 continue;
             }
             retryExecutor.submit(new Runnable() {
@@ -91,11 +89,11 @@ public final class RetryThread extends Thread {
                     } catch (final Exception ex) {
                         // CHECKSTYLE:ON
                         result = false;
-                        LOGGER.error("retry disrupt operation:{}, ex:{}", operation.toString(), ex.getMessage());
+                        log.error("retry disrupt operation:{}, ex:{}", operation.toString(), ex.getMessage());
                     }
                     if (result) {
                         queue.offer(operation);
-                        LOGGER.debug("enqueue again operation:{}", operation.toString());
+                        log.debug("enqueue again operation:{}", operation.toString());
                     }
                 }
             });
@@ -108,7 +106,7 @@ public final class RetryThread extends Thread {
             @Override
             public void run() {
                 try {
-                    LOGGER.debug("AsyncRetryCenter stop");
+                    log.debug("AsyncRetryCenter stop");
                     queue.clear();
                     service.shutdown();
                     service.awaitTermination(terminationTimeout, timeUnit);

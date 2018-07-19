@@ -58,7 +58,7 @@ public final class GeneralDDLIntegrateTest extends BaseDDLIntegrateTest {
         assertExecuteByType(false);
     }
 
-    private void assertExecuteByType(boolean isExecuteUpdate) throws JAXBException, IOException, SQLException {
+    private void assertExecuteByType(final boolean isExecuteUpdate) throws JAXBException, IOException, SQLException {
         if (!getDatabaseTypeEnvironment().isEnabled()) {
             return;
         }

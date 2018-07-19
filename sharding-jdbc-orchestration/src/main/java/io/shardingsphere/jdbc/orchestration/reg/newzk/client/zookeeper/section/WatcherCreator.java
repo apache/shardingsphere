@@ -17,19 +17,17 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /*
  * Build public watcher.
  *
  * @author lidongbo
  */
+@Slf4j
 public class WatcherCreator {
-    
-    private static final Logger LOGGER = LoggerFactory.getLogger(WatcherCreator.class);
     
     /**
      * Get string type data.
@@ -44,7 +42,7 @@ public class WatcherCreator {
             public void process(final WatchedEvent event) {
                 if (zookeeperEventListener.getPath().equals(event.getPath()) && Event.EventType.NodeDeleted.equals(event.getType())) {
                     zookeeperEventListener.process(event);
-                    LOGGER.debug("delete node event:{}", event.toString());
+                    log.debug("delete node event:{}", event.toString());
                 }
             }
         };

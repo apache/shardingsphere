@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 public class TestClient extends UsualClient {
     
-    TestClient(BaseContext context) {
+    TestClient(final BaseContext context) {
         super(context);
     }
     
@@ -36,6 +36,11 @@ public class TestClient extends UsualClient {
         return getHolder().isConnected();
     }
     
+    /**
+     * Get zookeeper.
+     * 
+     * @return zookeeper
+     */
     public ZooKeeper getZookeeper() {
         return getHolder().getZooKeeper();
     }

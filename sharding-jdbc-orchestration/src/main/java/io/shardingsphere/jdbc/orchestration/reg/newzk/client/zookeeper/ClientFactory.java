@@ -24,20 +24,19 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperCo
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseClientFactory;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ClientContext;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.zookeeper.data.ACL;
+
 import java.io.IOException;
 import java.util.List;
-import org.apache.zookeeper.data.ACL;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /*
  * Client factory.
  *
  * @author lidongbo
  */
+@Slf4j
 public class ClientFactory extends BaseClientFactory {
-    
-    private static final Logger LOGGER = LoggerFactory.getLogger(ClientFactory.class);
     
     private DelayRetryPolicy delayRetryPolicy;
     
@@ -55,7 +54,7 @@ public class ClientFactory extends BaseClientFactory {
         }
         setContext(new ClientContext(servers, wait));
         setClient(new UsualClient(getContext()));
-        LOGGER.debug("new usual client");
+        log.debug("new usual client");
         return this;
     }
     
@@ -69,14 +68,14 @@ public class ClientFactory extends BaseClientFactory {
         if (closeOriginal) {
             oldClient.close();
         }
-        LOGGER.debug("new usual client by a existing client");
+        log.debug("new usual client by a existing client");
         return this;
     }
     
     ClientFactory newCacheClient(final String servers, final int sessionTimeoutMilliseconds) {
         setContext(new ClientContext(servers, sessionTimeoutMilliseconds));
         setClient(new CacheClient(getContext()));
-        LOGGER.debug("new cache client");
+        log.debug("new cache client");
         return this;
     }
     

@@ -22,7 +22,6 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.Base
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.TestSupport;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -37,66 +36,66 @@ public class UsualClientTest extends BaseClientTest {
     
     @Test
     public void assertCreateRoot() throws KeeperException, InterruptedException {
-        super.createRoot(testClient);
+        super.createRoot(getTestClient());
     }
     
     @Test
     public void assertCreateChild() throws KeeperException, InterruptedException {
-        super.createChild(testClient);
+        super.createChild(getTestClient());
     }
     
     @Test
     public void assertDeleteBranch() throws KeeperException, InterruptedException {
-        super.deleteBranch(testClient);
+        super.deleteBranch(getTestClient());
     }
     
     @Test
     public void assertExisted() throws KeeperException, InterruptedException {
-        super.isExisted(testClient);
+        super.isExisted(getTestClient());
     }
     
     @Test
     public void assertGet() throws KeeperException, InterruptedException {
-        super.get(testClient);
+        super.get(getTestClient());
     }
     
     @Test
-    public void assertAsynGet() throws KeeperException, InterruptedException {
-        super.asynGet(testClient);
+    public void assertAsyncGet() throws KeeperException, InterruptedException {
+        super.asyncGet(getTestClient());
     }
     
     @Test
     public void assertGetChildrenKeys() throws KeeperException, InterruptedException {
-        super.getChildrenKeys(testClient);
+        super.getChildrenKeys(getTestClient());
     }
     
     @Test
     public void assertPersist() throws KeeperException, InterruptedException {
-        super.persist(testClient);
+        super.persist(getTestClient());
     }
     
     @Test
     public void assertPersistEphemeral() throws KeeperException, InterruptedException {
-        super.persistEphemeral(testClient);
+        super.persistEphemeral(getTestClient());
     }
     
     @Test
     public void assertDelAllChildren() throws KeeperException, InterruptedException {
-        super.delAllChildren(testClient);
+        super.delAllChildren(getTestClient());
     }
     
     @Test
     public void assertWatch() throws KeeperException, InterruptedException {
-        super.watch(testClient);
+        super.watch(getTestClient());
     }
     
     @Test
     public void assertWatchRegister() throws KeeperException, InterruptedException {
-        super.watchRegister(testClient);
+        super.watchRegister(getTestClient());
     }
     
     @Test
-    public void assertClose() throws Exception {
-        super.close(testClient);
+    public void assertClose() {
+        super.close(getTestClient());
     }
 }

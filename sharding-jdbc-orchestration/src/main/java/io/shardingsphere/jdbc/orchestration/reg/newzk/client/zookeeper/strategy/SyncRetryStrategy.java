@@ -22,11 +22,10 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayRetryPol
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.RetryCallable;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.Watcher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -35,9 +34,8 @@ import java.util.List;
  *
  * @author lidongbo
  */
+@Slf4j
 public class SyncRetryStrategy extends UsualStrategy {
-    
-    private static final Logger LOGGER = LoggerFactory.getLogger(SyncRetryStrategy.class);
     
     @Getter(value = AccessLevel.PROTECTED)
     private final DelayRetryPolicy delayRetryPolicy;
@@ -45,7 +43,7 @@ public class SyncRetryStrategy extends UsualStrategy {
     public SyncRetryStrategy(final IProvider provider, final DelayRetryPolicy delayRetryPolicy) {
         super(provider);
         if (delayRetryPolicy == null) {
-            LOGGER.info("RetryCallable constructor context's delayRetryPolicy is null");
+            log.info("RetryCallable constructor context's delayRetryPolicy is null");
             this.delayRetryPolicy = DelayRetryPolicy.defaultDelayPolicy();
         } else {
             this.delayRetryPolicy = delayRetryPolicy;

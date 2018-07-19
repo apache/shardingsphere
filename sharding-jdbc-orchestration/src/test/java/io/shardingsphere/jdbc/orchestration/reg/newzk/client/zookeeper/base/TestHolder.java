@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 
 public class TestHolder extends Holder {
     
-    private final CountDownLatch CONNECTING = new CountDownLatch(1);
+    private final CountDownLatch connecting = new CountDownLatch(1);
     
     public TestHolder(final BaseContext context) {
         super(context);
@@ -35,7 +35,7 @@ public class TestHolder extends Holder {
     @Override
     protected void start(final int wait, final TimeUnit units) throws IOException, InterruptedException {
         initZookeeper();
-        CONNECTING.await(wait, units);
+        connecting.await(wait, units);
     }
     
     @Override
@@ -48,7 +48,7 @@ public class TestHolder extends Holder {
                     //ignore
                 }
                 this.setConnected(true);
-                CONNECTING.countDown();
+                connecting.countDown();
             }
         }
     }

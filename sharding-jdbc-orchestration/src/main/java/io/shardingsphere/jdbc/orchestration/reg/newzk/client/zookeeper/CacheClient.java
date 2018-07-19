@@ -19,26 +19,25 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.CacheStrategy;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.PathTree;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseContext;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
 
 /*
  * Cache Client.
- * todo Partially prepared product
+ * 
+ * // todo Partially prepared product
  * @author lidongbo
  */
+@Slf4j
 public final class CacheClient extends UsualClient {
-    
-    private static final Logger LOGGER = LoggerFactory.getLogger(CacheClient.class);
     
     private PathTree pathTree;
     
@@ -52,7 +51,7 @@ public final class CacheClient extends UsualClient {
         try {
             useCacheStrategy(CacheStrategy.WATCH);
         } catch (final KeeperException ex) {
-            LOGGER.error("CacheClient useCacheStrategy : " + ex.getMessage());
+            log.error("CacheClient useCacheStrategy : " + ex.getMessage());
         }
     }
     
@@ -63,20 +62,19 @@ public final class CacheClient extends UsualClient {
     }
     
     //todo put it here?
-    void useCacheStrategy(final CacheStrategy cacheStrategy) throws KeeperException, InterruptedException {
-        LOGGER.debug("use cache strategy:{}", cacheStrategy);
+    private void useCacheStrategy(final CacheStrategy cacheStrategy) throws KeeperException, InterruptedException {
+        log.debug("use cache strategy:{}", cacheStrategy);
         switch (cacheStrategy) {
             case WATCH:
                 pathTree = new PathTree(getRootNode(), this);
                 pathTree.watch();
-                return;
+                break;
             case ALL:
                 pathTree = loadPathTree();
                 pathTree.refreshPeriodic(ZookeeperConstants.THREAD_PERIOD);
-                return;
+                break;
             case NONE:
             default:
-                return;
         }
     }
     
@@ -86,7 +84,7 @@ public final class CacheClient extends UsualClient {
     
     private PathTree loadPathTree(final String treeRoot) throws KeeperException, InterruptedException {
         PathTree tree = new PathTree(treeRoot, this);
-        LOGGER.debug("load path tree:{}", treeRoot);
+        log.debug("load path tree:{}", treeRoot);
         tree.load();
         tree.watch();
         return tree;
@@ -115,10 +113,10 @@ public final class CacheClient extends UsualClient {
         String path = PathUtil.getRealPath(getRootNode(), key);
         byte[] data = pathTree.getValue(path);
         if (data != null) {
-            LOGGER.debug("getData cache hit:{}", data);
+            log.debug("getData cache hit:{}", data);
             return data;
         }
-        LOGGER.debug("getData cache not hit:{}", data);
+        log.debug("getData cache not hit:{}", data);
         return getStrategy().getData(key);
     }
     
@@ -127,10 +125,10 @@ public final class CacheClient extends UsualClient {
         String path = PathUtil.getRealPath(getRootNode(), key);
         List<String> keys = pathTree.getChildren(path);
         if (!keys.isEmpty()) {
-            LOGGER.debug("getChildren cache hit:{}", keys);
+            log.debug("getChildren cache hit:{}", keys);
             return keys;
         }
-        LOGGER.debug("getChildren cache not hit:{}", keys);
+        log.debug("getChildren cache not hit:{}", keys);
         return getStrategy().getChildren(PathUtil.getRealPath(getRootNode(), key));
     }
 }
