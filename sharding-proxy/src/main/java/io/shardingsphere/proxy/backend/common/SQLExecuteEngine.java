@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.common.jdbc.execute.engine;
+package io.shardingsphere.proxy.backend.common;
 
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
