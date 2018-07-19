@@ -72,7 +72,7 @@
     </ddl-test-case>
     
     <ddl-test-case sql-case-id="drop_index_if_exists">
-        <assertion init-sql="CREATE TABLE t_log(id int, status varchar(10));CREATE INDEX t_log_index ON t_log(status)" table="t_log" expected-data-file="empty_log.xml" />
+        <assertion init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />
     </ddl-test-case>
     
     <ddl-test-case sql-case-id="truncate_table">
