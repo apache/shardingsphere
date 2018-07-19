@@ -18,9 +18,12 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache;
 
 /*
+ * Cache strategy.
+ *
  * @author lidongbo
  */
 public enum CacheStrategy {
+    
     NONE,
     WATCH,
     ALL

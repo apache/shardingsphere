@@ -31,12 +31,13 @@ import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
 /*
- * base async retry operation
+ * Base async retry operation.
  *
  * @author lidongbo
  */
 @Getter(value = AccessLevel.PROTECTED)
 public abstract class BaseOperation implements Delayed {
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseOperation.class);
     
     private final IProvider provider;
@@ -56,7 +57,7 @@ public abstract class BaseOperation implements Delayed {
     }
     
     /**
-     * queue precedence.
+     * Queue precedence.
      */
     @Override
     public int compareTo(final Delayed delayed) {
@@ -66,7 +67,7 @@ public abstract class BaseOperation implements Delayed {
     protected abstract void execute() throws KeeperException, InterruptedException;
     
     /**
-     * queue precedence.
+     * Queue precedence.
      *
      * @return whether or not continue enqueue
      * @throws KeeperException Keeper Exception
@@ -77,8 +78,8 @@ public abstract class BaseOperation implements Delayed {
         try {
             execute();
             result = true;
-        } catch (KeeperException e) {
-            if (Connection.needReset(e)) {
+        } catch (final KeeperException ex) {
+            if (Connection.needReset(ex)) {
                 provider.resetConnection();
             }
             result = false;

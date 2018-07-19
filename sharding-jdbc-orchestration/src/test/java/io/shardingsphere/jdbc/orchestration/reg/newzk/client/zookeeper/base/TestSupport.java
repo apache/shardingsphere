@@ -17,15 +17,13 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
-/*
- * Created by aaa
- */
 public class TestSupport {
+    
     public static final String AUTH = "digest";
     
     public static final String SERVERS = "localhost:3181";
     
-    public static final int SESSION_TIMEOUT = 200000;//ms
+    public static final int SESSION_TIMEOUT = 200000;
     
     public static final String ROOT = "test";
 }

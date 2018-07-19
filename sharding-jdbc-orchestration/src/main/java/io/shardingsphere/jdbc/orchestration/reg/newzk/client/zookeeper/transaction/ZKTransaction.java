@@ -17,7 +17,7 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction;
 
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.Holder;
 import org.apache.zookeeper.CreateMode;
@@ -31,10 +31,13 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /*
+ * Zookeeper transaction support.
+ *
  * @author lidongbo
  * @since zookeeper 3.4.0
  */
 public class ZKTransaction extends BaseTransaction {
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(ZKTransaction.class);
     
     private final Transaction transaction;
@@ -50,13 +53,13 @@ public class ZKTransaction extends BaseTransaction {
     @Override
     public ZKTransaction create(final String path, final byte[] data, final List<ACL> acl, final CreateMode createMode) {
         this.transaction.create(PathUtil.getRealPath(rootNode, path), data, acl, createMode);
-        LOGGER.debug("wait create:{},data:{},acl:{},createMode:{}", new Object[]{path, data, acl, createMode});
+        LOGGER.debug("wait create:{},data:{},acl:{},createMode:{}", path, data, acl, createMode);
         return this;
     }
     
     @Override
     public ZKTransaction delete(final String path) {
-        return delete(path, Constants.VERSION);
+        return delete(path, ZookeeperConstants.VERSION);
     }
     
     @Override
@@ -68,7 +71,7 @@ public class ZKTransaction extends BaseTransaction {
     
     @Override
     public ZKTransaction check(final String path) {
-        return check(path, Constants.VERSION);
+        return check(path, ZookeeperConstants.VERSION);
     }
     
     @Override
@@ -80,7 +83,7 @@ public class ZKTransaction extends BaseTransaction {
     
     @Override
     public ZKTransaction setData(final String path, final byte[] data) {
-        return setData(path, data, Constants.VERSION);
+        return setData(path, data, ZookeeperConstants.VERSION);
     }
     
     @Override

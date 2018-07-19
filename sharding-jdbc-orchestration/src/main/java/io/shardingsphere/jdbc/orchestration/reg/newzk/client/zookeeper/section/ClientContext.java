@@ -24,6 +24,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 /*
+ * Client context.
+ *
  * @author lidongbo
  */
 @Setter
@@ -41,7 +43,7 @@ public final class ClientContext extends BaseContext {
     }
     
     /**
-     * call.
+     * Close.
      */
     public void close() {
         super.close();
@@ -50,7 +52,7 @@ public final class ClientContext extends BaseContext {
     }
     
     /**
-     * update context.
+     * Update context.
      *
      * @param context context
      */

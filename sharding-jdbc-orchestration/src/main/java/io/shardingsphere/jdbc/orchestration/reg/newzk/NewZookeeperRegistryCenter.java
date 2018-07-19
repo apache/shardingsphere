@@ -26,15 +26,11 @@ import io.shardingsphere.jdbc.orchestration.reg.listener.EventListener;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.PathTree;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayRetryPolicy;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.StringUtil;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.ClientFactory;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
 import io.shardingsphere.jdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.ZooDefs;
-
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -42,6 +38,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
+import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.WatchedEvent;
+import org.apache.zookeeper.ZooDefs;
 
 /**
  * Zookeeper native based registry center.
@@ -73,12 +73,19 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
     private IClient initClient(final ClientFactory creator, final ZookeeperConfiguration zkConfig) {
         IClient newClient = null;
         try {
-            newClient = creator.start(zkConfig.getMaxSleepTimeMilliseconds() * zkConfig.getMaxRetries(), TimeUnit.MILLISECONDS);
+            // todo There is a bug when the start time is very short, and I haven't found the reason yet
+            // newClient = creator.start(zkConfig.getMaxSleepTimeMilliseconds() * zkConfig.getMaxRetries(), TimeUnit.MILLISECONDS);
+            newClient = creator.start();
+            if (!newClient.blockUntilConnected(zkConfig.getMaxSleepTimeMilliseconds() * zkConfig.getMaxRetries(), TimeUnit.MILLISECONDS)) {
+                newClient.close();
+                throw new KeeperException.OperationTimeoutException();
+            }
+            
             newClient.useExecStrategy(StrategyType.SYNC_RETRY);
             // CHECKSTYLE:OFF
-        } catch (Exception e) {
+        } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            RegExceptionHandler.handleException(e);
+            RegExceptionHandler.handleException(ex);
         }
         return newClient;
     }
@@ -167,7 +174,7 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
     @Override
     public void update(final String key, final String value) {
         try {
-            client.transaction().check(key, -1).setData(key, value.getBytes(Charsets.UTF_8)).commit();
+            client.transaction().check(key, ZookeeperConstants.VERSION).setData(key, value.getBytes(ZookeeperConstants.UTF_8), ZookeeperConstants.VERSION).commit();
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -196,26 +203,31 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
             addCacheData(key);
         }
         final PathTree cache = caches.get(path);
-        cache.watch(new Listener() {
+        cache.watch(new ZookeeperEventListener() {
+            
             @Override
             public void process(final WatchedEvent event) {
-                if (!StringUtil.isNullOrBlank(event.getPath())) {
+                if (!Strings.isNullOrEmpty(event.getPath())) {
                     eventListener.onChange(new DataChangedEvent(getEventType(event), event.getPath(), getWithoutCache(event.getPath())));
                 }
             }
             
             private DataChangedEvent.Type getEventType(final WatchedEvent event) {
-                switch (event.getType()) {
-                    case NodeDataChanged:
-                    case NodeChildrenChanged:
-                        return DataChangedEvent.Type.UPDATED;
-                    case NodeDeleted:
-                        return DataChangedEvent.Type.DELETED;
-                    default:
-                        return DataChangedEvent.Type.IGNORED;
-                }
+                return extractEventType(event);
             }
         });
+    }
+    
+    private DataChangedEvent.Type extractEventType(final WatchedEvent event) {
+        switch (event.getType()) {
+            case NodeDataChanged:
+            case NodeChildrenChanged:
+                return DataChangedEvent.Type.UPDATED;
+            case NodeDeleted:
+                return DataChangedEvent.Type.DELETED;
+            default:
+                return DataChangedEvent.Type.IGNORED;
+        }
     }
     
     private synchronized String getWithoutCache(final String key) {

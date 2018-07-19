@@ -15,35 +15,17 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.zookeeper.WatchedEvent;
+package io.shardingsphere.jdbc.orchestration.reg.newzk.client.action;
 
 /*
+ * Callback on contention has not reached.
+ *
  * @author lidongbo
  */
-@Getter
-public abstract class Listener {
-    private final String key;
-    
-    @Setter
-    private String path;
-    
-    public Listener() {
-        this(null);
-    }
-    
-    public Listener(final String path) {
-        this.path = path;
-        this.key = path + System.currentTimeMillis();
-    }
+public interface ContentionCallback {
     
     /**
-     * process.
-     *
-     * @param event event
-     */
-    public abstract void process(WatchedEvent event);
+    * Process callback result.
+    */
+    void processResult();
 }

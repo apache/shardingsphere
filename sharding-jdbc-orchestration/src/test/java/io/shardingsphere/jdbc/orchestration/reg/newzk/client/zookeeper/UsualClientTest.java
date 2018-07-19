@@ -27,9 +27,6 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-/**
- * Created by aaa
- */
 public class UsualClientTest extends BaseClientTest {
     
     @Override
@@ -91,6 +88,11 @@ public class UsualClientTest extends BaseClientTest {
     @Test
     public void assertWatch() throws KeeperException, InterruptedException {
         super.watch(testClient);
+    }
+    
+    @Test
+    public void assertWatchRegister() throws KeeperException, InterruptedException {
+        super.watchRegister(testClient);
     }
     
     @Test

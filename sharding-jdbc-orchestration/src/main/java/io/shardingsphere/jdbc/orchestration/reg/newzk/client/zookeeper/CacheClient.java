@@ -19,7 +19,7 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.CacheStrategy;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.PathTree;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseContext;
 import org.apache.zookeeper.AsyncCallback;
@@ -32,10 +32,12 @@ import java.io.IOException;
 import java.util.List;
 
 /*
- * todo
+ * Cache Client.
+ * todo Partially prepared product
  * @author lidongbo
  */
 public final class CacheClient extends UsualClient {
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(CacheClient.class);
     
     private PathTree pathTree;
@@ -49,8 +51,8 @@ public final class CacheClient extends UsualClient {
         super.start();
         try {
             useCacheStrategy(CacheStrategy.WATCH);
-        } catch (KeeperException e) {
-            LOGGER.error("CacheClient useCacheStrategy : " + e.getMessage());
+        } catch (final KeeperException ex) {
+            LOGGER.error("CacheClient useCacheStrategy : " + ex.getMessage());
         }
     }
     
@@ -70,7 +72,7 @@ public final class CacheClient extends UsualClient {
                 return;
             case ALL:
                 pathTree = loadPathTree();
-                pathTree.refreshPeriodic(Constants.THREAD_PERIOD);
+                pathTree.refreshPeriodic(ZookeeperConstants.THREAD_PERIOD);
                 return;
             case NONE:
             default:

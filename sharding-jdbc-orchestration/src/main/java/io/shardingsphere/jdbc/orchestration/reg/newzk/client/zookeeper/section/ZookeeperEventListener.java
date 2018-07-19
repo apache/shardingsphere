@@ -15,20 +15,38 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility;
+package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.zookeeper.WatchedEvent;
 
 /*
+ * Watch event listener.
+ *
  * @author lidongbo
  */
-public class StringUtil {
+@Getter
+public abstract class ZookeeperEventListener {
+    
+    private final String key;
+    
+    @Setter
+    private String path;
+    
+    public ZookeeperEventListener() {
+        this(null);
+    }
+    
+    public ZookeeperEventListener(final String path) {
+        this.path = path;
+        this.key = path + System.currentTimeMillis();
+    }
     
     /**
-     * Null Or Blank.
+     * Process.
      *
-     * @param string string
-     * @return isNullOrBlank
+     * @param event event
      */
-    public static boolean isNullOrBlank(final String string) {
-        return string == null || string.trim().length() == 0;
-    }
+    public abstract void process(WatchedEvent event);
 }

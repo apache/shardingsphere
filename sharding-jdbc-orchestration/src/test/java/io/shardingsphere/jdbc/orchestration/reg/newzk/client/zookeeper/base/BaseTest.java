@@ -17,26 +17,24 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.UsualClient;
-import org.apache.zookeeper.ZooKeeper;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
+import org.apache.zookeeper.KeeperException;
 
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-
-public class TestClient extends UsualClient {
+public class BaseTest {
     
-    TestClient(BaseContext context) {
-        super(context);
+    protected void createRootOnly(final IClient client) throws KeeperException, InterruptedException {
+        ((BaseClient)client).createNamespace();
     }
     
-    @Override
-    public synchronized boolean start(final int wait, final TimeUnit units) throws InterruptedException, IOException {
-        setHolder(new TestHolder(getContext()));
-        getHolder().start(wait, units);
-        return getHolder().isConnected();
+    protected void deleteRoot(final IClient client) throws KeeperException, InterruptedException {
+        ((BaseClient)client).deleteNamespace();
     }
     
-    public ZooKeeper getZookeeper() {
-        return getHolder().getZooKeeper();
+    protected void sleep(final long tick) {
+        try {
+            Thread.sleep(tick);
+        } catch (final InterruptedException ex) {
+            // ignore
+        }
     }
 }

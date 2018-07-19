@@ -20,11 +20,12 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility;
 import java.nio.charset.Charset;
 
 /*
- * constants
+ * Zookeeper client constants.
  *
  * @author lidongbo
  */
-public final class Constants {
+public final class ZookeeperConstants {
+    
     public static final int VERSION = -1;
     
     public static final int WAIT = 60 * 1000;
@@ -38,6 +39,8 @@ public final class Constants {
     public static final String PATH_SEPARATOR = "/";
     
     public static final String GLOBAL_LISTENER_KEY = "globalListener";
+    
+    public static final String ROOT_INIT_PATH = "/InitValue";
     
     public static final byte[] CHANGING_VALUE = new byte[]{'c'};
     
