@@ -19,29 +19,30 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayRetryPolicy;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseClientFactory;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ClientContext;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
+import java.io.IOException;
+import java.util.List;
 import org.apache.zookeeper.data.ACL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.List;
-
 /*
+ * Client factory.
+ *
  * @author lidongbo
  */
 public class ClientFactory extends BaseClientFactory {
-    //    private static final String CLIENT_EXCLUSIVE_NODE = "ZKC";
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(ClientFactory.class);
     
     private DelayRetryPolicy delayRetryPolicy;
     
     /**
-     * create a new client.
+     * Create a new client.
      *
      * @param servers servers
      * @param sessionTimeoutMilliseconds sessionTimeoutMilliseconds
@@ -50,7 +51,7 @@ public class ClientFactory extends BaseClientFactory {
     public ClientFactory newClient(final String servers, final int sessionTimeoutMilliseconds) {
         int wait = sessionTimeoutMilliseconds;
         if (sessionTimeoutMilliseconds == 0) {
-            wait = Constants.WAIT;
+            wait = ZookeeperConstants.WAIT;
         }
         setContext(new ClientContext(servers, wait));
         setClient(new UsualClient(getContext()));
@@ -59,8 +60,8 @@ public class ClientFactory extends BaseClientFactory {
     }
     
     /*
-    * used for create new clients through a existing client
-    * this client is not perhaps the client
+    * Used for create new clients through a existing client.
+    * This client is not perhaps the client.
     */
     synchronized BaseClientFactory newClientByOriginal(final boolean closeOriginal) {
         IClient oldClient = getClient();
@@ -80,18 +81,18 @@ public class ClientFactory extends BaseClientFactory {
     }
     
     /**
-     * wait to register global listener.
+     * Wait to register global listener.
      *
-     * @param globalListener globalListener
+     * @param globalZookeeperEventListener globalListener
      * @return ClientFactory this
      */
-    public ClientFactory watch(final Listener globalListener) {
-        setGlobalListener(globalListener);
+    public ClientFactory watch(final ZookeeperEventListener globalZookeeperEventListener) {
+        setGlobalZookeeperEventListener(globalZookeeperEventListener);
         return this;
     }
     
     /**
-     * set client namespace.
+     * Set client namespace.
      *
      * @param namespace namespace
      * @return ClientFactory this
@@ -102,7 +103,7 @@ public class ClientFactory extends BaseClientFactory {
     }
     
     /**
-     * authorization.
+     * Authorization.
      *
      * @param scheme scheme
      * @param auth auth
@@ -117,7 +118,7 @@ public class ClientFactory extends BaseClientFactory {
     }
     
     /**
-     * set delay retry policy.
+     * Set delay retry policy.
      *
      * @param delayRetryPolicy delayRetryPolicy
      * @return ClientFactory this

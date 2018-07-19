@@ -23,9 +23,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /*
+ * Client task.
+ *
  * @author lidongbo
  */
 public abstract class ClientTask implements Runnable {
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(ClientTask.class);
     
     private final IProvider provider;
@@ -35,7 +38,7 @@ public abstract class ClientTask implements Runnable {
     }
     
     /**
-     * run.
+     * Run.
      *
      * @param provider provider
      * @throws KeeperException Zookeeper Exception
@@ -47,8 +50,8 @@ public abstract class ClientTask implements Runnable {
     public void run() {
         try {
             run(provider);
-        } catch (KeeperException | InterruptedException e) {
-            LOGGER.error(e.getMessage(), e);
+        } catch (final KeeperException | InterruptedException ex) {
+            LOGGER.error(ex.getMessage(), ex);
         }
     }
 }

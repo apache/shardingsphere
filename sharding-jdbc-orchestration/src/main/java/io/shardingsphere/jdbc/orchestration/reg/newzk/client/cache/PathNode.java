@@ -17,7 +17,12 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache;
 
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
+import io.shardingsphere.core.parsing.lexer.LexerEngine;
+import io.shardingsphere.core.parsing.lexer.token.Assist;
+import io.shardingsphere.core.parsing.lexer.token.Symbol;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
@@ -28,32 +33,38 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /*
- * zookeeper node cache
+ * Zookeeper node cache.
  *
  * @author lidongbo
  */
-public class PathNode {
+public final class PathNode {
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(PathNode.class);
 
     private final Map<String, PathNode> children = new ConcurrentHashMap<>();
 
     private final String nodeKey;
+    
+    @Getter(value = AccessLevel.PACKAGE)
+    @Setter(value = AccessLevel.PACKAGE)
+    private String path;
 
-    @Getter
-    @Setter
+    @Getter(value = AccessLevel.PACKAGE)
+    @Setter(value = AccessLevel.PACKAGE)
     private byte[] value;
     
     PathNode(final String key) {
-        this(key, Constants.RELEASE_VALUE);
+        this(key, ZookeeperConstants.RELEASE_VALUE);
     }
     
     PathNode(final String key, final byte[] value) {
         this.nodeKey = key;
         this.value = value;
+        this.path = key;
     }
     
     /**
-     * get children.
+     * Get children.
      *
      * @return children
      */
@@ -62,7 +73,7 @@ public class PathNode {
     }
     
     /**
-     * get key.
+     * Get key.
      *
      * @return node key
      */
@@ -71,42 +82,55 @@ public class PathNode {
     }
     
     /**
-     * attach child node.
+     * Attach child node.
      *
      * @param node node
      */
     public void attachChild(final PathNode node) {
         this.children.put(node.nodeKey, node);
+        node.setPath(PathUtil.getRealPath(path, node.getKey()));
     }
     
     PathNode set(final Iterator<String> iterator, final String value) {
         String key = iterator.next();
         LOGGER.debug("PathNode set:{},value:{}", key, value);
-        PathNode node = children.get(key);
-        if (node == null) {
+        PathNode result = children.get(key);
+        if (result == null) {
             LOGGER.debug("set children haven't:{}", key);
-            node = new PathNode(key);
-            children.put(key, node);
+            result = new PathNode(key);
+            children.put(key, result);
         }
         if (iterator.hasNext()) {
-            node.set(iterator, value);
+            result.set(iterator, value);
         } else {
-            node.setValue(value.getBytes(Constants.UTF_8));
+            result.setValue(value.getBytes(ZookeeperConstants.UTF_8));
         }
-        return node;
+        return result;
     }
     
     PathNode get(final Iterator<String> iterator) {
         String key = iterator.next();
         LOGGER.debug("get:{}", key);
-        PathNode node = children.get(key);
-        if (node == null) {
+        PathNode result = children.get(key);
+        if (result == null) {
             LOGGER.debug("get children haven't:{}", key);
             return null;
         }
         if (iterator.hasNext()) {
-            return node.get(iterator);
+            return result.get(iterator);
         }
-        return node;
+        return result;
+    }
+    
+    void delete(final String path, final LexerEngine lexerEngine) {
+        if (lexerEngine.getCurrentToken().getType().equals(Assist.END)) {
+            children.remove(path);
+        }
+        if (children.containsKey(path)) {
+            PathNode node = children.get(path);
+            lexerEngine.nextToken();
+            lexerEngine.skipIfEqual(Symbol.SLASH);
+            node.delete(lexerEngine.getCurrentToken().getLiterals(), lexerEngine);
+        }
     }
 }

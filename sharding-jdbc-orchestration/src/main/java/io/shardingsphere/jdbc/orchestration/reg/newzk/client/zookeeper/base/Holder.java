@@ -17,27 +17,29 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
+import com.google.common.base.Strings;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
+import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
 /*
- * zookeeper connection holder
+ * Zookeeper connection holder.
  *
  * @author lidongbo
  */
 public class Holder {
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(Holder.class);
     
     private final CountDownLatch connectLatch = new CountDownLatch(1);
@@ -57,7 +59,7 @@ public class Holder {
     }
     
     /**
-     * start.
+     * Start.
      *
      * @throws IOException IO Exception
      * @throws InterruptedException InterruptedException
@@ -75,7 +77,7 @@ public class Holder {
     protected void initZookeeper() throws IOException {
         LOGGER.debug("Holder servers:{},sessionTimeOut:{}", context.getServers(), context.getSessionTimeOut());
         zooKeeper = new ZooKeeper(context.getServers(), context.getSessionTimeOut(), startWatcher());
-        if (!io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.StringUtil.isNullOrBlank(context.getScheme())) {
+        if (!Strings.isNullOrEmpty(context.getScheme())) {
             zooKeeper.addAuthInfo(context.getScheme(), context.getAuth());
             LOGGER.debug("Holder scheme:{},auth:{}", context.getScheme(), context.getAuth());
         }
@@ -83,17 +85,20 @@ public class Holder {
     
     private Watcher startWatcher() {
         return new Watcher() {
+            
             public void process(final WatchedEvent event) {
                 processConnection(event);
-                if (context.getGlobalListener() != null) {
-                    context.getGlobalListener().process(event);
-                    LOGGER.debug("BaseClient {} process", Constants.GLOBAL_LISTENER_KEY);
+                processGlobalListener(event);
+                // todo filter event type or path, add watch
+                //reWatch(event);
+                if (event.getType() == Event.EventType.None) {
+                    return;
                 }
                 if (!context.getWatchers().isEmpty()) {
-                    for (Listener listener : context.getWatchers().values()) {
-                        if (listener.getPath() == null || listener.getPath().equals(event.getPath())) {
-                            LOGGER.debug("listener process:{}, listener:{}", listener.getPath(), listener.getKey());
-                            listener.process(event);
+                    for (ZookeeperEventListener zookeeperEventListener : context.getWatchers().values()) {
+                        if (zookeeperEventListener.getPath() == null || event.getPath().startsWith(zookeeperEventListener.getPath())) {
+                            LOGGER.debug("listener process:{}, listener:{}", zookeeperEventListener.getPath(), zookeeperEventListener.getKey());
+                            zookeeperEventListener.process(event);
                         }
                     }
                 }
@@ -115,16 +120,37 @@ public class Holder {
                     LOGGER.warn("startWatcher Event.KeeperState.Expired");
                     reset();
                     // CHECKSTYLE:OFF
-                } catch (Exception e) {
+                } catch (final Exception ex) {
                     // CHECKSTYLE:ON
-                    LOGGER.error("event state Expired:{}", e.getMessage(), e);
+                    LOGGER.error("event state Expired:{}", ex.getMessage(), ex);
+                }
+            } else if (Watcher.Event.KeeperState.Disconnected == event.getState()) {
+                connected = false;
+            }
+        }
+    }
+    
+    private void processGlobalListener(final WatchedEvent event) {
+        if (context.getGlobalZookeeperEventListener() != null) {
+            context.getGlobalZookeeperEventListener().process(event);
+            LOGGER.debug("Holder {} process", ZookeeperConstants.GLOBAL_LISTENER_KEY);
+        }
+    }
+    
+    private void reWatch(final WatchedEvent event) {
+        if (!Strings.isNullOrEmpty(event.getPath())) {
+            try {
+                zooKeeper.exists(event.getPath(), true);
+            } catch (final KeeperException | InterruptedException ex) {
+                if (connected) {
+                    reWatch(event);
                 }
             }
         }
     }
     
     /**
-     * reset connection.
+     * Reset connection.
      *
      * @throws IOException IO Exception
      * @throws InterruptedException InterruptedException
@@ -137,18 +163,25 @@ public class Holder {
     }
     
     /**
-     * close.
+     * Close.
      */
     public void close() {
         try {
+            zooKeeper.register(new Watcher() {
+                
+                @Override
+                public void process(final WatchedEvent watchedEvent) {
+        
+                }
+            });
             zooKeeper.close();
             connected = false;
             LOGGER.debug("zk closed");
             this.context.close();
             // CHECKSTYLE:OFF
-        } catch (Exception e) {
+        } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            LOGGER.warn("Holder close:{}", e.getMessage());
+            LOGGER.warn("Holder close:{}", ex.getMessage());
         }
     }
 }

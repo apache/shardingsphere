@@ -21,14 +21,12 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.StatementRoutingEngine;
 import io.shardingsphere.proxy.backend.common.jdbc.JDBCBackendHandler;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngineFactory;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextResultSetRowPacket;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 
 /**
@@ -45,7 +43,7 @@ public final class JDBCTextBackendHandler extends JDBCBackendHandler {
     private final RuleRegistry ruleRegistry;
     
     public JDBCTextBackendHandler(final String sql, final DatabaseType databaseType) {
-        super(sql);
+        super(sql, JDBCExecuteEngineFactory.createTextProtocolInstance());
         this.databaseType = databaseType;
         ruleRegistry = RuleRegistry.getInstance();
     }
@@ -55,16 +53,6 @@ public final class JDBCTextBackendHandler extends JDBCBackendHandler {
         StatementRoutingEngine routingEngine = new StatementRoutingEngine(
                 ruleRegistry.getShardingRule(), ruleRegistry.getShardingMetaData(), databaseType, ruleRegistry.isShowSQL(), ruleRegistry.getShardingDataSourceMetaData());
         return routingEngine.route(getSql());
-    }
-    
-    @Override
-    protected Statement createStatement(final Connection connection, final String actualSQL, final boolean isReturnGeneratedKeys) throws SQLException {
-        return connection.createStatement();
-    }
-    
-    @Override
-    protected JDBCTextExecuteWorker createExecuteWorker(final Statement statement, final boolean isReturnGeneratedKeys, final String actualSQL) {
-        return new JDBCTextExecuteWorker(actualSQL, statement, isReturnGeneratedKeys);
     }
     
     @Override

@@ -15,64 +15,71 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.common.jdbc;
+package io.shardingsphere.proxy.backend.common.jdbc.execute;
 
-import io.shardingsphere.proxy.backend.common.ProxyMode;
-import io.shardingsphere.proxy.backend.common.jdbc.resultset.MemoryQueryResult;
-import io.shardingsphere.proxy.backend.common.jdbc.resultset.StreamQueryResult;
-import io.shardingsphere.proxy.config.RuleRegistry;
+import io.netty.channel.EventLoopGroup;
+import io.shardingsphere.core.merger.QueryResult;
+import io.shardingsphere.proxy.backend.common.SQLExecuteEngine;
+import io.shardingsphere.proxy.backend.common.jdbc.BackendConnection;
+import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
-import lombok.RequiredArgsConstructor;
+import io.shardingsphere.proxy.util.ExecutorContext;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Execute worker via JDBC to connect databases.
- * 
+ * SQL Execute engine for JDBC.
+ *
  * @author zhaojun
  * @author zhangliang
  */
-@RequiredArgsConstructor
-public abstract class JDBCExecuteWorker {
+@Getter
+@Setter
+public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
     
-    private static final Integer FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
+    private final List<QueryResult> queryResults = new LinkedList<>();
     
-    private final Statement statement;
+    private final BackendConnection backendConnection = new BackendConnection();
     
-    private final boolean isReturnGeneratedKeys;
+    private final EventLoopGroup userGroup = ExecutorContext.getInstance().getUserGroup();
     
-    /**
-     * Execute manipulate to database.
-     * 
-     * @return execute response
-     */
-    public JDBCExecuteResponse execute() {
+    private int columnCount;
+    
+    private List<ColumnType> columnTypes;
+    
+    protected abstract Statement createStatement(Connection connection, String sql, boolean isReturnGeneratedKeys) throws SQLException;
+    
+    protected JDBCExecuteResponse execute(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) {
         try {
-            if (ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
-                statement.setFetchSize(FETCH_ONE_ROW_A_TIME);
-            }
-            if (!executeSQL(isReturnGeneratedKeys)) {
-                return new JDBCExecuteResponse(new CommandResponsePackets(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey() : 0)));
+            setFetchSize(statement);
+            if (!executeSQL(statement, sql, isReturnGeneratedKeys)) {
+                return new JDBCExecuteResponse(new CommandResponsePackets(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0)));
             }
             ResultSet resultSet = statement.getResultSet();
-            return new JDBCExecuteResponse(getHeaderPackets(resultSet.getMetaData()), 
-                    ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode() ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet));
+            return new JDBCExecuteResponse(getHeaderPackets(resultSet.getMetaData()), createQueryResult(resultSet));
         } catch (final SQLException ex) {
             return new JDBCExecuteResponse(new CommandResponsePackets(new ErrPacket(1, ex)));
         }
     }
     
-    protected abstract boolean executeSQL(boolean isReturnGeneratedKeys) throws SQLException;
+    protected abstract void setFetchSize(Statement statement) throws SQLException;
     
-    private long getGeneratedKey() throws SQLException {
+    protected abstract boolean executeSQL(Statement statement, String sql, boolean isReturnGeneratedKeys) throws SQLException;
+    
+    private long getGeneratedKey(final Statement statement) throws SQLException {
         ResultSet resultSet = statement.getGeneratedKeys();
         return resultSet.next() ? resultSet.getLong(1) : 0L;
     }
@@ -90,4 +97,6 @@ public abstract class JDBCExecuteWorker {
         result.addPacket(new EofPacket(++currentSequenceId));
         return result;
     }
+    
+    protected abstract QueryResult createQueryResult(ResultSet resultSet) throws SQLException;
 }

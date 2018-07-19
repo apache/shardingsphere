@@ -17,7 +17,6 @@
 
 package io.shardingsphere.proxy.backend.common.jdbc;
 
-import com.google.common.collect.Lists;
 import io.netty.channel.EventLoopGroup;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.TransactionType;
@@ -33,6 +32,7 @@ import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingsphere.proxy.backend.common.BackendHandler;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngine;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
@@ -49,23 +49,18 @@ import lombok.Getter;
 
 import javax.transaction.Status;
 import javax.transaction.SystemException;
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 /**
  * Backend handler via JDBC to connect databases.
  *
  * @author zhaojun
+ * @author zhangliang
  */
 @Getter
 public abstract class JDBCBackendHandler implements BackendHandler {
@@ -76,7 +71,9 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     private final EventLoopGroup userGroup;
     
-    private final ConnectionManager connectionManager;
+    private final BackendConnection backendConnection;
+    
+    private final JDBCExecuteEngine executeEngine;
     
     private final List<QueryResult> queryResults;
     
@@ -92,11 +89,12 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     private boolean hasMoreResultValueFlag;
     
-    public JDBCBackendHandler(final String sql) {
+    public JDBCBackendHandler(final String sql, final JDBCExecuteEngine executeEngine) {
         this.sql = sql;
+        this.executeEngine = executeEngine;
         ruleRegistry = RuleRegistry.getInstance();
         userGroup = ExecutorContext.getInstance().getUserGroup();
-        connectionManager = new ConnectionManager();
+        backendConnection = executeEngine.getBackendConnection();
         queryResults = new LinkedList<>();
         isMerged = false;
         hasMoreResultValueFlag = true;
@@ -123,11 +121,10 @@ public abstract class JDBCBackendHandler implements BackendHandler {
             return new CommandResponsePackets(new ErrPacket(1, 
                     ServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "unknown_table"));
         }
-        Iterator<SQLExecutionUnit> sqlExecutionUnits = routeResult.getExecutionUnits().iterator();
-        SQLExecutionUnit firstSQLExecutionUnit = sqlExecutionUnits.next();
-        List<Future<JDBCExecuteResponse>> futureList = asyncExecute(isReturnGeneratedKeys, Lists.newArrayList(sqlExecutionUnits));
-        JDBCExecuteResponse firstJDBCExecuteResponse = syncExecute(isReturnGeneratedKeys, firstSQLExecutionUnit);
-        List<CommandResponsePackets> packets = buildCommandResponsePackets(firstJDBCExecuteResponse, futureList);
+        List<CommandResponsePackets> packets = executeEngine.execute(routeResult, isReturnGeneratedKeys);
+        queryResults.addAll(executeEngine.getQueryResults());
+        columnCount = executeEngine.getColumnCount();
+        columnTypes = executeEngine.getColumnTypes();
         CommandResponsePackets result = merge(sqlStatement, packets);
         if (!ruleRegistry.isMasterSlaveOnly()) {
             ProxyShardingRefreshHandler.build(routeResult).execute();
@@ -138,50 +135,6 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     // TODO should isolate Atomikos API to SPI
     private boolean isUnsupportedXA(final SQLType sqlType) throws SystemException {
         return TransactionType.XA == ruleRegistry.getTransactionType() && SQLType.DDL == sqlType && Status.STATUS_NO_TRANSACTION != AtomikosUserTransaction.getInstance().getStatus();
-    }
-    
-    protected abstract Statement createStatement(Connection connection, String actualSQL, boolean isReturnGeneratedKeys) throws SQLException;
-    
-    protected abstract JDBCExecuteWorker createExecuteWorker(Statement statement, boolean isReturnGeneratedKeys, String actualSQL);
-    
-    private List<Future<JDBCExecuteResponse>> asyncExecute(final boolean isReturnGeneratedKeys, final Collection<SQLExecutionUnit> sqlExecutionUnits) throws SQLException {
-        List<Future<JDBCExecuteResponse>> result = new LinkedList<>();
-        for (SQLExecutionUnit each : sqlExecutionUnits) {
-            final String actualSQL = each.getSqlUnit().getSql();
-            final Statement statement = createStatement(connectionManager.getConnection(each.getDataSource()), actualSQL, isReturnGeneratedKeys);
-            result.add(userGroup.submit(new Callable<JDBCExecuteResponse>() {
-                
-                @Override
-                public JDBCExecuteResponse call() {
-                    return createExecuteWorker(statement, isReturnGeneratedKeys, actualSQL).execute();
-                }
-            }));
-        }
-        return result;
-    }
-    
-    private JDBCExecuteResponse syncExecute(final boolean isReturnGeneratedKeys, final SQLExecutionUnit sqlExecutionUnit) throws SQLException {
-        String actualSQL = sqlExecutionUnit.getSqlUnit().getSql();
-        Statement statement = createStatement(connectionManager.getConnection(sqlExecutionUnit.getDataSource()), actualSQL, isReturnGeneratedKeys);
-        return createExecuteWorker(statement, isReturnGeneratedKeys, actualSQL).execute();
-    }
-    
-    private List<CommandResponsePackets> buildCommandResponsePackets(final JDBCExecuteResponse firstJDBCExecuteResponse, final List<Future<JDBCExecuteResponse>> futureList) {
-        List<CommandResponsePackets> result = new ArrayList<>(futureList.size() + 1);
-        result.add(firstJDBCExecuteResponse.getCommandResponsePackets());
-        columnCount = firstJDBCExecuteResponse.getColumnCount();
-        columnTypes = firstJDBCExecuteResponse.getColumnTypes();
-        queryResults.add(firstJDBCExecuteResponse.getQueryResult());
-        for (Future<JDBCExecuteResponse> each : futureList) {
-            try {
-                JDBCExecuteResponse executeResponse = each.get();
-                result.add(executeResponse.getCommandResponsePackets());
-                queryResults.add(executeResponse.getQueryResult());
-            } catch (final InterruptedException | ExecutionException ex) {
-                throw new ShardingException(ex.getMessage(), ex);
-            }
-        }
-        return result;
     }
     
     private CommandResponsePackets merge(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets) {
@@ -210,6 +163,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
             if (each instanceof OKPacket) {
                 OKPacket okPacket = (OKPacket) each;
                 affectedRows += okPacket.getAffectedRows();
+                // TODO consider about insert multiple values
                 lastInsertId = okPacket.getLastInsertId();
             }
         }
@@ -255,7 +209,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     @Override
     public final boolean hasMoreResultValue() throws SQLException {
         if (!isMerged || !hasMoreResultValueFlag) {
-            connectionManager.close();
+            backendConnection.close();
             return false;
         }
         if (!mergedResult.next()) {

@@ -18,25 +18,20 @@
 package io.shardingsphere.proxy.backend.common.jdbc;
 
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
-import io.shardingsphere.proxy.backend.common.ProxyMode;
 import io.shardingsphere.proxy.config.RuleRegistry;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 /**
- * Connection manager.
+ * Backend connection.
  *
  * @author zhaojun
+ * @author zhangliang
  */
-public final class ConnectionManager implements AutoCloseable {
-    
-    private final Map<String, Connection> dataSourceConnectionMap = new HashMap<>();
+public final class BackendConnection implements AutoCloseable {
     
     private final Collection<Connection> cachedConnections = new LinkedList<>();
     
@@ -48,16 +43,7 @@ public final class ConnectionManager implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     public Connection getConnection(final String dataSourceName) throws SQLException {
-        DataSource dataSource = RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName);
-        Connection result;
-        if (ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()) {
-            result = dataSource.getConnection();
-        } else {
-            if (!dataSourceConnectionMap.containsKey(dataSourceName)) {
-                dataSourceConnectionMap.put(dataSourceName, dataSource.getConnection());
-            }
-            result = dataSourceConnectionMap.get(dataSourceName);
-        }
+        Connection result = RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName).getConnection();
         cachedConnections.add(result);
         return result;
     }

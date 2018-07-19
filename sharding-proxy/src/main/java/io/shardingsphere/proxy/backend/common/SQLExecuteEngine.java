@@ -15,35 +15,28 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section;
+package io.shardingsphere.proxy.backend.common;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.zookeeper.WatchedEvent;
+import io.shardingsphere.core.routing.SQLRouteResult;
+import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 
-/*
- * @author lidongbo
+import java.sql.SQLException;
+import java.util.List;
+
+/**
+ * SQL Execute engine.
+ *
+ * @author zhangliang
  */
-@Getter
-public abstract class Listener {
-    private final String key;
-    
-    @Setter
-    private String path;
-    
-    public Listener() {
-        this(null);
-    }
-    
-    public Listener(final String path) {
-        this.path = path;
-        this.key = path + System.currentTimeMillis();
-    }
+public interface SQLExecuteEngine {
     
     /**
-     * process.
+     * Execute SQL.
      *
-     * @param event event
+     * @param routeResult route result
+     * @param isReturnGeneratedKeys is return generated keys
+     * @return command response packets
+     * @throws SQLException SQL exception
      */
-    public abstract void process(WatchedEvent event);
+    List<CommandResponsePackets> execute(SQLRouteResult routeResult, boolean isReturnGeneratedKeys) throws SQLException;
 }

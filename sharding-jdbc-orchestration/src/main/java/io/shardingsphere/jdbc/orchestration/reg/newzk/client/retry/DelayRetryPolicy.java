@@ -20,11 +20,12 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry;
 import lombok.Getter;
 
 /*
- * delay policy
+ * Delay policy
  *
  * @author lidongbo
  */
 public class DelayRetryPolicy {
+    
     private static final long BASE_DELAY = 10;
     
     private static final int BASE_COUNT = 3;
@@ -54,11 +55,11 @@ public class DelayRetryPolicy {
     }
     
     /**
-     * default DelayPolicy.
+     * Default DelayPolicy.
      *
      * @return DelayPolicy
      */
-    public static DelayRetryPolicy newNoInitDelayPolicy() {
+    public static DelayRetryPolicy defaultDelayPolicy() {
         return new DelayRetryPolicy(BASE_COUNT, BASE_DELAY, Integer.MAX_VALUE);
     }
 }

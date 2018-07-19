@@ -15,39 +15,17 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.common;
+package io.shardingsphere.jdbc.orchestration.reg.newzk.client.action;
 
-import java.util.Iterator;
-import java.util.List;
-
-/**
- * Result list.
- * 
- * @author zhangyonglun 
+/*
+ * Callback on contention has not reached.
+ *
+ * @author lidongbo
  */
-public final class ResultList {
-    
-    private final Iterator<Object> iterator;
-    
-    public ResultList(final List<Object> resultList) {
-        iterator = resultList.iterator();
-    }
+public interface ContentionCallback {
     
     /**
-     * Has next.
-     *
-     * @return has next
-     */
-    public boolean hasNext() {
-        return iterator.hasNext();
-    }
-    
-    /**
-     * Next object.
-     *
-     * @return object
-     */
-    public Object next() {
-        return iterator.next();
-    }
+    * Process callback result.
+    */
+    void processResult();
 }

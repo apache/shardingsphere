@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.common.jdbc;
+package io.shardingsphere.proxy.backend.common.jdbc.execute;
 
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
@@ -41,7 +41,7 @@ public final class JDBCExecuteResponse {
     
     private final QueryResult queryResult;
     
-    JDBCExecuteResponse(final CommandResponsePackets commandResponsePackets) {
+    public JDBCExecuteResponse(final CommandResponsePackets commandResponsePackets) {
         this(commandResponsePackets, null);
     }
     

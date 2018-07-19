@@ -30,11 +30,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /*
- * async retry
+ * Async retry.
  *
  * @author lidongbo
  */
-public class RetryThread extends Thread {
+public final class RetryThread extends Thread {
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(RetryThread.class);
     
     private final int corePoolSize = Runtime.getRuntime().availableProcessors();
@@ -52,7 +53,9 @@ public class RetryThread extends Thread {
     public RetryThread(final DelayQueue<BaseOperation> queue) {
         this.queue = queue;
         retryExecutor = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(10), new ThreadFactory() {
+            
             private final AtomicInteger threadIndex = new AtomicInteger(0);
+            
             @Override
             public Thread newThread(final Runnable r) {
                 Thread thread = new Thread(r);
@@ -73,21 +76,22 @@ public class RetryThread extends Thread {
             try {
                 operation = queue.take();
                 LOGGER.debug("take operation:{}", operation.toString());
-            } catch (InterruptedException e) {
-                LOGGER.error("retry interrupt e:{}", e.getMessage());
+            } catch (final InterruptedException ex) {
+                LOGGER.error("retry interrupt ex:{}", ex.getMessage());
                 continue;
             }
             retryExecutor.submit(new Runnable() {
+                
                 @Override
                 public void run() {
                     boolean result;
                     try {
                         result = operation.executeOperation();
                         // CHECKSTYLE:OFF
-                    } catch (Exception e) {
+                    } catch (final Exception ex) {
                         // CHECKSTYLE:ON
                         result = false;
-                        LOGGER.error("retry disrupt operation:{}, e:{}", operation.toString(), e.getMessage());
+                        LOGGER.error("retry disrupt operation:{}, ex:{}", operation.toString(), ex.getMessage());
                     }
                     if (result) {
                         queue.offer(operation);
@@ -98,8 +102,9 @@ public class RetryThread extends Thread {
         }
     }
     
-    final void addDelayedShutdownHook(final ExecutorService service, final long terminationTimeout, final TimeUnit timeUnit) {
+    private void addDelayedShutdownHook(final ExecutorService service, final long terminationTimeout, final TimeUnit timeUnit) {
         Thread thread = new Thread(new Runnable() {
+            
             @Override
             public void run() {
                 try {
@@ -107,7 +112,7 @@ public class RetryThread extends Thread {
                     queue.clear();
                     service.shutdown();
                     service.awaitTermination(terminationTimeout, timeUnit);
-                } catch (InterruptedException ignored) {
+                } catch (final InterruptedException ignored) {
                     // shutting down anyway, just ignore.
                 }
             }
