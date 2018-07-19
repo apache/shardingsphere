@@ -17,7 +17,7 @@
 
 package io.shardingsphere.proxy.backend.common.jdbc.statement;
 
-import io.shardingsphere.proxy.backend.common.jdbc.execute.worker.ConnectionStrictlyExecuteEngine;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.engine.ConnectionStrictlyExecuteEngine;
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute.PreparedStatementParameter;
 
 import java.sql.Connection;

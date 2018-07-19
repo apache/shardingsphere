@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.common.jdbc.execute.worker;
+package io.shardingsphere.proxy.backend.common.jdbc.execute.engine;
 
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.merger.QueryResult;

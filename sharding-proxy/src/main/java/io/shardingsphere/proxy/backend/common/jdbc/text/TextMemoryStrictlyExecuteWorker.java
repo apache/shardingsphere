@@ -17,7 +17,7 @@
 
 package io.shardingsphere.proxy.backend.common.jdbc.text;
 
-import io.shardingsphere.proxy.backend.common.jdbc.execute.worker.MemoryStrictlyExecuteEngine;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.engine.MemoryStrictlyExecuteEngine;
 
 import java.sql.Connection;
 import java.sql.SQLException;
