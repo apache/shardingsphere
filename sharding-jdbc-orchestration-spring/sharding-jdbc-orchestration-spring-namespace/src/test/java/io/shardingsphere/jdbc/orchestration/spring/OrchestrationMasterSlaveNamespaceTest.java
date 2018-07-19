@@ -21,6 +21,8 @@ import io.shardingsphere.core.api.ConfigMapContext;
 import io.shardingsphere.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
 import io.shardingsphere.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
 import io.shardingsphere.core.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
+import io.shardingsphere.core.constant.ShardingProperties;
+import io.shardingsphere.core.constant.ShardingPropertiesConstant;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationMasterSlaveDataSource;
@@ -88,5 +90,16 @@ public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringC
         configMap.put("key1", "value1");
         assertThat(ConfigMapContext.getInstance().getMasterSlaveConfig(), is(configMap));
         assertThat(masterSlaveDataSource, instanceOf(MasterSlaveDataSource.class));
+    }
+    
+    @Test
+    public void assertProperties() {
+        boolean showSQL = getShardingProperties("defaultMasterSlaveDataSource").getValue(ShardingPropertiesConstant.SQL_SHOW);
+        assertTrue(showSQL);
+    }
+    
+    private ShardingProperties getShardingProperties(final String masterSlaveDataSourceName) {
+        MasterSlaveDataSource masterSlaveDataSource = this.applicationContext.getBean(masterSlaveDataSourceName, MasterSlaveDataSource.class);
+        return (ShardingProperties) FieldValueUtil.getFieldValue(masterSlaveDataSource, "shardingProperties", true);
     }
 }
