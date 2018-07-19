@@ -67,7 +67,8 @@ public abstract class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine 
                 public Collection<JDBCExecuteResponse> call() throws SQLException {
                     Collection<JDBCExecuteResponse> result = new LinkedList<>();
                     for (SQLUnit each : sqlUnits) {
-                        result.add(execute(createStatement(connection, each.getSql(), isReturnGeneratedKeys), each.getSql(), isReturnGeneratedKeys));
+                        Statement statement = createStatement(connection, each.getSql(), isReturnGeneratedKeys);
+                        result.add(execute(statement, each.getSql(), isReturnGeneratedKeys));
                     }
                     return result;
                 }
@@ -80,7 +81,8 @@ public abstract class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine 
         Collection<JDBCExecuteResponse> result = new LinkedList<>();
         for (SQLUnit each : sqlUnits) {
             String actualSQL = each.getSql();
-            result.add(execute(createStatement(getBackendConnection().getConnection(dataSourceName), actualSQL, isReturnGeneratedKeys), actualSQL, isReturnGeneratedKeys));
+            Statement statement = createStatement(getBackendConnection().getConnection(dataSourceName), actualSQL, isReturnGeneratedKeys);
+            result.add(execute(statement, actualSQL, isReturnGeneratedKeys));
         }
         return result;
     }
