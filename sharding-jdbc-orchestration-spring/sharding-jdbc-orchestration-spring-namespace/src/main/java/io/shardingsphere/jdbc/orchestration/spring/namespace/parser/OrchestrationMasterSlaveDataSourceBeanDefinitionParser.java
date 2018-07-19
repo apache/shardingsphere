@@ -65,14 +65,14 @@ public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends Abst
         factory.addConstructorArgValue(parseId(element));
         factory.addConstructorArgValue(parseMasterDataSourceRef(element));
         factory.addConstructorArgValue(parseSlaveDataSourcesRef(element));
-        factory.addConstructorArgValue(parseConfigMap(element, parserContext, factory.getBeanDefinition()));
-        factory.addConstructorArgValue(parseProperties(element, parserContext));
         String strategyRef = parseStrategyRef(element);
         if (!Strings.isNullOrEmpty(strategyRef)) {
             factory.addConstructorArgReference(strategyRef);
         } else {
             factory.addConstructorArgValue(parseStrategyType(element));
         }
+        factory.addConstructorArgValue(parseConfigMap(element, parserContext, factory.getBeanDefinition()));
+        factory.addConstructorArgValue(parseProperties(element, parserContext));
         return factory.getBeanDefinition();
     }
     
