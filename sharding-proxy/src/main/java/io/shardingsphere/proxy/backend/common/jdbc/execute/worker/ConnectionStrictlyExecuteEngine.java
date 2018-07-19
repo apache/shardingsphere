@@ -47,7 +47,7 @@ import java.util.concurrent.Future;
 public abstract class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
     
     @Override
-    public List<CommandResponsePackets> execute(final SQLRouteResult routeResult, final boolean isReturnGeneratedKeys) throws SQLException {
+    public final List<CommandResponsePackets> execute(final SQLRouteResult routeResult, final boolean isReturnGeneratedKeys) throws SQLException {
         Map<String, Collection<SQLUnit>> sqlExecutionUnits = routeResult.getSQLUnitGroups();
         Entry<String, Collection<SQLUnit>> firstEntry = sqlExecutionUnits.entrySet().iterator().next();
         sqlExecutionUnits.remove(firstEntry.getKey());

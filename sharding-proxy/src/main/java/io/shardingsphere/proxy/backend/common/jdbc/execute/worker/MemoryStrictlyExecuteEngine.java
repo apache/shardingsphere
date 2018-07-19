@@ -49,7 +49,7 @@ public abstract class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
     private static final Integer FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
     
     @Override
-    public List<CommandResponsePackets> execute(final SQLRouteResult routeResult, final boolean isReturnGeneratedKeys) throws SQLException {
+    public final List<CommandResponsePackets> execute(final SQLRouteResult routeResult, final boolean isReturnGeneratedKeys) throws SQLException {
         Iterator<SQLExecutionUnit> sqlExecutionUnits = routeResult.getExecutionUnits().iterator();
         SQLExecutionUnit firstSQLExecutionUnit = sqlExecutionUnits.next();
         List<Future<JDBCExecuteResponse>> futureList = asyncExecute(isReturnGeneratedKeys, Lists.newArrayList(sqlExecutionUnits));

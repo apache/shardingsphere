@@ -19,7 +19,6 @@ package io.shardingsphere.proxy.backend.common.jdbc.execute.worker;
 
 import io.netty.channel.EventLoopGroup;
 import io.shardingsphere.core.merger.QueryResult;
-import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.proxy.backend.common.jdbc.ConnectionManager;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteResponse;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
@@ -42,14 +41,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Execute engine for JDBC.
+ * SQL Execute engine for JDBC.
  *
  * @author zhaojun
  * @author zhangliang
  */
 @Getter
 @Setter
-public abstract class JDBCExecuteEngine {
+public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
     
     private static final Integer FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
     
@@ -62,16 +61,6 @@ public abstract class JDBCExecuteEngine {
     private int columnCount;
     
     private List<ColumnType> columnTypes;
-    
-    /**
-     * Execute SQL to databases.
-     * 
-     * @param routeResult route result
-     * @param isReturnGeneratedKeys is return generated keys
-     * @return command response packets
-     * @throws SQLException SQL exception
-     */
-    public abstract List<CommandResponsePackets> execute(SQLRouteResult routeResult, boolean isReturnGeneratedKeys) throws SQLException;
     
     protected JDBCExecuteResponse execute(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) {
         try {
