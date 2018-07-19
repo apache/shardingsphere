@@ -36,17 +36,17 @@ public class NettyChannelPoolHandler implements ChannelPoolHandler {
     private final DataSourceConfig dataSourceConfig;
     
     @Override
-    public void channelReleased(final Channel channel) throws Exception {
+    public void channelReleased(final Channel channel) {
         log.info("channelReleased. Channel ID: {}" + channel.id().asShortText());
     }
     
     @Override
-    public void channelAcquired(final Channel channel) throws Exception {
+    public void channelAcquired(final Channel channel) {
         log.info("channelAcquired. Channel ID: {}" + channel.id().asShortText());
     }
     
     @Override
-    public void channelCreated(final Channel channel) throws Exception {
+    public void channelCreated(final Channel channel) {
         log.info("channelCreated. Channel ID: {}" + channel.id().asShortText());
         channel.pipeline().addLast(new ClientHandlerInitializer(dataSourceConfig));
     }

@@ -18,6 +18,7 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.KeeperException;
 
@@ -26,14 +27,11 @@ import org.apache.zookeeper.KeeperException;
  *
  * @author lidongbo
  */
+@RequiredArgsConstructor
 @Slf4j
 public abstract class ClientTask implements Runnable {
     
     private final IProvider provider;
-    
-    public ClientTask(final IProvider provider) {
-        this.provider = provider;
-    }
     
     /**
      * Run.
