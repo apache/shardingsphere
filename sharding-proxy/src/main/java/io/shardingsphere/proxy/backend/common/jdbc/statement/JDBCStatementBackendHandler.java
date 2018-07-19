@@ -20,10 +20,8 @@ package io.shardingsphere.proxy.backend.common.jdbc.statement;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.routing.PreparedStatementRoutingEngine;
 import io.shardingsphere.core.routing.SQLRouteResult;
-import io.shardingsphere.proxy.backend.common.ProxyMode;
 import io.shardingsphere.proxy.backend.common.jdbc.JDBCBackendHandler;
-import io.shardingsphere.proxy.backend.common.jdbc.execute.memory.StatementMemoryStrictlyExecuteEngine;
-import io.shardingsphere.proxy.backend.common.jdbc.execute.stream.StatementConnectionStrictlyExecuteEngine;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngineFactory;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
@@ -49,9 +47,7 @@ public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
     private final RuleRegistry ruleRegistry;
     
     public JDBCStatementBackendHandler(final List<PreparedStatementParameter> preparedStatementParameters, final int statementId, final DatabaseType databaseType) {
-        super(PreparedStatementRegistry.getInstance().getSQL(statementId), 
-                ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()
-                        ? new StatementMemoryStrictlyExecuteEngine(preparedStatementParameters) : new StatementConnectionStrictlyExecuteEngine(preparedStatementParameters));
+        super(PreparedStatementRegistry.getInstance().getSQL(statementId), JDBCExecuteEngineFactory.createStatementProtocolInstance(preparedStatementParameters));
         this.preparedStatementParameters = preparedStatementParameters;
         this.databaseType = databaseType;
         ruleRegistry = RuleRegistry.getInstance();

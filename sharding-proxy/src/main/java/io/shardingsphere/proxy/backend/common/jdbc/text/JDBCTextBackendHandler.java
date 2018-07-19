@@ -20,10 +20,8 @@ package io.shardingsphere.proxy.backend.common.jdbc.text;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.StatementRoutingEngine;
-import io.shardingsphere.proxy.backend.common.ProxyMode;
 import io.shardingsphere.proxy.backend.common.jdbc.JDBCBackendHandler;
-import io.shardingsphere.proxy.backend.common.jdbc.execute.memory.TextMemoryStrictlyExecuteEngine;
-import io.shardingsphere.proxy.backend.common.jdbc.execute.stream.TextConnectionStrictlyExecuteEngine;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngineFactory;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
@@ -45,7 +43,7 @@ public final class JDBCTextBackendHandler extends JDBCBackendHandler {
     private final RuleRegistry ruleRegistry;
     
     public JDBCTextBackendHandler(final String sql, final DatabaseType databaseType) {
-        super(sql, ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode() ? new TextMemoryStrictlyExecuteEngine() : new TextConnectionStrictlyExecuteEngine());
+        super(sql, JDBCExecuteEngineFactory.createTextProtocolInstance());
         this.databaseType = databaseType;
         ruleRegistry = RuleRegistry.getInstance();
     }
