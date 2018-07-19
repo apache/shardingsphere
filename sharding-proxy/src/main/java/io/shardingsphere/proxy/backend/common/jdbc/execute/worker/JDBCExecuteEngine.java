@@ -42,14 +42,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Execute worker.
+ * Execute engine for JDBC.
  *
  * @author zhaojun
  * @author zhangliang
  */
 @Getter
 @Setter
-public abstract class ExecuteWorker {
+public abstract class JDBCExecuteEngine {
     
     private static final Integer FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
     

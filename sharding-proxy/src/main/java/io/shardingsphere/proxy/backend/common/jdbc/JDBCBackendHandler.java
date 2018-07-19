@@ -32,7 +32,7 @@ import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingsphere.proxy.backend.common.BackendHandler;
-import io.shardingsphere.proxy.backend.common.jdbc.execute.worker.ExecuteWorker;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.worker.JDBCExecuteEngine;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
@@ -60,6 +60,7 @@ import java.util.List;
  * Backend handler via JDBC to connect databases.
  *
  * @author zhaojun
+ * @author zhangliang
  */
 @Getter
 public abstract class JDBCBackendHandler implements BackendHandler {
@@ -72,7 +73,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     private final ConnectionManager connectionManager;
     
-    private final ExecuteWorker executeWorker;
+    private final JDBCExecuteEngine executeEngine;
     
     private final List<QueryResult> queryResults;
     
@@ -88,12 +89,12 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     private boolean hasMoreResultValueFlag;
     
-    public JDBCBackendHandler(final String sql, final ExecuteWorker executeWorker) {
+    public JDBCBackendHandler(final String sql, final JDBCExecuteEngine executeEngine) {
         this.sql = sql;
-        this.executeWorker = executeWorker;
+        this.executeEngine = executeEngine;
         ruleRegistry = RuleRegistry.getInstance();
         userGroup = ExecutorContext.getInstance().getUserGroup();
-        connectionManager = executeWorker.getConnectionManager();
+        connectionManager = executeEngine.getConnectionManager();
         queryResults = new LinkedList<>();
         isMerged = false;
         hasMoreResultValueFlag = true;
@@ -120,10 +121,10 @@ public abstract class JDBCBackendHandler implements BackendHandler {
             return new CommandResponsePackets(new ErrPacket(1, 
                     ServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "unknown_table"));
         }
-        List<CommandResponsePackets> packets = executeWorker.execute(routeResult, isReturnGeneratedKeys);
-        queryResults.addAll(executeWorker.getQueryResults());
-        columnCount = executeWorker.getColumnCount();
-        columnTypes = executeWorker.getColumnTypes();
+        List<CommandResponsePackets> packets = executeEngine.execute(routeResult, isReturnGeneratedKeys);
+        queryResults.addAll(executeEngine.getQueryResults());
+        columnCount = executeEngine.getColumnCount();
+        columnTypes = executeEngine.getColumnTypes();
         CommandResponsePackets result = merge(sqlStatement, packets);
         if (!ruleRegistry.isMasterSlaveOnly()) {
             ProxyShardingRefreshHandler.build(routeResult).execute();

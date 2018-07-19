@@ -17,7 +17,7 @@
 
 package io.shardingsphere.proxy.backend.common.jdbc.statement;
 
-import io.shardingsphere.proxy.backend.common.jdbc.execute.worker.MemoryStrictlyExecuteWorker;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.worker.MemoryStrictlyExecuteEngine;
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute.PreparedStatementParameter;
 
 import java.sql.Connection;
@@ -32,7 +32,7 @@ import java.util.List;
  * @author zhaojun
  * @author zhangliang
  */
-public final class StatementMemoryStrictlyExecuteWorker extends MemoryStrictlyExecuteWorker {
+public final class StatementMemoryStrictlyExecuteWorker extends MemoryStrictlyExecuteEngine {
     
     private final List<PreparedStatementParameter> preparedStatementParameters;
     

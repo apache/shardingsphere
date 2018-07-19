@@ -17,7 +17,7 @@
 
 package io.shardingsphere.proxy.backend.common.jdbc.text;
 
-import io.shardingsphere.proxy.backend.common.jdbc.execute.worker.ConnectionStrictlyExecuteWorker;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.worker.ConnectionStrictlyExecuteEngine;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -29,7 +29,7 @@ import java.sql.Statement;
  * @author zhaojun
  * @author zhangliang
  */
-public final class TextConnectionStrictlyExecuteWorker extends ConnectionStrictlyExecuteWorker {
+public final class TextConnectionStrictlyExecuteWorker extends ConnectionStrictlyExecuteEngine {
     
     @Override
     protected Statement createStatement(final Connection connection, final String actualSQL, final boolean isReturnGeneratedKeys) throws SQLException {

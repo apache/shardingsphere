@@ -39,12 +39,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
- * Memory strictly execute worker.
+ * Memory strictly execute engine.
  *
  * @author zhaojun
  * @author zhangliang
  */
-public abstract class MemoryStrictlyExecuteWorker extends ExecuteWorker {
+public abstract class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
     
     private static final Integer FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
     

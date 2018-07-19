@@ -39,12 +39,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
- * Connection strictly execute worker.
+ * Connection strictly execute engine.
  *
  * @author zhaojun
  * @author zhangliang
  */
-public abstract class ConnectionStrictlyExecuteWorker extends ExecuteWorker {
+public abstract class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
     
     @Override
     public List<CommandResponsePackets> execute(final SQLRouteResult routeResult, final boolean isReturnGeneratedKeys) throws SQLException {
