@@ -51,6 +51,8 @@ public class YamlOrchestrationMasterSlaveIntegrateTest extends AbstractYamlDataS
         return Arrays.asList(new Object[][]{
                 {"/yaml/integrate/ms/configWithMasterSlaveDataSourceWithoutProps.yaml", true},
                 {"/yaml/integrate/ms/configWithMasterSlaveDataSourceWithoutProps.yaml", false},
+                {"/yaml/integrate/ms/configWithMasterSlaveDataSourceWithProps.yaml", true},
+                {"/yaml/integrate/ms/configWithMasterSlaveDataSourceWithProps.yaml", false},
         });
     }
     
