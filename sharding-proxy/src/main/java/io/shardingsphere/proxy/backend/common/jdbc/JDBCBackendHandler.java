@@ -17,7 +17,6 @@
 
 package io.shardingsphere.proxy.backend.common.jdbc;
 
-import io.netty.channel.EventLoopGroup;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
@@ -43,7 +42,6 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCo
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
-import io.shardingsphere.proxy.util.ExecutorContext;
 import io.shardingsphere.transaction.xa.AtomikosUserTransaction;
 import lombok.Getter;
 
@@ -69,8 +67,6 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     private final RuleRegistry ruleRegistry;
     
-    private final EventLoopGroup userGroup;
-    
     private final BackendConnection backendConnection;
     
     private final JDBCExecuteEngine executeEngine;
@@ -93,7 +89,6 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         this.sql = sql;
         this.executeEngine = executeEngine;
         ruleRegistry = RuleRegistry.getInstance();
-        userGroup = ExecutorContext.getInstance().getUserGroup();
         backendConnection = executeEngine.getBackendConnection();
         queryResults = new LinkedList<>();
         isMerged = false;

@@ -23,7 +23,7 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.Base
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.TestSupport;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
 import io.shardingsphere.jdbc.orchestration.util.EmbedTestingServer;
-import java.io.IOException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
@@ -32,25 +32,25 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+@Slf4j
 public class PathTreeTest extends BaseTest {
-    
-    private static final Logger LOGGER = LoggerFactory.getLogger(PathTreeTest.class);
     
     private PathTree pathTree;
     
     private IClient testClient;
     
     private ZookeeperEventListener zookeeperEventListener = new ZookeeperEventListener() {
+        
         @Override
-        public void process(WatchedEvent event) {
-            LOGGER.debug("debug event :" + event.toString());
+        public void process(final WatchedEvent event) {
+            log.debug("debug event :" + event.toString());
         }
     };
     
@@ -65,7 +65,7 @@ public class PathTreeTest extends BaseTest {
     }
     
     @After
-    public void stop() throws InterruptedException {
+    public void stop() {
         pathTree.close();
         testClient.close();
     }
@@ -76,7 +76,7 @@ public class PathTreeTest extends BaseTest {
         final String valueB = "bbb11";
         testClient.createAllNeedPath(keyB, valueB, CreateMode.PERSISTENT);
         assertTrue(testClient.checkExists(keyB));
-        final String keyC  = "a/c/cc";
+        final String keyC = "a/c/cc";
         final String valueC = "ccc11";
         testClient.createAllNeedPath(keyC, valueC, CreateMode.PERSISTENT);
         assertTrue(testClient.checkExists(keyC));

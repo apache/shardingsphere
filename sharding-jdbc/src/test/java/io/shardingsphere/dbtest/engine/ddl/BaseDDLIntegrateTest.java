@@ -88,7 +88,7 @@ public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
         assertMetadata(actualColumns, actualIndexes, expected.findMetadata(tableName));
     }
     
-    private void assertMetadata(final List<DataSetColumn> actualColumns, List<DataSetIndex> actualIndexes, final DataSetMetadata expected) {
+    private void assertMetadata(final List<DataSetColumn> actualColumns, final List<DataSetIndex> actualIndexes, final DataSetMetadata expected) {
         for (DataSetColumn each : expected.getColumns()) {
             assertColumnMetadata(actualColumns, each);
         }
@@ -97,13 +97,13 @@ public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
         }
     }
 
-    private void assertIfDropTable(List<DataSetColumn> actualColumns) {
+    private void assertIfDropTable(final List<DataSetColumn> actualColumns) {
         if (getSql().startsWith("DROP TABLE")) {
             assertTrue(actualColumns.isEmpty());
         }
     }
 
-    private void assertIfDropIndex(List<DataSetIndex> actualIndexes) {
+    private void assertIfDropIndex(final List<DataSetIndex> actualIndexes) {
         if (getSql().startsWith("DROP INDEX")) {
             assertTrue(actualIndexes.isEmpty());
         }

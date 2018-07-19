@@ -20,27 +20,25 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 import com.google.common.base.Strings;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
-import java.io.IOException;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.zookeeper.KeeperException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /*
  * Zookeeper connection holder.
  *
  * @author lidongbo
  */
+@Slf4j
 public class Holder {
-    
-    private static final Logger LOGGER = LoggerFactory.getLogger(Holder.class);
     
     private final CountDownLatch connectLatch = new CountDownLatch(1);
     
@@ -75,11 +73,11 @@ public class Holder {
     }
     
     protected void initZookeeper() throws IOException {
-        LOGGER.debug("Holder servers:{},sessionTimeOut:{}", context.getServers(), context.getSessionTimeOut());
+        log.debug("Holder servers:{},sessionTimeOut:{}", context.getServers(), context.getSessionTimeOut());
         zooKeeper = new ZooKeeper(context.getServers(), context.getSessionTimeOut(), startWatcher());
         if (!Strings.isNullOrEmpty(context.getScheme())) {
             zooKeeper.addAuthInfo(context.getScheme(), context.getAuth());
-            LOGGER.debug("Holder scheme:{},auth:{}", context.getScheme(), context.getAuth());
+            log.debug("Holder scheme:{},auth:{}", context.getScheme(), context.getAuth());
         }
     }
     
@@ -97,7 +95,7 @@ public class Holder {
                 if (!context.getWatchers().isEmpty()) {
                     for (ZookeeperEventListener zookeeperEventListener : context.getWatchers().values()) {
                         if (zookeeperEventListener.getPath() == null || event.getPath().startsWith(zookeeperEventListener.getPath())) {
-                            LOGGER.debug("listener process:{}, listener:{}", zookeeperEventListener.getPath(), zookeeperEventListener.getKey());
+                            log.debug("listener process:{}, listener:{}", zookeeperEventListener.getPath(), zookeeperEventListener.getKey());
                             zookeeperEventListener.process(event);
                         }
                     }
@@ -107,22 +105,21 @@ public class Holder {
     }
     
     protected void processConnection(final WatchedEvent event) {
-        LOGGER.debug("BaseClient process event:{}", event.toString());
+        log.debug("BaseClient process event:{}", event.toString());
         if (Watcher.Event.EventType.None == event.getType()) {
             if (Watcher.Event.KeeperState.SyncConnected == event.getState()) {
                 connectLatch.countDown();
                 connected = true;
-                LOGGER.debug("BaseClient startWatcher SyncConnected");
-                return;
+                log.debug("BaseClient startWatcher SyncConnected");
             } else if (Watcher.Event.KeeperState.Expired == event.getState()) {
                 connected = false;
                 try {
-                    LOGGER.warn("startWatcher Event.KeeperState.Expired");
+                    log.warn("startWatcher Event.KeeperState.Expired");
                     reset();
                     // CHECKSTYLE:OFF
                 } catch (final Exception ex) {
                     // CHECKSTYLE:ON
-                    LOGGER.error("event state Expired:{}", ex.getMessage(), ex);
+                    log.error("event state Expired:{}", ex.getMessage(), ex);
                 }
             } else if (Watcher.Event.KeeperState.Disconnected == event.getState()) {
                 connected = false;
@@ -133,19 +130,7 @@ public class Holder {
     private void processGlobalListener(final WatchedEvent event) {
         if (context.getGlobalZookeeperEventListener() != null) {
             context.getGlobalZookeeperEventListener().process(event);
-            LOGGER.debug("Holder {} process", ZookeeperConstants.GLOBAL_LISTENER_KEY);
-        }
-    }
-    
-    private void reWatch(final WatchedEvent event) {
-        if (!Strings.isNullOrEmpty(event.getPath())) {
-            try {
-                zooKeeper.exists(event.getPath(), true);
-            } catch (final KeeperException | InterruptedException ex) {
-                if (connected) {
-                    reWatch(event);
-                }
-            }
+            log.debug("Holder {} process", ZookeeperConstants.GLOBAL_LISTENER_KEY);
         }
     }
     
@@ -156,10 +141,10 @@ public class Holder {
      * @throws InterruptedException InterruptedException
      */
     public void reset() throws IOException, InterruptedException {
-        LOGGER.debug("zk reset....................................");
+        log.debug("zk reset....................................");
         close();
         start();
-        LOGGER.debug("....................................zk reset");
+        log.debug("....................................zk reset");
     }
     
     /**
@@ -176,12 +161,12 @@ public class Holder {
             });
             zooKeeper.close();
             connected = false;
-            LOGGER.debug("zk closed");
+            log.debug("zk closed");
             this.context.close();
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            LOGGER.warn("Holder close:{}", ex.getMessage());
+            log.warn("Holder close:{}", ex.getMessage());
         }
     }
 }

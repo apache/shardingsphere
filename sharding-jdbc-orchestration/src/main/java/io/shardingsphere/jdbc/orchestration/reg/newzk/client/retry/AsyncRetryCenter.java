@@ -18,8 +18,7 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseOperation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.DelayQueue;
 
@@ -28,11 +27,10 @@ import java.util.concurrent.DelayQueue;
  *
  * @author lidongbo
  */
+@Slf4j
 public enum AsyncRetryCenter {
     
     INSTANCE;
-    
-    private static final Logger LOGGER = LoggerFactory.getLogger(AsyncRetryCenter.class);
     
     private final DelayQueue<BaseOperation> queue = new DelayQueue<>();
     
@@ -48,9 +46,9 @@ public enum AsyncRetryCenter {
      * @param delayRetryPolicy delayRetryPolicy
      */
     public void init(final DelayRetryPolicy delayRetryPolicy) {
-        LOGGER.debug("delayRetryPolicy init");
+        log.debug("delayRetryPolicy init");
         if (delayRetryPolicy == null) {
-            LOGGER.warn("delayRetryPolicy is null and auto init with DelayRetryPolicy.defaultDelayPolicy");
+            log.warn("delayRetryPolicy is null and auto init with DelayRetryPolicy.defaultDelayPolicy");
             this.delayRetryPolicy = DelayRetryPolicy.defaultDelayPolicy();
             return;
         }
@@ -76,11 +74,11 @@ public enum AsyncRetryCenter {
      */
     public void add(final BaseOperation operation) {
         if (delayRetryPolicy == null) {
-            LOGGER.warn("delayRetryPolicy no init and auto init with DelayRetryPolicy.defaultDelayPolicy");
+            log.warn("delayRetryPolicy no init and auto init with DelayRetryPolicy.defaultDelayPolicy");
             delayRetryPolicy = DelayRetryPolicy.defaultDelayPolicy();
         }
         operation.setDelayPolicyExecutor(new DelayPolicyExecutor(delayRetryPolicy));
         queue.offer(operation);
-        LOGGER.debug("enqueue operation:{}", operation.toString());
+        log.debug("enqueue operation:{}", operation.toString());
     }
 }

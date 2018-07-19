@@ -24,27 +24,26 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperCo
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.WatcherCreator;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.data.ACL;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /*
  * Base client.
  *
  * @author lidongbo
  */
+@Slf4j
 public abstract class BaseClient implements IClient {
-    
-    private static final Logger LOGGER = LoggerFactory.getLogger(BaseClient.class);
     
     private static final int CIRCLE_WAIT = 30;
     
@@ -78,7 +77,7 @@ public abstract class BaseClient implements IClient {
     
     @Override
     public synchronized boolean start(final int wait, final TimeUnit units) throws InterruptedException, IOException {
-        LOGGER.debug("start wait:{}, units:{}", wait, units);
+        log.debug("start wait:{}, units:{}", wait, units);
         prepareStart();
         holder.start(wait, units);
         return holder.isConnected();
@@ -112,18 +111,18 @@ public abstract class BaseClient implements IClient {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            LOGGER.error("zk client close delete root error:{}", ex.getMessage(), ex);
+            log.error("zk client close delete root error:{}", ex.getMessage(), ex);
         }
         holder.close();
     }
     
     void registerWatch(final ZookeeperEventListener globalZookeeperEventListener) {
         if (context.getGlobalZookeeperEventListener() != null) {
-            LOGGER.warn("global listener can only register one");
+            log.warn("global listener can only register one");
             return;
         }
         context.setGlobalZookeeperEventListener(globalZookeeperEventListener);
-        LOGGER.debug("globalListenerRegistered:{}", globalZookeeperEventListener.getKey());
+        log.debug("globalListenerRegistered:{}", globalZookeeperEventListener.getKey());
     }
     
     @Override
@@ -131,7 +130,7 @@ public abstract class BaseClient implements IClient {
         String path = PathUtil.getRealPath(rootNode, key);
         zookeeperEventListener.setPath(path);
         context.getWatchers().put(zookeeperEventListener.getKey(), zookeeperEventListener);
-        LOGGER.debug("register watcher:{}", path);
+        log.debug("register watcher:{}", path);
     }
     
     @Override
@@ -141,7 +140,7 @@ public abstract class BaseClient implements IClient {
         }
         if (context.getWatchers().containsKey(key)) {
             context.getWatchers().remove(key);
-            LOGGER.debug("unregisterWatch:{}", key);
+            log.debug("unregisterWatch:{}", key);
         }
     }
     
@@ -151,7 +150,7 @@ public abstract class BaseClient implements IClient {
     
     private void createNamespace(final byte[] date) throws KeeperException, InterruptedException {
         if (rootExist) {
-            LOGGER.debug("root exist");
+            log.debug("root exist");
             return;
         }
         try {
@@ -159,9 +158,9 @@ public abstract class BaseClient implements IClient {
                 holder.getZooKeeper().create(rootNode, date, authorities, CreateMode.PERSISTENT);
             }
             rootExist = true;
-            LOGGER.debug("creating root:{}", rootNode);
+            log.debug("creating root:{}", rootNode);
         } catch (final KeeperException.NodeExistsException ex) {
-            LOGGER.warn("root create:{}", ex.getMessage());
+            log.warn("root create:{}", ex.getMessage());
             rootExist = true;
             return;
         }
@@ -172,17 +171,17 @@ public abstract class BaseClient implements IClient {
                 rootExist = false;
             }
         }));
-        LOGGER.debug("created root:{}", rootNode);
+        log.debug("created root:{}", rootNode);
     }
     
     protected void deleteNamespace() throws KeeperException, InterruptedException {
         try {
             holder.getZooKeeper().delete(rootNode, ZookeeperConstants.VERSION);
         } catch (final KeeperException.NodeExistsException | KeeperException.NotEmptyException ex) {
-            LOGGER.info("delete root :{}", ex.getMessage());
+            log.info("delete root :{}", ex.getMessage());
         }
         rootExist = false;
-        LOGGER.debug("delete root:{}", rootNode);
+        log.debug("delete root:{}", rootNode);
     }
     
     void setAuthorities(final String scheme, final byte[] auth, final List<ACL> authorities) {

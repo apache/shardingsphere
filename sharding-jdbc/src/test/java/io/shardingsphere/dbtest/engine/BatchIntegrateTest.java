@@ -73,7 +73,7 @@ public abstract class BatchIntegrateTest extends BaseIntegrateTest {
     private final Collection<String> expectedDataFiles;
     
     public BatchIntegrateTest(final String sqlCaseId, final IntegrateTestCase integrateTestCase, 
-                              final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, JAXBException, SQLException, ParseException {
+                              final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, JAXBException, SQLException {
         super(shardingRuleType, databaseTypeEnvironment);
         this.integrateTestCase = integrateTestCase;
         sql = SQLCasesLoader.getInstance().getSupportedSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList());

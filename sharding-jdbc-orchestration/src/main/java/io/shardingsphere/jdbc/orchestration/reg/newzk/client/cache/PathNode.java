@@ -20,13 +20,12 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.Assist;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -37,10 +36,9 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author lidongbo
  */
+@Slf4j
 public final class PathNode {
     
-    private static final Logger LOGGER = LoggerFactory.getLogger(PathNode.class);
-
     private final Map<String, PathNode> children = new ConcurrentHashMap<>();
 
     private final String nodeKey;
@@ -93,10 +91,10 @@ public final class PathNode {
     
     PathNode set(final Iterator<String> iterator, final String value) {
         String key = iterator.next();
-        LOGGER.debug("PathNode set:{},value:{}", key, value);
+        log.debug("PathNode set:{},value:{}", key, value);
         PathNode result = children.get(key);
         if (result == null) {
-            LOGGER.debug("set children haven't:{}", key);
+            log.debug("set children haven't:{}", key);
             result = new PathNode(key);
             children.put(key, result);
         }
@@ -110,10 +108,10 @@ public final class PathNode {
     
     PathNode get(final Iterator<String> iterator) {
         String key = iterator.next();
-        LOGGER.debug("get:{}", key);
+        log.debug("get:{}", key);
         PathNode result = children.get(key);
         if (result == null) {
-            LOGGER.debug("get children haven't:{}", key);
+            log.debug("get children haven't:{}", key);
             return null;
         }
         if (iterator.hasNext()) {

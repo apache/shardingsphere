@@ -17,8 +17,7 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Random;
 
@@ -27,9 +26,8 @@ import java.util.Random;
  *
  * @author lidongbo
  */
+@Slf4j
 public class DelayPolicyExecutor {
-    
-    private static final Logger LOGGER = LoggerFactory.getLogger(DelayPolicyExecutor.class);
     
     private final DelayRetryPolicy delayRetryPolicy;
     
@@ -78,6 +76,6 @@ public class DelayPolicyExecutor {
         } else {
             executeTick += delayRetryPolicy.getDelayUpperBound();
         }
-        LOGGER.debug("next executeCount:{}, executeTick:{}", executeCount, executeTick);
+        log.debug("next executeCount:{}, executeTick:{}", executeCount, executeTick);
     }
 }

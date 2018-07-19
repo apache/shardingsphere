@@ -54,9 +54,9 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
     
     private final DataSourceConfig dataSourceConfig;
     
-    private AuthType authType = AuthType.UN_AUTH;
+    private final Map<Integer, MySQLQueryResult> resultMap = Maps.newHashMap();
     
-    private Map<Integer, MySQLQueryResult> resultMap = Maps.newHashMap();
+    private AuthType authType = AuthType.UN_AUTH;
     
     @Override
     public void channelRead(final ChannelHandlerContext context, final Object message) {

@@ -38,7 +38,6 @@ import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextResultSetRowPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
@@ -77,9 +76,9 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     
     private boolean hasMoreResultValueFlag;
     
-    private SynchronizedFuture<List<QueryResult>> synchronizedFuture;
+    private final Map<String, List<Channel>> channelsMap = Maps.newHashMap();
     
-    private Map<String, List<Channel>> channelsMap = Maps.newHashMap();
+    private SynchronizedFuture<List<QueryResult>> synchronizedFuture;
     
     private int currentSequenceId;
     

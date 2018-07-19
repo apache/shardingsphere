@@ -34,9 +34,9 @@ public class MySQLResultCache {
     private static final MySQLResultCache INSTANCE = new MySQLResultCache();
     
     //TODO expire time should be set.
-    private Cache<Integer, SynchronizedFuture<List<QueryResult>>> resultCache = CacheBuilder.newBuilder().expireAfterWrite(60, TimeUnit.SECONDS).build();
+    private final Cache<Integer, SynchronizedFuture<List<QueryResult>>> resultCache = CacheBuilder.newBuilder().expireAfterWrite(60, TimeUnit.SECONDS).build();
     
-    private Cache<String, Integer> connectionCache = CacheBuilder.newBuilder().build();
+    private final Cache<String, Integer> connectionCache = CacheBuilder.newBuilder().build();
     
     /**
      * Get instance of MySQL result cache.

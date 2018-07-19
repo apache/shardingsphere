@@ -18,14 +18,13 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.Watcher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -34,9 +33,8 @@ import java.util.List;
  * 
  * @author lidongbo
  */
+@Slf4j
 public class UsualStrategy extends BaseStrategy {
-    
-    private static final Logger LOGGER = LoggerFactory.getLogger(UsualStrategy.class);
     
     public UsualStrategy(final IProvider provider) {
         super(provider);
@@ -101,26 +99,26 @@ public class UsualStrategy extends BaseStrategy {
                 } else {
                     this.createCurrentOnly(nodes.get(i), ZookeeperConstants.NOTHING_VALUE, CreateMode.PERSISTENT);
                 }
-                LOGGER.debug("node not exist and create:", nodes.get(i));
+                log.debug("node not exist and create:", nodes.get(i));
             } catch (final KeeperException.NodeExistsException ex) {
-                LOGGER.debug("create node exist:{}", nodes.get(i));
+                log.debug("create node exist:{}", nodes.get(i));
             }
         }
     }
     
     @Override
     public void deleteAllChildren(final String key) throws KeeperException, InterruptedException {
-        LOGGER.debug("deleteAllChildren:{}", key);
+        log.debug("deleteAllChildren:{}", key);
         this.deleteChildren(getProvider().getRealPath(key), true);
     }
     
     private void deleteChildren(final String path, final boolean deleteCurrentNode) throws KeeperException, InterruptedException {
-        LOGGER.debug("deleteChildren:{}", path);
+        log.debug("deleteChildren:{}", path);
         List<String> children;
         try {
             children = getProvider().getChildren(path);
         } catch (final KeeperException.NoNodeException ex) {
-            LOGGER.warn("deleteChildren node not exist:{},e:{}", path, ex.getMessage());
+            log.warn("deleteChildren node not exist:{},e:{}", path, ex.getMessage());
             return;
         }
         for (String each : children) {
@@ -130,10 +128,10 @@ public class UsualStrategy extends BaseStrategy {
             try {
                 this.deleteOnlyCurrent(path);
             } catch (final KeeperException.NotEmptyException ex) {
-                LOGGER.warn("deleteCurrentNode exist children:{},ex:{}", path, ex.getMessage());
+                log.warn("deleteCurrentNode exist children:{},ex:{}", path, ex.getMessage());
                 deleteChildren(path, true);
             } catch (final KeeperException.NoNodeException ex) {
-                LOGGER.warn("deleteCurrentNode node not exist:{},ex:{}", path, ex.getMessage());
+                log.warn("deleteCurrentNode node not exist:{},ex:{}", path, ex.getMessage());
             }
         }
     }
@@ -143,7 +141,7 @@ public class UsualStrategy extends BaseStrategy {
     */
     @Override
     public void deleteCurrentBranch(final String key) throws KeeperException, InterruptedException {
-        LOGGER.debug("deleteCurrentBranch:{}", key);
+        log.debug("deleteCurrentBranch:{}", key);
         if (!key.contains(ZookeeperConstants.PATH_SEPARATOR)) {
             this.deleteOnlyCurrent(key);
             return;
@@ -154,14 +152,14 @@ public class UsualStrategy extends BaseStrategy {
         try {
             this.deleteRecursively(superPath);
         } catch (KeeperException.NotEmptyException e) {
-            LOGGER.warn("deleteCurrentBranch exist children:{},e:{}", path, e.getMessage());
+            log.warn("deleteCurrentBranch exist children:{},e:{}", path, e.getMessage());
         } catch (KeeperException.NoNodeException e) {
-            LOGGER.warn("deleteCurrentBranch NoNodeException:{},e:{}", superPath, e.getMessage());
+            log.warn("deleteCurrentBranch NoNodeException:{},e:{}", superPath, e.getMessage());
         }
     }
     
     private void deleteRecursively(final String path) throws KeeperException, InterruptedException {
-        LOGGER.debug("deleteRecursively:{}", path);
+        log.debug("deleteRecursively:{}", path);
         int index = path.lastIndexOf(ZookeeperConstants.PATH_SEPARATOR);
         if (index == 0) {
             this.deleteOnlyCurrent(path);
@@ -172,8 +170,8 @@ public class UsualStrategy extends BaseStrategy {
             this.deleteOnlyCurrent(path);
             this.deleteRecursively(superPath);
         } catch (KeeperException.NotEmptyException e) {
-            LOGGER.info("deleteRecursively exist children:{},e:{}", path, e.getMessage());
-            LOGGER.debug("deleteRecursively {} exist other children:{}", path, this.getChildren(path));
+            log.info("deleteRecursively exist children:{},e:{}", path, e.getMessage());
+            log.debug("deleteRecursively {} exist other children:{}", path, this.getChildren(path));
         }
     }
 }

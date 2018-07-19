@@ -24,7 +24,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * Momory strictly execute engine for JDBC text protocol.
+ * Memory strictly execute engine for JDBC text protocol.
  *
  * @author zhaojun
  * @author zhangliang
