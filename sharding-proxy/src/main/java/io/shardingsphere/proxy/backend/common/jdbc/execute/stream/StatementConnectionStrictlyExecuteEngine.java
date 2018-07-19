@@ -15,9 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.common.jdbc.statement;
+package io.shardingsphere.proxy.backend.common.jdbc.execute.stream;
 
-import io.shardingsphere.proxy.backend.common.jdbc.execute.engine.MemoryStrictlyExecuteEngine;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.memory.ConnectionStrictlyExecuteEngine;
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute.PreparedStatementParameter;
 
 import java.sql.Connection;
@@ -27,16 +27,16 @@ import java.sql.Statement;
 import java.util.List;
 
 /**
- * Memory strictly execute engine for JDBC statement protocol.
+ * Connection strictly execute engine for JDBC statement protocol.
  *
  * @author zhaojun
  * @author zhangliang
  */
-public final class StatementMemoryStrictlyExecuteEngine extends MemoryStrictlyExecuteEngine {
+public final class StatementConnectionStrictlyExecuteEngine extends ConnectionStrictlyExecuteEngine {
     
     private final List<PreparedStatementParameter> preparedStatementParameters;
     
-    public StatementMemoryStrictlyExecuteEngine(final List<PreparedStatementParameter> preparedStatementParameters) {
+    public StatementConnectionStrictlyExecuteEngine(final List<PreparedStatementParameter> preparedStatementParameters) {
         this.preparedStatementParameters = preparedStatementParameters;
     }
     

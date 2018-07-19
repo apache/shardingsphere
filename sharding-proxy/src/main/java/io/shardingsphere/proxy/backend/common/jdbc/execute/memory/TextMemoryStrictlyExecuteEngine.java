@@ -15,21 +15,21 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.common.jdbc.text;
+package io.shardingsphere.proxy.backend.common.jdbc.execute.memory;
 
-import io.shardingsphere.proxy.backend.common.jdbc.execute.engine.ConnectionStrictlyExecuteEngine;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.stream.MemoryStrictlyExecuteEngine;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * Connection strictly execute engine for JDBC text protocol.
+ * Momory strictly execute engine for JDBC text protocol.
  *
  * @author zhaojun
  * @author zhangliang
  */
-public final class TextConnectionStrictlyExecuteEngine extends ConnectionStrictlyExecuteEngine {
+public final class TextMemoryStrictlyExecuteEngine extends MemoryStrictlyExecuteEngine {
     
     @Override
     protected Statement createStatement(final Connection connection, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {

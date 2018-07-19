@@ -15,13 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.common.jdbc.execute.engine;
+package io.shardingsphere.proxy.backend.common.jdbc.execute;
 
 import io.netty.channel.EventLoopGroup;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.proxy.backend.common.SQLExecuteEngine;
 import io.shardingsphere.proxy.backend.common.jdbc.BackendConnection;
-import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteResponse;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;

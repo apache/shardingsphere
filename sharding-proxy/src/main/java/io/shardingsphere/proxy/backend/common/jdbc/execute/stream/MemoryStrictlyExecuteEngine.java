@@ -15,15 +15,15 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.common.jdbc.execute.engine;
+package io.shardingsphere.proxy.backend.common.jdbc.execute.stream;
 
 import com.google.common.collect.Lists;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngine;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteResponse;
-import io.shardingsphere.proxy.backend.common.jdbc.execute.result.StreamQueryResult;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 
 import java.sql.ResultSet;

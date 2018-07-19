@@ -22,6 +22,8 @@ import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.StatementRoutingEngine;
 import io.shardingsphere.proxy.backend.common.ProxyMode;
 import io.shardingsphere.proxy.backend.common.jdbc.JDBCBackendHandler;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.memory.TextMemoryStrictlyExecuteEngine;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.stream.TextConnectionStrictlyExecuteEngine;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
