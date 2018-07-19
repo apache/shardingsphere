@@ -43,7 +43,7 @@ public final class JDBCTextBackendHandler extends JDBCBackendHandler {
     private final RuleRegistry ruleRegistry;
     
     public JDBCTextBackendHandler(final String sql, final DatabaseType databaseType) {
-        super(sql, ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode() ? new TextMemoryStrictlyExecuteWorker() : new TextConnectionStrictlyExecuteWorker());
+        super(sql, ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode() ? new TextMemoryStrictlyExecuteEngine() : new TextConnectionStrictlyExecuteEngine());
         this.databaseType = databaseType;
         ruleRegistry = RuleRegistry.getInstance();
     }

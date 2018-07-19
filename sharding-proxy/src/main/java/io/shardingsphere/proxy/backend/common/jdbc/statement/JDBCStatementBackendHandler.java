@@ -49,7 +49,7 @@ public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
     public JDBCStatementBackendHandler(final List<PreparedStatementParameter> preparedStatementParameters, final int statementId, final DatabaseType databaseType) {
         super(PreparedStatementRegistry.getInstance().getSQL(statementId), 
                 ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()
-                        ? new StatementMemoryStrictlyExecuteWorker(preparedStatementParameters) : new StatementConnectionStrictlyExecuteWorker(preparedStatementParameters));
+                        ? new StatementMemoryStrictlyExecuteEngine(preparedStatementParameters) : new StatementConnectionStrictlyExecuteEngine(preparedStatementParameters));
         this.preparedStatementParameters = preparedStatementParameters;
         this.databaseType = databaseType;
         ruleRegistry = RuleRegistry.getInstance();

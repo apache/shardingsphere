@@ -17,7 +17,7 @@
 
 package io.shardingsphere.proxy.backend.common.jdbc.statement;
 
-import io.shardingsphere.proxy.backend.common.jdbc.execute.engine.ConnectionStrictlyExecuteEngine;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.engine.MemoryStrictlyExecuteEngine;
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute.PreparedStatementParameter;
 
 import java.sql.Connection;
@@ -27,22 +27,22 @@ import java.sql.Statement;
 import java.util.List;
 
 /**
- * Connection strictly execute worker for JDBC statement protocol.
+ * Memory strictly execute engine for JDBC statement protocol.
  *
  * @author zhaojun
  * @author zhangliang
  */
-public final class StatementConnectionStrictlyExecuteWorker extends ConnectionStrictlyExecuteEngine {
+public final class StatementMemoryStrictlyExecuteEngine extends MemoryStrictlyExecuteEngine {
     
     private final List<PreparedStatementParameter> preparedStatementParameters;
     
-    public StatementConnectionStrictlyExecuteWorker(final List<PreparedStatementParameter> preparedStatementParameters) {
+    public StatementMemoryStrictlyExecuteEngine(final List<PreparedStatementParameter> preparedStatementParameters) {
         this.preparedStatementParameters = preparedStatementParameters;
     }
     
     @Override
-    protected Statement createStatement(final Connection connection, final String actualSQL, final boolean isReturnGeneratedKeys) throws SQLException {
-        PreparedStatement result = isReturnGeneratedKeys ? connection.prepareStatement(actualSQL, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(actualSQL);
+    protected Statement createStatement(final Connection connection, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
+        PreparedStatement result = isReturnGeneratedKeys ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sql);
         for (int i = 0; i < preparedStatementParameters.size(); i++) {
             result.setObject(i + 1, preparedStatementParameters.get(i).getValue());
         }

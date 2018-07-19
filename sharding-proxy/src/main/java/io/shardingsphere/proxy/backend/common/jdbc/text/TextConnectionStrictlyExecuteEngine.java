@@ -17,22 +17,22 @@
 
 package io.shardingsphere.proxy.backend.common.jdbc.text;
 
-import io.shardingsphere.proxy.backend.common.jdbc.execute.engine.MemoryStrictlyExecuteEngine;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.engine.ConnectionStrictlyExecuteEngine;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * Momory strictly execute worker for JDBC text protocol.
+ * Connection strictly execute engine for JDBC text protocol.
  *
  * @author zhaojun
  * @author zhangliang
  */
-public final class TextMemoryStrictlyExecuteWorker extends MemoryStrictlyExecuteEngine {
+public final class TextConnectionStrictlyExecuteEngine extends ConnectionStrictlyExecuteEngine {
     
     @Override
-    protected Statement createStatement(final Connection connection, final String actualSQL, final boolean isReturnGeneratedKeys) throws SQLException {
+    protected Statement createStatement(final Connection connection, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
         return connection.createStatement();
     }
     

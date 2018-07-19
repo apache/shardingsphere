@@ -51,8 +51,6 @@ import java.util.List;
 @Setter
 public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
     
-    private static final Integer FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
-    
     private final List<QueryResult> queryResults = new LinkedList<>();
     
     private final ConnectionManager connectionManager = new ConnectionManager();
@@ -62,6 +60,8 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
     private int columnCount;
     
     private List<ColumnType> columnTypes;
+    
+    protected abstract Statement createStatement(Connection connection, String sql, boolean isReturnGeneratedKeys) throws SQLException;
     
     protected JDBCExecuteResponse execute(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) {
         try {
@@ -75,8 +75,6 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
             return new JDBCExecuteResponse(new CommandResponsePackets(new ErrPacket(1, ex)));
         }
     }
-    
-    protected abstract Statement createStatement(Connection connection, String actualSQL, boolean isReturnGeneratedKeys) throws SQLException;
     
     protected abstract void setFetchSize(Statement statement) throws SQLException;
     
