@@ -54,17 +54,19 @@ public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends Abst
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         String regCenter = parseRegistryCenterRef(element);
         if (Strings.isNullOrEmpty(regCenter)) {
-            return getSpringMasterSlaveDataSourceBean(element);
+            return getSpringMasterSlaveDataSourceBean(element, parserContext);
         }
         return getOrchestrationSpringMasterSlaveDataSourceBean(element, parserContext);
     }
     
-    private AbstractBeanDefinition getSpringMasterSlaveDataSourceBean(final Element element) {
+    private AbstractBeanDefinition getSpringMasterSlaveDataSourceBean(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SpringMasterSlaveDataSource.class);
         factory.addConstructorArgValue(parseDataSources(element));
         factory.addConstructorArgValue(parseId(element));
         factory.addConstructorArgValue(parseMasterDataSourceRef(element));
         factory.addConstructorArgValue(parseSlaveDataSourcesRef(element));
+        factory.addConstructorArgValue(parseConfigMap(element, parserContext, factory.getBeanDefinition()));
+        factory.addConstructorArgValue(parseProperties(element, parserContext));
         String strategyRef = parseStrategyRef(element);
         if (!Strings.isNullOrEmpty(strategyRef)) {
             factory.addConstructorArgReference(strategyRef);
@@ -81,6 +83,7 @@ public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends Abst
             factory.addConstructorArgValue(parseDataSources(element));
             factory.addConstructorArgValue(parseMasterSlaveRuleConfig(element));
             factory.addConstructorArgValue(parseConfigMap(element, parserContext, factory.getBeanDefinition()));
+            factory.addConstructorArgValue(parseProperties(element, parserContext));
         }
         factory.addConstructorArgValue(parseOrchestrationConfiguration(element, OrchestrationType.MASTER_SLAVE));
         return factory.getBeanDefinition();
