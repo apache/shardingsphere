@@ -66,7 +66,7 @@ public abstract class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
                 
                 @Override
                 public JDBCExecuteResponse call() throws SQLException {
-                    return execute(createStatement(getConnectionManager().getConnection(dataSourceName), actualSQL, isReturnGeneratedKeys), actualSQL, isReturnGeneratedKeys);
+                    return execute(createStatement(getBackendConnection().getConnection(dataSourceName), actualSQL, isReturnGeneratedKeys), actualSQL, isReturnGeneratedKeys);
                 }
             }));
         }
@@ -74,7 +74,7 @@ public abstract class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
     }
     
     private JDBCExecuteResponse syncExecute(final boolean isReturnGeneratedKeys, final SQLExecutionUnit sqlExecutionUnit) throws SQLException {
-        return execute(createStatement(getConnectionManager().getConnection(sqlExecutionUnit.getDataSource()), sqlExecutionUnit.getSqlUnit().getSql(), isReturnGeneratedKeys),
+        return execute(createStatement(getBackendConnection().getConnection(sqlExecutionUnit.getDataSource()), sqlExecutionUnit.getSqlUnit().getSql(), isReturnGeneratedKeys),
                 sqlExecutionUnit.getSqlUnit().getSql(), isReturnGeneratedKeys);
     }
     

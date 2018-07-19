@@ -59,7 +59,7 @@ public abstract class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine 
     private List<Future<Collection<JDBCExecuteResponse>>> asyncExecute(final boolean isReturnGeneratedKeys, final Map<String, Collection<SQLUnit>> sqlUnitGroups) throws SQLException {
         List<Future<Collection<JDBCExecuteResponse>>> result = new LinkedList<>();
         for (Entry<String, Collection<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
-            final Connection connection = getConnectionManager().getConnection(entry.getKey());
+            final Connection connection = getBackendConnection().getConnection(entry.getKey());
             final Collection<SQLUnit> sqlUnits = entry.getValue();
             result.add(getUserGroup().submit(new Callable<Collection<JDBCExecuteResponse>>() {
                 
@@ -80,7 +80,7 @@ public abstract class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine 
         Collection<JDBCExecuteResponse> result = new LinkedList<>();
         for (SQLUnit each : sqlUnits) {
             String actualSQL = each.getSql();
-            result.add(execute(createStatement(getConnectionManager().getConnection(dataSourceName), actualSQL, isReturnGeneratedKeys), actualSQL, isReturnGeneratedKeys));
+            result.add(execute(createStatement(getBackendConnection().getConnection(dataSourceName), actualSQL, isReturnGeneratedKeys), actualSQL, isReturnGeneratedKeys));
         }
         return result;
     }

@@ -26,11 +26,12 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Connection manager.
+ * Backend connection.
  *
  * @author zhaojun
+ * @author zhangliang
  */
-public final class ConnectionManager implements AutoCloseable {
+public final class BackendConnection implements AutoCloseable {
     
     private final Collection<Connection> cachedConnections = new LinkedList<>();
     

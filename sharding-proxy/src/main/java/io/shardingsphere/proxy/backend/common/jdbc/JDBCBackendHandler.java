@@ -71,7 +71,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     private final EventLoopGroup userGroup;
     
-    private final ConnectionManager connectionManager;
+    private final BackendConnection backendConnection;
     
     private final JDBCExecuteEngine executeEngine;
     
@@ -94,7 +94,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         this.executeEngine = executeEngine;
         ruleRegistry = RuleRegistry.getInstance();
         userGroup = ExecutorContext.getInstance().getUserGroup();
-        connectionManager = executeEngine.getConnectionManager();
+        backendConnection = executeEngine.getBackendConnection();
         queryResults = new LinkedList<>();
         isMerged = false;
         hasMoreResultValueFlag = true;
@@ -209,7 +209,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     @Override
     public final boolean hasMoreResultValue() throws SQLException {
         if (!isMerged || !hasMoreResultValueFlag) {
-            connectionManager.close();
+            backendConnection.close();
             return false;
         }
         if (!mergedResult.next()) {

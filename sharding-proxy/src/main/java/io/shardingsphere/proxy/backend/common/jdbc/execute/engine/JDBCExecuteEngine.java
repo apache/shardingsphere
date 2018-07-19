@@ -20,7 +20,7 @@ package io.shardingsphere.proxy.backend.common.jdbc.execute.engine;
 import io.netty.channel.EventLoopGroup;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.proxy.backend.common.SQLExecuteEngine;
-import io.shardingsphere.proxy.backend.common.jdbc.ConnectionManager;
+import io.shardingsphere.proxy.backend.common.jdbc.BackendConnection;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteResponse;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
@@ -53,7 +53,7 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
     
     private final List<QueryResult> queryResults = new LinkedList<>();
     
-    private final ConnectionManager connectionManager = new ConnectionManager();
+    private final BackendConnection backendConnection = new BackendConnection();
     
     private final EventLoopGroup userGroup = ExecutorContext.getInstance().getUserGroup();
     
