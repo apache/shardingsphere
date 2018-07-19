@@ -148,15 +148,16 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         return buildCommandResponsePacketsWithMemoryStrictlyMode(firstJDBCExecuteResponse, futureList);
     }
     
-    private List<Future<JDBCExecuteResponse>> asyncExecuteWithMemoryStrictlyMode(final boolean isReturnGeneratedKeys, final Collection<SQLExecutionUnit> sqlExecutionUnits) throws SQLException {
+    private List<Future<JDBCExecuteResponse>> asyncExecuteWithMemoryStrictlyMode(final boolean isReturnGeneratedKeys, final Collection<SQLExecutionUnit> sqlExecutionUnits) {
         List<Future<JDBCExecuteResponse>> result = new LinkedList<>();
         for (SQLExecutionUnit each : sqlExecutionUnits) {
+            final String dataSourceName = each.getDataSource();
             final String actualSQL = each.getSqlUnit().getSql();
-            final Statement statement = createStatement(connectionManager.getConnection(each.getDataSource()), actualSQL, isReturnGeneratedKeys);
             result.add(userGroup.submit(new Callable<JDBCExecuteResponse>() {
                 
                 @Override
-                public JDBCExecuteResponse call() {
+                public JDBCExecuteResponse call() throws SQLException {
+                    final Statement statement = createStatement(connectionManager.getConnection(dataSourceName), actualSQL, isReturnGeneratedKeys);
                     return createExecuteWorker(statement, isReturnGeneratedKeys, actualSQL).execute();
                 }
             }));
@@ -201,21 +202,16 @@ public abstract class JDBCBackendHandler implements BackendHandler {
             final boolean isReturnGeneratedKeys, final Map<String, Collection<SQLUnit>> sqlUnitGroups) throws SQLException {
         List<Future<Collection<JDBCExecuteResponse>>> result = new LinkedList<>();
         for (Entry<String, Collection<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
-            Connection connection = connectionManager.getConnection(entry.getKey());
-            final List<String> actualSQLs = new ArrayList<>(entry.getValue().size());
-            final List<Statement> statements = new ArrayList<>(entry.getValue().size());
-            for (SQLUnit each : entry.getValue()) {
-                actualSQLs.add(each.getSql());
-                statements.add(createStatement(connection, each.getSql(), isReturnGeneratedKeys));
-            }
+            final Connection connection = connectionManager.getConnection(entry.getKey());
+            final Collection<SQLUnit> sqlUnits = entry.getValue();
             result.add(userGroup.submit(new Callable<Collection<JDBCExecuteResponse>>() {
                 
                 @Override
-                public Collection<JDBCExecuteResponse> call() {
+                public Collection<JDBCExecuteResponse> call() throws SQLException {
                     Collection<JDBCExecuteResponse> result = new LinkedList<>();
-                    int count = 0;
-                    for (Statement each : statements) {
-                        result.add(createExecuteWorker(each, isReturnGeneratedKeys, actualSQLs.get(count++)).execute());
+                    for (SQLUnit each : sqlUnits) {
+                        Statement statement = createStatement(connection, each.getSql(), isReturnGeneratedKeys);
+                        result.add(createExecuteWorker(statement, isReturnGeneratedKeys, each.getSql()).execute());
                     }
                     return result;
                 }
@@ -292,6 +288,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
             if (each instanceof OKPacket) {
                 OKPacket okPacket = (OKPacket) each;
                 affectedRows += okPacket.getAffectedRows();
+                // TODO consider about insert multiple values
                 lastInsertId = okPacket.getLastInsertId();
             }
         }
