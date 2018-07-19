@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.common.jdbc.resultset;
+package io.shardingsphere.proxy.backend.common.jdbc.execute.result;
 
 import io.shardingsphere.core.merger.QueryResult;
 

@@ -20,6 +20,7 @@ package io.shardingsphere.proxy.backend.common.jdbc.statement;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.routing.PreparedStatementRoutingEngine;
 import io.shardingsphere.core.routing.SQLRouteResult;
+import io.shardingsphere.proxy.backend.common.ProxyMode;
 import io.shardingsphere.proxy.backend.common.jdbc.JDBCBackendHandler;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
@@ -28,10 +29,6 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.statement.Prepared
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute.BinaryResultSetRowPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute.PreparedStatementParameter;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,7 +47,9 @@ public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
     private final RuleRegistry ruleRegistry;
     
     public JDBCStatementBackendHandler(final List<PreparedStatementParameter> preparedStatementParameters, final int statementId, final DatabaseType databaseType) {
-        super(PreparedStatementRegistry.getInstance().getSQL(statementId));
+        super(PreparedStatementRegistry.getInstance().getSQL(statementId), 
+                ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()
+                        ? new StatementMemoryStrictlyExecuteWorker(preparedStatementParameters) : new StatementConnectionStrictlyExecuteWorker(preparedStatementParameters));
         this.preparedStatementParameters = preparedStatementParameters;
         this.databaseType = databaseType;
         ruleRegistry = RuleRegistry.getInstance();
@@ -69,15 +68,6 @@ public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
             result.add(each.getValue());
         }
         return result;
-    }
-    
-    @Override
-    protected JDBCStatementExecuteWorker createExecuteWorker(final Connection connection, final String actualSQL, final boolean isReturnGeneratedKeys) throws SQLException {
-        PreparedStatement preparedStatement = isReturnGeneratedKeys ? connection.prepareStatement(actualSQL, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(actualSQL);
-        for (int i = 0; i < preparedStatementParameters.size(); i++) {
-            preparedStatement.setObject(i + 1, preparedStatementParameters.get(i).getValue());
-        }
-        return new JDBCStatementExecuteWorker(preparedStatement, isReturnGeneratedKeys);
     }
     
     @Override

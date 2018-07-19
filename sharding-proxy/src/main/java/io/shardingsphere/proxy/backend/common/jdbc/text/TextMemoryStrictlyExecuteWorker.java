@@ -17,32 +17,27 @@
 
 package io.shardingsphere.proxy.backend.common.jdbc.text;
 
-import io.shardingsphere.proxy.backend.common.jdbc.JDBCExecuteWorker;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.worker.MemoryStrictlyExecuteWorker;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * SQL execute worker.
+ * Momory strictly execute worker for JDBC text protocol.
  *
- * @author zhangyonglun
  * @author zhaojun
  * @author zhangliang
  */
-public final class JDBCTextExecuteWorker extends JDBCExecuteWorker {
+public final class TextMemoryStrictlyExecuteWorker extends MemoryStrictlyExecuteWorker {
     
-    private final Statement statement;
-    
-    private final String sql;
-    
-    public JDBCTextExecuteWorker(final String sql, final Statement statement, final boolean isReturnGeneratedKeys) {
-        super(statement, isReturnGeneratedKeys);
-        this.statement = statement;
-        this.sql = sql;
+    @Override
+    protected Statement createStatement(final Connection connection, final String actualSQL, final boolean isReturnGeneratedKeys) throws SQLException {
+        return connection.createStatement();
     }
     
     @Override
-    protected boolean executeSQL(final boolean isReturnGeneratedKeys) throws SQLException {
+    protected boolean executeSQL(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
         return statement.execute(sql, isReturnGeneratedKeys ? Statement.RETURN_GENERATED_KEYS : Statement.NO_GENERATED_KEYS);
     }
 }
