@@ -72,17 +72,12 @@ public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
     }
     
     @Override
-    protected JDBCStatementExecuteWorker createExecuteWorker(final Statement statement, final boolean isReturnGeneratedKeys, final String actualSQL) {
-        return new JDBCStatementExecuteWorker((PreparedStatement) statement, isReturnGeneratedKeys);
-    }
-    
-    @Override
-    protected PreparedStatement createStatement(final Connection connection, final String actualSQL, final boolean isReturnGeneratedKeys) throws SQLException {
-        PreparedStatement result = isReturnGeneratedKeys ? connection.prepareStatement(actualSQL, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(actualSQL);
+    protected JDBCStatementExecuteWorker createExecuteWorker(final Connection connection, final String actualSQL, final boolean isReturnGeneratedKeys) throws SQLException {
+        PreparedStatement preparedStatement = isReturnGeneratedKeys ? connection.prepareStatement(actualSQL, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(actualSQL);
         for (int i = 0; i < preparedStatementParameters.size(); i++) {
-            result.setObject(i + 1, preparedStatementParameters.get(i).getValue());
+            preparedStatement.setObject(i + 1, preparedStatementParameters.get(i).getValue());
         }
-        return result;
+        return new JDBCStatementExecuteWorker(preparedStatement, isReturnGeneratedKeys);
     }
     
     @Override

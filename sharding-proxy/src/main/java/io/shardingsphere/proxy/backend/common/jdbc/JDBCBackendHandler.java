@@ -52,7 +52,6 @@ import javax.transaction.Status;
 import javax.transaction.SystemException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -157,8 +156,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
                 
                 @Override
                 public JDBCExecuteResponse call() throws SQLException {
-                    final Statement statement = createStatement(connectionManager.getConnection(dataSourceName), actualSQL, isReturnGeneratedKeys);
-                    return createExecuteWorker(statement, isReturnGeneratedKeys, actualSQL).execute();
+                    return createExecuteWorker(connectionManager.getConnection(dataSourceName), actualSQL, isReturnGeneratedKeys).execute();
                 }
             }));
         }
@@ -166,9 +164,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     }
     
     private JDBCExecuteResponse syncExecuteWithMemoryStrictlyMode(final boolean isReturnGeneratedKeys, final SQLExecutionUnit sqlExecutionUnit) throws SQLException {
-        String actualSQL = sqlExecutionUnit.getSqlUnit().getSql();
-        Statement statement = createStatement(connectionManager.getConnection(sqlExecutionUnit.getDataSource()), actualSQL, isReturnGeneratedKeys);
-        return createExecuteWorker(statement, isReturnGeneratedKeys, actualSQL).execute();
+        return createExecuteWorker(connectionManager.getConnection(sqlExecutionUnit.getDataSource()), sqlExecutionUnit.getSqlUnit().getSql(), isReturnGeneratedKeys).execute();
     }
     
     private List<CommandResponsePackets> buildCommandResponsePacketsWithMemoryStrictlyMode(final JDBCExecuteResponse firstJDBCExecuteResponse, final List<Future<JDBCExecuteResponse>> futureList) {
@@ -210,8 +206,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
                 public Collection<JDBCExecuteResponse> call() throws SQLException {
                     Collection<JDBCExecuteResponse> result = new LinkedList<>();
                     for (SQLUnit each : sqlUnits) {
-                        Statement statement = createStatement(connection, each.getSql(), isReturnGeneratedKeys);
-                        result.add(createExecuteWorker(statement, isReturnGeneratedKeys, each.getSql()).execute());
+                        result.add(createExecuteWorker(connection, each.getSql(), isReturnGeneratedKeys).execute());
                     }
                     return result;
                 }
@@ -225,8 +220,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         Collection<JDBCExecuteResponse> result = new LinkedList<>();
         for (SQLUnit each : sqlUnits) {
             String actualSQL = each.getSql();
-            Statement statement = createStatement(connectionManager.getConnection(dataSourceName), actualSQL, isReturnGeneratedKeys);
-            result.add(createExecuteWorker(statement, isReturnGeneratedKeys, actualSQL).execute());    
+            result.add(createExecuteWorker(connectionManager.getConnection(dataSourceName), actualSQL, isReturnGeneratedKeys).execute());
         }
         return result;
     }
@@ -258,9 +252,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         return result;
     }
     
-    protected abstract Statement createStatement(Connection connection, String actualSQL, boolean isReturnGeneratedKeys) throws SQLException;
-    
-    protected abstract JDBCExecuteWorker createExecuteWorker(Statement statement, boolean isReturnGeneratedKeys, String actualSQL);
+    protected abstract JDBCExecuteWorker createExecuteWorker(Connection connection, String actualSQL, boolean isReturnGeneratedKeys) throws SQLException;
     
     private CommandResponsePackets merge(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets) {
         CommandResponsePackets headPackets = new CommandResponsePackets();

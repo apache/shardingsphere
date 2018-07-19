@@ -28,7 +28,6 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextRes
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 
 /**
@@ -58,13 +57,8 @@ public final class JDBCTextBackendHandler extends JDBCBackendHandler {
     }
     
     @Override
-    protected Statement createStatement(final Connection connection, final String actualSQL, final boolean isReturnGeneratedKeys) throws SQLException {
-        return connection.createStatement();
-    }
-    
-    @Override
-    protected JDBCTextExecuteWorker createExecuteWorker(final Statement statement, final boolean isReturnGeneratedKeys, final String actualSQL) {
-        return new JDBCTextExecuteWorker(actualSQL, statement, isReturnGeneratedKeys);
+    protected JDBCTextExecuteWorker createExecuteWorker(final Connection connection, final String actualSQL, final boolean isReturnGeneratedKeys) throws SQLException {
+        return new JDBCTextExecuteWorker(actualSQL, connection.createStatement(), isReturnGeneratedKeys);
     }
     
     @Override
