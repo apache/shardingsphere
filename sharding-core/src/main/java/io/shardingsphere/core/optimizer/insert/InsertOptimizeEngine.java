@@ -63,11 +63,13 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         List<ShardingCondition> result = new ArrayList<>(andConditions.size());
         Iterator<Number> generatedKeys = null;
         int count = 0;
+        int parametersCount = 0;
         for (AndCondition each : andConditions) {
             InsertValue insertValue = insertValues.get(count);
             List<Object> currentParameters = new ArrayList<>(insertValue.getParametersCount() + 1);
-            currentParameters.addAll(parameters.subList(count * insertValue.getParametersCount(), (count + 1) * insertValue.getParametersCount()));
-            
+            if (insertValue.getParametersCount() > 0) {
+                currentParameters.addAll(parameters.subList(parametersCount, parametersCount += insertValue.getParametersCount()));
+            }
             String logicTableName = insertStatement.getTables().getSingleTableName();
             Optional<Column> generateKeyColumn = shardingRule.getGenerateKeyColumn(logicTableName);
             InsertShardingCondition insertShardingCondition;
