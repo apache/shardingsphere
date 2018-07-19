@@ -253,6 +253,8 @@ public abstract class BaseClientTest extends BaseTest {
         String value2 = "value2";
         client.update(key, value2);
         assertThat(client.getDataString(key), is(value2));
+        sleep(200);
+        
         client.deleteCurrentBranch(key);
         sleep(200);
 
@@ -271,7 +273,7 @@ public abstract class BaseClientTest extends BaseTest {
         client.registerWatch(key, zookeeperEventListener);
         client.createCurrentOnly(key, "aaa", CreateMode.EPHEMERAL);
         assertThat(client.getDataString(key), is("aaa"));
-        
+
         String value = "value0";
         client.update(key, value);
         assertThat(client.getDataString(key), is(value));
@@ -285,6 +287,8 @@ public abstract class BaseClientTest extends BaseTest {
         String value2 = "value2";
         client.update(key, value2);
         assertThat(client.getDataString(key), is(value2));
+        sleep(200);
+        
         client.deleteCurrentBranch(key);
         sleep(200);
         
@@ -308,7 +312,8 @@ public abstract class BaseClientTest extends BaseTest {
                         try {
                             result = new String(getZooKeeper(client).getData(event.getPath(),false, null));
                         } catch (final KeeperException | InterruptedException ex) {
-                            result = ex.getMessage();
+                            LOGGER.info("path:{}, type:{}, ex:{}", event.getPath(), event.getType(), ex.getMessage());
+                            return;
                         }
                         LOGGER.info(result);
                         actual.add(new StringBuilder().append("update_").append(event.getPath()).append("_").append(result).toString());
