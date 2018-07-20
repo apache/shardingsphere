@@ -73,13 +73,13 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     private final List<QueryResult> queryResults;
     
-    private MergedResult mergedResult;
-    
-    private int currentSequenceId;
-    
     private int columnCount;
     
     private List<ColumnType> columnTypes;
+    
+    private MergedResult mergedResult;
+    
+    private int currentSequenceId;
     
     private boolean isMerged;
     
