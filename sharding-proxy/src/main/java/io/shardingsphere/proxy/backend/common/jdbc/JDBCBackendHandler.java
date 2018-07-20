@@ -22,7 +22,6 @@ import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.MergedResult;
-import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.parsing.SQLJudgeEngine;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
@@ -39,6 +38,7 @@ import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.QueryResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
@@ -73,11 +73,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     private final JDBCExecuteEngine executeEngine;
     
-    private final List<QueryResult> queryResults;
-    
-    private int columnCount;
-    
-    private List<ColumnType> columnTypes;
+    private SQLExecuteResponses responses;
     
     private MergedResult mergedResult;
     
@@ -92,7 +88,6 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         this.executeEngine = executeEngine;
         ruleRegistry = RuleRegistry.getInstance();
         backendConnection = executeEngine.getBackendConnection();
-        queryResults = new LinkedList<>();
         isMerged = false;
         hasMoreResultValueFlag = true;
     }
@@ -118,10 +113,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
             return new CommandResponsePackets(new ErrPacket(1, 
                     ServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "unknown_table"));
         }
-        SQLExecuteResponses responses = executeEngine.execute(routeResult, isReturnGeneratedKeys);
-        queryResults.addAll(responses.getQueryResults());
-        columnCount = responses.getColumnCount();
-        columnTypes = responses.getColumnTypes();
+        responses = executeEngine.execute(routeResult, isReturnGeneratedKeys);
         CommandResponsePackets result = merge(sqlStatement, responses.getCommandResponsePacketsList());
         if (!ruleRegistry.isMasterSlaveOnly()) {
             ProxyShardingRefreshHandler.build(routeResult).execute();
@@ -135,43 +127,25 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     }
     
     private CommandResponsePackets merge(final SQLStatement sqlStatement, final Collection<CommandResponsePackets> packets) {
-        CommandResponsePackets headPackets = new CommandResponsePackets();
+        Collection<DatabasePacket> headPackets = new LinkedList<>();
         for (CommandResponsePackets each : packets) {
             if (null != each) {
-                headPackets.getPackets().add(each.getHeadPacket());
+                if (each.getHeadPacket() instanceof ErrPacket) {
+                    return new CommandResponsePackets(each.getHeadPacket());
+                }
+                headPackets.add(each.getHeadPacket());
             }
         }
-        for (DatabasePacket each : headPackets.getPackets()) {
-            if (each instanceof ErrPacket) {
-                return new CommandResponsePackets(each);
-            }
+        CommandResponsePackets firstCommandResponsePackets = packets.iterator().next();
+        if (firstCommandResponsePackets instanceof QueryResponsePackets) {
+            return mergeQuery(sqlStatement, packets);
         }
-        if (SQLType.DML == sqlStatement.getType()) {
-            return mergeDML(headPackets);
-        }
-        if (SQLType.DQL == sqlStatement.getType() || SQLType.DAL == sqlStatement.getType()) {
-            return mergeDQLorDAL(sqlStatement, packets);
-        }
-        return packets.iterator().next();
+        return mergeUpdate(headPackets);
     }
     
-    private CommandResponsePackets mergeDML(final CommandResponsePackets firstPackets) {
-        int affectedRows = 0;
-        long lastInsertId = 0;
-        for (DatabasePacket each : firstPackets.getPackets()) {
-            if (each instanceof OKPacket) {
-                OKPacket okPacket = (OKPacket) each;
-                affectedRows += okPacket.getAffectedRows();
-                // TODO consider about insert multiple values
-                lastInsertId = okPacket.getLastInsertId();
-            }
-        }
-        return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId));
-    }
-    
-    private CommandResponsePackets mergeDQLorDAL(final SQLStatement sqlStatement, final Collection<CommandResponsePackets> packets) {
+    private CommandResponsePackets mergeQuery(final SQLStatement sqlStatement, final Collection<CommandResponsePackets> packets) {
         try {
-            mergedResult = MergeEngineFactory.newInstance(ruleRegistry.getShardingRule(), queryResults, sqlStatement, ruleRegistry.getShardingMetaData()).merge();
+            mergedResult = MergeEngineFactory.newInstance(ruleRegistry.getShardingRule(), responses.getQueryResults(), sqlStatement, ruleRegistry.getShardingMetaData()).merge();
             isMerged = true;
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex));
@@ -185,13 +159,27 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         FieldCountPacket fieldCountPacketSampling = (FieldCountPacket) databasePacketsSampling.next();
         result.getPackets().add(fieldCountPacketSampling);
         ++currentSequenceId;
-        for (int i = 0; i < columnCount; i++) {
+        for (int i = 0; i < responses.getColumnCount(); i++) {
             result.getPackets().add(databasePacketsSampling.next());
             ++currentSequenceId;
         }
         result.getPackets().add(databasePacketsSampling.next());
         ++currentSequenceId;
         return result;
+    }
+    
+    private CommandResponsePackets mergeUpdate(final Collection<DatabasePacket> packets) {
+        int affectedRows = 0;
+        long lastInsertId = 0;
+        for (DatabasePacket each : packets) {
+            if (each instanceof OKPacket) {
+                OKPacket okPacket = (OKPacket) each;
+                affectedRows += okPacket.getAffectedRows();
+                // TODO consider about insert multiple values
+                lastInsertId = okPacket.getLastInsertId();
+            }
+        }
+        return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId));
     }
     
     private SQLRouteResult doMasterSlaveRoute() {
@@ -223,15 +211,15 @@ public abstract class JDBCBackendHandler implements BackendHandler {
             return new EofPacket(++currentSequenceId);
         }
         try {
-            List<Object> data = new ArrayList<>(columnCount);
-            for (int i = 1; i <= columnCount; i++) {
+            List<Object> data = new ArrayList<>(responses.getColumnCount());
+            for (int i = 1; i <= responses.getColumnCount(); i++) {
                 data.add(mergedResult.getValue(i, Object.class));
             }
-            return newDatabasePacket(++currentSequenceId, data, columnTypes);
+            return newDatabasePacket(++currentSequenceId, data, responses.getColumnCount(), responses.getColumnTypes());
         } catch (final SQLException ex) {
             return new ErrPacket(1, ex);
         }
     }
     
-    protected abstract DatabasePacket newDatabasePacket(int sequenceId, List<Object> data, List<ColumnType> columnTypes);
+    protected abstract DatabasePacket newDatabasePacket(int sequenceId, List<Object> data, int columnCount, List<ColumnType> columnTypes);
 }

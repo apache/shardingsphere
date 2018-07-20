@@ -68,16 +68,16 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
         try {
             setFetchSize(statement);
             if (!executeSQL(statement, sql, isReturnGeneratedKeys)) {
-                return new JDBCExecuteResponse(new CommandResponsePackets(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0)));
+                return new JDBCExecuteUpdateResponse(new CommandResponsePackets(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0)));
             }
             ResultSet resultSet = statement.getResultSet();
             ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
             if (0 == resultSetMetaData.getColumnCount()) {
-                return new JDBCExecuteResponse(new CommandResponsePackets(new OKPacket(1)));
+                return new JDBCExecuteUpdateResponse(new CommandResponsePackets(new OKPacket(1)));
             }
-            return new JDBCExecuteResponse(getHeaderPackets(resultSetMetaData), createQueryResult(resultSet));
+            return new JDBCExecuteQueryResponse(getHeaderPackets(resultSetMetaData), createQueryResult(resultSet));
         } catch (final SQLException ex) {
-            return new JDBCExecuteResponse(new CommandResponsePackets(new ErrPacket(1, ex)));
+            return new JDBCExecuteUpdateResponse(new CommandResponsePackets(new ErrPacket(1, ex)));
         }
     }
     
@@ -85,11 +85,11 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
         try {
             setFetchSize(statement);
             if (!executeSQL(statement, sql, isReturnGeneratedKeys)) {
-                return new JDBCExecuteResponse(new CommandResponsePackets(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0)));
+                return new JDBCExecuteUpdateResponse(new CommandResponsePackets(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0)));
             }
-            return new JDBCExecuteResponse(createQueryResult(statement.getResultSet()));
+            return new JDBCExecuteQueryResponse(null, createQueryResult(statement.getResultSet()));
         } catch (final SQLException ex) {
-            return new JDBCExecuteResponse(new CommandResponsePackets(new ErrPacket(1, ex)));
+            return new JDBCExecuteUpdateResponse(new CommandResponsePackets(new ErrPacket(1, ex)));
         }
     }
     

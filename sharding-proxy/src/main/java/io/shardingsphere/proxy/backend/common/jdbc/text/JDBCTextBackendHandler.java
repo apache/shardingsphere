@@ -56,7 +56,7 @@ public final class JDBCTextBackendHandler extends JDBCBackendHandler {
     }
     
     @Override
-    protected DatabasePacket newDatabasePacket(final int sequenceId, final List<Object> data, final List<ColumnType> columnTypes) {
+    protected DatabasePacket newDatabasePacket(final int sequenceId, final List<Object> data, final int columnCount, final List<ColumnType> columnTypes) {
         return new TextResultSetRowPacket(sequenceId, data);
     }
 }

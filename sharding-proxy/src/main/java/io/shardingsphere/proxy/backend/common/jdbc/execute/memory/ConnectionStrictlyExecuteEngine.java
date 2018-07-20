@@ -22,6 +22,7 @@ import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngine;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteQueryResponse;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteResponse;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.SQLExecuteResponses;
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
@@ -98,18 +99,26 @@ public abstract class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine 
     }
     
     private SQLExecuteResponses buildCommandResponsePackets(final Collection<JDBCExecuteResponse> firstJDBCExecuteResponses, final List<Future<Collection<JDBCExecuteResponse>>> futureList) {
-        Collection<CommandResponsePackets> commandResponsePackets = new LinkedList<>();
-        Collection<QueryResult> queryResults = new LinkedList<>();
+        List<CommandResponsePackets> commandResponsePackets = new LinkedList<>();
+        List<QueryResult> queryResults = new LinkedList<>();
         for (JDBCExecuteResponse each : firstJDBCExecuteResponses) {
-            commandResponsePackets.add(each.getCommandResponsePackets());
-            queryResults.add(each.getQueryResult());
+            if (null != each.getCommandResponsePackets()) {
+                commandResponsePackets.add(each.getCommandResponsePackets());
+            }
+            if (each instanceof JDBCExecuteQueryResponse) {
+                queryResults.add(((JDBCExecuteQueryResponse) each).getQueryResult());
+            }
         }
         for (Future<Collection<JDBCExecuteResponse>> each : futureList) {
             try {
                 Collection<JDBCExecuteResponse> executeResponses = each.get();
-                for (JDBCExecuteResponse jdbcExecuteResponse : executeResponses) {
-                    commandResponsePackets.add(jdbcExecuteResponse.getCommandResponsePackets());
-                    queryResults.add(jdbcExecuteResponse.getQueryResult());
+                for (JDBCExecuteResponse executeResponse : executeResponses) {
+                    if (executeResponse instanceof JDBCExecuteQueryResponse) {
+                        queryResults.add(((JDBCExecuteQueryResponse) executeResponse).getQueryResult());
+                    } else {
+                        commandResponsePackets.add(executeResponse.getCommandResponsePackets());
+                    }
+                    commandResponsePackets.add(executeResponse.getCommandResponsePackets());
                 }
             } catch (final InterruptedException | ExecutionException ex) {
                 throw new ShardingException(ex.getMessage(), ex);

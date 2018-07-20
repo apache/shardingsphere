@@ -25,7 +25,6 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnD
 import lombok.Getter;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -36,13 +35,13 @@ import java.util.List;
 @Getter
 public final class SQLExecuteResponses {
     
-    private final Collection<CommandResponsePackets> commandResponsePacketsList;
+    private final List<CommandResponsePackets> commandResponsePacketsList;
     
-    private final Collection<QueryResult> queryResults;
+    private final List<QueryResult> queryResults;
     
     private final CommandResponsePackets firstCommandResponsePackets;
     
-    public SQLExecuteResponses(final Collection<CommandResponsePackets> commandResponsePacketsList, final Collection<QueryResult> queryResults) {
+    public SQLExecuteResponses(final List<CommandResponsePackets> commandResponsePacketsList, final List<QueryResult> queryResults) {
         this.commandResponsePacketsList = commandResponsePacketsList;
         this.queryResults = queryResults;
         firstCommandResponsePackets = commandResponsePacketsList.iterator().next();

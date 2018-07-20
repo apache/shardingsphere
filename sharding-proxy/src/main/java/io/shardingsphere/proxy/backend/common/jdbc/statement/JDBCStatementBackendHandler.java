@@ -69,7 +69,7 @@ public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
     }
     
     @Override
-    protected DatabasePacket newDatabasePacket(final int sequenceId, final List<Object> data, final List<ColumnType> columnTypes) {
-        return new BinaryResultSetRowPacket(sequenceId, getColumnCount(), data, columnTypes);
+    protected DatabasePacket newDatabasePacket(final int sequenceId, final List<Object> data, final int columnCount, final List<ColumnType> columnTypes) {
+        return new BinaryResultSetRowPacket(sequenceId, columnCount, data, columnTypes);
     }
 }
