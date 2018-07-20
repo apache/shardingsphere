@@ -56,8 +56,8 @@ public final class MySQLFrontendHandler extends FrontendHandler {
     
     @Override
     protected void auth(final ChannelHandlerContext context, final ByteBuf message) {
-        try (MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message)) {
-            HandshakeResponse41Packet response41 = new HandshakeResponse41Packet(mysqlPacketPayload);
+        try (MySQLPacketPayload payload = new MySQLPacketPayload(message)) {
+            HandshakeResponse41Packet response41 = new HandshakeResponse41Packet(payload);
             if (authorityHandler.login(response41.getUsername(), response41.getAuthResponse())) {
                 context.writeAndFlush(new OKPacket(response41.getSequenceId() + 1));
             } else {
@@ -74,10 +74,10 @@ public final class MySQLFrontendHandler extends FrontendHandler {
             
             @Override
             public void run() {
-                try (MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message)) {
-                    int sequenceId = mysqlPacketPayload.readInt1();
+                try (MySQLPacketPayload payload = new MySQLPacketPayload(message)) {
+                    int sequenceId = payload.readInt1();
                     int connectionId = MySQLResultCache.getInstance().getConnection(context.channel().id().asShortText());
-                    CommandPacket commandPacket = CommandPacketFactory.getCommandPacket(sequenceId, connectionId, mysqlPacketPayload);
+                    CommandPacket commandPacket = CommandPacketFactory.getCommandPacket(sequenceId, connectionId, payload);
                     for (DatabasePacket each : commandPacket.execute().getPackets()) {
                         context.writeAndFlush(each);
                     }

@@ -50,14 +50,14 @@ public final class ComStmtPrepareOKPacket extends MySQLPacket {
     }
     
     @Override
-    public void write(final MySQLPacketPayload mysqlPacketPayload) {
-        mysqlPacketPayload.writeInt1(status);
-        mysqlPacketPayload.writeInt4(statementId);
+    public void write(final MySQLPacketPayload payload) {
+        payload.writeInt1(status);
+        payload.writeInt4(statementId);
         // TODO Set numColumns=0 is a workaround to escape jdbc check for now, there's no issues found during a few tests.
         // TODO Column Definition Block should be added in future when the metadata of the columns is cached.
-        mysqlPacketPayload.writeInt2(0);
-        mysqlPacketPayload.writeInt2(numParameters);
-        mysqlPacketPayload.writeReserved(1);
-        mysqlPacketPayload.writeInt2(warningCount);
+        payload.writeInt2(0);
+        payload.writeInt2(numParameters);
+        payload.writeReserved(1);
+        payload.writeInt2(warningCount);
     }
 }

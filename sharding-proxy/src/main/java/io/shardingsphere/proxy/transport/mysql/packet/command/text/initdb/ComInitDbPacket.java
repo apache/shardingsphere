@@ -40,15 +40,15 @@ public final class ComInitDbPacket extends CommandPacket {
     
     private final String schemaName;
     
-    public ComInitDbPacket(final int sequenceId, final MySQLPacketPayload mysqlPacketPayload) {
+    public ComInitDbPacket(final int sequenceId, final MySQLPacketPayload payload) {
         super(sequenceId);
-        schemaName = mysqlPacketPayload.readStringEOF();
+        schemaName = payload.readStringEOF();
     }
     
     @Override
-    public void write(final MySQLPacketPayload mysqlPacketPayload) {
-        mysqlPacketPayload.writeInt1(CommandPacketType.COM_INIT_DB.getValue());
-        mysqlPacketPayload.writeStringEOF(schemaName);
+    public void write(final MySQLPacketPayload payload) {
+        payload.writeInt1(CommandPacketType.COM_INIT_DB.getValue());
+        payload.writeStringEOF(schemaName);
     }
     
     @Override

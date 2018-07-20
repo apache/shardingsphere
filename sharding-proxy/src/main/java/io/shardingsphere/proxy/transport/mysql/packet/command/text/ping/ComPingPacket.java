@@ -43,8 +43,8 @@ public final class ComPingPacket extends CommandPacket {
     }
     
     @Override
-    public void write(final MySQLPacketPayload mysqlPacketPayload) {
-        mysqlPacketPayload.writeInt1(CommandPacketType.COM_QUIT.getValue());
+    public void write(final MySQLPacketPayload payload) {
+        payload.writeInt1(CommandPacketType.COM_QUIT.getValue());
     }
     
     @Override

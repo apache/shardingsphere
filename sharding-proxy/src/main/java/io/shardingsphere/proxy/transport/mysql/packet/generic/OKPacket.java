@@ -70,23 +70,23 @@ public final class OKPacket extends MySQLPacket {
         this.info = info;
     }
     
-    public OKPacket(final MySQLPacketPayload mysqlPacketPayload) {
-        super(mysqlPacketPayload.readInt1());
-        Preconditions.checkArgument(HEADER == mysqlPacketPayload.readInt1());
-        affectedRows = mysqlPacketPayload.readIntLenenc();
-        lastInsertId = mysqlPacketPayload.readIntLenenc();
-        mysqlPacketPayload.readInt2();
-        warnings = mysqlPacketPayload.readInt2();
-        info = mysqlPacketPayload.readStringEOF();
+    public OKPacket(final MySQLPacketPayload payload) {
+        super(payload.readInt1());
+        Preconditions.checkArgument(HEADER == payload.readInt1());
+        affectedRows = payload.readIntLenenc();
+        lastInsertId = payload.readIntLenenc();
+        payload.readInt2();
+        warnings = payload.readInt2();
+        info = payload.readStringEOF();
     }
     
     @Override
-    public void write(final MySQLPacketPayload mysqlPacketPayload) {
-        mysqlPacketPayload.writeInt1(HEADER);
-        mysqlPacketPayload.writeIntLenenc(affectedRows);
-        mysqlPacketPayload.writeIntLenenc(lastInsertId);
-        mysqlPacketPayload.writeInt2(STATUS_FLAG);
-        mysqlPacketPayload.writeInt2(warnings);
-        mysqlPacketPayload.writeStringEOF(info);
+    public void write(final MySQLPacketPayload payload) {
+        payload.writeInt1(HEADER);
+        payload.writeIntLenenc(affectedRows);
+        payload.writeIntLenenc(lastInsertId);
+        payload.writeInt2(STATUS_FLAG);
+        payload.writeInt2(warnings);
+        payload.writeStringEOF(info);
     }
 }

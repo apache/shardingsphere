@@ -61,21 +61,21 @@ public final class ErrPacket extends MySQLPacket {
         this.errorMessage = errorMessage;
     }
     
-    public ErrPacket(final MySQLPacketPayload mysqlPacketPayload) {
-        super(mysqlPacketPayload.readInt1());
-        Preconditions.checkArgument(HEADER == mysqlPacketPayload.readInt1());
-        errorCode = mysqlPacketPayload.readInt2();
-        Preconditions.checkArgument(SQL_STATE_MARKER.equals(mysqlPacketPayload.readStringFix(1)));
-        sqlState = mysqlPacketPayload.readStringFix(5);
-        errorMessage = mysqlPacketPayload.readStringEOF();
+    public ErrPacket(final MySQLPacketPayload payload) {
+        super(payload.readInt1());
+        Preconditions.checkArgument(HEADER == payload.readInt1());
+        errorCode = payload.readInt2();
+        Preconditions.checkArgument(SQL_STATE_MARKER.equals(payload.readStringFix(1)));
+        sqlState = payload.readStringFix(5);
+        errorMessage = payload.readStringEOF();
     }
     
     @Override
-    public void write(final MySQLPacketPayload mysqlPacketPayload) {
-        mysqlPacketPayload.writeInt1(HEADER);
-        mysqlPacketPayload.writeInt2(errorCode);
-        mysqlPacketPayload.writeStringFix(SQL_STATE_MARKER);
-        mysqlPacketPayload.writeStringFix(sqlState);
-        mysqlPacketPayload.writeStringEOF(errorMessage);
+    public void write(final MySQLPacketPayload payload) {
+        payload.writeInt1(HEADER);
+        payload.writeInt2(errorCode);
+        payload.writeStringFix(SQL_STATE_MARKER);
+        payload.writeStringFix(sqlState);
+        payload.writeStringEOF(errorMessage);
     }
 }

@@ -42,7 +42,7 @@ public final class UnsupportedCommandPacket extends CommandPacket {
     }
     
     @Override
-    public void write(final MySQLPacketPayload mysqlPacketPayload) {
+    public void write(final MySQLPacketPayload payload) {
     }
     
     @Override

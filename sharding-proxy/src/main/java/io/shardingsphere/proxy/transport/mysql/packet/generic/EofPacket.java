@@ -50,17 +50,17 @@ public final class EofPacket extends MySQLPacket {
         this.statusFlags = statusFlags;
     }
     
-    public EofPacket(final MySQLPacketPayload mysqlPacketPayload) {
-        super(mysqlPacketPayload.readInt1());
-        Preconditions.checkArgument(HEADER == mysqlPacketPayload.readInt1());
-        warnings = mysqlPacketPayload.readInt2();
-        statusFlags = mysqlPacketPayload.readInt2();
+    public EofPacket(final MySQLPacketPayload payload) {
+        super(payload.readInt1());
+        Preconditions.checkArgument(HEADER == payload.readInt1());
+        warnings = payload.readInt2();
+        statusFlags = payload.readInt2();
     }
     
     @Override
-    public void write(final MySQLPacketPayload mysqlPacketPayload) {
-        mysqlPacketPayload.writeInt1(HEADER);
-        mysqlPacketPayload.writeInt2(warnings);
-        mysqlPacketPayload.writeInt2(statusFlags);
+    public void write(final MySQLPacketPayload payload) {
+        payload.writeInt1(HEADER);
+        payload.writeInt2(warnings);
+        payload.writeInt2(statusFlags);
     }
 }

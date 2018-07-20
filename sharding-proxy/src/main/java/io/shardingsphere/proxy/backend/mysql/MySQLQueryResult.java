@@ -76,8 +76,8 @@ public final class MySQLQueryResult implements QueryResult {
         resultSet = null;
     }
     
-    public MySQLQueryResult(final MySQLPacketPayload mysqlPacketPayload) {
-        FieldCountPacket fieldCountPacket = new FieldCountPacket(mysqlPacketPayload);
+    public MySQLQueryResult(final MySQLPacketPayload payload) {
+        FieldCountPacket fieldCountPacket = new FieldCountPacket(payload);
         commandResponsePackets = new CommandResponsePackets(fieldCountPacket);
         columnCount = fieldCountPacket.getColumnCount();
         columnIndexAndLabelMap = new HashMap<>(fieldCountPacket.getColumnCount(), 1);

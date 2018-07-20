@@ -52,8 +52,8 @@ public final class BinaryResultSetRowPacket extends MySQLPacket {
     }
     
     @Override
-    public void write(final MySQLPacketPayload mysqlPacketPayload) {
-        mysqlPacketPayload.writeInt1(PACKET_HEADER);
+    public void write(final MySQLPacketPayload payload) {
+        payload.writeInt1(PACKET_HEADER);
         NullBitmap nullBitmap = new NullBitmap(numColumns, RESERVED_BIT_LENGTH);
         for (int i = 0; i < numColumns; i++) {
             if (null == data.get(i)) {
@@ -61,11 +61,11 @@ public final class BinaryResultSetRowPacket extends MySQLPacket {
             }
         }
         for (int each : nullBitmap.getNullBitmap()) {
-            mysqlPacketPayload.writeInt1(each);
+            payload.writeInt1(each);
         }
         for (int i = 0; i < numColumns; i++) {
             ColumnType columnType = columnTypes.get(i);
-            BinaryProtocolValueUtility.getInstance().writeBinaryProtocolValue(columnType, data.get(i), mysqlPacketPayload);
+            BinaryProtocolValueUtility.getInstance().writeBinaryProtocolValue(columnType, data.get(i), payload);
         }
     }
 }

@@ -60,10 +60,10 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
     
     private final BackendHandler backendHandler;
     
-    public ComQueryPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload mysqlPacketPayload) {
+    public ComQueryPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload) {
         super(sequenceId);
         this.connectionId = connectionId;
-        sql = mysqlPacketPayload.readStringEOF();
+        sql = payload.readStringEOF();
         backendHandler = getBackendHandler(sql);
     }
     
@@ -75,9 +75,9 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
     }
     
     @Override
-    public void write(final MySQLPacketPayload mysqlPacketPayload) {
-        mysqlPacketPayload.writeInt1(CommandPacketType.COM_QUERY.getValue());
-        mysqlPacketPayload.writeStringEOF(sql);
+    public void write(final MySQLPacketPayload payload) {
+        payload.writeInt1(CommandPacketType.COM_QUERY.getValue());
+        payload.writeStringEOF(sql);
     }
     
     @Override

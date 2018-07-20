@@ -35,13 +35,13 @@ public class ComStmtClosePacket extends CommandPacket {
     
     private final int statementId;
     
-    public ComStmtClosePacket(final int sequenceId, final MySQLPacketPayload mysqlPacketPayload) {
+    public ComStmtClosePacket(final int sequenceId, final MySQLPacketPayload payload) {
         super(sequenceId);
-        statementId = mysqlPacketPayload.readInt4();
+        statementId = payload.readInt4();
     }
     
     @Override
-    public void write(final MySQLPacketPayload mysqlPacketPayload) {
+    public void write(final MySQLPacketPayload payload) {
     }
     
     @Override

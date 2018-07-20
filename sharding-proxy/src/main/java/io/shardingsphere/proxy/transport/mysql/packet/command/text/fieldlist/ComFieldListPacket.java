@@ -62,11 +62,11 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
     
     private BackendHandler backendHandler;
     
-    public ComFieldListPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload mysqlPacketPayload) {
+    public ComFieldListPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload) {
         super(sequenceId);
         this.connectionId = connectionId;
-        table = mysqlPacketPayload.readStringNul();
-        fieldWildcard = mysqlPacketPayload.readStringEOF();
+        table = payload.readStringNul();
+        fieldWildcard = payload.readStringEOF();
     }
     
     public ComFieldListPacket(final int sequenceId, final int connectionId, final String table, final String fieldWildcard) {
@@ -77,10 +77,10 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
     }
     
     @Override
-    public void write(final MySQLPacketPayload mysqlPacketPayload) {
-        mysqlPacketPayload.writeInt1(CommandPacketType.COM_FIELD_LIST.getValue());
-        mysqlPacketPayload.writeStringNul(table);
-        mysqlPacketPayload.writeStringEOF(fieldWildcard);
+    public void write(final MySQLPacketPayload payload) {
+        payload.writeInt1(CommandPacketType.COM_FIELD_LIST.getValue());
+        payload.writeStringNul(table);
+        payload.writeStringEOF(fieldWildcard);
     }
     
     @Override

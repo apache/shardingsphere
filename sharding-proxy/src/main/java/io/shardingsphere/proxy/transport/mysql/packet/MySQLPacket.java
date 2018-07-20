@@ -39,7 +39,7 @@ public abstract class MySQLPacket implements DatabasePacket {
     /**
      * Write packet to byte buffer.
      *
-     * @param mysqlPacketPayload packet payload to be write
+     * @param payload packet payload to be write
      */
-    public abstract void write(MySQLPacketPayload mysqlPacketPayload);
+    public abstract void write(MySQLPacketPayload payload);
 }
