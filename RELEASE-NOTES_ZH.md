@@ -26,7 +26,7 @@
 1. [ISSUE #773](https://github.com/sharding-sphere/sharding-sphere/issues/773) 支持不包含列名的INSERT语句的分片与自增主键
 1. [ISSUE #916](https://github.com/sharding-sphere/sharding-sphere/issues/916) 支持Sharding Proxy的登录权限认证
 1. [ISSUE #935](https://github.com/sharding-sphere/sharding-sphere/issues/935) 取代JSON格式，而将Yaml格式的配置文件存储在注册中心
-1. [ISSUE #1031](https://github.com/sharding-sphere/sharding-sphere/issues/1031) 支持在使用读写分离规则时，配置props属性
+1. [ISSUE #1004](https://github.com/sharding-sphere/sharding-sphere/issues/1004) 支持在使用读写分离规则时，配置props属性
 
 ### 缺陷修正
 
