@@ -314,8 +314,8 @@ weight = 4
 | -------------- | ----- | -------------- |
 | id             | 属性  | Spring Bean Id |
 | sharding-rule  | 标签  | 数据分片配置规则 |
-| props (?)      | 标签  | 属性配置        |
 | config-map (?) | 标签  | 用户自定义配置   |
+| props (?)      | 标签  | 属性配置        |
 
 #### \<sharding:sharding-rule />
 
@@ -420,8 +420,16 @@ weight = 4
 | strategy-ref (?)        | 属性  | 从库负载均衡算法引用。该类需实现MasterSlaveLoadBalanceAlgorithm接口               |
 | strategy-type (?)       | 属性  | 从库负载均衡算法类型，可选值：ROUND_ROBIN，RANDOM。若`strategy-ref`存在则忽略该配置 |
 | config-map (?)          | 标签  | 用户自定义配置                                                                 |
+| props (?)               | 标签  | 属性配置                                                                       |
 
-#### \<sharding:config-map />
+#### \<master-slave:config-map />
+
+#### \<master-slave:props />
+
+| *名称*            | *类型* | *说明*                      |
+| ----------------- | ----- | --------------------------- |
+| sql.show (?)      | 属性  | 是否开启SQL显示，默认值: false |
+| executor.size (?) | 属性  | 工作线程数量，默认值: CPU核数  |
 
 ### 数据分片 + 数据治理
 
@@ -433,8 +441,8 @@ weight = 4
 | ------------------- | ----- | ---------------------------------------------------------------------- |
 | id                  | 属性  | 配置同数据分片                                                           |
 | sharding-rule       | 标签  | 配置同数据分片                                                           |
-| props (?)           | 标签  | 配置同数据分片                                                           |
 | config-map (?)      | 标签  | 配置同数据分片                                                           |
+| props (?)           | 标签  | 配置同数据分片                                                           |
 | registry-center-ref | 属性  | 数据治理注册中心Bean引用                                                  |
 | overwrite           | 属性  | 本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准。缺省为不覆盖 |
 
@@ -452,6 +460,7 @@ weight = 4
 | strategy-ref (?)        | 属性  | 配置同读写分离           |
 | strategy-type (?)       | 属性  | 配置同读写分离           |
 | config-map (?)          | 标签  | 配置同读写分离           |
+| props (?)               | 标签  | 配置同数据分片           |                                               
 | registry-center-ref     | 属性  | 配置同数据分片 + 数据治理 |
 | overwrite               | 属性  | 配置同数据分片 + 数据治理 |
 

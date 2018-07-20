@@ -313,8 +313,8 @@ Namespace: http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
 | -------------- | --------- | --------------------------- |
 | id             | Attribute | Spring Bean Id              |
 | sharding-rule  | Tag       | Sharding rule configuration |
-| props (?)      | Tag       | Properties                  |
 | config-map (?) | Tag       | User-defined arguments      |
+| props (?)      | Tag       | Properties                  |
 
 #### \<sharding:sharding-rule />
 
@@ -419,8 +419,16 @@ Namespace: http://shardingsphere.io/schema/shardingsphere/masterslave/master-sla
 | strategy-ref (?)        | Attribute | Reference of load balance algorithm. This class need to implements MasterSlaveLoadBalanceAlgorithm            |
 | strategy-type (?)       | Attribute | Load balance algorithm type, values should be: `ROUND_ROBIN` or `RANDOM`. Ignore if `strategy-ref` is present |
 | config-map (?)          | Attribute | User-defined arguments                                                                                        |
+| props (?)               | Tag       | Properties                                                                                                    |
 
-#### \<sharding:config-map />
+#### \<master-slave:config-map />
+
+#### \<master-slave:props />
+
+| *Name*            | *Type*    | *Description*                                           |
+| ----------------- | --------- | ------------------------------------------------------- |
+| sql.show (?)      | Attribute | To show SQLS or not, default value: false               |
+| executor.size (?) | Attribute | The number of working threads, default value: CPU count |
 
 ### Sharding + orchestration
 
