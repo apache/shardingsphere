@@ -18,10 +18,9 @@
 package io.shardingsphere.proxy.backend.common;
 
 import io.shardingsphere.core.routing.SQLRouteResult;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.SQLExecuteResponses;
 
 import java.sql.SQLException;
-import java.util.List;
 
 /**
  * SQL Execute engine.
@@ -35,8 +34,8 @@ public interface SQLExecuteEngine {
      *
      * @param routeResult route result
      * @param isReturnGeneratedKeys is return generated keys
-     * @return command response packets
+     * @return SQL execute responses
      * @throws SQLException SQL exception
      */
-    List<CommandResponsePackets> execute(SQLRouteResult routeResult, boolean isReturnGeneratedKeys) throws SQLException;
+    SQLExecuteResponses execute(SQLRouteResult routeResult, boolean isReturnGeneratedKeys) throws SQLException;
 }

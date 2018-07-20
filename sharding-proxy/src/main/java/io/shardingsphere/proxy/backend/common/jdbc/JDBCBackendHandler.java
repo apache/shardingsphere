@@ -32,6 +32,7 @@ import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingsphere.proxy.backend.common.BackendHandler;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngine;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.SQLExecuteResponses;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;
 import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
@@ -49,6 +50,7 @@ import javax.transaction.Status;
 import javax.transaction.SystemException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -116,11 +118,11 @@ public abstract class JDBCBackendHandler implements BackendHandler {
             return new CommandResponsePackets(new ErrPacket(1, 
                     ServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "unknown_table"));
         }
-        List<CommandResponsePackets> packets = executeEngine.execute(routeResult, isReturnGeneratedKeys);
-        queryResults.addAll(executeEngine.getQueryResults());
-        columnCount = executeEngine.getColumnCount();
-        columnTypes = executeEngine.getColumnTypes();
-        CommandResponsePackets result = merge(sqlStatement, packets);
+        SQLExecuteResponses responses = executeEngine.execute(routeResult, isReturnGeneratedKeys);
+        queryResults.addAll(responses.getQueryResults());
+        columnCount = responses.getColumnCount();
+        columnTypes = responses.getColumnTypes();
+        CommandResponsePackets result = merge(sqlStatement, responses.getCommandResponsePacketsList());
         if (!ruleRegistry.isMasterSlaveOnly()) {
             ProxyShardingRefreshHandler.build(routeResult).execute();
         }
@@ -132,7 +134,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         return TransactionType.XA == ruleRegistry.getTransactionType() && SQLType.DDL == sqlType && Status.STATUS_NO_TRANSACTION != AtomikosUserTransaction.getInstance().getStatus();
     }
     
-    private CommandResponsePackets merge(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets) {
+    private CommandResponsePackets merge(final SQLStatement sqlStatement, final Collection<CommandResponsePackets> packets) {
         CommandResponsePackets headPackets = new CommandResponsePackets();
         for (CommandResponsePackets each : packets) {
             headPackets.addPacket(each.getHeadPacket());
@@ -148,7 +150,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         if (SQLType.DQL == sqlStatement.getType() || SQLType.DAL == sqlStatement.getType()) {
             return mergeDQLorDAL(sqlStatement, packets);
         }
-        return packets.get(0);
+        return packets.iterator().next();
     }
     
     private CommandResponsePackets mergeDML(final CommandResponsePackets firstPackets) {
@@ -165,7 +167,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId));
     }
     
-    private CommandResponsePackets mergeDQLorDAL(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets) {
+    private CommandResponsePackets mergeDQLorDAL(final SQLStatement sqlStatement, final Collection<CommandResponsePackets> packets) {
         try {
             mergedResult = MergeEngineFactory.newInstance(ruleRegistry.getShardingRule(), queryResults, sqlStatement, ruleRegistry.getShardingMetaData()).merge();
             isMerged = true;
@@ -175,7 +177,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         return buildPackets(packets);
     }
     
-    private CommandResponsePackets buildPackets(final List<CommandResponsePackets> packets) {
+    private CommandResponsePackets buildPackets(final Collection<CommandResponsePackets> packets) {
         CommandResponsePackets result = new CommandResponsePackets();
         Iterator<DatabaseProtocolPacket> databaseProtocolPacketsSampling = packets.iterator().next().getDatabaseProtocolPackets().iterator();
         FieldCountPacket fieldCountPacketSampling = (FieldCountPacket) databaseProtocolPacketsSampling.next();

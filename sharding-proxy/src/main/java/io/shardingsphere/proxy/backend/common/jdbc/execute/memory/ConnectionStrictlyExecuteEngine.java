@@ -23,6 +23,7 @@ import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngine;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteResponse;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.SQLExecuteResponses;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 
 import java.sql.Connection;
@@ -47,7 +48,7 @@ import java.util.concurrent.Future;
 public abstract class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
     
     @Override
-    public final List<CommandResponsePackets> execute(final SQLRouteResult routeResult, final boolean isReturnGeneratedKeys) throws SQLException {
+    public final SQLExecuteResponses execute(final SQLRouteResult routeResult, final boolean isReturnGeneratedKeys) throws SQLException {
         Map<String, Collection<SQLUnit>> sqlExecutionUnits = routeResult.getSQLUnitGroups();
         Entry<String, Collection<SQLUnit>> firstEntry = sqlExecutionUnits.entrySet().iterator().next();
         sqlExecutionUnits.remove(firstEntry.getKey());
@@ -87,30 +88,25 @@ public abstract class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine 
         return result;
     }
     
-    private List<CommandResponsePackets> buildCommandResponsePackets(final Collection<JDBCExecuteResponse> firstJDBCExecuteResponses, final List<Future<Collection<JDBCExecuteResponse>>> futureList) {
-        List<CommandResponsePackets> result = new LinkedList<>();
+    private SQLExecuteResponses buildCommandResponsePackets(final Collection<JDBCExecuteResponse> firstJDBCExecuteResponses, final List<Future<Collection<JDBCExecuteResponse>>> futureList) {
+        Collection<CommandResponsePackets> commandResponsePackets = new LinkedList<>();
+        Collection<QueryResult> queryResults = new LinkedList<>();
         for (JDBCExecuteResponse each : firstJDBCExecuteResponses) {
-            result.add(each.getCommandResponsePackets());
-            if (0 == getColumnCount()) {
-                setColumnCount(each.getColumnCount());
-            }
-            if (null == getColumnTypes()) {
-                setColumnTypes(each.getColumnTypes());
-            }
-            getQueryResults().add(each.getQueryResult());
+            commandResponsePackets.add(each.getCommandResponsePackets());
+            queryResults.add(each.getQueryResult());
         }
         for (Future<Collection<JDBCExecuteResponse>> each : futureList) {
             try {
                 Collection<JDBCExecuteResponse> executeResponses = each.get();
                 for (JDBCExecuteResponse jdbcExecuteResponse : executeResponses) {
-                    result.add(jdbcExecuteResponse.getCommandResponsePackets());
-                    getQueryResults().add(jdbcExecuteResponse.getQueryResult());
+                    commandResponsePackets.add(jdbcExecuteResponse.getCommandResponsePackets());
+                    queryResults.add(jdbcExecuteResponse.getQueryResult());
                 }
             } catch (final InterruptedException | ExecutionException ex) {
                 throw new ShardingException(ex.getMessage(), ex);
             }
         }
-        return result;
+        return new SQLExecuteResponses(commandResponsePackets, queryResults);
     }
     
     @Override

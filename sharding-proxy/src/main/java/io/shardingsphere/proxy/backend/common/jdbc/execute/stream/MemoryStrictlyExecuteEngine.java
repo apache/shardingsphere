@@ -24,6 +24,7 @@ import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngine;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteResponse;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.SQLExecuteResponses;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 
 import java.sql.ResultSet;
@@ -49,7 +50,7 @@ public abstract class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
     private static final Integer FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
     
     @Override
-    public final List<CommandResponsePackets> execute(final SQLRouteResult routeResult, final boolean isReturnGeneratedKeys) throws SQLException {
+    public final SQLExecuteResponses execute(final SQLRouteResult routeResult, final boolean isReturnGeneratedKeys) throws SQLException {
         Iterator<SQLExecutionUnit> sqlExecutionUnits = routeResult.getExecutionUnits().iterator();
         SQLExecutionUnit firstSQLExecutionUnit = sqlExecutionUnits.next();
         List<Future<JDBCExecuteResponse>> futureList = asyncExecute(isReturnGeneratedKeys, Lists.newArrayList(sqlExecutionUnits));
@@ -79,22 +80,21 @@ public abstract class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
         return execute(statement, sqlExecutionUnit.getSqlUnit().getSql(), isReturnGeneratedKeys);
     }
     
-    private List<CommandResponsePackets> buildCommandResponsePackets(final JDBCExecuteResponse firstJDBCExecuteResponse, final List<Future<JDBCExecuteResponse>> futureList) {
-        List<CommandResponsePackets> result = new ArrayList<>(futureList.size() + 1);
-        result.add(firstJDBCExecuteResponse.getCommandResponsePackets());
-        setColumnCount(firstJDBCExecuteResponse.getColumnCount());
-        setColumnTypes(firstJDBCExecuteResponse.getColumnTypes());
-        getQueryResults().add(firstJDBCExecuteResponse.getQueryResult());
+    private SQLExecuteResponses buildCommandResponsePackets(final JDBCExecuteResponse firstJDBCExecuteResponse, final List<Future<JDBCExecuteResponse>> futureList) {
+        Collection<CommandResponsePackets> commandResponsePackets = new ArrayList<>(futureList.size() + 1);
+        commandResponsePackets.add(firstJDBCExecuteResponse.getCommandResponsePackets());
+        Collection<QueryResult> queryResults = new ArrayList<>(futureList.size() + 1);
+        queryResults.add(firstJDBCExecuteResponse.getQueryResult());
         for (Future<JDBCExecuteResponse> each : futureList) {
             try {
                 JDBCExecuteResponse executeResponse = each.get();
-                result.add(executeResponse.getCommandResponsePackets());
-                getQueryResults().add(executeResponse.getQueryResult());
+                commandResponsePackets.add(executeResponse.getCommandResponsePackets());
+                queryResults.add(executeResponse.getQueryResult());
             } catch (final InterruptedException | ExecutionException ex) {
                 throw new ShardingException(ex.getMessage(), ex);
             }
         }
-        return result;
+        return new SQLExecuteResponses(commandResponsePackets, queryResults);
     }
     
     @Override
