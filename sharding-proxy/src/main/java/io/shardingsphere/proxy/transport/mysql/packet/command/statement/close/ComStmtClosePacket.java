@@ -20,7 +20,7 @@ package io.shardingsphere.proxy.transport.mysql.packet.command.statement.close;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import lombok.extern.slf4j.Slf4j;
 
 /**

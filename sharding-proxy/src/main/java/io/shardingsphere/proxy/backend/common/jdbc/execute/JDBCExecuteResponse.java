@@ -18,7 +18,7 @@
 package io.shardingsphere.proxy.backend.common.jdbc.execute;
 
 import io.shardingsphere.core.merger.QueryResult;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

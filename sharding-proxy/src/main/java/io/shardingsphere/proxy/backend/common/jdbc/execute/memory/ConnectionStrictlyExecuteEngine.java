@@ -24,7 +24,7 @@ import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngine;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteResponse;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.SQLExecuteResponses;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

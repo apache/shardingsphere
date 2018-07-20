@@ -21,7 +21,7 @@ import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.proxy.backend.common.SQLExecuteEngine;
 import io.shardingsphere.proxy.backend.common.jdbc.BackendConnection;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
