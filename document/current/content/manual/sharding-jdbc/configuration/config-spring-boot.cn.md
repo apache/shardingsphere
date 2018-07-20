@@ -67,6 +67,8 @@ sharding.jdbc.config.masterslave.load-balance-algorithm-type=round_robin
 sharding.jdbc.config.masterslave.name=ds_ms
 sharding.jdbc.config.masterslave.master-data-source-name=ds_master
 sharding.jdbc.config.masterslave.slave-data-source-names=ds_slave0,ds_slave1
+
+sharding.jdbc.config.masterslave.props.sql.show=true
 ```
 
 ### 数据分片 + 读写分离

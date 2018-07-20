@@ -289,6 +289,8 @@ sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.config.map.key1= #User-defined arguments
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.config.map.key2= #User-defined arguments
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.config.map.keyx= #User-defined arguments
+
+sharding.jdbc.config.masterslave.props.sql.show=true
 ```
 
 ### Orchestration by Zookeeper
