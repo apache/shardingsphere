@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.util;
 
+import io.shardingsphere.core.constant.RuleType;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import lombok.AccessLevel;
@@ -36,13 +37,14 @@ import java.util.Collection;
 public final class SQLLogger {
     
     /**
-     * Print SQL log.
+     * Print SQL log for sharding rule.
      * 
      * @param logicSQL logic SQL
      * @param sqlStatement SQL statement
      * @param sqlExecutionUnits SQL execution units
      */
     public static void logSQL(final String logicSQL, final SQLStatement sqlStatement, final Collection<SQLExecutionUnit> sqlExecutionUnits) {
+        log("Rule Type: {}", RuleType.Sharding);
         log("Logic SQL: {}", logicSQL);
         log("SQLStatement: {}", sqlStatement);
         for (SQLExecutionUnit each : sqlExecutionUnits) {
@@ -51,6 +53,20 @@ public final class SQLLogger {
             } else {
                 log("Actual SQL: {} ::: {} ::: {}", each.getDataSource(), each.getSqlUnit().getSql(), each.getSqlUnit().getParameterSets());
             }
+        }
+    }
+    
+    /**
+     * Print SQL log for master slave rule.
+     *
+     * @param logicSQL logic SQL
+     * @param dataSourceNames data source names
+     */
+    public static void logSQL(final String logicSQL, final Collection<String> dataSourceNames) {
+        log("Rule Type: {}", RuleType.MasterSlave);
+        log("Logic SQL: {}", logicSQL);
+        for (String each : dataSourceNames) {
+            log("Actual SQL: {} ::: {}", each, logicSQL);
         }
     }
     

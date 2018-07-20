@@ -40,6 +40,7 @@ import java.util.Map;
  *
  * @author zhangliang
  * @author caohao
+ * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlOrchestrationMasterSlaveDataSourceFactory {
@@ -99,7 +100,7 @@ public final class YamlOrchestrationMasterSlaveDataSourceFactory {
     private static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, 
                                                final YamlMasterSlaveRuleConfiguration yamlConfig, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         return null == yamlConfig ? OrchestrationMasterSlaveDataSourceFactory.createDataSource(orchestrationConfig)
-                : OrchestrationMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, yamlConfig.getMasterSlaveRuleConfiguration(), yamlConfig.getConfigMap(), orchestrationConfig);
+                : OrchestrationMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, yamlConfig.getMasterSlaveRuleConfiguration(), yamlConfig.getConfigMap(), yamlConfig.getProps(), orchestrationConfig);
     }
     
     private static YamlOrchestrationMasterSlaveRuleConfiguration unmarshal(final File yamlFile) throws IOException {

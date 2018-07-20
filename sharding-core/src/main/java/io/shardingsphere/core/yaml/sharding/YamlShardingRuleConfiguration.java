@@ -77,7 +77,7 @@ public class YamlShardingRuleConfiguration {
         defaultKeyGeneratorClassName = null == shardingRuleConfiguration.getDefaultKeyGenerator()
                 ? null : shardingRuleConfiguration.getDefaultKeyGenerator().getClass().getName();
         for (MasterSlaveRuleConfiguration each : shardingRuleConfiguration.getMasterSlaveRuleConfigs()) {
-            masterSlaveRules.put(each.getName(), new YamlMasterSlaveRuleConfiguration(each, new HashMap<String, Object>()));
+            masterSlaveRules.put(each.getName(), new YamlMasterSlaveRuleConfiguration(each, new HashMap<String, Object>(), new Properties()));
         }
         this.configMap = configMap;
         this.props = props;

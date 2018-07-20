@@ -24,11 +24,13 @@ import lombok.extern.slf4j.Slf4j;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Orchestration master-slave datasource.
  *
  * @author caohao
+ * @author panjuan
  */
 @Slf4j
 public class OrchestrationMasterSlaveDataSource extends MasterSlaveDataSource implements AutoCloseable {
@@ -41,20 +43,23 @@ public class OrchestrationMasterSlaveDataSource extends MasterSlaveDataSource im
     
     private final Map<String, Object> configMap;
     
+    private final Properties props;
+    
     public OrchestrationMasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
-                                              final Map<String, Object> configMap, final OrchestrationFacade orchestrationFacade) throws SQLException {
-        super(dataSourceMap, masterSlaveRuleConfig, configMap);
+                                              final Map<String, Object> configMap, final Properties props, final OrchestrationFacade orchestrationFacade) throws SQLException {
+        super(dataSourceMap, masterSlaveRuleConfig, configMap, props);
         this.orchestrationFacade = orchestrationFacade;
         this.dataSourceMap = dataSourceMap;
         this.masterSlaveRuleConfig = masterSlaveRuleConfig;
         this.configMap = configMap;
+        this.props = props;
     }
     
     /**
      * Initialize for master-slave orchestration.
      */
     public void init() {
-        orchestrationFacade.init(dataSourceMap, masterSlaveRuleConfig, configMap, this);
+        orchestrationFacade.init(dataSourceMap, masterSlaveRuleConfig, configMap, props, this);
     }
     
     @Override

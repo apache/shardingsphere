@@ -40,6 +40,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
@@ -60,7 +61,8 @@ public final class ShardingConnectionTest {
         dataSourceMap.put("test_ds_master", masterDataSource);
         dataSourceMap.put("test_ds_slave", slaveDataSource);
         masterSlaveDataSource = new MasterSlaveDataSource(
-                dataSourceMap, new MasterSlaveRuleConfiguration("test_ds", "test_ds_master", Collections.singletonList("test_ds_slave")), Collections.<String, Object>emptyMap());
+                dataSourceMap, new MasterSlaveRuleConfiguration("test_ds", "test_ds_master", Collections.singletonList("test_ds_slave")),
+                Collections.<String, Object>emptyMap(), new Properties());
         ((TestDataSource) slaveDataSource).setThrowExceptionWhenClosing(true);
     }
     
