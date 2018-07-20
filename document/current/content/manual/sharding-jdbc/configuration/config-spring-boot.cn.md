@@ -291,6 +291,9 @@ sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.config.map.key1= #用户自定义配置
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.config.map.key2= #用户自定义配置
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.config.map.keyx= #用户自定义配置
+
+sharding.jdbc.config.masterslave.props.sql.show= #是否开启SQL显示，默认值: false
+sharding.jdbc.config.masterslave.props.executor.size= #工作线程数量，默认值: CPU核数
 ```
 
 ### 使用Zookeeper的数据治理
