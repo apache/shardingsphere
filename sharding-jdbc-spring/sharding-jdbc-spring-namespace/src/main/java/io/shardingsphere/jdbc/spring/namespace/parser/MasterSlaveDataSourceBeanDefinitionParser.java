@@ -38,6 +38,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Master-slave data source parser for spring namespace.
@@ -60,6 +61,7 @@ public class MasterSlaveDataSourceBeanDefinitionParser extends AbstractBeanDefin
             factory.addConstructorArgValue(parseStrategyType(element));
         }
         factory.addConstructorArgValue(parseConfigMap(element, parserContext, factory.getBeanDefinition()));
+        factory.addConstructorArgValue(parseProperties(element, parserContext));
         return factory.getBeanDefinition();
     }
     
@@ -101,5 +103,10 @@ public class MasterSlaveDataSourceBeanDefinitionParser extends AbstractBeanDefin
     private Map parseConfigMap(final Element element, final ParserContext parserContext, final BeanDefinition beanDefinition) {
         Element dataElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.CONFIG_MAP_TAG);
         return null == dataElement ? Collections.<String, Class<?>>emptyMap() : parserContext.getDelegate().parseMapElement(dataElement, beanDefinition);
+    }
+    
+    private Properties parseProperties(final Element element, final ParserContext parserContext) {
+        Element propsElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.PROPS_TAG);
+        return null == propsElement ? new Properties() : parserContext.getDelegate().parsePropsElement(propsElement);
     }
 }

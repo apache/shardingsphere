@@ -26,6 +26,7 @@
 1. [ISSUE #773](https://github.com/sharding-sphere/sharding-sphere/issues/773) Support sharding and autoincrement primary key of INSERT statements without column names
 1. [ISSUE #916](https://github.com/sharding-sphere/sharding-sphere/issues/916) Support authorization for Sharding Proxy
 1. [ISSUE #935](https://github.com/sharding-sphere/sharding-sphere/issues/935) Support to store configuration by using Yaml instead of JSON in registry center.
+1. [ISSUE #1004](https://github.com/sharding-sphere/sharding-sphere/issues/1004) Support props configuration for MasterSlave rule.
 
 ### Bug Fixes
 

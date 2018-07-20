@@ -123,8 +123,8 @@ public final class OrchestrationFacade implements AutoCloseable {
      * @param masterSlaveDataSource master-slave source
      */
     public void init(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, 
-                     final Map<String, Object> configMap, final MasterSlaveDataSource masterSlaveDataSource) {
-        configService.persistMasterSlaveConfiguration(dataSourceMap, masterSlaveRuleConfig, configMap, isOverwrite);
+                     final Map<String, Object> configMap, final Properties props, final MasterSlaveDataSource masterSlaveDataSource) {
+        configService.persistMasterSlaveConfiguration(dataSourceMap, masterSlaveRuleConfig, configMap, props, isOverwrite);
         instanceStateService.persistMasterSlaveInstanceOnline();
         dataSourceService.persistDataSourcesNode();
         listenerManager.initMasterSlaveListeners(masterSlaveDataSource);

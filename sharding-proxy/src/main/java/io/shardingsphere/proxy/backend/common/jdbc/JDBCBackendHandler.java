@@ -73,13 +73,13 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     private final List<QueryResult> queryResults;
     
-    private MergedResult mergedResult;
-    
-    private int currentSequenceId;
-    
     private int columnCount;
     
     private List<ColumnType> columnTypes;
+    
+    private MergedResult mergedResult;
+    
+    private int currentSequenceId;
     
     private boolean isMerged;
     
@@ -193,7 +193,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     private SQLRouteResult doMasterSlaveRoute() {
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
         SQLRouteResult result = new SQLRouteResult(sqlStatement);
-        for (String each : new MasterSlaveRouter(ruleRegistry.getMasterSlaveRule()).route(sqlStatement.getType())) {
+        for (String each : new MasterSlaveRouter(ruleRegistry.getMasterSlaveRule(), ruleRegistry.isShowSQL()).route(sql)) {
             result.getExecutionUnits().add(new SQLExecutionUnit(each, new SQLUnit(sql, Collections.<List<Object>>emptyList())));
         }
         return result;

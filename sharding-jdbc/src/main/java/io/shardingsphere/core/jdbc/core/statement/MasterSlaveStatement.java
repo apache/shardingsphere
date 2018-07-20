@@ -33,6 +33,7 @@ import java.util.LinkedList;
  * Statement that support master-slave.
  * 
  * @author zhangliang
+ * @author panjuan
  */
 @Getter
 public final class MasterSlaveStatement extends AbstractStatementAdapter {
@@ -60,7 +61,7 @@ public final class MasterSlaveStatement extends AbstractStatementAdapter {
     public MasterSlaveStatement(final MasterSlaveConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         super(Statement.class);
         this.connection = connection;
-        masterSlaveRouter = new MasterSlaveRouter(connection.getMasterSlaveDataSource().getMasterSlaveRule());
+        masterSlaveRouter = new MasterSlaveRouter(connection.getMasterSlaveDataSource().getMasterSlaveRule(), connection.getMasterSlaveDataSource().showSQL());
         this.resultSetType = resultSetType;
         this.resultSetConcurrency = resultSetConcurrency;
         this.resultSetHoldability = resultSetHoldability;

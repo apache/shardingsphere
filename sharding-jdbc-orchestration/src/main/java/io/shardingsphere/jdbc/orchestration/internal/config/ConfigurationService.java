@@ -120,13 +120,16 @@ public final class ConfigurationService {
      * @param dataSourceMap data source map
      * @param masterSlaveRuleConfig master-slave rule configuration
      * @param configMap config map
+     * @param props props
      * @param isOverwrite is overwrite registry center's configuration
      */
     public void persistMasterSlaveConfiguration(
-            final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Map<String, Object> configMap, final boolean isOverwrite) {
+            final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Map<String, Object> configMap,
+            final Properties props, final boolean isOverwrite) {
         persistDataSourceConfiguration(dataSourceMap, isOverwrite);
         persistMasterSlaveRuleConfiguration(masterSlaveRuleConfig, isOverwrite);
         persistMasterSlaveConfigMap(configMap, isOverwrite);
+        persistMasterSlaveProperties(props, isOverwrite);
     }
     
     private void persistMasterSlaveRuleConfiguration(final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isOverwrite) {
@@ -147,6 +150,16 @@ public final class ConfigurationService {
     
     private boolean hasMasterSlaveConfigMap() {
         return regCenter.isExisted(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_CONFIG_MAP_NODE_PATH));
+    }
+    
+    private void persistMasterSlaveProperties(final Properties props, final boolean isOverwrite) {
+        if (isOverwrite || !hasMasterSlaveProperties()) {
+            regCenter.persist(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_PROPS_NODE_PATH), MasterSlaveConfigurationConverter.propertiesToYaml(props));
+        }
+    }
+    
+    private boolean hasMasterSlaveProperties() {
+        return regCenter.isExisted(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_PROPS_NODE_PATH));
     }
     
     /**
@@ -234,6 +247,16 @@ public final class ConfigurationService {
     @SuppressWarnings("unchecked")
     public Map<String, Object> loadMasterSlaveConfigMap() {
         return MasterSlaveConfigurationConverter.configMapFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_CONFIG_MAP_NODE_PATH)));
+    }
+    
+    /**
+     * Load sharding properties configuration.
+     *
+     * @return sharding properties
+     */
+    public Properties loadMasterSlaveProperties() {
+        String data = regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_CONFIG_MAP_NODE_PATH));
+        return Strings.isNullOrEmpty(data) ? new Properties() : MasterSlaveConfigurationConverter.propertiesFromYaml(data);
     }
     
     /**

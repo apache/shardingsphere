@@ -27,11 +27,13 @@ import org.springframework.beans.factory.InitializingBean;
 
 import javax.sql.DataSource;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Orchestration master-slave data source factory bean.
  * 
- * @author zhangliang 
+ * @author zhangliang
+ * @author panjuan
  */
 public class OrchestrationMasterSlaveDataSourceFactoryBean implements FactoryBean<OrchestrationMasterSlaveDataSource>, InitializingBean, DisposableBean {
     
@@ -43,18 +45,21 @@ public class OrchestrationMasterSlaveDataSourceFactoryBean implements FactoryBea
     
     private final Map<String, Object> configMap;
     
+    private final Properties props;
+    
     private final OrchestrationConfiguration orchestrationConfig;
     
     public OrchestrationMasterSlaveDataSourceFactoryBean(final OrchestrationConfiguration orchestrationConfig) {
-        this(null, null, null, orchestrationConfig);
+        this(null, null, null, null, orchestrationConfig);
     }
     
     public OrchestrationMasterSlaveDataSourceFactoryBean(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
-                                                         final Map<String, Object> configMap, final OrchestrationConfiguration orchestrationConfig) {
+                                                         final Map<String, Object> configMap, final Properties props, final OrchestrationConfiguration orchestrationConfig) {
         this.orchestrationConfig = orchestrationConfig;
         this.dataSourceMap = dataSourceMap;
         this.masterSlaveRuleConfig = masterSlaveRuleConfig;
         this.configMap = configMap;
+        this.props = props;
     }
     
     @Override
@@ -75,7 +80,7 @@ public class OrchestrationMasterSlaveDataSourceFactoryBean implements FactoryBea
     @Override
     public void afterPropertiesSet() throws Exception {
         orchestrationMasterSlaveDataSource = 
-                (OrchestrationMasterSlaveDataSource) OrchestrationMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig, configMap, orchestrationConfig);
+                (OrchestrationMasterSlaveDataSource) OrchestrationMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig, configMap, props, orchestrationConfig);
     }
     
     @Override

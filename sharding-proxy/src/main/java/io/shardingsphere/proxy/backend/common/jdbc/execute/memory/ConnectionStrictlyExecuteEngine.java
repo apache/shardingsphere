@@ -91,10 +91,10 @@ public abstract class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine 
         List<CommandResponsePackets> result = new LinkedList<>();
         for (JDBCExecuteResponse each : firstJDBCExecuteResponses) {
             result.add(each.getCommandResponsePackets());
-            if (0 != getColumnCount()) {
+            if (0 == getColumnCount()) {
                 setColumnCount(each.getColumnCount());
             }
-            if (null != getColumnTypes()) {
+            if (null == getColumnTypes()) {
                 setColumnTypes(each.getColumnTypes());
             }
             getQueryResults().add(each.getQueryResult());
