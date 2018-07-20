@@ -25,6 +25,7 @@ import lombok.Getter;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Query response packets.
@@ -60,8 +61,8 @@ public final class QueryResponsePackets extends CommandResponsePackets {
      *
      * @return column types
      */
-    public Collection<ColumnType> getColumnTypes() {
-        Collection<ColumnType> result = new LinkedList<>();
+    public List<ColumnType> getColumnTypes() {
+        List<ColumnType> result = new LinkedList<>();
         for (ColumnDefinition41Packet each : columnDefinition41Packets) {
             result.add(each.getColumnType());
         }

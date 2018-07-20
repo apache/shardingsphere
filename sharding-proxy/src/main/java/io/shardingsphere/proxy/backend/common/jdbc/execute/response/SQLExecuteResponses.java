@@ -21,10 +21,10 @@ import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.QueryResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -67,13 +67,7 @@ public final class SQLExecuteResponses {
      * @return column types
      */
     public List<ColumnType> getColumnTypes() {
-        List<ColumnType> result = new ArrayList<>(firstCommandResponsePackets.getPackets().size());
-        for (DatabasePacket each : firstCommandResponsePackets.getPackets()) {
-            if (each instanceof ColumnDefinition41Packet) {
-                result.add(((ColumnDefinition41Packet) each).getColumnType());
-            }
-        }
-        return result;
+        return ((QueryResponsePackets) firstCommandResponsePackets).getColumnTypes();
     }
     
     /**
@@ -82,6 +76,6 @@ public final class SQLExecuteResponses {
      * @return column count
      */
     public int getColumnCount() {
-        return 1 == firstCommandResponsePackets.getPackets().size() ? 0 : firstCommandResponsePackets.getPackets().size() - 2;
+        return ((QueryResponsePackets) firstCommandResponsePackets).getColumnCount();
     }
 }
