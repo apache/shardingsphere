@@ -55,7 +55,7 @@ public final class ShardingProxy {
     private EventLoopGroup workerGroup;
     
     public ShardingProxy() {
-        ruleRegistry.initShardingMetaData(executorContext.getUserGroup());
+        ruleRegistry.initShardingMetaData(executorContext.getExecutorService());
     }
     
     /**
@@ -71,7 +71,8 @@ public final class ShardingProxy {
                 ShardingProxyClient.getInstance().start();
             }
             ServerBootstrap bootstrap = new ServerBootstrap();
-            if (executorContext.canUseEpoll()) {
+            bossGroup = createEventLoopGroup();
+            if (bossGroup instanceof EpollEventLoopGroup) {
                 groupsEpoll(bootstrap);
             } else {
                 groupsNio(bootstrap);
@@ -81,10 +82,18 @@ public final class ShardingProxy {
         } finally {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
-            executorContext.getUserGroup().shutdownGracefully();
+            executorContext.getExecutorService().shutdown();
             if (ruleRegistry.isProxyBackendUseNio()) {
                 ShardingProxyClient.getInstance().stop();
             }
+        }
+    }
+    
+    private EventLoopGroup createEventLoopGroup() {
+        try {
+            return new EpollEventLoopGroup(1);
+        } catch (final UnsatisfiedLinkError ex) {
+            return new NioEventLoopGroup(1);
         }
     }
     

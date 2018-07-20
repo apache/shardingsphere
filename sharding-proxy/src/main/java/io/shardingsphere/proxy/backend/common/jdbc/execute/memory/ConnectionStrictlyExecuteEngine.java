@@ -61,7 +61,7 @@ public abstract class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine 
         for (Entry<String, Collection<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
             final Connection connection = getBackendConnection().getConnection(entry.getKey());
             final Collection<SQLUnit> sqlUnits = entry.getValue();
-            result.add(getUserGroup().submit(new Callable<Collection<JDBCExecuteResponse>>() {
+            result.add(getExecutorService().submit(new Callable<Collection<JDBCExecuteResponse>>() {
                 
                 @Override
                 public Collection<JDBCExecuteResponse> call() throws SQLException {
