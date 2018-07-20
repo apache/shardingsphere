@@ -104,7 +104,7 @@
 #    sql.show: false
 
 
-# Common configuration for auth.
+# Common configurations.
 
 #orchestration:
 #  name: orchestration_ds
