@@ -140,7 +140,14 @@ weight = 4
     
     <bean id="randomStrategy" class="io.shardingsphere.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
     
-    <master-slave:data-source id="masterSlaveDataSource" master-data-source-name="ds_master" slave-data-source-names="ds_slave0, ds_slave1" strategy-ref="randomStrategy" />
+    <master-slave:data-source id="masterSlaveDataSource" master-data-source-name="ds_master" slave-data-source-names="ds_slave0, ds_slave1" strategy-ref="randomStrategy">
+        <master-slave:props>
+            <prop key="sql.show">${sql_show}</prop>
+            <prop key="executor.size">10</prop>
+            <prop key="foo">bar</prop>
+        </master-slave:props>
+    </master-slave:data-source>
+            
 </beans>
 ```
 
