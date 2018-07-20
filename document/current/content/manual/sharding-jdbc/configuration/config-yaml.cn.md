@@ -281,6 +281,9 @@ masterSlaveRule:
     key1: value1
     key2: value2
     keyx: valuex
+    
+  props:
+    sql.show: false
 ```
 
 ### 使用Zookeeper的数据治理

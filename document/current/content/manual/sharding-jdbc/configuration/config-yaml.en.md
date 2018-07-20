@@ -79,6 +79,9 @@ masterSlaveRule:
   slaveDataSourceNames: 
     - ds_slave0
     - ds_slave1
+       
+  props:
+    sql.show: false
 ```
 
 ### Sharding + Read-write splitting
