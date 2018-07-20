@@ -81,9 +81,10 @@ public abstract class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine 
     private Collection<JDBCExecuteResponse> syncExecute(final boolean isReturnGeneratedKeys, final String dataSourceName, final Collection<SQLUnit> sqlUnits) throws SQLException {
         Collection<JDBCExecuteResponse> result = new LinkedList<>();
         boolean hasMetaData = false;
+        Connection connection = getBackendConnection().getConnection(dataSourceName);
         for (SQLUnit each : sqlUnits) {
             String actualSQL = each.getSql();
-            Statement statement = createStatement(getBackendConnection().getConnection(dataSourceName), actualSQL, isReturnGeneratedKeys);
+            Statement statement = createStatement(connection, actualSQL, isReturnGeneratedKeys);
             JDBCExecuteResponse response;
             if (hasMetaData) {
                 response = executeWithoutMetadata(statement, actualSQL, isReturnGeneratedKeys);
