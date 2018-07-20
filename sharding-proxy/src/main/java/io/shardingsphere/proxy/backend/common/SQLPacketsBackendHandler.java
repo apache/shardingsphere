@@ -164,7 +164,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     private CommandResponsePackets merge(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets, final List<QueryResult> queryResults) {
         CommandResponsePackets headPackets = new CommandResponsePackets();
         for (CommandResponsePackets each : packets) {
-            headPackets.addPacket(each.getHeadPacket());
+            headPackets.getDatabaseProtocolPackets().add(each.getHeadPacket());
         }
         for (DatabaseProtocolPacket each : headPackets.getDatabaseProtocolPackets()) {
             if (each instanceof ErrPacket) {

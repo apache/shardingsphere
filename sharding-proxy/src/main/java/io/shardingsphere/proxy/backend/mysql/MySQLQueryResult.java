@@ -92,7 +92,7 @@ public final class MySQLQueryResult implements QueryResult {
      * @param mysqlPacket mysqlPacket
      */
     public void setGenericResponse(final MySQLPacket mysqlPacket) {
-        commandResponsePackets.addPacket(mysqlPacket);
+        commandResponsePackets.getDatabaseProtocolPackets().add(mysqlPacket);
     }
     
     /**
@@ -108,7 +108,7 @@ public final class MySQLQueryResult implements QueryResult {
      * @param columnDefinition columnDefinition
      */
     public void addColumnDefinition(final ColumnDefinition41Packet columnDefinition) {
-        commandResponsePackets.addPacket(columnDefinition);
+        commandResponsePackets.getDatabaseProtocolPackets().add(columnDefinition);
         columnDefinitions.add(columnDefinition);
         columnIndexAndLabelMap.put(columnDefinitions.indexOf(columnDefinition) + 1, columnDefinition.getName());
         columnLabelAndIndexMap.put(columnDefinition.getName(), columnDefinitions.indexOf(columnDefinition) + 1);
@@ -128,7 +128,7 @@ public final class MySQLQueryResult implements QueryResult {
      * @param eofPacket eofPacket
      */
     public void setColumnFinished(final EofPacket eofPacket) {
-        commandResponsePackets.addPacket(eofPacket);
+        commandResponsePackets.getDatabaseProtocolPackets().add(eofPacket);
         currentSequenceId++;
         columnFinished = true;
     }

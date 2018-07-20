@@ -62,7 +62,7 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
     
     protected abstract Statement createStatement(Connection connection, String sql, boolean isReturnGeneratedKeys) throws SQLException;
     
-    protected JDBCExecuteResponse execute(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) {
+    protected JDBCExecuteResponse executeWithMetadata(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) {
         try {
             setFetchSize(statement);
             if (!executeSQL(statement, sql, isReturnGeneratedKeys)) {
@@ -70,6 +70,18 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
             }
             ResultSet resultSet = statement.getResultSet();
             return new JDBCExecuteResponse(getHeaderPackets(resultSet.getMetaData()), createQueryResult(resultSet));
+        } catch (final SQLException ex) {
+            return new JDBCExecuteResponse(new CommandResponsePackets(new ErrPacket(1, ex)));
+        }
+    }
+    
+    protected JDBCExecuteResponse executeWithoutMetadata(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) {
+        try {
+            setFetchSize(statement);
+            if (!executeSQL(statement, sql, isReturnGeneratedKeys)) {
+                return new JDBCExecuteResponse(new CommandResponsePackets(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0)));
+            }
+            return new JDBCExecuteResponse(createQueryResult(statement.getResultSet()));
         } catch (final SQLException ex) {
             return new JDBCExecuteResponse(new CommandResponsePackets(new ErrPacket(1, ex)));
         }
@@ -92,9 +104,9 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
         }
         CommandResponsePackets result = new CommandResponsePackets(new FieldCountPacket(++currentSequenceId, columnCount));
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            result.addPacket(new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData, columnIndex));
+            result.getDatabaseProtocolPackets().add(new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData, columnIndex));
         }
-        result.addPacket(new EofPacket(++currentSequenceId));
+        result.getDatabaseProtocolPackets().add(new EofPacket(++currentSequenceId));
         return result;
     }
     

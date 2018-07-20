@@ -137,7 +137,9 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     private CommandResponsePackets merge(final SQLStatement sqlStatement, final Collection<CommandResponsePackets> packets) {
         CommandResponsePackets headPackets = new CommandResponsePackets();
         for (CommandResponsePackets each : packets) {
-            headPackets.addPacket(each.getHeadPacket());
+            if (null != each) {
+                headPackets.getDatabaseProtocolPackets().add(each.getHeadPacket());
+            }
         }
         for (DatabaseProtocolPacket each : headPackets.getDatabaseProtocolPackets()) {
             if (each instanceof ErrPacket) {
@@ -181,13 +183,13 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         CommandResponsePackets result = new CommandResponsePackets();
         Iterator<DatabaseProtocolPacket> databaseProtocolPacketsSampling = packets.iterator().next().getDatabaseProtocolPackets().iterator();
         FieldCountPacket fieldCountPacketSampling = (FieldCountPacket) databaseProtocolPacketsSampling.next();
-        result.addPacket(fieldCountPacketSampling);
+        result.getDatabaseProtocolPackets().add(fieldCountPacketSampling);
         ++currentSequenceId;
         for (int i = 0; i < columnCount; i++) {
-            result.addPacket(databaseProtocolPacketsSampling.next());
+            result.getDatabaseProtocolPackets().add(databaseProtocolPacketsSampling.next());
             ++currentSequenceId;
         }
-        result.addPacket(databaseProtocolPacketsSampling.next());
+        result.getDatabaseProtocolPackets().add(databaseProtocolPacketsSampling.next());
         ++currentSequenceId;
         return result;
     }

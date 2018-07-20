@@ -40,15 +40,6 @@ public final class CommandResponsePackets {
     }
     
     /**
-     * Add packet.
-     *
-     * @param databaseProtocolPacket database protocol packet
-     */
-    public void addPacket(final DatabaseProtocolPacket databaseProtocolPacket) {
-        databaseProtocolPackets.add(databaseProtocolPacket);
-    }
-    
-    /**
      * Get head packet.
      *
      * @return head database protocol packet

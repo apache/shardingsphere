@@ -18,15 +18,9 @@
 package io.shardingsphere.proxy.backend.common.jdbc.execute;
 
 import io.shardingsphere.core.merger.QueryResult;
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
-import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
-import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * JDBC execute response.
@@ -41,31 +35,11 @@ public final class JDBCExecuteResponse {
     
     private final QueryResult queryResult;
     
+    public JDBCExecuteResponse(final QueryResult queryResult) {
+        this(null, queryResult);
+    }
+    
     public JDBCExecuteResponse(final CommandResponsePackets commandResponsePackets) {
         this(commandResponsePackets, null);
-    }
-    
-    /**
-     * Get column types.
-     * 
-     * @return column types
-     */
-    public List<ColumnType> getColumnTypes() {
-        List<ColumnType> result = new ArrayList<>(commandResponsePackets.getDatabaseProtocolPackets().size());
-        for (DatabaseProtocolPacket each : commandResponsePackets.getDatabaseProtocolPackets()) {
-            if (each instanceof ColumnDefinition41Packet) {
-                result.add(((ColumnDefinition41Packet) each).getColumnType());
-            }
-        }
-        return result;
-    }
-    
-    /**
-     * Get column count.
-     * 
-     * @return column count
-     */
-    public int getColumnCount() {
-        return 1 == commandResponsePackets.getDatabaseProtocolPackets().size() ? 0 : commandResponsePackets.getDatabaseProtocolPackets().size() - 2;
     }
 }

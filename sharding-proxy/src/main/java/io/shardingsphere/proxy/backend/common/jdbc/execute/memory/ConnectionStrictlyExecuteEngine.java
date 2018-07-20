@@ -69,7 +69,7 @@ public abstract class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine 
                     Collection<JDBCExecuteResponse> result = new LinkedList<>();
                     for (SQLUnit each : sqlUnits) {
                         Statement statement = createStatement(connection, each.getSql(), isReturnGeneratedKeys);
-                        result.add(execute(statement, each.getSql(), isReturnGeneratedKeys));
+                        result.add(executeWithoutMetadata(statement, each.getSql(), isReturnGeneratedKeys));
                     }
                     return result;
                 }
@@ -80,10 +80,18 @@ public abstract class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine 
     
     private Collection<JDBCExecuteResponse> syncExecute(final boolean isReturnGeneratedKeys, final String dataSourceName, final Collection<SQLUnit> sqlUnits) throws SQLException {
         Collection<JDBCExecuteResponse> result = new LinkedList<>();
+        boolean hasMetaData = false;
         for (SQLUnit each : sqlUnits) {
             String actualSQL = each.getSql();
             Statement statement = createStatement(getBackendConnection().getConnection(dataSourceName), actualSQL, isReturnGeneratedKeys);
-            result.add(execute(statement, actualSQL, isReturnGeneratedKeys));
+            JDBCExecuteResponse response;
+            if (hasMetaData) {
+                response = executeWithoutMetadata(statement, actualSQL, isReturnGeneratedKeys);
+            } else {
+                response = executeWithMetadata(statement, actualSQL, isReturnGeneratedKeys);
+                hasMetaData = true;
+            }
+            result.add(response);
         }
         return result;
     }
