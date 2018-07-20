@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.util;
 
+import com.google.common.base.Joiner;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import lombok.AccessLevel;
@@ -63,10 +64,7 @@ public final class SQLLogger {
      */
     public static void logSQL(final String logicSQL, final Collection<String> dataSourceNames) {
         log("Rule Type: master-slave");
-        log("Logic SQL: {}", logicSQL);
-        for (String each : dataSourceNames) {
-            log("Actual SQL: {} ::: {}", each, logicSQL);
-        }
+        log("SQL: {} ::: DataSources: {}", logicSQL, Joiner.on(",").join(dataSourceNames));
     }
     
     private static void log(final String pattern, final Object... arguments) {
