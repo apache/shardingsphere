@@ -39,7 +39,6 @@ import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.QueryResponsePackets;
-import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
@@ -52,7 +51,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -138,34 +136,20 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         }
         CommandResponsePackets firstCommandResponsePackets = packets.iterator().next();
         if (firstCommandResponsePackets instanceof QueryResponsePackets) {
-            return mergeQuery(sqlStatement, packets);
+            currentSequenceId += firstCommandResponsePackets.getPackets().size();
+            try {
+                mergedResult = mergeQuery(sqlStatement);
+                return firstCommandResponsePackets;
+            } catch (final SQLException ex) {
+                return new CommandResponsePackets(new ErrPacket(1, ex));
+            }
         }
         return mergeUpdate(headPackets);
     }
     
-    private CommandResponsePackets mergeQuery(final SQLStatement sqlStatement, final Collection<CommandResponsePackets> packets) {
-        try {
-            mergedResult = MergeEngineFactory.newInstance(ruleRegistry.getShardingRule(), responses.getQueryResults(), sqlStatement, ruleRegistry.getShardingMetaData()).merge();
-            isMerged = true;
-        } catch (final SQLException ex) {
-            return new CommandResponsePackets(new ErrPacket(1, ex));
-        }
-        return buildPackets(packets);
-    }
-    
-    private CommandResponsePackets buildPackets(final Collection<CommandResponsePackets> packets) {
-        CommandResponsePackets result = new CommandResponsePackets();
-        Iterator<DatabasePacket> databasePacketsSampling = packets.iterator().next().getPackets().iterator();
-        FieldCountPacket fieldCountPacketSampling = (FieldCountPacket) databasePacketsSampling.next();
-        result.getPackets().add(fieldCountPacketSampling);
-        ++currentSequenceId;
-        for (int i = 0; i < responses.getColumnCount(); i++) {
-            result.getPackets().add(databasePacketsSampling.next());
-            ++currentSequenceId;
-        }
-        result.getPackets().add(databasePacketsSampling.next());
-        ++currentSequenceId;
-        return result;
+    private MergedResult mergeQuery(final SQLStatement sqlStatement) throws SQLException {
+        isMerged = true;
+        return MergeEngineFactory.newInstance(ruleRegistry.getShardingRule(), responses.getQueryResults(), sqlStatement, ruleRegistry.getShardingMetaData()).merge();
     }
     
     private CommandResponsePackets mergeUpdate(final Collection<DatabasePacket> packets) {
