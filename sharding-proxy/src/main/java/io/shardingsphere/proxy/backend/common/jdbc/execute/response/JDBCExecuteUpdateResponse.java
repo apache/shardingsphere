@@ -15,28 +15,20 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.common.jdbc.execute;
+package io.shardingsphere.proxy.backend.common.jdbc.execute.response;
 
-import io.shardingsphere.core.merger.QueryResult;
-import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.QueryResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * JDBC execute query response.
+ * JDBC execute update response.
  * 
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class JDBCExecuteQueryResponse implements JDBCExecuteResponse {
+@Getter
+public final class JDBCExecuteUpdateResponse implements JDBCExecuteResponse {
     
-    private final QueryResponsePackets queryResponsePackets;
-    
-    @Getter
-    private final QueryResult queryResult;
-    
-    @Override
-    public QueryResponsePackets getCommandResponsePackets() {
-        return queryResponsePackets;
-    }
+    private final CommandResponsePackets commandResponsePackets;
 }

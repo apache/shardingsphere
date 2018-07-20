@@ -18,7 +18,7 @@
 package io.shardingsphere.proxy.backend.common;
 
 import io.shardingsphere.core.routing.SQLRouteResult;
-import io.shardingsphere.proxy.backend.common.jdbc.execute.SQLExecuteResponses;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.response.SQLExecuteResponses;
 
 import java.sql.SQLException;
 

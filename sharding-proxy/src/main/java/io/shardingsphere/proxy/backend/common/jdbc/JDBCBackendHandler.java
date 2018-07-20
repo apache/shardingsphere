@@ -31,7 +31,7 @@ import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingsphere.proxy.backend.common.BackendHandler;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngine;
-import io.shardingsphere.proxy.backend.common.jdbc.execute.SQLExecuteResponses;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.response.SQLExecuteResponses;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;

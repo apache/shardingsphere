@@ -22,9 +22,9 @@ import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngine;
-import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteQueryResponse;
-import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteResponse;
-import io.shardingsphere.proxy.backend.common.jdbc.execute.SQLExecuteResponses;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.response.JDBCExecuteQueryResponse;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.response.JDBCExecuteResponse;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.response.SQLExecuteResponses;
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 
 import java.sql.Connection;

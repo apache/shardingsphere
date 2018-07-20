@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.common.jdbc.execute;
+package io.shardingsphere.proxy.backend.common.jdbc.execute.response;
 
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
