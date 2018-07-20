@@ -17,7 +17,6 @@
 
 package io.shardingsphere.proxy.backend.common.jdbc.execute;
 
-import io.netty.channel.EventLoopGroup;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.proxy.backend.common.SQLExecuteEngine;
 import io.shardingsphere.proxy.backend.common.jdbc.BackendConnection;
@@ -39,6 +38,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 /**
  * SQL Execute engine for JDBC.
@@ -54,7 +54,7 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
     
     private final BackendConnection backendConnection = new BackendConnection();
     
-    private final EventLoopGroup userGroup = ExecutorContext.getInstance().getUserGroup();
+    private final ExecutorService executorService = ExecutorContext.getInstance().getExecutorService();
     
     private int columnCount;
     

@@ -63,7 +63,7 @@ public abstract class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
         for (SQLExecutionUnit each : sqlExecutionUnits) {
             final String dataSourceName = each.getDataSource();
             final String actualSQL = each.getSqlUnit().getSql();
-            result.add(getUserGroup().submit(new Callable<JDBCExecuteResponse>() {
+            result.add(getExecutorService().submit(new Callable<JDBCExecuteResponse>() {
                 
                 @Override
                 public JDBCExecuteResponse call() throws SQLException {
