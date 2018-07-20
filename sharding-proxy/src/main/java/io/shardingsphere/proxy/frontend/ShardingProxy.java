@@ -98,7 +98,6 @@ public final class ShardingProxy {
     }
     
     private void groupsEpoll(final ServerBootstrap bootstrap) {
-        bossGroup = new EpollEventLoopGroup(1);
         workerGroup = new EpollEventLoopGroup(ruleRegistry.getMaxWorkingThreads());
         bootstrap.group(bossGroup, workerGroup)
                 .channel(EpollServerSocketChannel.class)
@@ -111,7 +110,6 @@ public final class ShardingProxy {
     }
     
     private void groupsNio(final ServerBootstrap bootstrap) {
-        bossGroup = new NioEventLoopGroup(1);
         workerGroup = new NioEventLoopGroup(ruleRegistry.getMaxWorkingThreads());
         bootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)

@@ -18,9 +18,6 @@
 package io.shardingsphere.proxy.util;
 
 import com.google.common.util.concurrent.MoreExecutors;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.epoll.EpollEventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import lombok.Getter;
 
@@ -37,7 +34,7 @@ public final class ExecutorContext {
     private static final ExecutorContext INSTANCE = new ExecutorContext();
     
     @Getter
-    private final ExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(RuleRegistry.getInstance().getMaxWorkingThreads()));;
+    private final ExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(RuleRegistry.getInstance().getMaxWorkingThreads()));
     
     /**
      * Get executor context instance.

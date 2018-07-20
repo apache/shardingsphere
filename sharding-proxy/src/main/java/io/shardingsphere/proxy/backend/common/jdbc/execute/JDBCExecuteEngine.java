@@ -17,7 +17,6 @@
 
 package io.shardingsphere.proxy.backend.common.jdbc.execute;
 
-import io.netty.channel.EventLoopGroup;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.proxy.backend.common.SQLExecuteEngine;
 import io.shardingsphere.proxy.backend.common.jdbc.BackendConnection;

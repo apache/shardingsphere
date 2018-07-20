@@ -41,6 +41,7 @@ public final class ExecutorGroup {
      * @return executor service
      */
     public ExecutorService getExecutorService() {
-        return TransactionType.XA.equals(RuleRegistry.getInstance().getTransactionType()) ? ChannelThreadExecutorGroup.getInstance().get(channelId) : ExecutorContext.getInstance().getExecutorService();
+        return TransactionType.XA.equals(RuleRegistry.getInstance().getTransactionType()) ? ChannelThreadExecutorGroup.getInstance().get(channelId)
+            : ExecutorContext.getInstance().getExecutorService();
     }
 }
