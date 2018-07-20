@@ -50,7 +50,7 @@ weight = 1
          masterSlaveRuleConfig.setName("ds_master_slave");
          masterSlaveRuleConfig.setMasterDataSourceName("ds_master");
          masterSlaveRuleConfig.setSlaveDataSourceNames(Arrays.asList("ds_slave0", "ds_slave1"));
-         return MasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig);
+         return MasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig, new LinkedHashMap<String, Object>(), new Properties());
      }
      
      Map<String, DataSource> createDataSourceMap() {

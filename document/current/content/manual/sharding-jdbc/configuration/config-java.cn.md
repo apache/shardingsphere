@@ -50,7 +50,7 @@ weight = 1
          masterSlaveRuleConfig.setName("ds_master_slave");
          masterSlaveRuleConfig.setMasterDataSourceName("ds_master");
          masterSlaveRuleConfig.setSlaveDataSourceNames(Arrays.asList("ds_slave0", "ds_slave1"));
-         return MasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig);
+         return MasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig, new LinkedHashMap<String, Object>(), new Properties());
      }
      
      Map<String, DataSource> createDataSourceMap() {
@@ -261,9 +261,10 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 
 | *名称*                 | *数据类型*                    | *说明*             |
 | --------------------- | ---------------------------- | ------------------ |
-| dataSourceMap         | Map\<String, DataSource\>    | 数据源与其名称的映射 |
-| masterSlaveRuleConfig | MasterSlaveRuleConfiguration | 读写分离规则        |
-| configMap (?)         | Map\<String, Object\>        | 用户自定义配置      |
+| dataSourceMap         | Map\<String, DataSource\>    | 数据源与其名称的映射  |
+| masterSlaveRuleConfig | MasterSlaveRuleConfiguration | 读写分离规则         |
+| configMap (?)         | Map\<String, Object\>        | 用户自定义配置       |
+| props (?)             | Properties                   | 属性配置            |
 
 #### MasterSlaveRuleConfiguration
 
@@ -303,6 +304,7 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | dataSourceMap         | Map\<String, DataSource\>    | 同MasterSlaveDataSourceFactory |
 | masterSlaveRuleConfig | MasterSlaveRuleConfiguration | 同MasterSlaveDataSourceFactory |
 | configMap (?)         | Map\<String, Object\>        | 同MasterSlaveDataSourceFactory |
+| props (?)             | Properties                   | 同ShardingDataSourceFactory    |
 | orchestrationConfig   | OrchestrationConfiguration   | 数据治理规则配置                 |
  
 #### OrchestrationConfiguration
