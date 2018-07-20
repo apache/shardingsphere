@@ -80,8 +80,9 @@ masterSlaveRule:
     - ds_slave0
     - ds_slave1
        
-  props:
-    sql.show: false
+  props: #属性配置
+    sql.show: #是否开启SQL显示，默认值: false
+    executor.size: #工作线程数量，默认值: CPU核数
 ```
 
 ### Sharding + Read-write splitting

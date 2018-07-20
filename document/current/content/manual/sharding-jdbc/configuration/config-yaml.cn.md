@@ -282,8 +282,9 @@ masterSlaveRule:
     key2: value2
     keyx: valuex
     
-  props:
-    sql.show: false
+  props: #属性配置
+    sql.show: #是否开启SQL显示，默认值: false
+    executor.size: #工作线程数量，默认值: CPU核数
 ```
 
 ### 使用Zookeeper的数据治理
