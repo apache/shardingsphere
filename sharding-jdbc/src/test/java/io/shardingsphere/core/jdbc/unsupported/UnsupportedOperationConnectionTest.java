@@ -32,7 +32,7 @@ import java.util.Properties;
 
 public final class UnsupportedOperationConnectionTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
-    private List<ShardingConnection> shardingConnections = new ArrayList<>();
+    private final List<ShardingConnection> shardingConnections = new ArrayList<>();
     
     public UnsupportedOperationConnectionTest(final DatabaseType databaseType) {
         super(databaseType);

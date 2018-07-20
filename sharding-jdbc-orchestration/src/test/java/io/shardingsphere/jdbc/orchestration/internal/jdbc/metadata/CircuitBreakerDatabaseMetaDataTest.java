@@ -28,7 +28,7 @@ import static org.junit.Assert.assertThat;
 
 public final class CircuitBreakerDatabaseMetaDataTest {
     
-    private CircuitBreakerDatabaseMetaData metaData = new CircuitBreakerDatabaseMetaData();
+    private final CircuitBreakerDatabaseMetaData metaData = new CircuitBreakerDatabaseMetaData();
     
     @Test
     public void assertAllProceduresAreCallable() {

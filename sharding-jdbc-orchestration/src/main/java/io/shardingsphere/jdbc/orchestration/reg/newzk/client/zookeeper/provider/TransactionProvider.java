@@ -23,7 +23,6 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.Hold
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.ZKTransaction;
 import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.data.ACL;
 
 import java.util.List;
@@ -40,7 +39,7 @@ public class TransactionProvider extends BaseProvider implements ITransactionPro
     }
     
     @Override
-    public void createInTransaction(final String key, final String value, final CreateMode createMode, final BaseTransaction transaction) throws KeeperException, InterruptedException {
+    public void createInTransaction(final String key, final String value, final CreateMode createMode, final BaseTransaction transaction) {
         transaction.create(key, value.getBytes(ZookeeperConstants.UTF_8), getAuthorities(), createMode);
     }
     

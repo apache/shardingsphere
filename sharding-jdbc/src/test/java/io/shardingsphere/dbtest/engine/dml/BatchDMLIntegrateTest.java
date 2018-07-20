@@ -39,7 +39,7 @@ public final class BatchDMLIntegrateTest extends BatchIntegrateTest {
     private final IntegrateTestCase integrateTestCase;
     
     public BatchDMLIntegrateTest(final String sqlCaseId, final IntegrateTestCase integrateTestCase, 
-                                 final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, JAXBException, SQLException, ParseException {
+                                 final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, JAXBException, SQLException {
         super(sqlCaseId, integrateTestCase, shardingRuleType, databaseTypeEnvironment);
         this.integrateTestCase = integrateTestCase;
     }

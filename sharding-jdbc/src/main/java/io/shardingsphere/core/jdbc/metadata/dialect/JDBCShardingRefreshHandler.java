@@ -37,7 +37,7 @@ import java.util.Map;
  */
 public final class JDBCShardingRefreshHandler extends AbstractRefreshHandler {
 
-    private ShardingConnection shardingConnection;
+    private final ShardingConnection shardingConnection;
 
     private JDBCShardingRefreshHandler(final ShardingConnection shardingConnection, final SQLRouteResult routeResult, final ShardingMetaData shardingMetaData, final ShardingRule shardingRule) {
         super(routeResult, shardingMetaData, shardingRule);

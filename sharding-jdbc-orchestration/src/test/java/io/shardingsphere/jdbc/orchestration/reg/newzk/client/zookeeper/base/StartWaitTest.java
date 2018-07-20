@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 public class StartWaitTest {
     
     @Before
-    public void start() throws IOException, InterruptedException {
+    public void start() {
         EmbedTestingServer.start();
     }
     

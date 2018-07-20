@@ -51,7 +51,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
     public void assertAddBatch() throws SQLException {
         Object listener = new Object() {
             
-            private List<DMLExecutionEvent> beforeEvents = new ArrayList<>();
+            private final List<DMLExecutionEvent> beforeEvents = new ArrayList<>();
             
             @Subscribe
             public void subscribe(final DMLExecutionEvent event) {

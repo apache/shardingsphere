@@ -32,7 +32,7 @@ import static org.junit.Assert.assertTrue;
 
 public final class CircuitBreakerConnectionTest {
     
-    private CircuitBreakerConnection connection = new CircuitBreakerConnection();
+    private final CircuitBreakerConnection connection = new CircuitBreakerConnection();
     
     private final String sql = "select 1";
     

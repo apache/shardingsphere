@@ -37,11 +37,11 @@ public final class UnsupportedOperationResultSetTest extends AbstractShardingJDB
     
     private final String sql = JDBCTestSQL.SELECT_WITH_ALIAS_SQL;
     
-    private List<ShardingConnection> shardingConnections = new ArrayList<>();
+    private final List<ShardingConnection> shardingConnections = new ArrayList<>();
     
-    private List<Statement> statements = new ArrayList<>();
+    private final List<Statement> statements = new ArrayList<>();
     
-    private List<ResultSet> resultSets = new ArrayList<>();
+    private final List<ResultSet> resultSets = new ArrayList<>();
     
     public UnsupportedOperationResultSetTest(final DatabaseType databaseType) {
         super(databaseType);
