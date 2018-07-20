@@ -21,7 +21,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.shardingsphere.proxy.frontend.common.FrontendHandler;
 import io.shardingsphere.proxy.frontend.common.executor.ExecutorGroup;
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
@@ -78,7 +78,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
                     int sequenceId = mysqlPacketPayload.readInt1();
                     int connectionId = MySQLResultCache.getInstance().getConnection(context.channel().id().asShortText());
                     CommandPacket commandPacket = CommandPacketFactory.getCommandPacket(sequenceId, connectionId, mysqlPacketPayload);
-                    for (DatabaseProtocolPacket each : commandPacket.execute().getDatabaseProtocolPackets()) {
+                    for (DatabasePacket each : commandPacket.execute().getPackets()) {
                         context.writeAndFlush(each);
                     }
                     while (commandPacket.hasMoreResultValue()) {

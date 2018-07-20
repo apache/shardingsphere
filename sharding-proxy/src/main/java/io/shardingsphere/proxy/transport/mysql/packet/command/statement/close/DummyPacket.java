@@ -17,12 +17,12 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command.statement.close;
 
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 
 /**
  * Customized dummy packet.
  *
  * @author zhangyonglun
  */
-public final class DummyPacket implements DatabaseProtocolPacket {
+public final class DummyPacket implements DatabasePacket {
 }

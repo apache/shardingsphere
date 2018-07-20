@@ -17,7 +17,7 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command.text.ping;
 
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
@@ -53,7 +53,7 @@ public final class ComPingPacket extends CommandPacket {
     }
     
     @Override
-    public DatabaseProtocolPacket getResultValue() {
+    public DatabasePacket getResultValue() {
         return null;
     }
 }

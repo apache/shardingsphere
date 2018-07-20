@@ -24,7 +24,7 @@ import io.shardingsphere.proxy.backend.common.SQLPacketsBackendHandler;
 import io.shardingsphere.proxy.backend.common.jdbc.text.JDBCTextBackendHandler;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
@@ -90,7 +90,7 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
         String sql = String.format("SHOW COLUMNS FROM %s FROM %s", table, ShardingConstant.LOGIC_SCHEMA_NAME);
         // TODO use common database type
         backendHandler = getBackendHandler(sql);
-        DatabaseProtocolPacket headPacket = backendHandler.execute().getHeadPacket();
+        DatabasePacket headPacket = backendHandler.execute().getHeadPacket();
         return headPacket instanceof ErrPacket ? new CommandResponsePackets(headPacket) : new CommandResponsePackets(new DummyPacket());
     }
     
@@ -108,8 +108,8 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
     }
     
     @Override
-    public DatabaseProtocolPacket getResultValue() {
-        DatabaseProtocolPacket resultValue = backendHandler.getResultValue();
+    public DatabasePacket getResultValue() {
+        DatabasePacket resultValue = backendHandler.getResultValue();
         if (!backendHandler.isHasMoreResultValueFlag()) {
             return new EofPacket(++currentSequenceId);
         }

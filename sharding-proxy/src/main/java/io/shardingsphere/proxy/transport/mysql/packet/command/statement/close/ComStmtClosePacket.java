@@ -17,7 +17,7 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command.statement.close;
 
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
@@ -56,7 +56,7 @@ public class ComStmtClosePacket extends CommandPacket {
     }
     
     @Override
-    public DatabaseProtocolPacket getResultValue() {
+    public DatabasePacket getResultValue() {
         return null;
     }
 }

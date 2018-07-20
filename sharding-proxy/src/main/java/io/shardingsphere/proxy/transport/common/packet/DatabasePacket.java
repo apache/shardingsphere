@@ -18,9 +18,9 @@
 package io.shardingsphere.proxy.transport.common.packet;
 
 /**
- * Database protocol packet.
+ * Database packet.
  *
  * @author zhangliang
  */
-public interface DatabaseProtocolPacket {
+public interface DatabasePacket {
 }

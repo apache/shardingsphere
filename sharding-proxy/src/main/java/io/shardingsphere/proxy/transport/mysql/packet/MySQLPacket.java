@@ -17,7 +17,7 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet;
 
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public abstract class MySQLPacket implements DatabaseProtocolPacket {
+public abstract class MySQLPacket implements DatabasePacket {
     
     public static final int PAYLOAD_LENGTH = 3;
     

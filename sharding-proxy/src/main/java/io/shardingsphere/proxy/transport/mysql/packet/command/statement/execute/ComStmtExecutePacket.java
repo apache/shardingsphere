@@ -23,7 +23,7 @@ import io.shardingsphere.core.parsing.SQLParsingEngine;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.proxy.backend.common.jdbc.statement.JDBCStatementBackendHandler;
 import io.shardingsphere.proxy.config.RuleRegistry;
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.constant.NewParametersBoundFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
@@ -163,7 +163,7 @@ public final class ComStmtExecutePacket extends CommandPacket {
     }
     
     @Override
-    public DatabaseProtocolPacket getResultValue() {
+    public DatabasePacket getResultValue() {
         return statementExecuteBackendHandler.getResultValue();
     }
 }

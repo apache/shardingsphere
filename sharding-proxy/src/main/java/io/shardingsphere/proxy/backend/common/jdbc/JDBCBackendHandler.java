@@ -35,7 +35,7 @@ import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngine;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.SQLExecuteResponses;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
@@ -138,10 +138,10 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         CommandResponsePackets headPackets = new CommandResponsePackets();
         for (CommandResponsePackets each : packets) {
             if (null != each) {
-                headPackets.getDatabaseProtocolPackets().add(each.getHeadPacket());
+                headPackets.getPackets().add(each.getHeadPacket());
             }
         }
-        for (DatabaseProtocolPacket each : headPackets.getDatabaseProtocolPackets()) {
+        for (DatabasePacket each : headPackets.getPackets()) {
             if (each instanceof ErrPacket) {
                 return new CommandResponsePackets(each);
             }
@@ -158,7 +158,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     private CommandResponsePackets mergeDML(final CommandResponsePackets firstPackets) {
         int affectedRows = 0;
         long lastInsertId = 0;
-        for (DatabaseProtocolPacket each : firstPackets.getDatabaseProtocolPackets()) {
+        for (DatabasePacket each : firstPackets.getPackets()) {
             if (each instanceof OKPacket) {
                 OKPacket okPacket = (OKPacket) each;
                 affectedRows += okPacket.getAffectedRows();
@@ -181,15 +181,15 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     private CommandResponsePackets buildPackets(final Collection<CommandResponsePackets> packets) {
         CommandResponsePackets result = new CommandResponsePackets();
-        Iterator<DatabaseProtocolPacket> databaseProtocolPacketsSampling = packets.iterator().next().getDatabaseProtocolPackets().iterator();
-        FieldCountPacket fieldCountPacketSampling = (FieldCountPacket) databaseProtocolPacketsSampling.next();
-        result.getDatabaseProtocolPackets().add(fieldCountPacketSampling);
+        Iterator<DatabasePacket> databasePacketsSampling = packets.iterator().next().getPackets().iterator();
+        FieldCountPacket fieldCountPacketSampling = (FieldCountPacket) databasePacketsSampling.next();
+        result.getPackets().add(fieldCountPacketSampling);
         ++currentSequenceId;
         for (int i = 0; i < columnCount; i++) {
-            result.getDatabaseProtocolPackets().add(databaseProtocolPacketsSampling.next());
+            result.getPackets().add(databasePacketsSampling.next());
             ++currentSequenceId;
         }
-        result.getDatabaseProtocolPackets().add(databaseProtocolPacketsSampling.next());
+        result.getPackets().add(databasePacketsSampling.next());
         ++currentSequenceId;
         return result;
     }
@@ -218,7 +218,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     }
     
     @Override
-    public final DatabaseProtocolPacket getResultValue() {
+    public final DatabasePacket getResultValue() {
         if (!hasMoreResultValueFlag) {
             return new EofPacket(++currentSequenceId);
         }
@@ -227,11 +227,11 @@ public abstract class JDBCBackendHandler implements BackendHandler {
             for (int i = 1; i <= columnCount; i++) {
                 data.add(mergedResult.getValue(i, Object.class));
             }
-            return newDatabaseProtocolPacket(++currentSequenceId, data, columnTypes);
+            return newDatabasePacket(++currentSequenceId, data, columnTypes);
         } catch (final SQLException ex) {
             return new ErrPacket(1, ex);
         }
     }
     
-    protected abstract DatabaseProtocolPacket newDatabaseProtocolPacket(int sequenceId, List<Object> data, List<ColumnType> columnTypes);
+    protected abstract DatabasePacket newDatabasePacket(int sequenceId, List<Object> data, List<ColumnType> columnTypes);
 }

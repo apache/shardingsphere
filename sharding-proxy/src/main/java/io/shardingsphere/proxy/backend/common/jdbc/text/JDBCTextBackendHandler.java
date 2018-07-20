@@ -23,7 +23,7 @@ import io.shardingsphere.core.routing.StatementRoutingEngine;
 import io.shardingsphere.proxy.backend.common.jdbc.JDBCBackendHandler;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngineFactory;
 import io.shardingsphere.proxy.config.RuleRegistry;
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextResultSetRowPacket;
 
@@ -56,7 +56,7 @@ public final class JDBCTextBackendHandler extends JDBCBackendHandler {
     }
     
     @Override
-    protected DatabaseProtocolPacket newDatabaseProtocolPacket(final int sequenceId, final List<Object> data, final List<ColumnType> columnTypes) {
+    protected DatabasePacket newDatabasePacket(final int sequenceId, final List<Object> data, final List<ColumnType> columnTypes) {
         return new TextResultSetRowPacket(sequenceId, data);
     }
 }

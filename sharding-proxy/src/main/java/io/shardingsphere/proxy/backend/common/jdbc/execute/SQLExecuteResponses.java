@@ -18,7 +18,7 @@
 package io.shardingsphere.proxy.backend.common.jdbc.execute;
 
 import io.shardingsphere.core.merger.QueryResult;
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
@@ -54,7 +54,7 @@ public final class SQLExecuteResponses {
      * @return is query or not
      */
     public boolean isQuery() {
-        for (DatabaseProtocolPacket each : firstCommandResponsePackets.getDatabaseProtocolPackets()) {
+        for (DatabasePacket each : firstCommandResponsePackets.getPackets()) {
             if (each instanceof ColumnDefinition41Packet) {
                 return true;
             }
@@ -68,8 +68,8 @@ public final class SQLExecuteResponses {
      * @return column types
      */
     public List<ColumnType> getColumnTypes() {
-        List<ColumnType> result = new ArrayList<>(firstCommandResponsePackets.getDatabaseProtocolPackets().size());
-        for (DatabaseProtocolPacket each : firstCommandResponsePackets.getDatabaseProtocolPackets()) {
+        List<ColumnType> result = new ArrayList<>(firstCommandResponsePackets.getPackets().size());
+        for (DatabasePacket each : firstCommandResponsePackets.getPackets()) {
             if (each instanceof ColumnDefinition41Packet) {
                 result.add(((ColumnDefinition41Packet) each).getColumnType());
             }
@@ -83,6 +83,6 @@ public final class SQLExecuteResponses {
      * @return column count
      */
     public int getColumnCount() {
-        return 1 == firstCommandResponsePackets.getDatabaseProtocolPackets().size() ? 0 : firstCommandResponsePackets.getDatabaseProtocolPackets().size() - 2;
+        return 1 == firstCommandResponsePackets.getPackets().size() ? 0 : firstCommandResponsePackets.getPackets().size() - 2;
     }
 }

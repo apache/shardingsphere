@@ -37,7 +37,7 @@ import io.shardingsphere.proxy.backend.mysql.MySQLQueryResult;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextResultSetRowPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
@@ -164,9 +164,9 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     private CommandResponsePackets merge(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets, final List<QueryResult> queryResults) {
         CommandResponsePackets headPackets = new CommandResponsePackets();
         for (CommandResponsePackets each : packets) {
-            headPackets.getDatabaseProtocolPackets().add(each.getHeadPacket());
+            headPackets.getPackets().add(each.getHeadPacket());
         }
-        for (DatabaseProtocolPacket each : headPackets.getDatabaseProtocolPackets()) {
+        for (DatabasePacket each : headPackets.getPackets()) {
             if (each instanceof ErrPacket) {
                 return new CommandResponsePackets(each);
             }
@@ -183,7 +183,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     private CommandResponsePackets mergeDML(final CommandResponsePackets firstPackets) {
         int affectedRows = 0;
         long lastInsertId = 0;
-        for (DatabaseProtocolPacket each : firstPackets.getDatabaseProtocolPackets()) {
+        for (DatabasePacket each : firstPackets.getPackets()) {
             if (each instanceof OKPacket) {
                 OKPacket okPacket = (OKPacket) each;
                 affectedRows += okPacket.getAffectedRows();
@@ -221,7 +221,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     }
     
     @Override
-    public DatabaseProtocolPacket getResultValue() {
+    public DatabasePacket getResultValue() {
         if (!hasMoreResultValueFlag) {
             return new EofPacket(++currentSequenceId);
         }

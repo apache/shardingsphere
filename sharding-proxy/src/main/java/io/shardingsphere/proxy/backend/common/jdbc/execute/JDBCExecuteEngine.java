@@ -104,9 +104,9 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
         }
         CommandResponsePackets result = new CommandResponsePackets(new FieldCountPacket(++currentSequenceId, columnCount));
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            result.getDatabaseProtocolPackets().add(new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData, columnIndex));
+            result.getPackets().add(new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData, columnIndex));
         }
-        result.getDatabaseProtocolPackets().add(new EofPacket(++currentSequenceId));
+        result.getPackets().add(new EofPacket(++currentSequenceId));
         return result;
     }
     

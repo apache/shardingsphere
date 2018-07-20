@@ -17,7 +17,7 @@
 
 package io.shardingsphere.proxy.backend.common;
 
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 
 import java.sql.SQLException;
@@ -47,9 +47,9 @@ public interface BackendHandler {
     /**
      * Get result value.
      *
-     * @return database protocol packet
+     * @return database packet
      */
-    DatabaseProtocolPacket getResultValue();
+    DatabasePacket getResultValue();
     
     @Deprecated
     boolean isHasMoreResultValueFlag();

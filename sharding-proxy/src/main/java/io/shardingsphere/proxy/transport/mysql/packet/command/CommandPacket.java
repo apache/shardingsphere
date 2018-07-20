@@ -17,7 +17,7 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command;
 
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
 
 /**
@@ -51,5 +51,5 @@ public abstract class CommandPacket extends MySQLPacket {
      *
      * @return result to be sent
      */
-    public abstract DatabaseProtocolPacket getResultValue();
+    public abstract DatabasePacket getResultValue();
 }

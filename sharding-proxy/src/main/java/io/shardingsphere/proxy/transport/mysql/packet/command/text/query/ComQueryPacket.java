@@ -27,7 +27,7 @@ import io.shardingsphere.proxy.backend.common.SQLPacketsBackendHandler;
 import io.shardingsphere.proxy.backend.common.jdbc.text.JDBCTextBackendHandler;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
@@ -113,9 +113,9 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
     /**
      * Get result value.
      *
-     * @return database protocol packet
+     * @return database packet
      */
-    public DatabaseProtocolPacket getResultValue() {
+    public DatabasePacket getResultValue() {
         return backendHandler.getResultValue();
     }
     

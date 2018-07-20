@@ -17,7 +17,7 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command;
 
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -33,18 +33,18 @@ import java.util.LinkedList;
 @Getter
 public final class CommandResponsePackets {
     
-    private final Collection<DatabaseProtocolPacket> databaseProtocolPackets = new LinkedList<>();
+    private final Collection<DatabasePacket> packets = new LinkedList<>();
     
-    public CommandResponsePackets(final DatabaseProtocolPacket databaseProtocolPacket) {
-        databaseProtocolPackets.add(databaseProtocolPacket);
+    public CommandResponsePackets(final DatabasePacket databasePacket) {
+        packets.add(databasePacket);
     }
     
     /**
      * Get head packet.
      *
-     * @return head database protocol packet
+     * @return head packet
      */
-    public DatabaseProtocolPacket getHeadPacket() {
-        return databaseProtocolPackets.iterator().next();
+    public DatabasePacket getHeadPacket() {
+        return packets.iterator().next();
     }
 }
