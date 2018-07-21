@@ -18,17 +18,18 @@
 package io.shardingsphere.proxy.backend.common.jdbc.execute.response;
 
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
- * JDBC execute update response.
+ * Execute response unit.
  * 
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class JDBCExecuteUpdateResponse implements JDBCExecuteResponse {
+public interface ExecuteResponseUnit {
     
-    private final CommandResponsePackets commandResponsePackets;
+    /**
+     * Get command response packets.
+     * 
+     * @return command response packets
+     */
+    CommandResponsePackets getCommandResponsePackets();
 }

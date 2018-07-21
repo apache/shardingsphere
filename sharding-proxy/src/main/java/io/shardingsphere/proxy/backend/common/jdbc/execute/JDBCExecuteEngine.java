@@ -20,9 +20,9 @@ package io.shardingsphere.proxy.backend.common.jdbc.execute;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.proxy.backend.common.SQLExecuteEngine;
 import io.shardingsphere.proxy.backend.common.jdbc.BackendConnection;
-import io.shardingsphere.proxy.backend.common.jdbc.execute.response.JDBCExecuteQueryResponse;
-import io.shardingsphere.proxy.backend.common.jdbc.execute.response.JDBCExecuteResponse;
-import io.shardingsphere.proxy.backend.common.jdbc.execute.response.JDBCExecuteUpdateResponse;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.response.ExecuteQueryResponseUnit;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.response.ExecuteResponseUnit;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.response.ExecuteUpdateResponseUnit;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.QueryResponsePackets;
@@ -67,32 +67,32 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
     
     protected abstract Statement createStatement(Connection connection, String sql, boolean isReturnGeneratedKeys) throws SQLException;
     
-    protected JDBCExecuteResponse executeWithMetadata(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) {
+    protected ExecuteResponseUnit executeWithMetadata(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) {
         try {
             setFetchSize(statement);
             if (!executeSQL(statement, sql, isReturnGeneratedKeys)) {
-                return new JDBCExecuteUpdateResponse(new CommandResponsePackets(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0)));
+                return new ExecuteUpdateResponseUnit(new CommandResponsePackets(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0)));
             }
             ResultSet resultSet = statement.getResultSet();
             ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
             if (0 == resultSetMetaData.getColumnCount()) {
-                return new JDBCExecuteUpdateResponse(new CommandResponsePackets(new OKPacket(1)));
+                return new ExecuteUpdateResponseUnit(new CommandResponsePackets(new OKPacket(1)));
             }
-            return new JDBCExecuteQueryResponse(getHeaderPackets(resultSetMetaData), createQueryResult(resultSet));
+            return new ExecuteQueryResponseUnit(getHeaderPackets(resultSetMetaData), createQueryResult(resultSet));
         } catch (final SQLException ex) {
-            return new JDBCExecuteUpdateResponse(new CommandResponsePackets(new ErrPacket(1, ex)));
+            return new ExecuteUpdateResponseUnit(new CommandResponsePackets(new ErrPacket(1, ex)));
         }
     }
     
-    protected JDBCExecuteResponse executeWithoutMetadata(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) {
+    protected ExecuteResponseUnit executeWithoutMetadata(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) {
         try {
             setFetchSize(statement);
             if (!executeSQL(statement, sql, isReturnGeneratedKeys)) {
-                return new JDBCExecuteUpdateResponse(new CommandResponsePackets(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0)));
+                return new ExecuteUpdateResponseUnit(new CommandResponsePackets(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0)));
             }
-            return new JDBCExecuteQueryResponse(null, createQueryResult(statement.getResultSet()));
+            return new ExecuteQueryResponseUnit(null, createQueryResult(statement.getResultSet()));
         } catch (final SQLException ex) {
-            return new JDBCExecuteUpdateResponse(new CommandResponsePackets(new ErrPacket(1, ex)));
+            return new ExecuteUpdateResponseUnit(new CommandResponsePackets(new ErrPacket(1, ex)));
         }
     }
     

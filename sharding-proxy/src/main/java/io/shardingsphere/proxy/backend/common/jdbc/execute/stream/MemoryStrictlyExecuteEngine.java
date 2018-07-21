@@ -23,9 +23,9 @@ import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngine;
-import io.shardingsphere.proxy.backend.common.jdbc.execute.response.JDBCExecuteQueryResponse;
-import io.shardingsphere.proxy.backend.common.jdbc.execute.response.JDBCExecuteResponse;
-import io.shardingsphere.proxy.backend.common.jdbc.execute.response.SQLExecuteResponses;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.response.ExecuteQueryResponseUnit;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.response.ExecuteResponseUnit;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.response.SQLExecuteResponse;
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 
 import java.sql.ResultSet;
@@ -51,23 +51,23 @@ public abstract class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
     private static final Integer FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
     
     @Override
-    public final SQLExecuteResponses execute(final SQLRouteResult routeResult, final boolean isReturnGeneratedKeys) throws SQLException {
+    public final SQLExecuteResponse execute(final SQLRouteResult routeResult, final boolean isReturnGeneratedKeys) throws SQLException {
         Iterator<SQLExecutionUnit> sqlExecutionUnits = routeResult.getExecutionUnits().iterator();
         SQLExecutionUnit firstSQLExecutionUnit = sqlExecutionUnits.next();
-        List<Future<JDBCExecuteResponse>> futureList = asyncExecute(isReturnGeneratedKeys, Lists.newArrayList(sqlExecutionUnits));
-        JDBCExecuteResponse firstJDBCExecuteResponse = syncExecute(isReturnGeneratedKeys, firstSQLExecutionUnit);
+        List<Future<ExecuteResponseUnit>> futureList = asyncExecute(isReturnGeneratedKeys, Lists.newArrayList(sqlExecutionUnits));
+        ExecuteResponseUnit firstJDBCExecuteResponse = syncExecute(isReturnGeneratedKeys, firstSQLExecutionUnit);
         return buildCommandResponsePackets(firstJDBCExecuteResponse, futureList);
     }
     
-    private List<Future<JDBCExecuteResponse>> asyncExecute(final boolean isReturnGeneratedKeys, final Collection<SQLExecutionUnit> sqlExecutionUnits) {
-        List<Future<JDBCExecuteResponse>> result = new LinkedList<>();
+    private List<Future<ExecuteResponseUnit>> asyncExecute(final boolean isReturnGeneratedKeys, final Collection<SQLExecutionUnit> sqlExecutionUnits) {
+        List<Future<ExecuteResponseUnit>> result = new LinkedList<>();
         for (SQLExecutionUnit each : sqlExecutionUnits) {
             final String dataSourceName = each.getDataSource();
             final String actualSQL = each.getSqlUnit().getSql();
-            result.add(getExecutorService().submit(new Callable<JDBCExecuteResponse>() {
+            result.add(getExecutorService().submit(new Callable<ExecuteResponseUnit>() {
                 
                 @Override
-                public JDBCExecuteResponse call() throws SQLException {
+                public ExecuteResponseUnit call() throws SQLException {
                     Statement statement = createStatement(getBackendConnection().getConnection(dataSourceName), actualSQL, isReturnGeneratedKeys);
                     return executeWithoutMetadata(statement, actualSQL, isReturnGeneratedKeys);
                 }
@@ -76,23 +76,23 @@ public abstract class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
         return result;
     }
     
-    private JDBCExecuteResponse syncExecute(final boolean isReturnGeneratedKeys, final SQLExecutionUnit sqlExecutionUnit) throws SQLException {
+    private ExecuteResponseUnit syncExecute(final boolean isReturnGeneratedKeys, final SQLExecutionUnit sqlExecutionUnit) throws SQLException {
         Statement statement = createStatement(getBackendConnection().getConnection(sqlExecutionUnit.getDataSource()), sqlExecutionUnit.getSqlUnit().getSql(), isReturnGeneratedKeys);
         return executeWithMetadata(statement, sqlExecutionUnit.getSqlUnit().getSql(), isReturnGeneratedKeys);
     }
     
-    private SQLExecuteResponses buildCommandResponsePackets(final JDBCExecuteResponse firstJDBCExecuteResponse, final List<Future<JDBCExecuteResponse>> futureList) {
+    private SQLExecuteResponse buildCommandResponsePackets(final ExecuteResponseUnit firstJDBCExecuteResponse, final List<Future<ExecuteResponseUnit>> futureList) {
         List<CommandResponsePackets> commandResponsePackets = new ArrayList<>(futureList.size() + 1);
         List<QueryResult> queryResults = new ArrayList<>(futureList.size() + 1);
         commandResponsePackets.add(firstJDBCExecuteResponse.getCommandResponsePackets());
-        if (firstJDBCExecuteResponse instanceof JDBCExecuteQueryResponse) {
-            queryResults.add(((JDBCExecuteQueryResponse) firstJDBCExecuteResponse).getQueryResult());
+        if (firstJDBCExecuteResponse instanceof ExecuteQueryResponseUnit) {
+            queryResults.add(((ExecuteQueryResponseUnit) firstJDBCExecuteResponse).getQueryResult());
         }
-        for (Future<JDBCExecuteResponse> each : futureList) {
+        for (Future<ExecuteResponseUnit> each : futureList) {
             try {
-                JDBCExecuteResponse executeResponse = each.get();
-                if (executeResponse instanceof JDBCExecuteQueryResponse) {
-                    queryResults.add(((JDBCExecuteQueryResponse) executeResponse).getQueryResult());
+                ExecuteResponseUnit executeResponse = each.get();
+                if (executeResponse instanceof ExecuteQueryResponseUnit) {
+                    queryResults.add(((ExecuteQueryResponseUnit) executeResponse).getQueryResult());
                 } else {
                     commandResponsePackets.add(executeResponse.getCommandResponsePackets());
                 }
@@ -100,7 +100,7 @@ public abstract class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
                 throw new ShardingException(ex.getMessage(), ex);
             }
         }
-        return new SQLExecuteResponses(commandResponsePackets, queryResults);
+        return new SQLExecuteResponse(commandResponsePackets, queryResults);
     }
     
     @Override

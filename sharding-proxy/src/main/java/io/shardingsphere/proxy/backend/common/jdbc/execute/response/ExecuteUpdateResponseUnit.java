@@ -17,26 +17,18 @@
 
 package io.shardingsphere.proxy.backend.common.jdbc.execute.response;
 
-import io.shardingsphere.core.merger.QueryResult;
-import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.QueryResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * JDBC execute query response.
+ * Execute update response unit.
  * 
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class JDBCExecuteQueryResponse implements JDBCExecuteResponse {
+@Getter
+public final class ExecuteUpdateResponseUnit implements ExecuteResponseUnit {
     
-    private final QueryResponsePackets queryResponsePackets;
-    
-    @Getter
-    private final QueryResult queryResult;
-    
-    @Override
-    public QueryResponsePackets getCommandResponsePackets() {
-        return queryResponsePackets;
-    }
+    private final CommandResponsePackets commandResponsePackets;
 }

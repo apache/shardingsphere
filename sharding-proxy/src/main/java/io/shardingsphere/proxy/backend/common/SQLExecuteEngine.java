@@ -18,7 +18,7 @@
 package io.shardingsphere.proxy.backend.common;
 
 import io.shardingsphere.core.routing.SQLRouteResult;
-import io.shardingsphere.proxy.backend.common.jdbc.execute.response.SQLExecuteResponses;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.response.SQLExecuteResponse;
 
 import java.sql.SQLException;
 
@@ -37,5 +37,5 @@ public interface SQLExecuteEngine {
      * @return SQL execute responses
      * @throws SQLException SQL exception
      */
-    SQLExecuteResponses execute(SQLRouteResult routeResult, boolean isReturnGeneratedKeys) throws SQLException;
+    SQLExecuteResponse execute(SQLRouteResult routeResult, boolean isReturnGeneratedKeys) throws SQLException;
 }

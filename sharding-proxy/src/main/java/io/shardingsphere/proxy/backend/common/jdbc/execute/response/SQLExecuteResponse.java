@@ -33,7 +33,7 @@ import java.util.List;
  * @author zhangliang
  */
 @Getter
-public final class SQLExecuteResponses {
+public final class SQLExecuteResponse {
     
     private final List<CommandResponsePackets> commandResponsePacketsList;
     
@@ -41,7 +41,7 @@ public final class SQLExecuteResponses {
     
     private final CommandResponsePackets firstCommandResponsePackets;
     
-    public SQLExecuteResponses(final List<CommandResponsePackets> commandResponsePacketsList, final List<QueryResult> queryResults) {
+    public SQLExecuteResponse(final List<CommandResponsePackets> commandResponsePacketsList, final List<QueryResult> queryResults) {
         this.commandResponsePacketsList = commandResponsePacketsList;
         this.queryResults = queryResults;
         firstCommandResponsePackets = commandResponsePacketsList.iterator().next();
