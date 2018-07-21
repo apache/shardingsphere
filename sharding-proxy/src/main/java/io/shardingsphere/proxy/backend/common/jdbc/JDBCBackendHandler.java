@@ -116,7 +116,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         executeResponse = executeEngine.execute(routeResult, isReturnGeneratedKeys);
         CommandResponsePackets result = merge(sqlStatement);
         if (!ruleRegistry.isMasterSlaveOnly()) {
-            ProxyShardingRefreshHandler.build(routeResult.getSqlStatement()).execute();
+            ProxyShardingRefreshHandler.build(sqlStatement).execute();
         }
         return result;
     }
@@ -129,11 +129,11 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     private CommandResponsePackets merge(final SQLStatement sqlStatement) {
         if (executeResponse instanceof ExecuteUpdateResponse) {
             Collection<DatabasePacket> headPackets = new LinkedList<>();
-            for (CommandResponsePackets each : ((ExecuteUpdateResponse) executeResponse).getPacketsList()) {
-                if (each.getHeadPacket() instanceof ErrPacket) {
-                    return new CommandResponsePackets(each.getHeadPacket());
+            for (DatabasePacket each : ((ExecuteUpdateResponse) executeResponse).getPacketsList()) {
+                if (each instanceof ErrPacket) {
+                    return new CommandResponsePackets(each);
                 }
-                headPackets.add(each.getHeadPacket());
+                headPackets.add(each);
             }
             return mergeUpdate(headPackets);
         }

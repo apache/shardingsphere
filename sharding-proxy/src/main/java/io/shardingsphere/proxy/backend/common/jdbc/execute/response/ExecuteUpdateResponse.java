@@ -18,7 +18,7 @@
 package io.shardingsphere.proxy.backend.common.jdbc.execute.response;
 
 import io.shardingsphere.proxy.backend.common.jdbc.execute.response.unit.ExecuteResponseUnit;
-import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import lombok.Getter;
 
 import java.util.Collection;
@@ -33,18 +33,18 @@ import java.util.List;
 @Getter
 public final class ExecuteUpdateResponse implements ExecuteResponse {
     
-    private final List<CommandResponsePackets> packetsList = new LinkedList<>();
+    private final List<DatabasePacket> packetsList = new LinkedList<>();
     
-    private final CommandResponsePackets firstPackets;
+    private final DatabasePacket firstPackets;
     
-    public ExecuteUpdateResponse(final CommandResponsePackets packets) {
-        packetsList.add(packets);
+    public ExecuteUpdateResponse(final DatabasePacket packet) {
+        packetsList.add(packet);
         firstPackets = packetsList.iterator().next();
     }
     
     public ExecuteUpdateResponse(final Collection<ExecuteResponseUnit> responseUnits) {
         for (ExecuteResponseUnit each : responseUnits) {
-            packetsList.add(each.getCommandResponsePackets());
+            packetsList.add(each.getCommandResponsePackets().getHeadPacket());
         }
         firstPackets = packetsList.iterator().next();
     }
