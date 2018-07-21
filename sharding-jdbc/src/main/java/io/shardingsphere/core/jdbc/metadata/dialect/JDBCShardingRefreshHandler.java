@@ -36,14 +36,25 @@ import java.util.Map;
  * @author zhaojun
  */
 public final class JDBCShardingRefreshHandler extends AbstractRefreshHandler {
-
+    
     private final ShardingConnection shardingConnection;
-
+    
     private JDBCShardingRefreshHandler(final ShardingConnection shardingConnection, final SQLStatement sqlStatement, final ShardingMetaData shardingMetaData, final ShardingRule shardingRule) {
         super(sqlStatement, shardingMetaData, shardingRule);
         this.shardingConnection = shardingConnection;
     }
-
+    
+    /**
+     * create new instance of {@code JDBCShardingRefreshHandler}.
+     *
+     * @param sqlStatement SQL statement
+     * @param connection {@code ShardingConnection}
+     * @return {@code JDBCShardingRefreshHandler}
+     */
+    public static JDBCShardingRefreshHandler build(final SQLStatement sqlStatement, final ShardingConnection connection) {
+        return new JDBCShardingRefreshHandler(connection, sqlStatement, connection.getShardingContext().getShardingMetaData(), connection.getShardingContext().getShardingRule());
+    }
+    
     @Override
     public void execute() throws SQLException {
         if (isNeedRefresh()) {
@@ -60,16 +71,5 @@ public final class JDBCShardingRefreshHandler extends AbstractRefreshHandler {
             connectionMap.put(dataSourceName, shardingConnection.getConnection(dataSourceName));
         }
         return connectionMap;
-    }
-
-    /**
-     * create new instance of {@code JDBCShardingRefreshHandler}.
-     *
-     * @param sqlStatement SQL statement
-     * @param connection {@code ShardingConnection}
-     * @return {@code JDBCShardingRefreshHandler}
-     */
-    public static JDBCShardingRefreshHandler build(final SQLStatement sqlStatement, final ShardingConnection connection) {
-        return new JDBCShardingRefreshHandler(connection, sqlStatement, connection.getShardingContext().getShardingMetaData(), connection.getShardingContext().getShardingRule());
     }
 }

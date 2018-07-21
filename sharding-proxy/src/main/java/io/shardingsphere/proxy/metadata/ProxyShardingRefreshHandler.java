@@ -37,15 +37,6 @@ public final class ProxyShardingRefreshHandler extends AbstractRefreshHandler {
         super(sqlStatement, shardingMetaData, shardingRule);
     }
     
-    @Override
-    public void execute() {
-        if (isNeedRefresh()) {
-            String logicTable = getSqlStatement().getTables().getSingleTableName();
-            TableRule tableRule = getShardingRule().getTableRule(logicTable);
-            getShardingMetaData().refresh(tableRule, getShardingRule());
-        }
-    }
-    
     /**
      * create new instance of {@code ProxyShardingRefreshHandler}.
      *
@@ -54,5 +45,14 @@ public final class ProxyShardingRefreshHandler extends AbstractRefreshHandler {
      */
     public static ProxyShardingRefreshHandler build(final SQLStatement sqlStatement) {
         return new ProxyShardingRefreshHandler(sqlStatement, RuleRegistry.getInstance().getShardingMetaData(), RuleRegistry.getInstance().getShardingRule());
+    }
+    
+    @Override
+    public void execute() {
+        if (isNeedRefresh()) {
+            String logicTable = getSqlStatement().getTables().getSingleTableName();
+            TableRule tableRule = getShardingRule().getTableRule(logicTable);
+            getShardingMetaData().refresh(tableRule, getShardingRule());
+        }
     }
 }
