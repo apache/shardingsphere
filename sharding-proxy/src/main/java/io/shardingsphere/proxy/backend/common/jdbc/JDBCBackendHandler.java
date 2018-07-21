@@ -17,6 +17,7 @@
 
 package io.shardingsphere.proxy.backend.common.jdbc;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
@@ -99,7 +100,9 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex));
         } catch (final SystemException | ShardingException ex) {
-            return new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
+            Optional<SQLException> sqlException = findSQLException(ex);
+            return sqlException.isPresent()
+                    ? new CommandResponsePackets(new ErrPacket(1, sqlException.get())) : new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
         }
     }
     
@@ -126,7 +129,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         return TransactionType.XA == ruleRegistry.getTransactionType() && SQLType.DDL == sqlType && Status.STATUS_NO_TRANSACTION != AtomikosUserTransaction.getInstance().getStatus();
     }
     
-    private CommandResponsePackets merge(final SQLStatement sqlStatement) {
+    private CommandResponsePackets merge(final SQLStatement sqlStatement) throws SQLException {
         if (executeResponse instanceof ExecuteUpdateResponse) {
             Collection<DatabasePacket> headPackets = new LinkedList<>();
             for (DatabasePacket each : ((ExecuteUpdateResponse) executeResponse).getPackets()) {
@@ -139,12 +142,8 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         }
         QueryResponsePackets result = ((ExecuteQueryResponse) executeResponse).getQueryResponsePackets();
         currentSequenceId += result.getPackets().size();
-        try {
-            mergedResult = mergeQuery(sqlStatement);
-            return result;
-        } catch (final SQLException ex) {
-            return new CommandResponsePackets(new ErrPacket(1, ex));
-        }
+        mergedResult = mergeQuery(sqlStatement);
+        return result;
     }
     
     private MergedResult mergeQuery(final SQLStatement sqlStatement) throws SQLException {
@@ -176,6 +175,22 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     }
     
     protected abstract SQLRouteResult doShardingRoute();
+    
+    private Optional<SQLException> findSQLException(final Exception exception) {
+        if (null == exception.getCause()) {
+            return Optional.absent();
+        }
+        if (exception.getCause() instanceof SQLException) {
+            return Optional.of((SQLException) exception.getCause());
+        }
+        if (null == exception.getCause().getCause()) {
+            return Optional.absent();
+        }
+        if (exception.getCause().getCause() instanceof SQLException) {
+            return Optional.of((SQLException) exception.getCause());
+        }
+        return Optional.absent();
+    }
     
     @Override
     public final boolean hasMoreResultValue() throws SQLException {

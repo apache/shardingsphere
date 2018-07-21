@@ -29,7 +29,6 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.QueryRespo
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.proxy.util.ExecutorContext;
 import lombok.Getter;
@@ -67,33 +66,25 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
     
     protected abstract Statement createStatement(Connection connection, String sql, boolean isReturnGeneratedKeys) throws SQLException;
     
-    protected ExecuteResponseUnit executeWithMetadata(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) {
-        try {
-            setFetchSize(statement);
-            if (!executeSQL(statement, sql, isReturnGeneratedKeys)) {
-                return new ExecuteUpdateResponseUnit(new CommandResponsePackets(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0)));
-            }
-            ResultSet resultSet = statement.getResultSet();
-            ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-            if (0 == resultSetMetaData.getColumnCount()) {
-                return new ExecuteUpdateResponseUnit(new CommandResponsePackets(new OKPacket(1)));
-            }
-            return new ExecuteQueryResponseUnit(getHeaderPackets(resultSetMetaData), createQueryResult(resultSet));
-        } catch (final SQLException ex) {
-            return new ExecuteUpdateResponseUnit(new CommandResponsePackets(new ErrPacket(1, ex)));
+    protected ExecuteResponseUnit executeWithMetadata(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
+        setFetchSize(statement);
+        if (!executeSQL(statement, sql, isReturnGeneratedKeys)) {
+            return new ExecuteUpdateResponseUnit(new CommandResponsePackets(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0)));
         }
+        ResultSet resultSet = statement.getResultSet();
+        ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+        if (0 == resultSetMetaData.getColumnCount()) {
+            return new ExecuteUpdateResponseUnit(new CommandResponsePackets(new OKPacket(1)));
+        }
+        return new ExecuteQueryResponseUnit(getHeaderPackets(resultSetMetaData), createQueryResult(resultSet));
     }
     
-    protected ExecuteResponseUnit executeWithoutMetadata(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) {
-        try {
-            setFetchSize(statement);
-            if (!executeSQL(statement, sql, isReturnGeneratedKeys)) {
-                return new ExecuteUpdateResponseUnit(new CommandResponsePackets(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0)));
-            }
-            return new ExecuteQueryResponseUnit(null, createQueryResult(statement.getResultSet()));
-        } catch (final SQLException ex) {
-            return new ExecuteUpdateResponseUnit(new CommandResponsePackets(new ErrPacket(1, ex)));
+    protected ExecuteResponseUnit executeWithoutMetadata(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
+        setFetchSize(statement);
+        if (!executeSQL(statement, sql, isReturnGeneratedKeys)) {
+            return new ExecuteUpdateResponseUnit(new CommandResponsePackets(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0)));
         }
+        return new ExecuteQueryResponseUnit(null, createQueryResult(statement.getResultSet()));
     }
     
     protected abstract void setFetchSize(Statement statement) throws SQLException;
