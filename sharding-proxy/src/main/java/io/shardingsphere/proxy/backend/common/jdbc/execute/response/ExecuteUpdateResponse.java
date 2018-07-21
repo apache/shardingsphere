@@ -33,19 +33,19 @@ import java.util.List;
 @Getter
 public final class ExecuteUpdateResponse implements ExecuteResponse {
     
-    private final List<DatabasePacket> packetsList = new LinkedList<>();
+    private final List<DatabasePacket> packets = new LinkedList<>();
     
-    private final DatabasePacket firstPackets;
+    private final DatabasePacket firstPacket;
     
     public ExecuteUpdateResponse(final DatabasePacket packet) {
-        packetsList.add(packet);
-        firstPackets = packetsList.iterator().next();
+        packets.add(packet);
+        firstPacket = packets.iterator().next();
     }
     
     public ExecuteUpdateResponse(final Collection<ExecuteResponseUnit> responseUnits) {
         for (ExecuteResponseUnit each : responseUnits) {
-            packetsList.add(each.getCommandResponsePackets().getHeadPacket());
+            packets.add(each.getCommandResponsePackets().getHeadPacket());
         }
-        firstPackets = packetsList.iterator().next();
+        firstPacket = packets.iterator().next();
     }
 }

@@ -129,7 +129,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     private CommandResponsePackets merge(final SQLStatement sqlStatement) {
         if (executeResponse instanceof ExecuteUpdateResponse) {
             Collection<DatabasePacket> headPackets = new LinkedList<>();
-            for (DatabasePacket each : ((ExecuteUpdateResponse) executeResponse).getPacketsList()) {
+            for (DatabasePacket each : ((ExecuteUpdateResponse) executeResponse).getPackets()) {
                 if (each instanceof ErrPacket) {
                     return new CommandResponsePackets(each);
                 }
