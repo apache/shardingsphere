@@ -116,7 +116,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         executeResponse = executeEngine.execute(routeResult, isReturnGeneratedKeys);
         CommandResponsePackets result = merge(sqlStatement);
         if (!ruleRegistry.isMasterSlaveOnly()) {
-            ProxyShardingRefreshHandler.build(routeResult).execute();
+            ProxyShardingRefreshHandler.build(routeResult.getSqlStatement()).execute();
         }
         return result;
     }

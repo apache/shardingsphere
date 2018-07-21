@@ -142,7 +142,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
             packets.add(queryResult.getCommandResponsePackets());
         }
         CommandResponsePackets result = merge(routeResult.getSqlStatement(), packets, queryResults);
-        ProxyShardingRefreshHandler.build(routeResult).execute();
+        ProxyShardingRefreshHandler.build(routeResult.getSqlStatement()).execute();
         return result;
     }
     

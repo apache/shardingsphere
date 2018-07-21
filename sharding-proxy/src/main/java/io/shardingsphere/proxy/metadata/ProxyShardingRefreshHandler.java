@@ -19,7 +19,7 @@ package io.shardingsphere.proxy.metadata;
 
 import io.shardingsphere.core.metadata.AbstractRefreshHandler;
 import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.routing.SQLRouteResult;
+import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
 import io.shardingsphere.proxy.config.RuleRegistry;
@@ -33,14 +33,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class ProxyShardingRefreshHandler extends AbstractRefreshHandler {
     
-    private ProxyShardingRefreshHandler(final SQLRouteResult routeResult, final ShardingMetaData shardingMetaData, final ShardingRule shardingRule) {
-        super(routeResult, shardingMetaData, shardingRule);
+    private ProxyShardingRefreshHandler(final SQLStatement sqlStatement, final ShardingMetaData shardingMetaData, final ShardingRule shardingRule) {
+        super(sqlStatement, shardingMetaData, shardingRule);
     }
     
     @Override
     public void execute() {
-        if (getRouteResult().canRefreshMetaData()) {
-            String logicTable = getRouteResult().getSqlStatement().getTables().getSingleTableName();
+        if (isNeedRefresh()) {
+            String logicTable = getSqlStatement().getTables().getSingleTableName();
             TableRule tableRule = getShardingRule().getTableRule(logicTable);
             getShardingMetaData().refresh(tableRule, getShardingRule());
         }
@@ -49,10 +49,10 @@ public final class ProxyShardingRefreshHandler extends AbstractRefreshHandler {
     /**
      * create new instance of {@code ProxyShardingRefreshHandler}.
      *
-     * @param routeResult route result
+     * @param sqlStatement SQL statement
      * @return {@code ProxyShardingRefreshHandler}
      */
-    public static ProxyShardingRefreshHandler build(final SQLRouteResult routeResult) {
-        return new ProxyShardingRefreshHandler(routeResult, RuleRegistry.getInstance().getShardingMetaData(), RuleRegistry.getInstance().getShardingRule());
+    public static ProxyShardingRefreshHandler build(final SQLStatement sqlStatement) {
+        return new ProxyShardingRefreshHandler(sqlStatement, RuleRegistry.getInstance().getShardingMetaData(), RuleRegistry.getInstance().getShardingRule());
     }
 }

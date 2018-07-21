@@ -156,7 +156,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
                     getConnection().getShardingContext().getExecutorEngine(), routeResult.getSqlStatement().getType(), preparedStatementUnits).executeUpdate();
         } finally {
             if (routeResult != null && connection != null) {
-                JDBCShardingRefreshHandler.build(routeResult, connection).execute();
+                JDBCShardingRefreshHandler.build(routeResult.getSqlStatement(), connection).execute();
             }
             clearBatch();
         }
@@ -169,8 +169,8 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             return new PreparedStatementExecutor(
                     getConnection().getShardingContext().getExecutorEngine(), routeResult.getSqlStatement().getType(), preparedStatementUnits).execute();
         } finally {
-            if (routeResult != null && connection != null) {
-                JDBCShardingRefreshHandler.build(routeResult, connection).execute();
+            if (null != routeResult && null != connection) {
+                JDBCShardingRefreshHandler.build(routeResult.getSqlStatement(), connection).execute();
             }
             clearBatch();
         }
