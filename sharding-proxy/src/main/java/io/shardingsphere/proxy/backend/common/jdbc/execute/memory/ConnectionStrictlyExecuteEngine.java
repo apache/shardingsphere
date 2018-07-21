@@ -22,10 +22,11 @@ import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngine;
-import io.shardingsphere.proxy.backend.common.jdbc.execute.response.ExecuteQueryResponseUnit;
-import io.shardingsphere.proxy.backend.common.jdbc.execute.response.ExecuteResponseUnit;
-import io.shardingsphere.proxy.backend.common.jdbc.execute.response.SQLExecuteResponse;
-import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.response.ExecuteQueryResponse;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.response.ExecuteResponse;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.response.ExecuteUpdateResponse;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.response.unit.ExecuteQueryResponseUnit;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.response.unit.ExecuteResponseUnit;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -49,13 +50,13 @@ import java.util.concurrent.Future;
 public abstract class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
     
     @Override
-    public final SQLExecuteResponse execute(final SQLRouteResult routeResult, final boolean isReturnGeneratedKeys) throws SQLException {
+    public final ExecuteResponse execute(final SQLRouteResult routeResult, final boolean isReturnGeneratedKeys) throws SQLException {
         Map<String, Collection<SQLUnit>> sqlExecutionUnits = routeResult.getSQLUnitGroups();
         Entry<String, Collection<SQLUnit>> firstEntry = sqlExecutionUnits.entrySet().iterator().next();
         sqlExecutionUnits.remove(firstEntry.getKey());
         List<Future<Collection<ExecuteResponseUnit>>> futureList = asyncExecute(isReturnGeneratedKeys, sqlExecutionUnits);
-        Collection<ExecuteResponseUnit> firstJDBCExecuteResponses = syncExecute(isReturnGeneratedKeys, firstEntry.getKey(), firstEntry.getValue());
-        return buildCommandResponsePackets(firstJDBCExecuteResponses, futureList);
+        Collection<ExecuteResponseUnit> firstExecuteResponseUnits = syncExecute(isReturnGeneratedKeys, firstEntry.getKey(), firstEntry.getValue());
+        return buildCommandResponsePackets(firstExecuteResponseUnits, futureList);
     }
     
     private List<Future<Collection<ExecuteResponseUnit>>> asyncExecute(final boolean isReturnGeneratedKeys, final Map<String, Collection<SQLUnit>> sqlUnitGroups) throws SQLException {
@@ -98,33 +99,45 @@ public abstract class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine 
         return result;
     }
     
-    private SQLExecuteResponse buildCommandResponsePackets(final Collection<ExecuteResponseUnit> firstJDBCExecuteResponses, final List<Future<Collection<ExecuteResponseUnit>>> futureList) {
-        List<CommandResponsePackets> commandResponsePackets = new LinkedList<>();
-        List<QueryResult> queryResults = new LinkedList<>();
-        for (ExecuteResponseUnit each : firstJDBCExecuteResponses) {
-            if (null != each.getCommandResponsePackets()) {
-                commandResponsePackets.add(each.getCommandResponsePackets());
-            }
-            if (each instanceof ExecuteQueryResponseUnit) {
-                queryResults.add(((ExecuteQueryResponseUnit) each).getQueryResult());
-            }
+    private ExecuteResponse buildCommandResponsePackets(final Collection<ExecuteResponseUnit> firstExecuteResponseUnits, final List<Future<Collection<ExecuteResponseUnit>>> futureList) {
+        ExecuteResponseUnit firstExecuteResponseUnit = firstExecuteResponseUnits.iterator().next();
+        return firstExecuteResponseUnit instanceof ExecuteQueryResponseUnit
+                ? getExecuteQueryResponse((ExecuteQueryResponseUnit) firstExecuteResponseUnit, firstExecuteResponseUnits, futureList) : getExecuteUpdateResponse(firstExecuteResponseUnits, futureList);
+    }
+    
+    private ExecuteResponse getExecuteQueryResponse(
+            final ExecuteQueryResponseUnit firstExecuteResponseUnit, final Collection<ExecuteResponseUnit> firstExecuteResponseUnits, final List<Future<Collection<ExecuteResponseUnit>>> futureList) {
+        ExecuteQueryResponse result = new ExecuteQueryResponse(firstExecuteResponseUnit.getCommandResponsePackets());
+        for (ExecuteResponseUnit each : firstExecuteResponseUnits) {
+            result.getQueryResults().add(((ExecuteQueryResponseUnit) each).getQueryResult());
         }
         for (Future<Collection<ExecuteResponseUnit>> each : futureList) {
             try {
                 Collection<ExecuteResponseUnit> executeResponses = each.get();
                 for (ExecuteResponseUnit executeResponse : executeResponses) {
                     if (executeResponse instanceof ExecuteQueryResponseUnit) {
-                        queryResults.add(((ExecuteQueryResponseUnit) executeResponse).getQueryResult());
-                    } else {
-                        commandResponsePackets.add(executeResponse.getCommandResponsePackets());
+                        result.getQueryResults().add(((ExecuteQueryResponseUnit) executeResponse).getQueryResult());
                     }
-                    commandResponsePackets.add(executeResponse.getCommandResponsePackets());
                 }
             } catch (final InterruptedException | ExecutionException ex) {
                 throw new ShardingException(ex.getMessage(), ex);
             }
         }
-        return new SQLExecuteResponse(commandResponsePackets, queryResults);
+        return result;
+    }
+    
+    private ExecuteResponse getExecuteUpdateResponse(final Collection<ExecuteResponseUnit> firstExecuteResponseUnits, final List<Future<Collection<ExecuteResponseUnit>>> futureList) {
+        ExecuteUpdateResponse result = new ExecuteUpdateResponse(firstExecuteResponseUnits);
+        for (Future<Collection<ExecuteResponseUnit>> each : futureList) {
+            try {
+                for (ExecuteResponseUnit executeResponse : each.get()) {
+                    result.getPacketsList().add(executeResponse.getCommandResponsePackets());
+                }
+            } catch (final InterruptedException | ExecutionException ex) {
+                throw new ShardingException(ex.getMessage(), ex);
+            }
+        }
+        return result;
     }
     
     @Override

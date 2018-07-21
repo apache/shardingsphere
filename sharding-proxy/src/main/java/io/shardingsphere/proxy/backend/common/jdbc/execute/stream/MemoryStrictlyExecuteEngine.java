@@ -23,15 +23,15 @@ import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngine;
-import io.shardingsphere.proxy.backend.common.jdbc.execute.response.ExecuteQueryResponseUnit;
-import io.shardingsphere.proxy.backend.common.jdbc.execute.response.ExecuteResponseUnit;
-import io.shardingsphere.proxy.backend.common.jdbc.execute.response.SQLExecuteResponse;
-import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.response.ExecuteQueryResponse;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.response.ExecuteResponse;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.response.ExecuteUpdateResponse;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.response.unit.ExecuteQueryResponseUnit;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.response.unit.ExecuteResponseUnit;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -51,12 +51,13 @@ public abstract class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
     private static final Integer FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
     
     @Override
-    public final SQLExecuteResponse execute(final SQLRouteResult routeResult, final boolean isReturnGeneratedKeys) throws SQLException {
-        Iterator<SQLExecutionUnit> sqlExecutionUnits = routeResult.getExecutionUnits().iterator();
-        SQLExecutionUnit firstSQLExecutionUnit = sqlExecutionUnits.next();
-        List<Future<ExecuteResponseUnit>> futureList = asyncExecute(isReturnGeneratedKeys, Lists.newArrayList(sqlExecutionUnits));
-        ExecuteResponseUnit firstJDBCExecuteResponse = syncExecute(isReturnGeneratedKeys, firstSQLExecutionUnit);
-        return buildCommandResponsePackets(firstJDBCExecuteResponse, futureList);
+    public final ExecuteResponse execute(final SQLRouteResult routeResult, final boolean isReturnGeneratedKeys) throws SQLException {
+        Iterator<SQLExecutionUnit> executionUnits = routeResult.getExecutionUnits().iterator();
+        SQLExecutionUnit firstSQLExecutionUnit = executionUnits.next();
+        List<Future<ExecuteResponseUnit>> futureList = asyncExecute(isReturnGeneratedKeys, Lists.newArrayList(executionUnits));
+        ExecuteResponseUnit firstResponseUnit = syncExecute(isReturnGeneratedKeys, firstSQLExecutionUnit);
+        return firstResponseUnit instanceof ExecuteQueryResponseUnit
+                ? getExecuteQueryResponse((ExecuteQueryResponseUnit) firstResponseUnit, futureList) : getExecuteUpdateResponse(firstResponseUnit, futureList);
     }
     
     private List<Future<ExecuteResponseUnit>> asyncExecute(final boolean isReturnGeneratedKeys, final Collection<SQLExecutionUnit> sqlExecutionUnits) {
@@ -81,26 +82,29 @@ public abstract class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
         return executeWithMetadata(statement, sqlExecutionUnit.getSqlUnit().getSql(), isReturnGeneratedKeys);
     }
     
-    private SQLExecuteResponse buildCommandResponsePackets(final ExecuteResponseUnit firstJDBCExecuteResponse, final List<Future<ExecuteResponseUnit>> futureList) {
-        List<CommandResponsePackets> commandResponsePackets = new ArrayList<>(futureList.size() + 1);
-        List<QueryResult> queryResults = new ArrayList<>(futureList.size() + 1);
-        commandResponsePackets.add(firstJDBCExecuteResponse.getCommandResponsePackets());
-        if (firstJDBCExecuteResponse instanceof ExecuteQueryResponseUnit) {
-            queryResults.add(((ExecuteQueryResponseUnit) firstJDBCExecuteResponse).getQueryResult());
-        }
+    private ExecuteResponse getExecuteQueryResponse(final ExecuteQueryResponseUnit firstResponseUnit, final List<Future<ExecuteResponseUnit>> futureList) {
+        ExecuteQueryResponse result = new ExecuteQueryResponse(firstResponseUnit.getCommandResponsePackets());
+        result.getQueryResults().add(firstResponseUnit.getQueryResult());
         for (Future<ExecuteResponseUnit> each : futureList) {
             try {
-                ExecuteResponseUnit executeResponse = each.get();
-                if (executeResponse instanceof ExecuteQueryResponseUnit) {
-                    queryResults.add(((ExecuteQueryResponseUnit) executeResponse).getQueryResult());
-                } else {
-                    commandResponsePackets.add(executeResponse.getCommandResponsePackets());
-                }
+                result.getQueryResults().add(((ExecuteQueryResponseUnit) each.get()).getQueryResult());
             } catch (final InterruptedException | ExecutionException ex) {
                 throw new ShardingException(ex.getMessage(), ex);
             }
         }
-        return new SQLExecuteResponse(commandResponsePackets, queryResults);
+        return result;
+    }
+    
+    private ExecuteResponse getExecuteUpdateResponse(final ExecuteResponseUnit firstResponseUnit, final List<Future<ExecuteResponseUnit>> futureList) {
+        ExecuteUpdateResponse result = new ExecuteUpdateResponse(firstResponseUnit.getCommandResponsePackets());
+        for (Future<ExecuteResponseUnit> each : futureList) {
+            try {
+                result.getPacketsList().add(each.get().getCommandResponsePackets());
+            } catch (final InterruptedException | ExecutionException ex) {
+                throw new ShardingException(ex.getMessage(), ex);
+            }
+        }
+        return result;
     }
     
     @Override

@@ -17,18 +17,24 @@
 
 package io.shardingsphere.proxy.backend.common.jdbc.execute.response;
 
-import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
+import io.shardingsphere.core.merger.QueryResult;
+import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.QueryResponsePackets;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
- * Execute update response unit.
+ * Execute query response.
  * 
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class ExecuteUpdateResponseUnit implements ExecuteResponseUnit {
+public final class ExecuteQueryResponse implements ExecuteResponse {
     
-    private final CommandResponsePackets commandResponsePackets;
+    private final QueryResponsePackets queryResponsePackets;
+    
+    private final List<QueryResult> queryResults = new LinkedList<>();
 }
