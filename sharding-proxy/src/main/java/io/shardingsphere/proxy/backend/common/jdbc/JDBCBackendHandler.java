@@ -115,11 +115,10 @@ public abstract class JDBCBackendHandler implements BackendHandler {
                     ServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "unknown_table"));
         }
         executeResponse = executeEngine.execute(routeResult, isReturnGeneratedKeys);
-        CommandResponsePackets result = merge(sqlStatement);
         if (!ruleRegistry.isMasterSlaveOnly()) {
             ProxyShardingRefreshHandler.build(sqlStatement).execute();
         }
-        return result;
+        return merge(sqlStatement);
     }
     
     // TODO should isolate Atomikos API to SPI
