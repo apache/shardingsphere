@@ -2,6 +2,7 @@
 <sql-cases>
     <sql-case id="select_constant_without_table" value="SELECT 1 as a" />
     <sql-case id="select_not_equal_with_single_table" value="SELECT * FROM t_order_item WHERE item_id &lt;&gt; ? ORDER BY item_id" />
+    <sql-case id="select_equal_with_single_table_with_double_quotes" value="SELECT * FROM &quot;t_order_item&quot; WHERE item_id = ?" />
     <sql-case id="select_exclamation_equal_with_single_table" value="SELECT * FROM t_order_item WHERE item_id != ? ORDER BY item_id" />
     <sql-case id="select_not_in_with_single_table" value="SELECT * FROM t_order_item WHERE item_id IS NOT NULL AND item_id NOT IN (?, ?) ORDER BY item_id" />
     <sql-case id="select_not_between_with_single_table" value="SELECT * FROM t_order_item WHERE item_id IS NOT NULL AND item_id NOT BETWEEN ? AND ? ORDER BY item_id" />
