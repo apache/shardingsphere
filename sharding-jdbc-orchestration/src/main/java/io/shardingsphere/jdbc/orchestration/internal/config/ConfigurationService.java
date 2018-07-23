@@ -91,7 +91,7 @@ public final class ConfigurationService {
     }
     
     private boolean hasShardingRuleConfiguration() {
-        return regCenter.isExisted(configNode.getFullPath(ConfigurationNode.SHARDING_RULE_NODE_PATH));
+        return !Strings.isNullOrEmpty(regCenter.get(configNode.getFullPath(ConfigurationNode.SHARDING_RULE_NODE_PATH)));
     }
     
     private void persistShardingConfigMap(final Map<String, Object> configMap, final boolean isOverwrite) {
@@ -101,7 +101,7 @@ public final class ConfigurationService {
     }
     
     private boolean hasShardingConfigMap() {
-        return regCenter.isExisted(configNode.getFullPath(ConfigurationNode.SHARDING_CONFIG_MAP_NODE_PATH));
+        return !Strings.isNullOrEmpty(regCenter.get(configNode.getFullPath(ConfigurationNode.SHARDING_CONFIG_MAP_NODE_PATH)));
     }
     
     private void persistShardingProperties(final Properties props, final boolean isOverwrite) {
@@ -111,7 +111,7 @@ public final class ConfigurationService {
     }
     
     private boolean hasShardingProperties() {
-        return regCenter.isExisted(configNode.getFullPath(ConfigurationNode.SHARDING_PROPS_NODE_PATH));
+        return !Strings.isNullOrEmpty(regCenter.get(configNode.getFullPath(ConfigurationNode.SHARDING_PROPS_NODE_PATH)));
     }
     
     /**
@@ -139,7 +139,7 @@ public final class ConfigurationService {
     }
     
     private boolean hasMasterSlaveRuleConfiguration() {
-        return regCenter.isExisted(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH));
+        return !Strings.isNullOrEmpty(regCenter.get(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH)));
     }
     
     private void persistMasterSlaveConfigMap(final Map<String, Object> configMap, final boolean isOverwrite) {
@@ -149,7 +149,7 @@ public final class ConfigurationService {
     }
     
     private boolean hasMasterSlaveConfigMap() {
-        return regCenter.isExisted(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_CONFIG_MAP_NODE_PATH));
+        return !Strings.isNullOrEmpty(regCenter.get(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_CONFIG_MAP_NODE_PATH)));
     }
     
     private void persistMasterSlaveProperties(final Properties props, final boolean isOverwrite) {
@@ -159,7 +159,7 @@ public final class ConfigurationService {
     }
     
     private boolean hasMasterSlaveProperties() {
-        return regCenter.isExisted(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_PROPS_NODE_PATH));
+        return !Strings.isNullOrEmpty(regCenter.get(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_PROPS_NODE_PATH)));
     }
     
     /**
@@ -174,7 +174,7 @@ public final class ConfigurationService {
     }
     
     private boolean hasProxyConfig() {
-        return regCenter.isExisted(configNode.getFullPath(ConfigurationNode.PROXY_RULE_NODE_PATH));
+        return !Strings.isNullOrEmpty(regCenter.get(configNode.getFullPath(ConfigurationNode.PROXY_RULE_NODE_PATH)));
     }
     
     private void persistProxyRuleConfiguration(final OrchestrationProxyConfiguration orchestrationProxyConfiguration, final boolean isOverwrite) {
