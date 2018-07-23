@@ -21,6 +21,7 @@ chapter = true
 * [义乌购](http://www.yiwugou.com/)
 * [京东商城俄文站](https://www.jd.ru/)
 * [京东商城海外站](https://www.joybuy.com/)
+* [每日优鲜便利购](https://www.imrfresh.com/)
 
 ## 互联网金融
 
@@ -93,6 +94,7 @@ chapter = true
 * [别吃胖](http://www.biechipang.net/)
 * [YOU选](http://www.youx.mobi/)
 * [货车帮](http://www.huochebang.com/)
+* [兔展](http://www.rabbitpre.com/)
 
 ## 物流
 

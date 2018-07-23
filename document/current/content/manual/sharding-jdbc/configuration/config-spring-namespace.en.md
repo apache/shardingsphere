@@ -139,8 +139,14 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
     </bean>
     
     <bean id="randomStrategy" class="io.shardingsphere.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
+    <master-slave:data-source id="masterSlaveDataSource" master-data-source-name="ds_master" slave-data-source-names="ds_slave0, ds_slave1" strategy-ref="randomStrategy">
+            <master-slave:props>
+                <prop key="sql.show">${sql_show}</prop>
+                <prop key="executor.size">10</prop>
+                <prop key="foo">bar</prop>
+            </master-slave:props>
+    </master-slave:data-source>
     
-    <master-slave:data-source id="masterSlaveDataSource" master-data-source-name="ds_master" slave-data-source-names="ds_slave0, ds_slave1" strategy-ref="randomStrategy" />
 </beans>
 ```
 
@@ -307,8 +313,8 @@ Namespace: http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
 | -------------- | --------- | --------------------------- |
 | id             | Attribute | Spring Bean Id              |
 | sharding-rule  | Tag       | Sharding rule configuration |
-| props (?)      | Tag       | Properties                  |
 | config-map (?) | Tag       | User-defined arguments      |
+| props (?)      | Tag       | Properties                  |
 
 #### \<sharding:sharding-rule />
 
@@ -413,8 +419,16 @@ Namespace: http://shardingsphere.io/schema/shardingsphere/masterslave/master-sla
 | strategy-ref (?)        | Attribute | Reference of load balance algorithm. This class need to implements MasterSlaveLoadBalanceAlgorithm            |
 | strategy-type (?)       | Attribute | Load balance algorithm type, values should be: `ROUND_ROBIN` or `RANDOM`. Ignore if `strategy-ref` is present |
 | config-map (?)          | Attribute | User-defined arguments                                                                                        |
+| props (?)               | Tag       | Properties                                                                                                    |
 
-#### \<sharding:config-map />
+#### \<master-slave:config-map />
+
+#### \<master-slave:props />
+
+| *Name*            | *Type*    | *Description*                                           |
+| ----------------- | --------- | ------------------------------------------------------- |
+| sql.show (?)      | Attribute | To show SQLS or not, default value: false               |
+| executor.size (?) | Attribute | The number of working threads, default value: CPU count |
 
 ### Sharding + orchestration
 

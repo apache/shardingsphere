@@ -79,6 +79,11 @@ masterSlaveRule:
   name: ds_ms
   masterDataSourceName: ds_master
   slaveDataSourceNames: [ds_slave0, ds_slave1]
+  
+  props:
+    sql.show: true
+  configMap:
+    key1: value1
 ```
 
 ```java
@@ -153,6 +158,8 @@ sharding.jdbc.datasource.ds-slave1.password=
 sharding.jdbc.config.masterslave.name=ds_ms
 sharding.jdbc.config.masterslave.master-data-source-name=ds_master
 sharding.jdbc.config.masterslave.slave-data-source-names=ds_slave0,ds_slave1
+
+sharding.jdbc.config.masterslave.props.sql.show=true
 ```
 
 ### Configure read-write splitting rule with spring namespace
@@ -186,7 +193,13 @@ sharding.jdbc.config.masterslave.slave-data-source-names=ds_slave0,ds_slave1
         <property name="password" value="" />
     </bean>
     
-    <master-slave:data-source id="masterSlaveDataSource" master-data-source-name="ds_master" slave-data-source-names="ds_slave0, ds_slave1" />
+    <master-slave:data-source id="masterSlaveDataSource" master-data-source-name="ds_master" slave-data-source-names="ds_slave0, ds_slave1" >
+            <master-slave:props>
+                    <prop key="sql.show">${sql_show}</prop>
+                    <prop key="executor.size">10</prop>
+                    <prop key="foo">bar</prop>
+                </master-slave:props>
+    </master-slave:data-source>
 </beans>
 ```
 

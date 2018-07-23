@@ -50,7 +50,7 @@ weight = 1
          masterSlaveRuleConfig.setName("ds_master_slave");
          masterSlaveRuleConfig.setMasterDataSourceName("ds_master");
          masterSlaveRuleConfig.setSlaveDataSourceNames(Arrays.asList("ds_slave0", "ds_slave1"));
-         return MasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig);
+         return MasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig, new LinkedHashMap<String, Object>(), new Properties());
      }
      
      Map<String, DataSource> createDataSourceMap() {
@@ -169,8 +169,8 @@ weight = 1
 | ------------------ |  ------------------------ | -------------- |
 | dataSourceMap      | Map\<String, DataSource\> | 数据源配置      |
 | shardingRuleConfig | ShardingRuleConfiguration | 数据分片配置规则 |
-| props (?)          | Properties                | 属性配置        |
 | configMap (?)      | Map\<String, Object\>     | 用户自定义配置   |
+| props (?)          | Properties                | 属性配置        |
 
 #### ShardingRuleConfiguration
 
@@ -240,7 +240,7 @@ ShardingStrategyConfiguration的实现类，用于配置Hint方式分片策略�
 
 ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 
-#### ShardingPropertiesConstant
+#### PropertiesConstant
 
 属性配置项，可以为以下属性。
 
@@ -261,9 +261,10 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 
 | *名称*                 | *数据类型*                    | *说明*             |
 | --------------------- | ---------------------------- | ------------------ |
-| dataSourceMap         | Map\<String, DataSource\>    | 数据源与其名称的映射 |
-| masterSlaveRuleConfig | MasterSlaveRuleConfiguration | 读写分离规则        |
-| configMap (?)         | Map\<String, Object\>        | 用户自定义配置      |
+| dataSourceMap         | Map\<String, DataSource\>    | 数据源与其名称的映射  |
+| masterSlaveRuleConfig | MasterSlaveRuleConfiguration | 读写分离规则         |
+| configMap (?)         | Map\<String, Object\>        | 用户自定义配置       |
+| props (?)             | Properties                   | 属性配置            |
 
 #### MasterSlaveRuleConfiguration
 
@@ -279,6 +280,16 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 #### configMap
 
 用户自定义配置。
+
+#### PropertiesConstant
+
+属性配置项，可以为以下属性。
+
+| *名称*             | *数据类型* | *说明*                      |
+| ----------------- | --------- | --------------------------- |
+| sql.show (?)      | boolean   | 是否开启SQL显示，默认值: false |
+| executor.size (?) | int       | 工作线程数量，默认值: CPU核数  |
+
 
 ### 数据治理
 
@@ -303,6 +314,7 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | dataSourceMap         | Map\<String, DataSource\>    | 同MasterSlaveDataSourceFactory |
 | masterSlaveRuleConfig | MasterSlaveRuleConfiguration | 同MasterSlaveDataSourceFactory |
 | configMap (?)         | Map\<String, Object\>        | 同MasterSlaveDataSourceFactory |
+| props (?)             | Properties                   | 同ShardingDataSourceFactory    |
 | orchestrationConfig   | OrchestrationConfiguration   | 数据治理规则配置                 |
  
 #### OrchestrationConfiguration

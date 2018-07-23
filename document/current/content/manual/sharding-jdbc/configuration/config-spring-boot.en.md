@@ -289,6 +289,9 @@ sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.config.map.key1= #User-defined arguments
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.config.map.key2= #User-defined arguments
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.config.map.keyx= #User-defined arguments
+
+sharding.jdbc.config.masterslave.props.sql.show= #To show SQLS or not, default value: false
+sharding.jdbc.config.masterslave.props.executor.size= #The number of working threads, default value: CPU count
 ```
 
 ### Orchestration by Zookeeper

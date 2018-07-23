@@ -110,6 +110,10 @@ masterSlaveRule:
     - ds_slave0
     - ds_slave1
     
+  props:
+    proxy.mode: CONNECTION_STRICTLY
+    sql.show: false
+       
 proxyAuthority:
   username: root
   password:

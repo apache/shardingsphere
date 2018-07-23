@@ -50,7 +50,7 @@ weight = 1
          masterSlaveRuleConfig.setName("ds_master_slave");
          masterSlaveRuleConfig.setMasterDataSourceName("ds_master");
          masterSlaveRuleConfig.setSlaveDataSourceNames(Arrays.asList("ds_slave0", "ds_slave1"));
-         return MasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig);
+         return MasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig, new LinkedHashMap<String, Object>(), new Properties());
      }
      
      Map<String, DataSource> createDataSourceMap() {
@@ -256,6 +256,7 @@ User-defined arguments.
 | dataSourceMap         | Map\<String, DataSource\>    | Map of data sources and their names |
 | masterSlaveRuleConfig | MasterSlaveRuleConfiguration | Master slave rule configuration     |
 | configMap (?)         | Map\<String, Object\>        | Config map                          |
+| props (?)             | Properties                   | Properties                          |
 
 #### MasterSlaveRuleConfiguration
 
@@ -269,6 +270,15 @@ User-defined arguments.
 #### configMap
 
 User-defined arguments.
+
+#### ShardingPropertiesConstant
+
+Enumeration of properties.
+
+| *Name*            | *DataType* | *Description*                                           |
+| ----------------- | ---------- | ------------------------------------------------------- |
+| sql.show (?)      | boolean    | To show SQLS or not, default value: false               |
+| executor.size (?) | int        | The number of working threads, default value: CPU count |
 
 ### Orchestration
 
@@ -289,6 +299,7 @@ User-defined arguments.
 | dataSourceMap         | Map\<String, DataSource\>    | Same with MasterSlaveDataSourceFactory |
 | masterSlaveRuleConfig | MasterSlaveRuleConfiguration | Same with MasterSlaveDataSourceFactory |
 | configMap (?)         | Map\<String, Object\>        | Same with MasterSlaveDataSourceFactory |
+| props (?)             | Properties                   | Same with ShardingDataSourceFactory    |
 | orchestrationConfig   | OrchestrationConfiguration   | Orchestration configuration            |
  
 #### OrchestrationConfiguration
