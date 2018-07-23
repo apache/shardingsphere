@@ -13,7 +13,16 @@
             <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
-    
+
+    <parser-result sql-case-id="select_equal_with_single_table_with_double_quotes" parameters="1">
+        <tables>
+            <table name="t_order_item" />
+        </tables>
+        <tokens>
+            <table-token begin-position="14" original-literals="t_order_item" />
+        </tokens>
+    </parser-result>
+
     <parser-result sql-case-id="select_exclamation_equal_with_single_table" parameters="1">
         <tables>
             <table name="t_order_item" />
