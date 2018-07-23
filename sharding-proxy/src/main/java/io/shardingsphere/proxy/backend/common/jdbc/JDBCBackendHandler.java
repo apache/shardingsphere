@@ -72,8 +72,6 @@ public final class JDBCBackendHandler implements BackendHandler {
     
     private int currentSequenceId;
     
-    private boolean isMerged;
-    
     @Getter
     private boolean hasMoreResultValueFlag;
     
@@ -82,7 +80,6 @@ public final class JDBCBackendHandler implements BackendHandler {
         this.executeEngine = executeEngine;
         ruleRegistry = RuleRegistry.getInstance();
         backendConnection = executeEngine.getBackendConnection();
-        isMerged = false;
         hasMoreResultValueFlag = true;
     }
     
@@ -129,7 +126,6 @@ public final class JDBCBackendHandler implements BackendHandler {
                 ruleRegistry.getShardingRule(), ((ExecuteQueryResponse) executeResponse).getQueryResults(), sqlStatement, ruleRegistry.getShardingMetaData()).merge();
         QueryResponsePackets result = ((ExecuteQueryResponse) executeResponse).getQueryResponsePackets();
         currentSequenceId = result.getPackets().size();
-        isMerged = true;
         return result;
     }
     
@@ -151,7 +147,7 @@ public final class JDBCBackendHandler implements BackendHandler {
     
     @Override
     public boolean hasMoreResultValue() throws SQLException {
-        if (!isMerged || !hasMoreResultValueFlag) {
+        if (null == mergedResult || !hasMoreResultValueFlag) {
             backendConnection.close();
             return false;
         }

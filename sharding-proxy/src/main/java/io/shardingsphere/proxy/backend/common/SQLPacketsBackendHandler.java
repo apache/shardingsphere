@@ -53,6 +53,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -72,8 +73,6 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     
     private final DatabaseType databaseType;
     
-    private boolean isMerged;
-    
     private boolean hasMoreResultValueFlag;
     
     private final Map<String, List<Channel>> channelsMap = Maps.newHashMap();
@@ -91,7 +90,6 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     public SQLPacketsBackendHandler(final CommandPacketRebuilder rebuilder, final DatabaseType databaseType) {
         this.rebuilder = rebuilder;
         this.databaseType = databaseType;
-        isMerged = false;
         hasMoreResultValueFlag = true;
         ruleRegistry = RuleRegistry.getInstance();
     }
@@ -197,7 +195,6 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
         try {
             mergedResult = MergeEngineFactory.newInstance(ruleRegistry.getShardingRule(), queryResults,
                     sqlStatement, ruleRegistry.getShardingMetaData()).merge();
-            isMerged = true;
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex));
         }
@@ -206,8 +203,8 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     
     @Override
     public boolean hasMoreResultValue() throws SQLException {
-        if (!isMerged || !hasMoreResultValueFlag) {
-            for (Map.Entry<String, List<Channel>> entry : channelsMap.entrySet()) {
+        if (null == mergedResult || !hasMoreResultValueFlag) {
+            for (Entry<String, List<Channel>> entry : channelsMap.entrySet()) {
                 for (Channel each : entry.getValue()) {
                     ShardingProxyClient.getInstance().getPoolMap().get(entry.getKey()).release(each);
                 }
