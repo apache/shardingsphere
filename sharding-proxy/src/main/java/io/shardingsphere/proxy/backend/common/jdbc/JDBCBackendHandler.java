@@ -35,7 +35,6 @@ import io.shardingsphere.proxy.backend.common.jdbc.execute.response.ExecuteUpdat
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
-import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.QueryResponsePackets;
@@ -57,8 +56,7 @@ import java.util.List;
  * @author zhaojun
  * @author zhangliang
  */
-@Getter
-public abstract class JDBCBackendHandler implements BackendHandler {
+public final class JDBCBackendHandler implements BackendHandler {
     
     private final String sql;
     
@@ -76,6 +74,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     private boolean isMerged;
     
+    @Getter
     private boolean hasMoreResultValueFlag;
     
     public JDBCBackendHandler(final String sql, final JDBCExecuteEngine executeEngine) {
@@ -173,11 +172,10 @@ public abstract class JDBCBackendHandler implements BackendHandler {
             for (int i = 1; i <= queryResponsePackets.getColumnCount(); i++) {
                 data.add(mergedResult.getValue(i, Object.class));
             }
-            return newDatabasePacket(++currentSequenceId, data, queryResponsePackets.getColumnCount(), queryResponsePackets.getColumnTypes());
+            return executeEngine.getJdbcExecutorWrapper().createResultSetPacket(
+                    ++currentSequenceId, data, queryResponsePackets.getColumnCount(), queryResponsePackets.getColumnTypes(), DatabaseType.MySQL);
         } catch (final SQLException ex) {
             return new ErrPacket(1, ex);
         }
     }
-    
-    protected abstract DatabasePacket newDatabasePacket(int sequenceId, List<Object> data, int columnCount, List<ColumnType> columnTypes);
 }

@@ -26,6 +26,9 @@ import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.core.routing.StatementRoutingEngine;
 import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingsphere.proxy.config.RuleRegistry;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
+import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
+import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextResultSetRowPacket;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -70,5 +73,15 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     @Override
     public boolean executeSQL(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
         return statement.execute(sql, isReturnGeneratedKeys ? Statement.RETURN_GENERATED_KEYS : Statement.NO_GENERATED_KEYS);
+    }
+    
+    @Override
+    public DatabasePacket createResultSetPacket(final int sequenceId, final List<Object> data, final int columnCount, final List<ColumnType> columnTypes, final DatabaseType databaseType) {
+        switch (databaseType) {
+            case MySQL:
+                return new TextResultSetRowPacket(sequenceId, data);
+            default:
+                throw new UnsupportedOperationException(databaseType.name());
+        }
     }
 }

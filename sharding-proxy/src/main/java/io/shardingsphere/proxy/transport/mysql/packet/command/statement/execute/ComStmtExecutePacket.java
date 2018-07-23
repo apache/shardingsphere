@@ -21,7 +21,8 @@ import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.SQLParsingEngine;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.proxy.backend.common.jdbc.statement.JDBCStatementBackendHandler;
+import io.shardingsphere.proxy.backend.common.jdbc.JDBCBackendHandler;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngineFactory;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
@@ -66,7 +67,7 @@ public final class ComStmtExecutePacket extends CommandPacket {
     
     private final List<PreparedStatementParameter> preparedStatementParameters = new ArrayList<>(32);
     
-    private final JDBCStatementBackendHandler statementExecuteBackendHandler;
+    private final JDBCBackendHandler jdbcBackendHandler;
     
     public ComStmtExecutePacket(final int sequenceId, final MySQLPacketPayload payload) {
         super(sequenceId);
@@ -82,7 +83,7 @@ public final class ComStmtExecutePacket extends CommandPacket {
         }
         newParametersBoundFlag = NewParametersBoundFlag.valueOf(payload.readInt1());
         setParameterList(payload, numParameters, newParametersBoundFlag);
-        statementExecuteBackendHandler = new JDBCStatementBackendHandler(preparedStatementParameters, statementId);
+        jdbcBackendHandler = new JDBCBackendHandler(PreparedStatementRegistry.getInstance().getSQL(statementId), JDBCExecuteEngineFactory.createStatementProtocolInstance(preparedStatementParameters));
     }
     
     private void setParameterList(final MySQLPacketPayload payload, final int numParameters, final NewParametersBoundFlag newParametersBoundFlag) {
@@ -150,13 +151,13 @@ public final class ComStmtExecutePacket extends CommandPacket {
     @Override
     public CommandResponsePackets execute() {
         log.debug("COM_STMT_EXECUTE received for Sharding-Proxy: {}", statementId);
-        return statementExecuteBackendHandler.execute();
+        return jdbcBackendHandler.execute();
     }
     
     @Override
     public boolean hasMoreResultValue() {
         try {
-            return statementExecuteBackendHandler.hasMoreResultValue();
+            return jdbcBackendHandler.hasMoreResultValue();
         } catch (final SQLException ex) {
             return false;
         }
@@ -164,6 +165,6 @@ public final class ComStmtExecutePacket extends CommandPacket {
     
     @Override
     public DatabasePacket getResultValue() {
-        return statementExecuteBackendHandler.getResultValue();
+        return jdbcBackendHandler.getResultValue();
     }
 }
