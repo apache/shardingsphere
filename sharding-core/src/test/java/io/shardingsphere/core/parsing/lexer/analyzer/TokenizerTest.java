@@ -171,7 +171,7 @@ public final class TokenizerTest {
         tokenizer = new Tokenizer(sql, dictionary, sql.indexOf("=-"));
         assertTrue(EqualsBuilder.reflectionEquals(tokenizer.scanSymbol(), new Token(Symbol.EQ, "=", sql.indexOf("=-") + 1)));
         tokenizer = new Tokenizer(sql, dictionary, sql.indexOf("'"));
-        assertTrue(EqualsBuilder.reflectionEquals(tokenizer.scanChars(), new Token(Literals.CHARS, "xx", sql.indexOf("And") - 1)));
+        assertTrue(EqualsBuilder.reflectionEquals(tokenizer.scanChars(), new Token(Literals.CHARS, "'xx'", sql.indexOf("And") - 1)));
     }
     
     @Test(expected = UnterminatedCharException.class)

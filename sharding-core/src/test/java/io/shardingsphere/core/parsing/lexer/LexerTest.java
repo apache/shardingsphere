@@ -118,13 +118,13 @@ public final class LexerTest {
         LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "XX");
         LexerAssert.assertNextToken(lexer, DefaultKeyword.IN, "IN");
         LexerAssert.assertNextToken(lexer, Symbol.LEFT_PAREN, "(");
-        LexerAssert.assertNextToken(lexer, Literals.CHARS, "xxx");
+        LexerAssert.assertNextToken(lexer, Literals.CHARS, "'xxx'");
         LexerAssert.assertNextToken(lexer, Symbol.COMMA, ",");
-        LexerAssert.assertNextToken(lexer, Literals.CHARS, "x''x''''x");
+        LexerAssert.assertNextToken(lexer, Literals.CHARS, "'x''x''''x'");
         LexerAssert.assertNextToken(lexer, Symbol.COMMA, ",");
-        LexerAssert.assertNextToken(lexer, Literals.CHARS, "xyz");
+        LexerAssert.assertNextToken(lexer, Literals.CHARS, "\"xyz\"");
         LexerAssert.assertNextToken(lexer, Symbol.COMMA, ",");
-        LexerAssert.assertNextToken(lexer, Literals.CHARS, "x\"\"yz");
+        LexerAssert.assertNextToken(lexer, Literals.CHARS, "\"x\"\"yz\"");
         LexerAssert.assertNextToken(lexer, Symbol.RIGHT_PAREN, ")");
         LexerAssert.assertNextToken(lexer, Assist.END, "");
     }
@@ -168,7 +168,7 @@ public final class LexerTest {
         LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "XX");
         LexerAssert.assertNextToken(lexer, Symbol.EQ, "=");
         LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "N");
-        LexerAssert.assertNextToken(lexer, Literals.CHARS, "xx");
+        LexerAssert.assertNextToken(lexer, Literals.CHARS, "'xx'");
     }
     
     @Test(expected = SQLParsingException.class)
@@ -182,9 +182,9 @@ public final class LexerTest {
         LexerAssert.assertNextToken(lexer, Symbol.DOT, ".");
         LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "title");
         LexerAssert.assertNextToken(lexer, Symbol.EQ, "=");
-        LexerAssert.assertNextToken(lexer, Literals.CHARS, "Title");
+        LexerAssert.assertNextToken(lexer, Literals.CHARS, "'Title'");
         LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "s");
-        LexerAssert.assertNextToken(lexer, Literals.CHARS, ",s.description=");
+        LexerAssert.assertNextToken(lexer, Literals.CHARS, "',s.description='");
         lexer.nextToken();
     }
 }

@@ -282,7 +282,7 @@ public final class Tokenizer {
     
     private Token scanChars(final char terminatedChar) {
         int length = getLengthUntilTerminatedChar(terminatedChar);
-        return new Token(Literals.CHARS, input.substring(offset + 1, offset + length - 1), offset + length);
+        return new Token(Literals.CHARS, input.substring(offset, offset + length), offset + length);
     }
     
     /**

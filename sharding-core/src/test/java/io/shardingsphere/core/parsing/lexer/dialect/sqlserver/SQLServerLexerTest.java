@@ -50,6 +50,6 @@ public final class SQLServerLexerTest {
         LexerAssert.assertNextToken(lexer, DefaultKeyword.WHERE, "WHERE");
         LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "XX");
         LexerAssert.assertNextToken(lexer, Symbol.EQ, "=");
-        LexerAssert.assertNextToken(lexer, Literals.CHARS, "xx");
+        LexerAssert.assertNextToken(lexer, Literals.CHARS, "'xx'");
     }
 }
