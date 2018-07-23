@@ -19,6 +19,8 @@ package io.shardingsphere.proxy.backend.common.jdbc.execute.response;
 
 import io.shardingsphere.proxy.backend.common.jdbc.execute.response.unit.ExecuteResponseUnit;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import lombok.Getter;
 
 import java.util.Collection;
@@ -30,22 +32,37 @@ import java.util.List;
  * 
  * @author zhangliang
  */
-@Getter
 public final class ExecuteUpdateResponse implements ExecuteResponse {
     
+    @Getter
     private final List<DatabasePacket> packets = new LinkedList<>();
-    
-    private final DatabasePacket firstPacket;
     
     public ExecuteUpdateResponse(final DatabasePacket packet) {
         packets.add(packet);
-        firstPacket = packets.iterator().next();
     }
     
     public ExecuteUpdateResponse(final Collection<ExecuteResponseUnit> responseUnits) {
         for (ExecuteResponseUnit each : responseUnits) {
             packets.add(each.getCommandResponsePackets().getHeadPacket());
         }
-        firstPacket = packets.iterator().next();
+    }
+    
+    /**
+     * Merge packets.
+     * 
+     * @return merged packet.
+     */
+    public CommandResponsePackets merge() {
+        int affectedRows = 0;
+        long lastInsertId = 0;
+        for (DatabasePacket each : packets) {
+            if (each instanceof OKPacket) {
+                OKPacket okPacket = (OKPacket) each;
+                affectedRows += okPacket.getAffectedRows();
+                // TODO consider about insert multiple values
+                lastInsertId = okPacket.getLastInsertId();
+            }
+        }
+        return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId));
     }
 }

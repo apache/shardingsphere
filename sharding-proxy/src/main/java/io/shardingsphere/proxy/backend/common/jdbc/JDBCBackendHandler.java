@@ -52,9 +52,7 @@ import javax.transaction.Status;
 import javax.transaction.SystemException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -131,14 +129,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     private CommandResponsePackets merge(final SQLStatement sqlStatement) throws SQLException {
         if (executeResponse instanceof ExecuteUpdateResponse) {
-            Collection<DatabasePacket> headPackets = new LinkedList<>();
-            for (DatabasePacket each : ((ExecuteUpdateResponse) executeResponse).getPackets()) {
-                if (each instanceof ErrPacket) {
-                    return new CommandResponsePackets(each);
-                }
-                headPackets.add(each);
-            }
-            return mergeUpdate(headPackets);
+            return ((ExecuteUpdateResponse) executeResponse).merge();
         }
         QueryResponsePackets result = ((ExecuteQueryResponse) executeResponse).getQueryResponsePackets();
         currentSequenceId += result.getPackets().size();
@@ -149,20 +140,6 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     private MergedResult mergeQuery(final SQLStatement sqlStatement) throws SQLException {
         isMerged = true;
         return MergeEngineFactory.newInstance(ruleRegistry.getShardingRule(), ((ExecuteQueryResponse) executeResponse).getQueryResults(), sqlStatement, ruleRegistry.getShardingMetaData()).merge();
-    }
-    
-    private CommandResponsePackets mergeUpdate(final Collection<DatabasePacket> packets) {
-        int affectedRows = 0;
-        long lastInsertId = 0;
-        for (DatabasePacket each : packets) {
-            if (each instanceof OKPacket) {
-                OKPacket okPacket = (OKPacket) each;
-                affectedRows += okPacket.getAffectedRows();
-                // TODO consider about insert multiple values
-                lastInsertId = okPacket.getLastInsertId();
-            }
-        }
-        return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId));
     }
     
     private SQLRouteResult doMasterSlaveRoute() {
