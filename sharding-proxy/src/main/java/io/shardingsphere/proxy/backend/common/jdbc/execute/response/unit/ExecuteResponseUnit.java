@@ -17,19 +17,10 @@
 
 package io.shardingsphere.proxy.backend.common.jdbc.execute.response.unit;
 
-import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
-
 /**
  * Execute response unit.
  * 
  * @author zhangliang
  */
 public interface ExecuteResponseUnit {
-    
-    /**
-     * Get command response packets.
-     * 
-     * @return command response packets
-     */
-    CommandResponsePackets getCommandResponsePackets();
 }

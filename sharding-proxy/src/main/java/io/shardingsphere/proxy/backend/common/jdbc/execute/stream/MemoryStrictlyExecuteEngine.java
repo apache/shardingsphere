@@ -28,6 +28,7 @@ import io.shardingsphere.proxy.backend.common.jdbc.execute.response.ExecuteRespo
 import io.shardingsphere.proxy.backend.common.jdbc.execute.response.ExecuteUpdateResponse;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.response.unit.ExecuteQueryResponseUnit;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.response.unit.ExecuteResponseUnit;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.response.unit.ExecuteUpdateResponseUnit;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -57,7 +58,7 @@ public abstract class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
         List<Future<ExecuteResponseUnit>> futureList = asyncExecute(isReturnGeneratedKeys, Lists.newArrayList(executionUnits));
         ExecuteResponseUnit firstResponseUnit = syncExecute(isReturnGeneratedKeys, firstSQLExecutionUnit);
         return firstResponseUnit instanceof ExecuteQueryResponseUnit
-                ? getExecuteQueryResponse((ExecuteQueryResponseUnit) firstResponseUnit, futureList) : getExecuteUpdateResponse(firstResponseUnit, futureList);
+                ? getExecuteQueryResponse((ExecuteQueryResponseUnit) firstResponseUnit, futureList) : getExecuteUpdateResponse((ExecuteUpdateResponseUnit) firstResponseUnit, futureList);
     }
     
     private List<Future<ExecuteResponseUnit>> asyncExecute(final boolean isReturnGeneratedKeys, final Collection<SQLExecutionUnit> sqlExecutionUnits) {
@@ -83,7 +84,7 @@ public abstract class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
     }
     
     private ExecuteResponse getExecuteQueryResponse(final ExecuteQueryResponseUnit firstResponseUnit, final List<Future<ExecuteResponseUnit>> futureList) {
-        ExecuteQueryResponse result = new ExecuteQueryResponse(firstResponseUnit.getCommandResponsePackets());
+        ExecuteQueryResponse result = new ExecuteQueryResponse(firstResponseUnit.getQueryResponsePackets());
         result.getQueryResults().add(firstResponseUnit.getQueryResult());
         for (Future<ExecuteResponseUnit> each : futureList) {
             try {
@@ -95,11 +96,11 @@ public abstract class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
         return result;
     }
     
-    private ExecuteResponse getExecuteUpdateResponse(final ExecuteResponseUnit firstResponseUnit, final List<Future<ExecuteResponseUnit>> futureList) {
+    private ExecuteResponse getExecuteUpdateResponse(final ExecuteUpdateResponseUnit firstResponseUnit, final List<Future<ExecuteResponseUnit>> futureList) {
         ExecuteUpdateResponse result = new ExecuteUpdateResponse(firstResponseUnit.getCommandResponsePackets().getHeadPacket());
         for (Future<ExecuteResponseUnit> each : futureList) {
             try {
-                result.getPackets().add(each.get().getCommandResponsePackets().getHeadPacket());
+                result.getPackets().add(((ExecuteUpdateResponseUnit) each.get()).getCommandResponsePackets().getHeadPacket());
             } catch (final InterruptedException | ExecutionException ex) {
                 throw new ShardingException(ex.getMessage(), ex);
             }

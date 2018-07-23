@@ -28,15 +28,10 @@ import lombok.RequiredArgsConstructor;
  * @author zhangliang
  */
 @RequiredArgsConstructor
+@Getter
 public final class ExecuteQueryResponseUnit implements ExecuteResponseUnit {
     
     private final QueryResponsePackets queryResponsePackets;
     
-    @Getter
     private final QueryResult queryResult;
-    
-    @Override
-    public QueryResponsePackets getCommandResponsePackets() {
-        return queryResponsePackets;
-    }
 }

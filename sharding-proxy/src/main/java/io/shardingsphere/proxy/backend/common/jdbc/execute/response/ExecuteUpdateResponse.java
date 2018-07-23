@@ -18,6 +18,7 @@
 package io.shardingsphere.proxy.backend.common.jdbc.execute.response;
 
 import io.shardingsphere.proxy.backend.common.jdbc.execute.response.unit.ExecuteResponseUnit;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.response.unit.ExecuteUpdateResponseUnit;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
@@ -43,7 +44,7 @@ public final class ExecuteUpdateResponse implements ExecuteResponse {
     
     public ExecuteUpdateResponse(final Collection<ExecuteResponseUnit> responseUnits) {
         for (ExecuteResponseUnit each : responseUnits) {
-            packets.add(each.getCommandResponsePackets().getHeadPacket());
+            packets.add(((ExecuteUpdateResponseUnit) each).getCommandResponsePackets().getHeadPacket());
         }
     }
     

@@ -27,6 +27,7 @@ import io.shardingsphere.proxy.backend.common.jdbc.execute.response.ExecuteRespo
 import io.shardingsphere.proxy.backend.common.jdbc.execute.response.ExecuteUpdateResponse;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.response.unit.ExecuteQueryResponseUnit;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.response.unit.ExecuteResponseUnit;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.response.unit.ExecuteUpdateResponseUnit;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -107,7 +108,7 @@ public abstract class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine 
     
     private ExecuteResponse getExecuteQueryResponse(
             final ExecuteQueryResponseUnit firstExecuteResponseUnit, final Collection<ExecuteResponseUnit> firstExecuteResponseUnits, final List<Future<Collection<ExecuteResponseUnit>>> futureList) {
-        ExecuteQueryResponse result = new ExecuteQueryResponse(firstExecuteResponseUnit.getCommandResponsePackets());
+        ExecuteQueryResponse result = new ExecuteQueryResponse(firstExecuteResponseUnit.getQueryResponsePackets());
         for (ExecuteResponseUnit each : firstExecuteResponseUnits) {
             result.getQueryResults().add(((ExecuteQueryResponseUnit) each).getQueryResult());
         }
@@ -131,7 +132,7 @@ public abstract class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine 
         for (Future<Collection<ExecuteResponseUnit>> each : futureList) {
             try {
                 for (ExecuteResponseUnit executeResponse : each.get()) {
-                    result.getPackets().add(executeResponse.getCommandResponsePackets().getHeadPacket());
+                    result.getPackets().add(((ExecuteUpdateResponseUnit) executeResponse).getCommandResponsePackets().getHeadPacket());
                 }
             } catch (final InterruptedException | ExecutionException ex) {
                 throw new ShardingException(ex.getMessage(), ex);
