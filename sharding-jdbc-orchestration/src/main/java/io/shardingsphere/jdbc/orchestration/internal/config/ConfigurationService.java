@@ -20,6 +20,7 @@ package io.shardingsphere.jdbc.orchestration.internal.config;
 import com.google.common.base.Strings;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.yaml.converter.DataSourceConverter;
@@ -70,12 +71,18 @@ public final class ConfigurationService {
     
     private void persistDataSourceConfiguration(final Map<String, DataSource> dataSourceMap, final boolean isOverwrite) {
         if (isOverwrite || !hasDataSourceConfiguration()) {
+            if (dataSourceMap.isEmpty()) {
+                throw new ShardingConfigurationException("No available data source configuration for Orchestration.");
+            }
             regCenter.persist(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH), DataSourceConverter.dataSourceMapToYaml(dataSourceMap));
         }
     }
     
     private void persistDataSourceParameterConfiguration(final Map<String, DataSourceParameter> dataSourceParameterMap, final boolean isOverwrite) {
         if (isOverwrite || !hasDataSourceConfiguration()) {
+            if (dataSourceParameterMap.isEmpty()) {
+                throw new ShardingConfigurationException("No available data source configuration for Orchestration.");
+            }
             regCenter.persist(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH), DataSourceParameterConverter.dataSourceParameterMapToYaml(dataSourceParameterMap));
         }
     }
@@ -86,6 +93,9 @@ public final class ConfigurationService {
     
     private void persistShardingRuleConfiguration(final ShardingRuleConfiguration shardingRuleConfig, final boolean isOverwrite) {
         if (isOverwrite || !hasShardingRuleConfiguration()) {
+            if (shardingRuleConfig.getTableRuleConfigs().isEmpty()) {
+                throw new ShardingConfigurationException("No available sharding rule configuration for Orchestration.");
+            }
             regCenter.persist(configNode.getFullPath(ConfigurationNode.SHARDING_RULE_NODE_PATH), ShardingConfigurationConverter.shardingRuleConfigToYaml(shardingRuleConfig));
         }
     }
@@ -134,6 +144,9 @@ public final class ConfigurationService {
     
     private void persistMasterSlaveRuleConfiguration(final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isOverwrite) {
         if (isOverwrite || !hasMasterSlaveRuleConfiguration()) {
+            if (masterSlaveRuleConfig.getMasterDataSourceName().isEmpty()) {
+                throw new ShardingConfigurationException("No available master slave configuration for Orchestration.");
+            }
             regCenter.persist(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH), MasterSlaveConfigurationConverter.masterSlaveRuleConfigToYaml(masterSlaveRuleConfig));
         }
     }
@@ -179,6 +192,9 @@ public final class ConfigurationService {
     
     private void persistProxyRuleConfiguration(final OrchestrationProxyConfiguration orchestrationProxyConfiguration, final boolean isOverwrite) {
         if (isOverwrite || !hasProxyConfig()) {
+            if (orchestrationProxyConfiguration.getShardingRule().getTables().isEmpty() && orchestrationProxyConfiguration.getMasterSlaveRule().getMasterDataSourceName().isEmpty()) {
+                throw new ShardingConfigurationException("No available proxy rule configuration for Orchestration.");
+            }
             regCenter.persist(configNode.getFullPath(ConfigurationNode.PROXY_RULE_NODE_PATH), ProxyConfigurationConverter.proxyConfigToYaml(orchestrationProxyConfiguration));
         }
     }
