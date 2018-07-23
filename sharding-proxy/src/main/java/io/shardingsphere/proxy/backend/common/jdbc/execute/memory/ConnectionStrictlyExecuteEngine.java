@@ -57,7 +57,7 @@ public abstract class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine 
         sqlExecutionUnits.remove(firstEntry.getKey());
         List<Future<Collection<ExecuteResponseUnit>>> futureList = asyncExecute(isReturnGeneratedKeys, sqlExecutionUnits);
         Collection<ExecuteResponseUnit> firstExecuteResponseUnits = syncExecute(isReturnGeneratedKeys, firstEntry.getKey(), firstEntry.getValue());
-        return buildCommandResponsePackets(firstExecuteResponseUnits, futureList);
+        return getExecuteQueryResponse(firstExecuteResponseUnits, futureList);
     }
     
     private List<Future<Collection<ExecuteResponseUnit>>> asyncExecute(final boolean isReturnGeneratedKeys, final Map<String, Collection<SQLUnit>> sqlUnitGroups) throws SQLException {
@@ -100,7 +100,7 @@ public abstract class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine 
         return result;
     }
     
-    private ExecuteResponse buildCommandResponsePackets(final Collection<ExecuteResponseUnit> firstExecuteResponseUnits, final List<Future<Collection<ExecuteResponseUnit>>> futureList) {
+    private ExecuteResponse getExecuteQueryResponse(final Collection<ExecuteResponseUnit> firstExecuteResponseUnits, final List<Future<Collection<ExecuteResponseUnit>>> futureList) {
         ExecuteResponseUnit firstExecuteResponseUnit = firstExecuteResponseUnits.iterator().next();
         return firstExecuteResponseUnit instanceof ExecuteQueryResponseUnit
                 ? getExecuteQueryResponse((ExecuteQueryResponseUnit) firstExecuteResponseUnit, firstExecuteResponseUnits, futureList) : getExecuteUpdateResponse(firstExecuteResponseUnits, futureList);

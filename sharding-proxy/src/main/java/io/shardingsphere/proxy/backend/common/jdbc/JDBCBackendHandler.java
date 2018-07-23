@@ -130,15 +130,12 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         if (executeResponse instanceof ExecuteUpdateResponse) {
             return ((ExecuteUpdateResponse) executeResponse).merge();
         }
+        mergedResult = MergeEngineFactory.newInstance(
+                ruleRegistry.getShardingRule(), ((ExecuteQueryResponse) executeResponse).getQueryResults(), sqlStatement, ruleRegistry.getShardingMetaData()).merge();
         QueryResponsePackets result = ((ExecuteQueryResponse) executeResponse).getQueryResponsePackets();
-        currentSequenceId += result.getPackets().size();
-        mergedResult = mergeQuery(sqlStatement);
-        return result;
-    }
-    
-    private MergedResult mergeQuery(final SQLStatement sqlStatement) throws SQLException {
+        currentSequenceId = result.getPackets().size();
         isMerged = true;
-        return MergeEngineFactory.newInstance(ruleRegistry.getShardingRule(), ((ExecuteQueryResponse) executeResponse).getQueryResults(), sqlStatement, ruleRegistry.getShardingMetaData()).merge();
+        return result;
     }
     
     private SQLRouteResult doMasterSlaveRoute() {
