@@ -23,7 +23,7 @@ import io.shardingsphere.proxy.config.RuleRegistry;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Backend connection.
@@ -33,7 +33,7 @@ import java.util.LinkedList;
  */
 public final class BackendConnection implements AutoCloseable {
     
-    private final Collection<Connection> cachedConnections = new LinkedList<>();
+    private final Collection<Connection> cachedConnections = new CopyOnWriteArrayList<>();
     
     /**
      * Get connection of current thread datasource.

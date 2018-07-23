@@ -17,11 +17,11 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command.text.quit;
 
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 
 /**
@@ -43,8 +43,8 @@ public final class ComQuitPacket extends CommandPacket {
     }
     
     @Override
-    public void write(final MySQLPacketPayload mysqlPacketPayload) {
-        mysqlPacketPayload.writeInt1(CommandPacketType.COM_QUIT.getValue());
+    public void write(final MySQLPacketPayload payload) {
+        payload.writeInt1(CommandPacketType.COM_QUIT.getValue());
     }
     
     @Override
@@ -53,7 +53,7 @@ public final class ComQuitPacket extends CommandPacket {
     }
     
     @Override
-    public DatabaseProtocolPacket getResultValue() {
+    public DatabasePacket getResultValue() {
         return null;
     }
 }

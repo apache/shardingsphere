@@ -15,42 +15,36 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.common;
+package io.shardingsphere.proxy.transport.mysql.packet.command.reponse;
 
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import java.sql.SQLException;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Backend handler.
+ * Command response packets.
  *
- * @author zhangliang
+ * @author zhangyonglun
  */
-public interface BackendHandler {
+@NoArgsConstructor
+@Getter
+public class CommandResponsePackets {
+    
+    private final Collection<DatabasePacket> packets = new LinkedList<>();
+    
+    public CommandResponsePackets(final DatabasePacket databasePacket) {
+        packets.add(databasePacket);
+    }
     
     /**
-     * Execute command.
+     * Get head packet.
      *
-     * @return result packets to be sent
+     * @return head packet
      */
-    CommandResponsePackets execute();
-    
-    /**
-     * Has more Result value.
-     *
-     * @return has more result value
-     * @throws SQLException sql exception
-     */
-    boolean hasMoreResultValue() throws SQLException;
-    
-    /**
-     * Get result value.
-     *
-     * @return database packet
-     */
-    DatabasePacket getResultValue();
-    
-    @Deprecated
-    boolean isHasMoreResultValueFlag();
+    public DatabasePacket getHeadPacket() {
+        return packets.iterator().next();
+    }
 }

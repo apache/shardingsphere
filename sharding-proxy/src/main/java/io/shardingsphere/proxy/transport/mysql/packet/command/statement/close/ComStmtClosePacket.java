@@ -17,10 +17,10 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command.statement.close;
 
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -35,13 +35,13 @@ public class ComStmtClosePacket extends CommandPacket {
     
     private final int statementId;
     
-    public ComStmtClosePacket(final int sequenceId, final MySQLPacketPayload mysqlPacketPayload) {
+    public ComStmtClosePacket(final int sequenceId, final MySQLPacketPayload payload) {
         super(sequenceId);
-        statementId = mysqlPacketPayload.readInt4();
+        statementId = payload.readInt4();
     }
     
     @Override
-    public void write(final MySQLPacketPayload mysqlPacketPayload) {
+    public void write(final MySQLPacketPayload payload) {
     }
     
     @Override
@@ -56,7 +56,7 @@ public class ComStmtClosePacket extends CommandPacket {
     }
     
     @Override
-    public DatabaseProtocolPacket getResultValue() {
+    public DatabasePacket getResultValue() {
         return null;
     }
 }

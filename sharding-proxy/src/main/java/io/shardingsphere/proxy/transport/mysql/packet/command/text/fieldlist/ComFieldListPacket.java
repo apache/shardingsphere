@@ -24,13 +24,13 @@ import io.shardingsphere.proxy.backend.common.SQLPacketsBackendHandler;
 import io.shardingsphere.proxy.backend.common.jdbc.text.JDBCTextBackendHandler;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.close.DummyPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ComQueryPacket;
@@ -62,11 +62,11 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
     
     private BackendHandler backendHandler;
     
-    public ComFieldListPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload mysqlPacketPayload) {
+    public ComFieldListPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload) {
         super(sequenceId);
         this.connectionId = connectionId;
-        table = mysqlPacketPayload.readStringNul();
-        fieldWildcard = mysqlPacketPayload.readStringEOF();
+        table = payload.readStringNul();
+        fieldWildcard = payload.readStringEOF();
     }
     
     public ComFieldListPacket(final int sequenceId, final int connectionId, final String table, final String fieldWildcard) {
@@ -77,10 +77,10 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
     }
     
     @Override
-    public void write(final MySQLPacketPayload mysqlPacketPayload) {
-        mysqlPacketPayload.writeInt1(CommandPacketType.COM_FIELD_LIST.getValue());
-        mysqlPacketPayload.writeStringNul(table);
-        mysqlPacketPayload.writeStringEOF(fieldWildcard);
+    public void write(final MySQLPacketPayload payload) {
+        payload.writeInt1(CommandPacketType.COM_FIELD_LIST.getValue());
+        payload.writeStringNul(table);
+        payload.writeStringEOF(fieldWildcard);
     }
     
     @Override
@@ -90,7 +90,7 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
         String sql = String.format("SHOW COLUMNS FROM %s FROM %s", table, ShardingConstant.LOGIC_SCHEMA_NAME);
         // TODO use common database type
         backendHandler = getBackendHandler(sql);
-        DatabaseProtocolPacket headPacket = backendHandler.execute().getHeadPacket();
+        DatabasePacket headPacket = backendHandler.execute().getHeadPacket();
         return headPacket instanceof ErrPacket ? new CommandResponsePackets(headPacket) : new CommandResponsePackets(new DummyPacket());
     }
     
@@ -108,8 +108,8 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
     }
     
     @Override
-    public DatabaseProtocolPacket getResultValue() {
-        DatabaseProtocolPacket resultValue = backendHandler.getResultValue();
+    public DatabasePacket getResultValue() {
+        DatabasePacket resultValue = backendHandler.getResultValue();
         if (!backendHandler.isHasMoreResultValueFlag()) {
             return new EofPacket(++currentSequenceId);
         }

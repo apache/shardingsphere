@@ -40,27 +40,27 @@ public final class CommandPacketFactory {
      *
      * @param sequenceId sequence id
      * @param connectionId MySQL connection id
-     * @param mysqlPacketPayload MySQL packet payload
+     * @param payload MySQL packet payload
      * @return Command packet
      */
-    public static CommandPacket getCommandPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload mysqlPacketPayload) {
-        int commandPacketTypeValue = mysqlPacketPayload.readInt1();
+    public static CommandPacket getCommandPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload) {
+        int commandPacketTypeValue = payload.readInt1();
         CommandPacketType type = CommandPacketType.valueOf(commandPacketTypeValue);
         switch (type) {
             case COM_QUIT:
                 return new ComQuitPacket(sequenceId);
             case COM_INIT_DB:
-                return new ComInitDbPacket(sequenceId, mysqlPacketPayload);
+                return new ComInitDbPacket(sequenceId, payload);
             case COM_FIELD_LIST:
-                return new ComFieldListPacket(sequenceId, connectionId, mysqlPacketPayload);
+                return new ComFieldListPacket(sequenceId, connectionId, payload);
             case COM_QUERY:
-                return new ComQueryPacket(sequenceId, connectionId, mysqlPacketPayload);
+                return new ComQueryPacket(sequenceId, connectionId, payload);
             case COM_STMT_PREPARE:
-                return new ComStmtPreparePacket(sequenceId, mysqlPacketPayload);
+                return new ComStmtPreparePacket(sequenceId, payload);
             case COM_STMT_EXECUTE:
-                return new ComStmtExecutePacket(sequenceId, mysqlPacketPayload);
+                return new ComStmtExecutePacket(sequenceId, payload);
             case COM_STMT_CLOSE:
-                return new ComStmtClosePacket(sequenceId, mysqlPacketPayload);
+                return new ComStmtClosePacket(sequenceId, payload);
             case COM_PING:
                 return new ComPingPacket(sequenceId);
             case COM_SLEEP:

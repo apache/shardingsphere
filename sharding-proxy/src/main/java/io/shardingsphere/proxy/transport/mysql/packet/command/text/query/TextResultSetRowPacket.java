@@ -43,21 +43,21 @@ public final class TextResultSetRowPacket extends MySQLPacket {
         this.data = data;
     }
     
-    public TextResultSetRowPacket(final MySQLPacketPayload mysqlPacketPayload, final int columnCount) {
-        super(mysqlPacketPayload.readInt1());
+    public TextResultSetRowPacket(final MySQLPacketPayload payload, final int columnCount) {
+        super(payload.readInt1());
         data = Lists.newArrayListWithExpectedSize(columnCount);
         for (int i = 1; i <= columnCount; i++) {
-            data.add(mysqlPacketPayload.readStringLenenc());
+            data.add(payload.readStringLenenc());
         }
     }
     
     @Override
-    public void write(final MySQLPacketPayload mysqlPacketPayload) {
+    public void write(final MySQLPacketPayload payload) {
         for (Object each : data) {
             if (null == each) {
-                mysqlPacketPayload.writeInt1(NULL);
+                payload.writeInt1(NULL);
             } else {
-                mysqlPacketPayload.writeStringLenenc(each.toString());
+                payload.writeStringLenenc(each.toString());
             }
         }
     }

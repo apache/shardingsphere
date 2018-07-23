@@ -17,12 +17,12 @@
 
 package io.shardingsphere.proxy.backend.common.jdbc;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.MergedResult;
-import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.parsing.SQLJudgeEngine;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
@@ -32,13 +32,16 @@ import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingsphere.proxy.backend.common.BackendHandler;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngine;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.response.ExecuteQueryResponse;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.response.ExecuteResponse;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.response.ExecuteUpdateResponse;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
-import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.QueryResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
@@ -50,8 +53,6 @@ import javax.transaction.SystemException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -71,15 +72,11 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     private final JDBCExecuteEngine executeEngine;
     
-    private final List<QueryResult> queryResults;
+    private ExecuteResponse executeResponse;
     
     private MergedResult mergedResult;
     
     private int currentSequenceId;
-    
-    private int columnCount;
-    
-    private List<ColumnType> columnTypes;
     
     private boolean isMerged;
     
@@ -90,7 +87,6 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         this.executeEngine = executeEngine;
         ruleRegistry = RuleRegistry.getInstance();
         backendConnection = executeEngine.getBackendConnection();
-        queryResults = new LinkedList<>();
         isMerged = false;
         hasMoreResultValueFlag = true;
     }
@@ -102,7 +98,9 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex));
         } catch (final SystemException | ShardingException ex) {
-            return new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
+            Optional<SQLException> sqlException = findSQLException(ex);
+            return sqlException.isPresent()
+                    ? new CommandResponsePackets(new ErrPacket(1, sqlException.get())) : new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
         }
     }
     
@@ -116,15 +114,11 @@ public abstract class JDBCBackendHandler implements BackendHandler {
             return new CommandResponsePackets(new ErrPacket(1, 
                     ServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "unknown_table"));
         }
-        List<CommandResponsePackets> packets = executeEngine.execute(routeResult, isReturnGeneratedKeys);
-        queryResults.addAll(executeEngine.getQueryResults());
-        columnCount = executeEngine.getColumnCount();
-        columnTypes = executeEngine.getColumnTypes();
-        CommandResponsePackets result = merge(sqlStatement, packets);
+        executeResponse = executeEngine.execute(routeResult, isReturnGeneratedKeys);
         if (!ruleRegistry.isMasterSlaveOnly()) {
-            ProxyShardingRefreshHandler.build(routeResult).execute();
+            ProxyShardingRefreshHandler.build(sqlStatement).execute();
         }
-        return result;
+        return merge(sqlStatement);
     }
     
     // TODO should isolate Atomikos API to SPI
@@ -132,61 +126,15 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         return TransactionType.XA == ruleRegistry.getTransactionType() && SQLType.DDL == sqlType && Status.STATUS_NO_TRANSACTION != AtomikosUserTransaction.getInstance().getStatus();
     }
     
-    private CommandResponsePackets merge(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets) {
-        CommandResponsePackets headPackets = new CommandResponsePackets();
-        for (CommandResponsePackets each : packets) {
-            headPackets.addPacket(each.getHeadPacket());
+    private CommandResponsePackets merge(final SQLStatement sqlStatement) throws SQLException {
+        if (executeResponse instanceof ExecuteUpdateResponse) {
+            return ((ExecuteUpdateResponse) executeResponse).merge();
         }
-        for (DatabaseProtocolPacket each : headPackets.getDatabaseProtocolPackets()) {
-            if (each instanceof ErrPacket) {
-                return new CommandResponsePackets(each);
-            }
-        }
-        if (SQLType.DML == sqlStatement.getType()) {
-            return mergeDML(headPackets);
-        }
-        if (SQLType.DQL == sqlStatement.getType() || SQLType.DAL == sqlStatement.getType()) {
-            return mergeDQLorDAL(sqlStatement, packets);
-        }
-        return packets.get(0);
-    }
-    
-    private CommandResponsePackets mergeDML(final CommandResponsePackets firstPackets) {
-        int affectedRows = 0;
-        long lastInsertId = 0;
-        for (DatabaseProtocolPacket each : firstPackets.getDatabaseProtocolPackets()) {
-            if (each instanceof OKPacket) {
-                OKPacket okPacket = (OKPacket) each;
-                affectedRows += okPacket.getAffectedRows();
-                // TODO consider about insert multiple values
-                lastInsertId = okPacket.getLastInsertId();
-            }
-        }
-        return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId));
-    }
-    
-    private CommandResponsePackets mergeDQLorDAL(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets) {
-        try {
-            mergedResult = MergeEngineFactory.newInstance(ruleRegistry.getShardingRule(), queryResults, sqlStatement, ruleRegistry.getShardingMetaData()).merge();
-            isMerged = true;
-        } catch (final SQLException ex) {
-            return new CommandResponsePackets(new ErrPacket(1, ex));
-        }
-        return buildPackets(packets);
-    }
-    
-    private CommandResponsePackets buildPackets(final List<CommandResponsePackets> packets) {
-        CommandResponsePackets result = new CommandResponsePackets();
-        Iterator<DatabaseProtocolPacket> databaseProtocolPacketsSampling = packets.iterator().next().getDatabaseProtocolPackets().iterator();
-        FieldCountPacket fieldCountPacketSampling = (FieldCountPacket) databaseProtocolPacketsSampling.next();
-        result.addPacket(fieldCountPacketSampling);
-        ++currentSequenceId;
-        for (int i = 0; i < columnCount; i++) {
-            result.addPacket(databaseProtocolPacketsSampling.next());
-            ++currentSequenceId;
-        }
-        result.addPacket(databaseProtocolPacketsSampling.next());
-        ++currentSequenceId;
+        mergedResult = MergeEngineFactory.newInstance(
+                ruleRegistry.getShardingRule(), ((ExecuteQueryResponse) executeResponse).getQueryResults(), sqlStatement, ruleRegistry.getShardingMetaData()).merge();
+        QueryResponsePackets result = ((ExecuteQueryResponse) executeResponse).getQueryResponsePackets();
+        currentSequenceId = result.getPackets().size();
+        isMerged = true;
         return result;
     }
     
@@ -201,6 +149,22 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     protected abstract SQLRouteResult doShardingRoute();
     
+    private Optional<SQLException> findSQLException(final Exception exception) {
+        if (null == exception.getCause()) {
+            return Optional.absent();
+        }
+        if (exception.getCause() instanceof SQLException) {
+            return Optional.of((SQLException) exception.getCause());
+        }
+        if (null == exception.getCause().getCause()) {
+            return Optional.absent();
+        }
+        if (exception.getCause().getCause() instanceof SQLException) {
+            return Optional.of((SQLException) exception.getCause());
+        }
+        return Optional.absent();
+    }
+    
     @Override
     public final boolean hasMoreResultValue() throws SQLException {
         if (!isMerged || !hasMoreResultValueFlag) {
@@ -214,20 +178,21 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     }
     
     @Override
-    public final DatabaseProtocolPacket getResultValue() {
+    public final DatabasePacket getResultValue() {
         if (!hasMoreResultValueFlag) {
             return new EofPacket(++currentSequenceId);
         }
+        QueryResponsePackets queryResponsePackets = ((ExecuteQueryResponse) executeResponse).getQueryResponsePackets();
         try {
-            List<Object> data = new ArrayList<>(columnCount);
-            for (int i = 1; i <= columnCount; i++) {
+            List<Object> data = new ArrayList<>(queryResponsePackets.getColumnCount());
+            for (int i = 1; i <= queryResponsePackets.getColumnCount(); i++) {
                 data.add(mergedResult.getValue(i, Object.class));
             }
-            return newDatabaseProtocolPacket(++currentSequenceId, data, columnTypes);
+            return newDatabasePacket(++currentSequenceId, data, queryResponsePackets.getColumnCount(), queryResponsePackets.getColumnTypes());
         } catch (final SQLException ex) {
             return new ErrPacket(1, ex);
         }
     }
     
-    protected abstract DatabaseProtocolPacket newDatabaseProtocolPacket(int sequenceId, List<Object> data, List<ColumnType> columnTypes);
+    protected abstract DatabasePacket newDatabasePacket(int sequenceId, List<Object> data, int columnCount, List<ColumnType> columnTypes);
 }

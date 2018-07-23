@@ -15,27 +15,26 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.common;
+package io.shardingsphere.proxy.backend.common.jdbc.execute.response;
 
-import io.shardingsphere.core.routing.SQLRouteResult;
-import io.shardingsphere.proxy.backend.common.jdbc.execute.response.ExecuteResponse;
+import io.shardingsphere.core.merger.QueryResult;
+import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.QueryResponsePackets;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * SQL Execute engine.
- *
+ * Execute query response.
+ * 
  * @author zhangliang
  */
-public interface SQLExecuteEngine {
+@RequiredArgsConstructor
+@Getter
+public final class ExecuteQueryResponse implements ExecuteResponse {
     
-    /**
-     * Execute SQL.
-     *
-     * @param routeResult route result
-     * @param isReturnGeneratedKeys is return generated keys
-     * @return execute response
-     * @throws SQLException SQL exception
-     */
-    ExecuteResponse execute(SQLRouteResult routeResult, boolean isReturnGeneratedKeys) throws SQLException;
+    private final QueryResponsePackets queryResponsePackets;
+    
+    private final List<QueryResult> queryResults = new LinkedList<>();
 }

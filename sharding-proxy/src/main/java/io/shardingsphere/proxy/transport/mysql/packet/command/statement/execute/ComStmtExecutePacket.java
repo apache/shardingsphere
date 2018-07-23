@@ -23,12 +23,12 @@ import io.shardingsphere.core.parsing.SQLParsingEngine;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.proxy.backend.common.jdbc.statement.JDBCStatementBackendHandler;
 import io.shardingsphere.proxy.config.RuleRegistry;
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.constant.NewParametersBoundFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.PreparedStatementRegistry;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -68,41 +68,41 @@ public final class ComStmtExecutePacket extends CommandPacket {
     
     private final JDBCStatementBackendHandler statementExecuteBackendHandler;
     
-    public ComStmtExecutePacket(final int sequenceId, final MySQLPacketPayload mysqlPacketPayload) {
+    public ComStmtExecutePacket(final int sequenceId, final MySQLPacketPayload payload) {
         super(sequenceId);
-        statementId = mysqlPacketPayload.readInt4();
-        flags = mysqlPacketPayload.readInt1();
-        Preconditions.checkArgument(iterationCount == mysqlPacketPayload.readInt4());
+        statementId = payload.readInt4();
+        flags = payload.readInt1();
+        Preconditions.checkArgument(iterationCount == payload.readInt4());
         SQLStatement sqlStatement = new SQLParsingEngine(DatabaseType.MySQL, PreparedStatementRegistry.getInstance().getSQL(statementId),
             RuleRegistry.getInstance().getShardingRule(), null).parse(true);
         int numParameters = sqlStatement.getParametersIndex();
         nullBitmap = new NullBitmap(numParameters, RESERVED_BIT_LENGTH);
         for (int i = 0; i < nullBitmap.getNullBitmap().length; i++) {
-            nullBitmap.getNullBitmap()[i] = mysqlPacketPayload.readInt1();
+            nullBitmap.getNullBitmap()[i] = payload.readInt1();
         }
-        newParametersBoundFlag = NewParametersBoundFlag.valueOf(mysqlPacketPayload.readInt1());
-        setParameterList(mysqlPacketPayload, numParameters, newParametersBoundFlag);
+        newParametersBoundFlag = NewParametersBoundFlag.valueOf(payload.readInt1());
+        setParameterList(payload, numParameters, newParametersBoundFlag);
         statementExecuteBackendHandler = new JDBCStatementBackendHandler(preparedStatementParameters, statementId, DatabaseType.MySQL);
     }
     
-    private void setParameterList(final MySQLPacketPayload mysqlPacketPayload, final int numParameters, final NewParametersBoundFlag newParametersBoundFlag) {
+    private void setParameterList(final MySQLPacketPayload payload, final int numParameters, final NewParametersBoundFlag newParametersBoundFlag) {
         if (NewParametersBoundFlag.PARAMETER_TYPE_EXIST == newParametersBoundFlag) {
-            setParameterHeader(mysqlPacketPayload, numParameters);
+            setParameterHeader(payload, numParameters);
         } else if (NewParametersBoundFlag.PARAMETER_TYPE_NOT_EXIST == newParametersBoundFlag) {
             setParameterHeaderFromCache(numParameters);
         }
-        setParameterValue(mysqlPacketPayload, numParameters);
+        setParameterValue(payload, numParameters);
     }
     
-    private void setParameterHeader(final MySQLPacketPayload mysqlPacketPayload, final int numParameters) {
+    private void setParameterHeader(final MySQLPacketPayload payload, final int numParameters) {
         List<PreparedStatementParameterHeader> parameterHeaders = new ArrayList<>(32);
         for (int i = 0; i < numParameters; i++) {
             if (nullBitmap.isParameterNull(i)) {
                 preparedStatementParameters.add(new PreparedStatementParameter(NULL_PARAMETER_DEFAULT_COLUMN_TYPE, NULL_PARAMETER_DEFAULT_UNSIGNED_FLAG, null));
                 continue;
             }
-            ColumnType columnType = ColumnType.valueOf(mysqlPacketPayload.readInt1());
-            int unsignedFlag = mysqlPacketPayload.readInt1();
+            ColumnType columnType = ColumnType.valueOf(payload.readInt1());
+            int unsignedFlag = payload.readInt1();
             preparedStatementParameters.add(new PreparedStatementParameter(columnType, unsignedFlag));
             parameterHeaders.add(new PreparedStatementParameterHeader(columnType, unsignedFlag));
         }
@@ -120,30 +120,30 @@ public final class ComStmtExecutePacket extends CommandPacket {
         }
     }
     
-    private void setParameterValue(final MySQLPacketPayload mysqlPacketPayload, final int numParameters) {
+    private void setParameterValue(final MySQLPacketPayload payload, final int numParameters) {
         for (int i = 0; i < numParameters; i++) {
             if (nullBitmap.isParameterNull(i)) {
                 continue;
             }
             PreparedStatementParameter preparedStatementParameter = preparedStatementParameters.get(i);
             ColumnType columnType = preparedStatementParameter.getColumnType();
-            preparedStatementParameter.setValue(BinaryProtocolValueUtility.getInstance().readBinaryProtocolValue(columnType, mysqlPacketPayload));
+            preparedStatementParameter.setValue(BinaryProtocolValueUtility.getInstance().readBinaryProtocolValue(columnType, payload));
         }
     }
     
     @Override
-    public void write(final MySQLPacketPayload mysqlPacketPayload) {
-        mysqlPacketPayload.writeInt4(statementId);
-        mysqlPacketPayload.writeInt1(flags);
-        mysqlPacketPayload.writeInt4(iterationCount);
+    public void write(final MySQLPacketPayload payload) {
+        payload.writeInt4(statementId);
+        payload.writeInt1(flags);
+        payload.writeInt4(iterationCount);
         for (int each : nullBitmap.getNullBitmap()) {
-            mysqlPacketPayload.writeInt1(each);
+            payload.writeInt1(each);
         }
-        mysqlPacketPayload.writeInt1(newParametersBoundFlag.getValue());
+        payload.writeInt1(newParametersBoundFlag.getValue());
         for (PreparedStatementParameter each : preparedStatementParameters) {
-            mysqlPacketPayload.writeInt1(each.getColumnType().getValue());
-            mysqlPacketPayload.writeInt1(each.getUnsignedFlag());
-            mysqlPacketPayload.writeStringLenenc((String) each.getValue());
+            payload.writeInt1(each.getColumnType().getValue());
+            payload.writeInt1(each.getUnsignedFlag());
+            payload.writeStringLenenc((String) each.getValue());
         }
     }
     
@@ -163,7 +163,7 @@ public final class ComStmtExecutePacket extends CommandPacket {
     }
     
     @Override
-    public DatabaseProtocolPacket getResultValue() {
+    public DatabasePacket getResultValue() {
         return statementExecuteBackendHandler.getResultValue();
     }
 }

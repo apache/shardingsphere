@@ -21,7 +21,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.shardingsphere.proxy.frontend.common.FrontendHandler;
 import io.shardingsphere.proxy.frontend.common.executor.ExecutorGroup;
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
@@ -56,8 +56,8 @@ public final class MySQLFrontendHandler extends FrontendHandler {
     
     @Override
     protected void auth(final ChannelHandlerContext context, final ByteBuf message) {
-        try (MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message)) {
-            HandshakeResponse41Packet response41 = new HandshakeResponse41Packet(mysqlPacketPayload);
+        try (MySQLPacketPayload payload = new MySQLPacketPayload(message)) {
+            HandshakeResponse41Packet response41 = new HandshakeResponse41Packet(payload);
             if (authorityHandler.login(response41.getUsername(), response41.getAuthResponse())) {
                 context.writeAndFlush(new OKPacket(response41.getSequenceId() + 1));
             } else {
@@ -74,11 +74,11 @@ public final class MySQLFrontendHandler extends FrontendHandler {
             
             @Override
             public void run() {
-                try (MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message)) {
-                    int sequenceId = mysqlPacketPayload.readInt1();
+                try (MySQLPacketPayload payload = new MySQLPacketPayload(message)) {
+                    int sequenceId = payload.readInt1();
                     int connectionId = MySQLResultCache.getInstance().getConnection(context.channel().id().asShortText());
-                    CommandPacket commandPacket = CommandPacketFactory.getCommandPacket(sequenceId, connectionId, mysqlPacketPayload);
-                    for (DatabaseProtocolPacket each : commandPacket.execute().getDatabaseProtocolPackets()) {
+                    CommandPacket commandPacket = CommandPacketFactory.getCommandPacket(sequenceId, connectionId, payload);
+                    for (DatabasePacket each : commandPacket.execute().getPackets()) {
                         context.writeAndFlush(each);
                     }
                     while (commandPacket.hasMoreResultValue()) {

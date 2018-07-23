@@ -21,18 +21,18 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
 /**
- * Database protocol packet codec.
+ * Database packet codec.
  * 
  * @author zhangliang 
  */
 @Slf4j
-public abstract class PacketCodec<T extends DatabaseProtocolPacket> extends ByteToMessageCodec<T> {
+public abstract class PacketCodec<T extends DatabasePacket> extends ByteToMessageCodec<T> {
     
     @Override
     protected void decode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {

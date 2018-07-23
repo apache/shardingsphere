@@ -20,7 +20,7 @@ package io.shardingsphere.core.jdbc.metadata.dialect;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.metadata.AbstractRefreshHandler;
 import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.routing.SQLRouteResult;
+import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
@@ -36,18 +36,29 @@ import java.util.Map;
  * @author zhaojun
  */
 public final class JDBCShardingRefreshHandler extends AbstractRefreshHandler {
-
+    
     private final ShardingConnection shardingConnection;
-
-    private JDBCShardingRefreshHandler(final ShardingConnection shardingConnection, final SQLRouteResult routeResult, final ShardingMetaData shardingMetaData, final ShardingRule shardingRule) {
-        super(routeResult, shardingMetaData, shardingRule);
+    
+    private JDBCShardingRefreshHandler(final ShardingConnection shardingConnection, final SQLStatement sqlStatement, final ShardingMetaData shardingMetaData, final ShardingRule shardingRule) {
+        super(sqlStatement, shardingMetaData, shardingRule);
         this.shardingConnection = shardingConnection;
     }
-
+    
+    /**
+     * create new instance of {@code JDBCShardingRefreshHandler}.
+     *
+     * @param sqlStatement SQL statement
+     * @param connection {@code ShardingConnection}
+     * @return {@code JDBCShardingRefreshHandler}
+     */
+    public static JDBCShardingRefreshHandler build(final SQLStatement sqlStatement, final ShardingConnection connection) {
+        return new JDBCShardingRefreshHandler(connection, sqlStatement, connection.getShardingContext().getShardingMetaData(), connection.getShardingContext().getShardingRule());
+    }
+    
     @Override
     public void execute() throws SQLException {
-        if (getRouteResult().canRefreshMetaData()) {
-            String logicTable = getRouteResult().getSqlStatement().getTables().getSingleTableName();
+        if (isNeedRefresh()) {
+            String logicTable = getSqlStatement().getTables().getSingleTableName();
             Map<String, Connection> connectionMap = getConnectionMap(getShardingRule().getTableRule(logicTable));
             getShardingMetaData().refresh(getShardingRule().getTableRule(logicTable), getShardingRule(), connectionMap);
         }
@@ -60,16 +71,5 @@ public final class JDBCShardingRefreshHandler extends AbstractRefreshHandler {
             connectionMap.put(dataSourceName, shardingConnection.getConnection(dataSourceName));
         }
         return connectionMap;
-    }
-
-    /**
-     * create new instance of {@code JDBCShardingRefreshHandler}.
-     *
-     * @param routeResult route result
-     * @param connection {@code ShardingConnection}
-     * @return {@code JDBCShardingRefreshHandler}
-     */
-    public static JDBCShardingRefreshHandler build(final SQLRouteResult routeResult, final ShardingConnection connection) {
-        return new JDBCShardingRefreshHandler(connection, routeResult, connection.getShardingContext().getShardingMetaData(), connection.getShardingContext().getShardingRule());
     }
 }

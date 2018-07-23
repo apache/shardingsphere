@@ -17,16 +17,17 @@
 
 package io.shardingsphere.proxy.backend.common.jdbc.execute;
 
-import io.netty.channel.EventLoopGroup;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.proxy.backend.common.SQLExecuteEngine;
 import io.shardingsphere.proxy.backend.common.jdbc.BackendConnection;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.response.unit.ExecuteQueryResponseUnit;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.response.unit.ExecuteResponseUnit;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.response.unit.ExecuteUpdateResponseUnit;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.QueryResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.proxy.util.ExecutorContext;
 import lombok.Getter;
@@ -37,8 +38,10 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 /**
  * SQL Execute engine for JDBC.
@@ -54,7 +57,7 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
     
     private final BackendConnection backendConnection = new BackendConnection();
     
-    private final EventLoopGroup userGroup = ExecutorContext.getInstance().getUserGroup();
+    private final ExecutorService executorService = ExecutorContext.getInstance().getExecutorService();
     
     private int columnCount;
     
@@ -62,17 +65,25 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
     
     protected abstract Statement createStatement(Connection connection, String sql, boolean isReturnGeneratedKeys) throws SQLException;
     
-    protected JDBCExecuteResponse execute(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) {
-        try {
-            setFetchSize(statement);
-            if (!executeSQL(statement, sql, isReturnGeneratedKeys)) {
-                return new JDBCExecuteResponse(new CommandResponsePackets(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0)));
-            }
-            ResultSet resultSet = statement.getResultSet();
-            return new JDBCExecuteResponse(getHeaderPackets(resultSet.getMetaData()), createQueryResult(resultSet));
-        } catch (final SQLException ex) {
-            return new JDBCExecuteResponse(new CommandResponsePackets(new ErrPacket(1, ex)));
+    protected ExecuteResponseUnit executeWithMetadata(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
+        setFetchSize(statement);
+        if (!executeSQL(statement, sql, isReturnGeneratedKeys)) {
+            return new ExecuteUpdateResponseUnit(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0));
         }
+        ResultSet resultSet = statement.getResultSet();
+        ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+        if (0 == resultSetMetaData.getColumnCount()) {
+            return new ExecuteUpdateResponseUnit(new OKPacket(1));
+        }
+        return new ExecuteQueryResponseUnit(getHeaderPackets(resultSetMetaData), createQueryResult(resultSet));
+    }
+    
+    protected ExecuteResponseUnit executeWithoutMetadata(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
+        setFetchSize(statement);
+        if (!executeSQL(statement, sql, isReturnGeneratedKeys)) {
+            return new ExecuteUpdateResponseUnit(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0));
+        }
+        return new ExecuteQueryResponseUnit(null, createQueryResult(statement.getResultSet()));
     }
     
     protected abstract void setFetchSize(Statement statement) throws SQLException;
@@ -84,18 +95,15 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
         return resultSet.next() ? resultSet.getLong(1) : 0L;
     }
     
-    private CommandResponsePackets getHeaderPackets(final ResultSetMetaData resultSetMetaData) throws SQLException {
+    private QueryResponsePackets getHeaderPackets(final ResultSetMetaData resultSetMetaData) throws SQLException {
         int currentSequenceId = 0;
         int columnCount = resultSetMetaData.getColumnCount();
-        if (0 == columnCount) {
-            return new CommandResponsePackets(new OKPacket(++currentSequenceId));
-        }
-        CommandResponsePackets result = new CommandResponsePackets(new FieldCountPacket(++currentSequenceId, columnCount));
+        FieldCountPacket fieldCountPacket = new FieldCountPacket(++currentSequenceId, columnCount);
+        Collection<ColumnDefinition41Packet> columnDefinition41Packets = new LinkedList<>();
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            result.addPacket(new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData, columnIndex));
+            columnDefinition41Packets.add(new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData, columnIndex));
         }
-        result.addPacket(new EofPacket(++currentSequenceId));
-        return result;
+        return new QueryResponsePackets(fieldCountPacket, columnDefinition41Packets, new EofPacket(++currentSequenceId));
     }
     
     protected abstract QueryResult createQueryResult(ResultSet resultSet) throws SQLException;

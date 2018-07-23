@@ -38,13 +38,13 @@ public final class FieldCountPacket extends MySQLPacket {
         this.columnCount = columnCount;
     }
     
-    public FieldCountPacket(final MySQLPacketPayload mysqlPacketPayload) {
-        super(mysqlPacketPayload.readInt1());
-        columnCount = mysqlPacketPayload.readInt1();
+    public FieldCountPacket(final MySQLPacketPayload payload) {
+        super(payload.readInt1());
+        columnCount = payload.readInt1();
     }
     
     @Override
-    public void write(final MySQLPacketPayload mysqlPacketPayload) {
-        mysqlPacketPayload.writeIntLenenc(columnCount);
+    public void write(final MySQLPacketPayload payload) {
+        payload.writeIntLenenc(columnCount);
     }
 }

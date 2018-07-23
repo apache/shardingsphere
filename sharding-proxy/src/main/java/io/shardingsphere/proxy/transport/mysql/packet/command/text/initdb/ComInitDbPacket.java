@@ -18,12 +18,12 @@
 package io.shardingsphere.proxy.transport.mysql.packet.command.text.initdb;
 
 import io.shardingsphere.core.constant.ShardingConstant;
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import lombok.extern.slf4j.Slf4j;
@@ -40,15 +40,15 @@ public final class ComInitDbPacket extends CommandPacket {
     
     private final String schemaName;
     
-    public ComInitDbPacket(final int sequenceId, final MySQLPacketPayload mysqlPacketPayload) {
+    public ComInitDbPacket(final int sequenceId, final MySQLPacketPayload payload) {
         super(sequenceId);
-        schemaName = mysqlPacketPayload.readStringEOF();
+        schemaName = payload.readStringEOF();
     }
     
     @Override
-    public void write(final MySQLPacketPayload mysqlPacketPayload) {
-        mysqlPacketPayload.writeInt1(CommandPacketType.COM_INIT_DB.getValue());
-        mysqlPacketPayload.writeStringEOF(schemaName);
+    public void write(final MySQLPacketPayload payload) {
+        payload.writeInt1(CommandPacketType.COM_INIT_DB.getValue());
+        payload.writeStringEOF(schemaName);
     }
     
     @Override
@@ -66,7 +66,7 @@ public final class ComInitDbPacket extends CommandPacket {
     }
     
     @Override
-    public DatabaseProtocolPacket getResultValue() {
+    public DatabasePacket getResultValue() {
         return null;
     }
 }

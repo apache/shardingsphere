@@ -15,19 +15,20 @@
  * </p>
  */
 
-package io.shardingsphere.core.constant;
+package io.shardingsphere.proxy.backend.common.jdbc.execute.response.unit;
 
+import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Rule type enum.
- *
- * @author panjuan
+ * Execute update response unit.
+ * 
+ * @author zhangliang
  */
 @RequiredArgsConstructor
-public enum RuleType {
+@Getter
+public final class ExecuteUpdateResponseUnit implements ExecuteResponseUnit {
     
-    Sharding("Sharding Rule"), MasterSlave("Master Slave Rule");
-    
-    private final String ruleName;
+    private final OKPacket okPacket;
 }

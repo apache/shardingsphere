@@ -17,11 +17,12 @@
 
 package io.shardingsphere.proxy.util;
 
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.epoll.EpollEventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
+import com.google.common.util.concurrent.MoreExecutors;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import lombok.Getter;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Executor context.
@@ -33,19 +34,7 @@ public final class ExecutorContext {
     private static final ExecutorContext INSTANCE = new ExecutorContext();
     
     @Getter
-    private final EventLoopGroup userGroup;
-    
-    private ExecutorContext() {
-        userGroup = createEventLoopGroup(RuleRegistry.getInstance().getMaxWorkingThreads());
-    }
-    
-    private EventLoopGroup createEventLoopGroup(final int maxWorkingThreads) {
-        try {
-            return new EpollEventLoopGroup(maxWorkingThreads);
-        } catch (final UnsatisfiedLinkError ignore) {
-            return new NioEventLoopGroup(maxWorkingThreads);
-        }
-    }
+    private final ExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(RuleRegistry.getInstance().getMaxWorkingThreads()));
     
     /**
      * Get executor context instance.
@@ -54,14 +43,5 @@ public final class ExecutorContext {
      */
     public static ExecutorContext getInstance() {
         return INSTANCE;
-    }
-    
-    /**
-     * Judge can use epoll as IO solution or not.
-     * 
-     * @return can use epoll as IO solution or not
-     */
-    public boolean canUseEpoll() {
-        return userGroup instanceof EpollEventLoopGroup;
     }
 }

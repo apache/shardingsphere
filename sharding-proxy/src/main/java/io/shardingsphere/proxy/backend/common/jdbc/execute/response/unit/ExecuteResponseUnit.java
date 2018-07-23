@@ -15,27 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.common;
-
-import io.shardingsphere.core.routing.SQLRouteResult;
-import io.shardingsphere.proxy.backend.common.jdbc.execute.response.ExecuteResponse;
-
-import java.sql.SQLException;
+package io.shardingsphere.proxy.backend.common.jdbc.execute.response.unit;
 
 /**
- * SQL Execute engine.
- *
+ * Execute response unit.
+ * 
  * @author zhangliang
  */
-public interface SQLExecuteEngine {
-    
-    /**
-     * Execute SQL.
-     *
-     * @param routeResult route result
-     * @param isReturnGeneratedKeys is return generated keys
-     * @return execute response
-     * @throws SQLException SQL exception
-     */
-    ExecuteResponse execute(SQLRouteResult routeResult, boolean isReturnGeneratedKeys) throws SQLException;
+public interface ExecuteResponseUnit {
 }
