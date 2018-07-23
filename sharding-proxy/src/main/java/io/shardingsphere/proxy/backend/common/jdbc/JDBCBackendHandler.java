@@ -18,18 +18,15 @@
 package io.shardingsphere.proxy.backend.common.jdbc;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.MergedResult;
-import io.shardingsphere.core.parsing.SQLJudgeEngine;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
-import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
-import io.shardingsphere.core.routing.SQLUnit;
-import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingsphere.proxy.backend.common.BackendHandler;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngine;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.response.ExecuteQueryResponse;
@@ -52,7 +49,6 @@ import javax.transaction.Status;
 import javax.transaction.SystemException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -94,7 +90,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     @Override
     public final CommandResponsePackets execute() {
         try {
-            return execute(ruleRegistry.isMasterSlaveOnly() ? doMasterSlaveRoute() : doShardingRoute());
+            return execute(executeEngine.getJdbcExecutorWrapper().route(sql, DatabaseType.MySQL));
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex));
         } catch (final SystemException | ShardingException ex) {
@@ -137,17 +133,6 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         isMerged = true;
         return result;
     }
-    
-    private SQLRouteResult doMasterSlaveRoute() {
-        SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
-        SQLRouteResult result = new SQLRouteResult(sqlStatement);
-        for (String each : new MasterSlaveRouter(ruleRegistry.getMasterSlaveRule(), ruleRegistry.isShowSQL()).route(sql)) {
-            result.getExecutionUnits().add(new SQLExecutionUnit(each, new SQLUnit(sql, Collections.<List<Object>>emptyList())));
-        }
-        return result;
-    }
-    
-    protected abstract SQLRouteResult doShardingRoute();
     
     private Optional<SQLException> findSQLException(final Exception exception) {
         if (null == exception.getCause()) {

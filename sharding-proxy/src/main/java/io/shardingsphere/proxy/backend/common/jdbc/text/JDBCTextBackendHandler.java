@@ -17,12 +17,8 @@
 
 package io.shardingsphere.proxy.backend.common.jdbc.text;
 
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.routing.SQLRouteResult;
-import io.shardingsphere.core.routing.StatementRoutingEngine;
 import io.shardingsphere.proxy.backend.common.jdbc.JDBCBackendHandler;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngineFactory;
-import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextResultSetRowPacket;
@@ -38,21 +34,8 @@ import java.util.List;
  */
 public final class JDBCTextBackendHandler extends JDBCBackendHandler {
    
-    private final DatabaseType databaseType;
-    
-    private final RuleRegistry ruleRegistry;
-    
-    public JDBCTextBackendHandler(final String sql, final DatabaseType databaseType) {
+    public JDBCTextBackendHandler(final String sql) {
         super(sql, JDBCExecuteEngineFactory.createTextProtocolInstance());
-        this.databaseType = databaseType;
-        ruleRegistry = RuleRegistry.getInstance();
-    }
-    
-    @Override
-    protected SQLRouteResult doShardingRoute() {
-        StatementRoutingEngine routingEngine = new StatementRoutingEngine(
-                ruleRegistry.getShardingRule(), ruleRegistry.getShardingMetaData(), databaseType, ruleRegistry.isShowSQL(), ruleRegistry.getShardingDataSourceMetaData());
-        return routingEngine.route(getSql());
     }
     
     @Override

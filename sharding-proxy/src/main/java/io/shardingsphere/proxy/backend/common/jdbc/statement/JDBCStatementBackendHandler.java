@@ -17,19 +17,14 @@
 
 package io.shardingsphere.proxy.backend.common.jdbc.statement;
 
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.routing.PreparedStatementRoutingEngine;
-import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.proxy.backend.common.jdbc.JDBCBackendHandler;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngineFactory;
-import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.PreparedStatementRegistry;
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute.BinaryResultSetRowPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute.PreparedStatementParameter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -40,32 +35,8 @@ import java.util.List;
  */
 public final class JDBCStatementBackendHandler extends JDBCBackendHandler {
     
-    private final List<PreparedStatementParameter> preparedStatementParameters;
-    
-    private final DatabaseType databaseType;
-    
-    private final RuleRegistry ruleRegistry;
-    
-    public JDBCStatementBackendHandler(final List<PreparedStatementParameter> preparedStatementParameters, final int statementId, final DatabaseType databaseType) {
+    public JDBCStatementBackendHandler(final List<PreparedStatementParameter> preparedStatementParameters, final int statementId) {
         super(PreparedStatementRegistry.getInstance().getSQL(statementId), JDBCExecuteEngineFactory.createStatementProtocolInstance(preparedStatementParameters));
-        this.preparedStatementParameters = preparedStatementParameters;
-        this.databaseType = databaseType;
-        ruleRegistry = RuleRegistry.getInstance();
-    }
-    
-    @Override
-    protected SQLRouteResult doShardingRoute() {
-        PreparedStatementRoutingEngine routingEngine = new PreparedStatementRoutingEngine(
-                getSql(), ruleRegistry.getShardingRule(), ruleRegistry.getShardingMetaData(), databaseType, ruleRegistry.isShowSQL(), ruleRegistry.getShardingDataSourceMetaData());
-        return routingEngine.route(getComStmtExecuteParameters());
-    }
-    
-    private List<Object> getComStmtExecuteParameters() {
-        List<Object> result = new ArrayList<>(32);
-        for (PreparedStatementParameter each : preparedStatementParameters) {
-            result.add(each.getValue());
-        }
-        return result;
     }
     
     @Override

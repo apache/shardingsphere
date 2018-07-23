@@ -95,7 +95,7 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
     }
     
     private BackendHandler getBackendHandler(final String sql) {
-        return RuleRegistry.getInstance().isProxyBackendUseNio() ? new SQLPacketsBackendHandler(this, DatabaseType.MySQL) : new JDBCTextBackendHandler(sql, DatabaseType.MySQL);
+        return RuleRegistry.getInstance().isProxyBackendUseNio() ? new SQLPacketsBackendHandler(this, DatabaseType.MySQL) : new JDBCTextBackendHandler(sql);
     }
     
     @Override

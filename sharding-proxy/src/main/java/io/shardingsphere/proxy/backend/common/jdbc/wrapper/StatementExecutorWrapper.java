@@ -17,9 +17,21 @@
 
 package io.shardingsphere.proxy.backend.common.jdbc.wrapper;
 
+import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.parsing.SQLJudgeEngine;
+import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.routing.SQLExecutionUnit;
+import io.shardingsphere.core.routing.SQLRouteResult;
+import io.shardingsphere.core.routing.SQLUnit;
+import io.shardingsphere.core.routing.StatementRoutingEngine;
+import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
+import io.shardingsphere.proxy.config.RuleRegistry;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Executor wrapper for statement.
@@ -27,6 +39,28 @@ import java.sql.Statement;
  * @author zhangliang
  */
 public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
+    
+    private final RuleRegistry ruleRegistry = RuleRegistry.getInstance();
+    
+    @Override
+    public SQLRouteResult route(final String sql, final DatabaseType databaseType) {
+        return ruleRegistry.isMasterSlaveOnly() ? doMasterSlaveRoute(sql) : doShardingRoute(sql, databaseType);
+    }
+    
+    private SQLRouteResult doMasterSlaveRoute(final String sql) {
+        SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
+        SQLRouteResult result = new SQLRouteResult(sqlStatement);
+        for (String each : new MasterSlaveRouter(ruleRegistry.getMasterSlaveRule(), ruleRegistry.isShowSQL()).route(sql)) {
+            result.getExecutionUnits().add(new SQLExecutionUnit(each, new SQLUnit(sql, Collections.<List<Object>>emptyList())));
+        }
+        return result;
+    }
+    
+    private SQLRouteResult doShardingRoute(final String sql, final DatabaseType databaseType) {
+        StatementRoutingEngine routingEngine = new StatementRoutingEngine(
+                ruleRegistry.getShardingRule(), ruleRegistry.getShardingMetaData(), databaseType, ruleRegistry.isShowSQL(), ruleRegistry.getShardingDataSourceMetaData());
+        return routingEngine.route(sql);
+    }
     
     @Override
     public Statement createStatement(final Connection connection, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {

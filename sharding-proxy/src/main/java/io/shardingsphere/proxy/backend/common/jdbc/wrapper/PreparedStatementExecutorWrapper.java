@@ -17,6 +17,17 @@
 
 package io.shardingsphere.proxy.backend.common.jdbc.wrapper;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
+import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.parsing.SQLJudgeEngine;
+import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.routing.PreparedStatementRoutingEngine;
+import io.shardingsphere.core.routing.SQLExecutionUnit;
+import io.shardingsphere.core.routing.SQLRouteResult;
+import io.shardingsphere.core.routing.SQLUnit;
+import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
+import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute.PreparedStatementParameter;
 import lombok.RequiredArgsConstructor;
 
@@ -24,6 +35,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -34,7 +46,35 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapper {
     
+    private final RuleRegistry ruleRegistry = RuleRegistry.getInstance();
+    
     private final List<PreparedStatementParameter> preparedStatementParameters;
+    
+    @Override
+    public SQLRouteResult route(final String sql, final DatabaseType databaseType) {
+        return ruleRegistry.isMasterSlaveOnly() ? doMasterSlaveRoute(sql) : doShardingRoute(sql, databaseType);
+    }
+    
+    private SQLRouteResult doMasterSlaveRoute(final String sql) {
+        SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
+        SQLRouteResult result = new SQLRouteResult(sqlStatement);
+        for (String each : new MasterSlaveRouter(ruleRegistry.getMasterSlaveRule(), ruleRegistry.isShowSQL()).route(sql)) {
+            result.getExecutionUnits().add(new SQLExecutionUnit(each, new SQLUnit(sql, Collections.<List<Object>>emptyList())));
+        }
+        return result;
+    }
+    
+    private SQLRouteResult doShardingRoute(final String sql, final DatabaseType databaseType) {
+        PreparedStatementRoutingEngine routingEngine = new PreparedStatementRoutingEngine(
+                sql, ruleRegistry.getShardingRule(), ruleRegistry.getShardingMetaData(), databaseType, ruleRegistry.isShowSQL(), ruleRegistry.getShardingDataSourceMetaData());
+        return routingEngine.route(Lists.transform(preparedStatementParameters, new Function<PreparedStatementParameter, Object>() {
+            
+            @Override
+            public Object apply(final PreparedStatementParameter input) {
+                return input.getValue();
+            }
+        }));
+    }
     
     @Override
     public Statement createStatement(final Connection connection, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {

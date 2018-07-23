@@ -17,6 +17,9 @@
 
 package io.shardingsphere.proxy.backend.common.jdbc.wrapper;
 
+import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.routing.SQLRouteResult;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -27,6 +30,15 @@ import java.sql.Statement;
  * @author zhangliang
  */
 public interface JDBCExecutorWrapper {
+    
+    /**
+     * Route SQL.
+     * 
+     * @param sql SQL to be routed
+     * @param databaseType database type
+     * @return SQL route result
+     */
+    SQLRouteResult route(String sql, DatabaseType databaseType);
     
     /**
      * Create statement.
