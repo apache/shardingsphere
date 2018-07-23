@@ -24,7 +24,6 @@ import io.shardingsphere.proxy.backend.common.jdbc.execute.response.unit.Execute
 import io.shardingsphere.proxy.backend.common.jdbc.execute.response.unit.ExecuteResponseUnit;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.response.unit.ExecuteUpdateResponseUnit;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
-import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.QueryResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
@@ -69,12 +68,12 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
     protected ExecuteResponseUnit executeWithMetadata(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
         setFetchSize(statement);
         if (!executeSQL(statement, sql, isReturnGeneratedKeys)) {
-            return new ExecuteUpdateResponseUnit(new CommandResponsePackets(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0)));
+            return new ExecuteUpdateResponseUnit(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0));
         }
         ResultSet resultSet = statement.getResultSet();
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         if (0 == resultSetMetaData.getColumnCount()) {
-            return new ExecuteUpdateResponseUnit(new CommandResponsePackets(new OKPacket(1)));
+            return new ExecuteUpdateResponseUnit(new OKPacket(1));
         }
         return new ExecuteQueryResponseUnit(getHeaderPackets(resultSetMetaData), createQueryResult(resultSet));
     }
@@ -82,7 +81,7 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
     protected ExecuteResponseUnit executeWithoutMetadata(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
         setFetchSize(statement);
         if (!executeSQL(statement, sql, isReturnGeneratedKeys)) {
-            return new ExecuteUpdateResponseUnit(new CommandResponsePackets(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0)));
+            return new ExecuteUpdateResponseUnit(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0));
         }
         return new ExecuteQueryResponseUnit(null, createQueryResult(statement.getResultSet()));
     }

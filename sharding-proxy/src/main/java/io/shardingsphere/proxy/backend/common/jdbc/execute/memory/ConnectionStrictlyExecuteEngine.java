@@ -132,7 +132,7 @@ public abstract class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine 
         for (Future<Collection<ExecuteResponseUnit>> each : futureList) {
             try {
                 for (ExecuteResponseUnit executeResponse : each.get()) {
-                    result.getPackets().add(((ExecuteUpdateResponseUnit) executeResponse).getCommandResponsePackets().getHeadPacket());
+                    result.getPackets().add(((ExecuteUpdateResponseUnit) executeResponse).getDatabasePacket());
                 }
             } catch (final InterruptedException | ExecutionException ex) {
                 throw new ShardingException(ex.getMessage(), ex);
