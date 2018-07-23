@@ -87,7 +87,7 @@ public final class JDBCBackendHandler implements BackendHandler {
     }
     
     @Override
-    public final CommandResponsePackets execute() {
+    public CommandResponsePackets execute() {
         try {
             return execute(executeEngine.getJdbcExecutorWrapper().route(sql, DatabaseType.MySQL));
         } catch (final SQLException ex) {
@@ -150,7 +150,7 @@ public final class JDBCBackendHandler implements BackendHandler {
     }
     
     @Override
-    public final boolean hasMoreResultValue() throws SQLException {
+    public boolean hasMoreResultValue() throws SQLException {
         if (!isMerged || !hasMoreResultValueFlag) {
             backendConnection.close();
             return false;
@@ -162,7 +162,7 @@ public final class JDBCBackendHandler implements BackendHandler {
     }
     
     @Override
-    public final DatabasePacket getResultValue() {
+    public DatabasePacket getResultValue() {
         if (!hasMoreResultValueFlag) {
             return new EofPacket(++currentSequenceId);
         }
