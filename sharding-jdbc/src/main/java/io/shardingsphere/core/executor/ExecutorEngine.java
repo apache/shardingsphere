@@ -43,7 +43,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -54,6 +53,7 @@ import java.util.concurrent.TimeUnit;
  * @author gaohongtao
  * @author zhangliang
  * @author maxiaoguang
+ * @author panjuan
  */
 @Slf4j
 public final class ExecutorEngine implements AutoCloseable {
@@ -65,11 +65,9 @@ public final class ExecutorEngine implements AutoCloseable {
     private final ListeningExecutorService executorService;
     
     public ExecutorEngine(final int executorSize) {
-        executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(10));
-        
-//                MoreExecutors.listeningDecorator(new ThreadPoolExecutor(
-//                executorSize, executorSize, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("Sharding-JDBC-%d").build()));
-//        MoreExecutors.addDelayedShutdownHook(executorService, 60, TimeUnit.SECONDS);
+        executorService = MoreExecutors.listeningDecorator(new ThreadPoolExecutor(
+                executorSize, executorSize, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("Sharding-JDBC-%d").build()));
+        MoreExecutors.addDelayedShutdownHook(executorService, 60, TimeUnit.SECONDS);
     }
     
     /**
