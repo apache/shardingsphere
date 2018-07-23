@@ -78,15 +78,6 @@ public final class ConfigurationService {
         }
     }
     
-    private void persistDataSourceParameterConfiguration(final Map<String, DataSourceParameter> dataSourceParameterMap, final boolean isOverwrite) {
-        if (isOverwrite || !hasDataSourceConfiguration()) {
-            if (dataSourceParameterMap.isEmpty()) {
-                throw new ShardingConfigurationException("No available data source configuration for Orchestration.");
-            }
-            regCenter.persist(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH), DataSourceParameterConverter.dataSourceParameterMapToYaml(dataSourceParameterMap));
-        }
-    }
-    
     private boolean hasDataSourceConfiguration() {
         return !Strings.isNullOrEmpty(regCenter.get(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH)));
     }
@@ -184,6 +175,15 @@ public final class ConfigurationService {
     public void persistProxyConfiguration(final OrchestrationProxyConfiguration orchestrationProxyConfiguration, final boolean isOverwrite) {
         persistDataSourceParameterConfiguration(orchestrationProxyConfiguration.getDataSources(), isOverwrite);
         persistProxyRuleConfiguration(orchestrationProxyConfiguration, isOverwrite);
+    }
+    
+    private void persistDataSourceParameterConfiguration(final Map<String, DataSourceParameter> dataSourceParameterMap, final boolean isOverwrite) {
+        if (isOverwrite || !hasDataSourceConfiguration()) {
+            if (dataSourceParameterMap.isEmpty()) {
+                throw new ShardingConfigurationException("No available data source configuration for Orchestration.");
+            }
+            regCenter.persist(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH), DataSourceParameterConverter.dataSourceParameterMapToYaml(dataSourceParameterMap));
+        }
     }
     
     private boolean hasProxyConfig() {
