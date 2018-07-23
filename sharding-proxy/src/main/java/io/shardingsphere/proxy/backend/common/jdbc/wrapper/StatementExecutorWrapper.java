@@ -15,29 +15,26 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.common.jdbc.execute.stream;
-
-import io.shardingsphere.proxy.backend.common.jdbc.execute.memory.ConnectionStrictlyExecuteEngine;
+package io.shardingsphere.proxy.backend.common.jdbc.wrapper;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * Connection strictly execute engine for JDBC text protocol.
+ * Executor wrapper for statement.
  *
- * @author zhaojun
  * @author zhangliang
  */
-public final class TextConnectionStrictlyExecuteEngine extends ConnectionStrictlyExecuteEngine {
+public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     
     @Override
-    protected Statement createStatement(final Connection connection, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
+    public Statement createStatement(final Connection connection, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
         return connection.createStatement();
     }
     
     @Override
-    protected boolean executeSQL(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
+    public boolean executeSQL(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
         return statement.execute(sql, isReturnGeneratedKeys ? Statement.RETURN_GENERATED_KEYS : Statement.NO_GENERATED_KEYS);
     }
 }

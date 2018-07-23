@@ -15,10 +15,10 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.common.jdbc.execute.stream;
+package io.shardingsphere.proxy.backend.common.jdbc.wrapper;
 
-import io.shardingsphere.proxy.backend.common.jdbc.execute.memory.ConnectionStrictlyExecuteEngine;
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute.PreparedStatementParameter;
+import lombok.RequiredArgsConstructor;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -27,21 +27,17 @@ import java.sql.Statement;
 import java.util.List;
 
 /**
- * Connection strictly execute engine for JDBC statement protocol.
+ * Executor wrapper for prepared statement.
  *
- * @author zhaojun
  * @author zhangliang
  */
-public final class StatementConnectionStrictlyExecuteEngine extends ConnectionStrictlyExecuteEngine {
+@RequiredArgsConstructor
+public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapper {
     
     private final List<PreparedStatementParameter> preparedStatementParameters;
     
-    public StatementConnectionStrictlyExecuteEngine(final List<PreparedStatementParameter> preparedStatementParameters) {
-        this.preparedStatementParameters = preparedStatementParameters;
-    }
-    
     @Override
-    protected Statement createStatement(final Connection connection, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
+    public Statement createStatement(final Connection connection, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
         PreparedStatement result = isReturnGeneratedKeys ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sql);
         for (int i = 0; i < preparedStatementParameters.size(); i++) {
             result.setObject(i + 1, preparedStatementParameters.get(i).getValue());
@@ -50,7 +46,7 @@ public final class StatementConnectionStrictlyExecuteEngine extends ConnectionSt
     }
     
     @Override
-    protected boolean executeSQL(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
+    public boolean executeSQL(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
         return ((PreparedStatement) statement).execute();
     }
 }

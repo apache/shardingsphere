@@ -28,6 +28,7 @@ import io.shardingsphere.proxy.backend.common.jdbc.execute.response.ExecuteUpdat
 import io.shardingsphere.proxy.backend.common.jdbc.execute.response.unit.ExecuteQueryResponseUnit;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.response.unit.ExecuteResponseUnit;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.response.unit.ExecuteUpdateResponseUnit;
+import io.shardingsphere.proxy.backend.common.jdbc.wrapper.JDBCExecutorWrapper;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -48,10 +49,14 @@ import java.util.concurrent.Future;
  * @author zhaojun
  * @author zhangliang
  */
-public abstract class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
+public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
+    
+    public ConnectionStrictlyExecuteEngine(final JDBCExecutorWrapper jdbcExecutorWrapper) {
+        super(jdbcExecutorWrapper);
+    }
     
     @Override
-    public final ExecuteResponse execute(final SQLRouteResult routeResult, final boolean isReturnGeneratedKeys) throws SQLException {
+    public ExecuteResponse execute(final SQLRouteResult routeResult, final boolean isReturnGeneratedKeys) throws SQLException {
         Map<String, Collection<SQLUnit>> sqlExecutionUnits = routeResult.getSQLUnitGroups();
         Entry<String, Collection<SQLUnit>> firstEntry = sqlExecutionUnits.entrySet().iterator().next();
         sqlExecutionUnits.remove(firstEntry.getKey());
@@ -71,7 +76,7 @@ public abstract class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine 
                 public Collection<ExecuteResponseUnit> call() throws SQLException {
                     Collection<ExecuteResponseUnit> result = new LinkedList<>();
                     for (SQLUnit each : sqlUnits) {
-                        Statement statement = createStatement(connection, each.getSql(), isReturnGeneratedKeys);
+                        Statement statement = getJdbcExecutorWrapper().createStatement(connection, each.getSql(), isReturnGeneratedKeys);
                         result.add(executeWithoutMetadata(statement, each.getSql(), isReturnGeneratedKeys));
                     }
                     return result;
@@ -87,7 +92,7 @@ public abstract class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine 
         Connection connection = getBackendConnection().getConnection(dataSourceName);
         for (SQLUnit each : sqlUnits) {
             String actualSQL = each.getSql();
-            Statement statement = createStatement(connection, actualSQL, isReturnGeneratedKeys);
+            Statement statement = getJdbcExecutorWrapper().createStatement(connection, actualSQL, isReturnGeneratedKeys);
             ExecuteResponseUnit response;
             if (hasMetaData) {
                 response = executeWithoutMetadata(statement, actualSQL, isReturnGeneratedKeys);
@@ -142,11 +147,11 @@ public abstract class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine 
     }
     
     @Override
-    protected final void setFetchSize(final Statement statement) {
+    protected void setFetchSize(final Statement statement) {
     }
     
     @Override
-    protected final QueryResult createQueryResult(final ResultSet resultSet) throws SQLException {
+    protected QueryResult createQueryResult(final ResultSet resultSet) throws SQLException {
         return new MemoryQueryResult(resultSet);
     }
 }
