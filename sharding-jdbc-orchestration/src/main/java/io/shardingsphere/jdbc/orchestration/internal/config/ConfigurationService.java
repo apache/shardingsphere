@@ -81,7 +81,7 @@ public final class ConfigurationService {
     }
     
     private boolean hasDataSourceConfiguration() {
-        return regCenter.isExisted(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH));
+        return !Strings.isNullOrEmpty(regCenter.get(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH)));
     }
     
     private void persistShardingRuleConfiguration(final ShardingRuleConfiguration shardingRuleConfig, final boolean isOverwrite) {
