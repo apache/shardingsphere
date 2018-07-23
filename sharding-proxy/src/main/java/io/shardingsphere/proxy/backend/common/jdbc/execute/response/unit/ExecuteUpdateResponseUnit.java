@@ -17,7 +17,7 @@
 
 package io.shardingsphere.proxy.backend.common.jdbc.execute.response.unit;
 
-import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
+import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -30,5 +30,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class ExecuteUpdateResponseUnit implements ExecuteResponseUnit {
     
-    private final DatabasePacket databasePacket;
+    private final OKPacket okPacket;
 }

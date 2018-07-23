@@ -97,10 +97,10 @@ public abstract class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
     }
     
     private ExecuteResponse getExecuteUpdateResponse(final ExecuteUpdateResponseUnit firstResponseUnit, final List<Future<ExecuteResponseUnit>> futureList) {
-        ExecuteUpdateResponse result = new ExecuteUpdateResponse(firstResponseUnit.getDatabasePacket());
+        ExecuteUpdateResponse result = new ExecuteUpdateResponse(firstResponseUnit.getOkPacket());
         for (Future<ExecuteResponseUnit> each : futureList) {
             try {
-                result.getPackets().add(((ExecuteUpdateResponseUnit) each.get()).getDatabasePacket());
+                result.getPackets().add(((ExecuteUpdateResponseUnit) each.get()).getOkPacket());
             } catch (final InterruptedException | ExecutionException ex) {
                 throw new ShardingException(ex.getMessage(), ex);
             }

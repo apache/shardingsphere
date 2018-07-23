@@ -44,7 +44,7 @@ public final class ExecuteUpdateResponse implements ExecuteResponse {
     
     public ExecuteUpdateResponse(final Collection<ExecuteResponseUnit> responseUnits) {
         for (ExecuteResponseUnit each : responseUnits) {
-            packets.add(((ExecuteUpdateResponseUnit) each).getDatabasePacket());
+            packets.add(((ExecuteUpdateResponseUnit) each).getOkPacket());
         }
     }
     
