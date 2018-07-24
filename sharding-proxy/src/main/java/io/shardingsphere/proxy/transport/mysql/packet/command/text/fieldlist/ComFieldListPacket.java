@@ -100,9 +100,9 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
     }
     
     @Override
-    public boolean hasMoreResultValue() {
+    public boolean next() {
         try {
-            return backendHandler.hasMoreResultValue();
+            return backendHandler.next();
         } catch (final SQLException ex) {
             return false;
         }

@@ -104,9 +104,9 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
      *
      * @return has more result value
      */
-    public boolean hasMoreResultValue() {
+    public boolean next() {
         try {
-            return backendHandler.hasMoreResultValue();
+            return backendHandler.next();
         } catch (final SQLException ex) {
             return false;
         }

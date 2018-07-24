@@ -48,7 +48,7 @@ public final class ComPingPacket extends CommandPacket {
     }
     
     @Override
-    public boolean hasMoreResultValue() {
+    public boolean next() {
         return false;
     }
     

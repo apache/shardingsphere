@@ -140,7 +140,7 @@ public final class JDBCBackendHandler implements BackendHandler {
     }
     
     @Override
-    public boolean hasMoreResultValue() throws SQLException {
+    public boolean next() throws SQLException {
         if (null == mergedResult || !mergedResult.next()) {
             backendConnection.close();
             return false;

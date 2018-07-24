@@ -61,7 +61,7 @@ public final class ComInitDbPacket extends CommandPacket {
     }
     
     @Override
-    public boolean hasMoreResultValue() {
+    public boolean next() {
         return false;
     }
     

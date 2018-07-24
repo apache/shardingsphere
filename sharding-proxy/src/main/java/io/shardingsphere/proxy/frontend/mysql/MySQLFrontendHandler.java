@@ -82,7 +82,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
                     for (DatabasePacket each : commandPacket.execute().getPackets()) {
                         context.writeAndFlush(each);
                     }
-                    while (commandPacket.hasMoreResultValue()) {
+                    while (commandPacket.next()) {
                         // TODO try to use wait notify
                         while (!context.channel().isWritable()) {
                             continue;

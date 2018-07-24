@@ -41,16 +41,16 @@ public abstract class CommandPacket extends MySQLPacket {
     public abstract CommandResponsePackets execute();
     
     /**
-     * Has more result value.
+     * Goto next result value.
      *
-     * @return has more result value
+     * @return has more result value or not
      */
-    public abstract boolean hasMoreResultValue();
+    public abstract boolean next();
     
     /**
      * Get result value.
      *
-     * @return result to be sent
+     * @return database packet of result value
      */
     public abstract DatabasePacket getResultValue();
 }

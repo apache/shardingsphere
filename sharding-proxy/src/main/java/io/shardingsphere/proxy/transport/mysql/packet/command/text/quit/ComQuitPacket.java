@@ -48,7 +48,7 @@ public final class ComQuitPacket extends CommandPacket {
     }
     
     @Override
-    public boolean hasMoreResultValue() {
+    public boolean next() {
         return false;
     }
     

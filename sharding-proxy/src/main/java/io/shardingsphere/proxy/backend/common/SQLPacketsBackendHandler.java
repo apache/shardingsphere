@@ -198,7 +198,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     }
     
     @Override
-    public boolean hasMoreResultValue() throws SQLException {
+    public boolean next() throws SQLException {
         if (null == mergedResult || !mergedResult.next()) {
             for (Entry<String, List<Channel>> entry : channelsMap.entrySet()) {
                 for (Channel each : entry.getValue()) {
