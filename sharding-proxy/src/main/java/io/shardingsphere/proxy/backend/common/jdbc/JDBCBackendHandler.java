@@ -41,6 +41,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.QueryRespo
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.transaction.xa.AtomikosUserTransaction;
+import lombok.RequiredArgsConstructor;
 
 import javax.transaction.Status;
 import javax.transaction.SystemException;
@@ -54,28 +55,20 @@ import java.util.List;
  * @author zhaojun
  * @author zhangliang
  */
+@RequiredArgsConstructor
 public final class JDBCBackendHandler implements BackendHandler {
     
     private final String sql;
     
-    private final RuleRegistry ruleRegistry;
-    
-    private final BackendConnection backendConnection;
-    
     private final JDBCExecuteEngine executeEngine;
+    
+    private final RuleRegistry ruleRegistry = RuleRegistry.getInstance();
     
     private ExecuteResponse executeResponse;
     
     private MergedResult mergedResult;
     
     private int currentSequenceId;
-    
-    public JDBCBackendHandler(final String sql, final JDBCExecuteEngine executeEngine) {
-        this.sql = sql;
-        this.executeEngine = executeEngine;
-        ruleRegistry = RuleRegistry.getInstance();
-        backendConnection = executeEngine.getBackendConnection();
-    }
     
     @Override
     public CommandResponsePackets execute() {
@@ -141,11 +134,7 @@ public final class JDBCBackendHandler implements BackendHandler {
     
     @Override
     public boolean next() throws SQLException {
-        if (null == mergedResult || !mergedResult.next()) {
-            backendConnection.close();
-            return false;
-        }
-        return true;
+        return null != mergedResult && mergedResult.next();
     }
     
     @Override

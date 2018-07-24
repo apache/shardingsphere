@@ -17,6 +17,7 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command;
 
+import io.shardingsphere.proxy.backend.common.jdbc.BackendConnection;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.close.ComStmtClosePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute.ComStmtExecutePacket;
@@ -41,9 +42,10 @@ public final class CommandPacketFactory {
      * @param sequenceId sequence id
      * @param connectionId MySQL connection id
      * @param payload MySQL packet payload
+     * @param backendConnection backend connection
      * @return Command packet
      */
-    public static CommandPacket getCommandPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload) {
+    public static CommandPacket getCommandPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         int commandPacketTypeValue = payload.readInt1();
         CommandPacketType type = CommandPacketType.valueOf(commandPacketTypeValue);
         switch (type) {
@@ -52,13 +54,13 @@ public final class CommandPacketFactory {
             case COM_INIT_DB:
                 return new ComInitDbPacket(sequenceId, payload);
             case COM_FIELD_LIST:
-                return new ComFieldListPacket(sequenceId, connectionId, payload);
+                return new ComFieldListPacket(sequenceId, connectionId, payload, backendConnection);
             case COM_QUERY:
-                return new ComQueryPacket(sequenceId, connectionId, payload);
+                return new ComQueryPacket(sequenceId, connectionId, payload, backendConnection);
             case COM_STMT_PREPARE:
                 return new ComStmtPreparePacket(sequenceId, payload);
             case COM_STMT_EXECUTE:
-                return new ComStmtExecutePacket(sequenceId, payload);
+                return new ComStmtExecutePacket(sequenceId, payload, backendConnection);
             case COM_STMT_CLOSE:
                 return new ComStmtClosePacket(sequenceId, payload);
             case COM_PING:

@@ -24,6 +24,7 @@ import io.shardingsphere.core.transaction.event.XaTransactionEvent;
 import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.proxy.backend.common.BackendHandler;
 import io.shardingsphere.proxy.backend.common.SQLPacketsBackendHandler;
+import io.shardingsphere.proxy.backend.common.jdbc.BackendConnection;
 import io.shardingsphere.proxy.backend.common.jdbc.JDBCBackendHandler;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngineFactory;
 import io.shardingsphere.proxy.config.RuleRegistry;
@@ -63,12 +64,15 @@ public final class ComQueryPacket implements CommandPacket, CommandPacketRebuild
     
     private final String sql;
     
+    private final BackendConnection backendConnection;
+    
     private final BackendHandler backendHandler;
     
-    public ComQueryPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload) {
+    public ComQueryPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         this.sequenceId = sequenceId;
         this.connectionId = connectionId;
         sql = payload.readStringEOF();
+        this.backendConnection = backendConnection;
         backendHandler = getBackendHandler(sql);
     }
     
@@ -76,6 +80,7 @@ public final class ComQueryPacket implements CommandPacket, CommandPacketRebuild
         this.sequenceId = sequenceId;
         this.connectionId = connectionId;
         this.sql = sql;
+        backendConnection = null;
         backendHandler = null;
     }
     
@@ -100,7 +105,7 @@ public final class ComQueryPacket implements CommandPacket, CommandPacketRebuild
     
     private BackendHandler getBackendHandler(final String sql) {
         return RuleRegistry.getInstance().isProxyBackendUseNio()
-                ? new SQLPacketsBackendHandler(this, DatabaseType.MySQL) : new JDBCBackendHandler(sql, JDBCExecuteEngineFactory.createTextProtocolInstance());
+                ? new SQLPacketsBackendHandler(this, DatabaseType.MySQL) : new JDBCBackendHandler(sql, JDBCExecuteEngineFactory.createTextProtocolInstance(backendConnection));
     }
     
     /**

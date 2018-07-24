@@ -18,6 +18,7 @@
 package io.shardingsphere.proxy.backend.common.jdbc.execute;
 
 import io.shardingsphere.proxy.backend.common.ProxyMode;
+import io.shardingsphere.proxy.backend.common.jdbc.BackendConnection;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.memory.ConnectionStrictlyExecuteEngine;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.stream.MemoryStrictlyExecuteEngine;
 import io.shardingsphere.proxy.backend.common.jdbc.wrapper.JDBCExecutorWrapper;
@@ -41,21 +42,25 @@ public final class JDBCExecuteEngineFactory {
     /**
      * Create instance for text protocol.
      * 
+     * @param backendConnection backend connection
      * @return instance for text protocol
      */
-    public static JDBCExecuteEngine createTextProtocolInstance() {
+    public static JDBCExecuteEngine createTextProtocolInstance(final BackendConnection backendConnection) {
         JDBCExecutorWrapper jdbcExecutorWrapper = new StatementExecutorWrapper();
-        return ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode() ? new MemoryStrictlyExecuteEngine(jdbcExecutorWrapper) : new ConnectionStrictlyExecuteEngine(jdbcExecutorWrapper);
+        return ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()
+                ? new MemoryStrictlyExecuteEngine(backendConnection, jdbcExecutorWrapper) : new ConnectionStrictlyExecuteEngine(backendConnection, jdbcExecutorWrapper);
     }
     
     /**
      * Create instance for statement protocol.
      *
      * @param preparedStatementParameters parameters of prepared statement
+     * @param backendConnection backend connection
      * @return instance for statement protocol
      */
-    public static JDBCExecuteEngine createStatementProtocolInstance(final List<PreparedStatementParameter> preparedStatementParameters) {
+    public static JDBCExecuteEngine createStatementProtocolInstance(final List<PreparedStatementParameter> preparedStatementParameters, final BackendConnection backendConnection) {
         JDBCExecutorWrapper jdbcExecutorWrapper = new PreparedStatementExecutorWrapper(preparedStatementParameters);
-        return ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode() ? new MemoryStrictlyExecuteEngine(jdbcExecutorWrapper) : new ConnectionStrictlyExecuteEngine(jdbcExecutorWrapper);
+        return ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()
+                ? new MemoryStrictlyExecuteEngine(backendConnection, jdbcExecutorWrapper) : new ConnectionStrictlyExecuteEngine(backendConnection, jdbcExecutorWrapper);
     }
 }

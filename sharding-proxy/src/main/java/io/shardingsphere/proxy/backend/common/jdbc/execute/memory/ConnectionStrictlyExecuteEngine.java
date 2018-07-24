@@ -21,6 +21,7 @@ import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.SQLUnit;
+import io.shardingsphere.proxy.backend.common.jdbc.BackendConnection;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngine;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.response.ExecuteQueryResponse;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.response.ExecuteResponse;
@@ -51,8 +52,11 @@ import java.util.concurrent.Future;
  */
 public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
     
-    public ConnectionStrictlyExecuteEngine(final JDBCExecutorWrapper jdbcExecutorWrapper) {
+    private final BackendConnection backendConnection;
+    
+    public ConnectionStrictlyExecuteEngine(final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper) {
         super(jdbcExecutorWrapper);
+        this.backendConnection = backendConnection;
     }
     
     @Override
@@ -68,7 +72,7 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
     private List<Future<Collection<ExecuteResponseUnit>>> asyncExecute(final boolean isReturnGeneratedKeys, final Map<String, Collection<SQLUnit>> sqlUnitGroups) throws SQLException {
         List<Future<Collection<ExecuteResponseUnit>>> result = new LinkedList<>();
         for (Entry<String, Collection<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
-            final Connection connection = getBackendConnection().getConnection(entry.getKey());
+            final Connection connection = backendConnection.getConnection(entry.getKey());
             final Collection<SQLUnit> sqlUnits = entry.getValue();
             result.add(getExecutorService().submit(new Callable<Collection<ExecuteResponseUnit>>() {
                 
@@ -89,7 +93,7 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
     private Collection<ExecuteResponseUnit> syncExecute(final boolean isReturnGeneratedKeys, final String dataSourceName, final Collection<SQLUnit> sqlUnits) throws SQLException {
         Collection<ExecuteResponseUnit> result = new LinkedList<>();
         boolean hasMetaData = false;
-        Connection connection = getBackendConnection().getConnection(dataSourceName);
+        Connection connection = backendConnection.getConnection(dataSourceName);
         for (SQLUnit each : sqlUnits) {
             String actualSQL = each.getSql();
             Statement statement = getJdbcExecutorWrapper().createStatement(connection, actualSQL, isReturnGeneratedKeys);
