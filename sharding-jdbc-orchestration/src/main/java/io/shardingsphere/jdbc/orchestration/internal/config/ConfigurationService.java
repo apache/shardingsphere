@@ -205,7 +205,11 @@ public final class ConfigurationService {
      * @return data source configuration map
      */
     public Map<String, DataSource> loadDataSourceMap() {
-        return DataSourceConverter.dataSourceMapFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH)));
+        try {
+            return DataSourceConverter.dataSourceMapFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH)));
+        } catch (final Exception ex) {
+            throw new ShardingConfigurationException("No available data source configuration to load.");
+        }
     }
     
     /**
@@ -214,7 +218,11 @@ public final class ConfigurationService {
      * @return data sources map
      */
     public Map<String, DataSourceParameter> loadDataSources() {
-        return DataSourceParameterConverter.dataSourceParameterMapFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH)));
+        try {
+            return DataSourceParameterConverter.dataSourceParameterMapFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH)));
+        } catch (final Exception ex) {
+            throw new ShardingConfigurationException("No available data source configuration to load.");
+        }
     }
     
     /**
@@ -223,7 +231,11 @@ public final class ConfigurationService {
      * @return sharding rule configuration
      */
     public ShardingRuleConfiguration loadShardingRuleConfiguration() {
-        return ShardingConfigurationConverter.shardingRuleConfigFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.SHARDING_RULE_NODE_PATH)));
+        try {
+            return ShardingConfigurationConverter.shardingRuleConfigFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.SHARDING_RULE_NODE_PATH)));
+        } catch (final Exception ex) {
+            throw new ShardingConfigurationException("No available sharding rule configuration to load.");
+        }
     }
     
     /**
@@ -252,7 +264,11 @@ public final class ConfigurationService {
      * @return master-slave rule configuration
      */
     public MasterSlaveRuleConfiguration loadMasterSlaveRuleConfiguration() {
-        return MasterSlaveConfigurationConverter.masterSlaveRuleConfigFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH)));
+        try {
+            return MasterSlaveConfigurationConverter.masterSlaveRuleConfigFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH)));
+        } catch (final Exception ex) {
+            throw new ShardingConfigurationException("No available master slave rule configuration to load.");
+        }
     }
     
     /**
@@ -281,6 +297,10 @@ public final class ConfigurationService {
      * @return proxy configuration
      */
     public OrchestrationProxyConfiguration loadProxyConfiguration() {
-        return ProxyConfigurationConverter.proxyConfigFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.PROXY_RULE_NODE_PATH)));
+        try {
+            return ProxyConfigurationConverter.proxyConfigFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.PROXY_RULE_NODE_PATH)));
+        } catch (final Exception ex) {
+            throw new ShardingConfigurationException("No available proxy configuration to load.");
+        }
     }
 }
