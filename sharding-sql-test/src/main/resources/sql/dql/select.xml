@@ -6,6 +6,7 @@
     <sql-case id="select_not_in_with_single_table" value="SELECT * FROM t_order_item WHERE item_id IS NOT NULL AND item_id NOT IN (?, ?) ORDER BY item_id" />
     <sql-case id="select_not_between_with_single_table" value="SELECT * FROM t_order_item WHERE item_id IS NOT NULL AND item_id NOT BETWEEN ? AND ? ORDER BY item_id" />
     <sql-case id="select_equal_with_single_table" value="SELECT * FROM t_order WHERE user_id = ? AND order_id = ?" />
+    <sql-case id="select_equal_with_single_table_with_double_quotes" value="SELECT * FROM &quot;t_order_item&quot; WHERE item_id = ? AND order_id = ?" />
     <sql-case id="select_in_with_single_table" value="SELECT * FROM t_order WHERE user_id IN (?, ?, ?) AND order_id IN (?, ?) ORDER BY user_id, order_id" />
     <sql-case id="select_between_with_single_table" value="SELECT * FROM t_order WHERE user_id BETWEEN ? AND ? AND order_id BETWEEN ? AND ? ORDER BY user_id, order_id" />
     <sql-case id="select_equal_with_same_sharding_column" value="SELECT * FROM t_order WHERE order_id = ? AND order_id = ?" />
