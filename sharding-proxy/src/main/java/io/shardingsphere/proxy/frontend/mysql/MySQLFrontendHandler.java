@@ -26,6 +26,7 @@ import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketFactory;
+import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.handshake.AuthorityHandler;
@@ -86,8 +87,11 @@ public final class MySQLFrontendHandler extends FrontendHandler {
                         while (!context.channel().isWritable()) {
                             continue;
                         }
-                        context.writeAndFlush(commandPacket.getResultValue());
+                        DatabasePacket resultValue = commandPacket.getResultValue();
+                        sequenceId = resultValue.getSequenceId();
+                        context.writeAndFlush(resultValue);
                     }
+                    context.writeAndFlush(new EofPacket(++sequenceId));
                 }
             }
         });

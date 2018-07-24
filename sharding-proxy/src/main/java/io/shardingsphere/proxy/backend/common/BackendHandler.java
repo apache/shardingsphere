@@ -50,7 +50,4 @@ public interface BackendHandler {
      * @return database packet
      */
     DatabasePacket getResultValue();
-    
-    @Deprecated
-    boolean isHasMoreResultValueFlag();
 }

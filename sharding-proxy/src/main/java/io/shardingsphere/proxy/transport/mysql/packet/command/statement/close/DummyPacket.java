@@ -25,4 +25,9 @@ import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
  * @author zhangyonglun
  */
 public final class DummyPacket implements DatabasePacket {
+    
+    @Override
+    public int getSequenceId() {
+        return 1;
+    }
 }

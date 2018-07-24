@@ -38,7 +38,6 @@ import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.QueryResponsePackets;
-import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.transaction.xa.AtomikosUserTransaction;
@@ -147,21 +146,15 @@ public final class JDBCBackendHandler implements BackendHandler {
     
     @Override
     public boolean hasMoreResultValue() throws SQLException {
-        if (null == mergedResult || !hasMoreResultValueFlag) {
+        if (null == mergedResult || !mergedResult.next()) {
             backendConnection.close();
             return false;
-        }
-        if (!mergedResult.next()) {
-            hasMoreResultValueFlag = false;
         }
         return true;
     }
     
     @Override
     public DatabasePacket getResultValue() {
-        if (!hasMoreResultValueFlag) {
-            return new EofPacket(++currentSequenceId);
-        }
         QueryResponsePackets queryResponsePackets = ((ExecuteQueryResponse) executeResponse).getQueryResponsePackets();
         try {
             List<Object> data = new ArrayList<>(queryResponsePackets.getColumnCount());
@@ -171,7 +164,7 @@ public final class JDBCBackendHandler implements BackendHandler {
             return executeEngine.getJdbcExecutorWrapper().createResultSetPacket(
                     ++currentSequenceId, data, queryResponsePackets.getColumnCount(), queryResponsePackets.getColumnTypes(), DatabaseType.MySQL);
         } catch (final SQLException ex) {
-            return new ErrPacket(1, ex);
+            return new ErrPacket(++currentSequenceId, ex);
         }
     }
 }

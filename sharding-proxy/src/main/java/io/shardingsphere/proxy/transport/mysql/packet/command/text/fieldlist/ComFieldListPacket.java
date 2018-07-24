@@ -36,7 +36,6 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.statement.close.Du
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ComQueryPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextResultSetRowPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import lombok.extern.slf4j.Slf4j;
 
@@ -112,9 +111,6 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
     @Override
     public DatabasePacket getResultValue() {
         DatabasePacket resultValue = backendHandler.getResultValue();
-        if (!backendHandler.isHasMoreResultValueFlag()) {
-            return new EofPacket(++currentSequenceId);
-        }
         if (resultValue instanceof TextResultSetRowPacket) {
             TextResultSetRowPacket fieldListResponse = (TextResultSetRowPacket) resultValue;
             String columnName = (String) fieldListResponse.getData().get(0);
