@@ -21,6 +21,7 @@ import com.google.common.collect.Lists;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
@@ -31,20 +32,18 @@ import java.util.List;
  *
  * @author zhangliang
  */
+@RequiredArgsConstructor
 @Getter
-public final class TextResultSetRowPacket extends MySQLPacket {
+public final class TextResultSetRowPacket implements MySQLPacket {
     
     private static final int NULL = 0xfb;
     
+    private final int sequenceId;
+    
     private final List<Object> data;
     
-    public TextResultSetRowPacket(final int sequenceId, final List<Object> data) {
-        super(sequenceId);
-        this.data = data;
-    }
-    
     public TextResultSetRowPacket(final MySQLPacketPayload payload, final int columnCount) {
-        super(payload.readInt1());
+        sequenceId = payload.readInt1();
         data = Lists.newArrayListWithExpectedSize(columnCount);
         for (int i = 1; i <= columnCount; i++) {
             data.add(payload.readStringLenenc());

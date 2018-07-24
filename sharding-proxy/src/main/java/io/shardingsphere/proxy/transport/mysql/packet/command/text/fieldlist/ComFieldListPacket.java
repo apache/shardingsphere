@@ -37,6 +37,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnD
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ComQueryPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextResultSetRowPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
@@ -50,7 +51,10 @@ import java.sql.SQLException;
  * @author wangkai
  */
 @Slf4j
-public final class ComFieldListPacket extends CommandPacket implements CommandPacketRebuilder {
+public final class ComFieldListPacket implements CommandPacket, CommandPacketRebuilder {
+    
+    @Getter
+    private final int sequenceId;
     
     private final int connectionId;
     
@@ -63,17 +67,10 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
     private BackendHandler backendHandler;
     
     public ComFieldListPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload) {
-        super(sequenceId);
+        this.sequenceId = sequenceId;
         this.connectionId = connectionId;
         table = payload.readStringNul();
         fieldWildcard = payload.readStringEOF();
-    }
-    
-    public ComFieldListPacket(final int sequenceId, final int connectionId, final String table, final String fieldWildcard) {
-        super(sequenceId);
-        this.connectionId = connectionId;
-        this.table = table;
-        this.fieldWildcard = fieldWildcard;
     }
     
     @Override

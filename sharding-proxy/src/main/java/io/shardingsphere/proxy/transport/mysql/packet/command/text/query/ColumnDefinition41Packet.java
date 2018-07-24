@@ -35,11 +35,13 @@ import java.sql.SQLException;
  * @author zhangliang
  */
 @Getter
-public final class ColumnDefinition41Packet extends MySQLPacket {
+public final class ColumnDefinition41Packet implements MySQLPacket {
     
-    private final String catalog = "def";
+    private static final String CATALOG = "def";
     
-    private final int nextLength = 0x0c;
+    private static final int NEXT_LENGTH = 0x0c;
+    
+    private final int sequenceId;
     
     private final int characterSet;
     
@@ -69,7 +71,7 @@ public final class ColumnDefinition41Packet extends MySQLPacket {
     
     public ColumnDefinition41Packet(final int sequenceId, final String schema, final String table, final String orgTable, 
                                     final String name, final String orgName, final int columnLength, final ColumnType columnType, final int decimals) {
-        super(sequenceId);
+        this.sequenceId = sequenceId;
         this.characterSet = ServerInfo.CHARSET;
         this.flags = 0;
         this.schema = schema;
@@ -83,14 +85,14 @@ public final class ColumnDefinition41Packet extends MySQLPacket {
     }
     
     public ColumnDefinition41Packet(final MySQLPacketPayload payload) {
-        super(payload.readInt1());
-        Preconditions.checkArgument(catalog.equals(payload.readStringLenenc()));
+        sequenceId = payload.readInt1();
+        Preconditions.checkArgument(CATALOG.equals(payload.readStringLenenc()));
         schema = payload.readStringLenenc();
         table = payload.readStringLenenc();
         orgTable = payload.readStringLenenc();
         name = payload.readStringLenenc();
         orgName = payload.readStringLenenc();
-        Preconditions.checkArgument(nextLength == payload.readIntLenenc());
+        Preconditions.checkArgument(NEXT_LENGTH == payload.readIntLenenc());
         characterSet = payload.readInt2();
         columnLength = payload.readInt4();
         columnType = ColumnType.valueOf(payload.readInt1());
@@ -101,13 +103,13 @@ public final class ColumnDefinition41Packet extends MySQLPacket {
     
     @Override
     public void write(final MySQLPacketPayload payload) {
-        payload.writeStringLenenc(catalog);
+        payload.writeStringLenenc(CATALOG);
         payload.writeStringLenenc(schema);
         payload.writeStringLenenc(table);
         payload.writeStringLenenc(orgTable);
         payload.writeStringLenenc(name);
         payload.writeStringLenenc(orgName);
-        payload.writeIntLenenc(nextLength);
+        payload.writeIntLenenc(NEXT_LENGTH);
         payload.writeInt2(characterSet);
         payload.writeInt4(columnLength);
         payload.writeInt1(columnType.getValue());

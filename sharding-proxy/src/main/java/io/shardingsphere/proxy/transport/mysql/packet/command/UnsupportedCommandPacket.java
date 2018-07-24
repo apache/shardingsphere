@@ -22,20 +22,21 @@ import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Unsupported command packet.
  *
  * @author zhangliang
  */
-public final class UnsupportedCommandPacket extends CommandPacket {
+@RequiredArgsConstructor
+public final class UnsupportedCommandPacket implements CommandPacket {
+    
+    @Getter
+    private final int sequenceId;
     
     private final CommandPacketType type;
-    
-    public UnsupportedCommandPacket(final int sequenceId, final CommandPacketType type) {
-        super(sequenceId);
-        this.type = type;
-    }
     
     @Override
     public CommandResponsePackets execute() {

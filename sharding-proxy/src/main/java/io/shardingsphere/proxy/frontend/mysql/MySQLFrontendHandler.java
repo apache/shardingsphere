@@ -81,6 +81,9 @@ public final class MySQLFrontendHandler extends FrontendHandler {
                     CommandPacket commandPacket = CommandPacketFactory.getCommandPacket(sequenceId, connectionId, payload);
                     for (DatabasePacket each : commandPacket.execute().getPackets()) {
                         context.writeAndFlush(each);
+                        if (each instanceof OKPacket) {
+                            return;
+                        }
                     }
                     while (commandPacket.next()) {
                         // TODO try to use wait notify

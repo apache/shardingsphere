@@ -26,6 +26,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -36,12 +37,15 @@ import lombok.extern.slf4j.Slf4j;
  * @author zhangliang
  */
 @Slf4j
-public final class ComInitDbPacket extends CommandPacket {
+public final class ComInitDbPacket implements CommandPacket {
+    
+    @Getter
+    private final int sequenceId;
     
     private final String schemaName;
     
     public ComInitDbPacket(final int sequenceId, final MySQLPacketPayload payload) {
-        super(sequenceId);
+        this.sequenceId = sequenceId;
         schemaName = payload.readStringEOF();
     }
     

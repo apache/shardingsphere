@@ -35,7 +35,7 @@ import lombok.Getter;
  * @author linjiaqi
  */
 @Getter
-public final class HandshakePacket extends MySQLPacket {
+public final class HandshakePacket implements MySQLPacket {
     
     private final int protocolVersion = ServerInfo.PROTOCOL_VERSION;
     
@@ -49,18 +49,20 @@ public final class HandshakePacket extends MySQLPacket {
     
     private final int capabilityFlagsUpper = CapabilityFlag.calculateHandshakeCapabilityFlagsUpper();
     
+    private final int sequenceId;
+    
     private final int connectionId;
     
     private final AuthPluginData authPluginData;
     
     public HandshakePacket(final int connectionId, final AuthPluginData authPluginData) {
-        super(0);
+        sequenceId = 0;
         this.connectionId = connectionId;
         this.authPluginData = authPluginData;
     }
     
     public HandshakePacket(final MySQLPacketPayload payload) {
-        super(payload.readInt1());
+        sequenceId = payload.readInt1();
         Preconditions.checkArgument(protocolVersion == payload.readInt1());
         payload.readStringNul();
         connectionId = payload.readInt4();

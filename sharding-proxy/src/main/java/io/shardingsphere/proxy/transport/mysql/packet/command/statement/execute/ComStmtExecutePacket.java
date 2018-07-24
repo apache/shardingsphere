@@ -47,13 +47,15 @@ import java.util.List;
  */
 @Getter
 @Slf4j
-public final class ComStmtExecutePacket extends CommandPacket {
+public final class ComStmtExecutePacket implements CommandPacket {
     
     private static final ColumnType NULL_PARAMETER_DEFAULT_COLUMN_TYPE = ColumnType.MYSQL_TYPE_STRING;
     
     private static final int NULL_PARAMETER_DEFAULT_UNSIGNED_FLAG = 0;
     
     private static final int RESERVED_BIT_LENGTH = 0;
+    
+    private final int sequenceId;
     
     private final int statementId;
     
@@ -70,7 +72,7 @@ public final class ComStmtExecutePacket extends CommandPacket {
     private final JDBCBackendHandler jdbcBackendHandler;
     
     public ComStmtExecutePacket(final int sequenceId, final MySQLPacketPayload payload) {
-        super(sequenceId);
+        this.sequenceId = sequenceId;
         statementId = payload.readInt4();
         flags = payload.readInt1();
         Preconditions.checkArgument(iterationCount == payload.readInt4());

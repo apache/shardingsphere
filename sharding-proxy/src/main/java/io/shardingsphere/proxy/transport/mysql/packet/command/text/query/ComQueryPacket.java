@@ -37,6 +37,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandRes
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.transaction.xa.AtomikosUserTransaction;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.transaction.Status;
@@ -53,7 +54,10 @@ import java.sql.SQLException;
  * @author zhaojun
  */
 @Slf4j
-public final class ComQueryPacket extends CommandPacket implements CommandPacketRebuilder {
+public final class ComQueryPacket implements CommandPacket, CommandPacketRebuilder {
+    
+    @Getter
+    private final int sequenceId;
     
     private final int connectionId;
     
@@ -62,14 +66,14 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
     private final BackendHandler backendHandler;
     
     public ComQueryPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload) {
-        super(sequenceId);
+        this.sequenceId = sequenceId;
         this.connectionId = connectionId;
         sql = payload.readStringEOF();
         backendHandler = getBackendHandler(sql);
     }
     
     public ComQueryPacket(final int sequenceId, final int connectionId, final String sql) {
-        super(sequenceId);
+        this.sequenceId = sequenceId;
         this.connectionId = connectionId;
         this.sql = sql;
         backendHandler = null;

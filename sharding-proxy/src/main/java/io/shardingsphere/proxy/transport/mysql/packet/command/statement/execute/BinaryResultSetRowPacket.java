@@ -21,6 +21,7 @@ import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
@@ -31,25 +32,21 @@ import java.util.List;
  *
  * @author zhangyonglun
  */
+@RequiredArgsConstructor
 @Getter
-public final class BinaryResultSetRowPacket extends MySQLPacket {
+public final class BinaryResultSetRowPacket implements MySQLPacket {
     
     private static final int PACKET_HEADER = 0x00;
     
     private static final int RESERVED_BIT_LENGTH = 2;
+    
+    private final int sequenceId;
     
     private final int numColumns;
     
     private final List<Object> data;
     
     private final List<ColumnType> columnTypes;
-    
-    public BinaryResultSetRowPacket(final int sequenceId, final int numColumns, final List<Object> data, final List<ColumnType> columnTypes) {
-        super(sequenceId);
-        this.numColumns = numColumns;
-        this.data = data;
-        this.columnTypes = columnTypes;
-    }
     
     @Override
     public void write(final MySQLPacketPayload payload) {

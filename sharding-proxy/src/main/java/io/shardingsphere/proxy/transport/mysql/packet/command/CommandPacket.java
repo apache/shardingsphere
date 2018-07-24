@@ -27,30 +27,26 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandRes
  * @author zhangliang
  * @author wangkai
  */
-public abstract class CommandPacket extends MySQLPacket {
-    
-    public CommandPacket(final int sequenceId) {
-        super(sequenceId);
-    }
+public interface CommandPacket extends MySQLPacket {
     
     /**
      * Execute command.
      * 
      * @return result packets to be sent
      */
-    public abstract CommandResponsePackets execute();
+    CommandResponsePackets execute();
     
     /**
      * Goto next result value.
      *
      * @return has more result value or not
      */
-    public abstract boolean next();
+    boolean next();
     
     /**
      * Get result value.
      *
      * @return database packet of result value
      */
-    public abstract DatabasePacket getResultValue();
+    DatabasePacket getResultValue();
 }

@@ -22,6 +22,7 @@ import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * EOF packet protocol.
@@ -31,10 +32,13 @@ import lombok.Getter;
  * @author zhangliang
  * @author wangkai
  */
+@RequiredArgsConstructor
 @Getter
-public final class EofPacket extends MySQLPacket {
+public final class EofPacket implements MySQLPacket {
     
     private static final int HEADER = 0xfe;
+    
+    private final int sequenceId;
     
     private final int warnings;
     
@@ -44,14 +48,8 @@ public final class EofPacket extends MySQLPacket {
         this(sequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
     }
     
-    public EofPacket(final int sequenceId, final int warnings, final int statusFlags) {
-        super(sequenceId);
-        this.warnings = warnings;
-        this.statusFlags = statusFlags;
-    }
-    
     public EofPacket(final MySQLPacketPayload payload) {
-        super(payload.readInt1());
+        sequenceId = payload.readInt1();
         Preconditions.checkArgument(HEADER == payload.readInt1());
         warnings = payload.readInt2();
         statusFlags = payload.readInt2();
