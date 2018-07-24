@@ -37,6 +37,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.handshake.HandshakeRespons
 import io.shardingsphere.proxy.util.MySQLResultCache;
 import lombok.RequiredArgsConstructor;
 
+import java.sql.SQLException;
 import java.util.Collection;
 
 /**
@@ -78,6 +79,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
             
             @Override
             public void run() {
+                int currentSequenceId = 0;
                 try (MySQLPacketPayload payload = new MySQLPacketPayload(message);
                      BackendConnection backendConnection = new BackendConnection()) {
                     int sequenceId = payload.readInt1();
@@ -90,17 +92,19 @@ public final class MySQLFrontendHandler extends FrontendHandler {
                             return;
                         }
                     }
-                    sequenceId = packets.size();
+                    currentSequenceId = packets.size();
                     while (commandPacket.next()) {
                         // TODO try to use wait notify
                         while (!context.channel().isWritable()) {
                             continue;
                         }
                         DatabasePacket resultValue = commandPacket.getResultValue();
-                        sequenceId = resultValue.getSequenceId();
+                        currentSequenceId = resultValue.getSequenceId();
                         context.writeAndFlush(resultValue);
                     }
-                    context.writeAndFlush(new EofPacket(++sequenceId));
+                    context.writeAndFlush(new EofPacket(++currentSequenceId));
+                } catch (final SQLException ex) {
+                    context.writeAndFlush(new ErrPacket(++currentSequenceId, ex));
                 }
             }
         });

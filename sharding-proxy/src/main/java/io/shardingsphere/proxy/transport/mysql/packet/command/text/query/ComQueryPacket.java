@@ -108,25 +108,13 @@ public final class ComQueryPacket implements CommandPacket, CommandPacketRebuild
                 ? new SQLPacketsBackendHandler(this, DatabaseType.MySQL) : new JDBCBackendHandler(sql, JDBCExecuteEngineFactory.createTextProtocolInstance(backendConnection));
     }
     
-    /**
-     * Has more Result value.
-     *
-     * @return has more result value
-     */
-    public boolean next() {
-        try {
-            return backendHandler.next();
-        } catch (final SQLException ex) {
-            return false;
-        }
+    @Override
+    public boolean next() throws SQLException {
+        return backendHandler.next();
     }
     
-    /**
-     * Get result value.
-     *
-     * @return database packet
-     */
-    public DatabasePacket getResultValue() {
+    @Override
+    public DatabasePacket getResultValue() throws SQLException {
         return backendHandler.getResultValue();
     }
     

@@ -162,16 +162,12 @@ public final class ComStmtExecutePacket implements CommandPacket {
     }
     
     @Override
-    public boolean next() {
-        try {
-            return jdbcBackendHandler.next();
-        } catch (final SQLException ex) {
-            return false;
-        }
+    public boolean next() throws SQLException {
+        return jdbcBackendHandler.next();
     }
     
     @Override
-    public DatabasePacket getResultValue() {
+    public DatabasePacket getResultValue() throws SQLException {
         return jdbcBackendHandler.getResultValue();
     }
 }

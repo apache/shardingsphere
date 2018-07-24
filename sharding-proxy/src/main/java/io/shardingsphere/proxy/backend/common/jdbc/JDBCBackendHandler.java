@@ -138,17 +138,13 @@ public final class JDBCBackendHandler implements BackendHandler {
     }
     
     @Override
-    public DatabasePacket getResultValue() {
+    public DatabasePacket getResultValue() throws SQLException {
         QueryResponsePackets queryResponsePackets = ((ExecuteQueryResponse) executeResponse).getQueryResponsePackets();
-        try {
-            int columnCount = queryResponsePackets.getColumnCount();
-            List<Object> data = new ArrayList<>(columnCount);
-            for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-                data.add(mergedResult.getValue(columnIndex, Object.class));
-            }
-            return executeEngine.getJdbcExecutorWrapper().createResultSetPacket(++currentSequenceId, data, columnCount, queryResponsePackets.getColumnTypes(), DatabaseType.MySQL);
-        } catch (final SQLException ex) {
-            return new ErrPacket(++currentSequenceId, ex);
+        int columnCount = queryResponsePackets.getColumnCount();
+        List<Object> data = new ArrayList<>(columnCount);
+        for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+            data.add(mergedResult.getValue(columnIndex, Object.class));
         }
+        return executeEngine.getJdbcExecutorWrapper().createResultSetPacket(++currentSequenceId, data, columnCount, queryResponsePackets.getColumnTypes(), DatabaseType.MySQL);
     }
 }

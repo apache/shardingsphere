@@ -101,16 +101,12 @@ public final class ComFieldListPacket implements CommandPacket, CommandPacketReb
     }
     
     @Override
-    public boolean next() {
-        try {
-            return backendHandler.next();
-        } catch (final SQLException ex) {
-            return false;
-        }
+    public boolean next() throws SQLException {
+        return backendHandler.next();
     }
     
     @Override
-    public DatabasePacket getResultValue() {
+    public DatabasePacket getResultValue() throws SQLException {
         DatabasePacket resultValue = backendHandler.getResultValue();
         if (resultValue instanceof TextResultSetRowPacket) {
             TextResultSetRowPacket fieldListResponse = (TextResultSetRowPacket) resultValue;
