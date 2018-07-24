@@ -60,7 +60,7 @@ public interface JDBCExecutorWrapper {
      * @param statement statement
      * @param sql SQL to be executed
      * @param isReturnGeneratedKeys is return generated keys
-     * @return @{code true} is for query, @{code false} is for update
+     * @return {@code true} is for query, {@code false} is for update
      * @throws SQLException SQL exception
      */
     boolean executeSQL(Statement statement, String sql, boolean isReturnGeneratedKeys) throws SQLException;
