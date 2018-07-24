@@ -14,15 +14,6 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="select_equal_with_single_table_with_double_quotes" parameters="1">
-        <tables>
-            <table name="t_order_item" />
-        </tables>
-        <tokens>
-            <table-token begin-position="14" original-literals="t_order_item" />
-        </tokens>
-    </parser-result>
-    
     <parser-result sql-case-id="select_exclamation_equal_with_single_table" parameters="1">
         <tables>
             <table name="t_order_item" />
@@ -72,6 +63,25 @@
                     <value index="0" literal="1" type="int" />
                 </condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_equal_with_single_table_with_double_quotes" parameters="1, 1">
+        <tables>
+            <table name="t_order_item" />
+        </tables>
+        <tokens>
+            <table-token begin-position="14" original-literals="&quot;t_order_item&quot;" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="item_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="0" literal="1" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order_item" operator="EQUAL">
                     <value index="1" literal="1" type="int" />
                 </condition>
             </and-condition>
