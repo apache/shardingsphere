@@ -41,7 +41,6 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.QueryRespo
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.transaction.xa.AtomikosUserTransaction;
-import lombok.Getter;
 
 import javax.transaction.Status;
 import javax.transaction.SystemException;
@@ -71,15 +70,11 @@ public final class JDBCBackendHandler implements BackendHandler {
     
     private int currentSequenceId;
     
-    @Getter
-    private boolean hasMoreResultValueFlag;
-    
     public JDBCBackendHandler(final String sql, final JDBCExecuteEngine executeEngine) {
         this.sql = sql;
         this.executeEngine = executeEngine;
         ruleRegistry = RuleRegistry.getInstance();
         backendConnection = executeEngine.getBackendConnection();
-        hasMoreResultValueFlag = true;
     }
     
     @Override
