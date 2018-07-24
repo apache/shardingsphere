@@ -24,6 +24,7 @@ import io.shardingsphere.core.parsing.parser.clause.TableReferencesClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowColumnsStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowCreateTableStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
+import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowIndexStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowOtherStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTablesStatement;
 import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
@@ -80,6 +81,16 @@ public final class MySQLShowParser extends AbstractShowParser {
         if (lexerEngine.skipIfEqual(DefaultKeyword.CREATE) && lexerEngine.skipIfEqual(DefaultKeyword.TABLE)) {
             DALStatement result = new ShowCreateTableStatement();
             tableReferencesClauseParser.parseSingleTableWithoutAlias(result);
+            return result;
+        }
+        if (lexerEngine.skipIfEqual(DefaultKeyword.INDEX, MySQLKeyword.INDEXES, MySQLKeyword.KEYS)) {
+            DALStatement result = new ShowIndexStatement();
+            lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN);
+            tableReferencesClauseParser.parseSingleTableWithoutAlias(result);
+            if (lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN)) {
+                int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
+                result.getSqlTokens().add(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getLiterals(), result.getTables().getSingleTableName()));
+            }
             return result;
         }
         return new ShowOtherStatement();
