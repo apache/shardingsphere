@@ -18,18 +18,15 @@
 package io.shardingsphere.proxy.backend.common.jdbc;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.MergedResult;
-import io.shardingsphere.core.parsing.SQLJudgeEngine;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
-import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
-import io.shardingsphere.core.routing.SQLUnit;
-import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingsphere.proxy.backend.common.BackendHandler;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngine;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.response.ExecuteQueryResponse;
@@ -38,7 +35,6 @@ import io.shardingsphere.proxy.backend.common.jdbc.execute.response.ExecuteUpdat
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
-import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.QueryResponsePackets;
@@ -52,7 +48,6 @@ import javax.transaction.Status;
 import javax.transaction.SystemException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -61,8 +56,7 @@ import java.util.List;
  * @author zhaojun
  * @author zhangliang
  */
-@Getter
-public abstract class JDBCBackendHandler implements BackendHandler {
+public final class JDBCBackendHandler implements BackendHandler {
     
     private final String sql;
     
@@ -78,8 +72,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     
     private int currentSequenceId;
     
-    private boolean isMerged;
-    
+    @Getter
     private boolean hasMoreResultValueFlag;
     
     public JDBCBackendHandler(final String sql, final JDBCExecuteEngine executeEngine) {
@@ -87,14 +80,13 @@ public abstract class JDBCBackendHandler implements BackendHandler {
         this.executeEngine = executeEngine;
         ruleRegistry = RuleRegistry.getInstance();
         backendConnection = executeEngine.getBackendConnection();
-        isMerged = false;
         hasMoreResultValueFlag = true;
     }
     
     @Override
-    public final CommandResponsePackets execute() {
+    public CommandResponsePackets execute() {
         try {
-            return execute(ruleRegistry.isMasterSlaveOnly() ? doMasterSlaveRoute() : doShardingRoute());
+            return execute(executeEngine.getJdbcExecutorWrapper().route(sql, DatabaseType.MySQL));
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex));
         } catch (final SystemException | ShardingException ex) {
@@ -134,20 +126,8 @@ public abstract class JDBCBackendHandler implements BackendHandler {
                 ruleRegistry.getShardingRule(), ((ExecuteQueryResponse) executeResponse).getQueryResults(), sqlStatement, ruleRegistry.getShardingMetaData()).merge();
         QueryResponsePackets result = ((ExecuteQueryResponse) executeResponse).getQueryResponsePackets();
         currentSequenceId = result.getPackets().size();
-        isMerged = true;
         return result;
     }
-    
-    private SQLRouteResult doMasterSlaveRoute() {
-        SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
-        SQLRouteResult result = new SQLRouteResult(sqlStatement);
-        for (String each : new MasterSlaveRouter(ruleRegistry.getMasterSlaveRule(), ruleRegistry.isShowSQL()).route(sql)) {
-            result.getExecutionUnits().add(new SQLExecutionUnit(each, new SQLUnit(sql, Collections.<List<Object>>emptyList())));
-        }
-        return result;
-    }
-    
-    protected abstract SQLRouteResult doShardingRoute();
     
     private Optional<SQLException> findSQLException(final Exception exception) {
         if (null == exception.getCause()) {
@@ -166,8 +146,8 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     }
     
     @Override
-    public final boolean hasMoreResultValue() throws SQLException {
-        if (!isMerged || !hasMoreResultValueFlag) {
+    public boolean hasMoreResultValue() throws SQLException {
+        if (null == mergedResult || !hasMoreResultValueFlag) {
             backendConnection.close();
             return false;
         }
@@ -178,7 +158,7 @@ public abstract class JDBCBackendHandler implements BackendHandler {
     }
     
     @Override
-    public final DatabasePacket getResultValue() {
+    public DatabasePacket getResultValue() {
         if (!hasMoreResultValueFlag) {
             return new EofPacket(++currentSequenceId);
         }
@@ -188,11 +168,10 @@ public abstract class JDBCBackendHandler implements BackendHandler {
             for (int i = 1; i <= queryResponsePackets.getColumnCount(); i++) {
                 data.add(mergedResult.getValue(i, Object.class));
             }
-            return newDatabasePacket(++currentSequenceId, data, queryResponsePackets.getColumnCount(), queryResponsePackets.getColumnTypes());
+            return executeEngine.getJdbcExecutorWrapper().createResultSetPacket(
+                    ++currentSequenceId, data, queryResponsePackets.getColumnCount(), queryResponsePackets.getColumnTypes(), DatabaseType.MySQL);
         } catch (final SQLException ex) {
             return new ErrPacket(1, ex);
         }
     }
-    
-    protected abstract DatabasePacket newDatabasePacket(int sequenceId, List<Object> data, int columnCount, List<ColumnType> columnTypes);
 }

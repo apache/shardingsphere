@@ -21,7 +21,8 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.proxy.backend.common.BackendHandler;
 import io.shardingsphere.proxy.backend.common.SQLPacketsBackendHandler;
-import io.shardingsphere.proxy.backend.common.jdbc.text.JDBCTextBackendHandler;
+import io.shardingsphere.proxy.backend.common.jdbc.JDBCBackendHandler;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngineFactory;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
@@ -95,7 +96,8 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
     }
     
     private BackendHandler getBackendHandler(final String sql) {
-        return RuleRegistry.getInstance().isProxyBackendUseNio() ? new SQLPacketsBackendHandler(this, DatabaseType.MySQL) : new JDBCTextBackendHandler(sql, DatabaseType.MySQL);
+        return RuleRegistry.getInstance().isProxyBackendUseNio() 
+                ? new SQLPacketsBackendHandler(this, DatabaseType.MySQL) : new JDBCBackendHandler(sql, JDBCExecuteEngineFactory.createTextProtocolInstance());
     }
     
     @Override

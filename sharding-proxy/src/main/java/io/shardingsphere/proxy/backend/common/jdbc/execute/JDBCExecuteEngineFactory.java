@@ -18,10 +18,11 @@
 package io.shardingsphere.proxy.backend.common.jdbc.execute;
 
 import io.shardingsphere.proxy.backend.common.ProxyMode;
-import io.shardingsphere.proxy.backend.common.jdbc.execute.memory.StatementMemoryStrictlyExecuteEngine;
-import io.shardingsphere.proxy.backend.common.jdbc.execute.memory.TextMemoryStrictlyExecuteEngine;
-import io.shardingsphere.proxy.backend.common.jdbc.execute.stream.StatementConnectionStrictlyExecuteEngine;
-import io.shardingsphere.proxy.backend.common.jdbc.execute.stream.TextConnectionStrictlyExecuteEngine;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.memory.ConnectionStrictlyExecuteEngine;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.stream.MemoryStrictlyExecuteEngine;
+import io.shardingsphere.proxy.backend.common.jdbc.wrapper.JDBCExecutorWrapper;
+import io.shardingsphere.proxy.backend.common.jdbc.wrapper.PreparedStatementExecutorWrapper;
+import io.shardingsphere.proxy.backend.common.jdbc.wrapper.StatementExecutorWrapper;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute.PreparedStatementParameter;
 import lombok.AccessLevel;
@@ -43,7 +44,8 @@ public final class JDBCExecuteEngineFactory {
      * @return instance for text protocol
      */
     public static JDBCExecuteEngine createTextProtocolInstance() {
-        return ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode() ? new TextMemoryStrictlyExecuteEngine() : new TextConnectionStrictlyExecuteEngine();
+        JDBCExecutorWrapper jdbcExecutorWrapper = new StatementExecutorWrapper();
+        return ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode() ? new MemoryStrictlyExecuteEngine(jdbcExecutorWrapper) : new ConnectionStrictlyExecuteEngine(jdbcExecutorWrapper);
     }
     
     /**
@@ -53,7 +55,7 @@ public final class JDBCExecuteEngineFactory {
      * @return instance for statement protocol
      */
     public static JDBCExecuteEngine createStatementProtocolInstance(final List<PreparedStatementParameter> preparedStatementParameters) {
-        return ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()
-                ? new StatementMemoryStrictlyExecuteEngine(preparedStatementParameters) : new StatementConnectionStrictlyExecuteEngine(preparedStatementParameters);
+        JDBCExecutorWrapper jdbcExecutorWrapper = new PreparedStatementExecutorWrapper(preparedStatementParameters);
+        return ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode() ? new MemoryStrictlyExecuteEngine(jdbcExecutorWrapper) : new ConnectionStrictlyExecuteEngine(jdbcExecutorWrapper);
     }
 }
