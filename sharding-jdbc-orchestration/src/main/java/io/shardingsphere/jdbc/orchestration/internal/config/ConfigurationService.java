@@ -32,6 +32,7 @@ import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -280,7 +281,8 @@ public final class ConfigurationService {
      */
     @SuppressWarnings("unchecked")
     public Map<String, Object> loadMasterSlaveConfigMap() {
-        return MasterSlaveConfigurationConverter.configMapFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_CONFIG_MAP_NODE_PATH)));
+        String data = regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_CONFIG_MAP_NODE_PATH));
+        return Strings.isNullOrEmpty(data) ? new LinkedHashMap<String, Object>() : MasterSlaveConfigurationConverter.configMapFromYaml(data);
     }
     
     /**
