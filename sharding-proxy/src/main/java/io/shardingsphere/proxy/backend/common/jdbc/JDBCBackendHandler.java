@@ -141,12 +141,12 @@ public final class JDBCBackendHandler implements BackendHandler {
     public DatabasePacket getResultValue() {
         QueryResponsePackets queryResponsePackets = ((ExecuteQueryResponse) executeResponse).getQueryResponsePackets();
         try {
-            List<Object> data = new ArrayList<>(queryResponsePackets.getColumnCount());
-            for (int i = 1; i <= queryResponsePackets.getColumnCount(); i++) {
-                data.add(mergedResult.getValue(i, Object.class));
+            int columnCount = queryResponsePackets.getColumnCount();
+            List<Object> data = new ArrayList<>(columnCount);
+            for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+                data.add(mergedResult.getValue(columnIndex, Object.class));
             }
-            return executeEngine.getJdbcExecutorWrapper().createResultSetPacket(
-                    ++currentSequenceId, data, queryResponsePackets.getColumnCount(), queryResponsePackets.getColumnTypes(), DatabaseType.MySQL);
+            return executeEngine.getJdbcExecutorWrapper().createResultSetPacket(++currentSequenceId, data, columnCount, queryResponsePackets.getColumnTypes(), DatabaseType.MySQL);
         } catch (final SQLException ex) {
             return new ErrPacket(++currentSequenceId, ex);
         }
