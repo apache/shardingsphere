@@ -19,6 +19,7 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
 import com.google.common.base.Strings;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.WatchedDataEvent;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -86,9 +87,9 @@ public class Holder {
             
             public void process(final WatchedEvent event) {
                 processConnection(event);
-                processGlobalListener(event);
+                WatchedDataEvent dataEvent = new WatchedDataEvent(event, zooKeeper);
+                processGlobalListener(dataEvent);
                 // todo filter event type or path, add watch
-                //reWatch(event);
                 if (event.getType() == Event.EventType.None) {
                     return;
                 }
@@ -96,7 +97,7 @@ public class Holder {
                     for (ZookeeperEventListener zookeeperEventListener : context.getWatchers().values()) {
                         if (zookeeperEventListener.getPath() == null || event.getPath().startsWith(zookeeperEventListener.getPath())) {
                             log.debug("listener process:{}, listener:{}", zookeeperEventListener.getPath(), zookeeperEventListener.getKey());
-                            zookeeperEventListener.process(event);
+                            zookeeperEventListener.process(dataEvent);
                         }
                     }
                 }
@@ -127,7 +128,7 @@ public class Holder {
         }
     }
     
-    private void processGlobalListener(final WatchedEvent event) {
+    private void processGlobalListener(final WatchedDataEvent event) {
         if (context.getGlobalZookeeperEventListener() != null) {
             context.getGlobalZookeeperEventListener().process(event);
             log.debug("Holder {} process", ZookeeperConstants.GLOBAL_LISTENER_KEY);

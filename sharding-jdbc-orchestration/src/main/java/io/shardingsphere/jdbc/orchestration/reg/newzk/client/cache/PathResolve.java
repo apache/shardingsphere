@@ -33,6 +33,9 @@ public class PathResolve {
     @Getter
     private final String path;
     
+    @Getter
+    private String current;
+    
     private int position;
     
     private void next() {

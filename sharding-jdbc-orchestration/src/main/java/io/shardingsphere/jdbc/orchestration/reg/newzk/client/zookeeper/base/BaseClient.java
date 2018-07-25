@@ -22,20 +22,19 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.WatchedDataEvent;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.WatcherCreator;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.data.ACL;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /*
  * Base client.
@@ -167,7 +166,7 @@ public abstract class BaseClient implements IClient {
         holder.getZooKeeper().exists(rootNode, WatcherCreator.deleteWatcher(new ZookeeperEventListener(rootNode) {
             
             @Override
-            public void process(final WatchedEvent event) {
+            public void process(final WatchedDataEvent event) {
                 rootExist = false;
             }
         }));

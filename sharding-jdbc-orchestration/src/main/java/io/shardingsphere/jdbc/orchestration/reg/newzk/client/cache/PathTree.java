@@ -26,14 +26,8 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.UsualClient;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.WatchedDataEvent;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.common.PathUtils;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -42,6 +36,11 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.common.PathUtils;
 
 /*
  * Zookeeper cache tree.
@@ -197,14 +196,14 @@ public final class PathTree {
     public void watch() {
         watch(new ZookeeperEventListener(rootNode.get().getKey()) {
             @Override
-            public void process(final WatchedEvent event) {
+            public void process(final WatchedDataEvent event) {
                 String path = event.getPath();
                 log.debug("PathTree Watch event:{}", event.toString());
                 switch (event.getType()) {
                     case NodeCreated:
                     case NodeDataChanged:
                     case NodeChildrenChanged:
-                        processNodeChange(path);
+                        processNodeChange(path, event.getData());
                         break;
                     case NodeDeleted:
                         delete(path);
@@ -237,12 +236,8 @@ public final class PathTree {
         }));
     }
     
-    private void processNodeChange(final String path) {
+    private void processNodeChange(final String path, final String value) {
         try {
-            String value = ZookeeperConstants.NOTHING_VALUE;
-            if (!path.equals(getRootNode().getKey())) {
-                value = provider.getDataString(path);
-            }
             put(path, value);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {

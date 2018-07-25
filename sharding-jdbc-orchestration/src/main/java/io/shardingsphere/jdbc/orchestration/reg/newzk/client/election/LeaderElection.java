@@ -20,12 +20,12 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.election;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.WatchedDataEvent;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.WatcherCreator;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.WatchedEvent;
 
 /*
  * Competition of node write permission.
@@ -72,7 +72,7 @@ public abstract class LeaderElection {
         final String contendNode = PathUtil.getRealPath(realNode, ZookeeperConstants.CHANGING_KEY);
         canBegin = this.contend(contendNode, provider, new ZookeeperEventListener(contendNode) {
             @Override
-            public void process(final WatchedEvent event) {
+            public void process(final WatchedDataEvent event) {
                 try {
                     retryCount--;
                     if (retryCount < 0) {

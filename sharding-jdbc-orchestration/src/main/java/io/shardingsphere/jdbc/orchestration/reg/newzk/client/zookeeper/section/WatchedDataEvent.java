@@ -20,6 +20,7 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section;
 import com.google.common.base.Strings;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
@@ -30,6 +31,7 @@ import org.apache.zookeeper.ZooKeeper;
  *
  * @author lidongbo
  */
+@Slf4j
 public class WatchedDataEvent extends WatchedEvent {
     
     @Getter
@@ -46,6 +48,10 @@ public class WatchedDataEvent extends WatchedEvent {
     
     private String initData(final WatchedEvent event, final ZooKeeper zooKeeper) {
         if (zooKeeper == null) {
+            return null;
+        }
+        if (!zooKeeper.getState().isConnected() && !zooKeeper.getState().isAlive()) {
+            log.debug("wait connected..............");
             return null;
         }
         if (Strings.isNullOrEmpty(event.getPath())) {

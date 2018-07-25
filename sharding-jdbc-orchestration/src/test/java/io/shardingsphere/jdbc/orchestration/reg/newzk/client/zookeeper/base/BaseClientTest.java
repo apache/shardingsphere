@@ -21,6 +21,7 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.ClientFactory;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.WatchedDataEvent;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
 import io.shardingsphere.jdbc.orchestration.util.EmbedTestingServer;
 import lombok.Getter;
@@ -239,7 +240,7 @@ public abstract class BaseClientTest extends BaseTest {
             
             @Override
             public void process(final WatchedEvent event) {
-                zookeeperEventListener.process(event);
+                zookeeperEventListener.process(new WatchedDataEvent(event, getZooKeeper(client)));
             }
         });
         String value = "value0";
@@ -304,22 +305,16 @@ public abstract class BaseClientTest extends BaseTest {
         return new ZookeeperEventListener(null) {
             
             @Override
-            public void process(final WatchedEvent event) {
-                log.info(event.getPath());
-                log.info(event.getType().name());
-                
+            public void process(final WatchedDataEvent event) {
+                log.info(event.toString());
                 switch (event.getType()) {
                     case NodeDataChanged:
                     case NodeChildrenChanged:
-                        String result;
-                        try {
-                            result = new String(getZooKeeper(client).getData(event.getPath(), false, null));
-                        } catch (final KeeperException | InterruptedException ex) {
-                            log.info("path:{}, type:{}, ex:{}", event.getPath(), event.getType(), ex.getMessage());
+                        if (event.getData() == null) {
+                            log.info("update event's data is null");
                             return;
                         }
-                        log.info(result);
-                        actual.add("update_" + event.getPath() + "_" + result);
+                        actual.add("update_" + event.getPath() + "_" + event.getData());
                         break;
                     case NodeDeleted:
                         actual.add("delete_" + event.getPath() + "_");
