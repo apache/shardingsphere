@@ -31,16 +31,16 @@ import org.apache.zookeeper.proto.WatcherEvent;
  *
  * @author lidongbo
  */
-public class WatcherDataEvent extends WatchedEvent {
+public class WatchedDataEvent extends WatchedEvent {
     
     @Getter
     private final String data;
     
-    public WatcherDataEvent(final WatcherEvent event) {
+    public WatchedDataEvent(final WatcherEvent event) {
         this(event, null);
     }
     
-    public WatcherDataEvent(final WatcherEvent event, final ZooKeeper zooKeeper) {
+    public WatchedDataEvent(final WatcherEvent event, final ZooKeeper zooKeeper) {
         super(event);
         data = initData(event, zooKeeper);
     }
