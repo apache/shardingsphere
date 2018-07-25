@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.parsing.lexer.dialect.sqlserver;
 
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.lexer.Lexer;
 import io.shardingsphere.core.parsing.lexer.analyzer.Dictionary;
 
@@ -31,7 +30,7 @@ public final class SQLServerLexer extends Lexer {
     private static Dictionary dictionary = new Dictionary(SQLServerKeyword.values());
     
     public SQLServerLexer(final String input) {
-        super(DatabaseType.SQLServer, input, dictionary);
+        super(input, dictionary);
     }
     
     @Override

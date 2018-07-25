@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.parsing.lexer.dialect.mysql;
 
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.lexer.Lexer;
 import io.shardingsphere.core.parsing.lexer.analyzer.Dictionary;
 
@@ -31,7 +30,7 @@ public final class MySQLLexer extends Lexer {
     private static Dictionary dictionary = new Dictionary(MySQLKeyword.values());
     
     public MySQLLexer(final String input) {
-        super(DatabaseType.MySQL, input, dictionary);
+        super(input, dictionary);
     }
     
     @Override

@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.parsing.lexer;
 
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.lexer.analyzer.CharType;
 import io.shardingsphere.core.parsing.lexer.analyzer.Dictionary;
 import io.shardingsphere.core.parsing.lexer.analyzer.Tokenizer;
@@ -34,9 +33,6 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 public class Lexer {
-    
-    @Getter
-    private final DatabaseType databaseType;
     
     @Getter
     private final String input;
@@ -113,8 +109,8 @@ public class Lexer {
         return isIdentifierBegin(getCurrentChar(0));
     }
     
-    private boolean isIdentifierBegin(final char ch) {
-        return DatabaseType.PostgreSQL == databaseType ? CharType.isAlphabet(ch) || '\"' == ch || '_' == ch || '$' == ch : CharType.isAlphabet(ch) || '`' == ch || '_' == ch || '$' == ch;
+    protected boolean isIdentifierBegin(final char ch) {
+        return CharType.isAlphabet(ch) || '`' == ch || '_' == ch || '$' == ch;
     }
     
     private boolean isHexDecimalBegin() {
@@ -130,8 +126,8 @@ public class Lexer {
         return CharType.isSymbol(getCurrentChar(0));
     }
     
-    private boolean isCharsBegin() {
-        return DatabaseType.PostgreSQL == databaseType ? '\'' == getCurrentChar(0) : '\'' == getCurrentChar(0) || '\"' == getCurrentChar(0);
+    protected boolean isCharsBegin() {
+        return '\'' == getCurrentChar(0) || '\"' == getCurrentChar(0);
     }
     
     private boolean isEnd() {
