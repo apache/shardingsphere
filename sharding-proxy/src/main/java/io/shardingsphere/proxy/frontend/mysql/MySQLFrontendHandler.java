@@ -19,6 +19,7 @@ package io.shardingsphere.proxy.frontend.mysql;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import io.shardingsphere.proxy.backend.common.jdbc.BackendConnection;
 import io.shardingsphere.proxy.frontend.common.FrontendHandler;
 import io.shardingsphere.proxy.frontend.common.executor.ExecutorGroup;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
@@ -35,6 +36,9 @@ import io.shardingsphere.proxy.transport.mysql.packet.handshake.HandshakePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.handshake.HandshakeResponse41Packet;
 import io.shardingsphere.proxy.util.MySQLResultCache;
 import lombok.RequiredArgsConstructor;
+
+import java.sql.SQLException;
+import java.util.Collection;
 
 /**
  * MySQL frontend handler.
@@ -75,26 +79,32 @@ public final class MySQLFrontendHandler extends FrontendHandler {
             
             @Override
             public void run() {
-                try (MySQLPacketPayload payload = new MySQLPacketPayload(message)) {
+                int currentSequenceId = 0;
+                try (MySQLPacketPayload payload = new MySQLPacketPayload(message);
+                     BackendConnection backendConnection = new BackendConnection()) {
                     int sequenceId = payload.readInt1();
                     int connectionId = MySQLResultCache.getInstance().getConnection(context.channel().id().asShortText());
-                    CommandPacket commandPacket = CommandPacketFactory.getCommandPacket(sequenceId, connectionId, payload);
-                    for (DatabasePacket each : commandPacket.execute().getPackets()) {
+                    CommandPacket commandPacket = CommandPacketFactory.getCommandPacket(sequenceId, connectionId, payload, backendConnection);
+                    Collection<DatabasePacket> packets = commandPacket.execute().getPackets();
+                    for (DatabasePacket each : packets) {
                         context.writeAndFlush(each);
-                        if (each instanceof OKPacket) {
+                        if (each instanceof OKPacket || each instanceof ErrPacket) {
                             return;
                         }
                     }
+                    currentSequenceId = packets.size();
                     while (commandPacket.next()) {
                         // TODO try to use wait notify
                         while (!context.channel().isWritable()) {
                             continue;
                         }
                         DatabasePacket resultValue = commandPacket.getResultValue();
-                        sequenceId = resultValue.getSequenceId();
+                        currentSequenceId = resultValue.getSequenceId();
                         context.writeAndFlush(resultValue);
                     }
-                    context.writeAndFlush(new EofPacket(++sequenceId));
+                    context.writeAndFlush(new EofPacket(++currentSequenceId));
+                } catch (final SQLException ex) {
+                    context.writeAndFlush(new ErrPacket(++currentSequenceId, ex));
                 }
             }
         });

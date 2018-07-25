@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.SQLParsingEngine;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.proxy.backend.common.jdbc.BackendConnection;
 import io.shardingsphere.proxy.backend.common.jdbc.JDBCBackendHandler;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngineFactory;
 import io.shardingsphere.proxy.config.RuleRegistry;
@@ -69,9 +70,11 @@ public final class ComStmtExecutePacket implements CommandPacket {
     
     private final List<PreparedStatementParameter> preparedStatementParameters = new ArrayList<>(32);
     
+    private final BackendConnection backendConnection;
+    
     private final JDBCBackendHandler jdbcBackendHandler;
     
-    public ComStmtExecutePacket(final int sequenceId, final MySQLPacketPayload payload) {
+    public ComStmtExecutePacket(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         this.sequenceId = sequenceId;
         statementId = payload.readInt4();
         flags = payload.readInt1();
@@ -85,7 +88,9 @@ public final class ComStmtExecutePacket implements CommandPacket {
         }
         newParametersBoundFlag = NewParametersBoundFlag.valueOf(payload.readInt1());
         setParameterList(payload, numParameters, newParametersBoundFlag);
-        jdbcBackendHandler = new JDBCBackendHandler(PreparedStatementRegistry.getInstance().getSQL(statementId), JDBCExecuteEngineFactory.createStatementProtocolInstance(preparedStatementParameters));
+        this.backendConnection = backendConnection;
+        jdbcBackendHandler = new JDBCBackendHandler(
+                PreparedStatementRegistry.getInstance().getSQL(statementId), JDBCExecuteEngineFactory.createStatementProtocolInstance(preparedStatementParameters, backendConnection));
     }
     
     private void setParameterList(final MySQLPacketPayload payload, final int numParameters, final NewParametersBoundFlag newParametersBoundFlag) {
@@ -157,16 +162,12 @@ public final class ComStmtExecutePacket implements CommandPacket {
     }
     
     @Override
-    public boolean next() {
-        try {
-            return jdbcBackendHandler.next();
-        } catch (final SQLException ex) {
-            return false;
-        }
+    public boolean next() throws SQLException {
+        return jdbcBackendHandler.next();
     }
     
     @Override
-    public DatabasePacket getResultValue() {
+    public DatabasePacket getResultValue() throws SQLException {
         return jdbcBackendHandler.getResultValue();
     }
 }

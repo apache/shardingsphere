@@ -41,6 +41,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.QueryRespo
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.transaction.xa.AtomikosUserTransaction;
+import lombok.RequiredArgsConstructor;
 
 import javax.transaction.Status;
 import javax.transaction.SystemException;
@@ -54,28 +55,20 @@ import java.util.List;
  * @author zhaojun
  * @author zhangliang
  */
+@RequiredArgsConstructor
 public final class JDBCBackendHandler implements BackendHandler {
     
     private final String sql;
     
-    private final RuleRegistry ruleRegistry;
-    
-    private final BackendConnection backendConnection;
-    
     private final JDBCExecuteEngine executeEngine;
+    
+    private final RuleRegistry ruleRegistry = RuleRegistry.getInstance();
     
     private ExecuteResponse executeResponse;
     
     private MergedResult mergedResult;
     
     private int currentSequenceId;
-    
-    public JDBCBackendHandler(final String sql, final JDBCExecuteEngine executeEngine) {
-        this.sql = sql;
-        this.executeEngine = executeEngine;
-        ruleRegistry = RuleRegistry.getInstance();
-        backendConnection = executeEngine.getBackendConnection();
-    }
     
     @Override
     public CommandResponsePackets execute() {
@@ -141,25 +134,17 @@ public final class JDBCBackendHandler implements BackendHandler {
     
     @Override
     public boolean next() throws SQLException {
-        if (null == mergedResult || !mergedResult.next()) {
-            backendConnection.close();
-            return false;
-        }
-        return true;
+        return null != mergedResult && mergedResult.next();
     }
     
     @Override
-    public DatabasePacket getResultValue() {
+    public DatabasePacket getResultValue() throws SQLException {
         QueryResponsePackets queryResponsePackets = ((ExecuteQueryResponse) executeResponse).getQueryResponsePackets();
-        try {
-            List<Object> data = new ArrayList<>(queryResponsePackets.getColumnCount());
-            for (int i = 1; i <= queryResponsePackets.getColumnCount(); i++) {
-                data.add(mergedResult.getValue(i, Object.class));
-            }
-            return executeEngine.getJdbcExecutorWrapper().createResultSetPacket(
-                    ++currentSequenceId, data, queryResponsePackets.getColumnCount(), queryResponsePackets.getColumnTypes(), DatabaseType.MySQL);
-        } catch (final SQLException ex) {
-            return new ErrPacket(++currentSequenceId, ex);
+        int columnCount = queryResponsePackets.getColumnCount();
+        List<Object> data = new ArrayList<>(columnCount);
+        for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+            data.add(mergedResult.getValue(columnIndex, Object.class));
         }
+        return executeEngine.getJdbcExecutorWrapper().createResultSetPacket(++currentSequenceId, data, columnCount, queryResponsePackets.getColumnTypes(), DatabaseType.MySQL);
     }
 }

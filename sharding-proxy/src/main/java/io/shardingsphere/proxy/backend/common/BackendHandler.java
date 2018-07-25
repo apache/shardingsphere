@@ -48,6 +48,7 @@ public interface BackendHandler {
      * Get result value.
      *
      * @return database packet of result value
+     * @throws SQLException SQL exception
      */
-    DatabasePacket getResultValue();
+    DatabasePacket getResultValue() throws SQLException;
 }

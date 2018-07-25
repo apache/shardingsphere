@@ -21,6 +21,7 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.proxy.backend.common.BackendHandler;
 import io.shardingsphere.proxy.backend.common.SQLPacketsBackendHandler;
+import io.shardingsphere.proxy.backend.common.jdbc.BackendConnection;
 import io.shardingsphere.proxy.backend.common.jdbc.JDBCBackendHandler;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngineFactory;
 import io.shardingsphere.proxy.config.RuleRegistry;
@@ -62,15 +63,18 @@ public final class ComFieldListPacket implements CommandPacket, CommandPacketReb
     
     private final String fieldWildcard;
     
+    private final BackendConnection backendConnection;
+    
     private int currentSequenceId;
     
     private BackendHandler backendHandler;
     
-    public ComFieldListPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload) {
+    public ComFieldListPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         this.sequenceId = sequenceId;
         this.connectionId = connectionId;
         table = payload.readStringNul();
         fieldWildcard = payload.readStringEOF();
+        this.backendConnection = backendConnection;
     }
     
     @Override
@@ -86,27 +90,23 @@ public final class ComFieldListPacket implements CommandPacket, CommandPacketReb
         log.debug("Field wildcard received for Sharding-Proxy: {}", fieldWildcard);
         String sql = String.format("SHOW COLUMNS FROM %s FROM %s", table, ShardingConstant.LOGIC_SCHEMA_NAME);
         // TODO use common database type
-        backendHandler = getBackendHandler(sql);
+        backendHandler = getBackendHandler(sql, backendConnection);
         DatabasePacket headPacket = backendHandler.execute().getHeadPacket();
         return headPacket instanceof ErrPacket ? new CommandResponsePackets(headPacket) : new CommandResponsePackets(new DummyPacket());
     }
     
-    private BackendHandler getBackendHandler(final String sql) {
+    private BackendHandler getBackendHandler(final String sql, final BackendConnection backendConnection) {
         return RuleRegistry.getInstance().isProxyBackendUseNio() 
-                ? new SQLPacketsBackendHandler(this, DatabaseType.MySQL) : new JDBCBackendHandler(sql, JDBCExecuteEngineFactory.createTextProtocolInstance());
+                ? new SQLPacketsBackendHandler(this, DatabaseType.MySQL) : new JDBCBackendHandler(sql, JDBCExecuteEngineFactory.createTextProtocolInstance(backendConnection));
     }
     
     @Override
-    public boolean next() {
-        try {
-            return backendHandler.next();
-        } catch (final SQLException ex) {
-            return false;
-        }
+    public boolean next() throws SQLException {
+        return backendHandler.next();
     }
     
     @Override
-    public DatabasePacket getResultValue() {
+    public DatabasePacket getResultValue() throws SQLException {
         DatabasePacket resultValue = backendHandler.getResultValue();
         if (resultValue instanceof TextResultSetRowPacket) {
             TextResultSetRowPacket fieldListResponse = (TextResultSetRowPacket) resultValue;
