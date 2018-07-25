@@ -12,8 +12,11 @@ if "%PORT%"=="" (
 set MAIN_CLASS=io.shardingsphere.proxy.Bootstrap
 ) else ( if "%CONFIG%"=="" (
     set MAIN_CLASS=io.shardingsphere.proxy.Bootstrap %PORT%
+    echo The port is configured as %PORT%
     ) else (
     set MAIN_CLASS=io.shardingsphere.proxy.Bootstrap %PORT% %CONFIG%
+    echo The port is configured as %PORT%
+    echo The configuration file is %CONFIG%
     )
 )
 
