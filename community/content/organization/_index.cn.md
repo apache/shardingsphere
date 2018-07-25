@@ -51,15 +51,7 @@ Sharding在很多情况下需要投票。选票可以视情况通过手机、电
 
 ## External Committer
 
-* 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) 技术经理, 康大预诊
-
-* 朱政科, Zhengke Zhu, [@CharlesMaster](https://github.com/CharlesMaster) 高级工程师, 杭州恩牛网络技术有限公司
-
 * 马晓光, Xiaoguang Ma, [@ma-xiao-guang-64](https://github.com/ma-xiao-guang-64) 高级工程师, 惠买集团
-
-* 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013) Java技术专家, 蚂蚁金服
-
-* 刘泽剑, ZeJian Liu, [@qiankunshe](https://github.com/qiankunshe) IT经理, 泽达易盛
 
 * 陈清阳, QingYang Chen, [@beckhampu](https://github.com/beckhampu) 高级工程师, 甜橙金融
 

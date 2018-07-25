@@ -210,9 +210,7 @@ Slack <https://sharding.slack.com>
 - 林嘉琦, Jiaqi Lin
 - 赵俊, Jun Zhao
 - 岳令, Ling Yue
-- 李广云, Guangyun Li
 - 马晓光, Xiaoguang Ma
-- 刘泽剑, ZeJian Liu
 - 陈清阳, QingYang Chen
 
 ## Affiliations
@@ -220,7 +218,7 @@ Slack <https://sharding.slack.com>
 - Jingdong: Liang Zhang, Yonglun Zhang, Juan Pan, Jun Zhao, Ling Yue
 - Dangdang: Hao Cao, Kai Wang, Jiaqi Lin
 - Orange Finance: QingYang Chen
-- Individuals: Sheng Wu, Hongtao Gao, Guangyun Li, ZeJian Liu, Xiaoguang Ma
+- Individuals: Sheng Wu, Hongtao Gao, Xiaoguang Ma
 
 ## Sponsors
 
