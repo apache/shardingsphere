@@ -22,6 +22,7 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperCo
 import lombok.Getter;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
+import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.proto.WatcherEvent;
 
@@ -35,13 +36,23 @@ public class WatcherDataEvent extends WatchedEvent {
     @Getter
     private final String data;
     
+    public WatcherDataEvent(final WatcherEvent event) {
+        this(event, null);
+    }
+    
     public WatcherDataEvent(final WatcherEvent event, final ZooKeeper zooKeeper) {
         super(event);
         data = initData(event, zooKeeper);
     }
     
     private String initData(final WatcherEvent event, final ZooKeeper zooKeeper) {
+        if (zooKeeper == null) {
+            return null;
+        }
         if (Strings.isNullOrEmpty(event.getPath())) {
+            return null;
+        }
+        if (Watcher.Event.EventType.NodeDeleted.getIntValue() == event.getType()) {
             return null;
         }
         byte[] result;
