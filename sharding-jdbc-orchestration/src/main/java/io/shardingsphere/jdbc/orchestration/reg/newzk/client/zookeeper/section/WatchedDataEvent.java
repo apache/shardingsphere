@@ -24,7 +24,6 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
-import org.apache.zookeeper.proto.WatcherEvent;
 
 /*
  * Watch event with path data.
@@ -36,23 +35,23 @@ public class WatchedDataEvent extends WatchedEvent {
     @Getter
     private final String data;
     
-    public WatchedDataEvent(final WatcherEvent event) {
+    public WatchedDataEvent(final WatchedEvent event) {
         this(event, null);
     }
     
-    public WatchedDataEvent(final WatcherEvent event, final ZooKeeper zooKeeper) {
-        super(event);
+    public WatchedDataEvent(final WatchedEvent event, final ZooKeeper zooKeeper) {
+        super(event.getType(), event.getState(), event.getPath());
         data = initData(event, zooKeeper);
     }
     
-    private String initData(final WatcherEvent event, final ZooKeeper zooKeeper) {
+    private String initData(final WatchedEvent event, final ZooKeeper zooKeeper) {
         if (zooKeeper == null) {
             return null;
         }
         if (Strings.isNullOrEmpty(event.getPath())) {
             return null;
         }
-        if (Watcher.Event.EventType.NodeDeleted.getIntValue() == event.getType()) {
+        if (Watcher.Event.EventType.NodeDeleted == event.getType()) {
             return null;
         }
         byte[] result;
