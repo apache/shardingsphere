@@ -30,6 +30,7 @@
 
 ### Bug Fixes
 
+1. [ISSUE #372](https://github.com/sharding-sphere/sharding-sphere/issues/372) Reuse PreparedStatement cause cache of route result do not clean
 1. [ISSUE #628](https://github.com/sharding-sphere/sharding-sphere/issues/628) Support data type jsonb for PostgreSQL
 1. [ISSUE #629](https://github.com/sharding-sphere/sharding-sphere/issues/629) Support transaction isolation on JDBC
 1. [ISSUE #646](https://github.com/sharding-sphere/sharding-sphere/issues/646) When aliases in SELECT ITEMS correspond to the real column names of GROUP BY or ORDER BY, there is no need to add columns

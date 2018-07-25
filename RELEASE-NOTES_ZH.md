@@ -30,6 +30,7 @@
 
 ### 缺陷修正
 
+1. [ISSUE #372](https://github.com/sharding-sphere/sharding-sphere/issues/372) 同一PreparedStatement反复使用导致路由缓存未清理
 1. [ISSUE #628](https://github.com/sharding-sphere/sharding-sphere/issues/628) 支持PostgreSQL的数据类型jsonb
 1. [ISSUE #629](https://github.com/sharding-sphere/sharding-sphere/issues/629) 支持JDBC中设置事务隔离级别
 1. [ISSUE #646](https://github.com/sharding-sphere/sharding-sphere/issues/646) 当SELECT ITEMS中的别名与GROUP BY或ORDER BY的真实列名对应时，无需补列
