@@ -18,7 +18,6 @@
 package io.shardingsphere.proxy.transport.mysql.packet.command.text.initdb;
 
 import io.shardingsphere.core.constant.ShardingConstant;
-import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
@@ -62,15 +61,5 @@ public final class ComInitDbPacket implements CommandPacket {
             return new CommandResponsePackets(new OKPacket(getSequenceId() + 1));
         }
         return new CommandResponsePackets(new ErrPacket(getSequenceId() + 1, ServerErrorCode.ER_BAD_DB_ERROR, schemaName));
-    }
-    
-    @Override
-    public boolean next() {
-        return false;
-    }
-    
-    @Override
-    public DatabasePacket getResultValue() {
-        return null;
     }
 }
