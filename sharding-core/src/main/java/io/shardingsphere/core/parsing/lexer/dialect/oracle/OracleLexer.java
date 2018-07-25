@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.lexer.dialect.oracle;
 
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.lexer.Lexer;
 import io.shardingsphere.core.parsing.lexer.analyzer.Dictionary;
 
@@ -30,7 +31,7 @@ public final class OracleLexer extends Lexer {
     private static Dictionary dictionary = new Dictionary(OracleKeyword.values());
     
     public OracleLexer(final String input) {
-        super(input, dictionary);
+        super(DatabaseType.Oracle, input, dictionary);
     }
     
     @Override

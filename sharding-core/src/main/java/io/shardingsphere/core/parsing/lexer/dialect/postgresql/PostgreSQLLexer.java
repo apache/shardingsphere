@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.lexer.dialect.postgresql;
 
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.lexer.Lexer;
 import io.shardingsphere.core.parsing.lexer.analyzer.Dictionary;
 
@@ -30,6 +31,6 @@ public final class PostgreSQLLexer extends Lexer {
     private static Dictionary dictionary = new Dictionary(PostgreSQLKeyword.values());
     
     public PostgreSQLLexer(final String input) {
-        super(input, dictionary);
+        super(DatabaseType.PostgreSQL, input, dictionary);
     }
 }
