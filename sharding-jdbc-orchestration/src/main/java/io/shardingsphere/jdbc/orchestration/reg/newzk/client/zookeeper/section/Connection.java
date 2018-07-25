@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /*
+ * Zookeeper connection check.
+ *
  * @author lidongbo
  */
 public class Connection {
@@ -48,7 +50,7 @@ public class Connection {
     }
     
     /**
-     * need reset.
+     * Need reset.
      *
      * @param keeperException keeper exception
      * @return need reset

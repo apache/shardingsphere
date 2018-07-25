@@ -68,7 +68,10 @@
     <dcl-test-case sql-case-id="deny_user">
         <assertion />
     </dcl-test-case>
-    <dcl-test-case sql-case-id="drop_user">
+    <dcl-test-case sql-case-id="drop_user_without_hostname">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="drop_user_with_hostname">
         <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="drop_user_cascade">
@@ -110,13 +113,10 @@
     <dcl-test-case sql-case-id="revoke_user_from">
         <assertion />
     </dcl-test-case>
-    <dcl-test-case sql-case-id="revoke_user_on_db">
-        <assertion />
-    </dcl-test-case>
     <dcl-test-case sql-case-id="revoke_user_with_hostname">
         <assertion />
     </dcl-test-case>
-    <dcl-test-case sql-case-id="revoke_user_with_hostname">
+    <dcl-test-case sql-case-id="revoke_user_with_hostname_on_db">
         <assertion />
     </dcl-test-case>
 </integrate-test-cases>

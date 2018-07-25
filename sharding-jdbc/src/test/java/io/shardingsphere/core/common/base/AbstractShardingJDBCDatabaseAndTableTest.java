@@ -27,6 +27,7 @@ import io.shardingsphere.core.fixture.PreciseOrderShardingAlgorithm;
 import io.shardingsphere.core.fixture.RangeOrderShardingAlgorithm;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.rule.ShardingRule;
+import lombok.RequiredArgsConstructor;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -39,14 +40,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+@RequiredArgsConstructor
 @RunWith(Parameterized.class)
 public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractSQLTest {
     
-    private DatabaseType databaseType;
-    
-    public AbstractShardingJDBCDatabaseAndTableTest(final DatabaseType databaseType) {
-        this.databaseType = databaseType;
-    }
+    private final DatabaseType databaseType;
     
     @Before
     public void cleanAndInitTable() throws Exception {

@@ -19,15 +19,15 @@ package io.shardingsphere.proxy.frontend.mysql;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
-import io.shardingsphere.proxy.backend.common.jdbc.ConnectionManager;
+import io.shardingsphere.proxy.backend.common.jdbc.BackendConnection;
 import io.shardingsphere.proxy.frontend.common.FrontendHandler;
 import io.shardingsphere.proxy.frontend.common.executor.ExecutorGroup;
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketFactory;
+import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.handshake.AuthorityHandler;
@@ -36,6 +36,9 @@ import io.shardingsphere.proxy.transport.mysql.packet.handshake.HandshakePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.handshake.HandshakeResponse41Packet;
 import io.shardingsphere.proxy.util.MySQLResultCache;
 import lombok.RequiredArgsConstructor;
+
+import java.sql.SQLException;
+import java.util.Collection;
 
 /**
  * MySQL frontend handler.
@@ -58,8 +61,8 @@ public final class MySQLFrontendHandler extends FrontendHandler {
     
     @Override
     protected void auth(final ChannelHandlerContext context, final ByteBuf message) {
-        try (MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message)) {
-            HandshakeResponse41Packet response41 = new HandshakeResponse41Packet(mysqlPacketPayload);
+        try (MySQLPacketPayload payload = new MySQLPacketPayload(message)) {
+            HandshakeResponse41Packet response41 = new HandshakeResponse41Packet(payload);
             if (authorityHandler.login(response41.getUsername(), response41.getAuthResponse())) {
                 context.writeAndFlush(new OKPacket(response41.getSequenceId() + 1));
             } else {
@@ -76,23 +79,32 @@ public final class MySQLFrontendHandler extends FrontendHandler {
             
             @Override
             public void run() {
-                try (MySQLPacketPayload mysqlPacketPayload = new MySQLPacketPayload(message)) {
-                    int sequenceId = mysqlPacketPayload.readInt1();
+                int currentSequenceId = 0;
+                try (MySQLPacketPayload payload = new MySQLPacketPayload(message);
+                     BackendConnection backendConnection = new BackendConnection()) {
+                    int sequenceId = payload.readInt1();
                     int connectionId = MySQLResultCache.getInstance().getConnection(context.channel().id().asShortText());
-                    CommandPacket commandPacket = CommandPacketFactory.getCommandPacket(sequenceId, connectionId, mysqlPacketPayload);
-                    for (DatabaseProtocolPacket each : commandPacket.execute().getDatabaseProtocolPackets()) {
+                    CommandPacket commandPacket = CommandPacketFactory.getCommandPacket(sequenceId, connectionId, payload, backendConnection);
+                    Collection<DatabasePacket> packets = commandPacket.execute().getPackets();
+                    for (DatabasePacket each : packets) {
                         context.writeAndFlush(each);
+                        if (each instanceof OKPacket || each instanceof ErrPacket) {
+                            return;
+                        }
                     }
-                    while (commandPacket.hasMoreResultValue()) {
+                    currentSequenceId = packets.size();
+                    while (commandPacket.next()) {
                         // TODO try to use wait notify
                         while (!context.channel().isWritable()) {
                             continue;
                         }
-                        context.writeAndFlush(commandPacket.getResultValue());
+                        DatabasePacket resultValue = commandPacket.getResultValue();
+                        currentSequenceId = resultValue.getSequenceId();
+                        context.writeAndFlush(resultValue);
                     }
-                } finally {
-                    MasterVisitedManager.clear();
-                    ConnectionManager.clear();
+                    context.writeAndFlush(new EofPacket(++currentSequenceId));
+                } catch (final SQLException ex) {
+                    context.writeAndFlush(new ErrPacket(++currentSequenceId, ex));
                 }
             }
         });

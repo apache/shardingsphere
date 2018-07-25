@@ -46,6 +46,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
     
@@ -68,7 +69,7 @@ public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
     }
     
     protected void assertMetadata(final Connection connection) throws IOException, JAXBException, SQLException {
-        // TODO case for drop (index) and truncate, add assert later
+        // TODO drop index assertion
         if (null == assertion.getExpectedDataFile()) {
             return;
         }
@@ -79,10 +80,15 @@ public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
         String tableName = assertion.getTable();
         List<DataSetColumn> actualColumns = getActualColumns(connection, tableName);
         List<DataSetIndex> actualIndexes = getActualIndexes(connection, tableName);
+        if (actualColumns.isEmpty() || actualIndexes.isEmpty()) {
+            assertIfDropTable(actualColumns);
+            assertIfDropIndex(actualIndexes);
+            return;
+        }
         assertMetadata(actualColumns, actualIndexes, expected.findMetadata(tableName));
     }
     
-    private void assertMetadata(final List<DataSetColumn> actualColumns, List<DataSetIndex> actualIndexes, final DataSetMetadata expected) {
+    private void assertMetadata(final List<DataSetColumn> actualColumns, final List<DataSetIndex> actualIndexes, final DataSetMetadata expected) {
         for (DataSetColumn each : expected.getColumns()) {
             assertColumnMetadata(actualColumns, each);
         }
@@ -90,7 +96,19 @@ public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
             assertIndexMetadata(actualIndexes, each);
         }
     }
-    
+
+    private void assertIfDropTable(final List<DataSetColumn> actualColumns) {
+        if (getSql().startsWith("DROP TABLE")) {
+            assertTrue(actualColumns.isEmpty());
+        }
+    }
+
+    private void assertIfDropIndex(final List<DataSetIndex> actualIndexes) {
+        if (getSql().startsWith("DROP INDEX")) {
+            assertTrue(actualIndexes.isEmpty());
+        }
+    }
+
     private void assertColumnMetadata(final List<DataSetColumn> actual, final DataSetColumn expect) {
         for (DataSetColumn each : actual) {
             if (expect.getName().equals(each.getName())) {

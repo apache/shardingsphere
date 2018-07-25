@@ -17,7 +17,8 @@
 
 package io.shardingsphere.core.metadata;
 
-import io.shardingsphere.core.routing.SQLRouteResult;
+import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,7 +34,7 @@ import java.sql.SQLException;
 @Getter
 public abstract class AbstractRefreshHandler {
 
-    private SQLRouteResult routeResult;
+    private final SQLStatement sqlStatement;
 
     private ShardingMetaData shardingMetaData;
 
@@ -45,4 +46,13 @@ public abstract class AbstractRefreshHandler {
      * @throws SQLException SQL exception
      */
     public abstract void execute() throws SQLException;
+    
+    /**
+     * Whether need refresh table meta data.
+     *
+     * @return need refresh table meta data or not
+     */
+    public boolean isNeedRefresh() {
+        return SQLType.DDL == sqlStatement.getType() && !sqlStatement.getTables().isEmpty();
+    }
 }

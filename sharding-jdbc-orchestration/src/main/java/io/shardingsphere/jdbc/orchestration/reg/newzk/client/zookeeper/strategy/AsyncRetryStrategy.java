@@ -27,19 +27,17 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.operation
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.operation.DeleteCurrentOperation;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.operation.UpdateOperation;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Connection;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /*
- * async retry strategy
+ * Async retry strategy.
  *
  * @author lidongbo
  */
+@Slf4j
 public class AsyncRetryStrategy extends SyncRetryStrategy {
-    
-    private static final Logger LOGGER = LoggerFactory.getLogger(AsyncRetryStrategy.class);
     
     public AsyncRetryStrategy(final IProvider provider, final DelayRetryPolicy delayRetryPolicy) {
         super(provider, delayRetryPolicy);
@@ -54,7 +52,7 @@ public class AsyncRetryStrategy extends SyncRetryStrategy {
             getProvider().create(path, value, createMode);
         } catch (KeeperException ex) {
             if (Connection.needRetry(ex)) {
-                LOGGER.warn(String.format("AsyncRetryStrategy SessionExpiredException createCurrentOnly: %s", path), ex);
+                log.warn(String.format("AsyncRetryStrategy SessionExpiredException createCurrentOnly: %s", path), ex);
                 AsyncRetryCenter.INSTANCE.add(new CreateCurrentOperation(getProvider(), path, value, createMode));
             } else {
                 throw ex;
@@ -69,7 +67,7 @@ public class AsyncRetryStrategy extends SyncRetryStrategy {
             getProvider().update(path, value);
         } catch (KeeperException ex) {
             if (Connection.needRetry(ex)) {
-                LOGGER.warn(String.format("AsyncRetryStrategy SessionExpiredException update: %s", path), ex);
+                log.warn(String.format("AsyncRetryStrategy SessionExpiredException update: %s", path), ex);
                 AsyncRetryCenter.INSTANCE.add(new UpdateOperation(getProvider(), path, value));
             } else {
                 throw ex;
@@ -84,7 +82,7 @@ public class AsyncRetryStrategy extends SyncRetryStrategy {
             getProvider().delete(path);
         } catch (KeeperException ex) {
             if (Connection.needRetry(ex)) {
-                LOGGER.warn(String.format("AsyncRetryStrategy SessionExpiredException deleteOnlyCurrent: %s", path), ex);
+                log.warn(String.format("AsyncRetryStrategy SessionExpiredException deleteOnlyCurrent: %s", path), ex);
                 AsyncRetryCenter.INSTANCE.add(new DeleteCurrentOperation(getProvider(), path));
             } else {
                 throw ex;
@@ -98,7 +96,7 @@ public class AsyncRetryStrategy extends SyncRetryStrategy {
             super.createAllNeedPath(key, value, createMode);
         } catch (KeeperException ex) {
             if (Connection.needRetry(ex)) {
-                LOGGER.warn(String.format("AllAsyncRetryStrategy SessionExpiredException CreateAllNeedOperation: %s", key), ex);
+                log.warn(String.format("AllAsyncRetryStrategy SessionExpiredException CreateAllNeedOperation: %s", key), ex);
                 AsyncRetryCenter.INSTANCE.add(new CreateAllNeedOperation(getProvider(), key, value, createMode));
             } else {
                 throw ex;
@@ -112,7 +110,7 @@ public class AsyncRetryStrategy extends SyncRetryStrategy {
             super.deleteAllChildren(key);
         } catch (KeeperException ex) {
             if (Connection.needRetry(ex)) {
-                LOGGER.warn(String.format("AllAsyncRetryStrategy SessionExpiredException deleteAllChildren: %s", key), ex);
+                log.warn(String.format("AllAsyncRetryStrategy SessionExpiredException deleteAllChildren: %s", key), ex);
                 AsyncRetryCenter.INSTANCE.add(new DeleteAllChildrenOperation(getProvider(), key));
             } else {
                 throw ex;
@@ -126,7 +124,7 @@ public class AsyncRetryStrategy extends SyncRetryStrategy {
             super.deleteCurrentBranch(key);
         } catch (KeeperException ex) {
             if (Connection.needRetry(ex)) {
-                LOGGER.warn(String.format("AllAsyncRetryStrategy SessionExpiredException deleteCurrentBranch: %s", key), ex);
+                log.warn(String.format("AllAsyncRetryStrategy SessionExpiredException deleteCurrentBranch: %s", key), ex);
                 AsyncRetryCenter.INSTANCE.add(new DeleteCurrentBranchOperation(getProvider(), key));
             } else {
                 throw ex;

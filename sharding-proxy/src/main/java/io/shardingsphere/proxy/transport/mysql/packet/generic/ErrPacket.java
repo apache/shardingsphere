@@ -22,6 +22,7 @@ import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.sql.SQLException;
 
@@ -33,12 +34,15 @@ import java.sql.SQLException;
  * @author zhangliang
  * @author wangkai
  */
+@RequiredArgsConstructor
 @Getter
-public final class ErrPacket extends MySQLPacket {
+public final class ErrPacket implements MySQLPacket {
     
     private static final int HEADER = 0xff;
     
     private static final String SQL_STATE_MARKER = "#";
+    
+    private final int sequenceId;
     
     private final int errorCode;
     
@@ -46,43 +50,29 @@ public final class ErrPacket extends MySQLPacket {
     
     private final String errorMessage;
     
-    @Deprecated
-    public ErrPacket(final int sequenceId, final int errorCode, final String sqlState, final String errorMessage) {
-        super(sequenceId);
-        this.errorCode = errorCode;
-        this.sqlState = sqlState;
-        this.errorMessage = errorMessage;
-    }
-    
     public ErrPacket(final int sequenceId, final ServerErrorCode serverErrorCode, final Object... errorMessageArguments) {
-        super(sequenceId);
-        errorCode = serverErrorCode.getErrorCode();
-        sqlState = serverErrorCode.getSqlState();
-        errorMessage = String.format(serverErrorCode.getErrorMessage(), errorMessageArguments);
+        this(sequenceId, serverErrorCode.getErrorCode(), serverErrorCode.getSqlState(), String.format(serverErrorCode.getErrorMessage(), errorMessageArguments));
     }
     
     public ErrPacket(final int sequenceId, final SQLException cause) {
-        super(sequenceId);
-        this.errorCode = cause.getErrorCode();
-        this.sqlState = cause.getSQLState();
-        this.errorMessage = cause.getMessage();
+        this(sequenceId, cause.getErrorCode(), cause.getSQLState(), cause.getMessage());
     }
     
-    public ErrPacket(final MySQLPacketPayload mysqlPacketPayload) {
-        super(mysqlPacketPayload.readInt1());
-        Preconditions.checkArgument(HEADER == mysqlPacketPayload.readInt1());
-        errorCode = mysqlPacketPayload.readInt2();
-        Preconditions.checkArgument(SQL_STATE_MARKER.equals(mysqlPacketPayload.readStringFix(1)));
-        sqlState = mysqlPacketPayload.readStringFix(5);
-        errorMessage = mysqlPacketPayload.readStringEOF();
+    public ErrPacket(final MySQLPacketPayload payload) {
+        sequenceId = payload.readInt1();
+        Preconditions.checkArgument(HEADER == payload.readInt1());
+        errorCode = payload.readInt2();
+        Preconditions.checkArgument(SQL_STATE_MARKER.equals(payload.readStringFix(1)));
+        sqlState = payload.readStringFix(5);
+        errorMessage = payload.readStringEOF();
     }
     
     @Override
-    public void write(final MySQLPacketPayload mysqlPacketPayload) {
-        mysqlPacketPayload.writeInt1(HEADER);
-        mysqlPacketPayload.writeInt2(errorCode);
-        mysqlPacketPayload.writeStringFix(SQL_STATE_MARKER);
-        mysqlPacketPayload.writeStringFix(sqlState);
-        mysqlPacketPayload.writeStringEOF(errorMessage);
+    public void write(final MySQLPacketPayload payload) {
+        payload.writeInt1(HEADER);
+        payload.writeInt2(errorCode);
+        payload.writeStringFix(SQL_STATE_MARKER);
+        payload.writeStringFix(sqlState);
+        payload.writeStringEOF(errorMessage);
     }
 }

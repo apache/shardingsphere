@@ -17,14 +17,13 @@
 
 package io.shardingsphere.transaction.api;
 
+import com.google.common.base.Preconditions;
 import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.transaction.constants.SoftTransactionType;
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.UUID;
 
 /**
@@ -45,7 +44,7 @@ public abstract class AbstractSoftTransaction {
     @Getter
     private String transactionId;
     
-    protected final void beginInternal(final Connection conn, final SoftTransactionType type) throws SQLException {
+    protected final void beginInternal(final Connection conn, final SoftTransactionType type) {
         // TODO if in traditional transaction, then throw exception
         Preconditions.checkArgument(conn instanceof ShardingConnection, "Only ShardingConnection can support eventual consistency transaction.");
         ExecutorExceptionHandler.setExceptionThrown(false);
@@ -59,10 +58,8 @@ public abstract class AbstractSoftTransaction {
     
     /**
      * End transaction.
-     * 
-     * @throws SQLException SQL exception
      */
-    public final void end() throws SQLException {
+    public final void end() {
         if (null != connection) {
             ExecutorExceptionHandler.setExceptionThrown(true);
             connection.setAutoCommit(previousAutoCommit);

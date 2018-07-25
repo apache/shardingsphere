@@ -23,11 +23,9 @@ import org.apache.zookeeper.ZooKeeper;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-/*
- * Created by aaa
- */
 public class TestClient extends UsualClient {
-    TestClient(BaseContext context) {
+    
+    TestClient(final BaseContext context) {
         super(context);
     }
     
@@ -38,6 +36,11 @@ public class TestClient extends UsualClient {
         return getHolder().isConnected();
     }
     
+    /**
+     * Get zookeeper.
+     * 
+     * @return zookeeper
+     */
     public ZooKeeper getZookeeper() {
         return getHolder().getZooKeeper();
     }

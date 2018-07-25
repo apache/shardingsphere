@@ -42,7 +42,7 @@ public final class ChannelThreadExecutorGroup {
     
     private static final ChannelThreadExecutorGroup INSTANCE = new ChannelThreadExecutorGroup();
     
-    private volatile Map<ChannelId, ExecutorService> executorServices = new ConcurrentHashMap<>();
+    private final Map<ChannelId, ExecutorService> executorServices = new ConcurrentHashMap<>();
     
     /**
      * Get channel thread executor group.

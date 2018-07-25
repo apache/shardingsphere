@@ -35,11 +35,11 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class SynchronizedFuture<T> implements Future<List<QueryResult>> {
     
+    private final CountDownLatch latch;
+    
+    private final List<QueryResult> responses;
+    
     private boolean merged;
-    
-    private CountDownLatch latch;
-    
-    private List<QueryResult> responses;
     
     public SynchronizedFuture(final int resultSize) {
         latch = new CountDownLatch(resultSize);

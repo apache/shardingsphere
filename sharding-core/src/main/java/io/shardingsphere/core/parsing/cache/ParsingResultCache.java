@@ -34,7 +34,7 @@ public final class ParsingResultCache {
     
     private static final ParsingResultCache INSTANCE = new ParsingResultCache();
     
-    private volatile Map<String, SQLStatement> cache = new WeakHashMap<>(65535, 1);
+    private final Map<String, SQLStatement> cache = new WeakHashMap<>(65535, 1);
     
     /**
      * Get parsing result cache instance.

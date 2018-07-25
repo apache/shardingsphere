@@ -21,6 +21,7 @@ import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
@@ -31,12 +32,15 @@ import java.util.List;
  *
  * @author zhangyonglun
  */
+@RequiredArgsConstructor
 @Getter
-public final class BinaryResultSetRowPacket extends MySQLPacket {
+public final class BinaryResultSetRowPacket implements MySQLPacket {
     
     private static final int PACKET_HEADER = 0x00;
     
     private static final int RESERVED_BIT_LENGTH = 2;
+    
+    private final int sequenceId;
     
     private final int numColumns;
     
@@ -44,16 +48,9 @@ public final class BinaryResultSetRowPacket extends MySQLPacket {
     
     private final List<ColumnType> columnTypes;
     
-    public BinaryResultSetRowPacket(final int sequenceId, final int numColumns, final List<Object> data, final List<ColumnType> columnTypes) {
-        super(sequenceId);
-        this.numColumns = numColumns;
-        this.data = data;
-        this.columnTypes = columnTypes;
-    }
-    
     @Override
-    public void write(final MySQLPacketPayload mysqlPacketPayload) {
-        mysqlPacketPayload.writeInt1(PACKET_HEADER);
+    public void write(final MySQLPacketPayload payload) {
+        payload.writeInt1(PACKET_HEADER);
         NullBitmap nullBitmap = new NullBitmap(numColumns, RESERVED_BIT_LENGTH);
         for (int i = 0; i < numColumns; i++) {
             if (null == data.get(i)) {
@@ -61,11 +58,11 @@ public final class BinaryResultSetRowPacket extends MySQLPacket {
             }
         }
         for (int each : nullBitmap.getNullBitmap()) {
-            mysqlPacketPayload.writeInt1(each);
+            payload.writeInt1(each);
         }
         for (int i = 0; i < numColumns; i++) {
             ColumnType columnType = columnTypes.get(i);
-            BinaryProtocolValueUtility.getInstance().writeBinaryProtocolValue(columnType, data.get(i), mysqlPacketPayload);
+            BinaryProtocolValueUtility.getInstance().writeBinaryProtocolValue(columnType, data.get(i), payload);
         }
     }
 }

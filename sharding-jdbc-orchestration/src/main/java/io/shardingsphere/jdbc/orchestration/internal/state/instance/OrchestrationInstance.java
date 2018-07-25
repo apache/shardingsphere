@@ -35,7 +35,7 @@ public final class OrchestrationInstance {
     
     private static final OrchestrationInstance INSTANCE = new OrchestrationInstance();
     
-    private String instanceId;
+    private final String instanceId;
     
     private OrchestrationInstance() {
         instanceId = IpUtils.getIp() + DELIMITER + ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0] + DELIMITER + UUID.randomUUID().toString();

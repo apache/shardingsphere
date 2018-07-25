@@ -18,9 +18,8 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IExecStrategy;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.ITransactionProvider;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseContext;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.provider.TransactionProvider;
@@ -33,22 +32,23 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.UsualStrategy;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.Watcher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /*
+ * Usually use client.
+ *
  * @author lidongbo
  */
+@Slf4j
 public class UsualClient extends BaseClient {
-    private static final Logger LOGGER = LoggerFactory.getLogger(UsualClient.class);
     
     private final Map<StrategyType, IExecStrategy> strategies = new ConcurrentHashMap<>();
     
@@ -67,13 +67,13 @@ public class UsualClient extends BaseClient {
     
     @Override
     public synchronized void useExecStrategy(final StrategyType strategyType) {
-        LOGGER.debug("useExecStrategy:{}", strategyType);
+        log.debug("useExecStrategy:{}", strategyType);
         if (strategies.containsKey(strategyType)) {
             strategy = strategies.get(strategyType);
             return;
         }
         
-        ITransactionProvider provider = new TransactionProvider(getRootNode(), getHolder(), Constants.WATCHED, getAuthorities());
+        ITransactionProvider provider = new TransactionProvider(getRootNode(), getHolder(), ZookeeperConstants.WATCHED, getAuthorities());
         switch (strategyType) {
             case USUAL:
                 strategy = new UsualStrategy(provider);
@@ -174,7 +174,7 @@ public class UsualClient extends BaseClient {
         strategy.deleteAllChildren(key);
         if (getRootNode().equals(key)) {
             setRootExist(false);
-            LOGGER.debug("deleteAllChildren delete root:{}", getRootNode());
+            log.debug("deleteAllChildren delete root:{}", getRootNode());
         }
     }
     
@@ -183,7 +183,7 @@ public class UsualClient extends BaseClient {
         strategy.deleteCurrentBranch(key);
         if (!strategy.checkExists(getRootNode())) {
             setRootExist(false);
-            LOGGER.debug("deleteCurrentBranch delete root:{}", getRootNode());
+            log.debug("deleteCurrentBranch delete root:{}", getRootNode());
         }
     }
     

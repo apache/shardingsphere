@@ -42,11 +42,11 @@ import static org.junit.Assert.assertTrue;
 
 public final class ResultSetAdapterTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
-    private List<ShardingConnection> shardingConnections = new ArrayList<>();
+    private final List<ShardingConnection> shardingConnections = new ArrayList<>();
     
-    private List<Statement> statements = new ArrayList<>();
+    private final List<Statement> statements = new ArrayList<>();
     
-    private Map<DatabaseType, ResultSet> resultSets = new HashMap<>();
+    private final Map<DatabaseType, ResultSet> resultSets = new HashMap<>();
     
     public ResultSetAdapterTest(final DatabaseType databaseType) {
         super(databaseType);

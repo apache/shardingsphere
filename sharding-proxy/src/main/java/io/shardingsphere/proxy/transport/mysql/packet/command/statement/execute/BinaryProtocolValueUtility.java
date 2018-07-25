@@ -50,10 +50,10 @@ public final class BinaryProtocolValueUtility {
      * Read binary protocol value.
      *
      * @param columnType column type
-     * @param mysqlPacketPayload mysql packet payload
+     * @param payload mysql packet payload
      * @return object value
      */
-    public Object readBinaryProtocolValue(final ColumnType columnType, final MySQLPacketPayload mysqlPacketPayload) {
+    public Object readBinaryProtocolValue(final ColumnType columnType, final MySQLPacketPayload payload) {
         switch (columnType) {
             case MYSQL_TYPE_STRING:
             case MYSQL_TYPE_VARCHAR:
@@ -68,27 +68,27 @@ public final class BinaryProtocolValueUtility {
             case MYSQL_TYPE_BIT:
             case MYSQL_TYPE_DECIMAL:
             case MYSQL_TYPE_NEWDECIMAL:
-                return mysqlPacketPayload.readStringLenenc();
+                return payload.readStringLenenc();
             case MYSQL_TYPE_LONGLONG:
-                return mysqlPacketPayload.readInt8();
+                return payload.readInt8();
             case MYSQL_TYPE_LONG:
             case MYSQL_TYPE_INT24:
-                return mysqlPacketPayload.readInt4();
+                return payload.readInt4();
             case MYSQL_TYPE_SHORT:
             case MYSQL_TYPE_YEAR:
-                return mysqlPacketPayload.readInt2();
+                return payload.readInt2();
             case MYSQL_TYPE_TINY:
-                return mysqlPacketPayload.readInt1();
+                return payload.readInt1();
             case MYSQL_TYPE_DOUBLE:
-                return mysqlPacketPayload.readDouble();
+                return payload.readDouble();
             case MYSQL_TYPE_FLOAT:
-                return mysqlPacketPayload.readFloat();
+                return payload.readFloat();
             case MYSQL_TYPE_DATE:
             case MYSQL_TYPE_DATETIME:
             case MYSQL_TYPE_TIMESTAMP:
-                return mysqlPacketPayload.readDate();
+                return payload.readDate();
             case MYSQL_TYPE_TIME:
-                return mysqlPacketPayload.readTime();
+                return payload.readTime();
             default:
                 throw new IllegalArgumentException(String.format("Cannot find MYSQL type '%s' in column type when read binary protocol value", columnType));
         }
@@ -98,10 +98,10 @@ public final class BinaryProtocolValueUtility {
      * Write binary protocol value.
      *
      * @param columnType column type
-     * @param mysqlPacketPayload mysql packet pay load
+     * @param payload mysql packet pay load
      * @param objectData object data
      */
-    public void writeBinaryProtocolValue(final ColumnType columnType, final Object objectData, final MySQLPacketPayload mysqlPacketPayload) {
+    public void writeBinaryProtocolValue(final ColumnType columnType, final Object objectData, final MySQLPacketPayload payload) {
         switch (columnType) {
             case MYSQL_TYPE_STRING:
             case MYSQL_TYPE_VARCHAR:
@@ -116,35 +116,35 @@ public final class BinaryProtocolValueUtility {
             case MYSQL_TYPE_BIT:
             case MYSQL_TYPE_DECIMAL:
             case MYSQL_TYPE_NEWDECIMAL:
-                mysqlPacketPayload.writeStringLenenc(objectData.toString());
+                payload.writeStringLenenc(objectData.toString());
                 break;
             case MYSQL_TYPE_LONGLONG:
-                mysqlPacketPayload.writeInt8((Long) objectData);
+                payload.writeInt8((Long) objectData);
                 break;
             case MYSQL_TYPE_LONG:
             case MYSQL_TYPE_INT24:
-                mysqlPacketPayload.writeInt4((Integer) objectData);
+                payload.writeInt4((Integer) objectData);
                 break;
             case MYSQL_TYPE_SHORT:
             case MYSQL_TYPE_YEAR:
-                mysqlPacketPayload.writeInt2((Integer) objectData);
+                payload.writeInt2((Integer) objectData);
                 break;
             case MYSQL_TYPE_TINY:
-                mysqlPacketPayload.writeInt1((Integer) objectData);
+                payload.writeInt1((Integer) objectData);
                 break;
             case MYSQL_TYPE_DOUBLE:
-                mysqlPacketPayload.writeDouble(Double.parseDouble(objectData.toString()));
+                payload.writeDouble(Double.parseDouble(objectData.toString()));
                 break;
             case MYSQL_TYPE_FLOAT:
-                mysqlPacketPayload.writeFloat(Float.parseFloat(objectData.toString()));
+                payload.writeFloat(Float.parseFloat(objectData.toString()));
                 break;
             case MYSQL_TYPE_DATE:
             case MYSQL_TYPE_DATETIME:
             case MYSQL_TYPE_TIMESTAMP:
-                mysqlPacketPayload.writeDate((Timestamp) objectData);
+                payload.writeDate((Timestamp) objectData);
                 break;
             case MYSQL_TYPE_TIME:
-                mysqlPacketPayload.writeTime((Date) objectData);
+                payload.writeTime((Date) objectData);
                 break;
             default:
                 throw new IllegalArgumentException(String.format("Cannot find MYSQL type '%s' in column type when write binary protocol value", columnType));

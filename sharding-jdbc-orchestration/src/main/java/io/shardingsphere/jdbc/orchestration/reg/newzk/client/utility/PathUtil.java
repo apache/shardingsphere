@@ -17,19 +17,21 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
 /*
- * path util
+ * Path util.
  *
  * @author lidongbo
  */
 public class PathUtil {
     
     /**
-     * get real path.
+     * Get real path.
      *
      * @param root root
      * @param path path
@@ -40,16 +42,16 @@ public class PathUtil {
     }
     
     private static String adjustPath(final String root, final String path) {
-        if (StringUtil.isNullOrBlank(path)) {
+        if (Strings.isNullOrEmpty(path)) {
             throw new IllegalArgumentException("path should have content!");
         }
         String rootPath = root;
-        if (!root.startsWith(Constants.PATH_SEPARATOR)) {
-            rootPath = Constants.PATH_SEPARATOR + root;
+        if (!root.startsWith(ZookeeperConstants.PATH_SEPARATOR)) {
+            rootPath = ZookeeperConstants.PATH_SEPARATOR + root;
         }
         String subPath = path;
-        if (!path.startsWith(Constants.PATH_SEPARATOR)) {
-            subPath = Constants.PATH_SEPARATOR + path;
+        if (!path.startsWith(ZookeeperConstants.PATH_SEPARATOR)) {
+            subPath = ZookeeperConstants.PATH_SEPARATOR + path;
         }
         if (!subPath.startsWith(rootPath)) {
             return rootPath + subPath;
@@ -58,7 +60,7 @@ public class PathUtil {
     }
     
     /**
-     * get path nodes, child to root.
+     * Get path nodes, child to root.
      *
      * @param root root
      * @param path path
@@ -68,11 +70,11 @@ public class PathUtil {
         String realPath = adjustPath(root, path);
         Stack<String> pathStack = new Stack<>();
         int index = 1;
-        int position = realPath.indexOf(Constants.PATH_SEPARATOR, index);
+        int position = realPath.indexOf(ZookeeperConstants.PATH_SEPARATOR, index);
         do {
             pathStack.push(realPath.substring(0, position));
             index = position + 1;
-            position = realPath.indexOf(Constants.PATH_SEPARATOR, index);
+            position = realPath.indexOf(ZookeeperConstants.PATH_SEPARATOR, index);
         }
         while (position > -1);
         pathStack.push(realPath);
@@ -80,7 +82,7 @@ public class PathUtil {
     }
     
     /**
-     * get path nodes.
+     * Get path nodes.
      *
      * @param root root
      * @param path path
@@ -90,12 +92,12 @@ public class PathUtil {
         String realPath = adjustPath(root, path);
         List<String> paths = new ArrayList<>();
         int index = 1;
-        int position = realPath.indexOf(Constants.PATH_SEPARATOR, index);
+        int position = realPath.indexOf(ZookeeperConstants.PATH_SEPARATOR, index);
     
         do {
             paths.add(realPath.substring(0, position));
             index = position + 1;
-            position = realPath.indexOf(Constants.PATH_SEPARATOR, index);
+            position = realPath.indexOf(ZookeeperConstants.PATH_SEPARATOR, index);
         }
         while (position > -1);
         paths.add(realPath);
@@ -103,7 +105,7 @@ public class PathUtil {
     }
     
     /**
-     * get path nodes.
+     * Get path nodes.
      *
      * @param path path
      * @return all path nodes
@@ -112,11 +114,11 @@ public class PathUtil {
         String realPath = checkPath(path);
         List<String> paths = new ArrayList<>();
         char[] chars = realPath.toCharArray();
-        StringBuilder builder = new StringBuilder(Constants.PATH_SEPARATOR);
+        StringBuilder builder = new StringBuilder(ZookeeperConstants.PATH_SEPARATOR);
         for (int i = 1; i < chars.length; i++) {
-            if (chars[i] == Constants.PATH_SEPARATOR.charAt(0)) {
+            if (chars[i] == ZookeeperConstants.PATH_SEPARATOR.charAt(0)) {
                 paths.add(builder.toString());
-                builder = new StringBuilder(Constants.PATH_SEPARATOR);
+                builder = new StringBuilder(ZookeeperConstants.PATH_SEPARATOR);
                 continue;
             }
             builder.append(chars[i]);
@@ -128,7 +130,7 @@ public class PathUtil {
     }
     
     /**
-     * ignore invalid char and // /./  /../.
+     * Ignore invalid char and // /./  /../.
      * code consult zookeeper
      *
      * @param key key
@@ -136,18 +138,17 @@ public class PathUtil {
      * @throws IllegalArgumentException IllegalArgumentException
      */
     // CHECKSTYLE:OFF
-    public static String checkPath(final String key) throws IllegalArgumentException {
+    public static String checkPath(final String key) {
         // CHECKSTYLE:ON
-        if (StringUtil.isNullOrBlank(key)) {
-            throw new IllegalArgumentException("path should not be null");
-        }
+        Preconditions.checkNotNull(key, "path should not be null");
+
         String path = key;
         if (path.charAt(0) != 47 || path.charAt(path.length() - 1) == 47) {
-            path = Constants.PATH_SEPARATOR + path;
+            path = ZookeeperConstants.PATH_SEPARATOR + path;
         }
     
         if (path.charAt(path.length() - 1) == 47) {
-            path = Constants.PATH_SEPARATOR + path;
+            path = ZookeeperConstants.PATH_SEPARATOR + path;
         }
 
         char previous = 47;

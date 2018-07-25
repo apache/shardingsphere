@@ -23,18 +23,22 @@ import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.transaction.event.XaTransactionEvent;
 import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.proxy.backend.common.BackendHandler;
-import io.shardingsphere.proxy.backend.common.jdbc.text.JDBCTextBackendHandler;
 import io.shardingsphere.proxy.backend.common.SQLPacketsBackendHandler;
+import io.shardingsphere.proxy.backend.common.jdbc.BackendConnection;
+import io.shardingsphere.proxy.backend.common.jdbc.JDBCBackendHandler;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngineFactory;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
+import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.transaction.xa.AtomikosUserTransaction;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.transaction.Status;
@@ -43,7 +47,7 @@ import java.sql.SQLException;
 
 /**
  * COM_QUERY command packet.
- * 
+ *
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-query.html">COM_QUERY</a>
  *
  * @author zhangliang
@@ -51,32 +55,39 @@ import java.sql.SQLException;
  * @author zhaojun
  */
 @Slf4j
-public final class ComQueryPacket extends CommandPacket implements CommandPacketRebuilder {
+public final class ComQueryPacket implements CommandPacket, CommandPacketRebuilder {
+    
+    @Getter
+    private final int sequenceId;
     
     private final int connectionId;
     
     private final String sql;
     
+    private final BackendConnection backendConnection;
+    
     private final BackendHandler backendHandler;
     
-    public ComQueryPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload mysqlPacketPayload) {
-        super(sequenceId);
+    public ComQueryPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
+        this.sequenceId = sequenceId;
         this.connectionId = connectionId;
-        sql = mysqlPacketPayload.readStringEOF();
+        sql = payload.readStringEOF();
+        this.backendConnection = backendConnection;
         backendHandler = getBackendHandler(sql);
     }
     
     public ComQueryPacket(final int sequenceId, final int connectionId, final String sql) {
-        super(sequenceId);
+        this.sequenceId = sequenceId;
         this.connectionId = connectionId;
         this.sql = sql;
+        backendConnection = null;
         backendHandler = null;
     }
     
     @Override
-    public void write(final MySQLPacketPayload mysqlPacketPayload) {
-        mysqlPacketPayload.writeInt1(CommandPacketType.COM_QUERY.getValue());
-        mysqlPacketPayload.writeStringEOF(sql);
+    public void write(final MySQLPacketPayload payload) {
+        payload.writeInt1(CommandPacketType.COM_QUERY.getValue());
+        payload.writeStringEOF(sql);
     }
     
     @Override
@@ -87,34 +98,23 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
                 return new CommandResponsePackets(new OKPacket(1));
             }
         } catch (final SystemException ex) {
-            return new CommandResponsePackets(new ErrPacket(1, new SQLException(ex)));
+            return new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
         }
         return backendHandler.execute();
     }
     
     private BackendHandler getBackendHandler(final String sql) {
-        return RuleRegistry.getInstance().isWithoutJdbc() ? new SQLPacketsBackendHandler(this, DatabaseType.MySQL) : new JDBCTextBackendHandler(sql, DatabaseType.MySQL);
+        return RuleRegistry.getInstance().isProxyBackendUseNio()
+                ? new SQLPacketsBackendHandler(this, DatabaseType.MySQL) : new JDBCBackendHandler(sql, JDBCExecuteEngineFactory.createTextProtocolInstance(backendConnection));
     }
     
-    /**
-     * Has more Result value.
-     *
-     * @return has more result value
-     */
-    public boolean hasMoreResultValue() {
-        try {
-            return backendHandler.hasMoreResultValue();
-        } catch (final SQLException ex) {
-            return false;
-        }
+    @Override
+    public boolean next() throws SQLException {
+        return backendHandler.next();
     }
     
-    /**
-     * Get result value.
-     *
-     * @return database protocol packet
-     */
-    public DatabaseProtocolPacket getResultValue() {
+    @Override
+    public DatabasePacket getResultValue() throws SQLException {
         return backendHandler.getResultValue();
     }
     

@@ -51,9 +51,9 @@ import static org.junit.Assert.assertTrue;
 
 public final class PreparedStatementAdapterTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
-    private List<ShardingConnection> shardingConnections = new ArrayList<>();
+    private final List<ShardingConnection> shardingConnections = new ArrayList<>();
     
-    private List<PreparedStatement> preparedStatements = new ArrayList<>();
+    private final List<PreparedStatement> preparedStatements = new ArrayList<>();
     
     public PreparedStatementAdapterTest(final DatabaseType databaseType) {
         super(databaseType);

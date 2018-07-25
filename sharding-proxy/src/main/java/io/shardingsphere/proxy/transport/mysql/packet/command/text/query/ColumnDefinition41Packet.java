@@ -24,6 +24,9 @@ import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import lombok.Getter;
 
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+
 /**
  * Column definition above MySQL 4.1 packet protocol.
  * 
@@ -32,11 +35,13 @@ import lombok.Getter;
  * @author zhangliang
  */
 @Getter
-public final class ColumnDefinition41Packet extends MySQLPacket {
+public final class ColumnDefinition41Packet implements MySQLPacket {
     
-    private final String catalog = "def";
+    private static final String CATALOG = "def";
     
-    private final int nextLength = 0x0c;
+    private static final int NEXT_LENGTH = 0x0c;
+    
+    private final int sequenceId;
     
     private final int characterSet;
     
@@ -58,9 +63,15 @@ public final class ColumnDefinition41Packet extends MySQLPacket {
     
     private final int decimals;
     
+    public ColumnDefinition41Packet(final int sequenceId, final ResultSetMetaData resultSetMetaData, final int columnIndex) throws SQLException {
+        this(sequenceId, resultSetMetaData.getSchemaName(columnIndex), resultSetMetaData.getTableName(columnIndex), resultSetMetaData.getTableName(columnIndex), 
+                resultSetMetaData.getColumnLabel(columnIndex), resultSetMetaData.getColumnName(columnIndex), resultSetMetaData.getColumnDisplaySize(columnIndex), 
+                ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(columnIndex)), 0);
+    }
+    
     public ColumnDefinition41Packet(final int sequenceId, final String schema, final String table, final String orgTable, 
                                     final String name, final String orgName, final int columnLength, final ColumnType columnType, final int decimals) {
-        super(sequenceId);
+        this.sequenceId = sequenceId;
         this.characterSet = ServerInfo.CHARSET;
         this.flags = 0;
         this.schema = schema;
@@ -73,37 +84,37 @@ public final class ColumnDefinition41Packet extends MySQLPacket {
         this.decimals = decimals;
     }
     
-    public ColumnDefinition41Packet(final MySQLPacketPayload mysqlPacketPayload) {
-        super(mysqlPacketPayload.readInt1());
-        Preconditions.checkArgument(catalog.equals(mysqlPacketPayload.readStringLenenc()));
-        schema = mysqlPacketPayload.readStringLenenc();
-        table = mysqlPacketPayload.readStringLenenc();
-        orgTable = mysqlPacketPayload.readStringLenenc();
-        name = mysqlPacketPayload.readStringLenenc();
-        orgName = mysqlPacketPayload.readStringLenenc();
-        Preconditions.checkArgument(nextLength == mysqlPacketPayload.readIntLenenc());
-        characterSet = mysqlPacketPayload.readInt2();
-        columnLength = mysqlPacketPayload.readInt4();
-        columnType = ColumnType.valueOf(mysqlPacketPayload.readInt1());
-        flags = mysqlPacketPayload.readInt2();
-        decimals = mysqlPacketPayload.readInt1();
-        mysqlPacketPayload.skipReserved(2);
+    public ColumnDefinition41Packet(final MySQLPacketPayload payload) {
+        sequenceId = payload.readInt1();
+        Preconditions.checkArgument(CATALOG.equals(payload.readStringLenenc()));
+        schema = payload.readStringLenenc();
+        table = payload.readStringLenenc();
+        orgTable = payload.readStringLenenc();
+        name = payload.readStringLenenc();
+        orgName = payload.readStringLenenc();
+        Preconditions.checkArgument(NEXT_LENGTH == payload.readIntLenenc());
+        characterSet = payload.readInt2();
+        columnLength = payload.readInt4();
+        columnType = ColumnType.valueOf(payload.readInt1());
+        flags = payload.readInt2();
+        decimals = payload.readInt1();
+        payload.skipReserved(2);
     }
     
     @Override
-    public void write(final MySQLPacketPayload mysqlPacketPayload) {
-        mysqlPacketPayload.writeStringLenenc(catalog);
-        mysqlPacketPayload.writeStringLenenc(schema);
-        mysqlPacketPayload.writeStringLenenc(table);
-        mysqlPacketPayload.writeStringLenenc(orgTable);
-        mysqlPacketPayload.writeStringLenenc(name);
-        mysqlPacketPayload.writeStringLenenc(orgName);
-        mysqlPacketPayload.writeIntLenenc(nextLength);
-        mysqlPacketPayload.writeInt2(characterSet);
-        mysqlPacketPayload.writeInt4(columnLength);
-        mysqlPacketPayload.writeInt1(columnType.getValue());
-        mysqlPacketPayload.writeInt2(flags);
-        mysqlPacketPayload.writeInt1(decimals);
-        mysqlPacketPayload.writeReserved(2);
+    public void write(final MySQLPacketPayload payload) {
+        payload.writeStringLenenc(CATALOG);
+        payload.writeStringLenenc(schema);
+        payload.writeStringLenenc(table);
+        payload.writeStringLenenc(orgTable);
+        payload.writeStringLenenc(name);
+        payload.writeStringLenenc(orgName);
+        payload.writeIntLenenc(NEXT_LENGTH);
+        payload.writeInt2(characterSet);
+        payload.writeInt4(columnLength);
+        payload.writeInt1(columnType.getValue());
+        payload.writeInt2(flags);
+        payload.writeInt1(decimals);
+        payload.writeReserved(2);
     }
 }

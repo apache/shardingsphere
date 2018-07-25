@@ -21,7 +21,7 @@ import com.google.common.collect.Lists;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextResultSetRowPacket;
@@ -76,8 +76,8 @@ public final class MySQLQueryResult implements QueryResult {
         resultSet = null;
     }
     
-    public MySQLQueryResult(final MySQLPacketPayload mysqlPacketPayload) {
-        FieldCountPacket fieldCountPacket = new FieldCountPacket(mysqlPacketPayload);
+    public MySQLQueryResult(final MySQLPacketPayload payload) {
+        FieldCountPacket fieldCountPacket = new FieldCountPacket(payload);
         commandResponsePackets = new CommandResponsePackets(fieldCountPacket);
         columnCount = fieldCountPacket.getColumnCount();
         columnIndexAndLabelMap = new HashMap<>(fieldCountPacket.getColumnCount(), 1);
@@ -92,7 +92,7 @@ public final class MySQLQueryResult implements QueryResult {
      * @param mysqlPacket mysqlPacket
      */
     public void setGenericResponse(final MySQLPacket mysqlPacket) {
-        commandResponsePackets.addPacket(mysqlPacket);
+        commandResponsePackets.getPackets().add(mysqlPacket);
     }
     
     /**
@@ -108,7 +108,7 @@ public final class MySQLQueryResult implements QueryResult {
      * @param columnDefinition columnDefinition
      */
     public void addColumnDefinition(final ColumnDefinition41Packet columnDefinition) {
-        commandResponsePackets.addPacket(columnDefinition);
+        commandResponsePackets.getPackets().add(columnDefinition);
         columnDefinitions.add(columnDefinition);
         columnIndexAndLabelMap.put(columnDefinitions.indexOf(columnDefinition) + 1, columnDefinition.getName());
         columnLabelAndIndexMap.put(columnDefinition.getName(), columnDefinitions.indexOf(columnDefinition) + 1);
@@ -128,7 +128,7 @@ public final class MySQLQueryResult implements QueryResult {
      * @param eofPacket eofPacket
      */
     public void setColumnFinished(final EofPacket eofPacket) {
-        commandResponsePackets.addPacket(eofPacket);
+        commandResponsePackets.getPackets().add(eofPacket);
         currentSequenceId++;
         columnFinished = true;
     }

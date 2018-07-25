@@ -22,11 +22,12 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.Base
 import org.apache.zookeeper.KeeperException;
 
 /*
- * async retry
+ * Async retry operation which DeleteCurrent action.
  *
  * @author lidongbo
  */
 public class DeleteCurrentOperation extends BaseOperation {
+    
     private final String key;
     
     public DeleteCurrentOperation(final IProvider provider, final String key) {

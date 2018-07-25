@@ -29,13 +29,13 @@ import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
  */
 public abstract class CommandResponsePacketsHandler extends ChannelInboundHandlerAdapter {
     
-    protected abstract void auth(ChannelHandlerContext context, MySQLPacketPayload mysqlPacketPayload);
+    protected abstract void auth(ChannelHandlerContext context, MySQLPacketPayload payload);
     
-    protected abstract void eofPacket(ChannelHandlerContext context, MySQLPacketPayload mysqlPacketPayload);
+    protected abstract void eofPacket(ChannelHandlerContext context, MySQLPacketPayload payload);
     
-    protected abstract void okPacket(ChannelHandlerContext context, MySQLPacketPayload mysqlPacketPayload);
+    protected abstract void okPacket(ChannelHandlerContext context, MySQLPacketPayload payload);
     
-    protected abstract void errPacket(ChannelHandlerContext context, MySQLPacketPayload mysqlPacketPayload);
+    protected abstract void errPacket(ChannelHandlerContext context, MySQLPacketPayload payload);
     
-    protected abstract void commonPacket(MySQLPacketPayload mysqlPacketPayload);
+    protected abstract void commonPacket(ChannelHandlerContext context, MySQLPacketPayload payload);
 }

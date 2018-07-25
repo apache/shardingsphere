@@ -17,8 +17,11 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command;
 
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
+
+import java.sql.SQLException;
 
 /**
  * Command packet.
@@ -26,30 +29,28 @@ import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
  * @author zhangliang
  * @author wangkai
  */
-public abstract class CommandPacket extends MySQLPacket {
-    
-    public CommandPacket(final int sequenceId) {
-        super(sequenceId);
-    }
+public interface CommandPacket extends MySQLPacket {
     
     /**
      * Execute command.
      * 
      * @return result packets to be sent
      */
-    public abstract CommandResponsePackets execute();
+    CommandResponsePackets execute();
     
     /**
-     * Has more result value.
+     * Goto next result value.
      *
-     * @return has more result value
+     * @return has more result value or not
+     * @throws SQLException SQL exception
      */
-    public abstract boolean hasMoreResultValue();
+    boolean next() throws SQLException;
     
     /**
      * Get result value.
      *
-     * @return result to be sent
+     * @return database packet of result value
+     * @throws SQLException SQL exception
      */
-    public abstract DatabaseProtocolPacket getResultValue();
+    DatabasePacket getResultValue() throws SQLException;
 }

@@ -20,6 +20,7 @@ package io.shardingsphere.proxy.transport.mysql.packet.handshake;
 import io.shardingsphere.proxy.transport.mysql.constant.CapabilityFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
@@ -30,8 +31,11 @@ import lombok.Getter;
  * @author zhangliang
  * @author wangkai
  */
+@AllArgsConstructor
 @Getter
-public final class HandshakeResponse41Packet extends MySQLPacket {
+public final class HandshakeResponse41Packet implements MySQLPacket {
+    
+    private final int sequenceId;
     
     private int capabilityFlags;
     
@@ -45,70 +49,59 @@ public final class HandshakeResponse41Packet extends MySQLPacket {
     
     private String database;
     
-    public HandshakeResponse41Packet(final MySQLPacketPayload mysqlPacketPayload) {
-        super(mysqlPacketPayload.readInt1());
-        capabilityFlags = mysqlPacketPayload.readInt4();
-        maxPacketSize = mysqlPacketPayload.readInt4();
-        characterSet = mysqlPacketPayload.readInt1();
-        mysqlPacketPayload.skipReserved(23);
-        username = mysqlPacketPayload.readStringNul();
-        readAuthResponse(mysqlPacketPayload);
-        readDatabase(mysqlPacketPayload);
+    public HandshakeResponse41Packet(final MySQLPacketPayload payload) {
+        sequenceId = payload.readInt1();
+        capabilityFlags = payload.readInt4();
+        maxPacketSize = payload.readInt4();
+        characterSet = payload.readInt1();
+        payload.skipReserved(23);
+        username = payload.readStringNul();
+        readAuthResponse(payload);
+        readDatabase(payload);
     }
     
-    public HandshakeResponse41Packet(
-            final int sequenceId, final int capabilityFlags, final int maxPacketSize, final int characterSet, final String username, final byte[] authResponse, final String database) {
-        super(sequenceId);
-        this.capabilityFlags = capabilityFlags;
-        this.maxPacketSize = maxPacketSize;
-        this.characterSet = characterSet;
-        this.username = username;
-        this.authResponse = authResponse;
-        this.database = database;
-    }
-    
-    private void readAuthResponse(final MySQLPacketPayload mysqlPacketPayload) {
+    private void readAuthResponse(final MySQLPacketPayload payload) {
         if (0 != (capabilityFlags & CapabilityFlag.CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA.getValue())) {
-            authResponse = mysqlPacketPayload.readStringLenencByBytes();
+            authResponse = payload.readStringLenencByBytes();
         } else if (0 != (capabilityFlags & CapabilityFlag.CLIENT_SECURE_CONNECTION.getValue())) {
-            int length = mysqlPacketPayload.readInt1();
-            authResponse = mysqlPacketPayload.readStringFixByBytes(length);
+            int length = payload.readInt1();
+            authResponse = payload.readStringFixByBytes(length);
         } else {
-            authResponse = mysqlPacketPayload.readStringNulByBytes();
+            authResponse = payload.readStringNulByBytes();
         }
     }
     
-    private void readDatabase(final MySQLPacketPayload mysqlPacketPayload) {
+    private void readDatabase(final MySQLPacketPayload payload) {
         if (0 != (capabilityFlags & CapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue())) {
-            database = mysqlPacketPayload.readStringNul();
+            database = payload.readStringNul();
         }
     }
     
     @Override
-    public void write(final MySQLPacketPayload mysqlPacketPayload) {
-        mysqlPacketPayload.writeInt4(capabilityFlags);
-        mysqlPacketPayload.writeInt4(maxPacketSize);
-        mysqlPacketPayload.writeInt1(characterSet);
-        mysqlPacketPayload.writeReserved(23);
-        mysqlPacketPayload.writeStringNul(username);
-        writeAuthResponse(mysqlPacketPayload);
-        writeDatabase(mysqlPacketPayload);
+    public void write(final MySQLPacketPayload payload) {
+        payload.writeInt4(capabilityFlags);
+        payload.writeInt4(maxPacketSize);
+        payload.writeInt1(characterSet);
+        payload.writeReserved(23);
+        payload.writeStringNul(username);
+        writeAuthResponse(payload);
+        writeDatabase(payload);
     }
     
-    private void writeAuthResponse(final MySQLPacketPayload mysqlPacketPayload) {
+    private void writeAuthResponse(final MySQLPacketPayload payload) {
         if (0 != (capabilityFlags & CapabilityFlag.CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA.getValue())) {
-            mysqlPacketPayload.writeStringLenenc(new String(authResponse));
+            payload.writeStringLenenc(new String(authResponse));
         } else if (0 != (capabilityFlags & CapabilityFlag.CLIENT_SECURE_CONNECTION.getValue())) {
-            mysqlPacketPayload.writeInt1(authResponse.length);
-            mysqlPacketPayload.writeBytes(authResponse);
+            payload.writeInt1(authResponse.length);
+            payload.writeBytes(authResponse);
         } else {
-            mysqlPacketPayload.writeStringNul(new String(authResponse));
+            payload.writeStringNul(new String(authResponse));
         }
     }
     
-    private void writeDatabase(final MySQLPacketPayload mysqlPacketPayload) {
+    private void writeDatabase(final MySQLPacketPayload payload) {
         if (0 != (capabilityFlags & CapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue())) {
-            mysqlPacketPayload.writeStringNul(database);
+            payload.writeStringNul(database);
         }
     }
 }

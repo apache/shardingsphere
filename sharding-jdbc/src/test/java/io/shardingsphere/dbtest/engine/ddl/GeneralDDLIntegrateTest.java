@@ -58,7 +58,7 @@ public final class GeneralDDLIntegrateTest extends BaseDDLIntegrateTest {
         assertExecuteByType(false);
     }
 
-    private void assertExecuteByType(boolean isExecuteUpdate) throws JAXBException, IOException, SQLException {
+    private void assertExecuteByType(final boolean isExecuteUpdate) throws JAXBException, IOException, SQLException {
         if (!getDatabaseTypeEnvironment().isEnabled()) {
             return;
         }
@@ -71,15 +71,15 @@ public final class GeneralDDLIntegrateTest extends BaseDDLIntegrateTest {
             }
             if (isExecuteUpdate) {
                 if (SQLCaseType.Literal == getCaseType()) {
-                    connection.createStatement().execute(getSql());
-                } else {
-                    connection.prepareStatement(getSql()).execute();
-                }
-            } else {
-                if (SQLCaseType.Literal == getCaseType()) {
                     connection.createStatement().executeUpdate(getSql());
                 } else {
                     connection.prepareStatement(getSql()).executeUpdate();
+                }
+            } else {
+                if (SQLCaseType.Literal == getCaseType()) {
+                    connection.createStatement().execute(getSql());
+                } else {
+                    connection.prepareStatement(getSql()).execute();
                 }
             }
             assertMetadata(connection);

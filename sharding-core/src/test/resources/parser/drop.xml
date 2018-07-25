@@ -66,13 +66,13 @@
     
     <parser-result sql-case-id="drop_index_without_on">
         <tokens>
-            <index-token begin-position="11" original-literals="t_log_index" table-name="" />
+            <index-token begin-position="11" original-literals="order_index" table-name="" />
         </tokens>
     </parser-result>
     
     <parser-result sql-case-id="drop_index_if_exists">
         <tokens>
-            <index-token begin-position="21" original-literals="t_order_index" table-name="" />
+            <index-token begin-position="21" original-literals="order_index" table-name="" />
         </tokens>
     </parser-result>
 </parser-result-sets>

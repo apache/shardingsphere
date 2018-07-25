@@ -24,11 +24,12 @@ import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 
 /*
- * async retry
+ * Async retry operation which CreateAllNeed action.
  *
  * @author lidongbo
  */
 public class CreateAllNeedOperation extends BaseOperation {
+    
     private final String key;
     
     private final String value;

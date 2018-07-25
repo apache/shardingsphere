@@ -28,14 +28,14 @@ import java.util.List;
 import java.util.Stack;
 
 /*
- * provider api
+ * Provider api.
  *
  * @author lidongbo
  */
 public interface IProvider {
     
     /**
-     * get string type data.
+     * Get string type data.
      *
      * @param key key
      * @return data String
@@ -45,7 +45,7 @@ public interface IProvider {
     String getDataString(String key) throws KeeperException, InterruptedException;
     
     /**
-     * get string type data.
+     * Get string type data.
      *
      * @param key key
      * @return data
@@ -55,7 +55,7 @@ public interface IProvider {
     byte[] getData(String key) throws KeeperException, InterruptedException;
     
     /**
-     * get string type data.
+     * Get string type data.
      *
      * @param key key
      * @param callback callback
@@ -66,7 +66,7 @@ public interface IProvider {
     void getData(String key, AsyncCallback.DataCallback callback, Object ctx) throws KeeperException, InterruptedException;
     
     /**
-     * check exist.
+     * Check exist.
      *
      * @param key key
      * @return exist
@@ -76,7 +76,7 @@ public interface IProvider {
     boolean exists(String key) throws KeeperException, InterruptedException;
     
     /**
-     * check exist.
+     * Check exist.
      *
      * @param key key
      * @param watcher watcher
@@ -87,7 +87,7 @@ public interface IProvider {
     boolean exists(String key, Watcher watcher) throws KeeperException, InterruptedException;
     
     /**
-     * get children's keys.
+     * Get children's keys.
      *
      * @param key key
      * @return exist
@@ -97,7 +97,7 @@ public interface IProvider {
     List<String> getChildren(String key) throws KeeperException, InterruptedException;
     
     /**
-     * only create target node.
+     * Only create target node.
      *
      * @param key key
      * @param value value
@@ -108,7 +108,7 @@ public interface IProvider {
     void create(String key, String value, CreateMode createMode) throws KeeperException, InterruptedException;
     
     /**
-     * update.
+     * Update.
      *
      * @param key key
      * @param value value
@@ -118,7 +118,7 @@ public interface IProvider {
     void update(String key, String value) throws KeeperException, InterruptedException;
     
     /**
-     * only delete target node..
+     * Only delete target node..
      *
      * @param key key
      * @throws KeeperException Zookeeper Exception
@@ -127,7 +127,7 @@ public interface IProvider {
     void delete(String key) throws KeeperException, InterruptedException;
     
     /**
-     * only delete target node..
+     * Only delete target node..
      *
      * @param key key
      * @param callback callback
@@ -138,7 +138,7 @@ public interface IProvider {
     void delete(String key, AsyncCallback.VoidCallback callback, Object ctx) throws KeeperException, InterruptedException;
     
     /**
-     * get real path with root.
+     * Get real path with root.
      *
      * @param path path
      * @return real path
@@ -146,7 +146,7 @@ public interface IProvider {
     String getRealPath(String path);
     
     /**
-     * get path nodes that needed create.
+     * Get path nodes that needed create.
      *
      * @param key key
      * @return all path nodes
@@ -154,7 +154,7 @@ public interface IProvider {
     List<String> getNecessaryPaths(String key);
     
     /**
-     * get path nodes that needed delete.
+     * Get path nodes that needed delete.
      *
      * @param key key
      * @return all path nodes
@@ -162,7 +162,7 @@ public interface IProvider {
     Stack<String> getDeletingPaths(String key);
     
     /**
-     * contention exec.
+     * Contention exec.
      *
      * @param election election
      * @throws KeeperException Zookeeper Exception
@@ -171,12 +171,12 @@ public interface IProvider {
     void executeContention(LeaderElection election) throws KeeperException, InterruptedException;
     
     /**
-     * reset connection.
+     * Reset connection.
      */
     void resetConnection();
     
     /**
-     * create transaction.
+     * Create transaction.
      *
      * @return BaseTransaction
      */

@@ -18,7 +18,6 @@
 package io.shardingsphere.core.executor;
 
 import com.google.common.collect.Lists;
-import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -54,6 +53,7 @@ import java.util.concurrent.TimeUnit;
  * @author gaohongtao
  * @author zhangliang
  * @author maxiaoguang
+ * @author panjuan
  */
 @Slf4j
 public final class ExecutorEngine implements AutoCloseable {
@@ -88,13 +88,13 @@ public final class ExecutorEngine implements AutoCloseable {
         OverallExecutionEvent event = new OverallExecutionEvent(sqlType, baseStatementUnits.size());
         EventBusInstance.getInstance().post(event);
         Iterator<? extends BaseStatementUnit> iterator = baseStatementUnits.iterator();
-        BaseStatementUnit firstInput = iterator.next();
-        ListenableFuture<List<T>> restFutures = asyncExecute(sqlType, Lists.newArrayList(iterator), executeCallback);
-        T firstOutput;
-        List<T> restOutputs;
         try {
-            firstOutput = syncExecute(sqlType, firstInput, executeCallback);
-            restOutputs = restFutures.get();
+            T firstOutput = syncExecute(sqlType, iterator.next(), executeCallback);
+            List<ListenableFuture<T>> restFutures = asyncExecute(sqlType, Lists.newArrayList(iterator), executeCallback);
+            List<T> result = buildResultList(firstOutput, restFutures);
+            event.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+            EventBusInstance.getInstance().post(event);
+            return result;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -104,14 +104,9 @@ public final class ExecutorEngine implements AutoCloseable {
             ExecutorExceptionHandler.handleException(ex);
             return null;
         }
-        event.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
-        EventBusInstance.getInstance().post(event);
-        List<T> result = Lists.newLinkedList(restOutputs);
-        result.add(0, firstOutput);
-        return result;
     }
     
-    private <T> ListenableFuture<List<T>> asyncExecute(
+    private <T> List<ListenableFuture<T>> asyncExecute(
             final SQLType sqlType, final Collection<BaseStatementUnit> baseStatementUnits, final ExecuteCallback<T> executeCallback) {
         List<ListenableFuture<T>> result = new ArrayList<>(baseStatementUnits.size());
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
@@ -125,7 +120,7 @@ public final class ExecutorEngine implements AutoCloseable {
                 }
             }));
         }
-        return Futures.allAsList(result);
+        return result;
     }
     
     private <T> T syncExecute(final SQLType sqlType, final BaseStatementUnit baseStatementUnit, final ExecuteCallback<T> executeCallback) throws Exception {
@@ -162,6 +157,14 @@ public final class ExecutorEngine implements AutoCloseable {
             }
             return result;
         }
+    }
+    
+    private <T> List<T> buildResultList(final T firstOutput, final List<ListenableFuture<T>> restResultFutures) throws Exception {
+        List<T> result = new LinkedList<T>() { { add(firstOutput); } };
+        for (ListenableFuture<T> each : restResultFutures) {
+            result.add(each.get());
+        }
+        return result;
     }
     
     private AbstractExecutionEvent getExecutionEvent(final SQLType sqlType, final BaseStatementUnit baseStatementUnit, final List<Object> parameters) {
