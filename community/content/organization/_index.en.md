@@ -51,15 +51,7 @@ In various situations the Sharding shall hold a vote. These votes can happen on 
 
 ## External Committer
 
-* 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV) Technical manager, Kangda
-
-* 朱政科, Zhengke Zhu, [@CharlesMaster](https://github.com/CharlesMaster) Senior engineer, Hangzhou Enniu Network Technology Company Limited
-
 * 马晓光, Xiaoguang Ma, [@ma-xiao-guang-64](https://github.com/ma-xiao-guang-64) Senior engineer, huimai365
-
-* 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013) Java Expert, Antfin
-
-* 刘泽剑, ZeJian Liu, [@qiankunshe](https://github.com/qiankunshe) IT Manager, ZeDaYiSheng
 
 * 陈清阳, QingYang Chen, [@beckhampu](https://github.com/beckhampu) Senior engineer, Orange Finance
 
