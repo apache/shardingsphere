@@ -145,7 +145,7 @@ public final class ComQueryPacket implements QueryCommandPacket, CommandPacketRe
                 result = true;
             }
             if (result) {
-                TransactionContextHolder.set(new TransactionContext(RuleRegistry.getInstance().getTransactionManager(), RuleRegistry.getInstance().getTransactionType()));
+                TransactionContextHolder.set(new TransactionContext(RuleRegistry.getInstance().getTransactionManager(), RuleRegistry.getInstance().getTransactionType(), XaTransactionEvent.class));
                 EventBusInstance.getInstance().post(xaTransactionEvent);
             }
         } else {

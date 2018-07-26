@@ -20,6 +20,8 @@ package io.shardingsphere.core.jdbc.core.transaction;
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.transaction.TransactionContext;
 import io.shardingsphere.core.transaction.TransactionContextHolder;
+import io.shardingsphere.core.transaction.event.WeakXaTransactionEvent;
+import io.shardingsphere.core.transaction.event.XaTransactionEvent;
 import io.shardingsphere.core.transaction.listener.TransactionListener;
 import io.shardingsphere.core.transaction.spi.TransactionManager;
 import io.shardingsphere.core.util.EventBusInstance;
@@ -56,7 +58,12 @@ public final class TransactionLoader {
     
     private static void doXaTransactionConfiguration() {
         Iterator<TransactionManager> iterator = ServiceLoader.load(TransactionManager.class).iterator();
-        TransactionManager transactionManager = iterator.hasNext() ? iterator.next() : new WeakXaTransactionManager();
-        TransactionContextHolder.set(new TransactionContext(transactionManager, TransactionType.XA));
+        TransactionContext transactionContext;
+        if (iterator.hasNext()) {
+            transactionContext = new TransactionContext(iterator.next(), TransactionType.XA, XaTransactionEvent.class);
+        } else {
+            transactionContext = new TransactionContext(new WeakXaTransactionManager(), TransactionType.XA, WeakXaTransactionEvent.class);
+        }
+        TransactionContextHolder.set(transactionContext);
     }
 }

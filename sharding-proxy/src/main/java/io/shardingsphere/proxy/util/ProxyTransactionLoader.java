@@ -45,7 +45,7 @@ public final class ProxyTransactionLoader {
         TransactionManager result = null;
         switch (transactionType) {
             case XA:
-                result = doXaTransactionConfiguration(transactionType);
+                result = doXaTransactionConfiguration();
                 break;
             case BASE:
                 break;
@@ -55,7 +55,7 @@ public final class ProxyTransactionLoader {
         return result;
     }
     
-    private static TransactionManager doXaTransactionConfiguration(final TransactionType transactionType) {
+    private static TransactionManager doXaTransactionConfiguration() {
         Iterator<TransactionManager> iterator = ServiceLoader.load(TransactionManager.class).iterator();
         return iterator.hasNext() ? iterator.next() : null;
     }

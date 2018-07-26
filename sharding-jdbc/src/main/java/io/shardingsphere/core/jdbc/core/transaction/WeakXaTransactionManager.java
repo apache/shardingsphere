@@ -19,7 +19,6 @@ package io.shardingsphere.core.jdbc.core.transaction;
 
 import io.shardingsphere.core.transaction.event.TransactionEvent;
 import io.shardingsphere.core.transaction.event.WeakXaTransactionEvent;
-import io.shardingsphere.core.transaction.spi.TransactionEventHolder;
 import io.shardingsphere.core.transaction.spi.TransactionManager;
 
 import java.sql.Connection;
@@ -33,10 +32,6 @@ import java.util.LinkedList;
  * @author zhaojun
  */
 public final class WeakXaTransactionManager implements TransactionManager {
-    
-    static {
-        TransactionEventHolder.set(WeakXaTransactionEvent.class);
-    }
     
     @Override
     public void begin(final TransactionEvent transactionEvent) throws SQLException {
