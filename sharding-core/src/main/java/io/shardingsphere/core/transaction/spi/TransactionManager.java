@@ -20,11 +20,11 @@ package io.shardingsphere.core.transaction.spi;
 import io.shardingsphere.core.transaction.event.TransactionEvent;
 
 /**
- * Transaction Spi interface.
+ * TransactionManager Spi interface.
  *
  * @author zhaojun
  */
-public interface Transaction {
+public interface TransactionManager {
     
     /**
      * Do start a user transaction.

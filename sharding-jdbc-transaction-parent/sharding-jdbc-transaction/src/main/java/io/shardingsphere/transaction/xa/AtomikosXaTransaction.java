@@ -21,7 +21,7 @@ import com.atomikos.icatch.jta.UserTransactionManager;
 import io.shardingsphere.core.transaction.event.TransactionEvent;
 import io.shardingsphere.core.transaction.event.XaTransactionEvent;
 import io.shardingsphere.core.transaction.listener.TransactionListener;
-import io.shardingsphere.core.transaction.spi.Transaction;
+import io.shardingsphere.core.transaction.spi.TransactionManager;
 import io.shardingsphere.core.transaction.spi.TransactionEventHolder;
 import io.shardingsphere.core.util.EventBusInstance;
 
@@ -36,7 +36,7 @@ import javax.transaction.SystemException;
  *
  * @author zhaojun
  */
-public class AtomikosXaTransaction implements Transaction {
+public class AtomikosXaTransaction implements TransactionManager {
     
     private static UserTransactionManager transactionManager = AtomikosUserTransaction.getInstance();
     

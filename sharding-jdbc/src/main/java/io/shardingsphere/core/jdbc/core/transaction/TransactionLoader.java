@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.jdbc.core.transaction;
 
-import io.shardingsphere.core.transaction.spi.Transaction;
+import io.shardingsphere.core.transaction.spi.TransactionManager;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -37,8 +37,8 @@ public final class TransactionLoader {
      *
      * @return transaction SPI
      */
-    public static Transaction load() {
-        Iterator<Transaction> iterator = ServiceLoader.load(Transaction.class).iterator();
-        return iterator.hasNext() ? iterator.next() : new WeakXaTransaction();
+    public static TransactionManager load() {
+        Iterator<TransactionManager> iterator = ServiceLoader.load(TransactionManager.class).iterator();
+        return iterator.hasNext() ? iterator.next() : new WeakXaTransactionManager();
     }
 }

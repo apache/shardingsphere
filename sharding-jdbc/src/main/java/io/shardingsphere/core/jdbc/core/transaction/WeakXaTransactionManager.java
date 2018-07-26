@@ -20,7 +20,7 @@ package io.shardingsphere.core.jdbc.core.transaction;
 import io.shardingsphere.core.transaction.event.TransactionEvent;
 import io.shardingsphere.core.transaction.event.WeakXaTransactionEvent;
 import io.shardingsphere.core.transaction.listener.TransactionListener;
-import io.shardingsphere.core.transaction.spi.Transaction;
+import io.shardingsphere.core.transaction.spi.TransactionManager;
 import io.shardingsphere.core.transaction.spi.TransactionEventHolder;
 import io.shardingsphere.core.util.EventBusInstance;
 
@@ -34,10 +34,10 @@ import java.util.LinkedList;
  *
  * @author zhaojun
  */
-public final class WeakXaTransaction implements Transaction {
+public final class WeakXaTransactionManager implements TransactionManager {
     
     static {
-        EventBusInstance.getInstance().register(new TransactionListener(new WeakXaTransaction()));
+        EventBusInstance.getInstance().register(new TransactionListener(new WeakXaTransactionManager()));
         TransactionEventHolder.set(WeakXaTransactionEvent.class);
     }
     
