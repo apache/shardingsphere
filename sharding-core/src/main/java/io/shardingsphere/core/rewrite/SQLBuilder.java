@@ -103,7 +103,7 @@ public final class SQLBuilder {
             String logicTableName = ((ShardingPlaceholder) each).getLogicTableName();
             String actualTableName = logicAndActualTableMap.get(logicTableName);
             if (each instanceof TablePlaceholder) {
-                appendTablePlaceholder(logicTableName, actualTableName, result);
+                appendTablePlaceholder((TablePlaceholder) each, actualTableName, result);
             } else if (each instanceof SchemaPlaceholder) {
                 appendSchemaPlaceholder(shardingRule, shardingDataSourceMetaData, actualTableName, result);
             } else if (each instanceof IndexPlaceholder) {
@@ -118,8 +118,15 @@ public final class SQLBuilder {
         return new SQLUnit(result.toString(), parameterSets);
     }
     
-    private void appendTablePlaceholder(final String logicTableName, final String actualTableName, final StringBuilder stringBuilder) {
-        stringBuilder.append(null == actualTableName ? logicTableName : actualTableName);
+    private void appendTablePlaceholder(TablePlaceholder tablePlaceholder, final String actualTableName, final StringBuilder stringBuilder) {
+        final String logicTableName = tablePlaceholder.getLogicTableName();
+        final String originalLiterals = tablePlaceholder.getOriginalLiterals();
+        if (logicTableName.length() == originalLiterals.length()) {
+            stringBuilder.append(null == actualTableName ? logicTableName : actualTableName);
+        } else {
+            final char delimiter = originalLiterals.charAt(0);
+                stringBuilder.append(null == actualTableName ? originalLiterals : delimiter + actualTableName + delimiter);
+        }
     }
     
     private void appendSchemaPlaceholder(final ShardingRule shardingRule, final ShardingDataSourceMetaData shardingDataSourceMetaData,
