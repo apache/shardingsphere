@@ -61,18 +61,16 @@ public final class ComFieldListPacket implements QueryCommandPacket, CommandPack
     
     private final String fieldWildcard;
     
-    private final BackendConnection backendConnection;
+    private final BackendHandler backendHandler;
     
     private int currentSequenceId;
-    
-    private BackendHandler backendHandler;
     
     public ComFieldListPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         this.sequenceId = sequenceId;
         this.connectionId = connectionId;
         table = payload.readStringNul();
         fieldWildcard = payload.readStringEOF();
-        this.backendConnection = backendConnection;
+        backendHandler = BackendHandlerFactory.newTextProtocolInstance(sql(), backendConnection, DatabaseType.MySQL, this);
     }
     
     @Override
@@ -86,9 +84,7 @@ public final class ComFieldListPacket implements QueryCommandPacket, CommandPack
     public CommandResponsePackets execute() {
         log.debug("Table name received for Sharding-Proxy: {}", table);
         log.debug("Field wildcard received for Sharding-Proxy: {}", fieldWildcard);
-        String sql = String.format("SHOW COLUMNS FROM %s FROM %s", table, ShardingConstant.LOGIC_SCHEMA_NAME);
         // TODO use common database type
-        backendHandler = BackendHandlerFactory.newTextProtocolInstance(sql, backendConnection, DatabaseType.MySQL, this);
         DatabasePacket headPacket = backendHandler.execute().getHeadPacket();
         return headPacket instanceof ErrPacket ? new CommandResponsePackets(headPacket) : new CommandResponsePackets(new DummyPacket());
     }
