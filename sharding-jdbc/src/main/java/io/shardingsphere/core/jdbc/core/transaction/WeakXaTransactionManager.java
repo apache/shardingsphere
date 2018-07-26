@@ -69,6 +69,11 @@ public final class WeakXaTransactionManager implements TransactionManager {
         throwSQLExceptionIfNecessary(exceptions);
     }
     
+    @Override
+    public int getStatus() {
+        return 0;
+    }
+    
     private void throwSQLExceptionIfNecessary(final Collection<SQLException> exceptions) throws SQLException {
         if (exceptions.isEmpty()) {
             return;

@@ -21,7 +21,6 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.TransactionType;
-import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -40,11 +39,9 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandRes
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.QueryResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
-import io.shardingsphere.transaction.xa.AtomikosUserTransaction;
 import lombok.RequiredArgsConstructor;
 
 import javax.transaction.Status;
-import javax.transaction.SystemException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,14 +73,14 @@ public final class JDBCBackendHandler implements BackendHandler {
             return execute(executeEngine.getJdbcExecutorWrapper().route(sql, DatabaseType.MySQL));
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex));
-        } catch (final SystemException | ShardingException ex) {
+        } catch (final Exception ex) {
             Optional<SQLException> sqlException = findSQLException(ex);
             return sqlException.isPresent()
                     ? new CommandResponsePackets(new ErrPacket(1, sqlException.get())) : new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
         }
     }
     
-    private CommandResponsePackets execute(final SQLRouteResult routeResult) throws SQLException, SystemException {
+    private CommandResponsePackets execute(final SQLRouteResult routeResult) throws Exception {
         if (routeResult.getExecutionUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1));
         }
@@ -101,8 +98,8 @@ public final class JDBCBackendHandler implements BackendHandler {
     }
     
     // TODO should isolate Atomikos API to SPI
-    private boolean isUnsupportedXA(final SQLType sqlType) throws SystemException {
-        return TransactionType.XA == ruleRegistry.getTransactionType() && SQLType.DDL == sqlType && Status.STATUS_NO_TRANSACTION != AtomikosUserTransaction.getInstance().getStatus();
+    private boolean isUnsupportedXA(final SQLType sqlType) throws Exception {
+        return TransactionType.XA == ruleRegistry.getTransactionType() && SQLType.DDL == sqlType && Status.STATUS_NO_TRANSACTION != ruleRegistry.getTransactionManager().getStatus();
     }
     
     private CommandResponsePackets merge(final SQLStatement sqlStatement) throws SQLException {

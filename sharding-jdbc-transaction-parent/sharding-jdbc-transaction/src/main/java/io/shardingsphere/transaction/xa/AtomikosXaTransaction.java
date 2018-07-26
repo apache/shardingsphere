@@ -58,4 +58,9 @@ public class AtomikosXaTransaction implements TransactionManager {
     public void rollback(final TransactionEvent transactionEvent) throws SystemException {
         transactionManager.rollback();
     }
+    
+    @Override
+    public int getStatus() throws SystemException {
+        return transactionManager.getStatus();
+    }
 }

@@ -49,4 +49,16 @@ public interface TransactionManager {
      * @throws Exception Exception
      */
     void rollback(TransactionEvent transactionEvent) throws Exception;
+    
+    /**
+     * Obtain the status of the transaction associated with the current thread.
+     *
+     *  @return The transaction status.
+     *  <p>
+     *  If no transaction is associated with the current thread, this method returns the Status.NoTransaction value
+     * </p>
+     *
+     * @throws Exception Exception
+     */
+    int getStatus() throws Exception;
 }

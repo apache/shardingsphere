@@ -38,12 +38,10 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.QueryCommandPacket
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
-import io.shardingsphere.transaction.xa.AtomikosUserTransaction;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.transaction.Status;
-import javax.transaction.SystemException;
 import java.sql.SQLException;
 
 /**
@@ -94,7 +92,7 @@ public final class ComQueryPacket implements QueryCommandPacket, CommandPacketRe
             if (doTransactionIntercept()) {
                 return new CommandResponsePackets(new OKPacket(1));
             }
-        } catch (final SystemException ex) {
+        } catch (final Exception ex) {
             return new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
         }
         return backendHandler.execute();
@@ -130,7 +128,7 @@ public final class ComQueryPacket implements QueryCommandPacket, CommandPacketRe
         return new ComQueryPacket((int) params[0], (int) params[1], (String) params[2]);
     }
     
-    private boolean doTransactionIntercept() throws SystemException {
+    private boolean doTransactionIntercept() throws Exception {
         boolean result = false;
         if (TransactionType.XA.equals(RuleRegistry.getInstance().getTransactionType())) {
             XaTransactionEvent xaTransactionEvent = new XaTransactionEvent(sql);
@@ -164,8 +162,8 @@ public final class ComQueryPacket implements QueryCommandPacket, CommandPacketRe
         return "COMMIT".equalsIgnoreCase(sql);
     }
     
-    private boolean isXaRollback() throws SystemException {
-        return "ROLLBACK".equalsIgnoreCase(sql) && Status.STATUS_NO_TRANSACTION != AtomikosUserTransaction.getInstance().getStatus();
+    private boolean isXaRollback() throws Exception {
+        return "ROLLBACK".equalsIgnoreCase(sql) && Status.STATUS_NO_TRANSACTION != RuleRegistry.getInstance().getTransactionManager().getStatus();
     }
     
     private boolean isRollback() {
