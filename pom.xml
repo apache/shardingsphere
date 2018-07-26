@@ -81,7 +81,6 @@
         <commons-codec.version>1.10</commons-codec.version>
         <atomikos.version>4.0.4</atomikos.version>
         <javax.transaction.version>1.1</javax.transaction.version>
-        <commons-exec.version>1.3</commons-exec.version>
         
         <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
     </properties>
@@ -343,11 +342,6 @@
                 <groupId>javax.transaction</groupId>
                 <artifactId>jta</artifactId>
                 <version>${javax.transaction.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-exec</artifactId>
-                <version>${commons-exec.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
