@@ -25,13 +25,12 @@ import io.shardingsphere.proxy.backend.jdbc.BackendConnection;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
-import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.QueryCommandPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.binary.close.DummyPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ComQueryPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextResultSetRowPacket;
@@ -84,7 +83,6 @@ public final class ComFieldListPacket implements QueryCommandPacket, CommandPack
     public CommandResponsePackets execute() {
         log.debug("Table name received for Sharding-Proxy: {}", table);
         log.debug("Field wildcard received for Sharding-Proxy: {}", fieldWildcard);
-        // TODO use common database type
         DatabasePacket headPacket = backendHandler.execute().getHeadPacket();
         return headPacket instanceof ErrPacket ? new CommandResponsePackets(headPacket) : new CommandResponsePackets(new DummyPacket());
     }
@@ -96,13 +94,9 @@ public final class ComFieldListPacket implements QueryCommandPacket, CommandPack
     
     @Override
     public DatabasePacket getResultValue() throws SQLException {
-        DatabasePacket resultValue = backendHandler.getResultValue();
-        if (resultValue instanceof TextResultSetRowPacket) {
-            TextResultSetRowPacket fieldListResponse = (TextResultSetRowPacket) resultValue;
-            String columnName = (String) fieldListResponse.getData().get(0);
-            return new ColumnDefinition41Packet(++currentSequenceId, ShardingConstant.LOGIC_SCHEMA_NAME, table, table, columnName, columnName, 100, ColumnType.MYSQL_TYPE_VARCHAR, 0);
-        }
-        return new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, "");
+        TextResultSetRowPacket fieldListResponse = (TextResultSetRowPacket) backendHandler.getResultValue();
+        String columnName = (String) fieldListResponse.getData().get(0);
+        return new ColumnDefinition41Packet(++currentSequenceId, ShardingConstant.LOGIC_SCHEMA_NAME, table, table, columnName, columnName, 100, ColumnType.MYSQL_TYPE_VARCHAR, 0);
     }
     
     @Override
