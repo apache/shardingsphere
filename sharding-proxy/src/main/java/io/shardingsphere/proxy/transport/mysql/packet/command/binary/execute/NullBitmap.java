@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute;
+package io.shardingsphere.proxy.transport.mysql.packet.command.binary.execute;
 
 import lombok.Getter;
 

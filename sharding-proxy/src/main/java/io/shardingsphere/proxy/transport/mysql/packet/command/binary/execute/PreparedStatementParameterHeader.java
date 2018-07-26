@@ -15,19 +15,27 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.transport.mysql.packet.command.statement.close;
+package io.shardingsphere.proxy.transport.mysql.packet.command.binary.execute;
 
-import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
+import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+import java.io.Serializable;
 
 /**
- * Customized dummy packet.
+ * Prepared statement parameter header.
  *
  * @author zhangyonglun
  */
-public final class DummyPacket implements DatabasePacket {
+@AllArgsConstructor
+@Getter
+public class PreparedStatementParameterHeader implements Serializable {
     
-    @Override
-    public int getSequenceId() {
-        return 1;
-    }
+    private static final long serialVersionUID = -672589695838350689L;
+    
+    private final ColumnType columnType;
+    
+    private final int unsignedFlag;
+    
 }

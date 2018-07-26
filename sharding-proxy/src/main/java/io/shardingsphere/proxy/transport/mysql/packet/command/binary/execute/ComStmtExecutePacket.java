@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute;
+package io.shardingsphere.proxy.transport.mysql.packet.command.binary.execute;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.DatabaseType;
@@ -31,7 +31,7 @@ import io.shardingsphere.proxy.transport.mysql.constant.NewParametersBoundFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.QueryCommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
-import io.shardingsphere.proxy.transport.mysql.packet.command.statement.PreparedStatementRegistry;
+import io.shardingsphere.proxy.transport.mysql.packet.command.binary.PreparedStatementRegistry;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -90,7 +90,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
         setParameterList(payload, numParameters, newParametersBoundFlag);
         this.backendConnection = backendConnection;
         jdbcBackendHandler = new JDBCBackendHandler(
-                PreparedStatementRegistry.getInstance().getSQL(statementId), JDBCExecuteEngineFactory.createStatementProtocolInstance(preparedStatementParameters, backendConnection));
+                PreparedStatementRegistry.getInstance().getSQL(statementId), JDBCExecuteEngineFactory.createBinaryProtocolInstance(preparedStatementParameters, backendConnection));
     }
     
     private void setParameterList(final MySQLPacketPayload payload, final int numParameters, final NewParametersBoundFlag newParametersBoundFlag) {

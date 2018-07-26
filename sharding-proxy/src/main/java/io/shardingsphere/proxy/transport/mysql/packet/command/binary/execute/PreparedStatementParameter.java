@@ -15,27 +15,29 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute;
+package io.shardingsphere.proxy.transport.mysql.packet.command.binary.execute;
 
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.io.Serializable;
+import lombok.Setter;
 
 /**
- * Prepared statement parameter header.
+ * Prepared statement parameter.
  *
  * @author zhangyonglun
  */
-@AllArgsConstructor
 @Getter
-public class PreparedStatementParameterHeader implements Serializable {
+@Setter
+public final class PreparedStatementParameter extends PreparedStatementParameterHeader {
     
-    private static final long serialVersionUID = -672589695838350689L;
+    private Object value;
     
-    private final ColumnType columnType;
+    public PreparedStatementParameter(final ColumnType columnType, final int unsignedFlag) {
+        super(columnType, unsignedFlag);
+    }
     
-    private final int unsignedFlag;
-    
+    public PreparedStatementParameter(final ColumnType columnType, final int unsignedFlag, final String value) {
+        super(columnType, unsignedFlag);
+        this.value = value;
+    }
 }

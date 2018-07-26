@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.transport.mysql.packet.command.statement.prepare;
+package io.shardingsphere.proxy.transport.mysql.packet.command.binary.prepare;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.ShardingConstant;
@@ -28,7 +28,7 @@ import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
-import io.shardingsphere.proxy.transport.mysql.packet.command.statement.PreparedStatementRegistry;
+import io.shardingsphere.proxy.transport.mysql.packet.command.binary.PreparedStatementRegistry;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import lombok.Getter;

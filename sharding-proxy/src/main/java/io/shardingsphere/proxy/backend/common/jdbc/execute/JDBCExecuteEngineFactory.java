@@ -25,7 +25,7 @@ import io.shardingsphere.proxy.backend.common.jdbc.wrapper.JDBCExecutorWrapper;
 import io.shardingsphere.proxy.backend.common.jdbc.wrapper.PreparedStatementExecutorWrapper;
 import io.shardingsphere.proxy.backend.common.jdbc.wrapper.StatementExecutorWrapper;
 import io.shardingsphere.proxy.config.RuleRegistry;
-import io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute.PreparedStatementParameter;
+import io.shardingsphere.proxy.transport.mysql.packet.command.binary.execute.PreparedStatementParameter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -52,13 +52,13 @@ public final class JDBCExecuteEngineFactory {
     }
     
     /**
-     * Create instance for statement protocol.
+     * Create instance for binary protocol.
      *
      * @param preparedStatementParameters parameters of prepared statement
      * @param backendConnection backend connection
-     * @return instance for statement protocol
+     * @return instance for binary protocol
      */
-    public static JDBCExecuteEngine createStatementProtocolInstance(final List<PreparedStatementParameter> preparedStatementParameters, final BackendConnection backendConnection) {
+    public static JDBCExecuteEngine createBinaryProtocolInstance(final List<PreparedStatementParameter> preparedStatementParameters, final BackendConnection backendConnection) {
         JDBCExecutorWrapper jdbcExecutorWrapper = new PreparedStatementExecutorWrapper(preparedStatementParameters);
         return ProxyMode.MEMORY_STRICTLY == RuleRegistry.getInstance().getProxyMode()
                 ? new MemoryStrictlyExecuteEngine(backendConnection, jdbcExecutorWrapper) : new ConnectionStrictlyExecuteEngine(backendConnection, jdbcExecutorWrapper);
