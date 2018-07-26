@@ -15,32 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.transaction;
+package io.shardingsphere.core.transaction;
+
+import io.shardingsphere.core.constant.TransactionType;
+import io.shardingsphere.core.transaction.spi.TransactionManager;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 /**
- * Hold transaction context for current thread.
+ * Hold Transaction Context.
  *
  * @author zhaojun
  */
-public class TransactionContextHolder {
+@AllArgsConstructor
+@Getter
+public final class TransactionContext {
     
-    private static final ThreadLocal<TransactionContext> CONTEXT = new ThreadLocal<>();
+    private final TransactionManager transactionManager;
     
-    /**
-     * Get transaction context for current thread.
-     *
-     * @return TransactionContext
-     */
-    public static TransactionContext get() {
-        return CONTEXT.get();
-    }
-    
-    /**
-     * Set transaction context for current thread.
-     *
-     * @param context Transaction context
-     */
-    public static void set(final TransactionContext context) {
-        CONTEXT.set(context);
-    }
+    private final TransactionType transactionType;
 }

@@ -37,7 +37,7 @@ import java.util.LinkedList;
 public final class WeakXaTransactionManager implements TransactionManager {
     
     static {
-        EventBusInstance.getInstance().register(new TransactionListener(new WeakXaTransactionManager()));
+        EventBusInstance.getInstance().register(new TransactionListener());
         TransactionEventHolder.set(WeakXaTransactionEvent.class);
     }
     
