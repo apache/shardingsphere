@@ -17,7 +17,12 @@
 
 package io.shardingsphere.core.jdbc.core.transaction;
 
+import io.shardingsphere.core.constant.TransactionType;
+import io.shardingsphere.core.transaction.TransactionContext;
+import io.shardingsphere.core.transaction.TransactionContextHolder;
+import io.shardingsphere.core.transaction.listener.TransactionListener;
 import io.shardingsphere.core.transaction.spi.TransactionManager;
+import io.shardingsphere.core.util.EventBusInstance;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -35,10 +40,21 @@ public final class TransactionLoader {
     /**
      * Using ServiceLoader to dynamic load spi transaction.
      *
-     * @return transaction SPI
      */
-    public static TransactionManager load() {
+    public static void load() {
+        TransactionContext transactionContext = TransactionContextHolder.get();
+        switch (transactionContext.getTransactionType()) {
+            case XA:
+                doXaTransactionConfiguration();
+                break;
+            case BASE:
+        }
+        EventBusInstance.getInstance().register(TransactionListener.getInstance());
+    }
+    
+    private static void doXaTransactionConfiguration() {
         Iterator<TransactionManager> iterator = ServiceLoader.load(TransactionManager.class).iterator();
-        return iterator.hasNext() ? iterator.next() : new WeakXaTransactionManager();
+        TransactionManager transactionManager = iterator.hasNext() ? iterator.next() : null;
+        TransactionContextHolder.set(new TransactionContext(transactionManager, TransactionType.XA));
     }
 }

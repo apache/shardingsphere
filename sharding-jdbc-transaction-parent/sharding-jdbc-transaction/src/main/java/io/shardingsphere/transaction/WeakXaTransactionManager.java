@@ -15,14 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.core.jdbc.core.transaction;
+package io.shardingsphere.transaction;
 
 import io.shardingsphere.core.transaction.event.TransactionEvent;
 import io.shardingsphere.core.transaction.event.WeakXaTransactionEvent;
-import io.shardingsphere.core.transaction.listener.TransactionListener;
-import io.shardingsphere.core.transaction.spi.TransactionManager;
 import io.shardingsphere.core.transaction.spi.TransactionEventHolder;
-import io.shardingsphere.core.util.EventBusInstance;
+import io.shardingsphere.core.transaction.spi.TransactionManager;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -37,7 +35,6 @@ import java.util.LinkedList;
 public final class WeakXaTransactionManager implements TransactionManager {
     
     static {
-        EventBusInstance.getInstance().register(new TransactionListener());
         TransactionEventHolder.set(WeakXaTransactionEvent.class);
     }
     

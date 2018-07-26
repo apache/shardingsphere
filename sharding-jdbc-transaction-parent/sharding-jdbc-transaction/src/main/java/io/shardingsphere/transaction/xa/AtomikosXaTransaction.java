@@ -41,7 +41,6 @@ public class AtomikosXaTransaction implements TransactionManager {
     private static UserTransactionManager transactionManager = AtomikosUserTransaction.getInstance();
     
     static {
-        EventBusInstance.getInstance().register(new TransactionListener());
         TransactionEventHolder.set(XaTransactionEvent.class);
     }
     
