@@ -20,11 +20,8 @@ package io.shardingsphere.proxy.transport.mysql.packet.command.text.fieldlist;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.proxy.backend.common.BackendHandler;
-import io.shardingsphere.proxy.backend.common.netty.SQLPacketsBackendHandler;
+import io.shardingsphere.proxy.backend.common.BackendHandlerFactory;
 import io.shardingsphere.proxy.backend.common.jdbc.BackendConnection;
-import io.shardingsphere.proxy.backend.common.jdbc.JDBCBackendHandler;
-import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngineFactory;
-import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
@@ -91,14 +88,9 @@ public final class ComFieldListPacket implements QueryCommandPacket, CommandPack
         log.debug("Field wildcard received for Sharding-Proxy: {}", fieldWildcard);
         String sql = String.format("SHOW COLUMNS FROM %s FROM %s", table, ShardingConstant.LOGIC_SCHEMA_NAME);
         // TODO use common database type
-        backendHandler = getBackendHandler(sql, backendConnection);
+        backendHandler = BackendHandlerFactory.newTextProtocolInstance(sql, backendConnection, DatabaseType.MySQL, this);
         DatabasePacket headPacket = backendHandler.execute().getHeadPacket();
         return headPacket instanceof ErrPacket ? new CommandResponsePackets(headPacket) : new CommandResponsePackets(new DummyPacket());
-    }
-    
-    private BackendHandler getBackendHandler(final String sql, final BackendConnection backendConnection) {
-        return RuleRegistry.getInstance().isProxyBackendUseNio() 
-                ? new SQLPacketsBackendHandler(this, DatabaseType.MySQL) : new JDBCBackendHandler(sql, JDBCExecuteEngineFactory.createTextProtocolInstance(backendConnection));
     }
     
     @Override
