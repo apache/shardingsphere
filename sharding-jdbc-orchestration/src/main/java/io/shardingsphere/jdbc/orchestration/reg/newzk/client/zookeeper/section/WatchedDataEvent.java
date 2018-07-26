@@ -23,7 +23,6 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 
 /*
@@ -57,15 +56,19 @@ public class WatchedDataEvent extends WatchedEvent {
         if (Strings.isNullOrEmpty(event.getPath())) {
             return null;
         }
-        if (Watcher.Event.EventType.NodeDeleted == event.getType()) {
-            return null;
-        }
-        byte[] result;
         try {
-            result = zooKeeper.getData(event.getPath(), true, null);
+            if (zooKeeper.exists(event.getPath(), true) != null) {
+                return new String(zooKeeper.getData(event.getPath(), true, null), ZookeeperConstants.UTF_8);
+            }
         } catch (final KeeperException | InterruptedException ex) {
-            return null;
+            // ignore
+            log.warn("init data:{}", ex.getMessage());
         }
-        return new String(result, ZookeeperConstants.UTF_8);
+        return null;
+    }
+    
+    @Override
+    public String toString() {
+        return super.toString() + " data : " + data;
     }
 }
