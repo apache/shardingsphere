@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.common;
+package io.shardingsphere.proxy.backend.common.netty;
 
 import io.netty.channel.Channel;
 import io.netty.channel.pool.ChannelPoolHandler;

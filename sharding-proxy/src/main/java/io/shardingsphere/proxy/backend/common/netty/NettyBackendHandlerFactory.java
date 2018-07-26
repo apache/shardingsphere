@@ -15,19 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.common;
+package io.shardingsphere.proxy.backend.common.netty;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.proxy.backend.mysql.MySQLBackendHandler;
 import io.shardingsphere.proxy.config.DataSourceConfig;
 
 /**
- * Backend handler factory.
+ * Backend handler factory for netty.
  *
  * @author wangkai
  * @author linjiaqi
  */
-public final class BackendHandlerFactory {
+public final class NettyBackendHandlerFactory {
     /**
      * Create backend handler instance.
      *

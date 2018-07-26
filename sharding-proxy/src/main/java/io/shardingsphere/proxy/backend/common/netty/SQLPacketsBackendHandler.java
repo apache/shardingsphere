@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.common;
+package io.shardingsphere.proxy.backend.common.netty;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -33,6 +33,7 @@ import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.StatementRoutingEngine;
 import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingsphere.proxy.backend.ShardingProxyClient;
+import io.shardingsphere.proxy.backend.common.BackendHandler;
 import io.shardingsphere.proxy.backend.mysql.MySQLQueryResult;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;

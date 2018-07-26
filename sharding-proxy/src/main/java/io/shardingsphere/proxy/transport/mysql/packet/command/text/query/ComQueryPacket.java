@@ -23,7 +23,7 @@ import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.transaction.event.XaTransactionEvent;
 import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.proxy.backend.common.BackendHandler;
-import io.shardingsphere.proxy.backend.common.SQLPacketsBackendHandler;
+import io.shardingsphere.proxy.backend.common.netty.SQLPacketsBackendHandler;
 import io.shardingsphere.proxy.backend.common.jdbc.BackendConnection;
 import io.shardingsphere.proxy.backend.common.jdbc.JDBCBackendHandler;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngineFactory;

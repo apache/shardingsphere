@@ -20,7 +20,7 @@ package io.shardingsphere.proxy.transport.mysql.packet.command.text.fieldlist;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.proxy.backend.common.BackendHandler;
-import io.shardingsphere.proxy.backend.common.SQLPacketsBackendHandler;
+import io.shardingsphere.proxy.backend.common.netty.SQLPacketsBackendHandler;
 import io.shardingsphere.proxy.backend.common.jdbc.BackendConnection;
 import io.shardingsphere.proxy.backend.common.jdbc.JDBCBackendHandler;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngineFactory;
