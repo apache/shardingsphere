@@ -20,10 +20,8 @@ package io.shardingsphere.transaction.xa;
 import com.atomikos.icatch.jta.UserTransactionManager;
 import io.shardingsphere.core.transaction.event.TransactionEvent;
 import io.shardingsphere.core.transaction.event.XaTransactionEvent;
-import io.shardingsphere.core.transaction.listener.TransactionListener;
-import io.shardingsphere.core.transaction.spi.TransactionManager;
 import io.shardingsphere.core.transaction.spi.TransactionEventHolder;
-import io.shardingsphere.core.util.EventBusInstance;
+import io.shardingsphere.core.transaction.spi.TransactionManager;
 
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
@@ -41,13 +39,20 @@ public class AtomikosXaTransaction implements TransactionManager {
     private static UserTransactionManager transactionManager = AtomikosUserTransaction.getInstance();
     
     static {
-        TransactionEventHolder.set(XaTransactionEvent.class);
+        try {
+            init();
+        } catch (SystemException e) {
+            e.printStackTrace();
+        }
     }
     
     /**
      * Init.
+     *
+     * @throws SystemException System Exception
      */
-    public static void init() throws SystemException {
+    private static void init() throws SystemException {
+        TransactionEventHolder.set(XaTransactionEvent.class);
         transactionManager.init();
     }
     

@@ -24,11 +24,9 @@ import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusInstance;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.frontend.ShardingProxy;
-import io.shardingsphere.transaction.xa.AtomikosXaTransaction;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
-import javax.transaction.SystemException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -55,7 +53,7 @@ public final class Bootstrap {
      * @throws InterruptedException interrupted exception
      * @throws IOException IO exception
      */
-    public static void main(final String[] args) throws InterruptedException, IOException, SystemException {
+    public static void main(final String[] args) throws InterruptedException, IOException {
         OrchestrationProxyConfiguration localConfig = loadLocalConfiguration(new File(Bootstrap.class.getResource(CONFIG_YAML).getFile()));
         int port = getPort(args);
         if (null == localConfig.getOrchestration()) {
@@ -91,18 +89,16 @@ public final class Bootstrap {
         }
     }
     
-    private static void startWithoutRegistryCenter(final OrchestrationProxyConfiguration config, final int port) throws InterruptedException, MalformedURLException, SystemException {
-        AtomikosXaTransaction.init();
+    private static void startWithoutRegistryCenter(final OrchestrationProxyConfiguration config, final int port) throws InterruptedException, MalformedURLException {
         RuleRegistry.getInstance().init(config);
         new ShardingProxy().start(port);
     }
     
-    private static void startWithRegistryCenter(final OrchestrationProxyConfiguration localConfig, final int port) throws InterruptedException, MalformedURLException, SystemException {
+    private static void startWithRegistryCenter(final OrchestrationProxyConfiguration localConfig, final int port) throws InterruptedException, MalformedURLException {
         try (OrchestrationFacade orchestrationFacade = new OrchestrationFacade(localConfig.getOrchestration().getOrchestrationConfiguration())) {
             if (null != localConfig.getShardingRule() || null != localConfig.getMasterSlaveRule()) {
                 orchestrationFacade.init(localConfig);
             }
-            AtomikosXaTransaction.init();
             initRuleRegistry(orchestrationFacade.getConfigService());
             new ShardingProxy().start(port);
         }

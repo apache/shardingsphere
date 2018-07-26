@@ -20,6 +20,8 @@ package io.shardingsphere.proxy.transport.mysql.packet.command.text.query;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.TCLType;
 import io.shardingsphere.core.constant.TransactionType;
+import io.shardingsphere.core.transaction.TransactionContext;
+import io.shardingsphere.core.transaction.TransactionContextHolder;
 import io.shardingsphere.core.transaction.event.XaTransactionEvent;
 import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.proxy.backend.common.BackendHandler;
@@ -156,6 +158,7 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
                 result = true;
             }
             if (result) {
+                TransactionContextHolder.set(new TransactionContext(RuleRegistry.getInstance().getTransactionManager(), RuleRegistry.getInstance().getTransactionType()));
                 EventBusInstance.getInstance().post(xaTransactionEvent);
             }
         } else {
