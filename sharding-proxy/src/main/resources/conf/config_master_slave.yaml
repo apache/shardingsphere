@@ -1,13 +1,14 @@
 ##################      ##################
 # Here you can configure the rules for the proxy.
 #
-# We provide two kinds of configurations for example. This one is the configuration of Sharding rule,
-# If you want to use Sharding, please refer to the this one, and if you only want to use master-slave,
-# please refer to config_master_slave.yaml.
+# We provide two kinds of configurations for example. This one is the configuration of Master slave rule,
+# If you only want to use master-slave, please refer to this one, and if you want to use Sharding,
+# please refer to the config.yaml.
 #
 ##################      ##################
 
-# The example of Sharding rule.
+
+# The example of master-slave rule.
 
 #dataSources:
 #  ds_0:
@@ -28,32 +29,11 @@
 #    idleTimeout: 60000
 #    maxLifetime: 1800000
 #    maximumPoolSize: 65
-#
-#shardingRule:
-#  tables:
-#    t_order:
-#      actualDataNodes: ds_${0..1}.t_order_${0..1}
-#      tableStrategy:
-#        inline:
-#          shardingColumn: order_id
-#          algorithmExpression: t_order_${order_id % 2}
-#      keyGeneratorColumnName: order_id
-#    t_order_item:
-#      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
-#      tableStrategy:
-#        inline:
-#          shardingColumn: order_id
-#          algorithmExpression: t_order_item_${order_id % 2}
-#  bindingTables:
-#    - t_order,t_order_item
-#  defaultDatabaseStrategy:
-#    inline:
-#      shardingColumn: user_id
-#      algorithmExpression: ds_${user_id % 2}
-#  defaultTableStrategy:
-#    none:
-#  defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
-#
+#masterSlaveRule:
+#  name: ds_ms
+#  masterDataSourceName: ds_0
+#  slaveDataSourceNames:
+#    - ds_1
 #  props:
 #    # MEMORY_STRICTLY: Proxy holds as many connections as the count of actual tables routed in a database.
 #    #                  The benefit of this approach is saving memory for Proxy by Stream ResultSet.

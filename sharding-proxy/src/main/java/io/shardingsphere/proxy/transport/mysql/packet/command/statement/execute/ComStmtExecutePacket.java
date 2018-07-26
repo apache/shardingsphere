@@ -29,7 +29,7 @@ import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.constant.NewParametersBoundFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.QueryCommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.PreparedStatementRegistry;
 import lombok.Getter;
@@ -48,7 +48,7 @@ import java.util.List;
  */
 @Getter
 @Slf4j
-public final class ComStmtExecutePacket implements CommandPacket {
+public final class ComStmtExecutePacket implements QueryCommandPacket {
     
     private static final ColumnType NULL_PARAMETER_DEFAULT_COLUMN_TYPE = ColumnType.MYSQL_TYPE_STRING;
     

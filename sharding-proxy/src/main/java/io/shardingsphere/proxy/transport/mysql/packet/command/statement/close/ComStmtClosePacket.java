@@ -17,7 +17,6 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command.statement.close;
 
-import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
@@ -52,15 +51,5 @@ public class ComStmtClosePacket implements CommandPacket {
     public CommandResponsePackets execute() {
         log.debug("COM_STMT_CLOSE received for Sharding-Proxy: {}", statementId);
         return new CommandResponsePackets(new DummyPacket());
-    }
-    
-    @Override
-    public boolean next() {
-        return false;
-    }
-    
-    @Override
-    public DatabasePacket getResultValue() {
-        return null;
     }
 }

@@ -17,7 +17,6 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command.text.ping;
 
-import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
@@ -47,15 +46,5 @@ public final class ComPingPacket implements CommandPacket {
     @Override
     public void write(final MySQLPacketPayload payload) {
         payload.writeInt1(CommandPacketType.COM_QUIT.getValue());
-    }
-    
-    @Override
-    public boolean next() {
-        return false;
-    }
-    
-    @Override
-    public DatabasePacket getResultValue() {
-        return null;
     }
 }
