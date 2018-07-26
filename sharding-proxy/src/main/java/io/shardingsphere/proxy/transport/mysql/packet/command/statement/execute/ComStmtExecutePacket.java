@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.SQLParsingEngine;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.proxy.backend.common.jdbc.BackendConnection;
 import io.shardingsphere.proxy.backend.common.jdbc.JDBCBackendHandler;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngineFactory;
 import io.shardingsphere.proxy.config.RuleRegistry;
@@ -28,7 +29,7 @@ import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.constant.NewParametersBoundFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.QueryCommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.PreparedStatementRegistry;
 import lombok.Getter;
@@ -47,13 +48,15 @@ import java.util.List;
  */
 @Getter
 @Slf4j
-public final class ComStmtExecutePacket extends CommandPacket {
+public final class ComStmtExecutePacket implements QueryCommandPacket {
     
     private static final ColumnType NULL_PARAMETER_DEFAULT_COLUMN_TYPE = ColumnType.MYSQL_TYPE_STRING;
     
     private static final int NULL_PARAMETER_DEFAULT_UNSIGNED_FLAG = 0;
     
     private static final int RESERVED_BIT_LENGTH = 0;
+    
+    private final int sequenceId;
     
     private final int statementId;
     
@@ -67,10 +70,12 @@ public final class ComStmtExecutePacket extends CommandPacket {
     
     private final List<PreparedStatementParameter> preparedStatementParameters = new ArrayList<>(32);
     
+    private final BackendConnection backendConnection;
+    
     private final JDBCBackendHandler jdbcBackendHandler;
     
-    public ComStmtExecutePacket(final int sequenceId, final MySQLPacketPayload payload) {
-        super(sequenceId);
+    public ComStmtExecutePacket(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
+        this.sequenceId = sequenceId;
         statementId = payload.readInt4();
         flags = payload.readInt1();
         Preconditions.checkArgument(iterationCount == payload.readInt4());
@@ -83,7 +88,9 @@ public final class ComStmtExecutePacket extends CommandPacket {
         }
         newParametersBoundFlag = NewParametersBoundFlag.valueOf(payload.readInt1());
         setParameterList(payload, numParameters, newParametersBoundFlag);
-        jdbcBackendHandler = new JDBCBackendHandler(PreparedStatementRegistry.getInstance().getSQL(statementId), JDBCExecuteEngineFactory.createStatementProtocolInstance(preparedStatementParameters));
+        this.backendConnection = backendConnection;
+        jdbcBackendHandler = new JDBCBackendHandler(
+                PreparedStatementRegistry.getInstance().getSQL(statementId), JDBCExecuteEngineFactory.createStatementProtocolInstance(preparedStatementParameters, backendConnection));
     }
     
     private void setParameterList(final MySQLPacketPayload payload, final int numParameters, final NewParametersBoundFlag newParametersBoundFlag) {
@@ -155,16 +162,12 @@ public final class ComStmtExecutePacket extends CommandPacket {
     }
     
     @Override
-    public boolean hasMoreResultValue() {
-        try {
-            return jdbcBackendHandler.hasMoreResultValue();
-        } catch (final SQLException ex) {
-            return false;
-        }
+    public boolean next() throws SQLException {
+        return jdbcBackendHandler.next();
     }
     
     @Override
-    public DatabasePacket getResultValue() {
+    public DatabasePacket getResultValue() throws SQLException {
         return jdbcBackendHandler.getResultValue();
     }
 }

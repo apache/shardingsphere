@@ -23,4 +23,10 @@ package io.shardingsphere.proxy.transport.common.packet;
  * @author zhangliang
  */
 public interface DatabasePacket {
+    
+    /**
+     * Get sequence ID.
+     * @return sequence ID
+     */
+    int getSequenceId();
 }

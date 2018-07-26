@@ -18,7 +18,6 @@
 package io.shardingsphere.proxy.transport.mysql.packet.command.text.initdb;
 
 import io.shardingsphere.core.constant.ShardingConstant;
-import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
@@ -26,6 +25,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -36,12 +36,15 @@ import lombok.extern.slf4j.Slf4j;
  * @author zhangliang
  */
 @Slf4j
-public final class ComInitDbPacket extends CommandPacket {
+public final class ComInitDbPacket implements CommandPacket {
+    
+    @Getter
+    private final int sequenceId;
     
     private final String schemaName;
     
     public ComInitDbPacket(final int sequenceId, final MySQLPacketPayload payload) {
-        super(sequenceId);
+        this.sequenceId = sequenceId;
         schemaName = payload.readStringEOF();
     }
     
@@ -58,15 +61,5 @@ public final class ComInitDbPacket extends CommandPacket {
             return new CommandResponsePackets(new OKPacket(getSequenceId() + 1));
         }
         return new CommandResponsePackets(new ErrPacket(getSequenceId() + 1, ServerErrorCode.ER_BAD_DB_ERROR, schemaName));
-    }
-    
-    @Override
-    public boolean hasMoreResultValue() {
-        return false;
-    }
-    
-    @Override
-    public DatabasePacket getResultValue() {
-        return null;
     }
 }

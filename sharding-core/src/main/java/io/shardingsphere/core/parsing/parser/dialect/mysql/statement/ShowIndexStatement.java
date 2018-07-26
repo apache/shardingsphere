@@ -15,23 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.transport.mysql.packet.command;
+package io.shardingsphere.core.parsing.parser.dialect.mysql.statement;
 
-import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
+import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
 
 /**
- * Command packet.
+ * Show columns statement.
  *
- * @author zhangliang
- * @author wangkai
+ * @author zhangyonglun
  */
-public interface CommandPacket extends MySQLPacket {
-    
-    /**
-     * Execute command.
-     * 
-     * @return result packets to be sent
-     */
-    CommandResponsePackets execute();
+public final class ShowIndexStatement extends DALStatement {
 }

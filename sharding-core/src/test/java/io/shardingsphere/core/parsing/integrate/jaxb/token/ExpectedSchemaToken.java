@@ -15,23 +15,26 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.transport.mysql.packet.command;
+package io.shardingsphere.core.parsing.integrate.jaxb.token;
 
-import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
+import lombok.Getter;
+import lombok.Setter;
 
-/**
- * Command packet.
- *
- * @author zhangliang
- * @author wangkai
- */
-public interface CommandPacket extends MySQLPacket {
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+
+@Getter
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedSchemaToken {
     
-    /**
-     * Execute command.
-     * 
-     * @return result packets to be sent
-     */
-    CommandResponsePackets execute();
+    @XmlAttribute(name = "begin-position")
+    private int beginPosition;
+    
+    @XmlAttribute(name = "original-literals")
+    private String originalLiterals;
+    
+    @XmlAttribute(name = "table-name")
+    private String tableName;
 }

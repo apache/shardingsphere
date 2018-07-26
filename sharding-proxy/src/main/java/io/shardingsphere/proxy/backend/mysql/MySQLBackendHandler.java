@@ -20,7 +20,7 @@ package io.shardingsphere.proxy.backend.mysql;
 import com.google.common.collect.Maps;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.shardingsphere.proxy.backend.common.CommandResponsePacketsHandler;
+import io.shardingsphere.proxy.backend.common.netty.CommandResponsePacketsHandler;
 import io.shardingsphere.proxy.backend.constant.AuthType;
 import io.shardingsphere.proxy.config.DataSourceConfig;
 import io.shardingsphere.proxy.transport.mysql.constant.CapabilityFlag;

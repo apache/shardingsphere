@@ -24,7 +24,6 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.proxy.config.RuleRegistry;
-import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
@@ -32,6 +31,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandRes
 import io.shardingsphere.proxy.transport.mysql.packet.command.statement.PreparedStatementRegistry;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -42,12 +42,15 @@ import lombok.extern.slf4j.Slf4j;
  * @author zhangliang
  */
 @Slf4j
-public final class ComStmtPreparePacket extends CommandPacket {
+public final class ComStmtPreparePacket implements CommandPacket {
+    
+    @Getter
+    private final int sequenceId;
     
     private final String sql;
     
     public ComStmtPreparePacket(final int sequenceId, final MySQLPacketPayload payload) {
-        super(sequenceId);
+        this.sequenceId = sequenceId;
         sql = payload.readStringEOF();
     }
     
@@ -75,16 +78,6 @@ public final class ComStmtPreparePacket extends CommandPacket {
         }
         // TODO add If numColumns > 0
         return result;
-    }
-    
-    @Override
-    public boolean hasMoreResultValue() {
-        return false;
-    }
-    
-    @Override
-    public DatabasePacket getResultValue() {
-        return null;
     }
     
     private int getNumColumns(final SQLStatement sqlStatement) {

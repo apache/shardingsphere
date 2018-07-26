@@ -37,20 +37,18 @@ public interface BackendHandler {
     CommandResponsePackets execute();
     
     /**
-     * Has more Result value.
+     * Goto next result value.
      *
-     * @return has more result value
-     * @throws SQLException sql exception
+     * @return has more result value or not
+     * @throws SQLException SQL exception
      */
-    boolean hasMoreResultValue() throws SQLException;
+    boolean next() throws SQLException;
     
     /**
      * Get result value.
      *
-     * @return database packet
+     * @return database packet of result value
+     * @throws SQLException SQL exception
      */
-    DatabasePacket getResultValue();
-    
-    @Deprecated
-    boolean isHasMoreResultValueFlag();
+    DatabasePacket getResultValue() throws SQLException;
 }

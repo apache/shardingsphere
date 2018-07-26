@@ -20,4 +20,5 @@
     <sql-case id="select_equal_with_geography" value="SELECT * FROM t_place WHERE rule = ?::jsonb AND start_point=ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')') AND user_new_id = ?" db-types="PostgreSQL" />
     <sql-case id="select_in_with_geography" value="SELECT * FROM t_place WHERE rule IN (?::jsonb, ?::jsonb) AND start_point=ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')') AND user_new_id = ?" db-types="PostgreSQL" />
     <sql-case id="select_between_with_geography" value="SELECT * FROM t_place WHERE rule BETWEEN ?::jsonb AND ?::jsonb AND start_point=ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')') AND user_new_id = ?" db-types="PostgreSQL" />
+    <sql-case id="select_with_double_quotes" value="SELECT * FROM &quot;t_order_item&quot; WHERE &quot;item_id&quot; != ? ORDER BY &quot;item_id&quot;" db-types="PostgreSQL" />
 </sql-cases>

@@ -22,6 +22,7 @@ import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * OK packet protocol.
@@ -31,12 +32,15 @@ import lombok.Getter;
  * @author zhangliang
  * @author wangkai
  */
+@RequiredArgsConstructor
 @Getter
-public final class OKPacket extends MySQLPacket {
+public final class OKPacket implements MySQLPacket {
     
     private static final int HEADER = 0x00;
     
     private static final int STATUS_FLAG = StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue();
+    
+    private final int sequenceId;
     
     private final long affectedRows;
     
@@ -47,31 +51,15 @@ public final class OKPacket extends MySQLPacket {
     private final String info;
     
     public OKPacket(final int sequenceId) {
-        super(sequenceId);
-        affectedRows = 0L;
-        lastInsertId = 0L;
-        warnings = 0;
-        info = "";
+        this(sequenceId, 0L, 0L, 0, "");
     }
     
     public OKPacket(final int sequenceId, final long affectedRows, final long lastInsertId) {
-        super(sequenceId);
-        this.affectedRows = affectedRows;
-        this.lastInsertId = lastInsertId;
-        warnings = 0;
-        info = "";
-    }
-    
-    public OKPacket(final int sequenceId, final long affectedRows, final long lastInsertId, final int warnings, final String info) {
-        super(sequenceId);
-        this.affectedRows = affectedRows;
-        this.lastInsertId = lastInsertId;
-        this.warnings = warnings;
-        this.info = info;
+        this(sequenceId, affectedRows, lastInsertId, 0, "");
     }
     
     public OKPacket(final MySQLPacketPayload payload) {
-        super(payload.readInt1());
+        this.sequenceId = payload.readInt1();
         Preconditions.checkArgument(HEADER == payload.readInt1());
         affectedRows = payload.readIntLenenc();
         lastInsertId = payload.readIntLenenc();

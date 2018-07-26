@@ -22,6 +22,7 @@ import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.sql.SQLException;
 
@@ -33,12 +34,15 @@ import java.sql.SQLException;
  * @author zhangliang
  * @author wangkai
  */
+@RequiredArgsConstructor
 @Getter
-public final class ErrPacket extends MySQLPacket {
+public final class ErrPacket implements MySQLPacket {
     
     private static final int HEADER = 0xff;
     
     private static final String SQL_STATE_MARKER = "#";
+    
+    private final int sequenceId;
     
     private final int errorCode;
     
@@ -54,15 +58,8 @@ public final class ErrPacket extends MySQLPacket {
         this(sequenceId, cause.getErrorCode(), cause.getSQLState(), cause.getMessage());
     }
     
-    private ErrPacket(final int sequenceId, final int errorCode, final String sqlState, final String errorMessage) {
-        super(sequenceId);
-        this.errorCode = errorCode;
-        this.sqlState = sqlState;
-        this.errorMessage = errorMessage;
-    }
-    
     public ErrPacket(final MySQLPacketPayload payload) {
-        super(payload.readInt1());
+        sequenceId = payload.readInt1();
         Preconditions.checkArgument(HEADER == payload.readInt1());
         errorCode = payload.readInt2();
         Preconditions.checkArgument(SQL_STATE_MARKER.equals(payload.readStringFix(1)));

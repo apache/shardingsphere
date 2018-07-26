@@ -22,6 +22,7 @@ import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
+import io.shardingsphere.proxy.backend.common.jdbc.BackendConnection;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngine;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.response.ExecuteQueryResponse;
 import io.shardingsphere.proxy.backend.common.jdbc.execute.response.ExecuteResponse;
@@ -52,8 +53,11 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
     
     private static final Integer FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
     
-    public MemoryStrictlyExecuteEngine(final JDBCExecutorWrapper jdbcExecutorWrapper) {
+    private final BackendConnection backendConnection;
+    
+    public MemoryStrictlyExecuteEngine(final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper) {
         super(jdbcExecutorWrapper);
+        this.backendConnection = backendConnection;
     }
     
     @Override
@@ -75,7 +79,7 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
                 
                 @Override
                 public ExecuteResponseUnit call() throws SQLException {
-                    Statement statement = getJdbcExecutorWrapper().createStatement(getBackendConnection().getConnection(dataSourceName), actualSQL, isReturnGeneratedKeys);
+                    Statement statement = getJdbcExecutorWrapper().createStatement(backendConnection.getConnection(dataSourceName), actualSQL, isReturnGeneratedKeys);
                     return executeWithoutMetadata(statement, actualSQL, isReturnGeneratedKeys);
                 }
             }));
@@ -85,7 +89,7 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
     
     private ExecuteResponseUnit syncExecute(final boolean isReturnGeneratedKeys, final SQLExecutionUnit sqlExecutionUnit) throws SQLException {
         Statement statement = getJdbcExecutorWrapper().createStatement(
-                getBackendConnection().getConnection(sqlExecutionUnit.getDataSource()), sqlExecutionUnit.getSqlUnit().getSql(), isReturnGeneratedKeys);
+                backendConnection.getConnection(sqlExecutionUnit.getDataSource()), sqlExecutionUnit.getSqlUnit().getSql(), isReturnGeneratedKeys);
         return executeWithMetadata(statement, sqlExecutionUnit.getSqlUnit().getSql(), isReturnGeneratedKeys);
     }
     

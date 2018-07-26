@@ -17,12 +17,13 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command.text.ping;
 
-import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * COM_PING command packet.
@@ -31,11 +32,11 @@ import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
  *
  * @author zhangyonglun
  */
-public final class ComPingPacket extends CommandPacket {
+@RequiredArgsConstructor
+@Getter
+public final class ComPingPacket implements CommandPacket {
     
-    public ComPingPacket(final int sequenceId) {
-        super(sequenceId);
-    }
+    private final int sequenceId;
     
     @Override
     public CommandResponsePackets execute() {
@@ -45,15 +46,5 @@ public final class ComPingPacket extends CommandPacket {
     @Override
     public void write(final MySQLPacketPayload payload) {
         payload.writeInt1(CommandPacketType.COM_QUIT.getValue());
-    }
-    
-    @Override
-    public boolean hasMoreResultValue() {
-        return false;
-    }
-    
-    @Override
-    public DatabasePacket getResultValue() {
-        return null;
     }
 }

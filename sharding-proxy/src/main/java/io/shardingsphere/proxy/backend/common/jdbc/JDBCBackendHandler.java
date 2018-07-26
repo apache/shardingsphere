@@ -38,11 +38,10 @@ import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.QueryResponsePackets;
-import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.transaction.xa.AtomikosUserTransaction;
-import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import javax.transaction.Status;
 import javax.transaction.SystemException;
@@ -56,32 +55,20 @@ import java.util.List;
  * @author zhaojun
  * @author zhangliang
  */
+@RequiredArgsConstructor
 public final class JDBCBackendHandler implements BackendHandler {
     
     private final String sql;
     
-    private final RuleRegistry ruleRegistry;
-    
-    private final BackendConnection backendConnection;
-    
     private final JDBCExecuteEngine executeEngine;
+    
+    private final RuleRegistry ruleRegistry = RuleRegistry.getInstance();
     
     private ExecuteResponse executeResponse;
     
     private MergedResult mergedResult;
     
     private int currentSequenceId;
-    
-    @Getter
-    private boolean hasMoreResultValueFlag;
-    
-    public JDBCBackendHandler(final String sql, final JDBCExecuteEngine executeEngine) {
-        this.sql = sql;
-        this.executeEngine = executeEngine;
-        ruleRegistry = RuleRegistry.getInstance();
-        backendConnection = executeEngine.getBackendConnection();
-        hasMoreResultValueFlag = true;
-    }
     
     @Override
     public CommandResponsePackets execute() {
@@ -146,32 +133,18 @@ public final class JDBCBackendHandler implements BackendHandler {
     }
     
     @Override
-    public boolean hasMoreResultValue() throws SQLException {
-        if (null == mergedResult || !hasMoreResultValueFlag) {
-            backendConnection.close();
-            return false;
-        }
-        if (!mergedResult.next()) {
-            hasMoreResultValueFlag = false;
-        }
-        return true;
+    public boolean next() throws SQLException {
+        return null != mergedResult && mergedResult.next();
     }
     
     @Override
-    public DatabasePacket getResultValue() {
-        if (!hasMoreResultValueFlag) {
-            return new EofPacket(++currentSequenceId);
-        }
+    public DatabasePacket getResultValue() throws SQLException {
         QueryResponsePackets queryResponsePackets = ((ExecuteQueryResponse) executeResponse).getQueryResponsePackets();
-        try {
-            List<Object> data = new ArrayList<>(queryResponsePackets.getColumnCount());
-            for (int i = 1; i <= queryResponsePackets.getColumnCount(); i++) {
-                data.add(mergedResult.getValue(i, Object.class));
-            }
-            return executeEngine.getJdbcExecutorWrapper().createResultSetPacket(
-                    ++currentSequenceId, data, queryResponsePackets.getColumnCount(), queryResponsePackets.getColumnTypes(), DatabaseType.MySQL);
-        } catch (final SQLException ex) {
-            return new ErrPacket(1, ex);
+        int columnCount = queryResponsePackets.getColumnCount();
+        List<Object> data = new ArrayList<>(columnCount);
+        for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+            data.add(mergedResult.getValue(columnIndex, Object.class));
         }
+        return executeEngine.getJdbcExecutorWrapper().createResultSetPacket(++currentSequenceId, data, columnCount, queryResponsePackets.getColumnTypes(), DatabaseType.MySQL);
     }
 }

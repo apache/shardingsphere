@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.common;
+package io.shardingsphere.proxy.backend.common.netty;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -33,6 +33,7 @@ import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.StatementRoutingEngine;
 import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingsphere.proxy.backend.ShardingProxyClient;
+import io.shardingsphere.proxy.backend.common.BackendHandler;
 import io.shardingsphere.proxy.backend.mysql.MySQLQueryResult;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;
@@ -40,7 +41,6 @@ import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextResultSetRowPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.proxy.util.MySQLResultCache;
@@ -73,8 +73,6 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     
     private final DatabaseType databaseType;
     
-    private boolean hasMoreResultValueFlag;
-    
     private final Map<String, List<Channel>> channelsMap = Maps.newHashMap();
     
     private SynchronizedFuture<List<QueryResult>> synchronizedFuture;
@@ -90,7 +88,6 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     public SQLPacketsBackendHandler(final CommandPacketRebuilder rebuilder, final DatabaseType databaseType) {
         this.rebuilder = rebuilder;
         this.databaseType = databaseType;
-        hasMoreResultValueFlag = true;
         ruleRegistry = RuleRegistry.getInstance();
     }
     
@@ -202,8 +199,8 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     }
     
     @Override
-    public boolean hasMoreResultValue() throws SQLException {
-        if (null == mergedResult || !hasMoreResultValueFlag) {
+    public boolean next() throws SQLException {
+        if (null == mergedResult || !mergedResult.next()) {
             for (Entry<String, List<Channel>> entry : channelsMap.entrySet()) {
                 for (Channel each : entry.getValue()) {
                     ShardingProxyClient.getInstance().getPoolMap().get(entry.getKey()).release(each);
@@ -211,17 +208,11 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
             }
             return false;
         }
-        if (!mergedResult.next()) {
-            hasMoreResultValueFlag = false;
-        }
         return true;
     }
     
     @Override
     public DatabasePacket getResultValue() {
-        if (!hasMoreResultValueFlag) {
-            return new EofPacket(++currentSequenceId);
-        }
         try {
             List<Object> data = new ArrayList<>(columnCount);
             for (int i = 1; i <= columnCount; i++) {

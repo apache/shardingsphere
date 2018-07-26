@@ -18,29 +18,33 @@
 package io.shardingsphere.proxy.backend.common;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.proxy.backend.mysql.MySQLBackendHandler;
-import io.shardingsphere.proxy.config.DataSourceConfig;
+import io.shardingsphere.proxy.backend.common.jdbc.BackendConnection;
+import io.shardingsphere.proxy.backend.common.jdbc.JDBCBackendHandler;
+import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngineFactory;
+import io.shardingsphere.proxy.backend.common.netty.SQLPacketsBackendHandler;
+import io.shardingsphere.proxy.config.RuleRegistry;
+import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * Backend handler factory.
  *
- * @author wangkai
- * @author linjiaqi
+ * @author zhangliang
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BackendHandlerFactory {
+    
     /**
-     * Create backend handler instance.
-     *
+     * Create new instance of text protocol backend handler.
+     * @param sql SQL to be executed
+     * @param backendConnection backend connection
      * @param databaseType database type
-     * @param dataSourceConfig dataSourceConfig
-     * @return backend handler instance
+     * @param rebuilder rebuilder
+     * @return instance of text protocol backend handler
      */
-    public static CommandResponsePacketsHandler createBackendHandlerInstance(final DatabaseType databaseType, final DataSourceConfig dataSourceConfig) {
-        switch (databaseType) {
-            case MySQL:
-                return new MySQLBackendHandler(dataSourceConfig);
-            default:
-                throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseType));
-        }
+    public static BackendHandler newTextProtocolInstance(final String sql, final BackendConnection backendConnection, final DatabaseType databaseType, final CommandPacketRebuilder rebuilder) {
+        return RuleRegistry.getInstance().isProxyBackendUseNio()
+                ? new SQLPacketsBackendHandler(rebuilder, databaseType) : new JDBCBackendHandler(sql, JDBCExecuteEngineFactory.createTextProtocolInstance(backendConnection));
     }
 }
