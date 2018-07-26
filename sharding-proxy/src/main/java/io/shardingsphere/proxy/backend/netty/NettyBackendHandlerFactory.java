@@ -17,30 +17,30 @@
 
 package io.shardingsphere.proxy.backend.netty;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelPipeline;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.proxy.backend.netty.mysql.MySQLBackendHandler;
 import io.shardingsphere.proxy.config.DataSourceConfig;
-import io.shardingsphere.proxy.transport.common.codec.PacketCodecFactory;
-import lombok.RequiredArgsConstructor;
 
 /**
- * Channel initializer.
+ * Backend handler factory for netty.
  *
  * @author wangkai
  * @author linjiaqi
  */
-@RequiredArgsConstructor
-public final class ClientHandlerInitializer extends ChannelInitializer<Channel> {
-    
-    private final DataSourceConfig dataSourceConfig;
-    
-    @Override
-    protected void initChannel(final Channel channel) {
-        ChannelPipeline pipeline = channel.pipeline();
-        // TODO load database type from yaml or startup arguments
-        pipeline.addLast(PacketCodecFactory.createPacketCodecInstance(DatabaseType.MySQL));
-        pipeline.addLast(NettyBackendHandlerFactory.createBackendHandlerInstance(DatabaseType.MySQL, dataSourceConfig));
+public final class NettyBackendHandlerFactory {
+    /**
+     * Create backend handler instance.
+     *
+     * @param databaseType database type
+     * @param dataSourceConfig dataSourceConfig
+     * @return backend handler instance
+     */
+    public static CommandResponsePacketsHandler createBackendHandlerInstance(final DatabaseType databaseType, final DataSourceConfig dataSourceConfig) {
+        switch (databaseType) {
+            case MySQL:
+                return new MySQLBackendHandler(dataSourceConfig);
+            default:
+                throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseType));
+        }
     }
 }

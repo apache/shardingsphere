@@ -17,7 +17,7 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command;
 
-import io.shardingsphere.proxy.backend.common.jdbc.BackendConnection;
+import io.shardingsphere.proxy.backend.jdbc.BackendConnection;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.binary.close.ComStmtClosePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.binary.execute.ComStmtExecutePacket;
