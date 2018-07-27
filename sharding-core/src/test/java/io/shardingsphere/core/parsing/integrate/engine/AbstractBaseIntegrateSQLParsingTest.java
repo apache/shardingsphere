@@ -70,6 +70,7 @@ public abstract class AbstractBaseIntegrateSQLParsingTest {
         tableMetaDataMap.put("t_place", getTableMetaData(Arrays.asList("user_new_id", "guid")));
         ShardingMetaData shardingMetaData = Mockito.mock(ShardingMetaData.class);
         when(shardingMetaData.getTableMetaDataMap()).thenReturn(tableMetaDataMap);
+        when(shardingMetaData.hasColumn("t_order_item", "item_id")).thenReturn(true);
         return shardingMetaData;
     }
     
