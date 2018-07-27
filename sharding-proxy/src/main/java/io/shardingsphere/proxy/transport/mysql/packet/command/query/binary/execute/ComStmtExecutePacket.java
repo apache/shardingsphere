@@ -51,11 +51,17 @@ import java.util.List;
 @Slf4j
 public final class ComStmtExecutePacket implements QueryCommandPacket {
     
+    private static final int ITERATION_COUNT = 1;
+    
+    private static final int RESERVED_BIT_LENGTH = 0;
+    
     private static final ColumnType NULL_PARAMETER_DEFAULT_COLUMN_TYPE = ColumnType.MYSQL_TYPE_STRING;
     
     private static final int NULL_PARAMETER_DEFAULT_UNSIGNED_FLAG = 0;
     
-    private static final int RESERVED_BIT_LENGTH = 0;
+    private final RuleRegistry ruleRegistry;
+    
+    private final PreparedStatementRegistry preparedStatementRegistry;
     
     private final int sequenceId;
     
@@ -63,35 +69,31 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
     
     private final int flags;
     
-    private final int iterationCount = 1;
-    
     private final NullBitmap nullBitmap;
     
     private final NewParametersBoundFlag newParametersBoundFlag;
     
     private final List<PreparedStatementParameter> preparedStatementParameters = new ArrayList<>(32);
     
-    private final BackendConnection backendConnection;
-    
     private final JDBCBackendHandler jdbcBackendHandler;
     
     public ComStmtExecutePacket(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
+        ruleRegistry = RuleRegistry.getInstance();
+        preparedStatementRegistry = PreparedStatementRegistry.getInstance();
         this.sequenceId = sequenceId;
         statementId = payload.readInt4();
         flags = payload.readInt1();
-        Preconditions.checkArgument(iterationCount == payload.readInt4());
-        SQLStatement sqlStatement = new SQLParsingEngine(DatabaseType.MySQL, PreparedStatementRegistry.getInstance().getSQL(statementId),
-            RuleRegistry.getInstance().getShardingRule(), null).parse(true);
-        int numParameters = sqlStatement.getParametersIndex();
-        nullBitmap = new NullBitmap(numParameters, RESERVED_BIT_LENGTH);
+        Preconditions.checkArgument(ITERATION_COUNT == payload.readInt4());
+        // TODO why parse twice in here and prepared?
+        SQLStatement sqlStatement = new SQLParsingEngine(DatabaseType.MySQL, preparedStatementRegistry.getSQL(statementId), ruleRegistry.getShardingRule(), null).parse(true);
+        nullBitmap = new NullBitmap(sqlStatement.getParametersIndex(), RESERVED_BIT_LENGTH);
         for (int i = 0; i < nullBitmap.getNullBitmap().length; i++) {
             nullBitmap.getNullBitmap()[i] = payload.readInt1();
         }
         newParametersBoundFlag = NewParametersBoundFlag.valueOf(payload.readInt1());
-        setParameterList(payload, numParameters, newParametersBoundFlag);
-        this.backendConnection = backendConnection;
+        setParameterList(payload, sqlStatement.getParametersIndex(), newParametersBoundFlag);
         jdbcBackendHandler = new JDBCBackendHandler(
-                PreparedStatementRegistry.getInstance().getSQL(statementId), JDBCExecuteEngineFactory.createBinaryProtocolInstance(preparedStatementParameters, backendConnection));
+                preparedStatementRegistry.getSQL(statementId), JDBCExecuteEngineFactory.createBinaryProtocolInstance(preparedStatementParameters, backendConnection));
     }
     
     private void setParameterList(final MySQLPacketPayload payload, final int numParameters, final NewParametersBoundFlag newParametersBoundFlag) {
@@ -115,7 +117,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
             preparedStatementParameters.add(new PreparedStatementParameter(columnType, unsignedFlag));
             parameterHeaders.add(new PreparedStatementParameterHeader(columnType, unsignedFlag));
         }
-        PreparedStatementRegistry.getInstance().setParameterHeaders(statementId, parameterHeaders);
+        preparedStatementRegistry.setParameterHeaders(statementId, parameterHeaders);
     }
     
     private void setParameterHeaderFromCache(final int numParameters) {
@@ -124,7 +126,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
                 preparedStatementParameters.add(new PreparedStatementParameter(NULL_PARAMETER_DEFAULT_COLUMN_TYPE, NULL_PARAMETER_DEFAULT_UNSIGNED_FLAG, null));
                 continue;
             }
-            PreparedStatementParameterHeader preparedStatementParameterHeader = PreparedStatementRegistry.getInstance().getParameterHeader(statementId);
+            PreparedStatementParameterHeader preparedStatementParameterHeader = preparedStatementRegistry.getParameterHeader(statementId);
             preparedStatementParameters.add(new PreparedStatementParameter(preparedStatementParameterHeader.getColumnType(), preparedStatementParameterHeader.getUnsignedFlag()));
         }
     }
@@ -144,7 +146,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
     public void write(final MySQLPacketPayload payload) {
         payload.writeInt4(statementId);
         payload.writeInt1(flags);
-        payload.writeInt4(iterationCount);
+        payload.writeInt4(ITERATION_COUNT);
         for (int each : nullBitmap.getNullBitmap()) {
             payload.writeInt1(each);
         }
