@@ -15,26 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.transport.mysql.packet.command;
+package io.shardingsphere.proxy.backend.constant;
 
-import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
-
-import java.sql.SQLException;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Command packet.
+ * Proxy Mode.
  *
- * @author zhangliang
- * @author wangkai
+ * @author zhangyonglun
  */
-public interface CommandPacket extends MySQLPacket {
+@RequiredArgsConstructor
+@Getter
+public enum ProxyMode {
     
-    /**
-     * Execute command.
-     * 
-     * @return result packets to be sent
-     * @throws SQLException SQL exception
-     */
-    CommandResponsePackets execute() throws SQLException;
+    MEMORY_STRICTLY, CONNECTION_STRICTLY
 }

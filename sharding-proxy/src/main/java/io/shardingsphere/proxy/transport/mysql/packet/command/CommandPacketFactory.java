@@ -17,11 +17,11 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command;
 
-import io.shardingsphere.proxy.backend.common.jdbc.BackendConnection;
+import io.shardingsphere.proxy.backend.jdbc.BackendConnection;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
-import io.shardingsphere.proxy.transport.mysql.packet.command.statement.close.ComStmtClosePacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute.ComStmtExecutePacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.statement.prepare.ComStmtPreparePacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.binary.close.ComStmtClosePacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.binary.execute.ComStmtExecutePacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.binary.prepare.ComStmtPreparePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.fieldlist.ComFieldListPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.initdb.ComInitDbPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.ping.ComPingPacket;

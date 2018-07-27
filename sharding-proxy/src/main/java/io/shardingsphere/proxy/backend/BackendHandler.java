@@ -15,26 +15,40 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.transport.mysql.packet.command;
+package io.shardingsphere.proxy.backend;
 
-import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 
 import java.sql.SQLException;
 
 /**
- * Command packet.
+ * Backend handler.
  *
  * @author zhangliang
- * @author wangkai
  */
-public interface CommandPacket extends MySQLPacket {
+public interface BackendHandler {
     
     /**
      * Execute command.
-     * 
+     *
      * @return result packets to be sent
+     */
+    CommandResponsePackets execute();
+    
+    /**
+     * Goto next result value.
+     *
+     * @return has more result value or not
      * @throws SQLException SQL exception
      */
-    CommandResponsePackets execute() throws SQLException;
+    boolean next() throws SQLException;
+    
+    /**
+     * Get result value.
+     *
+     * @return database packet of result value
+     * @throws SQLException SQL exception
+     */
+    DatabasePacket getResultValue() throws SQLException;
 }

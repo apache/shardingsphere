@@ -15,26 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.transport.mysql.packet.command;
+package io.shardingsphere.proxy.transport.mysql.packet.command.binary.close;
 
-import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
-
-import java.sql.SQLException;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 
 /**
- * Command packet.
+ * Customized dummy packet.
  *
- * @author zhangliang
- * @author wangkai
+ * @author zhangyonglun
  */
-public interface CommandPacket extends MySQLPacket {
+public final class DummyPacket implements DatabasePacket {
     
-    /**
-     * Execute command.
-     * 
-     * @return result packets to be sent
-     * @throws SQLException SQL exception
-     */
-    CommandResponsePackets execute() throws SQLException;
+    @Override
+    public int getSequenceId() {
+        return 1;
+    }
 }

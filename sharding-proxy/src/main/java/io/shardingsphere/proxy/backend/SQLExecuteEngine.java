@@ -15,26 +15,27 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.transport.mysql.packet.command;
+package io.shardingsphere.proxy.backend;
 
-import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
+import io.shardingsphere.core.routing.SQLRouteResult;
+import io.shardingsphere.proxy.backend.jdbc.execute.response.ExecuteResponse;
 
 import java.sql.SQLException;
 
 /**
- * Command packet.
+ * SQL Execute engine.
  *
  * @author zhangliang
- * @author wangkai
  */
-public interface CommandPacket extends MySQLPacket {
+public interface SQLExecuteEngine {
     
     /**
-     * Execute command.
-     * 
-     * @return result packets to be sent
+     * Execute SQL.
+     *
+     * @param routeResult route result
+     * @param isReturnGeneratedKeys is return generated keys
+     * @return execute response
      * @throws SQLException SQL exception
      */
-    CommandResponsePackets execute() throws SQLException;
+    ExecuteResponse execute(SQLRouteResult routeResult, boolean isReturnGeneratedKeys) throws SQLException;
 }

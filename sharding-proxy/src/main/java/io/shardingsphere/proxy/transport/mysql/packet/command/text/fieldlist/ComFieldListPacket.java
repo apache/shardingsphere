@@ -19,22 +19,19 @@ package io.shardingsphere.proxy.transport.mysql.packet.command.text.fieldlist;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.ShardingConstant;
-import io.shardingsphere.proxy.backend.common.BackendHandler;
-import io.shardingsphere.proxy.backend.common.BackendHandlerFactory;
-import io.shardingsphere.proxy.backend.common.jdbc.BackendConnection;
+import io.shardingsphere.proxy.backend.BackendHandler;
+import io.shardingsphere.proxy.backend.BackendHandlerFactory;
+import io.shardingsphere.proxy.backend.jdbc.BackendConnection;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
-import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
-import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
-import io.shardingsphere.proxy.transport.mysql.packet.command.QueryCommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
-import io.shardingsphere.proxy.transport.mysql.packet.command.statement.close.DummyPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ComQueryPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextResultSetRowPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -50,7 +47,7 @@ import java.sql.SQLException;
  * @author wangkai
  */
 @Slf4j
-public final class ComFieldListPacket implements QueryCommandPacket, CommandPacketRebuilder {
+public final class ComFieldListPacket implements CommandPacket, CommandPacketRebuilder {
     
     @Getter
     private final int sequenceId;
@@ -61,18 +58,14 @@ public final class ComFieldListPacket implements QueryCommandPacket, CommandPack
     
     private final String fieldWildcard;
     
-    private final BackendConnection backendConnection;
-    
-    private int currentSequenceId;
-    
-    private BackendHandler backendHandler;
+    private final BackendHandler backendHandler;
     
     public ComFieldListPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         this.sequenceId = sequenceId;
         this.connectionId = connectionId;
         table = payload.readStringNul();
         fieldWildcard = payload.readStringEOF();
-        this.backendConnection = backendConnection;
+        backendHandler = BackendHandlerFactory.newTextProtocolInstance(sql(), backendConnection, DatabaseType.MySQL, this);
     }
     
     @Override
@@ -83,30 +76,22 @@ public final class ComFieldListPacket implements QueryCommandPacket, CommandPack
     }
     
     @Override
-    public CommandResponsePackets execute() {
+    public CommandResponsePackets execute() throws SQLException {
         log.debug("Table name received for Sharding-Proxy: {}", table);
         log.debug("Field wildcard received for Sharding-Proxy: {}", fieldWildcard);
-        String sql = String.format("SHOW COLUMNS FROM %s FROM %s", table, ShardingConstant.LOGIC_SCHEMA_NAME);
-        // TODO use common database type
-        backendHandler = BackendHandlerFactory.newTextProtocolInstance(sql, backendConnection, DatabaseType.MySQL, this);
-        DatabasePacket headPacket = backendHandler.execute().getHeadPacket();
-        return headPacket instanceof ErrPacket ? new CommandResponsePackets(headPacket) : new CommandResponsePackets(new DummyPacket());
+        CommandResponsePackets responsePackets = backendHandler.execute();
+        return responsePackets.getHeadPacket() instanceof ErrPacket ? responsePackets : getColumnDefinition41Packets();
     }
     
-    @Override
-    public boolean next() throws SQLException {
-        return backendHandler.next();
-    }
-    
-    @Override
-    public DatabasePacket getResultValue() throws SQLException {
-        DatabasePacket resultValue = backendHandler.getResultValue();
-        if (resultValue instanceof TextResultSetRowPacket) {
-            TextResultSetRowPacket fieldListResponse = (TextResultSetRowPacket) resultValue;
-            String columnName = (String) fieldListResponse.getData().get(0);
-            return new ColumnDefinition41Packet(++currentSequenceId, ShardingConstant.LOGIC_SCHEMA_NAME, table, table, columnName, columnName, 100, ColumnType.MYSQL_TYPE_VARCHAR, 0);
+    private CommandResponsePackets getColumnDefinition41Packets() throws SQLException {
+        CommandResponsePackets result = new CommandResponsePackets();
+        int currentSequenceId = 0;
+        while (backendHandler.next()) {
+            String columnName = ((TextResultSetRowPacket) backendHandler.getResultValue()).getData().get(0).toString();
+            result.getPackets().add(new ColumnDefinition41Packet(++currentSequenceId, ShardingConstant.LOGIC_SCHEMA_NAME, table, table, columnName, columnName, 100, ColumnType.MYSQL_TYPE_VARCHAR, 0));
         }
-        return new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, "");
+        result.getPackets().add(new EofPacket(++currentSequenceId));
+        return result;
     }
     
     @Override

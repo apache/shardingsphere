@@ -15,26 +15,27 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.transport.mysql.packet.command;
+package io.shardingsphere.proxy.transport.mysql.packet.command.binary.execute;
 
-import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-import java.sql.SQLException;
+import java.io.Serializable;
 
 /**
- * Command packet.
+ * Prepared statement parameter header.
  *
- * @author zhangliang
- * @author wangkai
+ * @author zhangyonglun
  */
-public interface CommandPacket extends MySQLPacket {
+@AllArgsConstructor
+@Getter
+public class PreparedStatementParameterHeader implements Serializable {
     
-    /**
-     * Execute command.
-     * 
-     * @return result packets to be sent
-     * @throws SQLException SQL exception
-     */
-    CommandResponsePackets execute() throws SQLException;
+    private static final long serialVersionUID = -672589695838350689L;
+    
+    private final ColumnType columnType;
+    
+    private final int unsignedFlag;
+    
 }

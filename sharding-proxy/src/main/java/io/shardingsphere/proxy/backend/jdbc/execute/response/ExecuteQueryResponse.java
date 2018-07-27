@@ -15,26 +15,26 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.transport.mysql.packet.command;
+package io.shardingsphere.proxy.backend.jdbc.execute.response;
 
-import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
+import io.shardingsphere.core.merger.QueryResult;
+import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.QueryResponsePackets;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Command packet.
- *
+ * Execute query response.
+ * 
  * @author zhangliang
- * @author wangkai
  */
-public interface CommandPacket extends MySQLPacket {
+@RequiredArgsConstructor
+@Getter
+public final class ExecuteQueryResponse implements ExecuteResponse {
     
-    /**
-     * Execute command.
-     * 
-     * @return result packets to be sent
-     * @throws SQLException SQL exception
-     */
-    CommandResponsePackets execute() throws SQLException;
+    private final QueryResponsePackets queryResponsePackets;
+    
+    private final List<QueryResult> queryResults = new LinkedList<>();
 }
