@@ -23,15 +23,17 @@ import io.shardingsphere.proxy.backend.BackendHandler;
 import io.shardingsphere.proxy.backend.BackendHandlerFactory;
 import io.shardingsphere.proxy.backend.jdbc.BackendConnection;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
+import io.shardingsphere.proxy.transport.mysql.packet.command.QueryCommandPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.binary.close.DummyPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ComQueryPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextResultSetRowPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +49,7 @@ import java.sql.SQLException;
  * @author wangkai
  */
 @Slf4j
-public final class ComFieldListPacket implements CommandPacket, CommandPacketRebuilder {
+public final class ComFieldListPacket implements QueryCommandPacket, CommandPacketRebuilder {
     
     @Getter
     private final int sequenceId;
@@ -59,6 +61,8 @@ public final class ComFieldListPacket implements CommandPacket, CommandPacketReb
     private final String fieldWildcard;
     
     private final BackendHandler backendHandler;
+    
+    private int currentSequenceId;
     
     public ComFieldListPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         this.sequenceId = sequenceId;
@@ -76,22 +80,23 @@ public final class ComFieldListPacket implements CommandPacket, CommandPacketReb
     }
     
     @Override
-    public CommandResponsePackets execute() throws SQLException {
+    public CommandResponsePackets execute() {
         log.debug("Table name received for Sharding-Proxy: {}", table);
         log.debug("Field wildcard received for Sharding-Proxy: {}", fieldWildcard);
-        CommandResponsePackets responsePackets = backendHandler.execute();
-        return responsePackets.getHeadPacket() instanceof ErrPacket ? responsePackets : getColumnDefinition41Packets();
+        DatabasePacket headPacket = backendHandler.execute().getHeadPacket();
+        return headPacket instanceof ErrPacket ? new CommandResponsePackets(headPacket) : new CommandResponsePackets(new DummyPacket());
     }
     
-    private CommandResponsePackets getColumnDefinition41Packets() throws SQLException {
-        CommandResponsePackets result = new CommandResponsePackets();
-        int currentSequenceId = 0;
-        while (backendHandler.next()) {
-            String columnName = ((TextResultSetRowPacket) backendHandler.getResultValue()).getData().get(0).toString();
-            result.getPackets().add(new ColumnDefinition41Packet(++currentSequenceId, ShardingConstant.LOGIC_SCHEMA_NAME, table, table, columnName, columnName, 100, ColumnType.MYSQL_TYPE_VARCHAR, 0));
-        }
-        result.getPackets().add(new EofPacket(++currentSequenceId));
-        return result;
+    @Override
+    public boolean next() throws SQLException {
+        return backendHandler.next();
+    }
+    
+    @Override
+    public DatabasePacket getResultValue() throws SQLException {
+        TextResultSetRowPacket fieldListResponse = (TextResultSetRowPacket) backendHandler.getResultValue();
+        String columnName = (String) fieldListResponse.getData().get(0);
+        return new ColumnDefinition41Packet(++currentSequenceId, ShardingConstant.LOGIC_SCHEMA_NAME, table, table, columnName, columnName, 100, ColumnType.MYSQL_TYPE_VARCHAR, 0);
     }
     
     @Override
