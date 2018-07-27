@@ -16,12 +16,4 @@
         <module>spring-boot-example</module>
         <module>spring-namespace-example</module>
     </modules>
-    
-    <dependencies>
-        <dependency>
-            <groupId>io.shardingsphere</groupId>
-            <artifactId>sharding-proxy</artifactId>
-            <version>${sharding-sphere.version}</version>
-        </dependency>
-    </dependencies>
 </project>
