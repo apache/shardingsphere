@@ -104,7 +104,7 @@ public final class DataSetEnvironmentManager {
             columnNames.add(each.getName());
             placeholders.add("?");
         }
-        return String.format("INSERT INTO %s (%s) VALUES (%s)", tableName, Joiner.on(",").join(columnNames), Joiner.on(",").join(placeholders));
+        return String.format("INSERT INTO `%s` (%s) VALUES (%s)", tableName, Joiner.on(",").join(columnNames), Joiner.on(",").join(placeholders));
     }
     
     private void executeBatch(final Connection connection, final String sql, final List<SQLValueGroup> sqlValueGroups) throws SQLException {
