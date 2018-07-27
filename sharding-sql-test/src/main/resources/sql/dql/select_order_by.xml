@@ -7,6 +7,6 @@
     <sql-case id="select_order_by_for_nulls_first" value="SELECT o.order_id as gen_order_id_ FROM t_order o ORDER BY o.order_id NULLS FIRST" db-types="Oracle" />
     <sql-case id="select_order_by_for_nulls_last" value="SELECT o.order_id as gen_order_id_ FROM t_order o ORDER BY o.order_id ASC NULLS LAST" db-types="Oracle" />
     <sql-case id="select_order_by_with_multiple_stars" value="SELECT *, order_id, o.* FROM t_order o ORDER BY o.order_id" />
-    <sql-case id="select_order_by_with_alias_star" value="SELECT o.* FROM t_order o ORDER BY o.order_id" />
-
+    <sql-case id="select_order_by_with_alias_star_alias_name" value="SELECT o.* FROM t_order o ORDER BY o.order_id" />
+    <sql-case id="select_order_by_with_alias_star_table_name" value="SELECT o.* FROM t_order o ORDER BY t_order.order_id" />
 </sql-cases>
