@@ -35,6 +35,7 @@ fi
 
 if [ $# == 2 ]; then
     MAIN_CLASS=$MAIN_CLASS" "$1" "$2
+    echo "The port is configured as $1"
     echo "The configuration file is $DEPLOY_DIR/conf/$2"
 fi
 
