@@ -305,20 +305,16 @@ public abstract class BaseClientTest extends BaseTest {
                 switch (event.getType()) {
                     case NodeDataChanged:
                     case NodeChildrenChanged:
-                        String result;
                         try {
-                            result = client.getDataString(event.getPath());
+                            actual.add("update_" + event.getPath() + "_" + client.getDataString(event.getPath()));
                         } catch (final KeeperException | InterruptedException e) {
                             log.debug(e.getMessage());
-                            return;
                         }
-                        actual.add("update_" + event.getPath() + "_" + result);
                         break;
                     case NodeDeleted:
                         actual.add("delete_" + event.getPath() + "_");
                         break;
                     default:
-                        break;
                 }
             }
         };
