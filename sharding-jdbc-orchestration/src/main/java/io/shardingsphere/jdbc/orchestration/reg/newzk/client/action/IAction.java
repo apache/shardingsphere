@@ -25,12 +25,14 @@ import org.apache.zookeeper.Watcher;
 import java.util.List;
 
 /*
+ * The basic actions of the client.
+ *
  * @author lidongbo
  */
 public interface IAction {
     
     /**
-     * get string type data.
+     * Get string type data.
      *
      * @param key key
      * @return data String
@@ -40,7 +42,7 @@ public interface IAction {
     String getDataString(String key) throws KeeperException, InterruptedException;
     
     /**
-     * get string type data.
+     * Get string type data.
      *
      * @param key key
      * @return data
@@ -50,7 +52,7 @@ public interface IAction {
     byte[] getData(String key) throws KeeperException, InterruptedException;
     
     /**
-     * get string type data.
+     * Get string type data.
      *
      * @param key key
      * @param callback callback
@@ -61,7 +63,7 @@ public interface IAction {
     void getData(String key, AsyncCallback.DataCallback callback, Object ctx) throws KeeperException, InterruptedException;
     
     /**
-     * check exist.
+     * Check exist.
      *
      * @param key key
      * @return exist
@@ -71,7 +73,7 @@ public interface IAction {
     boolean checkExists(String key) throws KeeperException, InterruptedException;
     
     /**
-     * check exist.
+     * Check exist.
      *
      * @param key key
      * @param watcher watcher
@@ -82,7 +84,7 @@ public interface IAction {
     boolean checkExists(String key, Watcher watcher) throws KeeperException, InterruptedException;
     
     /**
-     * get children's keys.
+     * Get children's keys.
      *
      * @param key key
      * @return children keys
@@ -92,7 +94,7 @@ public interface IAction {
     List<String> getChildren(String key) throws KeeperException, InterruptedException;
     
     /**
-     * only create target node.
+     * Only create target node.
      *
      * @param key key
      * @param value value
@@ -103,7 +105,7 @@ public interface IAction {
     void createCurrentOnly(String key, String value, CreateMode createMode) throws KeeperException, InterruptedException;
     
     /**
-     * update.
+     * Update.
      *
      * @param key key
      * @param value value
@@ -113,7 +115,7 @@ public interface IAction {
     void update(String key, String value) throws KeeperException, InterruptedException;
     
     /**
-     * only delete target node..
+     * Only delete target node..
      *
      * @param key key
      * @throws KeeperException Zookeeper Exception
@@ -122,7 +124,7 @@ public interface IAction {
     void deleteOnlyCurrent(String key) throws KeeperException, InterruptedException;
     
     /**
-     * only delete target node..
+     * Only delete target node..
      *
      * @param key key
      * @param callback callback

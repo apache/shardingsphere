@@ -129,6 +129,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     
     @Override
     public ResultSet executeQuery() throws SQLException {
+        routedStatements.clear();
         ResultSet result;
         try {
             Collection<PreparedStatementUnit> preparedStatementUnits = route();
@@ -150,13 +151,14 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     
     @Override
     public int executeUpdate() throws SQLException {
+        routedStatements.clear();
         try {
             Collection<PreparedStatementUnit> preparedStatementUnits = route();
             return new PreparedStatementExecutor(
                     getConnection().getShardingContext().getExecutorEngine(), routeResult.getSqlStatement().getType(), preparedStatementUnits).executeUpdate();
         } finally {
             if (routeResult != null && connection != null) {
-                JDBCShardingRefreshHandler.build(routeResult, connection).execute();
+                JDBCShardingRefreshHandler.build(routeResult.getSqlStatement(), connection).execute();
             }
             clearBatch();
         }
@@ -164,13 +166,14 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     
     @Override
     public boolean execute() throws SQLException {
+        routedStatements.clear();
         try {
             Collection<PreparedStatementUnit> preparedStatementUnits = route();
             return new PreparedStatementExecutor(
                     getConnection().getShardingContext().getExecutorEngine(), routeResult.getSqlStatement().getType(), preparedStatementUnits).execute();
         } finally {
-            if (routeResult != null && connection != null) {
-                JDBCShardingRefreshHandler.build(routeResult, connection).execute();
+            if (null != routeResult && null != connection) {
+                JDBCShardingRefreshHandler.build(routeResult.getSqlStatement(), connection).execute();
             }
             clearBatch();
         }

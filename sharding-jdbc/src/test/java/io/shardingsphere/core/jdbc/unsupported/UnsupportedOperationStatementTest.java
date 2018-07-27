@@ -33,9 +33,9 @@ import java.util.List;
 
 public final class UnsupportedOperationStatementTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
-    private List<ShardingConnection> shardingConnections = new ArrayList<>();
+    private final List<ShardingConnection> shardingConnections = new ArrayList<>();
     
-    private List<Statement> statements = new ArrayList<>();
+    private final List<Statement> statements = new ArrayList<>();
     
     public UnsupportedOperationStatementTest(final DatabaseType databaseType) {
         super(databaseType);

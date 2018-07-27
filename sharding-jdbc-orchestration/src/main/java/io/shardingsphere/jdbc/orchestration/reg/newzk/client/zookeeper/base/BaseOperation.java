@@ -20,25 +20,23 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayPolicyExecutor;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Connection;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.KeeperException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
 /*
- * base async retry operation
+ * Base async retry operation.
  *
  * @author lidongbo
  */
-@Getter(value = AccessLevel.PROTECTED)
+@Slf4j
 public abstract class BaseOperation implements Delayed {
-    private static final Logger LOGGER = LoggerFactory.getLogger(BaseOperation.class);
     
+    @Getter
     private final IProvider provider;
     
     @Setter
@@ -51,12 +49,12 @@ public abstract class BaseOperation implements Delayed {
     @Override
     public long getDelay(final TimeUnit unit) {
         long absoluteBlock = this.delayPolicyExecutor.getNextTick() - System.currentTimeMillis();
-        LOGGER.debug("queue getDelay block:{}", absoluteBlock);
+        log.debug("queue getDelay block:{}", absoluteBlock);
         return unit.convert(absoluteBlock, TimeUnit.MILLISECONDS);
     }
     
     /**
-     * queue precedence.
+     * Queue precedence.
      */
     @Override
     public int compareTo(final Delayed delayed) {
@@ -66,7 +64,7 @@ public abstract class BaseOperation implements Delayed {
     protected abstract void execute() throws KeeperException, InterruptedException;
     
     /**
-     * queue precedence.
+     * Queue precedence.
      *
      * @return whether or not continue enqueue
      * @throws KeeperException Keeper Exception
@@ -77,8 +75,8 @@ public abstract class BaseOperation implements Delayed {
         try {
             execute();
             result = true;
-        } catch (KeeperException e) {
-            if (Connection.needReset(e)) {
+        } catch (final KeeperException ex) {
+            if (Connection.needReset(ex)) {
                 provider.resetConnection();
             }
             result = false;

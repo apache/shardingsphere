@@ -17,46 +17,32 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command;
 
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
+import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Unsupported command packet.
  *
  * @author zhangliang
  */
-public final class UnsupportedCommandPacket extends CommandPacket {
+@RequiredArgsConstructor
+public final class UnsupportedCommandPacket implements CommandPacket {
     
-    private static final int ERROR_CODE = 0xcc;
-    
-    private static final String SQL_STATE = "xxxxx";
-    
-    private static final String ERROR_MESSAGE = "Unsupported command packet '%s'.";
+    @Getter
+    private final int sequenceId;
     
     private final CommandPacketType type;
     
-    public UnsupportedCommandPacket(final int sequenceId, final CommandPacketType type) {
-        super(sequenceId);
-        this.type = type;
-    }
-    
     @Override
     public CommandResponsePackets execute() {
-        return new CommandResponsePackets(new ErrPacket(getSequenceId() + 1, ERROR_CODE, SQL_STATE, String.format(ERROR_MESSAGE, type)));
+        return new CommandResponsePackets(new ErrPacket(getSequenceId() + 1, ServerErrorCode.ER_UNSUPPORTED_COMMAND, type));
     }
     
     @Override
-    public void write(final MySQLPacketPayload mysqlPacketPayload) {
-    }
-    
-    @Override
-    public boolean hasMoreResultValue() {
-        return false;
-    }
-    
-    @Override
-    public DatabaseProtocolPacket getResultValue() {
-        return null;
+    public void write(final MySQLPacketPayload payload) {
     }
 }

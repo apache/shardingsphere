@@ -222,6 +222,6 @@ public final class IntegrateTestCasesLoader {
      * @return count of all data set test cases
      */
     public int countAllDataSetTestCases() {
-        return dqlIntegrateTestCaseMap.size() + dmlIntegrateTestCaseMap.size() + ddlIntegrateTestCaseMap.size();
+        return dqlIntegrateTestCaseMap.size() + dmlIntegrateTestCaseMap.size() + ddlIntegrateTestCaseMap.size() + dclIntegrateTestCaseMap.size();
     }
 }

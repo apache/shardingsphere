@@ -17,9 +17,7 @@
 
 package io.shardingsphere.proxy.config;
 
-import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
-import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
@@ -32,10 +30,12 @@ import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ProxyAuthority;
 import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.core.transaction.spi.TransactionManager;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusEvent;
-import io.shardingsphere.proxy.backend.common.ProxyMode;
+import io.shardingsphere.proxy.backend.constant.ProxyMode;
 import io.shardingsphere.proxy.metadata.ProxyShardingMetaData;
+import io.shardingsphere.proxy.util.ProxyTransactionLoader;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -45,7 +45,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Sharding rule registry.
@@ -62,8 +62,6 @@ public final class RuleRegistry {
     
     private static final RuleRegistry INSTANCE = new RuleRegistry();
     
-    private final boolean withoutJdbc = false;
-    
     private ShardingRule shardingRule;
     
     private MasterSlaveRule masterSlaveRule;
@@ -72,21 +70,27 @@ public final class RuleRegistry {
     
     private Map<String, DataSourceParameter> dataSourceConfigurationMap;
     
-    private ProxyAuthority proxyAuthority;
-    
-    private ShardingMetaData shardingMetaData;
-    
-    private ListeningExecutorService executorService;
-    
     private boolean showSQL;
     
     private ProxyMode proxyMode;
     
     private TransactionType transactionType;
     
+    private TransactionManager transactionManager;
+    
     private int maxWorkingThreads;
     
+    private boolean proxyBackendUseNio;
+    
+    private int proxyBackendSimpleDbConnections;
+    
+    private int proxyBackendConnectionTimeout;
+    
+    private ProxyAuthority proxyAuthority;
+    
     private ShardingDataSourceMetaData shardingDataSourceMetaData;
+    
+    private ShardingMetaData shardingMetaData;
     
     /**
      * Get instance of sharding rule registry.
@@ -102,13 +106,17 @@ public final class RuleRegistry {
      *
      * @param config yaml proxy configuration
      */
-    public void init(final OrchestrationProxyConfiguration config) {
-        Properties properties = null == config.getShardingRule() ? new Properties() : config.getShardingRule().getProps();
+    public synchronized void init(final OrchestrationProxyConfiguration config) {
+        Properties properties = null == config.getShardingRule() ? config.getMasterSlaveRule().getProps() : config.getShardingRule().getProps();
         ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
         showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         proxyMode = ProxyMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_MODE));
         transactionType = TransactionType.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_MODE));
+        transactionManager = ProxyTransactionLoader.load(transactionType);
         maxWorkingThreads = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_MAX_WORKING_THREADS);
+        proxyBackendUseNio = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO);
+        proxyBackendSimpleDbConnections = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_SIMPLE_DB_CONNECTIONS);
+        proxyBackendConnectionTimeout = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT);
         shardingRule = new ShardingRule(
                 null == config.getShardingRule() ? new ShardingRuleConfiguration() : config.getShardingRule().getShardingRuleConfiguration(), config.getDataSources().keySet());
         if (null != config.getMasterSlaveRule()) {
@@ -116,19 +124,25 @@ public final class RuleRegistry {
         }
         dataSourceMap = ProxyRawDataSourceFactory.create(transactionType, config);
         dataSourceConfigurationMap = new HashMap<>(128, 1);
-        if (withoutJdbc) {
+        if (proxyBackendUseNio) {
             for (Entry<String, DataSourceParameter> entry : config.getDataSources().entrySet()) {
                 dataSourceConfigurationMap.put(entry.getKey(), entry.getValue());
             }
         }
-        executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(maxWorkingThreads));
+        proxyAuthority = config.getProxyAuthority();
         shardingDataSourceMetaData = new ShardingDataSourceMetaData(dataSourceMap, shardingRule, DatabaseType.MySQL);
-        shardingMetaData = new ProxyShardingMetaData(executorService, dataSourceMap);
+    }
+    
+    /**
+     * Initialize rule registry.
+     *
+     * @param executorService executor service
+     */
+    public void initShardingMetaData(final ExecutorService executorService) {
+        shardingMetaData = new ProxyShardingMetaData(MoreExecutors.listeningDecorator(executorService), dataSourceMap);
         if (!isMasterSlaveOnly()) {
             shardingMetaData.init(shardingRule);
         }
-        proxyAuthority = config.getProxyAuthority();
-        Preconditions.checkNotNull(proxyAuthority.getUsername(), "Invalid configuration for proxy authority.");
     }
     
     /**

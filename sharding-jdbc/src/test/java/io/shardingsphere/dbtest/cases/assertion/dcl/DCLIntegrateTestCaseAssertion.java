@@ -20,8 +20,6 @@ package io.shardingsphere.dbtest.cases.assertion.dcl;
 import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
 import lombok.Getter;
 
-import javax.xml.bind.annotation.XmlAttribute;
-
 /**
  * JAXB definition of DCL integrate test case assertion.
  *
@@ -29,14 +27,4 @@ import javax.xml.bind.annotation.XmlAttribute;
  */
 @Getter
 public final class DCLIntegrateTestCaseAssertion extends IntegrateTestCaseAssertion {
-    
-    @XmlAttribute(name = "init-sqls")
-    private String initSQLs;
-    
-    @XmlAttribute(name = "clean-sqls")
-    private String cleanSQLs;
-    
-    @XmlAttribute(name = "db-types")
-    private String dbTypes;
-    
 }

@@ -18,8 +18,7 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseOperation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.ExecutorService;
@@ -30,12 +29,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /*
- * async retry
+ * Async retry.
  *
  * @author lidongbo
  */
-public class RetryThread extends Thread {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RetryThread.class);
+@Slf4j
+public final class RetryThread extends Thread {
     
     private final int corePoolSize = Runtime.getRuntime().availableProcessors();
     
@@ -52,13 +51,15 @@ public class RetryThread extends Thread {
     public RetryThread(final DelayQueue<BaseOperation> queue) {
         this.queue = queue;
         retryExecutor = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(10), new ThreadFactory() {
+            
             private final AtomicInteger threadIndex = new AtomicInteger(0);
+            
             @Override
             public Thread newThread(final Runnable r) {
                 Thread thread = new Thread(r);
                 thread.setDaemon(true);
                 thread.setName("zk-retry-" + threadIndex.incrementAndGet());
-                LOGGER.debug("new thread:{}", thread.getName());
+                log.debug("new thread:{}", thread.getName());
                 return thread;
             }
         });
@@ -67,47 +68,49 @@ public class RetryThread extends Thread {
 
     @Override
     public void run() {
-        LOGGER.debug("RetryThread start");
+        log.debug("RetryThread start");
         for (;;) {
             final BaseOperation operation;
             try {
                 operation = queue.take();
-                LOGGER.debug("take operation:{}", operation.toString());
-            } catch (InterruptedException e) {
-                LOGGER.error("retry interrupt e:{}", e.getMessage());
+                log.debug("take operation:{}", operation.toString());
+            } catch (final InterruptedException ex) {
+                log.error("retry interrupt ex:{}", ex.getMessage());
                 continue;
             }
             retryExecutor.submit(new Runnable() {
+                
                 @Override
                 public void run() {
                     boolean result;
                     try {
                         result = operation.executeOperation();
                         // CHECKSTYLE:OFF
-                    } catch (Exception e) {
+                    } catch (final Exception ex) {
                         // CHECKSTYLE:ON
                         result = false;
-                        LOGGER.error("retry disrupt operation:{}, e:{}", operation.toString(), e.getMessage());
+                        log.error("retry disrupt operation:{}, ex:{}", operation.toString(), ex.getMessage());
                     }
                     if (result) {
                         queue.offer(operation);
-                        LOGGER.debug("enqueue again operation:{}", operation.toString());
+                        log.debug("enqueue again operation:{}", operation.toString());
                     }
                 }
             });
         }
     }
     
-    final void addDelayedShutdownHook(final ExecutorService service, final long terminationTimeout, final TimeUnit timeUnit) {
+    private void addDelayedShutdownHook(final ExecutorService service, final long terminationTimeout, final TimeUnit timeUnit) {
         Thread thread = new Thread(new Runnable() {
+            
             @Override
             public void run() {
                 try {
-                    LOGGER.debug("AsyncRetryCenter stop");
+                    log.debug("AsyncRetryCenter stop");
                     queue.clear();
                     service.shutdown();
                     service.awaitTermination(terminationTimeout, timeUnit);
-                } catch (InterruptedException ignored) {
+                } catch (final InterruptedException ignored) {
                     // shutting down anyway, just ignore.
                 }
             }

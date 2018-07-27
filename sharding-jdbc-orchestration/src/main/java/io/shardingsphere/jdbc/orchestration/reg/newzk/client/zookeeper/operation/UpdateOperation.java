@@ -22,11 +22,12 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.Base
 import org.apache.zookeeper.KeeperException;
 
 /*
- * async retry
+ * Async retry operation which Update action.
  *
  * @author lidongbo
  */
 public class UpdateOperation extends BaseOperation {
+    
     private final String key;
     
     private final String value;

@@ -35,7 +35,7 @@ import lombok.Getter;
  * @author linjiaqi
  */
 @Getter
-public class HandshakePacket extends MySQLPacket {
+public final class HandshakePacket implements MySQLPacket {
     
     private final int protocolVersion = ServerInfo.PROTOCOL_VERSION;
     
@@ -49,44 +49,46 @@ public class HandshakePacket extends MySQLPacket {
     
     private final int capabilityFlagsUpper = CapabilityFlag.calculateHandshakeCapabilityFlagsUpper();
     
+    private final int sequenceId;
+    
     private final int connectionId;
     
     private final AuthPluginData authPluginData;
     
     public HandshakePacket(final int connectionId, final AuthPluginData authPluginData) {
-        super(0);
+        sequenceId = 0;
         this.connectionId = connectionId;
         this.authPluginData = authPluginData;
     }
     
-    public HandshakePacket(final MySQLPacketPayload mysqlPacketPayload) {
-        super(mysqlPacketPayload.readInt1());
-        Preconditions.checkArgument(protocolVersion == mysqlPacketPayload.readInt1());
-        mysqlPacketPayload.readStringNul();
-        connectionId = mysqlPacketPayload.readInt4();
-        final byte[] authPluginDataPart1 = mysqlPacketPayload.readStringNul().getBytes();
-        mysqlPacketPayload.readInt2();
-        mysqlPacketPayload.readInt1();
-        Preconditions.checkArgument(statusFlag.getValue() == mysqlPacketPayload.readInt2());
-        mysqlPacketPayload.readInt2();
-        mysqlPacketPayload.readInt1();
-        mysqlPacketPayload.skipReserved(10);
-        byte[] authPluginDataPart2 = mysqlPacketPayload.readStringNul().getBytes();
+    public HandshakePacket(final MySQLPacketPayload payload) {
+        sequenceId = payload.readInt1();
+        Preconditions.checkArgument(protocolVersion == payload.readInt1());
+        payload.readStringNul();
+        connectionId = payload.readInt4();
+        final byte[] authPluginDataPart1 = payload.readStringNul().getBytes();
+        payload.readInt2();
+        payload.readInt1();
+        Preconditions.checkArgument(statusFlag.getValue() == payload.readInt2());
+        payload.readInt2();
+        payload.readInt1();
+        payload.skipReserved(10);
+        byte[] authPluginDataPart2 = payload.readStringNul().getBytes();
         authPluginData = new AuthPluginData(authPluginDataPart1, authPluginDataPart2);
     }
     
     @Override
-    public void write(final MySQLPacketPayload mysqlPacketPayload) {
-        mysqlPacketPayload.writeInt1(protocolVersion);
-        mysqlPacketPayload.writeStringNul(serverVersion);
-        mysqlPacketPayload.writeInt4(connectionId);
-        mysqlPacketPayload.writeStringNul(new String(authPluginData.getAuthPluginDataPart1()));
-        mysqlPacketPayload.writeInt2(capabilityFlagsLower);
-        mysqlPacketPayload.writeInt1(ServerInfo.CHARSET);
-        mysqlPacketPayload.writeInt2(statusFlag.getValue());
-        mysqlPacketPayload.writeInt2(capabilityFlagsUpper);
-        mysqlPacketPayload.writeInt1(0);
-        mysqlPacketPayload.writeReserved(10);
-        mysqlPacketPayload.writeStringNul(new String(authPluginData.getAuthPluginDataPart2()));
+    public void write(final MySQLPacketPayload payload) {
+        payload.writeInt1(protocolVersion);
+        payload.writeStringNul(serverVersion);
+        payload.writeInt4(connectionId);
+        payload.writeStringNul(new String(authPluginData.getAuthPluginDataPart1()));
+        payload.writeInt2(capabilityFlagsLower);
+        payload.writeInt1(ServerInfo.CHARSET);
+        payload.writeInt2(statusFlag.getValue());
+        payload.writeInt2(capabilityFlagsUpper);
+        payload.writeInt1(0);
+        payload.writeReserved(10);
+        payload.writeStringNul(new String(authPluginData.getAuthPluginDataPart2()));
     }
 }

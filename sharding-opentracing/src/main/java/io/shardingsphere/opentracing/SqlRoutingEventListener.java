@@ -31,20 +31,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Listen to the event of sql routing execution.
+ * Listen to the event of SQL routing execution.
  *
  * @author chenqingyang
  */
 public final class SqlRoutingEventListener {
     
-    private static final String OPER_NAME_PREFIX = "/SHARDING-SPHERE/ROUTING/";
+    private static final String OPERATION_NAME_PREFIX = "/SHARDING-SPHERE/ROUTING/";
     
     private final ThreadLocal<ActiveSpan> spanContainer = new ThreadLocal<>();
     
     /**
-     * listen sql routing event.
+     * Listen SQL routing event.
      *
-     * @param event sql routing event
+     * @param event SQL routing event
      */
     @Subscribe
     @AllowConcurrentEvents
@@ -56,7 +56,7 @@ public final class SqlRoutingEventListener {
         ActiveSpan activeSpan;
         switch (event.getEventRoutingType()) {
             case BEFORE_ROUTE:
-                activeSpan = tracer.buildSpan(OPER_NAME_PREFIX)
+                activeSpan = tracer.buildSpan(OPERATION_NAME_PREFIX)
                         .withTag(Tags.COMPONENT.getKey(), LocalTags.COMPONENT_NAME)
                         .withTag(Tags.DB_STATEMENT.getKey(), event.getSql())
                         .startActive();
@@ -74,7 +74,7 @@ public final class SqlRoutingEventListener {
                 deactivate();
                 break;
             default:
-                throw new ShardingException("Unsupported event type");
+                throw new ShardingException("Unsupported event type.");
         }
     }
     

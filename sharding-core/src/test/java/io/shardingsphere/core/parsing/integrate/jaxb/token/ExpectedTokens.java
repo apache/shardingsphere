@@ -57,4 +57,7 @@ public final class ExpectedTokens {
     
     @XmlElement(name = "insert-column-token")
     private ExpectedInsertColumnToken insertColumnToken;
+    
+    @XmlElement(name = "schema-token")
+    private List<ExpectedSchemaToken> schemaTokens = new LinkedList<>();
 }

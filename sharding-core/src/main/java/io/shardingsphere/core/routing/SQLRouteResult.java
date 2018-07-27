@@ -17,13 +17,16 @@
 
 package io.shardingsphere.core.routing;
 
-import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.routing.router.sharding.GeneratedKey;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -42,13 +45,24 @@ public final class SQLRouteResult {
     private final GeneratedKey generatedKey;
     
     private final Set<SQLExecutionUnit> executionUnits = new LinkedHashSet<>();
-
+    
+    public SQLRouteResult(final SQLStatement sqlStatement) {
+        this(sqlStatement, null);
+    }
+    
     /**
-     * whether SQLRouteResult can refresh table metadata.
-     *
-     * @return boolean
+     * Get SQL units grouped by data source name.
+     * 
+     * @return SQL units grouped by data source name.
      */
-    public boolean canRefreshMetaData() {
-        return SQLType.DDL.equals(sqlStatement.getType()) && !sqlStatement.getTables().isEmpty();
+    public Map<String, Collection<SQLUnit>> getSQLUnitGroups() {
+        Map<String, Collection<SQLUnit>> result = new LinkedHashMap<>(executionUnits.size(), 1);
+        for (SQLExecutionUnit each : executionUnits) {
+            if (!result.containsKey(each.getDataSource())) {
+                result.put(each.getDataSource(), new LinkedList<SQLUnit>());
+            }
+            result.get(each.getDataSource()).add(each.getSqlUnit());
+        }
+        return result;
     }
 }

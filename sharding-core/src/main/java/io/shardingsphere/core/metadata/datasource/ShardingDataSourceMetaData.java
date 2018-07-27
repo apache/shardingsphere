@@ -55,7 +55,7 @@ public class ShardingDataSourceMetaData {
             return dataSourceMetaDataMap;
         }
         for (Entry<String, DataSourceMetaData> entry : dataSourceMetaDataMap.entrySet()) {
-            Optional<String> masterSlaveRuleNameOptional = shardingRule.getMasterSlaveRuleNameOptional(entry.getKey());
+            Optional<String> masterSlaveRuleNameOptional = shardingRule.tryFindMasterSlaveRuleName(entry.getKey());
             if (masterSlaveRuleNameOptional.isPresent()) {
                 result.put(masterSlaveRuleNameOptional.get(), entry.getValue());
             }

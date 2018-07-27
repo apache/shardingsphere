@@ -40,7 +40,7 @@
         <spring-boot.version>[1.5.0.RELEASE,2.0.0.M1)</spring-boot.version>
         <mysql-connector-java.version>5.1.30</mysql-connector-java.version>
         <h2.version>1.4.196</h2.version>
-        <postgresql.version>9.1-901-1.jdbc4</postgresql.version>
+        <postgresql.version>9.4.1212</postgresql.version>
         <mssql.version>6.1.7.jre7-preview</mssql.version>
         <hikari-cp.version>2.4.11</hikari-cp.version>
         <junit.version>4.12</junit.version>
@@ -248,7 +248,7 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>postgresql</groupId>
+                <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
                 <version>${postgresql.version}</version>
                 <scope>test</scope>

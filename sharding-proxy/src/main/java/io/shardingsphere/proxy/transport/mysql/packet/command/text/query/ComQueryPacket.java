@@ -18,31 +18,29 @@
 package io.shardingsphere.proxy.transport.mysql.packet.command.text.query;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.TCLType;
-import io.shardingsphere.core.constant.TransactionType;
-import io.shardingsphere.core.transaction.event.XaTransactionEvent;
-import io.shardingsphere.core.util.EventBusInstance;
-import io.shardingsphere.proxy.backend.common.SQLExecuteBackendHandler;
-import io.shardingsphere.proxy.backend.common.SQLPacketsBackendHandler;
-import io.shardingsphere.proxy.config.RuleRegistry;
+import io.shardingsphere.proxy.backend.BackendHandler;
+import io.shardingsphere.proxy.backend.BackendHandlerFactory;
+import io.shardingsphere.proxy.backend.jdbc.BackendConnection;
+import io.shardingsphere.proxy.backend.jdbc.transaction.TransactionEngine;
+import io.shardingsphere.proxy.backend.jdbc.transaction.TransactionEngineFactory;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
-import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
+import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.QueryCommandPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
-import io.shardingsphere.transaction.xa.AtomikosUserTransaction;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.transaction.Status;
-import javax.transaction.SystemException;
 import java.sql.SQLException;
 
 /**
  * COM_QUERY command packet.
+ *
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-query.html">COM_QUERY</a>
  *
  * @author zhangliang
@@ -50,89 +48,62 @@ import java.sql.SQLException;
  * @author zhaojun
  */
 @Slf4j
-public final class ComQueryPacket extends CommandPacket implements CommandPacketRebuilder {
+public final class ComQueryPacket implements QueryCommandPacket, CommandPacketRebuilder {
+    
+    @Getter
+    private final int sequenceId;
     
     private final int connectionId;
     
     private final String sql;
     
-    private final SQLExecuteBackendHandler sqlExecuteBackendHandler;
+    private final BackendHandler backendHandler;
     
-    private final SQLPacketsBackendHandler sqlPacketsBackendHandler;
+    private final TransactionEngine transactionEngine;
     
-    public ComQueryPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload mysqlPacketPayload) {
-        super(sequenceId);
+    public ComQueryPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
+        this.sequenceId = sequenceId;
         this.connectionId = connectionId;
-        sql = mysqlPacketPayload.readStringEOF();
-        if (RuleRegistry.getInstance().isWithoutJdbc()) {
-            sqlExecuteBackendHandler = null;
-            sqlPacketsBackendHandler = new SQLPacketsBackendHandler(this, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
-        } else {
-            sqlPacketsBackendHandler = null;
-            sqlExecuteBackendHandler = new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
-        }
+        sql = payload.readStringEOF();
+        transactionEngine = TransactionEngineFactory.create(sql);
+        backendHandler = BackendHandlerFactory.newTextProtocolInstance(sql, backendConnection, DatabaseType.MySQL, this);
     }
     
     public ComQueryPacket(final int sequenceId, final int connectionId, final String sql) {
-        super(sequenceId);
+        this.sequenceId = sequenceId;
         this.connectionId = connectionId;
         this.sql = sql;
-        sqlExecuteBackendHandler = null;
-        sqlPacketsBackendHandler = null;
+        transactionEngine = null;
+        backendHandler = null;
     }
     
     @Override
-    public void write(final MySQLPacketPayload mysqlPacketPayload) {
-        mysqlPacketPayload.writeInt1(CommandPacketType.COM_QUERY.getValue());
-        mysqlPacketPayload.writeStringEOF(sql);
+    public void write(final MySQLPacketPayload payload) {
+        payload.writeInt1(CommandPacketType.COM_QUERY.getValue());
+        payload.writeStringEOF(sql);
     }
     
     @Override
     public CommandResponsePackets execute() {
         log.debug("COM_QUERY received for Sharding-Proxy: {}", sql);
         try {
-            if (doTransactionIntercept()) {
-                return new CommandResponsePackets(new OKPacket(1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+            if (!transactionEngine.execute().isNeedProcessByBackendHandler()) {
+                return new CommandResponsePackets(new OKPacket(1));
             }
         } catch (final Exception ex) {
-            log.error("doTransactionIntercept Exception", ex);
-            return new CommandResponsePackets(new ErrPacket(1, 0, "", "" + ex.getMessage()));
+            return new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
         }
-        if (RuleRegistry.getInstance().isWithoutJdbc()) {
-            return sqlPacketsBackendHandler.execute();
-        } else {
-            return sqlExecuteBackendHandler.execute();
-        }
+        return backendHandler.execute();
     }
     
-    /**
-     * Has more Result value.
-     *
-     * @return has more result value
-     */
-    public boolean hasMoreResultValue() {
-        try {
-            if (RuleRegistry.getInstance().isWithoutJdbc()) {
-                return sqlPacketsBackendHandler.hasMoreResultValue();
-            } else {
-                return sqlExecuteBackendHandler.hasMoreResultValue();
-            }
-        } catch (final SQLException ex) {
-            return false;
-        }
+    @Override
+    public boolean next() throws SQLException {
+        return backendHandler.next();
     }
     
-    /**
-     * Get result value.
-     *
-     * @return database protocol packet
-     */
-    public DatabaseProtocolPacket getResultValue() {
-        if (RuleRegistry.getInstance().isWithoutJdbc()) {
-            return sqlPacketsBackendHandler.getResultValue();
-        } else {
-            return sqlExecuteBackendHandler.getResultValue();
-        }
+    @Override
+    public DatabasePacket getResultValue() throws SQLException {
+        return backendHandler.getResultValue();
     }
     
     @Override
@@ -153,46 +124,5 @@ public final class ComQueryPacket extends CommandPacket implements CommandPacket
     @Override
     public CommandPacket rebuild(final Object... params) {
         return new ComQueryPacket((int) params[0], (int) params[1], (String) params[2]);
-    }
-    
-    private boolean doTransactionIntercept() throws Exception {
-        boolean result = false;
-        if (TransactionType.XA.equals(RuleRegistry.getInstance().getTransactionType())) {
-            XaTransactionEvent xaTransactionEvent = new XaTransactionEvent(sql);
-            if (isBegin()) {
-                xaTransactionEvent.setTclType(TCLType.BEGIN);
-                result = true;
-            } else if (isCommit()) {
-                xaTransactionEvent.setTclType(TCLType.COMMIT);
-                result = true;
-            } else if (isXaRollback()) {
-                xaTransactionEvent.setTclType(TCLType.ROLLBACK);
-                result = true;
-            }
-            if (result) {
-                EventBusInstance.getInstance().post(xaTransactionEvent);
-            }
-        } else {
-            if (isBegin() || isCommit() || isRollback()) {
-                result = true;
-            }
-        }
-        return result;
-    }
-    
-    private boolean isBegin() {
-        return "BEGIN".equalsIgnoreCase(sql) || "START TRANSACTION".equalsIgnoreCase(sql) || "SET AUTOCOMMIT=0".equalsIgnoreCase(sql);
-    }
-    
-    private boolean isCommit() {
-        return "COMMIT".equalsIgnoreCase(sql);
-    }
-    
-    private boolean isXaRollback() throws SystemException {
-        return "ROLLBACK".equalsIgnoreCase(sql) && Status.STATUS_NO_TRANSACTION != AtomikosUserTransaction.getInstance().getStatus();
-    }
-    
-    private boolean isRollback() {
-        return "ROLLBACK".equalsIgnoreCase(sql);
     }
 }

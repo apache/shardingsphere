@@ -17,14 +17,12 @@
 
 package io.shardingsphere.proxy.frontend;
 
-import io.netty.channel.WriteBufferWaterMark;
-import io.shardingsphere.proxy.frontend.netty.ServerHandlerInitializer;
-
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.WriteBufferWaterMark;
 import io.netty.channel.epoll.EpollChannelOption;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollServerSocketChannel;
@@ -32,8 +30,10 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import io.shardingsphere.proxy.backend.ShardingProxyClient;
+import io.shardingsphere.proxy.backend.netty.ShardingProxyClient;
 import io.shardingsphere.proxy.config.RuleRegistry;
+import io.shardingsphere.proxy.frontend.common.netty.ServerHandlerInitializer;
+import io.shardingsphere.proxy.util.ExecutorContext;
 
 import java.net.MalformedURLException;
 
@@ -46,13 +46,17 @@ import java.net.MalformedURLException;
  */
 public final class ShardingProxy {
     
-    private static final int WORKER_MAX_THREADS = Runtime.getRuntime().availableProcessors() * 2;
+    private final RuleRegistry ruleRegistry = RuleRegistry.getInstance();
+    
+    private final ExecutorContext executorContext = ExecutorContext.getInstance();
     
     private EventLoopGroup bossGroup;
     
     private EventLoopGroup workerGroup;
     
-    private EventLoopGroup userGroup;
+    public ShardingProxy() {
+        ruleRegistry.initShardingMetaData(executorContext.getExecutorService());
+    }
     
     /**
      * Start Sharding-Proxy.
@@ -63,7 +67,7 @@ public final class ShardingProxy {
      */
     public void start(final int port) throws InterruptedException, MalformedURLException {
         try {
-            if (RuleRegistry.getInstance().isWithoutJdbc()) {
+            if (ruleRegistry.isProxyBackendUseNio()) {
                 ShardingProxyClient.getInstance().start();
             }
             ServerBootstrap bootstrap = new ServerBootstrap();
@@ -78,8 +82,8 @@ public final class ShardingProxy {
         } finally {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
-            userGroup.shutdownGracefully();
-            if (RuleRegistry.getInstance().isWithoutJdbc()) {
+            executorContext.getExecutorService().shutdown();
+            if (ruleRegistry.isProxyBackendUseNio()) {
                 ShardingProxyClient.getInstance().stop();
             }
         }
@@ -94,8 +98,7 @@ public final class ShardingProxy {
     }
     
     private void groupsEpoll(final ServerBootstrap bootstrap) {
-        workerGroup = new EpollEventLoopGroup(WORKER_MAX_THREADS);
-        userGroup = new EpollEventLoopGroup(WORKER_MAX_THREADS);
+        workerGroup = new EpollEventLoopGroup(ruleRegistry.getMaxWorkingThreads());
         bootstrap.group(bossGroup, workerGroup)
                 .channel(EpollServerSocketChannel.class)
                 .option(EpollChannelOption.SO_BACKLOG, 128)
@@ -103,12 +106,11 @@ public final class ShardingProxy {
                 .option(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .childOption(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .handler(new LoggingHandler(LogLevel.INFO))
-                .childHandler(new ServerHandlerInitializer(userGroup));
+                .childHandler(new ServerHandlerInitializer());
     }
     
     private void groupsNio(final ServerBootstrap bootstrap) {
-        workerGroup = new NioEventLoopGroup(WORKER_MAX_THREADS);
-        userGroup = new NioEventLoopGroup(WORKER_MAX_THREADS);
+        workerGroup = new NioEventLoopGroup(ruleRegistry.getMaxWorkingThreads());
         bootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .option(ChannelOption.SO_BACKLOG, 128)
@@ -117,6 +119,6 @@ public final class ShardingProxy {
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .handler(new LoggingHandler(LogLevel.INFO))
-                .childHandler(new ServerHandlerInitializer(userGroup));
+                .childHandler(new ServerHandlerInitializer());
     }
 }

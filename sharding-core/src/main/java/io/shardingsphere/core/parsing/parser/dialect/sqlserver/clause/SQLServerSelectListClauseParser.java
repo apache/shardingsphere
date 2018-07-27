@@ -35,7 +35,7 @@ import io.shardingsphere.core.rule.ShardingRule;
  */
 public final class SQLServerSelectListClauseParser extends SelectListClauseParser {
     
-    private OrderByClauseParser orderByClauseParser;
+    private final OrderByClauseParser orderByClauseParser;
     
     public SQLServerSelectListClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine);

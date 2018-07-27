@@ -18,54 +18,48 @@
 package io.shardingsphere.proxy.transport.mysql.packet.command.text.initdb;
 
 import io.shardingsphere.core.constant.ShardingConstant;
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
-import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
+import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * COM_INIT_DB command packet.
+ * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-init-db.html#packet-COM_INIT_DB">COM_INIT_DB</a>
  *
  * @author zhangliang
  */
 @Slf4j
-public final class ComInitDbPacket extends CommandPacket {
+public final class ComInitDbPacket implements CommandPacket {
+    
+    @Getter
+    private final int sequenceId;
     
     private final String schemaName;
     
-    public ComInitDbPacket(final int sequenceId, final MySQLPacketPayload mysqlPacketPayload) {
-        super(sequenceId);
-        schemaName = mysqlPacketPayload.readStringEOF();
+    public ComInitDbPacket(final int sequenceId, final MySQLPacketPayload payload) {
+        this.sequenceId = sequenceId;
+        schemaName = payload.readStringEOF();
     }
     
     @Override
-    public void write(final MySQLPacketPayload mysqlPacketPayload) {
-        mysqlPacketPayload.writeInt1(CommandPacketType.COM_INIT_DB.getValue());
-        mysqlPacketPayload.writeStringEOF(schemaName);
+    public void write(final MySQLPacketPayload payload) {
+        payload.writeInt1(CommandPacketType.COM_INIT_DB.getValue());
+        payload.writeStringEOF(schemaName);
     }
     
     @Override
     public CommandResponsePackets execute() {
         log.debug("Schema name received for Sharding-Proxy: {}", schemaName);
         if (ShardingConstant.LOGIC_SCHEMA_NAME.equalsIgnoreCase(schemaName)) {
-            return new CommandResponsePackets(new OKPacket(getSequenceId() + 1, 0, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0, ""));
+            return new CommandResponsePackets(new OKPacket(getSequenceId() + 1));
         }
-        return new CommandResponsePackets(new ErrPacket(getSequenceId() + 1, 1049, "", String.format("Unknown database '%s'", schemaName)));
-    }
-    
-    @Override
-    public boolean hasMoreResultValue() {
-        return false;
-    }
-    
-    @Override
-    public DatabaseProtocolPacket getResultValue() {
-        return null;
+        return new CommandResponsePackets(new ErrPacket(getSequenceId() + 1, ServerErrorCode.ER_BAD_DB_ERROR, schemaName));
     }
 }

@@ -2,6 +2,8 @@
 <sql-cases>
     <sql-case id="select_sum" value="SELECT SUM(user_id) AS user_id_sum FROM t_order" />
     <sql-case id="select_count" value="SELECT COUNT(*) AS orders_count FROM t_order" />
+    <sql-case id="select_count_with_sub" value="SELECT COUNT(*) AS orders_count FROM t_order WHERE order_id > 1-1" />
+    <sql-case id="select_count_with_sub_with_whitespace" value="SELECT COUNT(*) AS orders_count FROM t_order WHERE order_id > 1 - 1" />
     <sql-case id="select_max" value="SELECT MAX(user_id) AS max_user_id FROM t_order" />
     <sql-case id="select_min" value="SELECT MIN(user_id) AS min_user_id FROM t_order" />
     <sql-case id="select_avg" value="SELECT AVG(user_id) AS user_id_avg FROM t_order" />

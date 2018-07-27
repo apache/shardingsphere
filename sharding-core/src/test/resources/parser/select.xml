@@ -313,7 +313,7 @@
             </and-condition>
         </or-condition>
     </parser-result>
-
+    
     <parser-result sql-case-id="select_equal_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', 100, 200, 1">
         <tables>
             <table name="t_place" />
@@ -329,7 +329,7 @@
             </and-condition>
         </or-condition>
     </parser-result>
-
+    
     <parser-result sql-case-id="select_in_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1">
         <tables>
             <table name="t_place" />
@@ -345,7 +345,7 @@
             </and-condition>
         </or-condition>
     </parser-result>
-
+    
     <parser-result sql-case-id="select_between_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1">
         <tables>
             <table name="t_place" />
@@ -361,4 +361,17 @@
             </and-condition>
         </or-condition>
     </parser-result>
+    
+    <parser-result sql-case-id="select_with_double_quotes" parameters="1">
+        <tables>
+            <table name="t_order_item" />
+        </tables>
+        <tokens>
+            <table-token begin-position="14" original-literals="&quot;t_order_item&quot;" />
+        </tokens>
+        <order-by-columns>
+            <order-by-column name="item_id" order-direction="ASC" />
+        </order-by-columns>
+    </parser-result>
+    
 </parser-result-sets>

@@ -17,47 +17,46 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command.text.query;
 
+import com.google.common.collect.Lists;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 /**
  * Text result set row packet.
+ * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-query-response.html#packet-ProtocolText::ResultsetRow">ResultsetRow</a>
  *
  * @author zhangliang
  */
+@RequiredArgsConstructor
 @Getter
-public final class TextResultSetRowPacket extends MySQLPacket {
+public final class TextResultSetRowPacket implements MySQLPacket {
     
     private static final int NULL = 0xfb;
     
+    private final int sequenceId;
+    
     private final List<Object> data;
     
-    public TextResultSetRowPacket(final int sequenceId, final List<Object> data) {
-        super(sequenceId);
-        this.data = data;
-    }
-    
-    public TextResultSetRowPacket(final MySQLPacketPayload mysqlPacketPayload, final int columnCount) {
-        super(mysqlPacketPayload.readInt1());
+    public TextResultSetRowPacket(final MySQLPacketPayload payload, final int columnCount) {
+        sequenceId = payload.readInt1();
         data = Lists.newArrayListWithExpectedSize(columnCount);
         for (int i = 1; i <= columnCount; i++) {
-            data.add(mysqlPacketPayload.readStringLenenc());
+            data.add(payload.readStringLenenc());
         }
     }
     
     @Override
-    public void write(final MySQLPacketPayload mysqlPacketPayload) {
+    public void write(final MySQLPacketPayload payload) {
         for (Object each : data) {
             if (null == each) {
-                mysqlPacketPayload.writeInt1(NULL);
+                payload.writeInt1(NULL);
             } else {
-                mysqlPacketPayload.writeStringLenenc(each.toString());
+                payload.writeStringLenenc(each.toString());
             }
         }
     }

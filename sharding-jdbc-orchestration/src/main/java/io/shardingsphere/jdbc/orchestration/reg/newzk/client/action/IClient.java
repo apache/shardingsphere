@@ -17,7 +17,7 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.action;
 
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
 
@@ -25,14 +25,14 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 /*
- * client api
+ * Client api.
  *
  * @author lidongbo
  */
 public interface IClient extends IAction, IGroupAction {
     
     /**
-     * start.
+     * Start.
      *
      * @throws IOException IO Exception
      * @throws InterruptedException InterruptedException
@@ -40,7 +40,7 @@ public interface IClient extends IAction, IGroupAction {
     void start() throws IOException, InterruptedException;
     
     /**
-     * start until out.
+     * Start until out.
      *
      * @param wait wait
      * @param units units
@@ -51,46 +51,46 @@ public interface IClient extends IAction, IGroupAction {
     boolean start(int wait, TimeUnit units) throws IOException, InterruptedException;
     
     /**
-     * close.
+     * Block until connected.
+     *
+     * @param wait wait
+     * @param units units
+     * @return connected
+     * @throws InterruptedException InterruptedException
+     */
+    boolean blockUntilConnected(int wait, TimeUnit units) throws InterruptedException;
+    
+    /**
+     * Close.
      */
     void close();
     
     /**
-     * register watcher.
+     * Register watcher.
      *
      * @param key key
-     * @param listener listener
+     * @param zookeeperEventListener listener
      */
-    void registerWatch(String key, Listener listener);
+    void registerWatch(String key, ZookeeperEventListener zookeeperEventListener);
     
     /**
-     * unregister watcher.
+     * Unregister watcher.
      *
      * @param key key
      */
     void unregisterWatch(String key);
     
     /**
-     * choice exec strategy.
+     * Choice exec strategy.
      *
      * @param strategyType strategyType
      */
     void useExecStrategy(StrategyType strategyType);
     
     /**
-     * create transaction.
+     * Create transaction.
      *
      * @return ZKTransaction
      */
     BaseTransaction transaction();
-    /*
-    void createNamespace();
-    void deleteNamespace();
-    
-    Watcher registerWatch(Listener listener);
-    void setRootNode(String namespace);
-    
-    void setAuthorities(String scheme, byte[] auth);
-    ZooKeeper getZooKeeper();
-    */
 }

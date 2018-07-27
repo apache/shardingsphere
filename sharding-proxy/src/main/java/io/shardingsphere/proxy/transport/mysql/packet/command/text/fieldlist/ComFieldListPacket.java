@@ -19,23 +19,21 @@ package io.shardingsphere.proxy.transport.mysql.packet.command.text.fieldlist;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.ShardingConstant;
-import io.shardingsphere.proxy.backend.common.SQLExecuteBackendHandler;
-import io.shardingsphere.proxy.backend.common.SQLPacketsBackendHandler;
-import io.shardingsphere.proxy.config.RuleRegistry;
+import io.shardingsphere.proxy.backend.BackendHandler;
+import io.shardingsphere.proxy.backend.BackendHandlerFactory;
+import io.shardingsphere.proxy.backend.jdbc.BackendConnection;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
-import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
-import io.shardingsphere.proxy.transport.mysql.packet.command.statement.close.DummyPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ComQueryPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextResultSetRowPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
@@ -43,12 +41,16 @@ import java.sql.SQLException;
 /**
  * COM_FIELD_LIST command packet.
  *
+ * @see <a href="https://dev.mysql.com/doc/internals/en/com-field-list.html">COM_FIELD_LIST</a>
+ * 
  * @author zhangliang
  * @author wangkai
- * @see <a href="https://dev.mysql.com/doc/internals/en/com-field-list.html">COM_FIELD_LIST</a>
  */
 @Slf4j
-public final class ComFieldListPacket extends CommandPacket implements CommandPacketRebuilder {
+public final class ComFieldListPacket implements CommandPacket, CommandPacketRebuilder {
+    
+    @Getter
+    private final int sequenceId;
     
     private final int connectionId;
     
@@ -56,89 +58,40 @@ public final class ComFieldListPacket extends CommandPacket implements CommandPa
     
     private final String fieldWildcard;
     
-    private int currentSequenceId;
+    private final BackendHandler backendHandler;
     
-    private SQLExecuteBackendHandler sqlExecuteBackendHandler;
-    
-    private SQLPacketsBackendHandler sqlPacketsBackendHandler;
-    
-    public ComFieldListPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload mysqlPacketPayload) {
-        super(sequenceId);
+    public ComFieldListPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
+        this.sequenceId = sequenceId;
         this.connectionId = connectionId;
-        table = mysqlPacketPayload.readStringNul();
-        fieldWildcard = mysqlPacketPayload.readStringEOF();
-    }
-    
-    public ComFieldListPacket(final int sequenceId, final int connectionId, final String table, final String fieldWildcard) {
-        super(sequenceId);
-        this.connectionId = connectionId;
-        this.table = table;
-        this.fieldWildcard = fieldWildcard;
+        table = payload.readStringNul();
+        fieldWildcard = payload.readStringEOF();
+        backendHandler = BackendHandlerFactory.newTextProtocolInstance(sql(), backendConnection, DatabaseType.MySQL, this);
     }
     
     @Override
-    public void write(final MySQLPacketPayload mysqlPacketPayload) {
-        mysqlPacketPayload.writeInt1(CommandPacketType.COM_FIELD_LIST.getValue());
-        mysqlPacketPayload.writeStringNul(table);
-        mysqlPacketPayload.writeStringEOF(fieldWildcard);
+    public void write(final MySQLPacketPayload payload) {
+        payload.writeInt1(CommandPacketType.COM_FIELD_LIST.getValue());
+        payload.writeStringNul(table);
+        payload.writeStringEOF(fieldWildcard);
     }
     
     @Override
-    public CommandResponsePackets execute() {
-        log.debug("table name received for Sharding-Proxy: {}", table);
-        log.debug("field wildcard received for Sharding-Proxy: {}", fieldWildcard);
-        String sql = String.format("SHOW COLUMNS FROM %s FROM %s", table, ShardingConstant.LOGIC_SCHEMA_NAME);
-        // TODO use common database type
-        if (RuleRegistry.getInstance().isWithoutJdbc()) {
-            sqlPacketsBackendHandler = new SQLPacketsBackendHandler(this, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
-            if (sqlPacketsBackendHandler.execute().getHeadPacket() instanceof ErrPacket) {
-                return new CommandResponsePackets(new ErrPacket(1, 0, "", ""));
-            }
-            return new CommandResponsePackets(new DummyPacket());
-        } else {
-            sqlExecuteBackendHandler = new SQLExecuteBackendHandler(sql, DatabaseType.MySQL, RuleRegistry.getInstance().isShowSQL());
-            if (sqlExecuteBackendHandler.execute().getHeadPacket() instanceof ErrPacket) {
-                return new CommandResponsePackets(new ErrPacket(1, 0, "", ""));
-            }
-            return new CommandResponsePackets(new DummyPacket());
-        }
+    public CommandResponsePackets execute() throws SQLException {
+        log.debug("Table name received for Sharding-Proxy: {}", table);
+        log.debug("Field wildcard received for Sharding-Proxy: {}", fieldWildcard);
+        CommandResponsePackets responsePackets = backendHandler.execute();
+        return responsePackets.getHeadPacket() instanceof ErrPacket ? responsePackets : getColumnDefinition41Packets();
     }
     
-    @Override
-    public boolean hasMoreResultValue() {
-        try {
-            if (RuleRegistry.getInstance().isWithoutJdbc()) {
-                return sqlPacketsBackendHandler.hasMoreResultValue();
-            } else {
-                return sqlExecuteBackendHandler.hasMoreResultValue();
-            }
-        } catch (final SQLException ex) {
-            return false;
+    private CommandResponsePackets getColumnDefinition41Packets() throws SQLException {
+        CommandResponsePackets result = new CommandResponsePackets();
+        int currentSequenceId = 0;
+        while (backendHandler.next()) {
+            String columnName = ((TextResultSetRowPacket) backendHandler.getResultValue()).getData().get(0).toString();
+            result.getPackets().add(new ColumnDefinition41Packet(++currentSequenceId, ShardingConstant.LOGIC_SCHEMA_NAME, table, table, columnName, columnName, 100, ColumnType.MYSQL_TYPE_VARCHAR, 0));
         }
-    }
-    
-    @Override
-    public DatabaseProtocolPacket getResultValue() {
-        DatabaseProtocolPacket result;
-        if (RuleRegistry.getInstance().isWithoutJdbc()) {
-            result = sqlPacketsBackendHandler.getResultValue();
-            if (!sqlPacketsBackendHandler.isHasMoreResultValueFlag()) {
-                return new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
-            }
-        } else {
-            result = sqlExecuteBackendHandler.getResultValue();
-            if (!sqlExecuteBackendHandler.isHasMoreResultValueFlag()) {
-                return new EofPacket(++currentSequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
-            }
-        }
-        if (result instanceof TextResultSetRowPacket) {
-            TextResultSetRowPacket fieldListResponse = (TextResultSetRowPacket) result;
-            String columnName = (String) fieldListResponse.getData().get(0);
-            return new ColumnDefinition41Packet(++currentSequenceId, ShardingConstant.LOGIC_SCHEMA_NAME, table, table,
-                columnName, columnName, 100, ColumnType.MYSQL_TYPE_VARCHAR, 0);
-        } else {
-            return new ErrPacket(1, 0, "", "");
-        }
+        result.getPackets().add(new EofPacket(++currentSequenceId));
+        return result;
     }
     
     @Override

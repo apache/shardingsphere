@@ -96,7 +96,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
         if (null != generatedKey) {
             setGeneratedKeys(result, generatedKey);
         }
-        RoutingResult routingResult = route(parameters, sqlStatement, shardingConditions);
+        RoutingResult routingResult = route(sqlStatement, shardingConditions);
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, logicSQL, databaseType, sqlStatement, shardingConditions, parameters);
         boolean isSingleRouting = routingResult.isSingleRouting();
         if (sqlStatement instanceof SelectStatement && null != ((SelectStatement) sqlStatement).getLimit()) {
@@ -112,7 +112,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
         return result;
     }
     
-    private RoutingResult route(final List<Object> parameters, final SQLStatement sqlStatement, final ShardingConditions shardingConditions) {
+    private RoutingResult route(final SQLStatement sqlStatement, final ShardingConditions shardingConditions) {
         Collection<String> tableNames = sqlStatement.getTables().getTableNames();
         RoutingEngine routingEngine;
         if (sqlStatement instanceof UseStatement) {
@@ -135,7 +135,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
             routingEngine = new StandardRoutingEngine(shardingRule, tableNames.iterator().next(), shardingConditions);
         } else {
             // TODO config for cartesian set
-            routingEngine = new ComplexRoutingEngine(shardingRule, parameters, tableNames, shardingConditions);
+            routingEngine = new ComplexRoutingEngine(shardingRule, tableNames, shardingConditions);
         }
         return routingEngine.route();
     }

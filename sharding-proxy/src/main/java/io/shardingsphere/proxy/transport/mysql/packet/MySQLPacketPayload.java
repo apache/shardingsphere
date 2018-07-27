@@ -38,12 +38,13 @@ import java.util.Date;
  */
 @RequiredArgsConstructor
 @Getter
-public final class MySQLPacketPayload {
+public final class MySQLPacketPayload implements AutoCloseable {
     
     private final ByteBuf byteBuf;
     
     /**
      * Read 1 byte fixed length integer from byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      * 
      * @return 1 byte fixed length integer
@@ -54,6 +55,7 @@ public final class MySQLPacketPayload {
     
     /**
      * Write 1 byte fixed length integer to byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      * 
      * @param value 1 byte fixed length integer
@@ -64,6 +66,7 @@ public final class MySQLPacketPayload {
     
     /**
      * Read 2 byte fixed length integer from byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      *
      * @return 2 byte fixed length integer
@@ -74,6 +77,7 @@ public final class MySQLPacketPayload {
     
     /**
      * Write 2 byte fixed length integer to byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      *
      * @param value 2 byte fixed length integer
@@ -84,6 +88,7 @@ public final class MySQLPacketPayload {
     
     /**
      * Read 3 byte fixed length integer from byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      *
      * @return 3 byte fixed length integer
@@ -94,6 +99,7 @@ public final class MySQLPacketPayload {
     
     /**
      * Write 3 byte fixed length integer to byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      *
      * @param value 3 byte fixed length integer
@@ -104,6 +110,7 @@ public final class MySQLPacketPayload {
     
     /**
      * Read 4 byte fixed length integer from byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      *
      * @return 4 byte fixed length integer
@@ -114,6 +121,7 @@ public final class MySQLPacketPayload {
     
     /**
      * Write 4 byte fixed length integer to byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      *
      * @param value 4 byte fixed length integer
@@ -125,6 +133,7 @@ public final class MySQLPacketPayload {
     
     /**
      * Read 6 byte fixed length integer from byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      *
      * @return 6 byte fixed length integer
@@ -136,6 +145,7 @@ public final class MySQLPacketPayload {
     
     /**
      * Write 6 byte fixed length integer to byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      *
      * @param value 6 byte fixed length integer
@@ -146,6 +156,7 @@ public final class MySQLPacketPayload {
     
     /**
      * Read 8 byte fixed length integer from byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      *
      * @return 8 byte fixed length integer
@@ -156,6 +167,7 @@ public final class MySQLPacketPayload {
     
     /**
      * Write 8 byte fixed length integer to byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      *
      * @param value 8 byte fixed length integer
@@ -167,6 +179,7 @@ public final class MySQLPacketPayload {
     
     /**
      * Read length encoded integer from byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::LengthEncodedInteger">LengthEncodedInteger</a>
      *
      * @return length encoded integer
@@ -190,6 +203,7 @@ public final class MySQLPacketPayload {
     
     /**
      * Write length encoded integer to byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::LengthEncodedInteger">LengthEncodedInteger</a>
      *
      * @param value length encoded integer
@@ -215,6 +229,7 @@ public final class MySQLPacketPayload {
     
     /**
      * Read fixed length string from byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::FixedLengthString">FixedLengthString</a>
      *
      * @return fixed length string
@@ -240,6 +255,7 @@ public final class MySQLPacketPayload {
     
     /**
      * Write fixed length string to byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::FixedLengthString">FixedLengthString</a>
      *
      * @param value fixed length string
@@ -255,6 +271,7 @@ public final class MySQLPacketPayload {
     
     /**
      * Read fixed length string from byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::FixedLengthString">FixedLengthString</a>
      *
      * @param length length of fixed string
@@ -282,6 +299,7 @@ public final class MySQLPacketPayload {
     
     /**
      * Write variable length string to byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::FixedLengthString">FixedLengthString</a>
      *
      * @param value fixed length string
@@ -292,6 +310,7 @@ public final class MySQLPacketPayload {
     
     /**
      * Write variable length bytes to byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/secure-password-authentication.html#packet-Authentication::Native41">Native41</a>
      *
      * @param value fixed length bytes
@@ -302,6 +321,7 @@ public final class MySQLPacketPayload {
     
     /**
      * Read variable length string from byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::VariableLengthString">FixedLengthString</a>
      *
      * @return variable length string
@@ -313,6 +333,7 @@ public final class MySQLPacketPayload {
     
     /**
      * Write fixed length string to byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::VariableLengthString">FixedLengthString</a>
      *
      * @param value variable length string
@@ -323,6 +344,7 @@ public final class MySQLPacketPayload {
     
     /**
      * Read null terminated string from byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::NulTerminatedString">NulTerminatedString</a>
      *
      * @return null terminated string
@@ -348,6 +370,7 @@ public final class MySQLPacketPayload {
     
     /**
      * Write null terminated string to byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::NulTerminatedString">NulTerminatedString</a>
      *
      * @param value null terminated string
@@ -359,6 +382,7 @@ public final class MySQLPacketPayload {
     
     /**
      * Read rest of packet string from byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::RestOfPacketString">RestOfPacketString</a>
      *
      * @return rest of packet string
@@ -371,6 +395,7 @@ public final class MySQLPacketPayload {
     
     /**
      * Write rest of packet string to byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::RestOfPacketString">RestOfPacketString</a>
      *
      * @param value rest of packet string
@@ -401,6 +426,7 @@ public final class MySQLPacketPayload {
     
     /**
      * Read 4 byte float from byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html#ProtocolBinary::MYSQL_TYPE_FLOAT">MYSQL_TYPE_FLOAT</a>
      *
      * @return 4 byte float
@@ -411,6 +437,7 @@ public final class MySQLPacketPayload {
     
     /**
      * Write 4 byte float to byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html#ProtocolBinary::MYSQL_TYPE_FLOAT">MYSQL_TYPE_FLOAT</a>
      *
      * @param value 4 byte float
@@ -421,6 +448,7 @@ public final class MySQLPacketPayload {
     
     /**
      * Read 8 byte double from byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html#ProtocolBinary::MYSQL_TYPE_DOUBLE">MYSQL_TYPE_DOUBLE</a>
      *
      * @return 8 byte double
@@ -431,6 +459,7 @@ public final class MySQLPacketPayload {
     
     /**
      * Write 8 byte double to byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html#ProtocolBinary::MYSQL_TYPE_DOUBLE">MYSQL_TYPE_DOUBLE</a>
      *
      * @param value 8 byte double
@@ -441,41 +470,41 @@ public final class MySQLPacketPayload {
     
     /**
      * Read date from byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html#ProtocolBinary::MYSQL_TYPE_DATE">MYSQL_TYPE_DATE</a>
      *
      * @return timestamp
      */
     public Timestamp readDate() {
-        Timestamp timestamp;
+        Timestamp result;
         Calendar calendar = Calendar.getInstance();
         int length = readInt1();
         switch (length) {
             case 0:
-                timestamp = new Timestamp(0);
+                result = new Timestamp(0);
                 break;
             case 4:
                 calendar.set(readInt2(), readInt1() - 1, readInt1());
-                timestamp = new Timestamp(calendar.getTimeInMillis());
+                result = new Timestamp(calendar.getTimeInMillis());
                 break;
             case 7:
-                calendar.set(readInt2(), readInt1() - 1, readInt1(),
-                    readInt1(), readInt1(), readInt1());
-                timestamp = new Timestamp(calendar.getTimeInMillis());
+                calendar.set(readInt2(), readInt1() - 1, readInt1(), readInt1(), readInt1(), readInt1());
+                result = new Timestamp(calendar.getTimeInMillis());
                 break;
             case 11:
-                calendar.set(readInt2(), readInt1() - 1, readInt1(),
-                    readInt1(), readInt1(), readInt1());
-                timestamp = new Timestamp(calendar.getTimeInMillis());
-                timestamp.setNanos(readInt4());
+                calendar.set(readInt2(), readInt1() - 1, readInt1(), readInt1(), readInt1(), readInt1());
+                result = new Timestamp(calendar.getTimeInMillis());
+                result.setNanos(readInt4());
                 break;
             default:
                 throw new IllegalArgumentException(String.format("Wrong length '%d' of MYSQL_TYPE_TIME", length));
         }
-        return timestamp;
+        return result;
     }
     
     /**
      * Write date to byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html#ProtocolBinary::MYSQL_TYPE_DATE">MYSQL_TYPE_DATE</a>
      *
      * @param timestamp timestamp
@@ -522,38 +551,40 @@ public final class MySQLPacketPayload {
     
     /**
      * Read time from byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html#ProtocolBinary::MYSQL_TYPE_TIME">MYSQL_TYPE_TIME</a>
      *
      * @return timestamp
      */
     public Timestamp readTime() {
-        Timestamp timestamp;
+        Timestamp result;
         Calendar calendar = Calendar.getInstance();
         int length = readInt1();
         readInt1();
         readInt4();
         switch (length) {
             case 0:
-                timestamp = new Timestamp(0);
+                result = new Timestamp(0);
                 break;
             case 8:
-                calendar.set(0, 0, 0, readInt1(), readInt1(), readInt1());
-                timestamp = new Timestamp(calendar.getTimeInMillis());
-                timestamp.setNanos(0);
+                calendar.set(0, Calendar.JANUARY, 0, readInt1(), readInt1(), readInt1());
+                result = new Timestamp(calendar.getTimeInMillis());
+                result.setNanos(0);
                 break;
             case 12:
-                calendar.set(0, 0, 0, readInt1(), readInt1(), readInt1());
-                timestamp = new Timestamp(calendar.getTimeInMillis());
-                timestamp.setNanos(readInt4());
+                calendar.set(0, Calendar.JANUARY, 0, readInt1(), readInt1(), readInt1());
+                result = new Timestamp(calendar.getTimeInMillis());
+                result.setNanos(readInt4());
                 break;
             default:
                 throw new IllegalArgumentException(String.format("Wrong length '%d' of MYSQL_TYPE_DATE", length));
         }
-        return timestamp;
+        return result;
     }
     
     /**
      * Write time to byte buffers.
+     * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html#ProtocolBinary::MYSQL_TYPE_TIME">MYSQL_TYPE_TIME</a>
      *
      * @param date date
@@ -586,5 +617,10 @@ public final class MySQLPacketPayload {
             writeInt1(second);
             writeInt4(millisecond);
         }
+    }
+    
+    @Override
+    public void close() {
+        byteBuf.release();
     }
 }

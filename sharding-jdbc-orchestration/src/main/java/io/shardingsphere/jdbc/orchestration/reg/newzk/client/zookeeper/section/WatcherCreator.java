@@ -17,30 +17,32 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /*
+ * Build public watcher.
+ *
  * @author lidongbo
  */
+@Slf4j
 public class WatcherCreator {
-    private static final Logger LOGGER = LoggerFactory.getLogger(WatcherCreator.class);
     
     /**
-     * get string type data.
+     * Get string type data.
      *
-     * @param listener listener
+     * @param zookeeperEventListener listener
      * @return watcher
      */
-    public static Watcher deleteWatcher(final Listener listener) {
+    public static Watcher deleteWatcher(final ZookeeperEventListener zookeeperEventListener) {
         return new Watcher() {
+            
             @Override
             public void process(final WatchedEvent event) {
-                if (listener.getPath().equals(event.getPath()) && Event.EventType.NodeDeleted.equals(event.getType())) {
-                    listener.process(event);
-                    LOGGER.debug("delete node event:{}", event.toString());
+                if (zookeeperEventListener.getPath().equals(event.getPath()) && Event.EventType.NodeDeleted.equals(event.getType())) {
+                    zookeeperEventListener.process(event);
+                    log.debug("delete node event:{}", event.toString());
                 }
             }
         };

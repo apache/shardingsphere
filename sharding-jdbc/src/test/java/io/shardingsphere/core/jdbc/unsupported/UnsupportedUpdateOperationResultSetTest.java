@@ -42,11 +42,11 @@ import java.util.List;
 
 public final class UnsupportedUpdateOperationResultSetTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
-    private List<ShardingConnection> shardingConnections = new ArrayList<>();
+    private final List<ShardingConnection> shardingConnections = new ArrayList<>();
     
-    private List<Statement> statements = new ArrayList<>();
+    private final List<Statement> statements = new ArrayList<>();
     
-    private List<ResultSet> resultSets = new ArrayList<>();
+    private final List<ResultSet> resultSets = new ArrayList<>();
     
     public UnsupportedUpdateOperationResultSetTest(final DatabaseType databaseType) {
         super(databaseType);

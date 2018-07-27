@@ -20,30 +20,29 @@ package io.shardingsphere.proxy.transport.mysql.packet.command.text.query;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * COM_QUERY response field count packet.
+ * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-query-response.html">COM_QUERY field count</a>
  *
  * @author zhangliang
  */
+@RequiredArgsConstructor
 @Getter
-public final class FieldCountPacket extends MySQLPacket {
+public final class FieldCountPacket implements MySQLPacket {
+    
+    private final int sequenceId;
     
     private final int columnCount;
     
-    public FieldCountPacket(final int sequenceId, final int columnCount) {
-        super(sequenceId);
-        this.columnCount = columnCount;
-    }
-    
-    public FieldCountPacket(final MySQLPacketPayload mysqlPacketPayload) {
-        super(mysqlPacketPayload.readInt1());
-        columnCount = mysqlPacketPayload.readInt1();
+    public FieldCountPacket(final MySQLPacketPayload payload) {
+        this(payload.readInt1(), payload.readInt1());
     }
     
     @Override
-    public void write(final MySQLPacketPayload mysqlPacketPayload) {
-        mysqlPacketPayload.writeIntLenenc(columnCount);
+    public void write(final MySQLPacketPayload payload) {
+        payload.writeIntLenenc(columnCount);
     }
 }

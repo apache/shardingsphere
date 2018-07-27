@@ -24,7 +24,6 @@ import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusInstance;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.frontend.ShardingProxy;
-import io.shardingsphere.transaction.xa.AtomikosXaTransaction;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
@@ -45,7 +44,9 @@ public final class Bootstrap {
     
     private static final int DEFAULT_PORT = 3307;
     
-    private static final String CONFIG_YAML = "/conf/config.yaml";
+    private static final String DEFAULT_CONFIG_PATH = "/conf/";
+    
+    private static final String DEFAULT_CONFIG_FILE = "config.yaml";
     
     /**
      * Main Entrance.
@@ -55,7 +56,7 @@ public final class Bootstrap {
      * @throws IOException IO exception
      */
     public static void main(final String[] args) throws InterruptedException, IOException {
-        OrchestrationProxyConfiguration localConfig = loadLocalConfiguration(new File(Bootstrap.class.getResource(CONFIG_YAML).getFile()));
+        OrchestrationProxyConfiguration localConfig = loadLocalConfiguration(new File(Bootstrap.class.getResource(getConfig(args)).getFile()));
         int port = getPort(args);
         if (null == localConfig.getOrchestration()) {
             startWithoutRegistryCenter(localConfig, port);
@@ -70,7 +71,7 @@ public final class Bootstrap {
                 InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")
         ) {
             OrchestrationProxyConfiguration result = new Yaml(new Constructor(OrchestrationProxyConfiguration.class)).loadAs(inputStreamReader, OrchestrationProxyConfiguration.class);
-            Preconditions.checkNotNull(result, String.format("Configuration file `%s` is invalid.", CONFIG_YAML));
+            Preconditions.checkNotNull(result, String.format("Configuration file `%s` is invalid.", yamlFile.getName()));
             Preconditions.checkState(!result.getDataSources().isEmpty(), "Data sources configuration can not be empty.");
             Preconditions.checkState(null != result.getShardingRule() || null != result.getMasterSlaveRule() || null != result.getOrchestration(), 
                     "Configuration invalid, sharding rule, local and orchestration configuration can not be both null.");
@@ -90,9 +91,15 @@ public final class Bootstrap {
         }
     }
     
+    private static String getConfig(final String[] args) {
+        if (2 != args.length) {
+            return DEFAULT_CONFIG_PATH + DEFAULT_CONFIG_FILE;
+        }
+        return DEFAULT_CONFIG_PATH + args[1];
+    }
+    
     private static void startWithoutRegistryCenter(final OrchestrationProxyConfiguration config, final int port) throws InterruptedException, MalformedURLException {
         RuleRegistry.getInstance().init(config);
-        AtomikosXaTransaction.init();
         new ShardingProxy().start(port);
     }
     
@@ -102,7 +109,6 @@ public final class Bootstrap {
                 orchestrationFacade.init(localConfig);
             }
             initRuleRegistry(orchestrationFacade.getConfigService());
-            AtomikosXaTransaction.init();
             new ShardingProxy().start(port);
         }
     }

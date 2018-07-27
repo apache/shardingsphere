@@ -18,43 +18,47 @@
 package io.shardingsphere.proxy.transport.mysql.packet.generic;
 
 import com.google.common.base.Preconditions;
+import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * EOF packet protocol.
+ * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/packet-EOF_Packet.html">EOF Packet</a>
  * 
  * @author zhangliang
  * @author wangkai
  */
+@RequiredArgsConstructor
 @Getter
-public class EofPacket extends MySQLPacket {
+public final class EofPacket implements MySQLPacket {
     
     private static final int HEADER = 0xfe;
+    
+    private final int sequenceId;
     
     private final int warnings;
     
     private final int statusFlags;
     
-    public EofPacket(final int sequenceId, final int warnings, final int statusFlags) {
-        super(sequenceId);
-        this.warnings = warnings;
-        this.statusFlags = statusFlags;
+    public EofPacket(final int sequenceId) {
+        this(sequenceId, 0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
     }
     
-    public EofPacket(final MySQLPacketPayload mysqlPacketPayload) {
-        super(mysqlPacketPayload.readInt1());
-        Preconditions.checkArgument(HEADER == mysqlPacketPayload.readInt1());
-        warnings = mysqlPacketPayload.readInt2();
-        statusFlags = mysqlPacketPayload.readInt2();
+    public EofPacket(final MySQLPacketPayload payload) {
+        sequenceId = payload.readInt1();
+        Preconditions.checkArgument(HEADER == payload.readInt1());
+        warnings = payload.readInt2();
+        statusFlags = payload.readInt2();
     }
     
     @Override
-    public void write(final MySQLPacketPayload mysqlPacketPayload) {
-        mysqlPacketPayload.writeInt1(HEADER);
-        mysqlPacketPayload.writeInt2(warnings);
-        mysqlPacketPayload.writeInt2(statusFlags);
+    public void write(final MySQLPacketPayload payload) {
+        payload.writeInt1(HEADER);
+        payload.writeInt2(warnings);
+        payload.writeInt2(statusFlags);
     }
 }

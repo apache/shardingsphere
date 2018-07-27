@@ -17,9 +17,7 @@
 
 package io.shardingsphere.transaction.xa;
 
-import com.atomikos.icatch.jta.UserTransactionImp;
-
-import javax.transaction.UserTransaction;
+import com.atomikos.icatch.jta.UserTransactionManager;
 
 /**
  * Hold singleton atomikos userTransaction.
@@ -28,21 +26,21 @@ import javax.transaction.UserTransaction;
  */
 public class AtomikosUserTransaction {
     
-    private static volatile UserTransaction userTransaction;
+    private static volatile UserTransactionManager transactionManager;
     
     /**
-     * Get singleton {@code UserTransaction} lazily.
+     * Get singleton {@code UserTransactionManager} lazily.
      *
-     * @return {@code UserTransactionImp}
+     * @return {@code UserTransactionManager}
      */
-    public static UserTransaction getInstance() {
-        if (null == userTransaction) {
+    public static UserTransactionManager getInstance() {
+        if (null == transactionManager) {
             synchronized (AtomikosUserTransaction.class) {
-                if (null == userTransaction) {
-                    userTransaction = new UserTransactionImp();
+                if (null == transactionManager) {
+                    transactionManager = new UserTransactionManager();
                 }
             }
         }
-        return userTransaction;
+        return transactionManager;
     }
 }

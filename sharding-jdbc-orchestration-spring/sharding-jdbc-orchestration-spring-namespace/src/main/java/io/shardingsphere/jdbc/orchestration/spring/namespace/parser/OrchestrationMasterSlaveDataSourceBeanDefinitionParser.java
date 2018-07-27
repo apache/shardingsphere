@@ -40,6 +40,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Orchestration master-slave data source parser for spring namespace.
@@ -53,12 +54,12 @@ public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends Abst
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         String regCenter = parseRegistryCenterRef(element);
         if (Strings.isNullOrEmpty(regCenter)) {
-            return getSpringMasterSlaveDataSourceBean(element);
+            return getSpringMasterSlaveDataSourceBean(element, parserContext);
         }
         return getOrchestrationSpringMasterSlaveDataSourceBean(element, parserContext);
     }
     
-    private AbstractBeanDefinition getSpringMasterSlaveDataSourceBean(final Element element) {
+    private AbstractBeanDefinition getSpringMasterSlaveDataSourceBean(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SpringMasterSlaveDataSource.class);
         factory.addConstructorArgValue(parseDataSources(element));
         factory.addConstructorArgValue(parseId(element));
@@ -70,6 +71,8 @@ public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends Abst
         } else {
             factory.addConstructorArgValue(parseStrategyType(element));
         }
+        factory.addConstructorArgValue(parseConfigMap(element, parserContext, factory.getBeanDefinition()));
+        factory.addConstructorArgValue(parseProperties(element, parserContext));
         return factory.getBeanDefinition();
     }
     
@@ -80,6 +83,7 @@ public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends Abst
             factory.addConstructorArgValue(parseDataSources(element));
             factory.addConstructorArgValue(parseMasterSlaveRuleConfig(element));
             factory.addConstructorArgValue(parseConfigMap(element, parserContext, factory.getBeanDefinition()));
+            factory.addConstructorArgValue(parseProperties(element, parserContext));
         }
         factory.addConstructorArgValue(parseOrchestrationConfiguration(element, OrchestrationType.MASTER_SLAVE));
         return factory.getBeanDefinition();
@@ -141,5 +145,10 @@ public class OrchestrationMasterSlaveDataSourceBeanDefinitionParser extends Abst
     private Map parseConfigMap(final Element element, final ParserContext parserContext, final BeanDefinition beanDefinition) {
         Element dataElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.CONFIG_MAP_TAG);
         return null == dataElement ? Collections.<String, Class<?>>emptyMap() : parserContext.getDelegate().parseMapElement(dataElement, beanDefinition);
+    }
+    
+    private Properties parseProperties(final Element element, final ParserContext parserContext) {
+        Element propsElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.PROPS_TAG);
+        return null == propsElement ? new Properties() : parserContext.getDelegate().parsePropsElement(propsElement);
     }
 }

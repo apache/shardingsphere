@@ -25,12 +25,14 @@ import org.apache.zookeeper.data.ACL;
 import java.util.List;
 
 /*
+ * Base transaction.
+ *
  * @author lidongbo
  */
 public class BaseTransaction {
     
     /**
-     * create target node.
+     * Create target node.
      *
      * @param path key
      * @param data value
@@ -43,7 +45,7 @@ public class BaseTransaction {
     }
     
     /**
-     * delete target node.
+     * Delete target node.
      *
      * @param path key
      * @return ZKTransaction
@@ -53,7 +55,7 @@ public class BaseTransaction {
     }
     
     /**
-     * delete target node.
+     * Delete target node.
      *
      * @param path key
      * @param version version
@@ -64,7 +66,7 @@ public class BaseTransaction {
     }
     
     /**
-     * check target node.
+     * Check target node.
      *
      * @param path key
      * @return ZKTransaction
@@ -75,7 +77,7 @@ public class BaseTransaction {
     
     
     /**
-     * check target node.
+     * Check target node.
      *
      * @param path key
      * @param version version
@@ -86,7 +88,7 @@ public class BaseTransaction {
     }
     
     /**
-     * update target node.
+     * Update target node.
      *
      * @param path key
      * @param data data
@@ -97,7 +99,7 @@ public class BaseTransaction {
     }
     
     /**
-     * update target node.
+     * Update target node.
      *
      * @param path key
      * @param data data
@@ -109,7 +111,7 @@ public class BaseTransaction {
     }
     
     /**
-     * commit.
+     * Commit.
      *
      * @return operation result
      * @throws KeeperException Zookeeper Exception

@@ -17,16 +17,15 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy;
 
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.Callback;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.ContentionCallback;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.election.LeaderElection;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Stack;
@@ -36,38 +35,38 @@ import java.util.Stack;
  *
  * @author lidongbo
  */
+@Slf4j
 public class ContentionStrategy extends UsualStrategy {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ContentionStrategy.class);
     
     public ContentionStrategy(final IProvider provider) {
         super(provider);
     }
     
-    @Override
     /*
     * Don't use this if you don't have to use it.
     */
+    @Override
     public void getData(final String key, final AsyncCallback.DataCallback callback, final Object ctx) throws KeeperException, InterruptedException {
         LeaderElection election = new LeaderElection() {
             @Override
             public void action() throws KeeperException, InterruptedException {
                 getProvider().getData(getProvider().getRealPath(key), callback, ctx);
-                LOGGER.debug("ContentionStrategy getData action:{}", key);
+                log.debug("ContentionStrategy getData action:{}", key);
             }
         };
         getProvider().executeContention(election);
-        LOGGER.debug("ContentionStrategy getData executeContention");
+        log.debug("ContentionStrategy getData executeContention");
     }
 
     @Override
     public void createCurrentOnly(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
         LeaderElection election = buildCreateElection(key, value, createMode, null);
         getProvider().executeContention(election);
-        LOGGER.debug("ContentionStrategy createCurrentOnly executeContention");
+        log.debug("ContentionStrategy createCurrentOnly executeContention");
         election.waitDone();
     }
     
-    private LeaderElection buildCreateElection(final String key, final String value, final CreateMode createMode, final Callback callback) {
+    private LeaderElection buildCreateElection(final String key, final String value, final CreateMode createMode, final ContentionCallback contentionCallback) {
         return new LeaderElection() {
             @Override
             public void action() throws KeeperException, InterruptedException {
@@ -76,8 +75,8 @@ public class ContentionStrategy extends UsualStrategy {
             
             @Override
             public void callback() {
-                if (callback != null) {
-                    callback.processResult();
+                if (contentionCallback != null) {
+                    contentionCallback.processResult();
                 }
             }
         };
@@ -87,22 +86,22 @@ public class ContentionStrategy extends UsualStrategy {
     public void update(final String key, final String value) throws KeeperException, InterruptedException {
         LeaderElection election = buildUpdateElection(key, value, null);
         getProvider().executeContention(election);
-        LOGGER.debug("ContentionStrategy update executeContention");
+        log.debug("ContentionStrategy update executeContention");
         election.waitDone();
     }
     
-    private LeaderElection buildUpdateElection(final String key, final String value, final Callback callback) {
+    private LeaderElection buildUpdateElection(final String key, final String value, final ContentionCallback contentionCallback) {
         return new LeaderElection() {
             @Override
             public void action() throws KeeperException, InterruptedException {
                 getProvider().update(getProvider().getRealPath(key), value);
-                LOGGER.debug("ContentionStrategy update action:{},value:{}", key, value);
+                log.debug("ContentionStrategy update action:{},value:{}", key, value);
             }
             
             @Override
             public void callback() {
-                if (callback != null) {
-                    callback.processResult();
+                if (contentionCallback != null) {
+                    contentionCallback.processResult();
                 }
             }
         };
@@ -112,7 +111,7 @@ public class ContentionStrategy extends UsualStrategy {
     public void deleteOnlyCurrent(final String key) throws KeeperException, InterruptedException {
         LeaderElection election = buildDeleteElection(key, null);
         getProvider().executeContention(election);
-        LOGGER.debug("ContentionStrategy deleteOnlyCurrent executeContention");
+        log.debug("ContentionStrategy deleteOnlyCurrent executeContention");
         election.waitDone();
     }
     
@@ -122,12 +121,12 @@ public class ContentionStrategy extends UsualStrategy {
             @Override
             public void action() throws KeeperException, InterruptedException {
                 getProvider().delete(getProvider().getRealPath(key), callback, ctx);
-                LOGGER.debug("ContentionStrategy deleteOnlyCurrent action:{},ctx:{}", key, ctx);
+                log.debug("ContentionStrategy deleteOnlyCurrent action:{},ctx:{}", key, ctx);
             }
         });
     }
     
-    private LeaderElection buildDeleteElection(final String key, final Callback callback) {
+    private LeaderElection buildDeleteElection(final String key, final ContentionCallback contentionCallback) {
         return new LeaderElection() {
             @Override
             public void action() throws KeeperException, InterruptedException {
@@ -136,8 +135,8 @@ public class ContentionStrategy extends UsualStrategy {
             
             @Override
             public void callback() {
-                if (callback != null) {
-                    callback.processResult();
+                if (contentionCallback != null) {
+                    contentionCallback.processResult();
                 }
             }
         };
@@ -147,43 +146,44 @@ public class ContentionStrategy extends UsualStrategy {
     public void createAllNeedPath(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
         LeaderElection election = buildCreateAllNeedElection(key, value, createMode, null);
         getProvider().executeContention(election);
-        LOGGER.debug("ContentionStrategy createAllNeedPath executeContention");
+        log.debug("ContentionStrategy createAllNeedPath executeContention");
         election.waitDone();
     }
     
-    private LeaderElection buildCreateAllNeedElection(final String key, final String value, final CreateMode createMode, final Callback callback) {
+    private LeaderElection buildCreateAllNeedElection(final String key, final String value, final CreateMode createMode, final ContentionCallback contentionCallback) {
         return new LeaderElection() {
             @Override
             public void action() throws KeeperException, InterruptedException {
-                LOGGER.debug("ContentionStrategy createAllNeedPath action:{}", key);
+                log.debug("ContentionStrategy createAllNeedPath action:{}", key);
                 createBegin(getProvider().getRealPath(key), value, createMode);
             }
             
             @Override
             public void callback() {
-                if (callback != null) {
-                    callback.processResult();
+                if (contentionCallback != null) {
+                    contentionCallback.processResult();
                 }
             }
         };
     }
     
     private void createBegin(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
-        if (key.indexOf(Constants.PATH_SEPARATOR) < -1) {
+        // todo start with /
+        if (!key.contains(ZookeeperConstants.PATH_SEPARATOR)) {
             getProvider().create(key, value, createMode);
             return;
         }
         List<String> nodes = getProvider().getNecessaryPaths(key);
         for (int i = 0; i < nodes.size(); i++) {
             if (getProvider().exists(nodes.get(i))) {
-                LOGGER.info("create node exist:{}", nodes.get(i));
+                log.info("create node exist:{}", nodes.get(i));
                 continue;
             }
-            LOGGER.debug("create node not exist:", nodes.get(i));
+            log.debug("create node not exist:", nodes.get(i));
             if (i == nodes.size() - 1) {
                 getProvider().create(nodes.get(i), value, createMode);
             } else {
-                getProvider().create(nodes.get(i), Constants.NOTHING_VALUE, createMode);
+                getProvider().create(nodes.get(i), ZookeeperConstants.NOTHING_VALUE, createMode);
             }
         }
     }
@@ -196,19 +196,19 @@ public class ContentionStrategy extends UsualStrategy {
                 deleteChildren(getProvider().getRealPath(key), true);
             }
         });
-        LOGGER.debug("ContentionStrategy deleteAllChildren executeContention");
+        log.debug("ContentionStrategy deleteAllChildren executeContention");
     }
     
     private void deleteChildren(final String key, final boolean deleteCurrentNode) throws KeeperException, InterruptedException {
         List<String> children = getProvider().getChildren(key);
-        LOGGER.debug("deleteChildren:{}", children);
+        log.debug("deleteChildren:{}", children);
         for (int i = 0; i < children.size(); i++) {
             String child = PathUtil.getRealPath(key, children.get(i));
             if (!getProvider().exists(child)) {
-                LOGGER.info("delete not exist:{}", child);
+                log.info("delete not exist:{}", child);
                 continue;
             }
-            LOGGER.debug("deleteChildren:{}", child);
+            log.debug("deleteChildren:{}", child);
             deleteChildren(child, true);
         }
         if (deleteCurrentNode) {
@@ -224,7 +224,7 @@ public class ContentionStrategy extends UsualStrategy {
                 deleteBranch(getProvider().getRealPath(key));
             }
         });
-        LOGGER.debug("ContentionStrategy deleteCurrentBranch executeContention");
+        log.debug("ContentionStrategy deleteCurrentBranch executeContention");
     }
     
     private void deleteBranch(final String key) throws KeeperException, InterruptedException {
@@ -237,26 +237,26 @@ public class ContentionStrategy extends UsualStrategy {
                 try {
                     getProvider().delete(node);
                 } catch (KeeperException.NotEmptyException e) {
-                    LOGGER.warn("deleteBranch {} exist other children:{}", node, this.getChildren(node));
-                    LOGGER.debug(e.getMessage());
+                    log.warn("deleteBranch {} exist other children:{}", node, this.getChildren(node));
+                    log.debug(e.getMessage());
                     return;
                 }
             }
-            LOGGER.info("deleteBranch node not exist:{}", node);
+            log.info("deleteBranch node not exist:{}", node);
         }
     }
     
     //todo Use arbitrary competitive nodes
     //IExecStrategy convert to ContentionStrategy
-    /*public void createCurrentOnly(final String key, final String value, final CreateMode createMode, final Callback callback) throws KeeperException, InterruptedException {
+    /*public void createCurrentOnly(final String key, final String value, final CreateMode createMode, final ContentionCallback callback) throws KeeperException, InterruptedException {
         getProvider().executeContention(buildCreateElection(key, value, createMode, callback));
     }
     
-    public void update(final String key, final String value, final Callback callback) throws KeeperException, InterruptedException {
+    public void update(final String key, final String value, final ContentionCallback callback) throws KeeperException, InterruptedException {
         getProvider().executeContention(buildUpdateElection(key, value, null));
     }
 
-    public void deleteOnlyCurrent(final String key, final Callback callback) throws KeeperException, InterruptedException {
+    public void deleteOnlyCurrent(final String key, final ContentionCallback callback) throws KeeperException, InterruptedException {
         getProvider().executeContention(buildDeleteElection(key, null));
     }*/
 }

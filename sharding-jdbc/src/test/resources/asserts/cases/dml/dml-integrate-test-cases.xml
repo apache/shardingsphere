@@ -66,6 +66,10 @@
     <dml-test-case sql-case-id="insert_with_batch">
         <assertion parameters="1:int, 1:int, insert:String, 2:int, 2:int, insert:String" expected-data-file="batch_insert_for_order.xml" />
     </dml-test-case>
+
+    <dml-test-case sql-case-id="insert_with_batch_and_irregular_parameters">
+        <assertion parameters="1:int, 2:int, 2:int, insert:String" expected-data-file="batch_insert_for_order.xml" />
+    </dml-test-case>
     
     <dml-test-case sql-case-id="insert_with_batch_and_with_generate_key_column">
         <assertion parameters="1:int, 1:int, 1:int, 2:int, 2:int, 2:int" expected-data-file="batch_insert_with_generate_key_column.xml" />

@@ -27,6 +27,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Sharding configuration converter.
@@ -48,7 +49,7 @@ public class MasterSlaveConfigurationConverter {
     public static String masterSlaveRuleConfigToYaml(final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration) {
         Yaml yaml = new Yaml(new MasterSlaveConfigurationRepresenter());
         YamlMasterSlaveRuleConfiguration yamlMasterSlaveRuleConfiguration =
-                new YamlMasterSlaveRuleConfiguration(masterSlaveRuleConfiguration, new HashMap<String, Object>());
+                new YamlMasterSlaveRuleConfiguration(masterSlaveRuleConfiguration, new HashMap<String, Object>(), new Properties());
         return yaml.dumpAsMap(yamlMasterSlaveRuleConfiguration);
     }
     
@@ -81,5 +82,25 @@ public class MasterSlaveConfigurationConverter {
     @SuppressWarnings("unchecked")
     public static Map<String, Object> configMapFromYaml(final String configMapYamlString) {
         return (Map<String, Object>) YAML.load(configMapYamlString);
+    }
+    
+    /**
+     * Convert properties to properties string.
+     *
+     * @param props properties
+     * @return properties string
+     */
+    public static String propertiesToYaml(final Properties props) {
+        return YAML.dumpAsMap(props);
+    }
+    
+    /**
+     * Convert properties yaml string to properties.
+     *
+     * @param propertiesYamlString properties yaml string
+     * @return properties
+     */
+    public static Properties propertiesFromYaml(final String propertiesYamlString) {
+        return YAML.loadAs(propertiesYamlString, Properties.class);
     }
 }

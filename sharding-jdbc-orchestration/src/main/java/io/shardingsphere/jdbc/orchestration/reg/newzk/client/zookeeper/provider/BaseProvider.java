@@ -19,28 +19,29 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.provider
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.election.LeaderElection;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.Holder;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.data.ACL;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Stack;
 
 /*
+ * Base provider.
+ *
  * @author lidongbo
  */
+@Slf4j
 public class BaseProvider implements IProvider {
-    private static final Logger LOGGER = LoggerFactory.getLogger(BaseProvider.class);
     
     @Getter
     private final Holder holder;
@@ -72,7 +73,7 @@ public class BaseProvider implements IProvider {
     }
     
     @Override
-    public void getData(final String key, final AsyncCallback.DataCallback callback, final Object ctx) throws KeeperException, InterruptedException {
+    public void getData(final String key, final AsyncCallback.DataCallback callback, final Object ctx) {
         holder.getZooKeeper().getData(key, watched, callback, ctx);
     }
     
@@ -93,26 +94,25 @@ public class BaseProvider implements IProvider {
     
     @Override
     public void create(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
-        holder.getZooKeeper().create(key, value.getBytes(Constants.UTF_8), authorities, createMode);
-        LOGGER.debug("BaseProvider createCurrentOnly:{}", key);
-//        create(key, value, createMode, new AtomicInteger());
+        holder.getZooKeeper().create(key, value.getBytes(ZookeeperConstants.UTF_8), authorities, createMode);
+        log.debug("BaseProvider createCurrentOnly:{}", key);
     }
 
     @Override
     public void update(final String key, final String value) throws KeeperException, InterruptedException {
-        holder.getZooKeeper().setData(key, value.getBytes(Constants.UTF_8), Constants.VERSION);
+        holder.getZooKeeper().setData(key, value.getBytes(ZookeeperConstants.UTF_8), ZookeeperConstants.VERSION);
     }
     
     @Override
     public void delete(final String key) throws KeeperException, InterruptedException {
-        holder.getZooKeeper().delete(key, Constants.VERSION);
-        LOGGER.debug("BaseProvider deleteOnlyCurrent:{}", key);
+        holder.getZooKeeper().delete(key, ZookeeperConstants.VERSION);
+        log.debug("BaseProvider deleteOnlyCurrent:{}", key);
     }
     
     @Override
-    public void delete(final String key, final AsyncCallback.VoidCallback callback, final Object ctx) throws KeeperException, InterruptedException {
-        holder.getZooKeeper().delete(key, Constants.VERSION, callback, ctx);
-        LOGGER.debug("BaseProvider deleteOnlyCurrent:{},ctx:{}", key, ctx);
+    public void delete(final String key, final AsyncCallback.VoidCallback callback, final Object ctx) {
+        holder.getZooKeeper().delete(key, ZookeeperConstants.VERSION, callback, ctx);
+        log.debug("BaseProvider deleteOnlyCurrent:{},ctx:{}", key, ctx);
     }
 
     @Override
@@ -146,9 +146,9 @@ public class BaseProvider implements IProvider {
         try {
             holder.reset();
             // CHECKSTYLE:OFF
-        } catch (Exception e) {
+        } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            LOGGER.error("resetConnection Exception:{}", e.getMessage(), e);
+            log.error("resetConnection Exception:{}", ex.getMessage(), ex);
         }
     }
     
