@@ -26,13 +26,11 @@ import io.shardingsphere.proxy.backend.jdbc.transaction.TransactionEngine;
 import io.shardingsphere.proxy.backend.jdbc.transaction.TransactionEngineFactory;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
-import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryCommandPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -85,14 +83,10 @@ public final class ComQueryPacket implements QueryCommandPacket, CommandPacketRe
     }
     
     @Override
-    public Optional<CommandResponsePackets> execute() {
+    public Optional<CommandResponsePackets> execute() throws Exception {
         log.debug("COM_QUERY received for Sharding-Proxy: {}", sql);
-        try {
-            if (transactionEngine.execute().isSkipAccessBackend()) {
-                return Optional.of(new CommandResponsePackets(new OKPacket(1)));
-            }
-        } catch (final Exception ex) {
-            return Optional.of(new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage())));
+        if (transactionEngine.execute().isSkipAccessBackend()) {
+            return Optional.of(new CommandResponsePackets(new OKPacket(1)));
         }
         return Optional.of(backendHandler.execute());
     }
