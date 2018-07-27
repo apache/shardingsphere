@@ -44,6 +44,7 @@ import java.util.LinkedList;
  *
  * @author zhangliang
  * @author maxiaoguang
+ * @author panjuan
  */
 public final class InsertColumnsClauseParser implements SQLClauseParser {
     
