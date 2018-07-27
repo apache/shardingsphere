@@ -19,7 +19,6 @@ package io.shardingsphere.core.parsing.parser.clause;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.metadata.TableMetaData;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.Assist;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
@@ -94,8 +93,7 @@ public final class InsertColumnsClauseParser implements SQLClauseParser {
             insertStatement.setColumnsListLastPosition(lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length());
             lexerEngine.nextToken();
         } else {
-            TableMetaData tableMetaData = shardingMetaData.getTableMetaDataMap().get(tableName);
-            Collection<String> columnNames = null == tableMetaData ? new LinkedList<String>() : tableMetaData.getAllColumnNames();
+            Collection<String> columnNames = shardingMetaData.getTableMetaDataMap().containsKey(tableName) ? shardingMetaData.getTableMetaDataMap().get(tableName).getAllColumnNames() : new LinkedList<String>();
             int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length() - 1;
             insertStatement.getSqlTokens().add(new InsertColumnToken(beginPosition, "("));
             ItemsToken columnsToken = new ItemsToken(beginPosition);
