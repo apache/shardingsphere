@@ -29,8 +29,8 @@ import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
-import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.PreparedStatementRegistry;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.PreparedStatementRegistry;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -50,9 +50,15 @@ public final class ComStmtPreparePacket implements CommandPacket {
     
     private final String sql;
     
+    private final RuleRegistry ruleRegistry;
+    
+    private final PreparedStatementRegistry preparedStatementRegistry;
+    
     public ComStmtPreparePacket(final int sequenceId, final MySQLPacketPayload payload) {
         this.sequenceId = sequenceId;
         sql = payload.readStringEOF();
+        ruleRegistry = RuleRegistry.getInstance();
+        preparedStatementRegistry = PreparedStatementRegistry.getInstance();
     }
     
     @Override
@@ -63,18 +69,16 @@ public final class ComStmtPreparePacket implements CommandPacket {
     @Override
     public Optional<CommandResponsePackets> execute() {
         log.debug("COM_STMT_PREPARE received for Sharding-Proxy: {}", sql);
-        CommandResponsePackets result = new CommandResponsePackets();
         int currentSequenceId = 0;
-        SQLStatement sqlStatement = new SQLParsingEngine(DatabaseType.MySQL, sql, RuleRegistry.getInstance().getShardingRule(), null).parse(true);
-        int parametersIndex = sqlStatement.getParametersIndex();
-        result.getPackets().add(
-                new ComStmtPrepareOKPacket(++currentSequenceId, PreparedStatementRegistry.getInstance().register(sql), getNumColumns(sqlStatement), parametersIndex, 0));
-        for (int i = 0; i < parametersIndex; i++) {
+        SQLStatement sqlStatement = new SQLParsingEngine(DatabaseType.MySQL, sql, ruleRegistry.getShardingRule(), ruleRegistry.getShardingMetaData()).parse(true);
+        CommandResponsePackets result = new CommandResponsePackets(
+                new ComStmtPrepareOKPacket(++currentSequenceId, preparedStatementRegistry.register(sql), getNumColumns(sqlStatement), sqlStatement.getParametersIndex(), 0));
+        for (int i = 0; i < sqlStatement.getParametersIndex(); i++) {
             // TODO add column name
             result.getPackets().add(new ColumnDefinition41Packet(++currentSequenceId, ShardingConstant.LOGIC_SCHEMA_NAME,
                     sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "", "", "", "", 100, ColumnType.MYSQL_TYPE_VARCHAR, 0));
         }
-        if (parametersIndex > 0) {
+        if (sqlStatement.getParametersIndex() > 0) {
             result.getPackets().add(new EofPacket(++currentSequenceId));
         }
         // TODO add If numColumns > 0
@@ -84,6 +88,7 @@ public final class ComStmtPreparePacket implements CommandPacket {
     private int getNumColumns(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
             // TODO select * cannot know items num
+            // right now, add metadata, can we know items num?
             return ((SelectStatement) sqlStatement).getItems().size();
         }
         if (sqlStatement instanceof InsertStatement) {

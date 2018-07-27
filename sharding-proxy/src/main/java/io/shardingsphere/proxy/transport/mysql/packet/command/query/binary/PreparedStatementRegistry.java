@@ -59,6 +59,7 @@ public final class PreparedStatementRegistry {
      * @param sql SQL
      * @return statement ID
      */
+    // TODO thread not safe?
     public int register(final String sql) {
         Integer result = sqlToStatementIdMap.get(sql);
         if (null != result) {
