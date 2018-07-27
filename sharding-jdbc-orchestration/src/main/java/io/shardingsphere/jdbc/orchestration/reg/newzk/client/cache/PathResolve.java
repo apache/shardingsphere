@@ -17,6 +17,8 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache;
 
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +30,10 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class PathResolve {
+class PathResolve {
+    
+    @Getter
+    private final List<String> nodes = new ArrayList<>();
     
     @Getter
     private final String path;
@@ -38,7 +43,32 @@ public class PathResolve {
     
     private int position;
     
-    private void next() {
-        
+    /**
+     * Read position Whether the end position or not .
+     *
+     * @return isEnd boolean
+     */
+    public boolean isEnd() {
+        return position == path.length() - 1;
+    }
+    
+    /**
+    * Next path node.
+    */
+    public void next() {
+        if (isEnd()) {
+            current = null;
+            return;
+        }
+        int nodeBegin = ++position;
+        while (path.charAt(position) != '/') {
+            if (isEnd()) {
+                position = path.length();
+                break;
+            }
+            position++;
+        }
+        current = path.substring(nodeBegin, position);
+        nodes.add(current);
     }
 }
