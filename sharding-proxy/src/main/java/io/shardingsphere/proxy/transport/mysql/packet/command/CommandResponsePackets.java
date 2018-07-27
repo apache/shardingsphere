@@ -15,26 +15,36 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.jdbc.execute.response;
+package io.shardingsphere.proxy.transport.mysql.packet.command;
 
-import io.shardingsphere.core.merger.QueryResult;
-import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryResponsePackets;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
+import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
- * Execute query response.
- * 
- * @author zhangliang
+ * Command response packets.
+ *
+ * @author zhangyonglun
  */
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Getter
-public final class ExecuteQueryResponse implements ExecuteResponse {
+public class CommandResponsePackets {
     
-    private final QueryResponsePackets queryResponsePackets;
+    private final Collection<DatabasePacket> packets = new LinkedList<>();
     
-    private final List<QueryResult> queryResults = new LinkedList<>();
+    public CommandResponsePackets(final DatabasePacket databasePacket) {
+        packets.add(databasePacket);
+    }
+    
+    /**
+     * Get head packet.
+     *
+     * @return head packet
+     */
+    public DatabasePacket getHeadPacket() {
+        return packets.iterator().next();
+    }
 }

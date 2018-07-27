@@ -24,9 +24,9 @@ import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteRespons
 import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteUpdateResponseUnit;
 import io.shardingsphere.proxy.backend.jdbc.wrapper.JDBCExecutorWrapper;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
-import io.shardingsphere.proxy.transport.mysql.packet.command.api.impl.QueryResponsePackets;
-import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
-import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.FieldCountPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.proxy.util.ExecutorContext;

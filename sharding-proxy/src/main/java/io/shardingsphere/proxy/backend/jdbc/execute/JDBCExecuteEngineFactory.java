@@ -25,7 +25,7 @@ import io.shardingsphere.proxy.backend.jdbc.wrapper.JDBCExecutorWrapper;
 import io.shardingsphere.proxy.backend.jdbc.wrapper.PreparedStatementExecutorWrapper;
 import io.shardingsphere.proxy.backend.jdbc.wrapper.StatementExecutorWrapper;
 import io.shardingsphere.proxy.config.RuleRegistry;
-import io.shardingsphere.proxy.transport.mysql.packet.command.binary.execute.PreparedStatementParameter;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute.PreparedStatementParameter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

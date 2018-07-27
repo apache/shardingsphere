@@ -15,23 +15,26 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.jdbc.execute.response.unit;
+package io.shardingsphere.proxy.transport.mysql.packet.command;
 
-import io.shardingsphere.core.merger.QueryResult;
-import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryResponsePackets;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import com.google.common.base.Optional;
+import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
+
+import java.sql.SQLException;
 
 /**
- * Execute query response unit.
- * 
+ * Command packet.
+ *
  * @author zhangliang
+ * @author wangkai
  */
-@RequiredArgsConstructor
-@Getter
-public final class ExecuteQueryResponseUnit implements ExecuteResponseUnit {
+public interface CommandPacket extends MySQLPacket {
     
-    private final QueryResponsePackets queryResponsePackets;
-    
-    private final QueryResult queryResult;
+    /**
+     * Execute command.
+     * 
+     * @return result packets to be sent
+     * @throws SQLException SQL exception
+     */
+    Optional<CommandResponsePackets> execute() throws SQLException;
 }

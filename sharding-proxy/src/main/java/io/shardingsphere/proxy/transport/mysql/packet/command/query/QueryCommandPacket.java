@@ -15,43 +15,34 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.transport.common.packet;
+package io.shardingsphere.proxy.transport.mysql.packet.command.query;
 
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 
+import java.sql.SQLException;
+
 /**
- * Command packet rebuilder.
+ * Query command packet.
  *
- * @author linjiaqi
+ * @author zhangliang
+ * @author wangkai
  */
-public interface CommandPacketRebuilder {
+public interface QueryCommandPacket extends CommandPacket {
     
     /**
-     * Get connection id.
-     * 
-     * @return connection id
+     * Goto next result value.
+     *
+     * @return has more result value or not
+     * @throws SQLException SQL exception
      */
-    int connectionId();
+    boolean next() throws SQLException;
     
     /**
-     * Get sequence id.
-     * 
-     * @return sequence id
+     * Get result value.
+     *
+     * @return database packet of result value
+     * @throws SQLException SQL exception
      */
-    int sequenceId();
-    
-    /**
-     * Get SQL.
-     * 
-     * @return SQL
-     */
-    String sql();
-    
-    /**
-     * CommandPacket rebuild by params.
-     * 
-     * @param params rebuild params
-     * @return rebuild command packet
-     */
-    CommandPacket rebuild(Object... params);
+    DatabasePacket getResultValue() throws SQLException;
 }

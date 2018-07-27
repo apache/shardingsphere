@@ -28,7 +28,7 @@ import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
-import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextResultSetRowPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.text.TextResultSetRowPacket;
 
 import java.sql.Connection;
 import java.sql.SQLException;

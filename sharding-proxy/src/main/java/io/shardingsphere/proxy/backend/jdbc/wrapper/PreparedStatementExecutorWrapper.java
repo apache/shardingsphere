@@ -30,8 +30,8 @@ import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
-import io.shardingsphere.proxy.transport.mysql.packet.command.binary.execute.BinaryResultSetRowPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.binary.execute.PreparedStatementParameter;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute.BinaryResultSetRowPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute.PreparedStatementParameter;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.Connection;

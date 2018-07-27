@@ -19,7 +19,7 @@ package io.shardingsphere.proxy.backend.jdbc.execute.response;
 
 import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteResponseUnit;
 import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteUpdateResponseUnit;
-import io.shardingsphere.proxy.transport.mysql.packet.command.api.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import lombok.Getter;
 

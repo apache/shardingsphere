@@ -15,23 +15,27 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.jdbc.execute.response.unit;
+package io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute;
 
-import io.shardingsphere.core.merger.QueryResult;
-import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+
+import java.io.Serializable;
 
 /**
- * Execute query response unit.
- * 
- * @author zhangliang
+ * Prepared statement parameter header.
+ *
+ * @author zhangyonglun
  */
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Getter
-public final class ExecuteQueryResponseUnit implements ExecuteResponseUnit {
+public class PreparedStatementParameterHeader implements Serializable {
     
-    private final QueryResponsePackets queryResponsePackets;
+    private static final long serialVersionUID = -672589695838350689L;
     
-    private final QueryResult queryResult;
+    private final ColumnType columnType;
+    
+    private final int unsignedFlag;
+    
 }

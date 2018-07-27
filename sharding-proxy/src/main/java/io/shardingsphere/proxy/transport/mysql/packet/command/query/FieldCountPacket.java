@@ -15,23 +15,34 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.jdbc.execute.response.unit;
+package io.shardingsphere.proxy.transport.mysql.packet.command.query;
 
-import io.shardingsphere.core.merger.QueryResult;
-import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Execute query response unit.
+ * COM_QUERY response field count packet.
  * 
+ * @see <a href="https://dev.mysql.com/doc/internals/en/com-query-response.html">COM_QUERY field count</a>
+ *
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class ExecuteQueryResponseUnit implements ExecuteResponseUnit {
+public final class FieldCountPacket implements MySQLPacket {
     
-    private final QueryResponsePackets queryResponsePackets;
+    private final int sequenceId;
     
-    private final QueryResult queryResult;
+    private final int columnCount;
+    
+    public FieldCountPacket(final MySQLPacketPayload payload) {
+        this(payload.readInt1(), payload.readInt1());
+    }
+    
+    @Override
+    public void write(final MySQLPacketPayload payload) {
+        payload.writeIntLenenc(columnCount);
+    }
 }
