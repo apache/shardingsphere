@@ -104,7 +104,7 @@
         </order-by-columns>
     </parser-result>
 
-    <parser-result sql-case-id="select_order_by_with_alias_star">
+    <parser-result sql-case-id="select_order_by_with_alias_star_alias_name">
         <tables>
             <table name="t_order" alias="o" />
         </tables>
