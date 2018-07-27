@@ -24,9 +24,5 @@ package io.shardingsphere.core.constant;
  */
 public enum TCLType {
     
-    SET,
-    BEGIN,
-    COMMIT,
-    ROLLBACK,
-    SAVEPOINT
+    SET, BEGIN, COMMIT, ROLLBACK, SAVEPOINT
 }

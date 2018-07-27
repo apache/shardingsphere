@@ -58,4 +58,12 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
         context.fireChannelInactive();
         ChannelThreadExecutorGroup.getInstance().unregister(context.channel().id());
     }
+    
+    @Override
+    public void channelWritabilityChanged(final ChannelHandlerContext context) {
+        context.fireChannelWritabilityChanged();
+        if (context.channel().isWritable()) {
+            // TODO MySQLFrontendHandler line 124, trigger here
+        }
+    }
 }

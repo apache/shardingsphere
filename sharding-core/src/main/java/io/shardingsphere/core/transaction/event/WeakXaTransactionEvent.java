@@ -18,9 +18,9 @@
 package io.shardingsphere.core.transaction.event;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.constant.TCLType;
 import io.shardingsphere.core.exception.ShardingException;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Connection;
@@ -31,25 +31,20 @@ import java.util.Map;
  *
  * @author zhaojun
  */
-@RequiredArgsConstructor
 @Getter
+@Setter
 public class WeakXaTransactionEvent extends TransactionEvent {
     
-    private final Map<String, Connection> cachedConnections;
+    private Map<String, Connection> cachedConnections;
     
-    @Setter
     private boolean autoCommit = true;
     
-    /**
-     * Get exception.
-     *
-     * @return exception
-     */
+    public WeakXaTransactionEvent(final TCLType tclType) {
+        super(tclType);
+    }
+    
+    @Override
     public Optional<ShardingException> getException() {
-        Optional<? extends Exception> ex = super.getException();
-        if (ex.isPresent()) {
-            return Optional.of((ShardingException) ex.get());
-        }
-        return Optional.absent();
+        return Optional.fromNullable((ShardingException) super.getException().orNull());
     }
 }

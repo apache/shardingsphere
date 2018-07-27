@@ -19,14 +19,15 @@ package io.shardingsphere.proxy.transport.mysql.packet.command;
 
 import io.shardingsphere.proxy.backend.jdbc.BackendConnection;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
-import io.shardingsphere.proxy.transport.mysql.packet.command.binary.close.ComStmtClosePacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.binary.execute.ComStmtExecutePacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.binary.prepare.ComStmtPreparePacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.text.fieldlist.ComFieldListPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.text.initdb.ComInitDbPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.text.ping.ComPingPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ComQueryPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.text.quit.ComQuitPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.admin.UnsupportedCommandPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.close.ComStmtClosePacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute.ComStmtExecutePacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.prepare.ComStmtPreparePacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.text.fieldlist.ComFieldListPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.admin.initdb.ComInitDbPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.admin.ping.ComPingPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.text.query.ComQueryPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.admin.quit.ComQuitPacket;
 
 /**
  * Command packet factory.

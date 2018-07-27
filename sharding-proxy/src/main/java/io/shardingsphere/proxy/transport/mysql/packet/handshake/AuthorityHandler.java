@@ -33,6 +33,8 @@ import java.util.Arrays;
 @Getter
 public final class AuthorityHandler {
     
+    private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
+    
     private final AuthPluginData authPluginData;
     
     public AuthorityHandler() {
@@ -47,7 +49,7 @@ public final class AuthorityHandler {
      * @return login success or failure.
      */
     public boolean login(final String username, final byte[] authResponse) {
-        ProxyAuthority proxyAuthority = RuleRegistry.getInstance().getProxyAuthority();
+        ProxyAuthority proxyAuthority = RULE_REGISTRY.getProxyAuthority();
         if (Strings.isNullOrEmpty(proxyAuthority.getPassword())) {
             return proxyAuthority.getUsername().equals(username);
         }

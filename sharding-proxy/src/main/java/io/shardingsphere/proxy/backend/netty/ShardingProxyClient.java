@@ -56,11 +56,13 @@ public final class ShardingProxyClient {
     
     private static final ShardingProxyClient INSTANCE = new ShardingProxyClient();
     
+    private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
+    
     private static final int WORKER_MAX_THREADS = Runtime.getRuntime().availableProcessors();
     
-    private static final int MAX_CONNECTIONS = RuleRegistry.getInstance().getProxyBackendSimpleDbConnections();
+    private static final int MAX_CONNECTIONS = RULE_REGISTRY.getProxyBackendSimpleDbConnections();
     
-    private static final int CONNECTION_TIMEOUT = RuleRegistry.getInstance().getProxyBackendConnectionTimeout();
+    private static final int CONNECTION_TIMEOUT = RULE_REGISTRY.getProxyBackendConnectionTimeout();
     
     private final Map<String, DataSourceConfig> dataSourceConfigMap = Maps.newHashMap();
     
@@ -76,7 +78,7 @@ public final class ShardingProxyClient {
      * @throws InterruptedException  interrupted exception
      */
     public void start() throws MalformedURLException, InterruptedException {
-        Map<String, DataSourceParameter> dataSourceConfigurationMap = RuleRegistry.getInstance().getDataSourceConfigurationMap();
+        Map<String, DataSourceParameter> dataSourceConfigurationMap = RULE_REGISTRY.getDataSourceConfigurationMap();
         for (Map.Entry<String, DataSourceParameter> each : dataSourceConfigurationMap.entrySet()) {
             URL url = new URL(each.getValue().getUrl().replaceAll("jdbc:mysql:", "http:"));
             final String ip = url.getHost();

@@ -33,18 +33,20 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class ProxyShardingRefreshHandler extends AbstractRefreshHandler {
     
+    private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
+    
     private ProxyShardingRefreshHandler(final SQLStatement sqlStatement, final ShardingMetaData shardingMetaData, final ShardingRule shardingRule) {
         super(sqlStatement, shardingMetaData, shardingRule);
     }
     
     /**
-     * create new instance of {@code ProxyShardingRefreshHandler}.
+     * Create new instance of {@code ProxyShardingRefreshHandler}.
      *
      * @param sqlStatement SQL statement
      * @return {@code ProxyShardingRefreshHandler}
      */
     public static ProxyShardingRefreshHandler build(final SQLStatement sqlStatement) {
-        return new ProxyShardingRefreshHandler(sqlStatement, RuleRegistry.getInstance().getShardingMetaData(), RuleRegistry.getInstance().getShardingRule());
+        return new ProxyShardingRefreshHandler(sqlStatement, RULE_REGISTRY.getShardingMetaData(), RULE_REGISTRY.getShardingRule());
     }
     
     @Override

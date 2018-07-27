@@ -23,9 +23,8 @@ import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.core.transaction.event.TransactionEvent;
+import io.shardingsphere.core.transaction.event.TransactionEventFactory;
 import io.shardingsphere.core.transaction.event.WeakXaTransactionEvent;
-import io.shardingsphere.core.transaction.event.XaTransactionEvent;
-import io.shardingsphere.core.transaction.spi.TransactionEventHolder;
 import io.shardingsphere.core.util.EventBusInstance;
 
 import javax.sql.DataSource;
@@ -89,23 +88,17 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     public final void setAutoCommit(final boolean autoCommit) {
         this.autoCommit = autoCommit;
         recordMethodInvocation(Connection.class, "setAutoCommit", new Class[] {boolean.class}, new Object[] {autoCommit});
-        TransactionEvent transactionEvent = buildTransactionEvent();
-        transactionEvent.setTclType(TCLType.BEGIN);
-        EventBusInstance.getInstance().post(transactionEvent);
+        EventBusInstance.getInstance().post(buildTransactionEvent(TCLType.BEGIN));
     }
     
     @Override
     public final void commit() {
-        TransactionEvent transactionEvent = buildTransactionEvent();
-        transactionEvent.setTclType(TCLType.COMMIT);
-        EventBusInstance.getInstance().post(transactionEvent);
+        EventBusInstance.getInstance().post(buildTransactionEvent(TCLType.COMMIT));
     }
     
     @Override
     public final void rollback() {
-        TransactionEvent transactionEvent = buildTransactionEvent();
-        transactionEvent.setTclType(TCLType.ROLLBACK);
-        EventBusInstance.getInstance().post(transactionEvent);
+        EventBusInstance.getInstance().post(buildTransactionEvent(TCLType.ROLLBACK));
     }
     
     @Override
@@ -180,14 +173,13 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     public final void setHoldability(final int holdability) {
     }
     
-    private TransactionEvent buildTransactionEvent() {
-        TransactionEvent transactionEvent;
-        if (TransactionEventHolder.get().isAssignableFrom(XaTransactionEvent.class)) {
-            transactionEvent = new XaTransactionEvent("");
-        } else {
-            transactionEvent = new WeakXaTransactionEvent(cachedConnections);
-            ((WeakXaTransactionEvent) transactionEvent).setAutoCommit(autoCommit);
+    private TransactionEvent buildTransactionEvent(final TCLType tclType) {
+        TransactionEvent result = TransactionEventFactory.create(tclType);
+        if (result instanceof WeakXaTransactionEvent) {
+            WeakXaTransactionEvent weakXaTransactionEvent = (WeakXaTransactionEvent) result;
+            weakXaTransactionEvent.setCachedConnections(cachedConnections);
+            weakXaTransactionEvent.setAutoCommit(autoCommit);
         }
-        return transactionEvent;
+        return result;
     }
 }
