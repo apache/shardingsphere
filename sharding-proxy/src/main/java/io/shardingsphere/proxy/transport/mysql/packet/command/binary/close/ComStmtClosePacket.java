@@ -20,6 +20,7 @@ package io.shardingsphere.proxy.transport.mysql.packet.command.binary.close;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.api.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.api.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.api.impl.DummyPacket;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,6 +51,7 @@ public class ComStmtClosePacket implements CommandPacket {
     @Override
     public CommandResponsePackets execute() {
         log.debug("COM_STMT_CLOSE received for Sharding-Proxy: {}", statementId);
+        // TODO need to clean PreparedStatementRegistry?
         return new CommandResponsePackets(new DummyPacket());
     }
 }

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.transport.mysql.packet.command.binary.close;
+package io.shardingsphere.proxy.transport.mysql.packet.command.api.impl;
 
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 

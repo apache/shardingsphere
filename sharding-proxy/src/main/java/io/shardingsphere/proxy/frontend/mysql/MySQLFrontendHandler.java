@@ -27,6 +27,7 @@ import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.api.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.api.CommandPacketFactory;
+import io.shardingsphere.proxy.transport.mysql.packet.command.api.impl.DummyPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.api.impl.QueryCommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.api.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
@@ -95,7 +96,9 @@ public final class MySQLFrontendHandler extends FrontendHandler {
                 CommandPacket commandPacket = getCommandPacket(payload, backendConnection);
                 CommandResponsePackets responsePackets = commandPacket.execute();
                 for (DatabasePacket each : responsePackets.getPackets()) {
-                    context.writeAndFlush(each);
+                    if (!(each instanceof DummyPacket)) {
+                        context.writeAndFlush(each);
+                    }
                 }
                 if (commandPacket instanceof QueryCommandPacket && !(responsePackets.getHeadPacket() instanceof OKPacket) && !(responsePackets.getHeadPacket() instanceof ErrPacket)) {
                     writeMoreResults((QueryCommandPacket) commandPacket, responsePackets.getPackets().size());
