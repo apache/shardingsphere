@@ -42,14 +42,14 @@ public final class XaTransactionEngine extends TransactionEngine {
     }
     
     @Override
-    public XaTransactionEngine execute() throws Exception {
+    public boolean execute() throws Exception {
         Optional<TCLType> tclType = parseSQL();
         if (tclType.isPresent() && isInTransaction(tclType.get())) {
             TransactionContextHolder.set(new TransactionContext(ruleRegistry.getTransactionManager(), ruleRegistry.getTransactionType(), XaTransactionEvent.class));
             EventBusInstance.getInstance().post(new XaTransactionEvent(tclType.get(), getSql()));
-            setSkipAccessBackend(true);
+            return true;
         }
-        return this;
+        return false;
     }
     
     private boolean isInTransaction(final TCLType tclType) throws Exception {

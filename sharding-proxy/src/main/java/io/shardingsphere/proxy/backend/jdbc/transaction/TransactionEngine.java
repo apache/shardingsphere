@@ -35,8 +35,6 @@ public abstract class TransactionEngine {
     
     private final String sql;
     
-    private boolean skipAccessBackend;
-    
     // TODO move to TCLParser
     protected Optional<TCLType> parseSQL() {
         switch (sql.toUpperCase()) {
@@ -57,8 +55,8 @@ public abstract class TransactionEngine {
     /**
      * Execute transaction with binding transaction manager.
      *
-     * @return transaction engine
+     * @return skip or not skip access backend databases 
      * @throws Exception exception
      */
-    public abstract TransactionEngine execute() throws Exception;
+    public abstract boolean execute() throws Exception;
 }

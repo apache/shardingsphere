@@ -29,8 +29,7 @@ public class DefaultTransactionEngine extends TransactionEngine {
     }
     
     @Override
-    public DefaultTransactionEngine execute() {
-        setSkipAccessBackend(parseSQL().isPresent());
-        return this;
+    public boolean execute() {
+        return parseSQL().isPresent();
     }
 }
