@@ -18,32 +18,35 @@
 package io.shardingsphere.core.transaction.event;
 
 import io.shardingsphere.core.transaction.TransactionContextHolder;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * Create TransactionEvent for current thread.
  *
  * @author zhaojun
  */
-public class TransactionEventFactory {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class TransactionEventFactory {
     
     /**
      * Create transaction event.
      *
-     * @return TransactionEvent
+     * @return transaction event
      */
     public static TransactionEvent create() {
-        TransactionEvent transactionEvent = null;
+        TransactionEvent result = null;
         switch (TransactionContextHolder.get().getTransactionType()) {
             case XA:
                 if (TransactionContextHolder.get().getTransactionEventClazz().isAssignableFrom(XaTransactionEvent.class)) {
-                    transactionEvent = new XaTransactionEvent("");
+                    result = new XaTransactionEvent("");
                 } else {
-                    transactionEvent = new WeakXaTransactionEvent();
+                    result = new WeakXaTransactionEvent();
                 }
                 break;
             case BASE:
             default:
         }
-        return transactionEvent;
+        return result;
     }
 }

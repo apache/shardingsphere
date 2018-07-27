@@ -29,16 +29,14 @@ import java.util.UUID;
  *
  * @author zhaojun
  */
+@Getter
+@Setter
 public abstract class TransactionEvent {
     
-    @Getter
     private final String id = UUID.randomUUID().toString();
     
-    @Getter
-    @Setter
     private TCLType tclType;
     
-    @Setter
     private Exception exception;
     
     /**
@@ -46,6 +44,7 @@ public abstract class TransactionEvent {
      *
      * @return exception
      */
+    // TODO why not use sharding exception directly?
     public Optional<? extends Exception> getException() {
         return Optional.fromNullable(exception);
     }

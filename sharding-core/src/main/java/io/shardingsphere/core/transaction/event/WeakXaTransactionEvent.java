@@ -40,16 +40,8 @@ public class WeakXaTransactionEvent extends TransactionEvent {
     
     private boolean autoCommit = true;
     
-    /**
-     * Get exception.
-     *
-     * @return exception
-     */
+    @Override
     public Optional<ShardingException> getException() {
-        Optional<? extends Exception> ex = super.getException();
-        if (ex.isPresent()) {
-            return Optional.of((ShardingException) ex.get());
-        }
-        return Optional.absent();
+        return Optional.fromNullable((ShardingException) super.getException().orNull());
     }
 }
