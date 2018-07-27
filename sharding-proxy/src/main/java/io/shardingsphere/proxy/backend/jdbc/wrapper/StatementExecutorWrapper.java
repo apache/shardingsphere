@@ -74,14 +74,4 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     public boolean executeSQL(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
         return statement.execute(sql, isReturnGeneratedKeys ? Statement.RETURN_GENERATED_KEYS : Statement.NO_GENERATED_KEYS);
     }
-    
-    @Override
-    public DatabasePacket createResultSetPacket(final int sequenceId, final List<Object> data, final int columnCount, final List<ColumnType> columnTypes, final DatabaseType databaseType) {
-        switch (databaseType) {
-            case MySQL:
-                return new TextResultSetRowPacket(sequenceId, data);
-            default:
-                throw new UnsupportedOperationException(databaseType.name());
-        }
-    }
 }

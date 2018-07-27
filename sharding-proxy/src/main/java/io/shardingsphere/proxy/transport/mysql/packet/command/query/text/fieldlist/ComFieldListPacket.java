@@ -31,7 +31,6 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.text.query.ComQueryPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.query.text.TextResultSetRowPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import lombok.Getter;
@@ -88,7 +87,7 @@ public final class ComFieldListPacket implements CommandPacket, CommandPacketReb
         CommandResponsePackets result = new CommandResponsePackets();
         int currentSequenceId = 0;
         while (backendHandler.next()) {
-            String columnName = ((TextResultSetRowPacket) backendHandler.getResultValue()).getData().get(0).toString();
+            String columnName = backendHandler.getResultValue().getData().get(0).toString();
             result.getPackets().add(
                     new ColumnDefinition41Packet(++currentSequenceId, ShardingConstant.LOGIC_SCHEMA_NAME, table, table, columnName, columnName, 100, ColumnType.MYSQL_TYPE_VARCHAR, 0));
         }

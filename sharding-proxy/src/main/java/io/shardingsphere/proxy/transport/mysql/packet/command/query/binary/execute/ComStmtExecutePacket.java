@@ -22,6 +22,7 @@ import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.SQLParsingEngine;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.proxy.backend.ResultPacket;
 import io.shardingsphere.proxy.backend.jdbc.BackendConnection;
 import io.shardingsphere.proxy.backend.jdbc.JDBCBackendHandler;
 import io.shardingsphere.proxy.backend.jdbc.execute.JDBCExecuteEngineFactory;
@@ -171,6 +172,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
     
     @Override
     public DatabasePacket getResultValue() throws SQLException {
-        return jdbcBackendHandler.getResultValue();
+        ResultPacket resultPacket = jdbcBackendHandler.getResultValue();
+        return new BinaryResultSetRowPacket(resultPacket.getSequenceId(), resultPacket.getColumnCount(), resultPacket.getData(), resultPacket.getColumnTypes());
     }
 }

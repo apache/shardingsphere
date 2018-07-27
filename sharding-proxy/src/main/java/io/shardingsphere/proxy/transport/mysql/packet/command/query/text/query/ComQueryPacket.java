@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.proxy.backend.BackendHandler;
 import io.shardingsphere.proxy.backend.BackendHandlerFactory;
+import io.shardingsphere.proxy.backend.ResultPacket;
 import io.shardingsphere.proxy.backend.jdbc.BackendConnection;
 import io.shardingsphere.proxy.backend.jdbc.transaction.TransactionEngine;
 import io.shardingsphere.proxy.backend.jdbc.transaction.TransactionEngineFactory;
@@ -31,6 +32,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryCommandPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.text.TextResultSetRowPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -95,7 +97,8 @@ public final class ComQueryPacket implements QueryCommandPacket, CommandPacketRe
     
     @Override
     public DatabasePacket getResultValue() throws SQLException {
-        return backendHandler.getResultValue();
+        ResultPacket resultPacket = backendHandler.getResultValue();
+        return new TextResultSetRowPacket(resultPacket.getSequenceId(), resultPacket.getData());
     }
     
     @Override

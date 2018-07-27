@@ -28,9 +28,6 @@ import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingsphere.proxy.config.RuleRegistry;
-import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
-import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
-import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute.BinaryResultSetRowPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute.PreparedStatementParameter;
 import lombok.RequiredArgsConstructor;
 
@@ -91,15 +88,5 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     @Override
     public boolean executeSQL(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
         return ((PreparedStatement) statement).execute();
-    }
-    
-    @Override
-    public DatabasePacket createResultSetPacket(final int sequenceId, final List<Object> data, final int columnCount, final List<ColumnType> columnTypes, final DatabaseType databaseType) {
-        switch (databaseType) {
-            case MySQL:
-                return new BinaryResultSetRowPacket(sequenceId, columnCount, data, columnTypes);
-            default:
-                throw new UnsupportedOperationException(databaseType.name());
-        }
     }
 }

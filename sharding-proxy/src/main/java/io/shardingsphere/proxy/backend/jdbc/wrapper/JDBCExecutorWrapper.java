@@ -19,13 +19,10 @@ package io.shardingsphere.proxy.backend.jdbc.wrapper;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.routing.SQLRouteResult;
-import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
-import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
 
 /**
  * JDBC executor wrapper.
@@ -64,16 +61,4 @@ public interface JDBCExecutorWrapper {
      * @throws SQLException SQL exception
      */
     boolean executeSQL(Statement statement, String sql, boolean isReturnGeneratedKeys) throws SQLException;
-    
-    /**
-     * Create packet for result set.
-     * 
-     * @param sequenceId sequence ID
-     * @param data data of result set
-     * @param columnCount column count
-     * @param columnTypes column types
-     * @param databaseType database type
-     * @return packet for result set
-     */
-    DatabasePacket createResultSetPacket(int sequenceId, List<Object> data, int columnCount, List<ColumnType> columnTypes, DatabaseType databaseType);
 }

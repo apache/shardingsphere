@@ -17,37 +17,26 @@
 
 package io.shardingsphere.proxy.backend;
 
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import java.sql.SQLException;
+import java.util.List;
 
 /**
- * Backend handler.
+ * Result packet.
  *
  * @author zhangliang
  */
-public interface BackendHandler {
+@RequiredArgsConstructor
+@Getter
+public final class ResultPacket {
     
-    /**
-     * Execute command.
-     *
-     * @return result packets to be sent
-     */
-    CommandResponsePackets execute();
+    private final int sequenceId;
     
-    /**
-     * Goto next result value.
-     *
-     * @return has more result value or not
-     * @throws SQLException SQL exception
-     */
-    boolean next() throws SQLException;
+    private final List<Object> data;
     
-    /**
-     * Get result value.
-     *
-     * @return result packet
-     * @throws SQLException SQL exception
-     */
-    ResultPacket getResultValue() throws SQLException;
+    private final int columnCount;
+    
+    private final List<ColumnType> columnTypes;
 }
