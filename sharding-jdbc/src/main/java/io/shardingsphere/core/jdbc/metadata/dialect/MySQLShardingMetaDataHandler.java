@@ -54,7 +54,7 @@ public final class MySQLShardingMetaDataHandler extends ShardingMetaDataHandler 
     public List<ColumnMetaData> getExistColumnMeta(final Connection connection) throws SQLException {
         List<ColumnMetaData> result = new LinkedList<>();
         try (Statement statement = connection.createStatement()) {
-            statement.execute(String.format("desc %s;", getActualTableName()));
+            statement.execute(String.format("desc `%s`;", getActualTableName()));
             try (ResultSet resultSet = statement.getResultSet()) {
                 while (resultSet.next()) {
                     result.add(new ColumnMetaData(resultSet.getString("Field"), resultSet.getString("Type"), resultSet.getString("Key")));

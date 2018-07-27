@@ -51,7 +51,7 @@ public final class H2ShardingMetaDataHandler extends ShardingMetaDataHandler {
     public List<ColumnMetaData> getExistColumnMeta(final Connection connection) throws SQLException {
         List<ColumnMetaData> result = new LinkedList<>();
         try (Statement statement = connection.createStatement()) {
-            statement.executeQuery(String.format("show columns from %s;", getActualTableName()));
+            statement.executeQuery(String.format("show columns from `%s`;", getActualTableName()));
             try (ResultSet resultSet = statement.getResultSet()) {
                 while (resultSet.next()) {
                     result.add(new ColumnMetaData(resultSet.getString("FIELD"), resultSet.getString("TYPE"), resultSet.getString("KEY")));
