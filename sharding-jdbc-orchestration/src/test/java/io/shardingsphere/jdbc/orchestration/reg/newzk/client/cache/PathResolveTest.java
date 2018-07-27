@@ -39,4 +39,14 @@ public class PathResolveTest {
         pathResolve.next();
         assertThat(pathResolve.getCurrent(), is("ddd"));
     }
+    
+    @Test
+    public void assertEnd() {
+        final String path = "/test/a/bb";
+        PathResolve pathResolve = new PathResolve(path);
+        pathResolve.next();
+        pathResolve.next();
+        pathResolve.next();
+        assertThat(pathResolve.isEnd(), is(true));
+    }
 }

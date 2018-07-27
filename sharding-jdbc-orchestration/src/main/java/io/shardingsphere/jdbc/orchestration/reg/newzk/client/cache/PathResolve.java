@@ -49,7 +49,7 @@ class PathResolve {
      * @return isEnd boolean
      */
     public boolean isEnd() {
-        return position == path.length() - 1;
+        return position >= path.length();
     }
     
     /**
@@ -61,11 +61,7 @@ class PathResolve {
             return;
         }
         int nodeBegin = ++position;
-        while (path.charAt(position) != '/') {
-            if (isEnd()) {
-                position = path.length();
-                break;
-            }
+        while (!isEnd() && path.charAt(position) != '/') {
             position++;
         }
         current = path.substring(nodeBegin, position);
