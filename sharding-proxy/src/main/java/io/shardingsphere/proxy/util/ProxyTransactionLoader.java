@@ -28,7 +28,7 @@ import java.util.Iterator;
 import java.util.ServiceLoader;
 
 /**
- * Loader Transaction spi with ServiceLoader.
+ * Transaction manager loader via SPI.
  *
  * @author zhaojun
  */
@@ -36,10 +36,10 @@ import java.util.ServiceLoader;
 public final class ProxyTransactionLoader {
     
     /**
-     * Using ServiceLoader to dynamic load spi transaction.
+     * Create transaction manager via SPI.
      *
-     * @param transactionType Transaction type
-     * @return TransactionManager
+     * @param transactionType transaction type
+     * @return transaction manager
      */
     public static TransactionManager load(final TransactionType transactionType) {
         TransactionManager result = null;
@@ -55,6 +55,7 @@ public final class ProxyTransactionLoader {
         return result;
     }
     
+    // TODO if read more transaction manager, log chosen one, if no transaction manager, throw exception
     private static TransactionManager doXaTransactionConfiguration() {
         Iterator<TransactionManager> iterator = ServiceLoader.load(TransactionManager.class).iterator();
         return iterator.hasNext() ? iterator.next() : null;

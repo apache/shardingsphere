@@ -32,18 +32,19 @@ import javax.transaction.Status;
  *
  * @author zhaojun
  */
-public class XaTransactionEngine extends TransactionEngine {
+public final class XaTransactionEngine extends TransactionEngine {
     
-    private final RuleRegistry ruleRegistry = RuleRegistry.getInstance();
+    private final RuleRegistry ruleRegistry;
     
     public XaTransactionEngine(final String sql) {
         super(sql);
+        ruleRegistry = RuleRegistry.getInstance();
     }
     
     @Override
     public XaTransactionEngine execute() throws Exception {
         Optional<TCLType> tclType = parseSQL();
-        if (tclType.isPresent() && isAvailable(tclType)) {
+        if (tclType.isPresent() && isInTransaction(tclType.get())) {
             XaTransactionEvent xaTransactionEvent = new XaTransactionEvent(getSql());
             xaTransactionEvent.setTclType(tclType.get());
             TransactionContextHolder.set(new TransactionContext(ruleRegistry.getTransactionManager(), ruleRegistry.getTransactionType(), XaTransactionEvent.class));
@@ -53,12 +54,7 @@ public class XaTransactionEngine extends TransactionEngine {
         return this;
     }
     
-    private boolean isAvailable(final Optional<TCLType> tclType) throws Exception {
-        switch (tclType.orNull()) {
-            case ROLLBACK:
-                return tclType.isPresent() && Status.STATUS_NO_TRANSACTION != ruleRegistry.getTransactionManager().getStatus();
-            default:
-                return tclType.isPresent();
-        }
+    private boolean isInTransaction(final TCLType tclType) throws Exception {
+        return TCLType.ROLLBACK != tclType || Status.STATUS_NO_TRANSACTION != ruleRegistry.getTransactionManager().getStatus();
     }
 }
