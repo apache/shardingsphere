@@ -19,6 +19,7 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.zookeeper.WatchedEvent;
 
 /*
  * Watch event listener.
@@ -47,5 +48,5 @@ public abstract class ZookeeperEventListener {
      *
      * @param event event
      */
-    public abstract void process(WatchedDataEvent event);
+    public abstract void process(WatchedEvent event);
 }

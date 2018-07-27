@@ -19,19 +19,18 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
 import com.google.common.base.Strings;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.WatchedDataEvent;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
+import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
-
-import java.io.IOException;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 /*
  * Zookeeper connection holder.
@@ -86,21 +85,17 @@ public class Holder {
         return new Watcher() {
             
             public void process(final WatchedEvent event) {
+                log.debug("event-----------:" + event.toString());
                 processConnection(event);
-                WatchedDataEvent dataEvent = new WatchedDataEvent(event, zooKeeper);
-                processGlobalListener(dataEvent);
-                // todo filter event type or path, add watch
+                if (!isConnected()) {
+                    return;
+                }
+                processGlobalListener(event);
+                // todo filter event type or path
                 if (event.getType() == Event.EventType.None) {
                     return;
                 }
-                if (!context.getWatchers().isEmpty()) {
-                    for (ZookeeperEventListener zookeeperEventListener : context.getWatchers().values()) {
-                        if (zookeeperEventListener.getPath() == null || event.getPath().startsWith(zookeeperEventListener.getPath())) {
-                            log.debug("listener process:{}, listener:{}", zookeeperEventListener.getPath(), zookeeperEventListener.getKey());
-                            zookeeperEventListener.process(dataEvent);
-                        }
-                    }
-                }
+                processUsualListener(event);
             }
         };
     }
@@ -128,10 +123,32 @@ public class Holder {
         }
     }
     
-    private void processGlobalListener(final WatchedDataEvent event) {
+    private void processGlobalListener(final WatchedEvent event) {
         if (context.getGlobalZookeeperEventListener() != null) {
             context.getGlobalZookeeperEventListener().process(event);
             log.debug("Holder {} process", ZookeeperConstants.GLOBAL_LISTENER_KEY);
+        }
+    }
+    
+    private void processUsualListener(final WatchedEvent event) {
+        checkPath(event.getPath());
+        if (!context.getWatchers().isEmpty()) {
+            for (ZookeeperEventListener zookeeperEventListener : context.getWatchers().values()) {
+                if (zookeeperEventListener.getPath() == null || event.getPath().startsWith(zookeeperEventListener.getPath())) {
+                    log.debug("listener process:{}, listener:{}", zookeeperEventListener.getPath(), zookeeperEventListener.getKey());
+                    zookeeperEventListener.process(event);
+                }
+            }
+        }
+    }
+    
+    private void checkPath(final String path) {
+        try {
+            if (zooKeeper.exists(path, true) != null && context.getWaitCheckPaths().contains(path)) {
+                context.getWaitCheckPaths().remove(path);
+            }
+        } catch (final KeeperException | InterruptedException ex) {
+            // ignore
         }
     }
     

@@ -22,7 +22,6 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.WatchedDataEvent;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.WatcherCreator;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
 import java.io.IOException;
@@ -34,6 +33,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.data.ACL;
 
 /*
@@ -128,8 +128,20 @@ public abstract class BaseClient implements IClient {
     public void registerWatch(final String key, final ZookeeperEventListener zookeeperEventListener) {
         String path = PathUtil.getRealPath(rootNode, key);
         zookeeperEventListener.setPath(path);
+        checkPath(path);
         context.getWatchers().put(zookeeperEventListener.getKey(), zookeeperEventListener);
         log.debug("register watcher:{}", path);
+    }
+    
+    private void checkPath(final String path) {
+        try {
+            if (checkExists(path)) {
+                return;
+            }
+        } catch (final KeeperException | InterruptedException ex) {
+            // ignore
+        }
+        context.getWaitCheckPaths().add(path);
     }
     
     @Override
@@ -166,7 +178,7 @@ public abstract class BaseClient implements IClient {
         holder.getZooKeeper().exists(rootNode, WatcherCreator.deleteWatcher(new ZookeeperEventListener(rootNode) {
             
             @Override
-            public void process(final WatchedDataEvent event) {
+            public void process(final WatchedEvent event) {
                 rootExist = false;
             }
         }));

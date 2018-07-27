@@ -26,7 +26,6 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.UsualClient;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.WatchedDataEvent;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -40,6 +39,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.common.PathUtils;
 
 /*
@@ -196,14 +196,14 @@ public final class PathTree {
     public void watch() {
         watch(new ZookeeperEventListener(rootNode.get().getKey()) {
             @Override
-            public void process(final WatchedDataEvent event) {
+            public void process(final WatchedEvent event) {
                 String path = event.getPath();
                 log.debug("PathTree Watch event:{}", event.toString());
                 switch (event.getType()) {
                     case NodeCreated:
                     case NodeDataChanged:
                     case NodeChildrenChanged:
-                        processNodeChange(path, event.getData());
+                        processNodeChange(path);
                         break;
                     case NodeDeleted:
                         delete(path);
@@ -236,12 +236,14 @@ public final class PathTree {
         }));
     }
     
-    private void processNodeChange(final String path, final String value) {
+    private void processNodeChange(final String path) {
         try {
+            String value = ZookeeperConstants.NOTHING_VALUE;
+            if (!path.equals(getRootNode().getKey())) {
+                value = provider.getDataString(path);
+            }
             put(path, value);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
+        } catch (final KeeperException | InterruptedException ex) {
             log.error("PathTree put error : " + ex.getMessage());
         }
     }

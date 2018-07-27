@@ -41,8 +41,7 @@ public class WatcherCreator {
             @Override
             public void process(final WatchedEvent event) {
                 if (zookeeperEventListener.getPath().equals(event.getPath()) && Event.EventType.NodeDeleted.equals(event.getType())) {
-                    WatchedDataEvent dataEvent = new WatchedDataEvent(event);
-                    zookeeperEventListener.process(dataEvent);
+                    zookeeperEventListener.process(event);
                     log.debug("delete node event:{}", event.toString());
                 }
             }

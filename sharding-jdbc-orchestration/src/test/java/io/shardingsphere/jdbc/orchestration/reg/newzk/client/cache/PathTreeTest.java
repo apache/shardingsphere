@@ -21,13 +21,13 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.ClientFactory;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseTest;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.TestSupport;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.WatchedDataEvent;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
 import io.shardingsphere.jdbc.orchestration.util.EmbedTestingServer;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.ZooDefs;
 import org.junit.After;
 import org.junit.Before;
@@ -48,7 +48,7 @@ public class PathTreeTest extends BaseTest {
     private ZookeeperEventListener zookeeperEventListener = new ZookeeperEventListener() {
         
         @Override
-        public void process(final WatchedDataEvent event) {
+        public void process(final WatchedEvent event) {
             log.debug("debug event :" + event.toString());
         }
     };

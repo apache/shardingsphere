@@ -21,7 +21,6 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.ClientFactory;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.WatchedDataEvent;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
 import io.shardingsphere.jdbc.orchestration.util.EmbedTestingServer;
 import lombok.Getter;
@@ -240,7 +239,7 @@ public abstract class BaseClientTest extends BaseTest {
             
             @Override
             public void process(final WatchedEvent event) {
-                zookeeperEventListener.process(new WatchedDataEvent(event, getZooKeeper(client)));
+                zookeeperEventListener.process(event);
             }
         });
         String value = "value0";
@@ -275,25 +274,22 @@ public abstract class BaseClientTest extends BaseTest {
         String key = "a";
         client.registerWatch(key, zookeeperEventListener);
         client.createCurrentOnly(key, "aaa", CreateMode.EPHEMERAL);
-        assertThat(client.getDataString(key), is("aaa"));
+        sleep(100);
 
         String value = "value0";
         client.update(key, value);
-        assertThat(client.getDataString(key), is(value));
-        sleep(200);
+        sleep(100);
         
         String value1 = "value1";
         client.update(key, value1);
-        assertThat(client.getDataString(key), is(value1));
-        sleep(200);
+        sleep(100);
         
         String value2 = "value2";
         client.update(key, value2);
-        assertThat(client.getDataString(key), is(value2));
-        sleep(200);
+        sleep(100);
         
         client.deleteCurrentBranch(key);
-        sleep(200);
+        sleep(100);
         
         //The acquisition value is after the reception of the event,
         //so the value may be not equal.
@@ -305,22 +301,23 @@ public abstract class BaseClientTest extends BaseTest {
         return new ZookeeperEventListener(null) {
             
             @Override
-            public void process(final WatchedDataEvent event) {
-                log.info(event.toString());
+            public void process(final WatchedEvent event) {
                 switch (event.getType()) {
                     case NodeDataChanged:
                     case NodeChildrenChanged:
-                        if (event.getData() == null) {
-                            log.info("update event's data is null");
+                        String result;
+                        try {
+                            result = client.getDataString(event.getPath());
+                        } catch (final KeeperException | InterruptedException e) {
+                            log.debug(e.getMessage());
                             return;
                         }
-                        actual.add("update_" + event.getPath() + "_" + event.getData());
+                        actual.add("update_" + event.getPath() + "_" + result);
                         break;
                     case NodeDeleted:
                         actual.add("delete_" + event.getPath() + "_");
                         break;
                     default:
-                        actual.add("ignore_" + event.getPath() + "_" + event.getType());
                         break;
                 }
             }

@@ -18,6 +18,8 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.AccessLevel;
@@ -44,6 +46,8 @@ public abstract class BaseContext {
     private ZookeeperEventListener globalZookeeperEventListener;
     
     private final Map<String, ZookeeperEventListener> watchers = new ConcurrentHashMap<>();
+    
+    private final List<String> waitCheckPaths = new ArrayList<>();
     
     /**
      * Close.
