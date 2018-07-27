@@ -256,6 +256,10 @@
     <dql-test-case sql-case-id="select_pagination_with_offset">
         <assertion parameters="10:int, 19:int, 1000:int, 1909:int, 6:int" expected-data-file="select_pagination_with_offset.xml" />
     </dql-test-case>
+
+    <dql-test-case sql-case-id="select_order_by_with_table_star_without_table_name">
+        <assertion expected-data-file="select_order_by_with_table_star_without_table_name.xml" />
+    </dql-test-case>
     
     <dql-test-case sql-case-id="select_pagination_with_row_count">
         <assertion parameters="10:int, 19:int, 1000:int, 1909:int, 2:int" expected-data-file="select_pagination_with_row_count.xml" />
