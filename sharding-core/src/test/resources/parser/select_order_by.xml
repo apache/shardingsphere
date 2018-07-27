@@ -97,7 +97,7 @@
             <table name="t_order" alias="o" />
         </tables>
         <tokens>
-            <table-token begin-position="16" original-literals="t_order" />
+            <table-token begin-position="29" original-literals="t_order" />
         </tokens>
         <order-by-columns>
             <order-by-column owner="o" name="order_id" order-direction="ASC" />
@@ -121,10 +121,10 @@
             <table name="t_order" alias="o" />
         </tables>
         <tokens>
-            <table-token begin-position="16" original-literals="t_order" />
+            <table-token begin-position="14" original-literals="t_order" />
         </tokens>
         <order-by-columns>
-            <order-by-column owner="t_order" name="order_id" order-direction="ASC" />
+            <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
 
@@ -136,7 +136,7 @@
             <table-token begin-position="16" original-literals="t_order" />
         </tokens>
         <order-by-columns>
-            <order-by-column owner="o" name="order_id" order-direction="ASC" />
+            <order-by-column owner="t_order" name="order_id" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
 
