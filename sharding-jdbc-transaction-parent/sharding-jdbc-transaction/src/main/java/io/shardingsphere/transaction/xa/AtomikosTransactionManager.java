@@ -17,52 +17,50 @@
 
 package io.shardingsphere.transaction.xa;
 
+import com.atomikos.icatch.jta.UserTransactionManager;
 import io.shardingsphere.core.transaction.event.TransactionEvent;
-import io.shardingsphere.core.transaction.event.XaTransactionEvent;
-import io.shardingsphere.core.transaction.listener.TransactionListener;
-import io.shardingsphere.core.transaction.spi.Transaction;
-import io.shardingsphere.core.transaction.spi.TransactionEventHolder;
-import io.shardingsphere.core.util.EventBusInstance;
+import io.shardingsphere.core.transaction.spi.TransactionManager;
 
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
 
 /**
  * Atomikos XA transaction implement for Transaction SPI.
  *
  * @author zhaojun
  */
-public class AtomikosXaTransaction implements Transaction {
+public class AtomikosTransactionManager implements TransactionManager {
     
-    private static UserTransaction userTransaction = AtomikosUserTransaction.getInstance();
+    private static UserTransactionManager transactionManager = AtomikosUserTransaction.getInstance();
     
     static {
-        EventBusInstance.getInstance().register(new TransactionListener(new AtomikosXaTransaction()));
-        TransactionEventHolder.set(XaTransactionEvent.class);
-    }
-    
-    /**
-     * Init.
-     */
-    public static void init() {
+        try {
+            transactionManager.init();
+        } catch (SystemException e) {
+            e.printStackTrace();
+        }
     }
     
     @Override
     public void begin(final TransactionEvent transactionEvent) throws SystemException, NotSupportedException {
-        userTransaction.begin();
+        transactionManager.begin();
     }
     
     @Override
     public void commit(final TransactionEvent transactionEvent) throws HeuristicRollbackException, RollbackException, HeuristicMixedException, SystemException {
-        userTransaction.commit();
+        transactionManager.commit();
     }
     
     @Override
     public void rollback(final TransactionEvent transactionEvent) throws SystemException {
-        userTransaction.rollback();
+        transactionManager.rollback();
+    }
+    
+    @Override
+    public int getStatus() throws SystemException {
+        return transactionManager.getStatus();
     }
 }

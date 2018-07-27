@@ -15,13 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.core.jdbc.core.transaction;
+package io.shardingsphere.proxy.util;
 
 import io.shardingsphere.core.constant.TransactionType;
-import io.shardingsphere.core.transaction.TransactionContext;
-import io.shardingsphere.core.transaction.TransactionContextHolder;
-import io.shardingsphere.core.transaction.event.WeakXaTransactionEvent;
-import io.shardingsphere.core.transaction.event.XaTransactionEvent;
 import io.shardingsphere.core.transaction.listener.TransactionListener;
 import io.shardingsphere.core.transaction.spi.TransactionManager;
 import io.shardingsphere.core.util.EventBusInstance;
@@ -37,33 +33,30 @@ import java.util.ServiceLoader;
  * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TransactionLoader {
+public final class ProxyTransactionLoader {
     
     /**
      * Using ServiceLoader to dynamic load spi transaction.
      *
+     * @param transactionType Transaction type
+     * @return TransactionManager
      */
-    public static void load() {
-        TransactionContext transactionContext = TransactionContextHolder.get();
-        switch (transactionContext.getTransactionType()) {
+    public static TransactionManager load(final TransactionType transactionType) {
+        TransactionManager result = null;
+        switch (transactionType) {
             case XA:
-                doXaTransactionConfiguration();
+                result = doXaTransactionConfiguration();
                 break;
             case BASE:
                 break;
             default:
         }
         EventBusInstance.getInstance().register(TransactionListener.getInstance());
+        return result;
     }
     
-    private static void doXaTransactionConfiguration() {
+    private static TransactionManager doXaTransactionConfiguration() {
         Iterator<TransactionManager> iterator = ServiceLoader.load(TransactionManager.class).iterator();
-        TransactionContext transactionContext;
-        if (iterator.hasNext()) {
-            transactionContext = new TransactionContext(iterator.next(), TransactionType.XA, XaTransactionEvent.class);
-        } else {
-            transactionContext = new TransactionContext(new WeakXaTransactionManager(), TransactionType.XA, WeakXaTransactionEvent.class);
-        }
-        TransactionContextHolder.set(transactionContext);
+        return iterator.hasNext() ? iterator.next() : null;
     }
 }

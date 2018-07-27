@@ -33,11 +33,11 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
+@Setter
 public class WeakXaTransactionEvent extends TransactionEvent {
     
-    private final Map<String, Connection> cachedConnections;
+    private Map<String, Connection> cachedConnections;
     
-    @Setter
     private boolean autoCommit = true;
     
     /**

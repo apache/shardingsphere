@@ -18,14 +18,11 @@
 package io.shardingsphere.proxy.transport.mysql.packet.command.text.query;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.TCLType;
-import io.shardingsphere.core.constant.TransactionType;
-import io.shardingsphere.core.transaction.event.XaTransactionEvent;
-import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.proxy.backend.BackendHandler;
 import io.shardingsphere.proxy.backend.BackendHandlerFactory;
 import io.shardingsphere.proxy.backend.jdbc.BackendConnection;
-import io.shardingsphere.proxy.config.RuleRegistry;
+import io.shardingsphere.proxy.backend.jdbc.transaction.TransactionEngine;
+import io.shardingsphere.proxy.backend.jdbc.transaction.TransactionEngineFactory;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
@@ -36,12 +33,9 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.QueryCommandPacket
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
-import io.shardingsphere.transaction.xa.AtomikosUserTransaction;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.transaction.Status;
-import javax.transaction.SystemException;
 import java.sql.SQLException;
 
 /**
@@ -65,10 +59,13 @@ public final class ComQueryPacket implements QueryCommandPacket, CommandPacketRe
     
     private final BackendHandler backendHandler;
     
+    private final TransactionEngine transactionEngine;
+    
     public ComQueryPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         this.sequenceId = sequenceId;
         this.connectionId = connectionId;
         sql = payload.readStringEOF();
+        transactionEngine = TransactionEngineFactory.create(sql);
         backendHandler = BackendHandlerFactory.newTextProtocolInstance(sql, backendConnection, DatabaseType.MySQL, this);
     }
     
@@ -76,6 +73,7 @@ public final class ComQueryPacket implements QueryCommandPacket, CommandPacketRe
         this.sequenceId = sequenceId;
         this.connectionId = connectionId;
         this.sql = sql;
+        transactionEngine = null;
         backendHandler = null;
     }
     
@@ -89,10 +87,10 @@ public final class ComQueryPacket implements QueryCommandPacket, CommandPacketRe
     public CommandResponsePackets execute() {
         log.debug("COM_QUERY received for Sharding-Proxy: {}", sql);
         try {
-            if (doTransactionIntercept()) {
+            if (!transactionEngine.execute().isNeedProcessByBackendHandler()) {
                 return new CommandResponsePackets(new OKPacket(1));
             }
-        } catch (final SystemException ex) {
+        } catch (final Exception ex) {
             return new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
         }
         return backendHandler.execute();
@@ -126,46 +124,5 @@ public final class ComQueryPacket implements QueryCommandPacket, CommandPacketRe
     @Override
     public CommandPacket rebuild(final Object... params) {
         return new ComQueryPacket((int) params[0], (int) params[1], (String) params[2]);
-    }
-    
-    private boolean doTransactionIntercept() throws SystemException {
-        boolean result = false;
-        if (TransactionType.XA.equals(RuleRegistry.getInstance().getTransactionType())) {
-            XaTransactionEvent xaTransactionEvent = new XaTransactionEvent(sql);
-            if (isBegin()) {
-                xaTransactionEvent.setTclType(TCLType.BEGIN);
-                result = true;
-            } else if (isCommit()) {
-                xaTransactionEvent.setTclType(TCLType.COMMIT);
-                result = true;
-            } else if (isXaRollback()) {
-                xaTransactionEvent.setTclType(TCLType.ROLLBACK);
-                result = true;
-            }
-            if (result) {
-                EventBusInstance.getInstance().post(xaTransactionEvent);
-            }
-        } else {
-            if (isBegin() || isCommit() || isRollback()) {
-                result = true;
-            }
-        }
-        return result;
-    }
-    
-    private boolean isBegin() {
-        return "BEGIN".equalsIgnoreCase(sql) || "START TRANSACTION".equalsIgnoreCase(sql) || "SET AUTOCOMMIT=0".equalsIgnoreCase(sql);
-    }
-    
-    private boolean isCommit() {
-        return "COMMIT".equalsIgnoreCase(sql);
-    }
-    
-    private boolean isXaRollback() throws SystemException {
-        return "ROLLBACK".equalsIgnoreCase(sql) && Status.STATUS_NO_TRANSACTION != AtomikosUserTransaction.getInstance().getStatus();
-    }
-    
-    private boolean isRollback() {
-        return "ROLLBACK".equalsIgnoreCase(sql);
     }
 }
