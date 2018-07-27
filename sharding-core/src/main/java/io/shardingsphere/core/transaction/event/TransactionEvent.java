@@ -20,6 +20,7 @@ package io.shardingsphere.core.transaction.event;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.TCLType;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
@@ -29,14 +30,15 @@ import java.util.UUID;
  *
  * @author zhaojun
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
 public abstract class TransactionEvent {
     
     private final String id = UUID.randomUUID().toString();
     
-    private TCLType tclType;
+    private final TCLType tclType;
     
+    @Setter
     private Exception exception;
     
     /**

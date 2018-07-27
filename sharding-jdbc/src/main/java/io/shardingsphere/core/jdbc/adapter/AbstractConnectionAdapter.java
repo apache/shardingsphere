@@ -88,23 +88,17 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     public final void setAutoCommit(final boolean autoCommit) {
         this.autoCommit = autoCommit;
         recordMethodInvocation(Connection.class, "setAutoCommit", new Class[] {boolean.class}, new Object[] {autoCommit});
-        TransactionEvent transactionEvent = buildTransactionEvent();
-        transactionEvent.setTclType(TCLType.BEGIN);
-        EventBusInstance.getInstance().post(transactionEvent);
+        EventBusInstance.getInstance().post(buildTransactionEvent(TCLType.BEGIN));
     }
     
     @Override
     public final void commit() {
-        TransactionEvent transactionEvent = buildTransactionEvent();
-        transactionEvent.setTclType(TCLType.COMMIT);
-        EventBusInstance.getInstance().post(transactionEvent);
+        EventBusInstance.getInstance().post(buildTransactionEvent(TCLType.COMMIT));
     }
     
     @Override
     public final void rollback() {
-        TransactionEvent transactionEvent = buildTransactionEvent();
-        transactionEvent.setTclType(TCLType.ROLLBACK);
-        EventBusInstance.getInstance().post(transactionEvent);
+        EventBusInstance.getInstance().post(buildTransactionEvent(TCLType.ROLLBACK));
     }
     
     @Override
@@ -179,8 +173,8 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     public final void setHoldability(final int holdability) {
     }
     
-    private TransactionEvent buildTransactionEvent() {
-        TransactionEvent result = TransactionEventFactory.create();
+    private TransactionEvent buildTransactionEvent(final TCLType tclType) {
+        TransactionEvent result = TransactionEventFactory.create(tclType);
         if (result instanceof WeakXaTransactionEvent) {
             WeakXaTransactionEvent weakXaTransactionEvent = (WeakXaTransactionEvent) result;
             weakXaTransactionEvent.setCachedConnections(cachedConnections);

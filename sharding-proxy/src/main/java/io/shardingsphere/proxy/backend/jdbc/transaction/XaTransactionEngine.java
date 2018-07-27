@@ -45,10 +45,8 @@ public final class XaTransactionEngine extends TransactionEngine {
     public XaTransactionEngine execute() throws Exception {
         Optional<TCLType> tclType = parseSQL();
         if (tclType.isPresent() && isInTransaction(tclType.get())) {
-            XaTransactionEvent xaTransactionEvent = new XaTransactionEvent(getSql());
-            xaTransactionEvent.setTclType(tclType.get());
             TransactionContextHolder.set(new TransactionContext(ruleRegistry.getTransactionManager(), ruleRegistry.getTransactionType(), XaTransactionEvent.class));
-            EventBusInstance.getInstance().post(xaTransactionEvent);
+            EventBusInstance.getInstance().post(new XaTransactionEvent(tclType.get(), getSql()));
             setNeedProcessByBackendHandler(false);
         }
         return this;

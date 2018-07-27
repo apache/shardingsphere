@@ -57,8 +57,8 @@ public abstract class TransactionEngine {
     /**
      * Execute transaction with binding transaction manager.
      *
-     * @return TransactionEngine
-     * @throws Exception Exception
+     * @return transaction engine
+     * @throws Exception exception
      */
     public abstract TransactionEngine execute() throws Exception;
 }

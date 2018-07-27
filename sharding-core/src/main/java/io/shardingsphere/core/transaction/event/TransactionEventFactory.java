@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.transaction.event;
 
+import io.shardingsphere.core.constant.TCLType;
 import io.shardingsphere.core.transaction.TransactionContextHolder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -32,16 +33,17 @@ public final class TransactionEventFactory {
     /**
      * Create transaction event.
      *
+     * @param tclType TCL type
      * @return transaction event
      */
-    public static TransactionEvent create() {
+    public static TransactionEvent create(final TCLType tclType) {
         TransactionEvent result = null;
         switch (TransactionContextHolder.get().getTransactionType()) {
             case XA:
                 if (TransactionContextHolder.get().getTransactionEventClazz().isAssignableFrom(XaTransactionEvent.class)) {
-                    result = new XaTransactionEvent("");
+                    result = new XaTransactionEvent(tclType, "");
                 } else {
-                    result = new WeakXaTransactionEvent();
+                    result = new WeakXaTransactionEvent(tclType);
                 }
                 break;
             case BASE:
