@@ -33,6 +33,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public final class BackendConnection implements AutoCloseable {
     
+    private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
+    
     private final Collection<Connection> cachedConnections = new CopyOnWriteArrayList<>();
     
     /**
@@ -43,7 +45,7 @@ public final class BackendConnection implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     public Connection getConnection(final String dataSourceName) throws SQLException {
-        Connection result = RuleRegistry.getInstance().getDataSourceMap().get(dataSourceName).getConnection();
+        Connection result = RULE_REGISTRY.getDataSourceMap().get(dataSourceName).getConnection();
         cachedConnections.add(result);
         return result;
     }

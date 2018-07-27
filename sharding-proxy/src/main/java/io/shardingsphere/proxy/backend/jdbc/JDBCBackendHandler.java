@@ -55,11 +55,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class JDBCBackendHandler implements BackendHandler {
     
+    private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
+    
     private final String sql;
     
     private final JDBCExecuteEngine executeEngine;
-    
-    private final RuleRegistry ruleRegistry = RuleRegistry.getInstance();
     
     private ExecuteResponse executeResponse;
     
@@ -91,7 +91,7 @@ public final class JDBCBackendHandler implements BackendHandler {
                     ServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "unknown_table"));
         }
         executeResponse = executeEngine.execute(routeResult, isReturnGeneratedKeys);
-        if (!ruleRegistry.isMasterSlaveOnly()) {
+        if (!RULE_REGISTRY.isMasterSlaveOnly()) {
             ProxyShardingRefreshHandler.build(sqlStatement).execute();
         }
         return merge(sqlStatement);
@@ -99,7 +99,7 @@ public final class JDBCBackendHandler implements BackendHandler {
     
     // TODO should isolate Atomikos API to SPI
     private boolean isUnsupportedXA(final SQLType sqlType) throws Exception {
-        return TransactionType.XA == ruleRegistry.getTransactionType() && SQLType.DDL == sqlType && Status.STATUS_NO_TRANSACTION != ruleRegistry.getTransactionManager().getStatus();
+        return TransactionType.XA == RULE_REGISTRY.getTransactionType() && SQLType.DDL == sqlType && Status.STATUS_NO_TRANSACTION != RULE_REGISTRY.getTransactionManager().getStatus();
     }
     
     private CommandResponsePackets merge(final SQLStatement sqlStatement) throws SQLException {
@@ -107,7 +107,7 @@ public final class JDBCBackendHandler implements BackendHandler {
             return ((ExecuteUpdateResponse) executeResponse).merge();
         }
         mergedResult = MergeEngineFactory.newInstance(
-                ruleRegistry.getShardingRule(), ((ExecuteQueryResponse) executeResponse).getQueryResults(), sqlStatement, ruleRegistry.getShardingMetaData()).merge();
+                RULE_REGISTRY.getShardingRule(), ((ExecuteQueryResponse) executeResponse).getQueryResults(), sqlStatement, RULE_REGISTRY.getShardingMetaData()).merge();
         QueryResponsePackets result = ((ExecuteQueryResponse) executeResponse).getQueryResponsePackets();
         currentSequenceId = result.getPackets().size();
         return result;

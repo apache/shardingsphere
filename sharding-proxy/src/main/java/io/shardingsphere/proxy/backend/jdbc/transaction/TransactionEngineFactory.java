@@ -29,6 +29,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TransactionEngineFactory {
     
+    private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
+    
     /**
      * Create transaction engine from SQL.
      * 
@@ -36,7 +38,7 @@ public final class TransactionEngineFactory {
      * @return transaction engine
      */
     public static TransactionEngine create(final String sql) {
-        switch (RuleRegistry.getInstance().getTransactionType()) {
+        switch (RULE_REGISTRY.getTransactionType()) {
             case XA:
                 return new XaTransactionEngine(sql);
             default:

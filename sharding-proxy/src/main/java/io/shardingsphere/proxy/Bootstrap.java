@@ -48,6 +48,8 @@ public final class Bootstrap {
     
     private static final String DEFAULT_CONFIG_FILE = "config.yaml";
     
+    private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
+    
     /**
      * Main Entrance.
      * 
@@ -99,7 +101,7 @@ public final class Bootstrap {
     }
     
     private static void startWithoutRegistryCenter(final OrchestrationProxyConfiguration config, final int port) throws InterruptedException, MalformedURLException {
-        RuleRegistry.getInstance().init(config);
+        RULE_REGISTRY.init(config);
         new ShardingProxy().start(port);
     }
     
@@ -114,7 +116,7 @@ public final class Bootstrap {
     }
     
     private static void initRuleRegistry(final ConfigurationService configService) {
-        RuleRegistry.getInstance().init(new OrchestrationProxyConfiguration(configService.loadDataSources(), configService.loadProxyConfiguration()));
-        ProxyEventBusInstance.getInstance().register(RuleRegistry.getInstance());
+        RULE_REGISTRY.init(new OrchestrationProxyConfiguration(configService.loadDataSources(), configService.loadProxyConfiguration()));
+        ProxyEventBusInstance.getInstance().register(RULE_REGISTRY);
     }
 }

@@ -70,6 +70,8 @@ import java.util.concurrent.TimeoutException;
 @Getter
 public final class SQLPacketsBackendHandler implements BackendHandler {
     
+    private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
+    
     private final CommandPacketRebuilder rebuilder;
     
     private final DatabaseType databaseType;
@@ -84,25 +86,22 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     
     private MergedResult mergedResult;
     
-    private final RuleRegistry ruleRegistry;
-    
     public SQLPacketsBackendHandler(final CommandPacketRebuilder rebuilder, final DatabaseType databaseType) {
         this.rebuilder = rebuilder;
         this.databaseType = databaseType;
-        ruleRegistry = RuleRegistry.getInstance();
     }
     
     @Override
     public CommandResponsePackets execute() {
-        return ruleRegistry.isMasterSlaveOnly() ? executeForMasterSlave() : executeForSharding();
+        return RULE_REGISTRY.isMasterSlaveOnly() ? executeForMasterSlave() : executeForSharding();
     }
     
     private CommandResponsePackets executeForMasterSlave() {
-        String dataSourceName = new MasterSlaveRouter(ruleRegistry.getMasterSlaveRule(), ruleRegistry.isShowSQL()).route(rebuilder.sql()).iterator().next();
+        String dataSourceName = new MasterSlaveRouter(RULE_REGISTRY.getMasterSlaveRule(), RULE_REGISTRY.isShowSQL()).route(rebuilder.sql()).iterator().next();
         synchronizedFuture = new SynchronizedFuture<>(1);
         MySQLResultCache.getInstance().putFuture(rebuilder.connectionId(), synchronizedFuture);
         executeCommand(dataSourceName, rebuilder.sql());
-        List<QueryResult> queryResults = synchronizedFuture.get(ruleRegistry.getProxyBackendConnectionTimeout(), TimeUnit.SECONDS);
+        List<QueryResult> queryResults = synchronizedFuture.get(RULE_REGISTRY.getProxyBackendConnectionTimeout(), TimeUnit.SECONDS);
         MySQLResultCache.getInstance().deleteFuture(rebuilder.connectionId());
         List<CommandResponsePackets> packets = new LinkedList<>();
         for (QueryResult each : queryResults) {
@@ -113,7 +112,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     
     private CommandResponsePackets executeForSharding() {
         StatementRoutingEngine routingEngine = new StatementRoutingEngine(
-                ruleRegistry.getShardingRule(), ruleRegistry.getShardingMetaData(), databaseType, ruleRegistry.isShowSQL(), ruleRegistry.getShardingDataSourceMetaData());
+                RULE_REGISTRY.getShardingRule(), RULE_REGISTRY.getShardingMetaData(), databaseType, RULE_REGISTRY.isShowSQL(), RULE_REGISTRY.getShardingDataSourceMetaData());
         SQLRouteResult routeResult = routingEngine.route(rebuilder.sql());
         if (routeResult.getExecutionUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1));
@@ -123,7 +122,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             executeCommand(each.getDataSource(), each.getSqlUnit().getSql());
         }
-        List<QueryResult> queryResults = synchronizedFuture.get(ruleRegistry.getProxyBackendConnectionTimeout(), TimeUnit.SECONDS);
+        List<QueryResult> queryResults = synchronizedFuture.get(RULE_REGISTRY.getProxyBackendConnectionTimeout(), TimeUnit.SECONDS);
         MySQLResultCache.getInstance().deleteFuture(rebuilder.connectionId());
         
         List<CommandResponsePackets> packets = Lists.newArrayListWithCapacity(queryResults.size());
@@ -148,7 +147,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
                 channelsMap.put(dataSourceName, Lists.<Channel>newArrayList());
             }
             SimpleChannelPool pool = ShardingProxyClient.getInstance().getPoolMap().get(dataSourceName);
-            Channel channel = pool.acquire().get(ruleRegistry.getProxyBackendConnectionTimeout(), TimeUnit.SECONDS);
+            Channel channel = pool.acquire().get(RULE_REGISTRY.getProxyBackendConnectionTimeout(), TimeUnit.SECONDS);
             channelsMap.get(dataSourceName).add(channel);
             MySQLResultCache.getInstance().putConnection(channel.id().asShortText(), rebuilder.connectionId());
             channel.writeAndFlush(rebuilder.rebuild(rebuilder.sequenceId(), rebuilder.connectionId(), sql));
@@ -191,8 +190,8 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     
     private CommandResponsePackets mergeDQLorDAL(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets, final List<QueryResult> queryResults) {
         try {
-            mergedResult = MergeEngineFactory.newInstance(ruleRegistry.getShardingRule(), queryResults,
-                    sqlStatement, ruleRegistry.getShardingMetaData()).merge();
+            mergedResult = MergeEngineFactory.newInstance(RULE_REGISTRY.getShardingRule(), queryResults,
+                    sqlStatement, RULE_REGISTRY.getShardingMetaData()).merge();
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex));
         }

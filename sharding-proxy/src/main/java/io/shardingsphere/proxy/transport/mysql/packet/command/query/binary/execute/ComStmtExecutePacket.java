@@ -52,6 +52,10 @@ import java.util.List;
 @Slf4j
 public final class ComStmtExecutePacket implements QueryCommandPacket {
     
+    private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
+    
+    private static final PreparedStatementRegistry PREPARED_STATEMENT_REGISTRY = PreparedStatementRegistry.getInstance();
+    
     private static final int ITERATION_COUNT = 1;
     
     private static final int RESERVED_BIT_LENGTH = 0;
@@ -59,10 +63,6 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
     private static final ColumnType NULL_PARAMETER_DEFAULT_COLUMN_TYPE = ColumnType.MYSQL_TYPE_STRING;
     
     private static final int NULL_PARAMETER_DEFAULT_UNSIGNED_FLAG = 0;
-    
-    private final RuleRegistry ruleRegistry;
-    
-    private final PreparedStatementRegistry preparedStatementRegistry;
     
     private final int sequenceId;
     
@@ -79,14 +79,12 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
     private final JDBCBackendHandler jdbcBackendHandler;
     
     public ComStmtExecutePacket(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
-        ruleRegistry = RuleRegistry.getInstance();
-        preparedStatementRegistry = PreparedStatementRegistry.getInstance();
         this.sequenceId = sequenceId;
         statementId = payload.readInt4();
         flags = payload.readInt1();
         Preconditions.checkArgument(ITERATION_COUNT == payload.readInt4());
         // TODO why parse twice in here and prepared?
-        SQLStatement sqlStatement = new SQLParsingEngine(DatabaseType.MySQL, preparedStatementRegistry.getSQL(statementId), ruleRegistry.getShardingRule(), null).parse(true);
+        SQLStatement sqlStatement = new SQLParsingEngine(DatabaseType.MySQL, PREPARED_STATEMENT_REGISTRY.getSQL(statementId), RULE_REGISTRY.getShardingRule(), null).parse(true);
         nullBitmap = new NullBitmap(sqlStatement.getParametersIndex(), RESERVED_BIT_LENGTH);
         for (int i = 0; i < nullBitmap.getNullBitmap().length; i++) {
             nullBitmap.getNullBitmap()[i] = payload.readInt1();
@@ -94,7 +92,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
         newParametersBoundFlag = NewParametersBoundFlag.valueOf(payload.readInt1());
         setParameterList(payload, sqlStatement.getParametersIndex(), newParametersBoundFlag);
         jdbcBackendHandler = new JDBCBackendHandler(
-                preparedStatementRegistry.getSQL(statementId), JDBCExecuteEngineFactory.createBinaryProtocolInstance(preparedStatementParameters, backendConnection));
+                PREPARED_STATEMENT_REGISTRY.getSQL(statementId), JDBCExecuteEngineFactory.createBinaryProtocolInstance(preparedStatementParameters, backendConnection));
     }
     
     private void setParameterList(final MySQLPacketPayload payload, final int numParameters, final NewParametersBoundFlag newParametersBoundFlag) {
@@ -118,7 +116,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
             preparedStatementParameters.add(new PreparedStatementParameter(columnType, unsignedFlag));
             parameterHeaders.add(new PreparedStatementParameterHeader(columnType, unsignedFlag));
         }
-        preparedStatementRegistry.setParameterHeaders(statementId, parameterHeaders);
+        PREPARED_STATEMENT_REGISTRY.setParameterHeaders(statementId, parameterHeaders);
     }
     
     private void setParameterHeaderFromCache(final int numParameters) {
@@ -127,7 +125,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
                 preparedStatementParameters.add(new PreparedStatementParameter(NULL_PARAMETER_DEFAULT_COLUMN_TYPE, NULL_PARAMETER_DEFAULT_UNSIGNED_FLAG, null));
                 continue;
             }
-            PreparedStatementParameterHeader preparedStatementParameterHeader = preparedStatementRegistry.getParameterHeader(statementId);
+            PreparedStatementParameterHeader preparedStatementParameterHeader = PREPARED_STATEMENT_REGISTRY.getParameterHeader(statementId);
             preparedStatementParameters.add(new PreparedStatementParameter(preparedStatementParameterHeader.getColumnType(), preparedStatementParameterHeader.getUnsignedFlag()));
         }
     }

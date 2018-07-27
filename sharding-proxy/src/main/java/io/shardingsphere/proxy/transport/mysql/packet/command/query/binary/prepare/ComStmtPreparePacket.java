@@ -45,20 +45,19 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class ComStmtPreparePacket implements CommandPacket {
     
+    private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
+    
+    private static final PreparedStatementRegistry PREPARED_STATEMENT_REGISTRY = PreparedStatementRegistry.getInstance();
+    
     @Getter
     private final int sequenceId;
     
     private final String sql;
     
-    private final RuleRegistry ruleRegistry;
-    
-    private final PreparedStatementRegistry preparedStatementRegistry;
-    
     public ComStmtPreparePacket(final int sequenceId, final MySQLPacketPayload payload) {
         this.sequenceId = sequenceId;
         sql = payload.readStringEOF();
-        ruleRegistry = RuleRegistry.getInstance();
-        preparedStatementRegistry = PreparedStatementRegistry.getInstance();
+        
     }
     
     @Override
@@ -70,9 +69,9 @@ public final class ComStmtPreparePacket implements CommandPacket {
     public Optional<CommandResponsePackets> execute() {
         log.debug("COM_STMT_PREPARE received for Sharding-Proxy: {}", sql);
         int currentSequenceId = 0;
-        SQLStatement sqlStatement = new SQLParsingEngine(DatabaseType.MySQL, sql, ruleRegistry.getShardingRule(), ruleRegistry.getShardingMetaData()).parse(true);
+        SQLStatement sqlStatement = new SQLParsingEngine(DatabaseType.MySQL, sql, RULE_REGISTRY.getShardingRule(), RULE_REGISTRY.getShardingMetaData()).parse(true);
         CommandResponsePackets result = new CommandResponsePackets(
-                new ComStmtPrepareOKPacket(++currentSequenceId, preparedStatementRegistry.register(sql), getNumColumns(sqlStatement), sqlStatement.getParametersIndex(), 0));
+                new ComStmtPrepareOKPacket(++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(sql), getNumColumns(sqlStatement), sqlStatement.getParametersIndex(), 0));
         for (int i = 0; i < sqlStatement.getParametersIndex(); i++) {
             // TODO add column name
             result.getPackets().add(new ColumnDefinition41Packet(++currentSequenceId, ShardingConstant.LOGIC_SCHEMA_NAME,
