@@ -43,7 +43,7 @@ public class XaTransactionEngine extends TransactionEngine {
     @Override
     public XaTransactionEngine execute() throws Exception {
         Optional<TCLType> tclType = parseSQL();
-        if (isAvailable(tclType)) {
+        if (tclType.isPresent() && isAvailable(tclType)) {
             XaTransactionEvent xaTransactionEvent = new XaTransactionEvent(getSql());
             xaTransactionEvent.setTclType(tclType.get());
             TransactionContextHolder.set(new TransactionContext(ruleRegistry.getTransactionManager(), ruleRegistry.getTransactionType(), XaTransactionEvent.class));
@@ -53,9 +53,8 @@ public class XaTransactionEngine extends TransactionEngine {
         return this;
     }
     
-    @Override
-    protected boolean isAvailable(final Optional<TCLType> tclType) throws Exception {
-        switch (tclType.get()) {
+    private boolean isAvailable(final Optional<TCLType> tclType) throws Exception {
+        switch (tclType.orNull()) {
             case ROLLBACK:
                 return tclType.isPresent() && Status.STATUS_NO_TRANSACTION != ruleRegistry.getTransactionManager().getStatus();
             default:

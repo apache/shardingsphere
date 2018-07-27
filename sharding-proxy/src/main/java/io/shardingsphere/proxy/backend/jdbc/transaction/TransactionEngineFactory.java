@@ -17,20 +17,28 @@
 
 package io.shardingsphere.proxy.backend.jdbc.transaction;
 
+import io.shardingsphere.proxy.config.RuleRegistry;
+
 /**
- * Default transaction engine.
+ * Create transaction engine based on current transaction type.
  *
  * @author zhaojun
  */
-public class DefaultTransactionEngine extends TransactionEngine {
+public class TransactionEngineFactory {
     
-    public DefaultTransactionEngine(final String sql) {
-        super(sql);
-    }
+    private static final RuleRegistry REGISTRY = RuleRegistry.getInstance();
     
-    @Override
-    public DefaultTransactionEngine execute() {
-        setNeedProcessByBackendHandler(!parseSQL().isPresent());
-        return this;
+    /**
+     * Create transaction engine from sql.
+     * @param sql SQL
+     * @return transaction engine
+     */
+    public static TransactionEngine create(final String sql) {
+        switch (REGISTRY.getTransactionType()) {
+            case XA:
+                return new XaTransactionEngine(sql);
+            default:
+                return new DefaultTransactionEngine(sql);
+        }
     }
 }

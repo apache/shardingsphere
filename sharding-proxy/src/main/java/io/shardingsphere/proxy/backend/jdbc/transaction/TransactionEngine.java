@@ -47,7 +47,7 @@ public abstract class TransactionEngine {
             case "ROLLBACK":
                 return Optional.of(TCLType.ROLLBACK);
             default:
-                return Optional.fromNullable(null);
+                return Optional.absent();
         }
     }
     
@@ -58,7 +58,4 @@ public abstract class TransactionEngine {
      * @throws Exception Exception
      */
     public abstract TransactionEngine execute() throws Exception;
-    
-    protected abstract boolean isAvailable(Optional<TCLType> tclType) throws Exception;
-    
 }
