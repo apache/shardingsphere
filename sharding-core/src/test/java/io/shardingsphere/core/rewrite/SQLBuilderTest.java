@@ -125,10 +125,136 @@ public final class SQLBuilderTest {
     }
     
     @Test
+    public void assertAppendTableWithoutTableTokenWithBackQuotes() {
+        SQLBuilder sqlBuilder = new SQLBuilder();
+        sqlBuilder.appendLiterals("SELECT ");
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "`table_x`"));
+        sqlBuilder.appendLiterals(".id");
+        sqlBuilder.appendLiterals(" FROM ");
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "`table_x`"));
+        assertThat(sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null, null).getSql(), is("SELECT `table_x`.id FROM `table_x`"));
+    }
+    
+    @Test
+    public void assertAppendTableWithTableTokenWithBackQuotes() {
+        SQLBuilder sqlBuilder = new SQLBuilder();
+        sqlBuilder.appendLiterals("SELECT ");
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "`table_x`"));
+        sqlBuilder.appendLiterals(".id");
+        sqlBuilder.appendLiterals(" FROM ");
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "`table_x`"));
+        Map<String, String> tableTokens = new HashMap<>(1, 1);
+        tableTokens.put("table_x", "table_x_1");
+        assertThat(sqlBuilder.toSQL(null, tableTokens, null, null).getSql(), is("SELECT `table_x_1`.id FROM `table_x_1`"));
+    }
+    
+    @Test
+    public void assertIndexPlaceholderAppendTableWithoutTableTokenWithBackQuotes() {
+        SQLBuilder sqlBuilder = new SQLBuilder();
+        sqlBuilder.appendLiterals("CREATE INDEX ");
+        sqlBuilder.appendPlaceholder(new IndexPlaceholder("index_name", "index_name"));
+        sqlBuilder.appendLiterals(" ON ");
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "`table_x`"));
+        sqlBuilder.appendLiterals(" ('column')");
+        assertThat(sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null, null).getSql(), is("CREATE INDEX index_name ON `table_x` ('column')"));
+    }
+    
+    @Test
+    public void assertIndexPlaceholderAppendTableWithTableTokenWithBackQuotes() {
+        SQLBuilder sqlBuilder = new SQLBuilder();
+        sqlBuilder.appendLiterals("CREATE INDEX ");
+        sqlBuilder.appendPlaceholder(new IndexPlaceholder("index_name", "table_x"));
+        sqlBuilder.appendLiterals(" ON ");
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "`table_x`"));
+        sqlBuilder.appendLiterals(" ('column')");
+        Map<String, String> tableTokens = new HashMap<>(1, 1);
+        tableTokens.put("table_x", "table_x_1");
+        assertThat(sqlBuilder.toSQL(null, tableTokens, null, null).getSql(), is("CREATE INDEX index_name_table_x_1 ON `table_x_1` ('column')"));
+    }
+    
+    @Test
+    public void assertSchemaPlaceholderAppendTableWithTableTokenWithBackQuotes() {
+        SQLBuilder sqlBuilder = new SQLBuilder();
+        sqlBuilder.appendLiterals("SHOW ");
+        sqlBuilder.appendLiterals("CREATE TABLE ");
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_0", "`table_0`"));
+        sqlBuilder.appendLiterals(" ON ");
+        sqlBuilder.appendPlaceholder(new SchemaPlaceholder("ds", "table_0"));
+        Map<String, String> tableTokens = new HashMap<>(1, 1);
+        tableTokens.put("table_0", "table_1");
+        ShardingDataSourceMetaData shardingDataSourceMetaData = Mockito.mock(ShardingDataSourceMetaData.class);
+        Mockito.when(shardingDataSourceMetaData.getActualSchemaName(Mockito.anyString())).thenReturn("actual_db");
+        assertThat(sqlBuilder.toSQL(null, tableTokens, createShardingRule(), shardingDataSourceMetaData).getSql(), is("SHOW CREATE TABLE `table_1` ON actual_db"));
+    }
+    
+    @Test
+    public void assertAppendTableWithoutTableTokenWithDoubleQuotes() {
+        SQLBuilder sqlBuilder = new SQLBuilder();
+        sqlBuilder.appendLiterals("SELECT ");
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "\"table_x\""));
+        sqlBuilder.appendLiterals(".id");
+        sqlBuilder.appendLiterals(" FROM ");
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "\"table_x\""));
+        assertThat(sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null, null).getSql(), is("SELECT \"table_x\".id FROM \"table_x\""));
+    }
+    
+    @Test
+    public void assertAppendTableWithTableTokenWithDoubleQuotes() {
+        SQLBuilder sqlBuilder = new SQLBuilder();
+        sqlBuilder.appendLiterals("SELECT ");
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "\"table_x\""));
+        sqlBuilder.appendLiterals(".id");
+        sqlBuilder.appendLiterals(" FROM ");
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "\"table_x\""));
+        Map<String, String> tableTokens = new HashMap<>(1, 1);
+        tableTokens.put("table_x", "table_x_1");
+        assertThat(sqlBuilder.toSQL(null, tableTokens, null, null).getSql(), is("SELECT \"table_x_1\".id FROM \"table_x_1\""));
+    }
+    
+    @Test
+    public void assertIndexPlaceholderAppendTableWithoutTableTokenWithDoubleQuotes() {
+        SQLBuilder sqlBuilder = new SQLBuilder();
+        sqlBuilder.appendLiterals("CREATE INDEX ");
+        sqlBuilder.appendPlaceholder(new IndexPlaceholder("index_name", "index_name"));
+        sqlBuilder.appendLiterals(" ON ");
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "\"table_x\""));
+        sqlBuilder.appendLiterals(" ('column')");
+        assertThat(sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null, null).getSql(), is("CREATE INDEX index_name ON \"table_x\" ('column')"));
+    }
+    
+    @Test
+    public void assertIndexPlaceholderAppendTableWithTableTokenWithDoubleQuotes() {
+        SQLBuilder sqlBuilder = new SQLBuilder();
+        sqlBuilder.appendLiterals("CREATE INDEX ");
+        sqlBuilder.appendPlaceholder(new IndexPlaceholder("index_name", "table_x"));
+        sqlBuilder.appendLiterals(" ON ");
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "\"table_x\""));
+        sqlBuilder.appendLiterals(" ('column')");
+        Map<String, String> tableTokens = new HashMap<>(1, 1);
+        tableTokens.put("table_x", "table_x_1");
+        assertThat(sqlBuilder.toSQL(null, tableTokens, null, null).getSql(), is("CREATE INDEX index_name_table_x_1 ON \"table_x_1\" ('column')"));
+    }
+    
+    @Test
+    public void assertSchemaPlaceholderAppendTableWithTableTokenWithDoubleQuotes() {
+        SQLBuilder sqlBuilder = new SQLBuilder();
+        sqlBuilder.appendLiterals("SHOW ");
+        sqlBuilder.appendLiterals("CREATE TABLE ");
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_0", "\"table_0\""));
+        sqlBuilder.appendLiterals(" ON ");
+        sqlBuilder.appendPlaceholder(new SchemaPlaceholder("ds", "table_0"));
+        Map<String, String> tableTokens = new HashMap<>(1, 1);
+        tableTokens.put("table_0", "table_1");
+        ShardingDataSourceMetaData shardingDataSourceMetaData = Mockito.mock(ShardingDataSourceMetaData.class);
+        Mockito.when(shardingDataSourceMetaData.getActualSchemaName(Mockito.anyString())).thenReturn("actual_db");
+        assertThat(sqlBuilder.toSQL(null, tableTokens, createShardingRule(), shardingDataSourceMetaData).getSql(), is("SHOW CREATE TABLE \"table_1\" ON actual_db"));
+    }
+    
+    @Test
     public void assertShardingPlaceholderToString() {
         assertThat(new IndexPlaceholder("index_name", "table_x").toString(), is("index_name"));
         assertThat(new SchemaPlaceholder("schema_name", "table_x").toString(), is("schema_name"));
-        assertThat(new TablePlaceholder("table_name", "table_name").toString(), is("table_name"));
+        assertThat(new TablePlaceholder("table_name", "`table_name`").toString(), is("table_name"));
     }
     
     private ShardingRule createShardingRule() {
