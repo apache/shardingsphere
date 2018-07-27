@@ -18,23 +18,25 @@
 package io.shardingsphere.proxy.backend.jdbc.transaction;
 
 import io.shardingsphere.proxy.config.RuleRegistry;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * Create transaction engine based on current transaction type.
  *
  * @author zhaojun
  */
-public class TransactionEngineFactory {
-    
-    private static final RuleRegistry REGISTRY = RuleRegistry.getInstance();
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class TransactionEngineFactory {
     
     /**
-     * Create transaction engine from sql.
+     * Create transaction engine from SQL.
+     * 
      * @param sql SQL
      * @return transaction engine
      */
     public static TransactionEngine create(final String sql) {
-        switch (REGISTRY.getTransactionType()) {
+        switch (RuleRegistry.getInstance().getTransactionType()) {
             case XA:
                 return new XaTransactionEngine(sql);
             default:
