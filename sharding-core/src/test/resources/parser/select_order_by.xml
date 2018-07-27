@@ -130,10 +130,12 @@
 
     <parser-result sql-case-id="select_order_by_with_table_star_alias_name">
         <tables>
-            <table name="t_order" alias="o" />
+            <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="16" original-literals="t_order" />
+            <table-token begin-position="7" original-literals="t_order" />
+            <table-token begin-position="22" original-literals="t_order" />
+            <table-token begin-position="39" original-literals="t_order" />
         </tokens>
         <order-by-columns>
             <order-by-column owner="t_order" name="order_id" order-direction="ASC" />
@@ -142,13 +144,13 @@
 
     <parser-result sql-case-id="select_order_by_with_table_star_table_name">
         <tables>
-            <table name="t_order" alias="o" />
+            <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="16" original-literals="t_order" />
+            <table-token begin-position="14" original-literals="t_order" />
         </tokens>
         <order-by-columns>
-            <order-by-column owner="t_order" name="order_id" order-direction="ASC" />
+            <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
 
@@ -162,7 +164,7 @@
             <table-token begin-position="36" original-literals="t_order_item" />
         </tokens>
         <order-by-columns>
-            <order-by-column owner="t_order_item" name="item_id" order-direction="ASC" />
+            <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
 </parser-result-sets>
