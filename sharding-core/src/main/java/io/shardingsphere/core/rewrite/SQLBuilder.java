@@ -118,14 +118,14 @@ public final class SQLBuilder {
         return new SQLUnit(result.toString(), parameterSets);
     }
     
-    private void appendTablePlaceholder(TablePlaceholder tablePlaceholder, final String actualTableName, final StringBuilder stringBuilder) {
+    private void appendTablePlaceholder(final TablePlaceholder tablePlaceholder, final String actualTableName, final StringBuilder stringBuilder) {
         final String logicTableName = tablePlaceholder.getLogicTableName();
         final String originalLiterals = tablePlaceholder.getOriginalLiterals();
         if (logicTableName.length() == originalLiterals.length()) {
             stringBuilder.append(null == actualTableName ? logicTableName : actualTableName);
         } else {
             final char delimiter = originalLiterals.charAt(0);
-                stringBuilder.append(null == actualTableName ? originalLiterals : delimiter + actualTableName + delimiter);
+            stringBuilder.append(null == actualTableName ? originalLiterals : delimiter + actualTableName + delimiter);
         }
     }
     
