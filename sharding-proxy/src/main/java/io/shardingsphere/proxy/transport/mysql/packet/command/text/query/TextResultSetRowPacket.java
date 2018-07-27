@@ -17,12 +17,12 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command.text.query;
 
-import com.google.common.collect.Lists;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,8 +44,8 @@ public final class TextResultSetRowPacket implements MySQLPacket {
     
     public TextResultSetRowPacket(final MySQLPacketPayload payload, final int columnCount) {
         sequenceId = payload.readInt1();
-        data = Lists.newArrayListWithExpectedSize(columnCount);
-        for (int i = 1; i <= columnCount; i++) {
+        data = new ArrayList<>(columnCount);
+        for (int i = 0; i < columnCount; i++) {
             data.add(payload.readStringLenenc());
         }
     }
