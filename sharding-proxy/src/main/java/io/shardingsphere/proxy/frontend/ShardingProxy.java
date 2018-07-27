@@ -30,7 +30,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import io.shardingsphere.proxy.backend.ShardingProxyClient;
+import io.shardingsphere.proxy.backend.netty.ShardingProxyClient;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.frontend.common.netty.ServerHandlerInitializer;
 import io.shardingsphere.proxy.util.ExecutorContext;

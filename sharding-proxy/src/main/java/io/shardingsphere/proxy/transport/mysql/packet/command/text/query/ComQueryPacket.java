@@ -22,11 +22,9 @@ import io.shardingsphere.core.constant.TCLType;
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.transaction.event.XaTransactionEvent;
 import io.shardingsphere.core.util.EventBusInstance;
-import io.shardingsphere.proxy.backend.common.BackendHandler;
-import io.shardingsphere.proxy.backend.common.SQLPacketsBackendHandler;
-import io.shardingsphere.proxy.backend.common.jdbc.BackendConnection;
-import io.shardingsphere.proxy.backend.common.jdbc.JDBCBackendHandler;
-import io.shardingsphere.proxy.backend.common.jdbc.execute.JDBCExecuteEngineFactory;
+import io.shardingsphere.proxy.backend.BackendHandler;
+import io.shardingsphere.proxy.backend.BackendHandlerFactory;
+import io.shardingsphere.proxy.backend.jdbc.BackendConnection;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
@@ -34,6 +32,7 @@ import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
+import io.shardingsphere.proxy.transport.mysql.packet.command.QueryCommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
@@ -55,7 +54,7 @@ import java.sql.SQLException;
  * @author zhaojun
  */
 @Slf4j
-public final class ComQueryPacket implements CommandPacket, CommandPacketRebuilder {
+public final class ComQueryPacket implements QueryCommandPacket, CommandPacketRebuilder {
     
     @Getter
     private final int sequenceId;
@@ -64,23 +63,19 @@ public final class ComQueryPacket implements CommandPacket, CommandPacketRebuild
     
     private final String sql;
     
-    private final BackendConnection backendConnection;
-    
     private final BackendHandler backendHandler;
     
     public ComQueryPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         this.sequenceId = sequenceId;
         this.connectionId = connectionId;
         sql = payload.readStringEOF();
-        this.backendConnection = backendConnection;
-        backendHandler = getBackendHandler(sql);
+        backendHandler = BackendHandlerFactory.newTextProtocolInstance(sql, backendConnection, DatabaseType.MySQL, this);
     }
     
     public ComQueryPacket(final int sequenceId, final int connectionId, final String sql) {
         this.sequenceId = sequenceId;
         this.connectionId = connectionId;
         this.sql = sql;
-        backendConnection = null;
         backendHandler = null;
     }
     
@@ -101,11 +96,6 @@ public final class ComQueryPacket implements CommandPacket, CommandPacketRebuild
             return new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
         }
         return backendHandler.execute();
-    }
-    
-    private BackendHandler getBackendHandler(final String sql) {
-        return RuleRegistry.getInstance().isProxyBackendUseNio()
-                ? new SQLPacketsBackendHandler(this, DatabaseType.MySQL) : new JDBCBackendHandler(sql, JDBCExecuteEngineFactory.createTextProtocolInstance(backendConnection));
     }
     
     @Override

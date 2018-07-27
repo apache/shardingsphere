@@ -17,7 +17,6 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command;
 
-import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 
@@ -35,22 +34,7 @@ public interface CommandPacket extends MySQLPacket {
      * Execute command.
      * 
      * @return result packets to be sent
-     */
-    CommandResponsePackets execute();
-    
-    /**
-     * Goto next result value.
-     *
-     * @return has more result value or not
      * @throws SQLException SQL exception
      */
-    boolean next() throws SQLException;
-    
-    /**
-     * Get result value.
-     *
-     * @return database packet of result value
-     * @throws SQLException SQL exception
-     */
-    DatabasePacket getResultValue() throws SQLException;
+    CommandResponsePackets execute() throws SQLException;
 }
