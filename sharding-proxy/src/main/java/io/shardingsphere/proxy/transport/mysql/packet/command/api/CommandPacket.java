@@ -15,10 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.transport.mysql.packet.command;
+package io.shardingsphere.proxy.transport.mysql.packet.command.api;
 
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
 
 /**
  * Command packet.

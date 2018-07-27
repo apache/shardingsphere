@@ -17,7 +17,7 @@
 
 package io.shardingsphere.proxy.transport.common.packet;
 
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.api.CommandPacket;
 
 /**
  * Command packet rebuilder.

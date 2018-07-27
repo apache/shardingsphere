@@ -18,8 +18,8 @@
 package io.shardingsphere.proxy.transport.mysql.packet.command.binary.close;
 
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.api.CommandPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.api.CommandResponsePackets;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 

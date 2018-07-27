@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.transport.mysql.packet.command;
+package io.shardingsphere.proxy.transport.mysql.packet.command.api;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -15,33 +15,36 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.transport.mysql.packet.command;
+package io.shardingsphere.proxy.transport.mysql.packet.command.api;
 
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import java.sql.SQLException;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Query command packet.
+ * Command response packets.
  *
- * @author zhangliang
- * @author wangkai
+ * @author zhangyonglun
  */
-public interface QueryCommandPacket extends CommandPacket {
+@NoArgsConstructor
+@Getter
+public class CommandResponsePackets {
+    
+    private final Collection<DatabasePacket> packets = new LinkedList<>();
+    
+    public CommandResponsePackets(final DatabasePacket databasePacket) {
+        packets.add(databasePacket);
+    }
     
     /**
-     * Goto next result value.
+     * Get head packet.
      *
-     * @return has more result value or not
-     * @throws SQLException SQL exception
+     * @return head packet
      */
-    boolean next() throws SQLException;
-    
-    /**
-     * Get result value.
-     *
-     * @return database packet of result value
-     * @throws SQLException SQL exception
-     */
-    DatabasePacket getResultValue() throws SQLException;
+    public DatabasePacket getHeadPacket() {
+        return packets.iterator().next();
+    }
 }

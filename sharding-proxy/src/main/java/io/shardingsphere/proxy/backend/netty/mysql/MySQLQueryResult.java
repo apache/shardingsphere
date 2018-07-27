@@ -21,7 +21,7 @@ import com.google.common.collect.Lists;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
-import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.api.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ColumnDefinition41Packet;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.FieldCountPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.TextResultSetRowPacket;

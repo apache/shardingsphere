@@ -18,9 +18,9 @@
 package io.shardingsphere.proxy.transport.mysql.packet.command.text.ping;
 
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
-import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.api.CommandPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.api.CommandPacketType;
+import io.shardingsphere.proxy.transport.mysql.packet.command.api.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

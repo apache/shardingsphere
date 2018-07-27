@@ -15,11 +15,13 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.transport.mysql.packet.command;
+package io.shardingsphere.proxy.transport.mysql.packet.command.api.impl;
 
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
-import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.api.CommandPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.api.CommandPacketType;
+import io.shardingsphere.proxy.transport.mysql.packet.command.api.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

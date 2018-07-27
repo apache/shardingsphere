@@ -15,10 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.transport.mysql.packet.command;
+package io.shardingsphere.proxy.transport.mysql.packet.command.api;
 
 import io.shardingsphere.proxy.backend.jdbc.BackendConnection;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
+import io.shardingsphere.proxy.transport.mysql.packet.command.api.impl.UnsupportedCommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.binary.close.ComStmtClosePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.binary.execute.ComStmtExecutePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.binary.prepare.ComStmtPreparePacket;

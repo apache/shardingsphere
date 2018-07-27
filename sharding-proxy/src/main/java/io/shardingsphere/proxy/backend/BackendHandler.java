@@ -18,7 +18,7 @@
 package io.shardingsphere.proxy.backend;
 
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.api.CommandResponsePackets;
 
 import java.sql.SQLException;
 
