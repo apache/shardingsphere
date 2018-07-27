@@ -29,18 +29,21 @@ import lombok.Setter;
  * @author zhaojun
  */
 @RequiredArgsConstructor
+@Getter
+@Setter
 public abstract class TransactionEngine {
     
-    @Getter
-    @Setter
-    private boolean isNeedProcessByBackendHandler = true;
-    
-    @Getter
     private final String sql;
     
+    private boolean isNeedProcessByBackendHandler = true;
+    
+    // TODO move to TCLParser
     protected Optional<TCLType> parseSQL() {
         switch (sql.toUpperCase()) {
-            case "BEGIN": case "START TRANSACTION": case "SET AUTOCOMMIT=0":
+            case "BEGIN": 
+            case "START TRANSACTION":
+                // TODO SET AUTOCOMMIT=0 is not transaction begin flag? 
+            case "SET AUTOCOMMIT=0":
                 return Optional.of(TCLType.BEGIN);
             case "COMMIT":
                 return Optional.of(TCLType.COMMIT);
@@ -52,7 +55,7 @@ public abstract class TransactionEngine {
     }
     
     /**
-     * Execute transaction with binding tm.
+     * Execute transaction with binding transaction manager.
      *
      * @return TransactionEngine
      * @throws Exception Exception
