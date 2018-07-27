@@ -142,7 +142,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     
     private void executeCommand(final String dataSourceName, final String sql) {
         try {
-            if (channelsMap.get(dataSourceName) == null) {
+            if (null == channelsMap.get(dataSourceName)) {
                 channelsMap.put(dataSourceName, Lists.<Channel>newArrayList());
             }
             SimpleChannelPool pool = ShardingProxyClient.getInstance().getPoolMap().get(dataSourceName);
@@ -150,8 +150,8 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
             channelsMap.get(dataSourceName).add(channel);
             MySQLResultCache.getInstance().putConnection(channel.id().asShortText(), rebuilder.connectionId());
             channel.writeAndFlush(rebuilder.rebuild(rebuilder.sequenceId(), rebuilder.connectionId(), sql));
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            log.error(e.getMessage(), e);
+        } catch (final InterruptedException | ExecutionException | TimeoutException ex) {
+            log.error(ex.getMessage(), ex);
         }
     }
     
