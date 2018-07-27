@@ -32,7 +32,7 @@ import javax.transaction.SystemException;
  *
  * @author zhaojun
  */
-public class AtomikosXaTransaction implements TransactionManager {
+public class AtomikosTransactionManager implements TransactionManager {
     
     private static UserTransactionManager transactionManager = AtomikosUserTransaction.getInstance();
     
