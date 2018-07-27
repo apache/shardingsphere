@@ -105,6 +105,8 @@ public final class MySQLFrontendHandler extends FrontendHandler {
                     context.writeAndFlush(new EofPacket(++currentSequenceId));
                 } catch (final SQLException ex) {
                     context.writeAndFlush(new ErrPacket(++currentSequenceId, ex));
+                } catch (final Exception ex) {
+                    context.writeAndFlush(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
                 }
             }
         });
