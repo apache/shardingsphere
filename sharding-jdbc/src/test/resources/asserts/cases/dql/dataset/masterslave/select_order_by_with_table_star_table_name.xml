@@ -1,8 +1,10 @@
 <dataset>
     <metadata>
+        <column name="item_id" />
         <column name="order_id" />
         <column name="user_id" />
         <column name="status" />
+        <column name="creation_date" />
     </metadata>
     <row values="1000, 10, init_slave" />
     <row values="1001, 10, init_slave" />
