@@ -33,9 +33,6 @@ import lombok.extern.slf4j.Slf4j;
 class PathResolve {
     
     @Getter
-    private final List<String> nodes = new ArrayList<>();
-    
-    @Getter
     private final String path;
     
     @Getter
@@ -43,13 +40,29 @@ class PathResolve {
     
     private int position;
     
+    private boolean ended;
+    
+    private long length = -1;
+    
     /**
      * Read position Whether the end position or not .
      *
      * @return isEnd boolean
      */
     public boolean isEnd() {
-        return position >= path.length();
+        return ended;
+    }
+    
+    private void checkEnd() {
+        if (length == -1) {
+            if (path.charAt(path.length() - 1) == '/') {
+                length = path.length() - 1;
+            } else {
+                length = path.length();
+            }
+        }
+        // todo
+        ended = position >= length;
     }
     
     /**
@@ -63,8 +76,9 @@ class PathResolve {
         int nodeBegin = ++position;
         while (!isEnd() && path.charAt(position) != '/') {
             position++;
+            checkEnd();
         }
         current = path.substring(nodeBegin, position);
-        nodes.add(current);
+        System.out.println(current);
     }
 }

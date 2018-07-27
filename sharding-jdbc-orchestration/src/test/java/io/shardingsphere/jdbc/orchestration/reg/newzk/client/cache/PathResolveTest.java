@@ -17,6 +17,7 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -38,6 +39,14 @@ public class PathResolveTest {
         assertThat(pathResolve.getCurrent(), is("ccc"));
         pathResolve.next();
         assertThat(pathResolve.getCurrent(), is("ddd"));
+    }
+    
+    @Test
+    public void assertTrickEnd() {
+        final String path = "/test/";
+        PathResolve pathResolve = new PathResolve(path);
+        pathResolve.next();
+        assertThat(pathResolve.isEnd(), is(true));
     }
     
     @Test
