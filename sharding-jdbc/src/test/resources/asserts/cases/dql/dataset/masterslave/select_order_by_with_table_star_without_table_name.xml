@@ -5,6 +5,9 @@
         <column name="user_id" />
         <column name="status" />
         <column name="creation_date" />
+        <column name="order_id" />
+        <column name="user_id" />
+        <column name="status" />
     </metadata>
     <row values="100001, 1000, 10, init_slave, 1000, 10, init_slave" />
     <row values="100002, 1000, 10, init_slave, 1000, 10, init_slave" />
