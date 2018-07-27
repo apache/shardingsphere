@@ -47,7 +47,7 @@ public final class XaTransactionEngine extends TransactionEngine {
         if (tclType.isPresent() && isInTransaction(tclType.get())) {
             TransactionContextHolder.set(new TransactionContext(ruleRegistry.getTransactionManager(), ruleRegistry.getTransactionType(), XaTransactionEvent.class));
             EventBusInstance.getInstance().post(new XaTransactionEvent(tclType.get(), getSql()));
-            setNeedProcessByBackendHandler(false);
+            setSkipAccessBackend(true);
         }
         return this;
     }

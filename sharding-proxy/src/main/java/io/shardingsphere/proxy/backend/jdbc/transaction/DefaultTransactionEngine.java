@@ -30,7 +30,7 @@ public class DefaultTransactionEngine extends TransactionEngine {
     
     @Override
     public DefaultTransactionEngine execute() {
-        setNeedProcessByBackendHandler(!parseSQL().isPresent());
+        setSkipAccessBackend(parseSQL().isPresent());
         return this;
     }
 }

@@ -88,7 +88,7 @@ public final class ComQueryPacket implements QueryCommandPacket, CommandPacketRe
     public Optional<CommandResponsePackets> execute() {
         log.debug("COM_QUERY received for Sharding-Proxy: {}", sql);
         try {
-            if (!transactionEngine.execute().isNeedProcessByBackendHandler()) {
+            if (transactionEngine.execute().isSkipAccessBackend()) {
                 return Optional.of(new CommandResponsePackets(new OKPacket(1)));
             }
         } catch (final Exception ex) {

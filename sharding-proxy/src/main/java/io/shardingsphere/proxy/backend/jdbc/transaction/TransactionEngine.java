@@ -35,7 +35,7 @@ public abstract class TransactionEngine {
     
     private final String sql;
     
-    private boolean isNeedProcessByBackendHandler = true;
+    private boolean skipAccessBackend;
     
     // TODO move to TCLParser
     protected Optional<TCLType> parseSQL() {
