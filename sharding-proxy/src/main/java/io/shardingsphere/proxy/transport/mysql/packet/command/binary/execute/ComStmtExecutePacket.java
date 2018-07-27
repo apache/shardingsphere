@@ -17,6 +17,7 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command.binary.execute;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.SQLParsingEngine;
@@ -156,9 +157,9 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
     }
     
     @Override
-    public CommandResponsePackets execute() {
+    public Optional<CommandResponsePackets> execute() {
         log.debug("COM_STMT_EXECUTE received for Sharding-Proxy: {}", statementId);
-        return jdbcBackendHandler.execute();
+        return Optional.of(jdbcBackendHandler.execute());
     }
     
     @Override

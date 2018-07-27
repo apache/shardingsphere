@@ -17,6 +17,7 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command.binary.prepare;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.parsing.SQLParsingEngine;
@@ -60,7 +61,7 @@ public final class ComStmtPreparePacket implements CommandPacket {
     }
     
     @Override
-    public CommandResponsePackets execute() {
+    public Optional<CommandResponsePackets> execute() {
         log.debug("COM_STMT_PREPARE received for Sharding-Proxy: {}", sql);
         CommandResponsePackets result = new CommandResponsePackets();
         int currentSequenceId = 0;
@@ -77,7 +78,7 @@ public final class ComStmtPreparePacket implements CommandPacket {
             result.getPackets().add(new EofPacket(++currentSequenceId));
         }
         // TODO add If numColumns > 0
-        return result;
+        return Optional.of(result);
     }
     
     private int getNumColumns(final SQLStatement sqlStatement) {

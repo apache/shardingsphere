@@ -17,6 +17,7 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command.text.fieldlist;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.proxy.backend.BackendHandler;
@@ -76,11 +77,11 @@ public final class ComFieldListPacket implements CommandPacket, CommandPacketReb
     }
     
     @Override
-    public CommandResponsePackets execute() throws SQLException {
+    public Optional<CommandResponsePackets> execute() throws SQLException {
         log.debug("Table name received for Sharding-Proxy: {}", table);
         log.debug("Field wildcard received for Sharding-Proxy: {}", fieldWildcard);
         CommandResponsePackets responsePackets = backendHandler.execute();
-        return responsePackets.getHeadPacket() instanceof ErrPacket ? responsePackets : getColumnDefinition41Packets();
+        return Optional.of(responsePackets.getHeadPacket() instanceof ErrPacket ? responsePackets : getColumnDefinition41Packets());
     }
     
     private CommandResponsePackets getColumnDefinition41Packets() throws SQLException {

@@ -17,6 +17,7 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command.api.impl;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.api.CommandPacket;
@@ -40,8 +41,8 @@ public final class UnsupportedCommandPacket implements CommandPacket {
     private final CommandPacketType type;
     
     @Override
-    public CommandResponsePackets execute() {
-        return new CommandResponsePackets(new ErrPacket(getSequenceId() + 1, ServerErrorCode.ER_UNSUPPORTED_COMMAND, type));
+    public Optional<CommandResponsePackets> execute() {
+        return Optional.of(new CommandResponsePackets(new ErrPacket(getSequenceId() + 1, ServerErrorCode.ER_UNSUPPORTED_COMMAND, type)));
     }
     
     @Override

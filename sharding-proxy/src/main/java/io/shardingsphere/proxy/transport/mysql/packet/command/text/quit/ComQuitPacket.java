@@ -17,6 +17,7 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command.text.quit;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.api.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.api.CommandPacketType;
@@ -39,8 +40,8 @@ public final class ComQuitPacket implements CommandPacket {
     private final int sequenceId;
     
     @Override
-    public CommandResponsePackets execute() {
-        return new CommandResponsePackets(new OKPacket(getSequenceId() + 1));
+    public Optional<CommandResponsePackets> execute() {
+        return Optional.of(new CommandResponsePackets(new OKPacket(getSequenceId() + 1)));
     }
     
     @Override

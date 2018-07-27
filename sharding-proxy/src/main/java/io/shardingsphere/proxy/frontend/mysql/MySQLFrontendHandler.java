@@ -17,6 +17,7 @@
 
 package io.shardingsphere.proxy.frontend.mysql;
 
+import com.google.common.base.Optional;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.shardingsphere.proxy.backend.jdbc.BackendConnection;
@@ -27,9 +28,8 @@ import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.api.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.api.CommandPacketFactory;
-import io.shardingsphere.proxy.transport.mysql.packet.command.api.impl.DummyPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.api.impl.QueryCommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.api.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.api.impl.QueryCommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
@@ -94,14 +94,15 @@ public final class MySQLFrontendHandler extends FrontendHandler {
             try (MySQLPacketPayload payload = new MySQLPacketPayload(message);
                  BackendConnection backendConnection = new BackendConnection()) {
                 CommandPacket commandPacket = getCommandPacket(payload, backendConnection);
-                CommandResponsePackets responsePackets = commandPacket.execute();
-                for (DatabasePacket each : responsePackets.getPackets()) {
-                    if (!(each instanceof DummyPacket)) {
-                        context.writeAndFlush(each);
-                    }
+                Optional<CommandResponsePackets> responsePackets = commandPacket.execute();
+                if (!responsePackets.isPresent()) {
+                    return;
                 }
-                if (commandPacket instanceof QueryCommandPacket && !(responsePackets.getHeadPacket() instanceof OKPacket) && !(responsePackets.getHeadPacket() instanceof ErrPacket)) {
-                    writeMoreResults((QueryCommandPacket) commandPacket, responsePackets.getPackets().size());
+                for (DatabasePacket each : responsePackets.get().getPackets()) {
+                    context.writeAndFlush(each);
+                }
+                if (commandPacket instanceof QueryCommandPacket && !(responsePackets.get().getHeadPacket() instanceof OKPacket) && !(responsePackets.get().getHeadPacket() instanceof ErrPacket)) {
+                    writeMoreResults((QueryCommandPacket) commandPacket, responsePackets.get().getPackets().size());
                 }
             } catch (final SQLException ex) {
                 context.writeAndFlush(new ErrPacket(++currentSequenceId, ex));

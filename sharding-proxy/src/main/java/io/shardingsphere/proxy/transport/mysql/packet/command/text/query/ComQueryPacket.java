@@ -17,6 +17,7 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command.text.query;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.proxy.backend.BackendHandler;
 import io.shardingsphere.proxy.backend.BackendHandlerFactory;
@@ -29,8 +30,8 @@ import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.api.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.api.CommandPacketType;
-import io.shardingsphere.proxy.transport.mysql.packet.command.api.impl.QueryCommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.api.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.api.impl.QueryCommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import lombok.Getter;
@@ -84,16 +85,16 @@ public final class ComQueryPacket implements QueryCommandPacket, CommandPacketRe
     }
     
     @Override
-    public CommandResponsePackets execute() {
+    public Optional<CommandResponsePackets> execute() {
         log.debug("COM_QUERY received for Sharding-Proxy: {}", sql);
         try {
             if (!transactionEngine.execute().isNeedProcessByBackendHandler()) {
-                return new CommandResponsePackets(new OKPacket(1));
+                return Optional.of(new CommandResponsePackets(new OKPacket(1)));
             }
         } catch (final Exception ex) {
-            return new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
+            return Optional.of(new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage())));
         }
-        return backendHandler.execute();
+        return Optional.of(backendHandler.execute());
     }
     
     @Override
