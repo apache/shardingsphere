@@ -40,6 +40,11 @@ public enum TransactionType {
     XA("XA"),
     
     /**
+     * B.A.S.E distribute transaction.
+     */
+    BASE("BASE"),
+    
+    /**
      * TCC (Try-Confirm-Cancel) distribute transaction mode.
      */
     TCC("TCC");

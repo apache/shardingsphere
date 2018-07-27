@@ -19,10 +19,7 @@ package io.shardingsphere.core.jdbc.core.transaction;
 
 import io.shardingsphere.core.transaction.event.TransactionEvent;
 import io.shardingsphere.core.transaction.event.WeakXaTransactionEvent;
-import io.shardingsphere.core.transaction.listener.TransactionListener;
-import io.shardingsphere.core.transaction.spi.Transaction;
-import io.shardingsphere.core.transaction.spi.TransactionEventHolder;
-import io.shardingsphere.core.util.EventBusInstance;
+import io.shardingsphere.core.transaction.spi.TransactionManager;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -34,12 +31,7 @@ import java.util.LinkedList;
  *
  * @author zhaojun
  */
-public final class WeakXaTransaction implements Transaction {
-    
-    static {
-        EventBusInstance.getInstance().register(new TransactionListener(new WeakXaTransaction()));
-        TransactionEventHolder.set(WeakXaTransactionEvent.class);
-    }
+public final class WeakXaTransactionManager implements TransactionManager {
     
     @Override
     public void begin(final TransactionEvent transactionEvent) throws SQLException {
@@ -75,6 +67,11 @@ public final class WeakXaTransaction implements Transaction {
             }
         }
         throwSQLExceptionIfNecessary(exceptions);
+    }
+    
+    @Override
+    public int getStatus() {
+        return 0;
     }
     
     private void throwSQLExceptionIfNecessary(final Collection<SQLException> exceptions) throws SQLException {

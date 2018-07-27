@@ -30,10 +30,12 @@ import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ProxyAuthority;
 import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.core.transaction.spi.TransactionManager;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusEvent;
 import io.shardingsphere.proxy.backend.constant.ProxyMode;
 import io.shardingsphere.proxy.metadata.ProxyShardingMetaData;
+import io.shardingsphere.proxy.util.ProxyTransactionLoader;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -74,6 +76,8 @@ public final class RuleRegistry {
     
     private TransactionType transactionType;
     
+    private TransactionManager transactionManager;
+    
     private int maxWorkingThreads;
     
     private boolean proxyBackendUseNio;
@@ -108,6 +112,7 @@ public final class RuleRegistry {
         showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         proxyMode = ProxyMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_MODE));
         transactionType = TransactionType.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_MODE));
+        transactionManager = ProxyTransactionLoader.load(transactionType);
         maxWorkingThreads = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_MAX_WORKING_THREADS);
         proxyBackendUseNio = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO);
         proxyBackendSimpleDbConnections = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_SIMPLE_DB_CONNECTIONS);
