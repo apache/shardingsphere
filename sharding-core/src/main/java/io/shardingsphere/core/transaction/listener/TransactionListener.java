@@ -25,6 +25,8 @@ import io.shardingsphere.core.transaction.spi.TransactionManager;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.sql.SQLException;
+
 /**
  * Transaction Listener.
  *
@@ -48,11 +50,11 @@ public final class TransactionListener {
      * Listen event.
      *
      * @param transactionEvent transaction event
-     * @throws Exception exception
+     * @throws SQLException SQL exception
      */
     @Subscribe
     @AllowConcurrentEvents
-    public void listen(final TransactionEvent transactionEvent) throws Exception {
+    public void listen(final TransactionEvent transactionEvent) throws SQLException {
         TransactionManager transactionManager = TransactionContextHolder.get().getTransactionManager();
         switch (transactionEvent.getTclType()) {
             case BEGIN:

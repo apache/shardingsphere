@@ -26,6 +26,7 @@ import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.proxy.config.RuleRegistry;
 
 import javax.transaction.Status;
+import java.sql.SQLException;
 
 /**
  * Execute XA transaction intercept.
@@ -41,7 +42,7 @@ public final class XaTransactionEngine extends TransactionEngine {
     }
     
     @Override
-    public boolean execute() throws Exception {
+    public boolean execute() throws SQLException {
         Optional<TCLType> tclType = parseSQL();
         if (tclType.isPresent() && isInTransaction(tclType.get())) {
             TransactionContextHolder.set(new TransactionContext(RULE_REGISTRY.getTransactionManager(), RULE_REGISTRY.getTransactionType(), XaTransactionEvent.class));
@@ -51,7 +52,7 @@ public final class XaTransactionEngine extends TransactionEngine {
         return false;
     }
     
-    private boolean isInTransaction(final TCLType tclType) throws Exception {
+    private boolean isInTransaction(final TCLType tclType) throws SQLException {
         return TCLType.ROLLBACK != tclType || Status.STATUS_NO_TRANSACTION != RULE_REGISTRY.getTransactionManager().getStatus();
     }
 }

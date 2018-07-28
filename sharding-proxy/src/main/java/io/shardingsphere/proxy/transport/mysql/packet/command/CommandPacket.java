@@ -20,6 +20,8 @@ package io.shardingsphere.proxy.transport.mysql.packet.command;
 import com.google.common.base.Optional;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
 
+import java.sql.SQLException;
+
 /**
  * Command packet.
  *
@@ -32,7 +34,7 @@ public interface CommandPacket extends MySQLPacket {
      * Execute command.
      * 
      * @return result packets to be sent
-     * @throws Exception exception
+     * @throws SQLException SQL exception
      */
-    Optional<CommandResponsePackets> execute() throws Exception;
+    Optional<CommandResponsePackets> execute() throws SQLException;
 }

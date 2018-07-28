@@ -23,6 +23,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.sql.SQLException;
+
 /**
  * Abstract transaction engine.
  *
@@ -56,7 +58,7 @@ public abstract class TransactionEngine {
      * Execute transaction with binding transaction manager.
      *
      * @return skip or not skip access backend databases 
-     * @throws Exception exception
+     * @throws SQLException SQL exception
      */
-    public abstract boolean execute() throws Exception;
+    public abstract boolean execute() throws SQLException;
 }

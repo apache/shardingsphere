@@ -80,7 +80,7 @@ public final class JDBCBackendHandler implements BackendHandler {
         }
     }
     
-    private CommandResponsePackets execute(final SQLRouteResult routeResult) throws Exception {
+    private CommandResponsePackets execute(final SQLRouteResult routeResult) throws SQLException {
         if (routeResult.getExecutionUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1));
         }
@@ -97,8 +97,7 @@ public final class JDBCBackendHandler implements BackendHandler {
         return merge(sqlStatement);
     }
     
-    // TODO should isolate Atomikos API to SPI
-    private boolean isUnsupportedXA(final SQLType sqlType) throws Exception {
+    private boolean isUnsupportedXA(final SQLType sqlType) throws SQLException {
         return TransactionType.XA == RULE_REGISTRY.getTransactionType() && SQLType.DDL == sqlType && Status.STATUS_NO_TRANSACTION != RULE_REGISTRY.getTransactionManager().getStatus();
     }
     

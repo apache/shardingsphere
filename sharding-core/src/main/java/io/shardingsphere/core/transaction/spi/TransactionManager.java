@@ -19,6 +19,8 @@ package io.shardingsphere.core.transaction.spi;
 
 import io.shardingsphere.core.transaction.event.TransactionEvent;
 
+import java.sql.SQLException;
+
 /**
  * Transaction manager.
  *
@@ -30,25 +32,25 @@ public interface TransactionManager {
      * Begin transaction.
      *
      * @param transactionEvent transaction event
-     * @throws Exception Exception
+     * @throws SQLException SQL exception
      */
-    void begin(TransactionEvent transactionEvent) throws Exception;
+    void begin(TransactionEvent transactionEvent) throws SQLException;
     
     /**
      * Commit transaction.
      *
      * @param transactionEvent transaction event
-     * @throws Exception Exception
+     * @throws SQLException SQL exception
      */
-    void commit(TransactionEvent transactionEvent) throws Exception;
+    void commit(TransactionEvent transactionEvent) throws SQLException;
     
     /**
      * Rollback transaction.
      *
      * @param transactionEvent transaction event
-     * @throws Exception Exception
+     * @throws SQLException SQL exception
      */
-    void rollback(TransactionEvent transactionEvent) throws Exception;
+    void rollback(TransactionEvent transactionEvent) throws SQLException;
     
     /**
      * Obtain the status of the transaction associated with the current thread.
@@ -58,7 +60,7 @@ public interface TransactionManager {
      *  If no transaction is associated with the current thread, this method returns the Status.NoTransaction value
      * </p>
      *
-     * @throws Exception Exception
+     * @throws SQLException SQL exception
      */
-    int getStatus() throws Exception;
+    int getStatus() throws SQLException;
 }

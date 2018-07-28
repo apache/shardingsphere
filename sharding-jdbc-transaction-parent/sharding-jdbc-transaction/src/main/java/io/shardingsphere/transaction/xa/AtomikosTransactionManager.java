@@ -26,6 +26,7 @@ import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
+import java.sql.SQLException;
 
 /**
  * Atomikos XA transaction manager.
@@ -45,22 +46,38 @@ public final class AtomikosTransactionManager implements TransactionManager {
     }
     
     @Override
-    public void begin(final TransactionEvent transactionEvent) throws SystemException, NotSupportedException {
-        transactionManager.begin();
+    public void begin(final TransactionEvent transactionEvent) throws SQLException {
+        try {
+            transactionManager.begin();
+        } catch (final SystemException | NotSupportedException ex) {
+            throw new SQLException(ex);
+        }
     }
     
     @Override
-    public void commit(final TransactionEvent transactionEvent) throws HeuristicRollbackException, RollbackException, HeuristicMixedException, SystemException {
-        transactionManager.commit();
+    public void commit(final TransactionEvent transactionEvent) throws SQLException {
+        try {
+            transactionManager.commit();
+        } catch (final RollbackException | HeuristicMixedException | SystemException | HeuristicRollbackException ex) {
+            throw new SQLException(ex);
+        }
     }
     
     @Override
-    public void rollback(final TransactionEvent transactionEvent) throws SystemException {
-        transactionManager.rollback();
+    public void rollback(final TransactionEvent transactionEvent) throws SQLException {
+        try {
+            transactionManager.rollback();
+        } catch (final SystemException ex) {
+            throw new SQLException(ex);
+        }
     }
     
     @Override
-    public int getStatus() throws SystemException {
-        return transactionManager.getStatus();
+    public int getStatus() throws SQLException {
+        try {
+            return transactionManager.getStatus();
+        } catch (final SystemException ex) {
+            throw new SQLException(ex);
+        }
     }
 }

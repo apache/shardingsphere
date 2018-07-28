@@ -85,7 +85,7 @@ public final class ComQueryPacket implements QueryCommandPacket, CommandPacketRe
     }
     
     @Override
-    public Optional<CommandResponsePackets> execute() throws Exception {
+    public Optional<CommandResponsePackets> execute() throws SQLException {
         log.debug("COM_QUERY received for Sharding-Proxy: {}", sql);
         return Optional.of(transactionEngine.execute() ? new CommandResponsePackets(new OKPacket(1)) : backendHandler.execute());
     }
