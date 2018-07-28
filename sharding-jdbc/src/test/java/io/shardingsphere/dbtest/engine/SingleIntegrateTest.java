@@ -26,6 +26,8 @@ import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -57,6 +59,16 @@ public abstract class SingleIntegrateTest extends BaseIntegrateTest {
         this.caseType = caseType;
         sql = getSQL(sqlCaseId);
         expectedDataFile = getExpectedDataFile(path, shardingRuleType, databaseTypeEnvironment.getDatabaseType(), assertion.getExpectedDataFile());
+    }
+    
+    @BeforeClass
+    public static void initDatabasesAndTables(){
+        createDatabasesAndTables();
+    }
+    
+    @AfterClass
+    public static void destroyDatabasesAndTables(){
+        dropDatabases();
     }
     
     private String getSQL(final String sqlCaseId) throws ParseException {

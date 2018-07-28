@@ -34,8 +34,6 @@ import io.shardingsphere.dbtest.env.schema.SchemaEnvironmentManager;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -158,26 +156,32 @@ public abstract class BaseIntegrateTest {
         }
     }
     
-    @BeforeClass
-    public static void createDatabasesAndTables() throws JAXBException, IOException, SQLException {
-        for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
-            SchemaEnvironmentManager.dropDatabase(each);
-        }
-        for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
-            SchemaEnvironmentManager.createDatabase(each);
-        }
-        for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
-            SchemaEnvironmentManager.dropTable(each);
-        }
-        for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
-            SchemaEnvironmentManager.createTable(each);
+    protected static void createDatabasesAndTables() {
+        try {
+            for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
+                SchemaEnvironmentManager.dropDatabase(each);
+            }
+            for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
+                SchemaEnvironmentManager.createDatabase(each);
+            }
+            for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
+                SchemaEnvironmentManager.dropTable(each);
+            }
+            for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
+                SchemaEnvironmentManager.createTable(each);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
     
-    @AfterClass
-    public static void dropDatabases() throws JAXBException, IOException {
-        for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
-            SchemaEnvironmentManager.dropDatabase(each);
+    protected static void dropDatabases() {
+        try {
+            for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
+                SchemaEnvironmentManager.dropDatabase(each);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
     
