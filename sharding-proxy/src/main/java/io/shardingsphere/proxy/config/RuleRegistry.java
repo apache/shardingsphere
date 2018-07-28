@@ -41,7 +41,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -67,7 +66,7 @@ public final class RuleRegistry {
     
     private MasterSlaveRule masterSlaveRule;
     
-    private Map<String, DataSource> dataSourceMap;
+    private BackendDataSource backendDataSource;
     
     private Map<String, DataSourceParameter> dataSourceConfigurationMap;
     
@@ -123,7 +122,7 @@ public final class RuleRegistry {
         if (null != config.getMasterSlaveRule()) {
             masterSlaveRule = new MasterSlaveRule(config.getMasterSlaveRule().getMasterSlaveRuleConfiguration());
         }
-        dataSourceMap = new BackendDataSource(transactionType, config.getDataSources()).getDataSourceMap();
+        backendDataSource = new BackendDataSource(transactionType, config.getDataSources());
         dataSourceConfigurationMap = new HashMap<>(128, 1);
         if (proxyBackendUseNio) {
             for (Entry<String, DataSourceParameter> entry : config.getDataSources().entrySet()) {
@@ -131,7 +130,7 @@ public final class RuleRegistry {
             }
         }
         proxyAuthority = config.getProxyAuthority();
-        shardingDataSourceMetaData = new ShardingDataSourceMetaData(dataSourceMap, shardingRule, DatabaseType.MySQL);
+        shardingDataSourceMetaData = new ShardingDataSourceMetaData(backendDataSource.getDataSourceMap(), shardingRule, DatabaseType.MySQL);
     }
     
     /**
@@ -140,7 +139,7 @@ public final class RuleRegistry {
      * @param executorService executor service
      */
     public void initShardingMetaData(final ExecutorService executorService) {
-        shardingMetaData = new ProxyShardingMetaData(MoreExecutors.listeningDecorator(executorService), dataSourceMap);
+        shardingMetaData = new ProxyShardingMetaData(MoreExecutors.listeningDecorator(executorService), backendDataSource);
         if (!isMasterSlaveOnly()) {
             shardingMetaData.init(shardingRule);
         }

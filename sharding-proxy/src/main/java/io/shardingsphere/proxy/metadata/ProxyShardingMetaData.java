@@ -22,9 +22,9 @@ import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.metadata.TableMetaData;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.rule.ShardingDataSourceNames;
+import io.shardingsphere.proxy.backend.jdbc.datasource.BackendDataSource;
 import lombok.Getter;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -38,20 +38,21 @@ import java.util.Map;
 @Getter
 public final class ProxyShardingMetaData extends ShardingMetaData {
     
-    private final Map<String, DataSource> dataSourceMap;
+    private final BackendDataSource backendDataSource;
     
-    public ProxyShardingMetaData(final ListeningExecutorService executorService, final Map<String, DataSource> dataSourceMap) {
+    public ProxyShardingMetaData(final ListeningExecutorService executorService, final BackendDataSource backendDataSource) {
         super(executorService);
-        this.dataSourceMap = dataSourceMap;
+        this.backendDataSource = backendDataSource;
     }
     
     @Override
     public TableMetaData getTableMetaData(final DataNode dataNode, final ShardingDataSourceNames shardingDataSourceNames, final Map<String, Connection> connectionMap) throws SQLException {
-        return new ShardingMetaDataHandler(dataSourceMap.get(shardingDataSourceNames.getRawMasterDataSourceName(dataNode.getDataSourceName())), dataNode.getTableName()).getTableMetaData();
+        return new ShardingMetaDataHandler(
+                backendDataSource.getDataSourceMap().get(shardingDataSourceNames.getRawMasterDataSourceName(dataNode.getDataSourceName())), dataNode.getTableName()).getTableMetaData();
     }
     
     @Override
     public Collection<String> getTableNamesFromDefaultDataSource(final String defaultDataSourceName) throws SQLException {
-        return new ShardingMetaDataHandler(dataSourceMap.get(defaultDataSourceName), "").getTableNamesFromDefaultDataSource();
+        return new ShardingMetaDataHandler(backendDataSource.getDataSourceMap().get(defaultDataSourceName), "").getTableNamesFromDefaultDataSource();
     }
 }
