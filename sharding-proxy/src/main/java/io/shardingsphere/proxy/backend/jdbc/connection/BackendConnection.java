@@ -45,7 +45,7 @@ public final class BackendConnection implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     public Connection getConnection(final String dataSourceName) throws SQLException {
-        Connection result = RULE_REGISTRY.getBackendDataSource().getDataSourceMap().get(dataSourceName).getConnection();
+        Connection result = RULE_REGISTRY.getBackendDataSource().getConnection(dataSourceName);
         cachedConnections.add(result);
         return result;
     }

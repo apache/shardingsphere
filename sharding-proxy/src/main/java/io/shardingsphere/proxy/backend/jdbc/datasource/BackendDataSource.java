@@ -22,6 +22,8 @@ import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.Getter;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -56,5 +58,26 @@ public final class BackendDataSource {
             default:
                 return new RawBackendDataSourceFactory();
         }
+    }
+    
+    /**
+     * Get data source.
+     *
+     * @param dataSourceName data source name
+     * @return data source
+     */
+    public DataSource getDataSource(final String dataSourceName) {
+        return dataSourceMap.get(dataSourceName);
+    }
+    
+    /**
+     * Get connection.
+     *
+     * @param dataSourceName data source name
+     * @return connection
+     * @throws SQLException SQL exception
+     */
+    public Connection getConnection(final String dataSourceName) throws SQLException {
+        return getDataSource(dataSourceName).getConnection();
     }
 }
