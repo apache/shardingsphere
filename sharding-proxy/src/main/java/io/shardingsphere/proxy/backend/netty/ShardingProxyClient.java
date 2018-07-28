@@ -33,7 +33,6 @@ import io.netty.channel.pool.FixedChannelPool;
 import io.netty.channel.pool.SimpleChannelPool;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.proxy.config.DataSourceConfig;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;

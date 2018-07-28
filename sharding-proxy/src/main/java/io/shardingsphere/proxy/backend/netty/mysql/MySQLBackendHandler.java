@@ -22,7 +22,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.shardingsphere.proxy.backend.netty.CommandResponsePacketsHandler;
 import io.shardingsphere.proxy.backend.constant.AuthType;
-import io.shardingsphere.proxy.config.DataSourceConfig;
+import io.shardingsphere.proxy.backend.netty.DataSourceConfig;
 import io.shardingsphere.proxy.transport.mysql.constant.CapabilityFlag;
 import io.shardingsphere.proxy.transport.mysql.constant.PacketHeader;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerInfo;

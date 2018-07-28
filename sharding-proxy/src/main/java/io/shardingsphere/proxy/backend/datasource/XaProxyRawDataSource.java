@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.config;
+package io.shardingsphere.proxy.backend.datasource;
 
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.google.common.base.Optional;

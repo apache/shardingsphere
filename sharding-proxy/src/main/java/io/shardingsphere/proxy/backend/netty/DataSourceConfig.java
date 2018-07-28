@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.config;
+package io.shardingsphere.proxy.backend.netty;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
