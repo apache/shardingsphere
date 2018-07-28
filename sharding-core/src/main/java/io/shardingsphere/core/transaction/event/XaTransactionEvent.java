@@ -18,31 +18,27 @@
 package io.shardingsphere.core.transaction.event;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.constant.TCLType;
 import io.shardingsphere.core.exception.ShardingException;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * XA transactionEvent.
  *
  * @author zhaojun
  */
-@RequiredArgsConstructor
 @Getter
-public class XaTransactionEvent extends TransactionEvent {
+public final class XaTransactionEvent extends TransactionEvent {
     
     private final String sql;
     
-    /**
-     * Get exception.
-     *
-     * @return exception
-     */
+    public XaTransactionEvent(final TCLType tclType, final String sql) {
+        super(tclType);
+        this.sql = sql;
+    }
+    
+    @Override
     public Optional<ShardingException> getException() {
-        Optional<? extends Exception> ex = super.getException();
-        if (ex.isPresent()) {
-            return Optional.of((ShardingException) ex.get());
-        }
-        return Optional.absent();
+        return Optional.fromNullable((ShardingException) super.getException().orNull());
     }
 }

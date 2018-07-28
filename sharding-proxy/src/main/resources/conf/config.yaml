@@ -1,13 +1,11 @@
 ##################      ##################
 # Here you can configure the rules for the proxy.
 #
-# We provide two kinds of configurations for example. The one is the configuration of Sharding rule,
-# and the other is the configuration of master-slave rule.
-# If you want to use Sharding, please refer to the first one, and if you only want to use master-slave,
-# please refer to the second one.
+# We provide two kinds of configurations for example. This one is the configuration of Sharding rule,
+# If you want to use Sharding, please refer to the this one, and if you only want to use master-slave,
+# please refer to config_master_slave.yaml.
 #
 ##################      ##################
-
 
 # The example of Sharding rule.
 
@@ -65,46 +63,6 @@
 #    proxy.transaction.mode: NONE
 #    proxy.max.working.threads: 16
 #    sql.show: false
-
-
-# The example of master-slave rule.
-
-#dataSources:
-#  ds_0:
-#    url: jdbc:mysql://127.0.0.1:3306/ds_0?serverTimezone=UTC&useSSL=false
-#    username: root
-#    password:
-#    autoCommit: true
-#    connectionTimeout: 30000
-#    idleTimeout: 60000
-#    maxLifetime: 1800000
-#    maximumPoolSize: 65
-#  ds_1:
-#    url: jdbc:mysql://127.0.0.1:3306/ds_1?serverTimezone=UTC&useSSL=false
-#    username: root
-#    password:
-#    autoCommit: true
-#    connectionTimeout: 30000
-#    idleTimeout: 60000
-#    maxLifetime: 1800000
-#    maximumPoolSize: 65
-#masterSlaveRule:
-#  name: ds_ms
-#  masterDataSourceName: ds_0
-#  slaveDataSourceNames:
-#    - ds_1
-#  props:
-#    # MEMORY_STRICTLY: Proxy holds as many connections as the count of actual tables routed in a database.
-#    #                  The benefit of this approach is saving memory for Proxy by Stream ResultSet.
-#    # CONNECTION_STRICTLY: Proxy will release connections after get the overall rows from the ResultSet.
-#    #                      Meanwhile, the cost of the memory will be increased.
-#    proxy.mode: MEMORY_STRICTLY
-#    proxy.transaction.mode: NONE
-#    proxy.max.working.threads: 16
-#    sql.show: false
-
-
-# Common configurations.
 
 #orchestration:
 #  name: orchestration_ds

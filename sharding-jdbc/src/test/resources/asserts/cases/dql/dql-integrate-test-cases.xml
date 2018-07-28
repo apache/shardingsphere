@@ -228,9 +228,37 @@
     <dql-test-case sql-case-id="select_order_by_for_nulls_last">
         <assertion expected-data-file="select_order_by_with_ordered_column.xml" />
     </dql-test-case>
+
+    <dql-test-case sql-case-id="select_order_by_with_multiple_stars">
+        <assertion expected-data-file="select_order_by_with_multiple_stars.xml" />
+    </dql-test-case>
+
+    <dql-test-case sql-case-id="select_order_by_with_alias_star_alias_name">
+        <assertion expected-data-file="select_order_by_with_alias_star_alias_name.xml" />
+    </dql-test-case>
+
+    <dql-test-case sql-case-id="select_order_by_with_alias_star_alias_name">
+        <assertion expected-data-file="select_order_by_with_alias_star_alias_name.xml" />
+    </dql-test-case>
+
+    <dql-test-case sql-case-id="select_order_by_with_star_table_alias">
+        <assertion expected-data-file="select_order_by_with_star_table_alias.xml" />
+    </dql-test-case>
+
+    <dql-test-case sql-case-id="select_order_by_with_table_star_table_name">
+        <assertion expected-data-file="select_order_by_with_table_star_table_name.xml" />
+    </dql-test-case>
+
+    <dql-test-case sql-case-id="select_order_by_with_star_no_table_alias">
+        <assertion expected-data-file="select_order_by_with_star_no_table_alias.xml" />
+    </dql-test-case>
     
     <dql-test-case sql-case-id="select_pagination_with_offset">
         <assertion parameters="10:int, 19:int, 1000:int, 1909:int, 6:int" expected-data-file="select_pagination_with_offset.xml" />
+    </dql-test-case>
+
+    <dql-test-case sql-case-id="select_order_by_with_table_star_without_table_name">
+        <assertion expected-data-file="select_order_by_with_table_star_without_table_name.xml" />
     </dql-test-case>
     
     <dql-test-case sql-case-id="select_pagination_with_row_count">
@@ -296,4 +324,9 @@
     <dql-test-case sql-case-id="select_sub_query_with_group_by">
         <assertion expected-data-file="select_sub_query_with_group_by.xml" />
     </dql-test-case>
+    
+    <dql-test-case sql-case-id="select_with_double_quotes">
+        <assertion parameters="100001:int" expected-data-file="select_not_equal_with_single_table.xml" />
+    </dql-test-case>
+    
 </integrate-test-cases>

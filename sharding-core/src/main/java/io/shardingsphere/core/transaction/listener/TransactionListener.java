@@ -19,19 +19,25 @@ package io.shardingsphere.core.transaction.listener;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
+import io.shardingsphere.core.transaction.TransactionContextHolder;
 import io.shardingsphere.core.transaction.event.TransactionEvent;
-import io.shardingsphere.core.transaction.spi.Transaction;
-import lombok.RequiredArgsConstructor;
+import io.shardingsphere.core.transaction.spi.TransactionManager;
 
 /**
  * Transaction Listener.
  *
  * @author zhaojun
  */
-@RequiredArgsConstructor
 public class TransactionListener {
     
-    private final Transaction transaction;
+    private final static TransactionListener INSTANCE = new TransactionListener();
+    
+    private TransactionListener() {
+    }
+    
+    public static TransactionListener getInstance() {
+        return INSTANCE;
+    }
     
     /**
      * Listen event.
@@ -42,15 +48,16 @@ public class TransactionListener {
     @Subscribe
     @AllowConcurrentEvents
     public void listen(final TransactionEvent transactionEvent) throws Exception {
+        TransactionManager transactionManager = TransactionContextHolder.get().getTransactionManager();
         switch (transactionEvent.getTclType()) {
             case BEGIN:
-                transaction.begin(transactionEvent);
+                transactionManager.begin(transactionEvent);
                 break;
             case COMMIT:
-                transaction.commit(transactionEvent);
+                transactionManager.commit(transactionEvent);
                 break;
             case ROLLBACK:
-                transaction.rollback(transactionEvent);
+                transactionManager.rollback(transactionEvent);
                 break;
             default:
         }

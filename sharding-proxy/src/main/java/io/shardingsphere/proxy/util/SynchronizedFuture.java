@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
  * @author linjiaqi
  */
 @Slf4j
-public class SynchronizedFuture<T> implements Future<List<QueryResult>> {
+public class SynchronizedFuture implements Future<List<QueryResult>> {
     
     private final CountDownLatch latch;
     

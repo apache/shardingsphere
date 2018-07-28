@@ -43,6 +43,7 @@ import java.util.LinkedList;
  *
  * @author zhangliang
  * @author maxiaoguang
+ * @author panjuan
  */
 public final class InsertColumnsClauseParser implements SQLClauseParser {
     
@@ -92,7 +93,7 @@ public final class InsertColumnsClauseParser implements SQLClauseParser {
             insertStatement.setColumnsListLastPosition(lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length());
             lexerEngine.nextToken();
         } else {
-            Collection<String> columnNames = shardingMetaData.getTableMetaDataMap().get(tableName).getAllColumnNames();
+            Collection<String> columnNames = shardingMetaData.getTableMetaDataMap().containsKey(tableName) ? shardingMetaData.getTableMetaDataMap().get(tableName).getAllColumnNames() : new LinkedList<String>();
             int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length() - 1;
             insertStatement.getSqlTokens().add(new InsertColumnToken(beginPosition, "("));
             ItemsToken columnsToken = new ItemsToken(beginPosition);
