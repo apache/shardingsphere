@@ -128,7 +128,7 @@
         </order-by-columns>
     </parser-result>
 
-    <parser-result sql-case-id="select_order_by_with_table_star_alias_name">
+    <parser-result sql-case-id="select_order_by_with_table_star_table_name">
         <tables>
             <table name="t_order" />
         </tables>
