@@ -89,17 +89,17 @@ public final class ShardingConnectionTest {
     }
     
     @Test
-    public void assertGetConnectionFromCache() throws Exception {
+    public void assertGetConnectionFromCache() throws SQLException {
         assertSame(connection.getConnection(DS_NAME), connection.getConnection(DS_NAME));
     }
     
     @Test(expected = IllegalStateException.class)
-    public void assertGetConnectionFailure() throws Exception {
+    public void assertGetConnectionFailure() throws SQLException {
         connection.getConnection("not_exist");
     }
     
     @Test
-    public void assertRelease() throws Exception {
+    public void assertRelease() throws SQLException {
         Connection conn = connection.getConnection(DS_NAME);
         connection.release(conn);
         assertNotSame(conn, connection.getConnection(DS_NAME));

@@ -45,6 +45,7 @@ import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 
@@ -66,7 +67,7 @@ public final class MergeEventListenerTest {
     }
     
     @AfterClass
-    public static void tearDown() throws Exception {
+    public static void tearDown() throws NoSuchFieldException, IllegalAccessException {
         releaseTracer();
     }
     
@@ -86,7 +87,7 @@ public final class MergeEventListenerTest {
     }
     
     @Test
-    public void assertPreparedStatementRouting() throws Exception {
+    public void assertPreparedStatementRouting() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         ShardingPreparedStatement statement = new ShardingPreparedStatement(new ShardingConnection(shardingContext), "show databases");
         Method mergeMethod = ShardingPreparedStatement.class.getDeclaredMethod("merge", MergeEngine.class);
         mergeMethod.setAccessible(true);
@@ -96,7 +97,7 @@ public final class MergeEventListenerTest {
     }
     
     @Test
-    public void assertStatementRouting() throws Exception {
+    public void assertStatementRouting() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         ShardingStatement statement = new ShardingStatement(new ShardingConnection(shardingContext));
         Method mergeMethod = ShardingStatement.class.getDeclaredMethod("merge", MergeEngine.class);
         mergeMethod.setAccessible(true);
@@ -113,7 +114,7 @@ public final class MergeEventListenerTest {
             mergeMethod.setAccessible(true);
             mergeMethod.invoke(statement, errorMergeEngine);
             // CHECKSTYLE:OFF
-        } catch (Exception e) {
+        } catch (final Exception ignored) {
             // CHECKSTYLE:ON
         }
         assertThat(TRACER.finishedSpans().size(), is(1));

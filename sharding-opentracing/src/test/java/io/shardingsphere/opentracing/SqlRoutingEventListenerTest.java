@@ -61,7 +61,7 @@ public final class SqlRoutingEventListenerTest {
     }
     
     @AfterClass
-    public static void tearDown() throws Exception {
+    public static void tearDown() throws NoSuchFieldException, IllegalAccessException {
         releaseTracer();
     }
     
@@ -106,7 +106,7 @@ public final class SqlRoutingEventListenerTest {
             sqlRouteMethod.setAccessible(true);
             sqlRouteMethod.invoke(statement, "111");
             // CHECKSTYLE:OFF
-        } catch (Exception e) {
+        } catch (final Exception ex) {
             // CHECKSTYLE:ON
         }
         assertThat(TRACER.finishedSpans().size(), is(1));

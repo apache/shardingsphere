@@ -134,7 +134,7 @@ public abstract class ShardingMetaData {
             result.add(executorService.submit(new Callable<TableMetaData>() {
                 
                 @Override
-                public TableMetaData call() throws Exception {
+                public TableMetaData call() throws SQLException {
                     return getTableMetaData(each, shardingDataSourceNames, connectionMap);
                 }
             }));
