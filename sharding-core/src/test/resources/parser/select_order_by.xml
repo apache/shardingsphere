@@ -142,7 +142,7 @@
         </order-by-columns>
     </parser-result>
 
-    <parser-result sql-case-id="select_order_by_with_table_star_table_name">
+    <parser-result sql-case-id="select_order_by_with_star_no_table_alias">
         <tables>
             <table name="t_order" />
         </tables>
