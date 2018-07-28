@@ -19,30 +19,33 @@ package io.shardingsphere.proxy.config;
 
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import javax.sql.DataSource;
 import java.util.Map;
 
 /**
- * Create raw datasource Map by transaction type.
+ * Data source factory.
  *
  * @author zhaojun
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ProxyRawDataSourceFactory {
     
     /**
-     * Crate raw datasource Map by transaction type.
+     * Crate raw datasource map via transaction type.
      *
      * @param transactionType transaction type
-     * @param yamlProxyConfiguration yaml proxy configuration
+     * @param config proxy configuration
      * @return raw datasource map
      */
-    public static Map<String, DataSource> create(final TransactionType transactionType, final OrchestrationProxyConfiguration yamlProxyConfiguration) {
+    public static Map<String, DataSource> create(final TransactionType transactionType, final OrchestrationProxyConfiguration config) {
         switch (transactionType) {
             case XA:
-                return new XaProxyRawDataSource(yamlProxyConfiguration.getDataSources()).build();
+                return new XaProxyRawDataSource(config.getDataSources()).build();
             default:
-                return new DefaultProxyRawDataSource(yamlProxyConfiguration.getDataSources()).build();
+                return new DefaultProxyRawDataSource(config.getDataSources()).build();
         }
     }
 }

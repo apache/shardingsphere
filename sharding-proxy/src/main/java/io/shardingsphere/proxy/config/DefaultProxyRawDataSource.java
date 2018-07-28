@@ -22,23 +22,21 @@ import com.zaxxer.hikari.HikariDataSource;
 import io.shardingsphere.core.rule.DataSourceParameter;
 
 import javax.sql.DataSource;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Create default proxy raw datasource using {@code HikariDataSource}.
+ * Default proxy raw data source using {@code HikariDataSource}.
  *
  * @author zhaojun
  */
-public class DefaultProxyRawDataSource extends ProxyRawDataSource {
+public final class DefaultProxyRawDataSource extends ProxyRawDataSource {
     
     public DefaultProxyRawDataSource(final Map<String, DataSourceParameter> dataSourceParameters) {
         super(dataSourceParameters);
     }
     
     @Override
-    protected Map<String, DataSource> buildInternal(final String key, final DataSourceParameter dataSourceParameter) {
-        final Map<String, DataSource> result = new HashMap<>(128, 1);
+    protected DataSource buildInternal(final String dataSourceName, final DataSourceParameter dataSourceParameter) {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("com.mysql.jdbc.Driver");
         config.setJdbcUrl(dataSourceParameter.getUrl());
@@ -51,7 +49,6 @@ public class DefaultProxyRawDataSource extends ProxyRawDataSource {
         config.setMaximumPoolSize(dataSourceParameter.getMaximumPoolSize());
         config.addDataSourceProperty("useServerPrepStmts", "true");
         config.addDataSourceProperty("cachePrepStmts", "true");
-        result.put(key, new HikariDataSource(config));
-        return result;
+        return new HikariDataSource(config);
     }
 }

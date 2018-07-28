@@ -22,37 +22,38 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.rule.DataSourceParameter;
 
 import javax.sql.DataSource;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
 /**
- * Create Xa Raw DataSource Map using {@code AtomikosDataSourceBean}.
+ * XA Raw data source using {@code AtomikosDataSourceBean}.
  *
  * @author zhaojun
  */
-public class XaProxyRawDataSource extends ProxyRawDataSource {
+public final class XaProxyRawDataSource extends ProxyRawDataSource {
     
     public XaProxyRawDataSource(final Map<String, DataSourceParameter> dataSourceParameters) {
         super(dataSourceParameters);
     }
     
     @Override
-    protected Map<String, DataSource> buildInternal(final String key, final DataSourceParameter dataSourceParameter) {
-        final Map<String, DataSource> result = new HashMap<>(128, 1);
-        AtomikosDataSourceBean dataSourceBean = new AtomikosDataSourceBean();
-        dataSourceBean.setUniqueResourceName(key);
-        dataSourceBean.setXaDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource");
-        dataSourceBean.setMaxPoolSize(dataSourceParameter.getMaximumPoolSize());
-        dataSourceBean.setTestQuery("SELECT 1");
-        Properties xaProperties = new Properties();
-        xaProperties.setProperty("user", dataSourceParameter.getUsername());
-        xaProperties.setProperty("password", Optional.fromNullable(dataSourceParameter.getPassword()).or(""));
-        xaProperties.setProperty("URL", dataSourceParameter.getUrl());
-        xaProperties.setProperty("pinGlobalTxToPhysicalConnection", "true");
-        xaProperties.setProperty("autoReconnect", "true");
-        dataSourceBean.setXaProperties(xaProperties);
-        result.put(key, dataSourceBean);
+    protected DataSource buildInternal(final String dataSourceName, final DataSourceParameter dataSourceParameter) {
+        AtomikosDataSourceBean result = new AtomikosDataSourceBean();
+        result.setUniqueResourceName(dataSourceName);
+        result.setXaDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource");
+        result.setMaxPoolSize(dataSourceParameter.getMaximumPoolSize());
+        result.setTestQuery("SELECT 1");
+        result.setXaProperties(getProperties(dataSourceParameter));
+        return result;
+    }
+    
+    private Properties getProperties(final DataSourceParameter dataSourceParameter) {
+        Properties result = new Properties();
+        result.setProperty("user", dataSourceParameter.getUsername());
+        result.setProperty("password", Optional.fromNullable(dataSourceParameter.getPassword()).or(""));
+        result.setProperty("URL", dataSourceParameter.getUrl());
+        result.setProperty("pinGlobalTxToPhysicalConnection", Boolean.TRUE.toString());
+        result.setProperty("autoReconnect", Boolean.TRUE.toString());
         return result;
     }
 }

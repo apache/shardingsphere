@@ -21,11 +21,12 @@ import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
- * Abstract class for creating proxy raw datasource.
+ * Proxy raw data source.
  *
  * @author zhaojun
  */
@@ -35,17 +36,17 @@ public abstract class ProxyRawDataSource {
     private final Map<String, DataSourceParameter> dataSourceParameters;
     
     /**
-     * build Datasource map by yaml configuration.
+     * Build data source map.
      *
-     * @return datasource map
+     * @return data source map
      */
-    public Map<String, DataSource> build() {
-        Map<String, DataSource> result = new HashMap<>(128, 1);
-        for (Map.Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
-            result.putAll(buildInternal(entry.getKey(), entry.getValue()));
+    public final Map<String, DataSource> build() {
+        Map<String, DataSource> result = new LinkedHashMap<>(128, 1);
+        for (Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
+            result.put(entry.getKey(), buildInternal(entry.getKey(), entry.getValue()));
         }
         return result;
     }
     
-    protected abstract Map<String, DataSource> buildInternal(String key, DataSourceParameter dataSourceParameter);
+    protected abstract DataSource buildInternal(String dataSourceName, DataSourceParameter dataSourceParameter);
 }
