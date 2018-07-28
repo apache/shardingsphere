@@ -50,14 +50,6 @@ public final class DataSourceMetaDataFactory {
         return createDataSourceMetaDataParser(databaseType).getDataSourceMetaData(getDataSourceURL(dataSource), databaseType);
     }
     
-    private static String getDataSourceURL(final DataSource dataSource) {
-        try (Connection connection = dataSource.getConnection()) {
-            return connection.getMetaData().getURL();
-        } catch (final SQLException ex) {
-            throw new ShardingException(ex);
-        }
-    }
-    
     private static DataSourceMetaDataParser createDataSourceMetaDataParser(final DatabaseType databaseType) {
         switch (databaseType) {
             case H2:
@@ -72,6 +64,14 @@ public final class DataSourceMetaDataFactory {
                 return new SQLServerDataSourceMetaDataParser();
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support database [%s].", databaseType));
+        }
+    }
+    
+    private static String getDataSourceURL(final DataSource dataSource) {
+        try (Connection connection = dataSource.getConnection()) {
+            return connection.getMetaData().getURL();
+        } catch (final SQLException ex) {
+            throw new ShardingException(ex);
         }
     }
 }

@@ -33,7 +33,7 @@ import java.util.Map.Entry;
  *
  * @author panjuan
  */
-public class ShardingDataSourceMetaData {
+public final class ShardingDataSourceMetaData {
     
     private final Map<String, DataSourceMetaData> dataSourceMetaDataMap;
     
@@ -42,7 +42,7 @@ public class ShardingDataSourceMetaData {
     }
     
     private Map<String, DataSourceMetaData> getDataSourceMetaDataMap(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType) {
-        Map<String, DataSourceMetaData> dataSourceMetaDataMap = new LinkedHashMap<>();
+        Map<String, DataSourceMetaData> dataSourceMetaDataMap = new LinkedHashMap<>(dataSourceMap.size(), 1);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             dataSourceMetaDataMap.put(entry.getKey(), DataSourceMetaDataFactory.getDataSourceMetaData(databaseType, entry.getValue()));
         }

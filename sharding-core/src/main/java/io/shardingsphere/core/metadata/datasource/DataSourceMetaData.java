@@ -46,8 +46,7 @@ public final class DataSourceMetaData {
      */
     public boolean isInSameDatabaseInstance(final DataSourceMetaData dataSourceMetaData) {
         if (dataSourceMetaData.databaseType == DatabaseType.H2) {
-            return hostName.equals(dataSourceMetaData.getHostName()) && port.equals(dataSourceMetaData.getPort())
-                    && schemeName.equals(dataSourceMetaData.schemeName);
+            return hostName.equals(dataSourceMetaData.getHostName()) && port.equals(dataSourceMetaData.getPort()) && schemeName.equals(dataSourceMetaData.schemeName);
         }
         return hostName.equals(dataSourceMetaData.getHostName()) && port.equals(dataSourceMetaData.getPort());
     }
