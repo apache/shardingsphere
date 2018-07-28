@@ -19,7 +19,6 @@ package io.shardingsphere.proxy.backend.jdbc.datasource;
 
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -41,12 +40,12 @@ public final class BackendDataSourceFactory {
      * Create backend data source map.
      *
      * @param transactionType transaction type
-     * @param config proxy configuration
+     * @param dataSourceParameters data source parameters
      * @return data source map
      */
-    public static Map<String, DataSource> createDataSourceMap(final TransactionType transactionType, final OrchestrationProxyConfiguration config) {
-        Map<String, DataSource> result = new LinkedHashMap<>(config.getDataSources().size());
-        for (Entry<String, DataSourceParameter> entry : config.getDataSources().entrySet()) {
+    public static Map<String, DataSource> createDataSourceMap(final TransactionType transactionType, final Map<String, DataSourceParameter> dataSourceParameters) {
+        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceParameters.size());
+        for (Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
             result.put(entry.getKey(), createDataSource(transactionType, entry.getKey(), entry.getValue()));
         }
         return result;

@@ -123,7 +123,7 @@ public final class RuleRegistry {
         if (null != config.getMasterSlaveRule()) {
             masterSlaveRule = new MasterSlaveRule(config.getMasterSlaveRule().getMasterSlaveRuleConfiguration());
         }
-        dataSourceMap = BackendDataSourceFactory.createDataSourceMap(transactionType, config);
+        dataSourceMap = BackendDataSourceFactory.createDataSourceMap(transactionType, config.getDataSources());
         dataSourceConfigurationMap = new HashMap<>(128, 1);
         if (proxyBackendUseNio) {
             for (Entry<String, DataSourceParameter> entry : config.getDataSources().entrySet()) {
