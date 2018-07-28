@@ -43,6 +43,7 @@ import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -118,11 +119,11 @@ public abstract class BaseIntegrateTest {
                 : YamlShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)));
     }
     
-    private Map<String, DataSource> createInstanceDataSourceMap() {
+    private Map<String, DataSource> createInstanceDataSourceMap() throws SQLException {
         return "masterslave".equals(shardingRuleType) ? dataSourceMap : getShardingInstanceDataSourceMap();
     }
     
-    private Map<String, DataSource> getShardingInstanceDataSourceMap() {
+    private Map<String, DataSource> getShardingInstanceDataSourceMap() throws SQLException {
         Map<String, DataSource> result = new LinkedHashMap<>();
         Map<String, DataSourceMetaData> dataSourceMetaDataMap = getDataSourceMetaDataMap();
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
@@ -143,12 +144,18 @@ public abstract class BaseIntegrateTest {
         return false;
     }
     
-    private Map<String, DataSourceMetaData> getDataSourceMetaDataMap() {
+    private Map<String, DataSourceMetaData> getDataSourceMetaDataMap() throws SQLException {
         Map<String, DataSourceMetaData> result = new LinkedHashMap<>();
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            result.put(entry.getKey(), DataSourceMetaDataFactory.getDataSourceMetaData(databaseTypeEnvironment.getDatabaseType(), entry.getValue()));
+            result.put(entry.getKey(), DataSourceMetaDataFactory.getDataSourceMetaData(databaseTypeEnvironment.getDatabaseType(), getDataSourceURL(entry.getValue())));
         }
         return result;
+    }
+    
+    private static String getDataSourceURL(final DataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            return connection.getMetaData().getURL();
+        }
     }
     
     @BeforeClass

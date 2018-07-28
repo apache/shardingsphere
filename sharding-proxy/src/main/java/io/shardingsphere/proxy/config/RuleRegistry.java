@@ -131,7 +131,15 @@ public final class RuleRegistry {
             }
         }
         proxyAuthority = config.getProxyAuthority();
-        shardingDataSourceMetaData = new ShardingDataSourceMetaData(backendDataSource.getDataSourceMap(), shardingRule, DatabaseType.MySQL);
+        shardingDataSourceMetaData = new ShardingDataSourceMetaData(getDataSourceURLs(config.getDataSources()), shardingRule, DatabaseType.MySQL);
+    }
+    
+    private static Map<String, String> getDataSourceURLs(final Map<String, DataSourceParameter> dataSourceParameters) {
+        Map<String, String> result = new LinkedHashMap<>(dataSourceParameters.size(), 1);
+        for (Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
+            result.put(entry.getKey(), entry.getValue().getUrl());
+        }
+        return result;
     }
     
     /**
