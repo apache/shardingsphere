@@ -241,8 +241,8 @@
         <assertion expected-data-file="select_order_by_with_alias_star_alias_name.xml" />
     </dql-test-case>
 
-    <dql-test-case sql-case-id="select_order_by_with_alias_star_table_name">
-        <assertion expected-data-file="select_order_by_with_alias_star_table_name.xml" />
+    <dql-test-case sql-case-id="select_order_by_with_star_table_alias">
+        <assertion expected-data-file="select_order_by_with_star_table_alias.xml" />
     </dql-test-case>
 
     <dql-test-case sql-case-id="select_order_by_with_table_star_table_name">
