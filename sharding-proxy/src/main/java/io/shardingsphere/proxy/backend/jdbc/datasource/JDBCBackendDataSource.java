@@ -19,6 +19,7 @@ package io.shardingsphere.proxy.backend.jdbc.datasource;
 
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.proxy.backend.BackendDataSource;
 import lombok.Getter;
 
 import javax.sql.DataSource;
@@ -29,17 +30,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Backend data source factory.
+ * Backend data source for JDBC.
  *
  * @author zhaojun
  * @author zhangliang
  */
 @Getter
-public final class BackendDataSource {
+public final class JDBCBackendDataSource implements BackendDataSource {
     
     private final Map<String, DataSource> dataSourceMap;
     
-    public BackendDataSource(final TransactionType transactionType, final Map<String, DataSourceParameter> dataSourceParameters) {
+    public JDBCBackendDataSource(final TransactionType transactionType, final Map<String, DataSourceParameter> dataSourceParameters) {
         dataSourceMap = createDataSourceMap(transactionType, dataSourceParameters);
     }
     
@@ -51,12 +52,12 @@ public final class BackendDataSource {
         return result;
     }
     
-    private BackendDataSourceFactory getBackendDataSourceFactory(final TransactionType transactionType) {
+    private JDBCBackendDataSourceFactory getBackendDataSourceFactory(final TransactionType transactionType) {
         switch (transactionType) {
             case XA:
-                return new XABackendDataSourceFactory();
+                return new JDBCXABackendDataSourceFactory();
             default:
-                return new RawBackendDataSourceFactory();
+                return new JDBCRawBackendDataSourceFactory();
         }
     }
     

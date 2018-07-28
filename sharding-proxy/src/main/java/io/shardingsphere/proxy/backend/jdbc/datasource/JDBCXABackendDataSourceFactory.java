@@ -25,12 +25,12 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 /**
- * Backend data source using {@code AtomikosDataSourceBean} for XA protocol.
+ * Backend data source factory using {@code AtomikosDataSourceBean} for JDBC and XA protocol.
  *
  * @author zhaojun
  * @author zhangliang
  */
-public final class XABackendDataSourceFactory implements BackendDataSourceFactory {
+public final class JDBCXABackendDataSourceFactory implements JDBCBackendDataSourceFactory {
     
     @Override
     public DataSource build(final String dataSourceName, final DataSourceParameter dataSourceParameter) {

@@ -22,7 +22,7 @@ import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.metadata.TableMetaData;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.rule.ShardingDataSourceNames;
-import io.shardingsphere.proxy.backend.jdbc.datasource.BackendDataSource;
+import io.shardingsphere.proxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import lombok.Getter;
 
 import java.sql.Connection;
@@ -38,9 +38,9 @@ import java.util.Map;
 @Getter
 public final class ProxyShardingMetaData extends ShardingMetaData {
     
-    private final BackendDataSource backendDataSource;
+    private final JDBCBackendDataSource backendDataSource;
     
-    public ProxyShardingMetaData(final ListeningExecutorService executorService, final BackendDataSource backendDataSource) {
+    public ProxyShardingMetaData(final ListeningExecutorService executorService, final JDBCBackendDataSource backendDataSource) {
         super(executorService);
         this.backendDataSource = backendDataSource;
     }

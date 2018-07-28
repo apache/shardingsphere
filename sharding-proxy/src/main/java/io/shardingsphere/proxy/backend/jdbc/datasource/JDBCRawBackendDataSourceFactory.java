@@ -24,12 +24,12 @@ import io.shardingsphere.core.rule.DataSourceParameter;
 import javax.sql.DataSource;
 
 /**
- * Backend data source using {@code HikariDataSource} for row.
+ * Backend data source factory using {@code HikariDataSource} for JDBC raw.
  *
  * @author zhaojun
  * @author zhangliang
  */
-public final class RawBackendDataSourceFactory implements BackendDataSourceFactory {
+public final class JDBCRawBackendDataSourceFactory implements JDBCBackendDataSourceFactory {
     
     @Override
     public DataSource build(final String dataSourceName, final DataSourceParameter dataSourceParameter) {

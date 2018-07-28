@@ -15,25 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.jdbc.datasource;
-
-import io.shardingsphere.core.rule.DataSourceParameter;
-
-import javax.sql.DataSource;
+package io.shardingsphere.proxy.backend;
 
 /**
- * Backend data source factory.
+ * Backend data source.
  *
  * @author zhangliang
  */
-public interface BackendDataSourceFactory {
-    
-    /**
-     * Build data source for connect backend databases.
-     *
-     * @param dataSourceName data source name
-     * @param dataSourceParameter data source connection parameter
-     * @return data source for connect backend databases
-     */
-    DataSource build(String dataSourceName, DataSourceParameter dataSourceParameter);
+public interface BackendDataSource {
 }

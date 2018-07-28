@@ -34,7 +34,7 @@ import io.shardingsphere.core.transaction.spi.TransactionManager;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusEvent;
 import io.shardingsphere.proxy.backend.constant.ProxyMode;
-import io.shardingsphere.proxy.backend.jdbc.datasource.BackendDataSource;
+import io.shardingsphere.proxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import io.shardingsphere.proxy.metadata.ProxyShardingMetaData;
 import io.shardingsphere.proxy.util.ProxyTransactionLoader;
 import lombok.AccessLevel;
@@ -66,7 +66,7 @@ public final class RuleRegistry {
     
     private MasterSlaveRule masterSlaveRule;
     
-    private BackendDataSource backendDataSource;
+    private JDBCBackendDataSource backendDataSource;
     
     private Map<String, DataSourceParameter> dataSourceConfigurationMap;
     
@@ -122,7 +122,8 @@ public final class RuleRegistry {
         if (null != config.getMasterSlaveRule()) {
             masterSlaveRule = new MasterSlaveRule(config.getMasterSlaveRule().getMasterSlaveRuleConfiguration());
         }
-        backendDataSource = new BackendDataSource(transactionType, config.getDataSources());
+        // TODO only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
+        backendDataSource = new JDBCBackendDataSource(transactionType, config.getDataSources());
         dataSourceConfigurationMap = new LinkedHashMap<>(config.getDataSources().size(), 1);
         if (proxyBackendUseNio) {
             for (Entry<String, DataSourceParameter> entry : config.getDataSources().entrySet()) {
