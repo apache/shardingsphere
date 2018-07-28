@@ -78,7 +78,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     
     private final Map<String, List<Channel>> channelsMap = Maps.newHashMap();
     
-    private SynchronizedFuture<List<QueryResult>> synchronizedFuture;
+    private SynchronizedFuture synchronizedFuture;
     
     private int currentSequenceId;
     
@@ -98,7 +98,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     
     private CommandResponsePackets executeForMasterSlave() {
         String dataSourceName = new MasterSlaveRouter(RULE_REGISTRY.getMasterSlaveRule(), RULE_REGISTRY.isShowSQL()).route(rebuilder.sql()).iterator().next();
-        synchronizedFuture = new SynchronizedFuture<>(1);
+        synchronizedFuture = new SynchronizedFuture(1);
         MySQLResultCache.getInstance().putFuture(rebuilder.connectionId(), synchronizedFuture);
         executeCommand(dataSourceName, rebuilder.sql());
         List<QueryResult> queryResults = synchronizedFuture.get(RULE_REGISTRY.getProxyBackendConnectionTimeout(), TimeUnit.SECONDS);
@@ -117,7 +117,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
         if (routeResult.getExecutionUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1));
         }
-        synchronizedFuture = new SynchronizedFuture<>(routeResult.getExecutionUnits().size());
+        synchronizedFuture = new SynchronizedFuture(routeResult.getExecutionUnits().size());
         MySQLResultCache.getInstance().putFuture(rebuilder.connectionId(), synchronizedFuture);
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             executeCommand(each.getDataSource(), each.getSqlUnit().getSql());

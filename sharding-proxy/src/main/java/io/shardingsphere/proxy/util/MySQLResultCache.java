@@ -19,9 +19,7 @@ package io.shardingsphere.proxy.util;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import io.shardingsphere.core.merger.QueryResult;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -34,7 +32,7 @@ public class MySQLResultCache {
     private static final MySQLResultCache INSTANCE = new MySQLResultCache();
     
     //TODO expire time should be set.
-    private final Cache<Integer, SynchronizedFuture<List<QueryResult>>> resultCache = CacheBuilder.newBuilder().expireAfterWrite(60, TimeUnit.SECONDS).build();
+    private final Cache<Integer, SynchronizedFuture> resultCache = CacheBuilder.newBuilder().expireAfterWrite(60, TimeUnit.SECONDS).build();
     
     private final Cache<String, Integer> connectionCache = CacheBuilder.newBuilder().build();
     
@@ -53,7 +51,7 @@ public class MySQLResultCache {
      * @param connectionId MySQL connection id
      * @param synchronizedFuture multiple result set
      */
-    public void putFuture(final int connectionId, final SynchronizedFuture<List<QueryResult>> synchronizedFuture) {
+    public void putFuture(final int connectionId, final SynchronizedFuture synchronizedFuture) {
         resultCache.put(connectionId, synchronizedFuture);
     }
     
@@ -63,7 +61,7 @@ public class MySQLResultCache {
      * @param connectionId MySQL connection id
      * @return multiple result set
      */
-    public SynchronizedFuture<List<QueryResult>> getFuture(final int connectionId) {
+    public SynchronizedFuture getFuture(final int connectionId) {
         return resultCache.getIfPresent(connectionId);
     }
     
