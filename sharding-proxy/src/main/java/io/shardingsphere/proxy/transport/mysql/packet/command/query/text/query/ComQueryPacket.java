@@ -22,7 +22,7 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.proxy.backend.BackendHandler;
 import io.shardingsphere.proxy.backend.BackendHandlerFactory;
 import io.shardingsphere.proxy.backend.ResultPacket;
-import io.shardingsphere.proxy.backend.jdbc.BackendConnection;
+import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.proxy.backend.jdbc.transaction.TransactionEngine;
 import io.shardingsphere.proxy.backend.jdbc.transaction.TransactionEngineFactory;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
