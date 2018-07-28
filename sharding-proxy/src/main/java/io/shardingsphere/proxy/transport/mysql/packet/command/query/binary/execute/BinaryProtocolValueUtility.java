@@ -50,7 +50,7 @@ public final class BinaryProtocolValueUtility {
      * Read binary protocol value.
      *
      * @param columnType column type
-     * @param payload mysql packet payload
+     * @param payload MySQL packet payload
      * @return object value
      */
     public Object readBinaryProtocolValue(final ColumnType columnType, final MySQLPacketPayload payload) {
@@ -90,7 +90,7 @@ public final class BinaryProtocolValueUtility {
             case MYSQL_TYPE_TIME:
                 return payload.readTime();
             default:
-                throw new IllegalArgumentException(String.format("Cannot find MYSQL type '%s' in column type when read binary protocol value", columnType));
+                throw new IllegalArgumentException(String.format("Cannot find MySQL type '%s' in column type when read binary protocol value", columnType));
         }
     }
     
@@ -98,7 +98,7 @@ public final class BinaryProtocolValueUtility {
      * Write binary protocol value.
      *
      * @param columnType column type
-     * @param payload mysql packet pay load
+     * @param payload MySQL packet pay load
      * @param objectData object data
      */
     public void writeBinaryProtocolValue(final ColumnType columnType, final Object objectData, final MySQLPacketPayload payload) {
@@ -147,7 +147,7 @@ public final class BinaryProtocolValueUtility {
                 payload.writeTime((Date) objectData);
                 break;
             default:
-                throw new IllegalArgumentException(String.format("Cannot find MYSQL type '%s' in column type when write binary protocol value", columnType));
+                throw new IllegalArgumentException(String.format("Cannot find MySQL type '%s' in column type when write binary protocol value", columnType));
         }
     }
 }

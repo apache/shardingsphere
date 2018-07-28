@@ -33,7 +33,7 @@ public final class NullBitmap {
     
     public NullBitmap(final int numColumns, final int reservedBitLength) {
         this.reservedBitLength = reservedBitLength;
-        this.nullBitmap = new int[calculateBitmapBytes(numColumns, reservedBitLength)];
+        nullBitmap = new int[calculateBitmapBytes(numColumns, reservedBitLength)];
     }
     
     private int calculateBitmapBytes(final int numColumns, final int reservedBitLength) {
@@ -52,10 +52,10 @@ public final class NullBitmap {
     }
     
     /**
-     * Is parameter null.
+     * Judge parameter is null or not null.
      *
      * @param index column index
-     * @return is parameter null
+     * @return parameter is null or not null
      */
     public boolean isParameterNull(final int index) {
         int bytePosition = index / 8;
