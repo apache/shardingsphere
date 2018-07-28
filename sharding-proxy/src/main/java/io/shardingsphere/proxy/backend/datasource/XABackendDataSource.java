@@ -22,22 +22,18 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.rule.DataSourceParameter;
 
 import javax.sql.DataSource;
-import java.util.Map;
 import java.util.Properties;
 
 /**
- * XA Raw data source using {@code AtomikosDataSourceBean}.
+ * Backend data source using {@code AtomikosDataSourceBean} for XA protocol.
  *
  * @author zhaojun
+ * @author zhangliang
  */
-public final class XaProxyRawDataSource extends ProxyRawDataSource {
-    
-    public XaProxyRawDataSource(final Map<String, DataSourceParameter> dataSourceParameters) {
-        super(dataSourceParameters);
-    }
+public final class XABackendDataSource implements BackendDataSource {
     
     @Override
-    protected DataSource buildInternal(final String dataSourceName, final DataSourceParameter dataSourceParameter) {
+    public DataSource build(final String dataSourceName, final DataSourceParameter dataSourceParameter) {
         AtomikosDataSourceBean result = new AtomikosDataSourceBean();
         result.setUniqueResourceName(dataSourceName);
         result.setXaDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource");
