@@ -41,7 +41,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -123,7 +123,7 @@ public final class RuleRegistry {
             masterSlaveRule = new MasterSlaveRule(config.getMasterSlaveRule().getMasterSlaveRuleConfiguration());
         }
         backendDataSource = new BackendDataSource(transactionType, config.getDataSources());
-        dataSourceConfigurationMap = new HashMap<>(128, 1);
+        dataSourceConfigurationMap = new LinkedHashMap<>(config.getDataSources().size(), 1);
         if (proxyBackendUseNio) {
             for (Entry<String, DataSourceParameter> entry : config.getDataSources().entrySet()) {
                 dataSourceConfigurationMap.put(entry.getKey(), entry.getValue());
