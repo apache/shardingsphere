@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.datasource;
+package io.shardingsphere.proxy.backend.jdbc.datasource;
 
 import io.shardingsphere.core.rule.DataSourceParameter;
 
