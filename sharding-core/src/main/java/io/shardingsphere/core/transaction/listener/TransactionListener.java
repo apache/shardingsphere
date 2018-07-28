@@ -22,19 +22,24 @@ import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.transaction.TransactionContextHolder;
 import io.shardingsphere.core.transaction.event.TransactionEvent;
 import io.shardingsphere.core.transaction.spi.TransactionManager;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * Transaction Listener.
  *
  * @author zhaojun
  */
-public class TransactionListener {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class TransactionListener {
     
-    private final static TransactionListener INSTANCE = new TransactionListener();
+    private static final TransactionListener INSTANCE = new TransactionListener();
     
-    private TransactionListener() {
-    }
-    
+    /**
+     * Get instance of transaction listener.
+     * 
+     * @return instance of transaction listener
+     */
     public static TransactionListener getInstance() {
         return INSTANCE;
     }

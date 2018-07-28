@@ -24,8 +24,9 @@ import com.atomikos.icatch.jta.UserTransactionManager;
  *
  * @author zhaojun
  */
-public class AtomikosUserTransaction {
+public final class AtomikosUserTransaction {
     
+    // TODO why not new here?
     private static volatile UserTransactionManager transactionManager;
     
     /**

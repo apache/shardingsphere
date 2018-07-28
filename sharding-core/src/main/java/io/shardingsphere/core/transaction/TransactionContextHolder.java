@@ -22,7 +22,7 @@ package io.shardingsphere.core.transaction;
  *
  * @author zhaojun
  */
-public class TransactionContextHolder {
+public final class TransactionContextHolder {
     
     private static final ThreadLocal<TransactionContext> CONTEXT = new ThreadLocal<TransactionContext>() {
         @Override

@@ -23,7 +23,7 @@ import io.shardingsphere.core.exception.ShardingException;
 import lombok.Getter;
 
 /**
- * XA transactionEvent.
+ * XA transaction event.
  *
  * @author zhaojun
  */

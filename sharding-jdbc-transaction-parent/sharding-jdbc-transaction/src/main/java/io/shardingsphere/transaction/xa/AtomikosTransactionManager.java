@@ -28,19 +28,19 @@ import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 
 /**
- * Atomikos XA transaction implement for Transaction SPI.
+ * Atomikos XA transaction manager.
  *
  * @author zhaojun
  */
-public class AtomikosTransactionManager implements TransactionManager {
+public final class AtomikosTransactionManager implements TransactionManager {
     
     private static UserTransactionManager transactionManager = AtomikosUserTransaction.getInstance();
     
     static {
         try {
             transactionManager.init();
-        } catch (SystemException e) {
-            e.printStackTrace();
+        } catch (final SystemException ex) {
+            ex.printStackTrace();
         }
     }
     

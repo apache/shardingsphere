@@ -20,14 +20,14 @@ package io.shardingsphere.core.transaction.spi;
 import io.shardingsphere.core.transaction.event.TransactionEvent;
 
 /**
- * TransactionManager Spi interface.
+ * Transaction manager.
  *
  * @author zhaojun
  */
 public interface TransactionManager {
     
     /**
-     * Do start a user transaction.
+     * Begin transaction.
      *
      * @param transactionEvent transaction event
      * @throws Exception Exception
@@ -35,7 +35,7 @@ public interface TransactionManager {
     void begin(TransactionEvent transactionEvent) throws Exception;
     
     /**
-     * Do transaction commit.
+     * Commit transaction.
      *
      * @param transactionEvent transaction event
      * @throws Exception Exception
@@ -43,7 +43,7 @@ public interface TransactionManager {
     void commit(TransactionEvent transactionEvent) throws Exception;
     
     /**
-     * Do transaction rollback.
+     * Rollback transaction.
      *
      * @param transactionEvent transaction event
      * @throws Exception Exception

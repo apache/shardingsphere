@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Weak XA transaction implement for Transaction spi.
+ * Weak XA transaction manager.
  *
  * @author zhaojun
  */

@@ -37,18 +37,13 @@ public final class TransactionEventFactory {
      * @return transaction event
      */
     public static TransactionEvent create(final TCLType tclType) {
-        TransactionEvent result = null;
         switch (TransactionContextHolder.get().getTransactionType()) {
             case XA:
-                if (TransactionContextHolder.get().getTransactionEventClazz().isAssignableFrom(XaTransactionEvent.class)) {
-                    result = new XaTransactionEvent(tclType, "");
-                } else {
-                    result = new WeakXaTransactionEvent(tclType);
-                }
-                break;
+                return TransactionContextHolder.get().getTransactionEventClazz().isAssignableFrom(XaTransactionEvent.class)
+                        ? new XaTransactionEvent(tclType, "") : new WeakXaTransactionEvent(tclType);
             case BASE:
             default:
+                return null;
         }
-        return result;
     }
 }

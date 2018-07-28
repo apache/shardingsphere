@@ -27,13 +27,13 @@ import java.sql.Connection;
 import java.util.Map;
 
 /**
- * Weak-XA transactionEvent.
+ * Weak XA transaction event.
  *
  * @author zhaojun
  */
 @Getter
 @Setter
-public class WeakXaTransactionEvent extends TransactionEvent {
+public final class WeakXaTransactionEvent extends TransactionEvent {
     
     private Map<String, Connection> cachedConnections;
     
