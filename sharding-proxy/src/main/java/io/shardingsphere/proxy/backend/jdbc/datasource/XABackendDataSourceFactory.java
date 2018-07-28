@@ -30,7 +30,7 @@ import java.util.Properties;
  * @author zhaojun
  * @author zhangliang
  */
-public final class XABackendDataSource implements BackendDataSource {
+public final class XABackendDataSourceFactory implements BackendDataSourceFactory {
     
     @Override
     public DataSource build(final String dataSourceName, final DataSourceParameter dataSourceParameter) {

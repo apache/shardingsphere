@@ -29,7 +29,7 @@ import javax.sql.DataSource;
  * @author zhaojun
  * @author zhangliang
  */
-public final class RawBackendDataSource implements BackendDataSource {
+public final class RawBackendDataSourceFactory implements BackendDataSourceFactory {
     
     @Override
     public DataSource build(final String dataSourceName, final DataSourceParameter dataSourceParameter) {

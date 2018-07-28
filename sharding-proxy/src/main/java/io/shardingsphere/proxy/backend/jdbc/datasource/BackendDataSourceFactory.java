@@ -17,46 +17,23 @@
 
 package io.shardingsphere.proxy.backend.jdbc.datasource;
 
-import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 
 import javax.sql.DataSource;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Backend data source factory.
  *
- * @author zhaojun
  * @author zhangliang
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class BackendDataSourceFactory {
+public interface BackendDataSourceFactory {
     
     /**
-     * Create backend data source map.
+     * Build data source for connect backend databases.
      *
-     * @param transactionType transaction type
-     * @param dataSourceParameters data source parameters
-     * @return data source map
+     * @param dataSourceName data source name
+     * @param dataSourceParameter data source connection parameter
+     * @return data source for connect backend databases
      */
-    public static Map<String, DataSource> createDataSourceMap(final TransactionType transactionType, final Map<String, DataSourceParameter> dataSourceParameters) {
-        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceParameters.size());
-        for (Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
-            result.put(entry.getKey(), createDataSource(transactionType, entry.getKey(), entry.getValue()));
-        }
-        return result;
-    }
-    
-    private static DataSource createDataSource(final TransactionType transactionType, final String dataSourceName, final DataSourceParameter dataSourceParameter) {
-        switch (transactionType) {
-            case XA:
-                return new XABackendDataSource().build(dataSourceName, dataSourceParameter);
-            default:
-                return new RawBackendDataSource().build(dataSourceName, dataSourceParameter);
-        }
-    }
+    DataSource build(String dataSourceName, DataSourceParameter dataSourceParameter);
 }

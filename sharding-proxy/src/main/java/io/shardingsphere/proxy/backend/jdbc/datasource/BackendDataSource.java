@@ -17,23 +17,44 @@
 
 package io.shardingsphere.proxy.backend.jdbc.datasource;
 
+import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.rule.DataSourceParameter;
+import lombok.Getter;
 
 import javax.sql.DataSource;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
- * Backend data source.
+ * Backend data source factory.
  *
+ * @author zhaojun
  * @author zhangliang
  */
-public interface BackendDataSource {
+@Getter
+public final class BackendDataSource {
     
-    /**
-     * Build data source for connect backend databases.
-     *
-     * @param dataSourceName data source name
-     * @param dataSourceParameter data source connection parameter
-     * @return data source for connect backend databases
-     */
-    DataSource build(String dataSourceName, DataSourceParameter dataSourceParameter);
+    private final Map<String, DataSource> dataSourceMap;
+    
+    public BackendDataSource(final TransactionType transactionType, final Map<String, DataSourceParameter> dataSourceParameters) {
+        dataSourceMap = createDataSourceMap(transactionType, dataSourceParameters);
+    }
+    
+    private Map<String, DataSource> createDataSourceMap(final TransactionType transactionType, final Map<String, DataSourceParameter> dataSourceParameters) {
+        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceParameters.size());
+        for (Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
+            result.put(entry.getKey(), getBackendDataSourceFactory(transactionType).build(entry.getKey(), entry.getValue()));
+        }
+        return result;
+    }
+    
+    private BackendDataSourceFactory getBackendDataSourceFactory(final TransactionType transactionType) {
+        switch (transactionType) {
+            case XA:
+                return new XABackendDataSourceFactory();
+            default:
+                return new RawBackendDataSourceFactory();
+        }
+    }
 }

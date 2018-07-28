@@ -34,7 +34,7 @@ import io.shardingsphere.core.transaction.spi.TransactionManager;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusEvent;
 import io.shardingsphere.proxy.backend.constant.ProxyMode;
-import io.shardingsphere.proxy.backend.jdbc.datasource.BackendDataSourceFactory;
+import io.shardingsphere.proxy.backend.jdbc.datasource.BackendDataSource;
 import io.shardingsphere.proxy.metadata.ProxyShardingMetaData;
 import io.shardingsphere.proxy.util.ProxyTransactionLoader;
 import lombok.AccessLevel;
@@ -123,7 +123,7 @@ public final class RuleRegistry {
         if (null != config.getMasterSlaveRule()) {
             masterSlaveRule = new MasterSlaveRule(config.getMasterSlaveRule().getMasterSlaveRuleConfiguration());
         }
-        dataSourceMap = BackendDataSourceFactory.createDataSourceMap(transactionType, config.getDataSources());
+        dataSourceMap = new BackendDataSource(transactionType, config.getDataSources()).getDataSourceMap();
         dataSourceConfigurationMap = new HashMap<>(128, 1);
         if (proxyBackendUseNio) {
             for (Entry<String, DataSourceParameter> entry : config.getDataSources().entrySet()) {
