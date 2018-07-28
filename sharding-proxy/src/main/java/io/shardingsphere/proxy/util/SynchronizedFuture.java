@@ -39,7 +39,7 @@ public class SynchronizedFuture<T> implements Future<List<QueryResult>> {
     
     private final List<QueryResult> responses;
     
-    private boolean merged;
+    private boolean isDone;
     
     public SynchronizedFuture(final int resultSize) {
         latch = new CountDownLatch(resultSize);
@@ -58,7 +58,7 @@ public class SynchronizedFuture<T> implements Future<List<QueryResult>> {
     
     @Override
     public boolean isDone() {
-        return merged;
+        return isDone;
     }
     
     @Override
@@ -78,6 +78,7 @@ public class SynchronizedFuture<T> implements Future<List<QueryResult>> {
     public List<QueryResult> get(final long timeout, final TimeUnit unit) {
         try {
             latch.await(timeout, unit);
+            isDone = true;
         } catch (final InterruptedException ex) {
             log.error(ex.getMessage(), ex);
         }
