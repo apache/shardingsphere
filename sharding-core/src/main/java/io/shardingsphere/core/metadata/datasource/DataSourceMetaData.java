@@ -17,8 +17,6 @@
 
 package io.shardingsphere.core.metadata.datasource;
 
-import io.shardingsphere.core.constant.DatabaseType;
-
 /**
  * Data source meta data.
  *
@@ -47,13 +45,6 @@ public interface DataSourceMetaData {
      * @return schema name
      */
     String getSchemeName();
-    
-    /**
-     * Get database type.
-     * 
-     * @return database type
-     */
-    DatabaseType getDatabaseType();
     
     /**
      * Judge whether two of data sources are in the same database instance.

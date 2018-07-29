@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.metadata.datasource.dialect;
 
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import lombok.Getter;
@@ -41,8 +40,6 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
     private final int port;
     
     private final String schemeName;
-    
-    private final DatabaseType databaseType = DatabaseType.H2;
     
     public H2DataSourceMetaData(final String url) {
         String cleanUrl = url.substring(5);
