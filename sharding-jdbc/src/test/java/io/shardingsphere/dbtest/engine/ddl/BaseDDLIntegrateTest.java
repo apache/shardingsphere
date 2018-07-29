@@ -28,7 +28,9 @@ import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
 import io.shardingsphere.test.sql.SQLCaseType;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -60,7 +62,17 @@ public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
         this.assertion = assertion;
         databaseType = databaseTypeEnvironment.getDatabaseType();
     }
-    
+
+    @BeforeClass
+    public static void initDatabasesAndTables(){
+        createDatabasesAndTables();
+    }
+
+    @AfterClass
+    public static void destroyDatabasesAndTables(){
+        dropDatabases();
+    }
+
     @Before
     public void insertData() throws SQLException, ParseException, IOException, JAXBException {
         if (getDatabaseTypeEnvironment().isEnabled()) {
