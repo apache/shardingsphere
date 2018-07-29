@@ -40,14 +40,20 @@ public final class MySQLDataSourceMetaData implements DataSourceMetaData {
     private final String schemeName;
     
     public MySQLDataSourceMetaData(final String url) {
-        String cleanUrl = url.substring(5);
-        URI uri = URI.create(cleanUrl);
-        if (null == uri.getHost()) {
-            throw new ShardingException("The URL of JDBC is not supported.");
-        }
+        URI uri = getURI(url);
         hostName = uri.getHost();
+        // TODO when equals -1 ?
         port = -1 == uri.getPort() ? DEFAULT_PORT : uri.getPort();
         schemeName = uri.getPath().isEmpty() ? "" : uri.getPath().substring(1);
+    }
+    
+    private URI getURI(final String url) {
+        String cleanUrl = url.substring(5);
+        URI result = URI.create(cleanUrl);
+        if (null == result.getHost()) {
+            throw new ShardingException("The URL of JDBC is not supported.");
+        }
+        return result;
     }
     
     @Override

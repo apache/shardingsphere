@@ -40,24 +40,28 @@ public final class OracleDataSourceMetaData implements DataSourceMetaData {
     private final String schemeName;
     
     public OracleDataSourceMetaData(final String url) {
+        URI uri = getURI(url);
+        hostName = uri.getHost();
+        port = -1 == uri.getPort() ? DEFAULT_PORT : uri.getPort();
+        schemeName = uri.getPath().isEmpty() ? "" : uri.getPath().substring(1);
+    }
+    
+    private URI getURI(final String url) {
         String cleanUrl = url.substring(5);
         if (cleanUrl.contains("oracle:thin:@//")) {
             cleanUrl = cleanUrl.replace("oracle:thin:@//", "oracle://");
         } else if (cleanUrl.contains("oracle:thin:@")) {
             cleanUrl = cleanUrl.replace("oracle:thin:@", "oracle://");
         }
-    
         String[] parts = cleanUrl.split(":");
         if (4 == parts.length) {
             cleanUrl = parts[0] + ":" + parts[1] + ":" + parts[2] + "/" + parts[3];
         }
-        URI uri = URI.create(cleanUrl);
-        if (null == uri.getHost()) {
+        URI result = URI.create(cleanUrl);
+        if (null == result.getHost()) {
             throw new ShardingException("The URL of JDBC is not supported.");
         }
-        hostName = uri.getHost();
-        port = -1 == uri.getPort() ? DEFAULT_PORT : uri.getPort();
-        schemeName = uri.getPath().isEmpty() ? "" : uri.getPath().substring(1);
+        return result;
     }
     
     @Override

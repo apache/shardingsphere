@@ -42,6 +42,14 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
     private final String schemeName;
     
     public H2DataSourceMetaData(final String url) {
+        URI uri = getURI(url);
+        hostName = uri.getHost();
+        // TODO when equals -1 ?
+        port = -1 == uri.getPort() ? DEFAULT_PORT : uri.getPort();
+        schemeName = uri.getPath().isEmpty() ? "" : uri.getPath().substring(1);
+    }
+    
+    private URI getURI(final String url) {
         String cleanUrl = url.substring(5);
         if (cleanUrl.contains("h2:~")) {
             cleanUrl = cleanUrl.split(";")[0];
@@ -55,13 +63,11 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
         } else {
             throw new ShardingException("The URL of JDBC is not supported.");
         }
-        URI uri = URI.create(cleanUrl);
-        if (null == uri.getHost()) {
+        URI result = URI.create(cleanUrl);
+        if (null == result.getHost()) {
             throw new ShardingException("The URL of JDBC is not supported.");
         }
-        hostName = uri.getHost();
-        port = -1 == uri.getPort() ? DEFAULT_PORT : uri.getPort();
-        schemeName = uri.getPath().isEmpty() ? "" : uri.getPath().substring(1);
+        return result;
     }
     
     @Override
