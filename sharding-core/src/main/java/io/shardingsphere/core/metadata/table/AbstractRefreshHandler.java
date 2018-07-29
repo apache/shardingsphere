@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.metadata;
+package io.shardingsphere.core.metadata.table;
 
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -36,7 +36,7 @@ public abstract class AbstractRefreshHandler {
 
     private final SQLStatement sqlStatement;
 
-    private ShardingMetaData shardingMetaData;
+    private ShardingTableMetaData shardingTableMetaData;
 
     private ShardingRule shardingRule;
 

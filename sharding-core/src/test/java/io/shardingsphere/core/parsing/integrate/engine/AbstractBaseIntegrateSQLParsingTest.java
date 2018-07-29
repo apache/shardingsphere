@@ -18,9 +18,9 @@
 package io.shardingsphere.core.parsing.integrate.engine;
 
 import com.google.common.base.Preconditions;
-import io.shardingsphere.core.metadata.ColumnMetaData;
-import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.metadata.TableMetaData;
+import io.shardingsphere.core.metadata.table.ColumnMetaData;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.yaml.sharding.YamlShardingConfiguration;
 import lombok.AccessLevel;
@@ -48,12 +48,12 @@ public abstract class AbstractBaseIntegrateSQLParsingTest {
     private static ShardingRule shardingRule;
     
     @Getter(AccessLevel.PROTECTED)
-    private static ShardingMetaData shardingMetaData;
+    private static ShardingTableMetaData shardingTableMetaData;
     
     @BeforeClass
     public static void setUp() throws IOException {
         shardingRule = buildShardingRule();
-        shardingMetaData = buildShardingMetaData();
+        shardingTableMetaData = buildShardingTableMetaData();
     }
     
     private static ShardingRule buildShardingRule() throws IOException {
@@ -63,15 +63,15 @@ public abstract class AbstractBaseIntegrateSQLParsingTest {
         return yamlShardingConfig.getShardingRule(yamlShardingConfig.getDataSources().keySet());
     }
     
-    private static ShardingMetaData buildShardingMetaData() {
+    private static ShardingTableMetaData buildShardingTableMetaData() {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>();
         tableMetaDataMap.put("t_order", getTableMetaData(Arrays.asList("order_id", "user_id")));
         tableMetaDataMap.put("t_order_item", getTableMetaData(Arrays.asList("item_id", "order_id", "user_id", "status", "c_date")));
         tableMetaDataMap.put("t_place", getTableMetaData(Arrays.asList("user_new_id", "guid")));
-        ShardingMetaData shardingMetaData = Mockito.mock(ShardingMetaData.class);
-        when(shardingMetaData.getTableMetaDataMap()).thenReturn(tableMetaDataMap);
-        when(shardingMetaData.hasColumn("t_order_item", "item_id")).thenReturn(true);
-        return shardingMetaData;
+        ShardingTableMetaData result = Mockito.mock(ShardingTableMetaData.class);
+        when(result.getTableMetaDataMap()).thenReturn(tableMetaDataMap);
+        when(result.hasColumn("t_order_item", "item_id")).thenReturn(true);
+        return result;
     }
     
     private static TableMetaData getTableMetaData(final List<String> columnNames) {

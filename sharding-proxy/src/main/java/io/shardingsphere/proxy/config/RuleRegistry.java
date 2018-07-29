@@ -24,7 +24,7 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.ShardingProperties;
 import io.shardingsphere.core.constant.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.TransactionType;
-import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
@@ -35,7 +35,7 @@ import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfigura
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusEvent;
 import io.shardingsphere.proxy.backend.constant.ProxyMode;
 import io.shardingsphere.proxy.backend.jdbc.datasource.JDBCBackendDataSource;
-import io.shardingsphere.proxy.metadata.ProxyShardingMetaData;
+import io.shardingsphere.proxy.metadata.ProxyShardingTableMetaData;
 import io.shardingsphere.proxy.util.ProxyTransactionLoader;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -90,7 +90,7 @@ public final class RuleRegistry {
     
     private ShardingDataSourceMetaData shardingDataSourceMetaData;
     
-    private ShardingMetaData shardingMetaData;
+    private ShardingTableMetaData shardingTableMetaData;
     
     /**
      * Get instance of sharding rule registry.
@@ -148,9 +148,9 @@ public final class RuleRegistry {
      * @param executorService executor service
      */
     public void initShardingMetaData(final ExecutorService executorService) {
-        shardingMetaData = new ProxyShardingMetaData(MoreExecutors.listeningDecorator(executorService), backendDataSource);
+        shardingTableMetaData = new ProxyShardingTableMetaData(MoreExecutors.listeningDecorator(executorService), backendDataSource);
         if (!isMasterSlaveOnly()) {
-            shardingMetaData.init(shardingRule);
+            shardingTableMetaData.init(shardingRule);
         }
     }
     

@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.parser.dialect.oracle.sql;
 
-import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.parser.dialect.oracle.clause.facade.OracleInsertClauseParserFacade;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.AbstractInsertParser;
@@ -31,7 +31,7 @@ import io.shardingsphere.core.rule.ShardingRule;
  */
 public final class OracleInsertParser extends AbstractInsertParser {
     
-    public OracleInsertParser(final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingMetaData shardingMetaData) {
-        super(shardingRule, shardingMetaData, lexerEngine, new OracleInsertClauseParserFacade(shardingRule, lexerEngine));
+    public OracleInsertParser(final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingTableMetaData shardingTableMetaData) {
+        super(shardingRule, shardingTableMetaData, lexerEngine, new OracleInsertClauseParserFacade(shardingRule, lexerEngine));
     }
 }

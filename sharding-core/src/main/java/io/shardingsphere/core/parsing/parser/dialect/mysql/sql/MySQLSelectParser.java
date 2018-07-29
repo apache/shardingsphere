@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.parser.dialect.mysql.sql;
 
-import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.MySQLLimitClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.MySQLSelectOptionClauseParser;
@@ -37,8 +37,8 @@ public final class MySQLSelectParser extends AbstractSelectParser {
     
     private final MySQLLimitClauseParser limitClauseParser;
     
-    public MySQLSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingMetaData shardingMetaData) {
-        super(shardingRule, lexerEngine, new MySQLSelectClauseParserFacade(shardingRule, lexerEngine), shardingMetaData);
+    public MySQLSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingTableMetaData shardingTableMetaData) {
+        super(shardingRule, lexerEngine, new MySQLSelectClauseParserFacade(shardingRule, lexerEngine), shardingTableMetaData);
         selectOptionClauseParser = new MySQLSelectOptionClauseParser(lexerEngine);
         limitClauseParser = new MySQLLimitClauseParser(lexerEngine);
     }

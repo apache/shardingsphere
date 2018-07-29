@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.metadata;
+package io.shardingsphere.core.metadata.table;
 
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.Futures;
@@ -43,7 +43,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Sharding metadata.
+ * Sharding table meta data.
  *
  * @author panjuan
  * @author zhaojun
@@ -51,7 +51,7 @@ import java.util.concurrent.ExecutionException;
 @RequiredArgsConstructor
 @Getter
 @Slf4j
-public abstract class ShardingMetaData {
+public abstract class ShardingTableMetaData {
     
     private final ListeningExecutorService executorService;
     

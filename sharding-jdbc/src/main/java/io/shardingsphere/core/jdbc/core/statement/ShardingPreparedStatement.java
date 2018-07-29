@@ -123,7 +123,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         this.sql = sql;
         ShardingContext shardingContext = connection.getShardingContext();
         routingEngine = new PreparedStatementRoutingEngine(
-                sql, shardingContext.getShardingRule(), shardingContext.getShardingMetaData(), shardingContext.getDatabaseType(),
+                sql, shardingContext.getShardingRule(), shardingContext.getShardingTableMetaData(), shardingContext.getDatabaseType(),
                 shardingContext.isShowSQL(), shardingContext.getShardingDataSourceMetaData());
     }
     
@@ -140,7 +140,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
                 queryResults.add(new JDBCQueryResult(each));
             }
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getShardingContext().getShardingRule(),
-                    queryResults, routeResult.getSqlStatement(), connection.getShardingContext().getShardingMetaData());
+                    queryResults, routeResult.getSqlStatement(), connection.getShardingContext().getShardingTableMetaData());
             result = new ShardingResultSet(resultSets, merge(mergeEngine), this);
         } finally {
             clearBatch();
@@ -311,7 +311,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         }
         if (routeResult.getSqlStatement() instanceof SelectStatement || routeResult.getSqlStatement() instanceof DALStatement) {
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getShardingContext().getShardingRule(), queryResults,
-                    routeResult.getSqlStatement(), connection.getShardingContext().getShardingMetaData());
+                    routeResult.getSqlStatement(), connection.getShardingContext().getShardingTableMetaData());
             currentResultSet = new ShardingResultSet(resultSets, merge(mergeEngine), this);
         }
         return currentResultSet;

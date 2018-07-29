@@ -15,15 +15,18 @@
  * </p>
  */
 
-package io.shardingsphere.core.metadata;
+package io.shardingsphere.core.metadata.table;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 /**
- * Column metadata.
+ * Table metadata.
  *
  * @author panjuan
  */
@@ -31,11 +34,24 @@ import lombok.ToString;
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class ColumnMetaData {
+public final class TableMetaData {
     
-    private final String columnName;
+    private final Collection<ColumnMetaData> columnMetaData;
     
-    private final String columnType;
+    public TableMetaData() {
+        columnMetaData = new LinkedList<>();
+    }
     
-    private final String keyType;
+    /**
+     * Get all column names.
+     *
+     * @return column name list.
+     */
+    public Collection<String> getAllColumnNames() {
+        Collection<String> result = new LinkedList<>();
+        for (ColumnMetaData each : columnMetaData) {
+            result.add(each.getColumnName().toLowerCase());
+        }
+        return result;
+    }
 }

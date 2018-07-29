@@ -17,8 +17,8 @@
 
 package io.shardingsphere.proxy.metadata;
 
-import io.shardingsphere.core.metadata.AbstractRefreshHandler;
-import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.metadata.table.AbstractRefreshHandler;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
@@ -35,7 +35,7 @@ public final class ProxyShardingRefreshHandler extends AbstractRefreshHandler {
     
     private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
     
-    private ProxyShardingRefreshHandler(final SQLStatement sqlStatement, final ShardingMetaData shardingMetaData, final ShardingRule shardingRule) {
+    private ProxyShardingRefreshHandler(final SQLStatement sqlStatement, final ShardingTableMetaData shardingMetaData, final ShardingRule shardingRule) {
         super(sqlStatement, shardingMetaData, shardingRule);
     }
     
@@ -46,7 +46,7 @@ public final class ProxyShardingRefreshHandler extends AbstractRefreshHandler {
      * @return {@code ProxyShardingRefreshHandler}
      */
     public static ProxyShardingRefreshHandler build(final SQLStatement sqlStatement) {
-        return new ProxyShardingRefreshHandler(sqlStatement, RULE_REGISTRY.getShardingMetaData(), RULE_REGISTRY.getShardingRule());
+        return new ProxyShardingRefreshHandler(sqlStatement, RULE_REGISTRY.getShardingTableMetaData(), RULE_REGISTRY.getShardingRule());
     }
     
     @Override
@@ -54,7 +54,7 @@ public final class ProxyShardingRefreshHandler extends AbstractRefreshHandler {
         if (isNeedRefresh()) {
             String logicTable = getSqlStatement().getTables().getSingleTableName();
             TableRule tableRule = getShardingRule().getTableRule(logicTable);
-            getShardingMetaData().refresh(tableRule, getShardingRule());
+            getShardingTableMetaData().refresh(tableRule, getShardingRule());
         }
     }
 }
