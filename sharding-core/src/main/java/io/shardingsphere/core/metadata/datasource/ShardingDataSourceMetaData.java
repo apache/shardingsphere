@@ -19,6 +19,11 @@ package io.shardingsphere.core.metadata.datasource;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.metadata.datasource.dialect.H2DataSourceMetaDataParser;
+import io.shardingsphere.core.metadata.datasource.dialect.MySQLDataSourceMetaDataParser;
+import io.shardingsphere.core.metadata.datasource.dialect.OracleDataSourceMetaDataParser;
+import io.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaDataParser;
+import io.shardingsphere.core.metadata.datasource.dialect.SQLServerDataSourceMetaDataParser;
 import io.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
@@ -43,9 +48,26 @@ public class ShardingDataSourceMetaData {
     private Map<String, DataSourceMetaData> getDataSourceMetaDataMap(final Map<String, String> dataSourceURLs, final ShardingRule shardingRule, final DatabaseType databaseType) {
         Map<String, DataSourceMetaData> dataSourceMetaDataMap = new LinkedHashMap<>(dataSourceURLs.size(), 1);
         for (Entry<String, String> entry : dataSourceURLs.entrySet()) {
-            dataSourceMetaDataMap.put(entry.getKey(), DataSourceMetaDataFactory.getDataSourceMetaData(databaseType, entry.getValue()));
+            dataSourceMetaDataMap.put(entry.getKey(), createDataSourceMetaDataParser(databaseType).getDataSourceMetaData(entry.getValue(), databaseType));
         }
         return handleMasterSlaveDataSourceNames(shardingRule, dataSourceMetaDataMap);
+    }
+    
+    private static DataSourceMetaDataParser createDataSourceMetaDataParser(final DatabaseType databaseType) {
+        switch (databaseType) {
+            case H2:
+                return new H2DataSourceMetaDataParser();
+            case MySQL:
+                return new MySQLDataSourceMetaDataParser();
+            case Oracle:
+                return new OracleDataSourceMetaDataParser();
+            case PostgreSQL:
+                return new PostgreSQLDataSourceMetaDataParser();
+            case SQLServer:
+                return new SQLServerDataSourceMetaDataParser();
+            default:
+                throw new UnsupportedOperationException(String.format("Cannot support database [%s].", databaseType));
+        }
     }
     
     private Map<String, DataSourceMetaData> handleMasterSlaveDataSourceNames(final ShardingRule shardingRule, final Map<String, DataSourceMetaData> dataSourceMetaDataMap) {
