@@ -32,13 +32,13 @@ import java.net.URI;
 @Getter
 public final class H2DataSourceMetaData implements DataSourceMetaData {
     
-    private static final Integer DEFAULT_PORT = -1;
+    private static final int DEFAULT_PORT = -1;
     
     private static final String DEFAULT_HOST = "localhost";
     
     private final String hostName;
     
-    private final Integer port;
+    private final int port;
     
     private final String schemeName;
     
@@ -69,6 +69,6 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
     
     @Override
     public boolean isInSameDatabaseInstance(final DataSourceMetaData dataSourceMetaData) {
-        return hostName.equals(dataSourceMetaData.getHostName()) && port.equals(dataSourceMetaData.getPort()) && schemeName.equals(dataSourceMetaData.getSchemeName());
+        return hostName.equals(dataSourceMetaData.getHostName()) && port == dataSourceMetaData.getPort() && schemeName.equals(dataSourceMetaData.getSchemeName());
     }
 }

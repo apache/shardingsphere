@@ -32,11 +32,11 @@ import java.net.URI;
 @Getter
 public final class PostgreSQLDataSourceMetaData implements DataSourceMetaData {
     
-    private static final Integer DEFAULT_PORT = 5432;
+    private static final int DEFAULT_PORT = 5432;
     
     private final String hostName;
     
-    private final Integer port;
+    private final int port;
     
     private final String schemeName;
     
@@ -55,6 +55,6 @@ public final class PostgreSQLDataSourceMetaData implements DataSourceMetaData {
     
     @Override
     public boolean isInSameDatabaseInstance(final DataSourceMetaData dataSourceMetaData) {
-        return hostName.equals(dataSourceMetaData.getHostName()) && port.equals(dataSourceMetaData.getPort());
+        return hostName.equals(dataSourceMetaData.getHostName()) && port == dataSourceMetaData.getPort();
     }
 }

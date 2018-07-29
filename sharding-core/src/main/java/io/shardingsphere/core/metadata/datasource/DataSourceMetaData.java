@@ -39,7 +39,7 @@ public interface DataSourceMetaData {
      * 
      * @return port
      */
-    Integer getPort();
+    int getPort();
     
     /**
      * Get schema name.
