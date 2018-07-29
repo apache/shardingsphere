@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.metadata.datasource.dialect;
 
+import com.google.common.base.Splitter;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import lombok.Getter;
@@ -52,10 +53,10 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
     private URI getURI(final String url) {
         String cleanUrl = url.substring(5);
         if (cleanUrl.contains("h2:~")) {
-            cleanUrl = cleanUrl.split(";")[0];
+            cleanUrl = Splitter.on(";").splitToList(cleanUrl).get(0);
             cleanUrl = cleanUrl.replace(":", "://").replace("~", DEFAULT_HOST);
         } else if (cleanUrl.contains("h2:mem")) {
-            cleanUrl = cleanUrl.split(";")[0];
+            cleanUrl = Splitter.on(";").splitToList(cleanUrl).get(0);
             String[] parts = cleanUrl.split(":");
             if (3 == parts.length) {
                 cleanUrl = parts[0] + "://" + parts[1] + "/" + parts[2];

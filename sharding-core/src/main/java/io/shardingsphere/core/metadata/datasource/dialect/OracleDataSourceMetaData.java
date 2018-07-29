@@ -17,11 +17,13 @@
 
 package io.shardingsphere.core.metadata.datasource.dialect;
 
+import com.google.common.base.Splitter;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import lombok.Getter;
 
 import java.net.URI;
+import java.util.List;
 
 /**
  * Data source meta data for Oracle.
@@ -53,9 +55,9 @@ public final class OracleDataSourceMetaData implements DataSourceMetaData {
         } else if (cleanUrl.contains("oracle:thin:@")) {
             cleanUrl = cleanUrl.replace("oracle:thin:@", "oracle://");
         }
-        String[] parts = cleanUrl.split(":");
-        if (4 == parts.length) {
-            cleanUrl = parts[0] + ":" + parts[1] + ":" + parts[2] + "/" + parts[3];
+        List<String> parts = Splitter.on(":").splitToList(cleanUrl);
+        if (4 == parts.size()) {
+            cleanUrl = parts.get(0) + ":" + parts.get(1) + ":" + parts.get(2) + "/" + parts.get(3);
         }
         URI result = URI.create(cleanUrl);
         if (null == result.getHost()) {
