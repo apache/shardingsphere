@@ -55,7 +55,7 @@ public interface TransactionManager {
     /**
      * Obtain the status of the transaction associated with the current thread.
      *
-     *  @return The transaction status.
+     * @return The transaction status.
      *  <p>
      *  If no transaction is associated with the current thread, this method returns the Status.NoTransaction value
      * </p>
