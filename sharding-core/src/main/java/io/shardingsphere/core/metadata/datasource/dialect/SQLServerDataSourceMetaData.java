@@ -20,36 +20,42 @@ package io.shardingsphere.core.metadata.datasource.dialect;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
-import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataBuilder;
+import lombok.Getter;
 
 import java.net.URI;
 
 /**
- * Oracle data source meta data builder.
+ * Data source meta data for SQLServer.
  *
  * @author panjuan
  */
-public final class OracleDataSourceMetaDataBuilder implements DataSourceMetaDataBuilder {
+@Getter
+public final class SQLServerDataSourceMetaData implements DataSourceMetaData {
     
-    private static final Integer DEFAULT_PORT = 1521;
+    private static final Integer DEFAULT_PORT = 1433;
     
-    @Override
-    public DataSourceMetaData build(final String url) {
+    private final String hostName;
+    
+    private final Integer port;
+    
+    private final String schemeName;
+    
+    private final DatabaseType databaseType = DatabaseType.SQLServer;
+    
+    public SQLServerDataSourceMetaData(final String url) {
         String cleanUrl = url.substring(5);
-        if (cleanUrl.contains("oracle:thin:@//")) {
-            cleanUrl = cleanUrl.replace("oracle:thin:@//", "oracle://");
-        } else if (cleanUrl.contains("oracle:thin:@")) {
-            cleanUrl = cleanUrl.replace("oracle:thin:@", "oracle://");
-        }
-    
-        String[] parts = cleanUrl.split(":");
-        if (4 == parts.length) {
-            cleanUrl = parts[0] + ":" + parts[1] + ":" + parts[2] + "/" + parts[3];
-        }
+        cleanUrl = cleanUrl.replace("microsoft:", "").replace(";DatabaseName=", "/");
         URI uri = URI.create(cleanUrl);
         if (null == uri.getHost()) {
             throw new ShardingException("The URL of JDBC is not supported.");
         }
-        return new DataSourceMetaData(uri.getHost(), -1 == uri.getPort() ? DEFAULT_PORT : uri.getPort(), uri.getPath().isEmpty() ? "" : uri.getPath().substring(1), DatabaseType.Oracle);
+        hostName = uri.getHost();
+        port = -1 == uri.getPort() ? DEFAULT_PORT : uri.getPort();
+        schemeName = uri.getPath().isEmpty() ? "" : uri.getPath().substring(1);
+    }
+    
+    @Override
+    public boolean isInSameDatabaseInstance(final DataSourceMetaData dataSourceMetaData) {
+        return hostName.equals(dataSourceMetaData.getHostName()) && port.equals(dataSourceMetaData.getPort());
     }
 }

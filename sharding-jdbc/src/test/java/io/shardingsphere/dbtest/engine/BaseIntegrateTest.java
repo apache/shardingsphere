@@ -23,12 +23,7 @@ import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
-import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataBuilder;
-import io.shardingsphere.core.metadata.datasource.dialect.H2DataSourceMetaDataBuilder;
-import io.shardingsphere.core.metadata.datasource.dialect.MySQLDataSourceMetaDataBuilder;
-import io.shardingsphere.core.metadata.datasource.dialect.OracleDataSourceMetaDataBuilder;
-import io.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaDataBuilder;
-import io.shardingsphere.core.metadata.datasource.dialect.SQLServerDataSourceMetaDataBuilder;
+import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataFactory;
 import io.shardingsphere.core.parsing.cache.ParsingResultCache;
 import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
@@ -150,26 +145,9 @@ public abstract class BaseIntegrateTest {
     private Map<String, DataSourceMetaData> getDataSourceMetaDataMap() throws SQLException {
         Map<String, DataSourceMetaData> result = new LinkedHashMap<>();
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            result.put(entry.getKey(), createDataSourceMetaDataParser(databaseTypeEnvironment.getDatabaseType()).build(getDataSourceURL(entry.getValue())));
+            result.put(entry.getKey(), DataSourceMetaDataFactory.newInstance(databaseTypeEnvironment.getDatabaseType(), getDataSourceURL(entry.getValue())));
         }
         return result;
-    }
-    
-    private DataSourceMetaDataBuilder createDataSourceMetaDataParser(final DatabaseType databaseType) {
-        switch (databaseType) {
-            case H2:
-                return new H2DataSourceMetaDataBuilder();
-            case MySQL:
-                return new MySQLDataSourceMetaDataBuilder();
-            case Oracle:
-                return new OracleDataSourceMetaDataBuilder();
-            case PostgreSQL:
-                return new PostgreSQLDataSourceMetaDataBuilder();
-            case SQLServer:
-                return new SQLServerDataSourceMetaDataBuilder();
-            default:
-                throw new UnsupportedOperationException(String.format("Cannot support database [%s].", databaseType));
-        }
     }
     
     private static String getDataSourceURL(final DataSource dataSource) throws SQLException {

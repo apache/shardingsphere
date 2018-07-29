@@ -20,26 +20,41 @@ package io.shardingsphere.core.metadata.datasource.dialect;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
-import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataBuilder;
+import lombok.Getter;
 
 import java.net.URI;
 
 /**
- * MySQL data source meta data builder.
+ * Data source meta data for MySQL.
  *
  * @author panjuan
  */
-public final class MySQLDataSourceMetaDataBuilder implements DataSourceMetaDataBuilder {
+@Getter
+public final class MySQLDataSourceMetaData implements DataSourceMetaData {
     
     private static final Integer DEFAULT_PORT = 3306;
     
-    @Override
-    public DataSourceMetaData build(final String url) {
+    private final String hostName;
+    
+    private final Integer port;
+    
+    private final String schemeName;
+    
+    private final DatabaseType databaseType = DatabaseType.MySQL;
+    
+    public MySQLDataSourceMetaData(final String url) {
         String cleanUrl = url.substring(5);
         URI uri = URI.create(cleanUrl);
         if (null == uri.getHost()) {
             throw new ShardingException("The URL of JDBC is not supported.");
         }
-        return new DataSourceMetaData(uri.getHost(), -1 == uri.getPort() ? DEFAULT_PORT : uri.getPort(), uri.getPath().isEmpty() ? "" : uri.getPath().substring(1), DatabaseType.MySQL);
+        hostName = uri.getHost();
+        port = -1 == uri.getPort() ? DEFAULT_PORT : uri.getPort();
+        schemeName = uri.getPath().isEmpty() ? "" : uri.getPath().substring(1);
+    }
+    
+    @Override
+    public boolean isInSameDatabaseInstance(final DataSourceMetaData dataSourceMetaData) {
+        return hostName.equals(dataSourceMetaData.getHostName()) && port.equals(dataSourceMetaData.getPort());
     }
 }
