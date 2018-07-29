@@ -361,18 +361,15 @@ public final class ShardingRule {
     }
     
     /**
-     * Get master slave rule name optional.
+     * Find master slave rule.
      *
      * @param dataSourceName data source name
-     * @return master slave rule name
+     * @return master slave rule
      */
-    public Optional<String> tryFindMasterSlaveRuleName(final String dataSourceName) {
-        if (masterSlaveRules.isEmpty()) {
-            return Optional.absent();
-        }
+    public Optional<MasterSlaveRule> findMasterSlaveRule(final String dataSourceName) {
         for (MasterSlaveRule each : masterSlaveRules) {
             if (each.containDataSourceName(dataSourceName)) {
-                return Optional.fromNullable(each.getName());
+                return Optional.of(each);
             }
         }
         return Optional.absent();
