@@ -17,21 +17,18 @@
 
 package io.shardingsphere.core.metadata.datasource;
 
-import io.shardingsphere.core.constant.DatabaseType;
-
 /**
- * Data source meta data parser.
+ * Data source meta data builder.
  *
  * @author panjuan
  */
-public interface DataSourceMetaDataParser {
+public interface DataSourceMetaDataBuilder {
     
     /**
-     * Get data source meta data.
+     * Build data source meta data.
      *
      * @param url data source URL
-     * @param databaseType database type
      * @return data source meta data
      */
-    DataSourceMetaData getDataSourceMetaData(String url, DatabaseType databaseType);
+    DataSourceMetaData build(String url);
 }

@@ -19,11 +19,11 @@ package io.shardingsphere.core.metadata.datasource;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.metadata.datasource.dialect.H2DataSourceMetaDataParser;
-import io.shardingsphere.core.metadata.datasource.dialect.MySQLDataSourceMetaDataParser;
-import io.shardingsphere.core.metadata.datasource.dialect.OracleDataSourceMetaDataParser;
-import io.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaDataParser;
-import io.shardingsphere.core.metadata.datasource.dialect.SQLServerDataSourceMetaDataParser;
+import io.shardingsphere.core.metadata.datasource.dialect.H2DataSourceMetaDataBuilder;
+import io.shardingsphere.core.metadata.datasource.dialect.MySQLDataSourceMetaDataBuilder;
+import io.shardingsphere.core.metadata.datasource.dialect.OracleDataSourceMetaDataBuilder;
+import io.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaDataBuilder;
+import io.shardingsphere.core.metadata.datasource.dialect.SQLServerDataSourceMetaDataBuilder;
 import io.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
@@ -48,23 +48,23 @@ public class ShardingDataSourceMetaData {
     private Map<String, DataSourceMetaData> getDataSourceMetaDataMap(final Map<String, String> dataSourceURLs, final ShardingRule shardingRule, final DatabaseType databaseType) {
         Map<String, DataSourceMetaData> dataSourceMetaDataMap = new LinkedHashMap<>(dataSourceURLs.size(), 1);
         for (Entry<String, String> entry : dataSourceURLs.entrySet()) {
-            dataSourceMetaDataMap.put(entry.getKey(), createDataSourceMetaDataParser(databaseType).getDataSourceMetaData(entry.getValue(), databaseType));
+            dataSourceMetaDataMap.put(entry.getKey(), createDataSourceMetaDataParser(databaseType).build(entry.getValue()));
         }
         return handleMasterSlaveDataSourceNames(shardingRule, dataSourceMetaDataMap);
     }
     
-    private static DataSourceMetaDataParser createDataSourceMetaDataParser(final DatabaseType databaseType) {
+    private static DataSourceMetaDataBuilder createDataSourceMetaDataParser(final DatabaseType databaseType) {
         switch (databaseType) {
             case H2:
-                return new H2DataSourceMetaDataParser();
+                return new H2DataSourceMetaDataBuilder();
             case MySQL:
-                return new MySQLDataSourceMetaDataParser();
+                return new MySQLDataSourceMetaDataBuilder();
             case Oracle:
-                return new OracleDataSourceMetaDataParser();
+                return new OracleDataSourceMetaDataBuilder();
             case PostgreSQL:
-                return new PostgreSQLDataSourceMetaDataParser();
+                return new PostgreSQLDataSourceMetaDataBuilder();
             case SQLServer:
-                return new SQLServerDataSourceMetaDataParser();
+                return new SQLServerDataSourceMetaDataBuilder();
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support database [%s].", databaseType));
         }

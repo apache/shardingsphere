@@ -20,26 +20,26 @@ package io.shardingsphere.core.metadata.datasource.dialect;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
-import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataParser;
+import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataBuilder;
 
 import java.net.URI;
 
 /**
- * MySQL data source meta data parser.
+ * PostgreSQL data source meta data builder.
  *
  * @author panjuan
  */
-public final class MySQLDataSourceMetaDataParser implements DataSourceMetaDataParser {
+public final class PostgreSQLDataSourceMetaDataBuilder implements DataSourceMetaDataBuilder {
     
-    private static final Integer DEFAULT_PORT = 3306;
+    private static final Integer DEFAULT_PORT = 5432;
     
     @Override
-    public DataSourceMetaData getDataSourceMetaData(final String url, final DatabaseType databaseType) {
+    public DataSourceMetaData build(final String url) {
         String cleanUrl = url.substring(5);
         URI uri = URI.create(cleanUrl);
         if (null == uri.getHost()) {
             throw new ShardingException("The URL of JDBC is not supported.");
         }
-        return new DataSourceMetaData(uri.getHost(), -1 == uri.getPort() ? DEFAULT_PORT : uri.getPort(), uri.getPath().isEmpty() ? "" : uri.getPath().substring(1), databaseType);
+        return new DataSourceMetaData(uri.getHost(), -1 == uri.getPort() ? DEFAULT_PORT : uri.getPort(), uri.getPath().isEmpty() ? "" : uri.getPath().substring(1), DatabaseType.PostgreSQL);
     }
 }
