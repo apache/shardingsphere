@@ -61,7 +61,7 @@ public final class SqlRoutingEventListenerTest {
     }
     
     @AfterClass
-    public static void tearDown() throws Exception {
+    public static void tearDown() throws NoSuchFieldException, IllegalAccessException {
         releaseTracer();
     }
     
@@ -76,7 +76,7 @@ public final class SqlRoutingEventListenerTest {
         dataSourceMap.put("ds_0", null);
         dataSourceMap.put("ds_1", null);
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, dataSourceMap.keySet());
-        shardingContext = new ShardingContext(dataSourceMap, null, shardingRule, DatabaseType.MySQL, null, null, true);
+        shardingContext = new ShardingContext(dataSourceMap, shardingRule, DatabaseType.MySQL, null, null, true, null);
     }
     
     @Test
@@ -106,7 +106,7 @@ public final class SqlRoutingEventListenerTest {
             sqlRouteMethod.setAccessible(true);
             sqlRouteMethod.invoke(statement, "111");
             // CHECKSTYLE:OFF
-        } catch (Exception e) {
+        } catch (final Exception ex) {
             // CHECKSTYLE:ON
         }
         assertThat(TRACER.finishedSpans().size(), is(1));

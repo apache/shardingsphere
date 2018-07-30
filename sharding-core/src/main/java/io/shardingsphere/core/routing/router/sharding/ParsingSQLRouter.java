@@ -19,7 +19,7 @@ package io.shardingsphere.core.routing.router.sharding;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.optimizer.OptimizeEngineFactory;
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;
 import io.shardingsphere.core.parsing.SQLParsingEngine;
@@ -70,7 +70,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     private final ShardingRule shardingRule;
     
-    private final ShardingMetaData shardingMetaData;
+    private final ShardingTableMetaData shardingTableMetaData;
     
     private final DatabaseType databaseType;
     
@@ -82,7 +82,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     @Override
     public SQLStatement parse(final String logicSQL, final boolean useCache) {
-        return new SQLParsingEngine(databaseType, logicSQL, shardingRule, shardingMetaData).parse(useCache);
+        return new SQLParsingEngine(databaseType, logicSQL, shardingRule, shardingTableMetaData).parse(useCache);
     }
     
     @Override

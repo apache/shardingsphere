@@ -26,7 +26,7 @@ import io.shardingsphere.core.api.config.strategy.ComplexShardingStrategyConfigu
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.ShardingOperator;
 import io.shardingsphere.core.keygen.fixture.IncrementKeyGenerator;
-import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.SQLParsingEngine;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
 import io.shardingsphere.core.parsing.parser.context.condition.Condition;
@@ -94,8 +94,8 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     @Test
     public void assertParseWithoutColumnsWithGenerateKeyColumnsWithoutParameter() {
         ShardingRule shardingRule = createShardingRuleWithGenerateKeyColumns();
-        ShardingMetaData shardingMetaData = createShardingMetaData();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` VALUES (10)", shardingRule, shardingMetaData);
+        ShardingTableMetaData shardingTableMetaData = createShardingTableMetaData();
+        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` VALUES (10)", shardingRule, shardingTableMetaData);
         InsertStatement insertStatement = (InsertStatement) statementParser.parse(false);
         assertInsertStatementWithoutParameter(insertStatement);
     }
@@ -103,8 +103,8 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     @Test
     public void assertParseWithoutColumnsWithGenerateKeyColumnsWithParameter() {
         ShardingRule shardingRule = createShardingRuleWithGenerateKeyColumns();
-        ShardingMetaData shardingMetaData = createShardingMetaData();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` VALUES (?)", shardingRule, shardingMetaData);
+        ShardingTableMetaData shardingTableMetaData = createShardingTableMetaData();
+        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` VALUES (?)", shardingRule, shardingTableMetaData);
         InsertStatement insertStatement = (InsertStatement) statementParser.parse(false);
         assertInsertStatementWithParameter(insertStatement);
     }
@@ -112,8 +112,8 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     @Test
     public void assertParseWithoutColumnsWithoutParameter() {
         ShardingRule shardingRule = createShardingRule();
-        ShardingMetaData shardingMetaData = createShardingMetaData();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` VALUES (10,20)", shardingRule, shardingMetaData);
+        ShardingTableMetaData shardingTableMetaData = createShardingTableMetaData();
+        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` VALUES (10,20)", shardingRule, shardingTableMetaData);
         InsertStatement insertStatement = (InsertStatement) statementParser.parse(false);
         assertInsertStatementWithoutParameter(insertStatement);
     }
@@ -121,8 +121,8 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     @Test
     public void assertParseWithoutColumnsWithParameter() {
         ShardingRule shardingRule = createShardingRule();
-        ShardingMetaData shardingMetaData = createShardingMetaData();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` VALUES (?, ?)", shardingRule, shardingMetaData);
+        ShardingTableMetaData shardingTableMetaData = createShardingTableMetaData();
+        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` VALUES (?, ?)", shardingRule, shardingTableMetaData);
         InsertStatement insertStatement = (InsertStatement) statementParser.parse(false);
         assertInsertStatementWithParameter(insertStatement);
     }
@@ -168,8 +168,8 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     @SuppressWarnings("unchecked")
     private void parseWithSpecialSyntax(final DatabaseType dbType, final String actualSQL) {
         ShardingRule shardingRule = createShardingRule();
-        ShardingMetaData shardingMetaData = createShardingMetaData();
-        InsertStatement insertStatement = (InsertStatement) new SQLParsingEngine(dbType, actualSQL, shardingRule, shardingMetaData).parse(false);
+        ShardingTableMetaData shardingTableMetaData = createShardingTableMetaData();
+        InsertStatement insertStatement = (InsertStatement) new SQLParsingEngine(dbType, actualSQL, shardingRule, shardingTableMetaData).parse(false);
         assertThat(insertStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
         assertFalse(insertStatement.getTables().find("TABLE_XXX").get().getAlias().isPresent());
         Condition condition = insertStatement.getConditions().find(new Column("field1", "TABLE_XXX")).get();

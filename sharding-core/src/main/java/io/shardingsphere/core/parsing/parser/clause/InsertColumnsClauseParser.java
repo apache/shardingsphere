@@ -18,7 +18,7 @@
 package io.shardingsphere.core.parsing.parser.clause;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.Assist;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
@@ -43,6 +43,7 @@ import java.util.LinkedList;
  *
  * @author zhangliang
  * @author maxiaoguang
+ * @author panjuan
  */
 public final class InsertColumnsClauseParser implements SQLClauseParser {
     
@@ -62,9 +63,9 @@ public final class InsertColumnsClauseParser implements SQLClauseParser {
      * Parse insert columns.
      *
      * @param insertStatement insert statement
-     * @param shardingMetaData sharding meta data
+     * @param shardingTableMetaData sharding table meta data
      */
-    public void parse(final InsertStatement insertStatement, final ShardingMetaData shardingMetaData) {
+    public void parse(final InsertStatement insertStatement, final ShardingTableMetaData shardingTableMetaData) {
         Collection<Column> result = new LinkedList<>();
         String tableName = insertStatement.getTables().getSingleTableName();
         Optional<Column> generateKeyColumn = shardingRule.getGenerateKeyColumn(tableName);
@@ -92,7 +93,8 @@ public final class InsertColumnsClauseParser implements SQLClauseParser {
             insertStatement.setColumnsListLastPosition(lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length());
             lexerEngine.nextToken();
         } else {
-            Collection<String> columnNames = shardingMetaData.getTableMetaDataMap().get(tableName).getAllColumnNames();
+            Collection<String> columnNames = shardingTableMetaData.getTableMetaDataMap().containsKey(tableName)
+                    ? shardingTableMetaData.getTableMetaDataMap().get(tableName).getAllColumnNames() : new LinkedList<String>();
             int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length() - 1;
             insertStatement.getSqlTokens().add(new InsertColumnToken(beginPosition, "("));
             ItemsToken columnsToken = new ItemsToken(beginPosition);

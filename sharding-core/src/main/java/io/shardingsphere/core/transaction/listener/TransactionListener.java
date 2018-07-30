@@ -19,38 +19,52 @@ package io.shardingsphere.core.transaction.listener;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
+import io.shardingsphere.core.transaction.TransactionContextHolder;
 import io.shardingsphere.core.transaction.event.TransactionEvent;
-import io.shardingsphere.core.transaction.spi.Transaction;
-import lombok.RequiredArgsConstructor;
+import io.shardingsphere.core.transaction.spi.TransactionManager;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+import java.sql.SQLException;
 
 /**
  * Transaction Listener.
  *
  * @author zhaojun
  */
-@RequiredArgsConstructor
-public class TransactionListener {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class TransactionListener {
     
-    private final Transaction transaction;
+    private static final TransactionListener INSTANCE = new TransactionListener();
+    
+    /**
+     * Get instance of transaction listener.
+     * 
+     * @return instance of transaction listener
+     */
+    public static TransactionListener getInstance() {
+        return INSTANCE;
+    }
     
     /**
      * Listen event.
      *
      * @param transactionEvent transaction event
-     * @throws Exception exception
+     * @throws SQLException SQL exception
      */
     @Subscribe
     @AllowConcurrentEvents
-    public void listen(final TransactionEvent transactionEvent) throws Exception {
+    public void listen(final TransactionEvent transactionEvent) throws SQLException {
+        TransactionManager transactionManager = TransactionContextHolder.get().getTransactionManager();
         switch (transactionEvent.getTclType()) {
             case BEGIN:
-                transaction.begin(transactionEvent);
+                transactionManager.begin(transactionEvent);
                 break;
             case COMMIT:
-                transaction.commit(transactionEvent);
+                transactionManager.commit(transactionEvent);
                 break;
             case ROLLBACK:
-                transaction.rollback(transactionEvent);
+                transactionManager.rollback(transactionEvent);
                 break;
             default:
         }

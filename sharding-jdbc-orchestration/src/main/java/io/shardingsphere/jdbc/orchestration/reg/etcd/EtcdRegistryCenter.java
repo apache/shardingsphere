@@ -46,7 +46,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Etcd based registry center.
@@ -83,7 +85,7 @@ public final class EtcdRegistryCenter implements RegistryCenter {
         return etcdRetryEngine.execute(new Callable<String>() {
             
             @Override
-            public String call() throws Exception {
+            public String call() throws InterruptedException, ExecutionException, TimeoutException {
                 RangeResponse response = kvStub.range(request).get(etcdConfig.getTimeoutMilliseconds(), TimeUnit.MILLISECONDS);
                 return response.getKvsCount() > 0 ? response.getKvs(0).getValue().toStringUtf8() : null;
             }
@@ -107,7 +109,7 @@ public final class EtcdRegistryCenter implements RegistryCenter {
         Optional<List<String>> result = etcdRetryEngine.execute(new Callable<List<String>>() {
             
             @Override
-            public List<String> call() throws Exception {
+            public List<String> call() throws InterruptedException, ExecutionException, TimeoutException {
                 RangeResponse response = kvStub.range(request).get(etcdConfig.getTimeoutMilliseconds(), TimeUnit.MILLISECONDS);
                 List<String> result = new ArrayList<>();
                 for (KeyValue each : response.getKvsList()) {
@@ -126,7 +128,7 @@ public final class EtcdRegistryCenter implements RegistryCenter {
         etcdRetryEngine.execute(new Callable<Void>() {
             
             @Override
-            public Void call() throws Exception {
+            public Void call() throws InterruptedException, ExecutionException, TimeoutException {
                 kvStub.put(request).get(etcdConfig.getTimeoutMilliseconds(), TimeUnit.MILLISECONDS);
                 return null;
             }
@@ -148,7 +150,7 @@ public final class EtcdRegistryCenter implements RegistryCenter {
         etcdRetryEngine.execute(new Callable<Void>() {
             
             @Override
-            public Void call() throws Exception {
+            public Void call() throws InterruptedException, ExecutionException, TimeoutException {
                 kvStub.put(request).get(etcdConfig.getTimeoutMilliseconds(), TimeUnit.MILLISECONDS);
                 return null;
             }
@@ -160,7 +162,7 @@ public final class EtcdRegistryCenter implements RegistryCenter {
         return etcdRetryEngine.execute(new Callable<Long>() {
             
             @Override
-            public Long call() throws Exception {
+            public Long call() throws InterruptedException, ExecutionException, TimeoutException {
                 long leaseId = leaseStub.leaseGrant(request).get(etcdConfig.getTimeoutMilliseconds(), TimeUnit.MILLISECONDS).getID();
                 keepAlive.heartbeat(leaseId);
                 return leaseId;

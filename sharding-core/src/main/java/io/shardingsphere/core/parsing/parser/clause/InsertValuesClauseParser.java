@@ -19,7 +19,6 @@ package io.shardingsphere.core.parsing.parser.clause;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
@@ -69,9 +68,8 @@ public class InsertValuesClauseParser implements SQLClauseParser {
      * Parse insert values.
      *
      * @param insertStatement insert statement
-     * @param shardingMetaData sharding meta data
      */
-    public void parse(final InsertStatement insertStatement, final ShardingMetaData shardingMetaData) {
+    public void parse(final InsertStatement insertStatement) {
         Collection<Keyword> valueKeywords = new LinkedList<>();
         valueKeywords.add(DefaultKeyword.VALUES);
         valueKeywords.addAll(Arrays.asList(getSynonymousKeywordsForValues()));

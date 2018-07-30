@@ -37,7 +37,7 @@ public enum NewParametersBoundFlag {
     private final int value;
     
     /**
-     * Value of.
+     * Value of new parameters bound flag.
      * 
      * @param value value
      * @return new parameters bound flag

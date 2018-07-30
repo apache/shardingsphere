@@ -33,6 +33,8 @@ import java.util.concurrent.ExecutorService;
 @RequiredArgsConstructor
 public final class ExecutorGroup {
     
+    private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
+    
     private final ChannelId channelId;
     
     /**
@@ -41,7 +43,7 @@ public final class ExecutorGroup {
      * @return executor service
      */
     public ExecutorService getExecutorService() {
-        return TransactionType.XA.equals(RuleRegistry.getInstance().getTransactionType()) ? ChannelThreadExecutorGroup.getInstance().get(channelId)
+        return TransactionType.XA.equals(RULE_REGISTRY.getTransactionType()) ? ChannelThreadExecutorGroup.getInstance().get(channelId)
             : ExecutorContext.getInstance().getExecutorService();
     }
 }

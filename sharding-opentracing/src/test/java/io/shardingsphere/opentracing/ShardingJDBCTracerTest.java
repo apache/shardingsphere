@@ -41,7 +41,7 @@ import static org.mockito.Mockito.mock;
 public final class ShardingJDBCTracerTest {
     
     @Before
-    public void setUp() throws Exception {
+    public void setUp() throws NoSuchFieldException, IllegalAccessException {
         System.setProperty("shardingjdbc.opentracing.tracer.class", FooTracer.class.getName());
         clearGlobalTracer();
         unregisterEventBus();
