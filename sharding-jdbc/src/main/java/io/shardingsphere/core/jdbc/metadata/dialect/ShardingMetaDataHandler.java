@@ -25,8 +25,11 @@ import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -80,7 +83,19 @@ public abstract class ShardingMetaDataHandler {
      * @return Table names from default data source
      * @throws SQLException SQL exception.
      */
-    public abstract Collection<String> getTableNamesFromDefaultDataSource() throws SQLException;
+    public Collection<String> getTableNamesFromDefaultDataSource() throws SQLException {
+        Collection<String> result = new LinkedList<>();
+        try (Connection connection = getDataSource().getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.execute("show tables;");
+            try (ResultSet resultSet = statement.getResultSet()) {
+                while (resultSet.next()) {
+                    result.add(resultSet.getString(1));
+                }
+            }
+            return result;
+        }
+    }
 
     /**
      * Judge whether table exist or not.
