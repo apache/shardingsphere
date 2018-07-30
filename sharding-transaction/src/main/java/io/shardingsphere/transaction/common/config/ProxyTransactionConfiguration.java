@@ -18,7 +18,7 @@
 package io.shardingsphere.transaction.common.config;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.transaction.common.TransactionContext;
+import com.google.common.base.Preconditions;
 import io.shardingsphere.transaction.common.TransactionContextFactory;
 import io.shardingsphere.transaction.common.TransactionContextHolder;
 import io.shardingsphere.transaction.common.spi.TransactionManager;
@@ -26,29 +26,28 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * JDBC transaction configuration.
+ * Sharding proxy transaction configuration.
  *
  * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class JDBCTransactionConfiguration extends TransactionConfigurationAdapter {
+public class ProxyTransactionConfiguration extends TransactionConfigurationAdapter {
     
-    private static final JDBCTransactionConfiguration CONFIG = new JDBCTransactionConfiguration();
+    private static final ProxyTransactionConfiguration CONFIG = new ProxyTransactionConfiguration();
     
     /**
-     * Get singleton instance of {@code JDBCTransactionConfiguration}.
+     * Get singleton instance of {@code ProxyTransactionConfiguration}.
      *
-     * @return JDBC transaction configuration
+     * @return proxy transaction configuration
      */
-    public static JDBCTransactionConfiguration getInstance() {
+    public static ProxyTransactionConfiguration getInstance() {
         return CONFIG;
     }
     
     @Override
     protected void doXaTransactionConfiguration() {
         Optional<TransactionManager> transactionManager = doSPIConfiguration();
-        TransactionContext transactionContext = transactionManager.isPresent()
-                ? TransactionContextFactory.newXAContext(transactionManager.get()) : TransactionContextFactory.newWeakXAContext();
-        TransactionContextHolder.set(transactionContext);
+        Preconditions.checkState(transactionManager.isPresent(), "there is no XA transaction manager existing, please prepare exactly one(Atomikos or Narayana) using SPI.");
+        TransactionContextHolder.set(TransactionContextFactory.newXAContext(transactionManager.get()));
     }
 }
