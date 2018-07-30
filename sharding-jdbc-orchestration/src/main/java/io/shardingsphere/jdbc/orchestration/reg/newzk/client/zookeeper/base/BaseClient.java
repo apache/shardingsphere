@@ -126,7 +126,7 @@ public abstract class BaseClient implements IClient {
     
     @Override
     public void registerWatch(final String key, final ZookeeperEventListener zookeeperEventListener) {
-        String path = PathUtil.getRealPath(rootNode, key);
+        final String path = PathUtil.getRealPath(rootNode, key);
         zookeeperEventListener.setPath(path);
         checkPath(path);
         context.getWatchers().put(zookeeperEventListener.getKey(), zookeeperEventListener);

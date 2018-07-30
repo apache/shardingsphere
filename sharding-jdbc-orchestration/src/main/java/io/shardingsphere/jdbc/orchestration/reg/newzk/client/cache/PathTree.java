@@ -322,7 +322,9 @@ public final class PathTree {
             log.debug("cache put:{},value:{},status:{}", path, value, status);
             if (status == PathStatus.RELEASE) {
                 this.setStatus(PathStatus.CHANGING);
-                get(path).setValue(value.getBytes(ZookeeperConstants.UTF_8));
+                final String realPath = provider.getRealPath(path);
+                final PathResolve pathResolve = new PathResolve(realPath);
+                rootNode.get().set(pathResolve, realPath);
                 this.setStatus(PathStatus.RELEASE);
             } else {
                 try {

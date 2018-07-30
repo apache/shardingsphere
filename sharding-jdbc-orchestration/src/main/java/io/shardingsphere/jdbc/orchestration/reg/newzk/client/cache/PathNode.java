@@ -89,58 +89,47 @@ public final class PathNode {
         node.setPath(PathUtil.getRealPath(path, node.getKey()));
     }
     
-    PathNode set(final Iterator<String> iterator, final String value) {
-        String key = iterator.next();
-        log.debug("PathNode set:{},value:{}", key, value);
-        PathNode result = children.get(key);
-        if (result == null) {
-            log.debug("set children haven't:{}", key);
-            result = new PathNode(key);
-            children.put(key, result);
-        }
-        if (iterator.hasNext()) {
-            result.set(iterator, value);
-        } else {
-            result.setValue(value.getBytes(ZookeeperConstants.UTF_8));
-        }
-        return result;
-    }
-    
-    PathNode get(final Iterator<String> iterator) {
-        String key = iterator.next();
-        log.debug("get:{}", key);
-        PathNode result = children.get(key);
-        if (result == null) {
-            log.debug("get children haven't:{}", key);
-            return null;
-        }
-        if (iterator.hasNext()) {
-            return result.get(iterator);
-        }
-        return result;
-    }
-    
-    void delete(final String path, final LexerEngine lexerEngine) {
-        if (lexerEngine.getCurrentToken().getType().equals(Assist.END)) {
-            children.remove(path);
-        }
-        if (children.containsKey(path)) {
-            PathNode node = children.get(path);
-            lexerEngine.nextToken();
-            lexerEngine.skipIfEqual(Symbol.SLASH);
-            node.delete(lexerEngine.getCurrentToken().getLiterals(), lexerEngine);
-        }
-    }
-    
-    public PathNode get(final PathResolve pathResolve) {
-        pathResolve.next();
+    PathNode set(final PathResolve pathResolve, final String value) {
         if (pathResolve.isEnd()) {
-            return children.get(pathResolve.getCurrent());
+            setValue(value.getBytes(ZookeeperConstants.UTF_8));
+            return this;
         }
-        return children.get(pathResolve.getCurrent()).get(pathResolve);
+        pathResolve.next();
+        log.debug("PathNode set:{},value:{}", pathResolve.getCurrent(), value);
+        if (children.containsKey(pathResolve.getCurrent())) {
+            if (pathResolve.isEnd()) {
+                PathNode result = children.get(pathResolve.getCurrent());
+                result.setValue(value.getBytes(ZookeeperConstants.UTF_8));
+                return result;
+            } else {
+                set(pathResolve, value);
+            }
+        }
+        PathNode result;
+        PathNode current = new PathNode(pathResolve.getCurrent());
+        this.attachChild(current);
+        do {
+            pathResolve.next();
+            result = new PathNode(pathResolve.getCurrent());
+            current.attachChild(result);
+            current = result;
+        }
+        while (!pathResolve.isEnd());
+        return result;
     }
     
-    public void delete(final PathResolve pathResolve) {
+    PathNode get(final PathResolve pathResolve) {
+        pathResolve.next();
+        if (children.containsKey(pathResolve.getCurrent())) {
+            if (pathResolve.isEnd()) {
+                return children.get(pathResolve.getCurrent());
+            }
+            return children.get(pathResolve.getCurrent()).get(pathResolve);
+        }
+        return null;
+    }
+    
+    void delete(final PathResolve pathResolve) {
         pathResolve.next();
         if (children.containsKey(pathResolve.getCurrent())) {
             if (pathResolve.isEnd()) {

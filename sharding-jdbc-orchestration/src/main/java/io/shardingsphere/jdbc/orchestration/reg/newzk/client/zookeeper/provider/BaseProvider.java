@@ -34,6 +34,7 @@ import org.apache.zookeeper.data.ACL;
 
 import java.util.List;
 import java.util.Stack;
+import org.apache.zookeeper.data.Stat;
 
 /*
  * Base provider.
@@ -94,13 +95,21 @@ public class BaseProvider implements IProvider {
     
     @Override
     public void create(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
+        if (exists(key)) {
+            log.debug("node exist:{}", key);
+            return;
+        }
         holder.getZooKeeper().create(key, value.getBytes(ZookeeperConstants.UTF_8), authorities, createMode);
         log.debug("BaseProvider createCurrentOnly:{}", key);
     }
 
     @Override
-    public void update(final String key, final String value) throws KeeperException, InterruptedException {
-        holder.getZooKeeper().setData(key, value.getBytes(ZookeeperConstants.UTF_8), ZookeeperConstants.VERSION);
+    public boolean update(final String key, final String value) throws KeeperException, InterruptedException {
+        if (exists(key)) {
+            holder.getZooKeeper().setData(key, value.getBytes(ZookeeperConstants.UTF_8), ZookeeperConstants.VERSION);
+            return true;
+        }
+        return false;
     }
     
     @Override

@@ -112,10 +112,11 @@ public interface IProvider {
      *
      * @param key key
      * @param value value
+     * @return is success
      * @throws KeeperException Zookeeper Exception
      * @throws InterruptedException InterruptedException
      */
-    void update(String key, String value) throws KeeperException, InterruptedException;
+    boolean update(String key, String value) throws KeeperException, InterruptedException;
     
     /**
      * Only delete target node..

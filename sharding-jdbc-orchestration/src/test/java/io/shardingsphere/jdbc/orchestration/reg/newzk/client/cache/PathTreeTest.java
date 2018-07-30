@@ -18,6 +18,7 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.ClientFactory;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseTest;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.TestSupport;
@@ -91,22 +92,29 @@ public class PathTreeTest extends BaseTest {
         }
     }
     
+    @Test
+    public void assertDelete() {
+        
+    }
+    
     @Ignore
     @Test
     public void assertWatch() throws KeeperException, InterruptedException {
-        final String keyB = "a/b/bb";
-        final String valueB = "bbb11";
+        final String key = "a/b/bb";
+        final String value = "bbb11";
+        final String valueNew = "111";
         try {
             createRootOnly(testClient);
             pathTree.watch();
-    
-            testClient.createAllNeedPath(keyB, valueB, CreateMode.PERSISTENT);
-            testClient.update(keyB, "111");
+
+            testClient.createAllNeedPath(key, value, CreateMode.PERSISTENT);
+            Thread.sleep(200);
+            testClient.update(key, valueNew);
             
             Thread.sleep(1000);
-            assertThat(new String(pathTree.getValue(keyB)), is(valueB));
+            assertThat(pathTree.getValue(key), is(valueNew.getBytes(ZookeeperConstants.UTF_8)));
         } finally {
-            testClient.deleteCurrentBranch(keyB);
+            testClient.deleteCurrentBranch(key);
         }
     }
 }
