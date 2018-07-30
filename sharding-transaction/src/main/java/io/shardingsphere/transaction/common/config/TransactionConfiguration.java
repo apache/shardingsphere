@@ -18,6 +18,7 @@
 package io.shardingsphere.transaction.common.config;
 
 import io.shardingsphere.core.constant.TransactionType;
+import io.shardingsphere.transaction.common.spi.TransactionManager;
 
 /**
  * Execute transaction manager configuration.
@@ -30,8 +31,9 @@ public interface TransactionConfiguration {
      * Config transaction context, then binding to current thread.
      *
      * @param transactionType transaction type
+     * @return transaction manager
      */
-    void configTransactionContext(TransactionType transactionType);
+    TransactionManager configTransactionContext(TransactionType transactionType);
     
     /**
      * Subscribe transaction event using listener, register into event bus.

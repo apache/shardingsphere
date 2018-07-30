@@ -34,15 +34,17 @@ import java.util.ServiceLoader;
 public abstract class TransactionConfigurationAdapter implements TransactionConfiguration {
     
     @Override
-    public void configTransactionContext(final TransactionType transactionType) {
+    public TransactionManager configTransactionContext(final TransactionType transactionType) {
+        TransactionManager result = null;
         switch (transactionType) {
             case XA:
-                doXaTransactionConfiguration();
+                result = doXaTransactionConfiguration();
                 break;
             case BASE:
                 break;
             default:
         }
+        return result;
     }
     
     @Override
@@ -50,7 +52,7 @@ public abstract class TransactionConfigurationAdapter implements TransactionConf
         TransactionEventBusInstance.getInstance().register(TransactionListener.getInstance());
     }
     
-    protected abstract void doXaTransactionConfiguration();
+    protected abstract TransactionManager doXaTransactionConfiguration();
     
     protected Optional<TransactionManager> doSPIConfiguration() {
         Iterator<TransactionManager> iterator = ServiceLoader.load(TransactionManager.class).iterator();

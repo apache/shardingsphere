@@ -45,10 +45,11 @@ public class JDBCTransactionConfiguration extends TransactionConfigurationAdapte
     }
     
     @Override
-    protected void doXaTransactionConfiguration() {
+    protected TransactionManager doXaTransactionConfiguration() {
         Optional<TransactionManager> transactionManager = doSPIConfiguration();
         TransactionContext transactionContext = transactionManager.isPresent()
                 ? TransactionContextFactory.newXAContext(transactionManager.get()) : TransactionContextFactory.newWeakXAContext();
         TransactionContextHolder.set(transactionContext);
+        return transactionContext.getTransactionManager();
     }
 }
