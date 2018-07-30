@@ -137,7 +137,7 @@ public final class DataSetEnvironmentManager {
     private void clear(final String dataSourceName, final Collection<String> tableNames) throws SQLException {
         try (Connection connection = dataSourceMap.get(dataSourceName).getConnection()) {
             for (String each : tableNames) {
-                try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("TRUNCATE TABLE %s", each))) {
+                try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("TRUNCATE TABLE `%s`", each))) {
                     preparedStatement.executeUpdate();
                     // CHECKSTYLE:OFF
                 } catch (final SQLException ex) {
