@@ -17,12 +17,12 @@
 
 package io.shardingsphere.core.metadata.datasource.dialect;
 
-import com.google.common.base.Splitter;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import lombok.Getter;
 
-import java.net.URI;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Data source meta data for H2.
@@ -32,7 +32,7 @@ import java.net.URI;
 @Getter
 public final class H2DataSourceMetaData implements DataSourceMetaData {
     
-    private static final String DEFAULT_HOST = "localhost";
+    private static final int DEFAULT_PORT = -1;
     
     private final String hostName;
     
@@ -40,32 +40,17 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
     
     private final String schemeName;
     
-    public H2DataSourceMetaData(final String url) {
-        URI uri = getURI(url);
-        hostName = uri.getHost();
-        port = uri.getPort();
-        schemeName = uri.getPath().isEmpty() ? "" : uri.getPath().substring(1);
-    }
+    private final Pattern pattern = Pattern.compile("jdbc:h2:(mem|~)[:/](\\w+);?\\w*");
     
-    private URI getURI(final String url) {
-        String cleanUrl = url.substring(5);
-        if (cleanUrl.contains("h2:~")) {
-            cleanUrl = Splitter.on(";").splitToList(cleanUrl).get(0);
-            cleanUrl = cleanUrl.replace(":", "://").replace("~", DEFAULT_HOST);
-        } else if (cleanUrl.contains("h2:mem")) {
-            cleanUrl = Splitter.on(";").splitToList(cleanUrl).get(0);
-            String[] parts = cleanUrl.split(":");
-            if (3 == parts.length) {
-                cleanUrl = parts[0] + "://" + parts[1] + "/" + parts[2];
-            }
+    public H2DataSourceMetaData(final String url) {
+        Matcher matcher = pattern.matcher(url);
+        if (matcher.find()) {
+            hostName = matcher.group(0);
+            port = DEFAULT_PORT;
+            schemeName = matcher.group(1);
         } else {
             throw new ShardingException("The URL of JDBC is not supported.");
         }
-        URI result = URI.create(cleanUrl);
-        if (null == result.getHost()) {
-            throw new ShardingException("The URL of JDBC is not supported.");
-        }
-        return result;
     }
     
     @Override
