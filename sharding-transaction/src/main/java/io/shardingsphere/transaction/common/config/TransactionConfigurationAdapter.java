@@ -18,12 +18,14 @@
 package io.shardingsphere.transaction.common.config;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.transaction.common.listener.TransactionListener;
 import io.shardingsphere.transaction.common.spi.TransactionManager;
+import lombok.extern.slf4j.Slf4j;
 
-import java.util.Iterator;
+import java.util.List;
 import java.util.ServiceLoader;
 
 /**
@@ -31,6 +33,7 @@ import java.util.ServiceLoader;
  *
  * @author zhaojun
  */
+@Slf4j
 public abstract class TransactionConfigurationAdapter implements TransactionConfiguration {
     
     @Override
@@ -55,7 +58,10 @@ public abstract class TransactionConfigurationAdapter implements TransactionConf
     protected abstract TransactionManager doXaTransactionConfiguration();
     
     protected Optional<TransactionManager> doSPIConfiguration() {
-        Iterator<TransactionManager> iterator = ServiceLoader.load(TransactionManager.class).iterator();
-        return iterator.hasNext() ? Optional.of(iterator.next()) : Optional.<TransactionManager>absent();
+        List<TransactionManager> transactionManagerList = Lists.newArrayList(ServiceLoader.load(TransactionManager.class).iterator());
+        if (transactionManagerList.size() > 1) {
+            log.info("there is more than one transaction manger existing, chosen first one default.");
+        }
+        return transactionManagerList.isEmpty() ? Optional.<TransactionManager>absent() : Optional.of(transactionManagerList.get(0));
     }
 }
