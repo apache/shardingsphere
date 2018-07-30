@@ -139,4 +139,15 @@ public final class PathNode {
         }
         return children.get(pathResolve.getCurrent()).get(pathResolve);
     }
+    
+    public void delete(final PathResolve pathResolve) {
+        pathResolve.next();
+        if (children.containsKey(pathResolve.getCurrent())) {
+            if (pathResolve.isEnd()) {
+                children.remove(pathResolve.getCurrent());
+            } else {
+                children.get(pathResolve.getCurrent()).delete(pathResolve);
+            }
+        }
+    }
 }
