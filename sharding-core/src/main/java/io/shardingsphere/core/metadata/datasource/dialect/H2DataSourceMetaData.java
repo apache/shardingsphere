@@ -45,9 +45,9 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
     public H2DataSourceMetaData(final String url) {
         Matcher matcher = pattern.matcher(url);
         if (matcher.find()) {
-            hostName = matcher.group(0);
+            hostName = matcher.group(1);
             port = DEFAULT_PORT;
-            schemeName = matcher.group(1);
+            schemeName = matcher.group(2);
         } else {
             throw new ShardingException("The URL of JDBC is not supported.");
         }
