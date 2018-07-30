@@ -17,8 +17,8 @@
 
 package io.shardingsphere.proxy.metadata;
 
-import io.shardingsphere.core.metadata.ColumnMetaData;
-import io.shardingsphere.core.metadata.TableMetaData;
+import io.shardingsphere.core.metadata.table.ColumnMetaData;
+import io.shardingsphere.core.metadata.table.TableMetaData;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -32,7 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Sharding meta data handler.
+ * Sharding table meta data handler.
  *
  * @author panjuan
  */
@@ -70,7 +70,7 @@ public final class ShardingTableMetaDataHandler {
     
     private List<ColumnMetaData> getExistColumnMeta(final Statement statement) throws SQLException {
         List<ColumnMetaData> result = new LinkedList<>();
-        statement.executeQuery(String.format("DESC `%s`;", getActualTableName()));
+        statement.executeQuery(String.format("DESC %s;", getActualTableName()));
         try (ResultSet resultSet = statement.getResultSet()) {
             while (resultSet.next()) {
                 result.add(new ColumnMetaData(resultSet.getString("Field"), resultSet.getString("Type"), resultSet.getString("Key")));
