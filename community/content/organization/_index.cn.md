@@ -31,6 +31,8 @@ chapter = true
 
 * 史海峰, Haifeng Shi, [@PegasusS](https://github.com/PegasusS) 高级总监, 饿了么
 
+* 张小虎, Xiaohu Zhang, [@pottieva](https://github.com/pottieva) 高级总监, 翼支付
+
 ## 投票
 
 Sharding在很多情况下需要投票。选票可以视情况通过手机、电子邮件或某个投票系统产生。投票人可以回复“agree, yes, +1”，“disagree, no, -1”或“弃权”。赞成票占总票数的三分之二即可通过本次投票。弃权票等同于未投票。

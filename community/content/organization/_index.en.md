@@ -31,6 +31,8 @@ The current Project Management Committee is as follows (in chronological order):
 
 * 史海峰, Haifeng Shi, [@PegasusS](https://github.com/PegasusS) Ex-Director, ele.me
 
+* 张小虎, Xiaohu Zhang, [@pottieva](https://github.com/pottieva) Ex-Director, Orange Finance
+
 ## Voting
 
 In various situations the Sharding shall hold a vote. These votes can happen on the phone, email, or via a voting service, when appropriate. Voters can either respond "agree, yes, +1", "disagree, no, -1", or "abstain". A vote passes with two-thirds vote of votes cast. An abstain vote equals not voting at all.
