@@ -55,7 +55,7 @@ public final class ProxyTransactionLoader {
         return result;
     }
     
-    // TODO if read more transaction manager, log chosen one, if no transaction manager, throw exception
+    // TODO :zhaojun if read more transaction manager, log chosen one, if no transaction manager, throw exception
     private static TransactionManager doXaTransactionConfiguration() {
         Iterator<TransactionManager> iterator = ServiceLoader.load(TransactionManager.class).iterator();
         return iterator.hasNext() ? iterator.next() : null;

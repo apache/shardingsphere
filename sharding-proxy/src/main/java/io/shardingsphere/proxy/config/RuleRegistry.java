@@ -122,7 +122,7 @@ public final class RuleRegistry {
         if (null != config.getMasterSlaveRule()) {
             masterSlaveRule = new MasterSlaveRule(config.getMasterSlaveRule().getMasterSlaveRuleConfiguration());
         }
-        // TODO only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
+        // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
         backendDataSource = new JDBCBackendDataSource(transactionType, config.getDataSources());
         dataSourceConfigurationMap = new LinkedHashMap<>(config.getDataSources().size(), 1);
         if (proxyBackendUseNio) {

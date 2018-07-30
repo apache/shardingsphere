@@ -86,8 +86,6 @@ public final class ComStmtPreparePacket implements CommandPacket {
     
     private int getNumColumns(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
-            // TODO select * cannot know items num
-            // right now, add metadata, can we know items num?
             return ((SelectStatement) sqlStatement).getItems().size();
         }
         if (sqlStatement instanceof InsertStatement) {
