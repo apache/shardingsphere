@@ -34,5 +34,4 @@ public class PostgreSQLDataSourceMetaDataTest {
         PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData("jdbc:postgresql://127.0.0.1:5432/ds_0");
         assertThat(actual.isInSameDatabaseInstance(target), is(true));
     }
-    
 }
