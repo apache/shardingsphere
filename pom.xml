@@ -17,7 +17,6 @@
         <module>sharding-proxy</module>
         <module>sharding-sql-test</module>
         <module>sharding-transaction</module>
-        <module>sharding-event</module>
     </modules>
     
     <properties>
