@@ -28,6 +28,7 @@ import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
 import io.shardingsphere.test.sql.SQLCaseType;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -51,6 +52,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+@Slf4j
 public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
     
     private final DDLIntegrateTestCaseAssertion assertion;
@@ -93,8 +95,8 @@ public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
     }
 
     protected void assertMetadata(final Connection connection) throws IOException, JAXBException, SQLException {
-        // TODO drop index assertion
         if (null == assertion.getExpectedDataFile()) {
+            log.warn("Have empty expectedDataFile `{}`", super.getSql());
             return;
         }
         DataSet expected;
