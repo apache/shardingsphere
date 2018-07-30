@@ -17,13 +17,13 @@
 
 package io.shardingsphere.core.metadata.datasource.dialect;
 
-import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import lombok.Getter;
 
-import java.net.URI;
-import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Data source meta data for Oracle.
@@ -41,29 +41,17 @@ public final class OracleDataSourceMetaData implements DataSourceMetaData {
     
     private final String schemeName;
     
-    public OracleDataSourceMetaData(final String url) {
-        URI uri = getURI(url);
-        hostName = uri.getHost();
-        port = -1 == uri.getPort() ? DEFAULT_PORT : uri.getPort();
-        schemeName = uri.getPath().isEmpty() ? "" : uri.getPath().substring(1);
-    }
+    private final Pattern pattern = Pattern.compile("jdbc:oracle:thin:@/{0,2}([a-zA-Z0-9\\-\\.]+):?([0-9]*)[:/](\\w+)");
     
-    private URI getURI(final String url) {
-        String cleanUrl = url.substring(5);
-        if (cleanUrl.contains("oracle:thin:@//")) {
-            cleanUrl = cleanUrl.replace("oracle:thin:@//", "oracle://");
-        } else if (cleanUrl.contains("oracle:thin:@")) {
-            cleanUrl = cleanUrl.replace("oracle:thin:@", "oracle://");
-        }
-        List<String> parts = Splitter.on(":").splitToList(cleanUrl);
-        if (4 == parts.size()) {
-            cleanUrl = parts.get(0) + ":" + parts.get(1) + ":" + parts.get(2) + "/" + parts.get(3);
-        }
-        URI result = URI.create(cleanUrl);
-        if (null == result.getHost()) {
+    public OracleDataSourceMetaData(final String url) {
+        Matcher matcher = pattern.matcher(url);
+        if (matcher.find()) {
+            hostName = matcher.group(1);
+            port = Strings.isNullOrEmpty(matcher.group(2)) ? DEFAULT_PORT : Integer.valueOf(matcher.group(2));
+            schemeName = matcher.group(3);
+        } else {
             throw new ShardingException("The URL of JDBC is not supported.");
         }
-        return result;
     }
     
     @Override
