@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.jdbc.core.transaction;
+package io.shardingsphere.transaction;
 
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.transaction.TransactionContext;
@@ -24,7 +24,6 @@ import io.shardingsphere.core.transaction.event.WeakXaTransactionEvent;
 import io.shardingsphere.core.transaction.event.XaTransactionEvent;
 import io.shardingsphere.core.transaction.listener.TransactionListener;
 import io.shardingsphere.core.transaction.spi.TransactionManager;
-import io.shardingsphere.core.util.EventBusInstance;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -53,7 +52,7 @@ public final class TransactionLoader {
                 break;
             default:
         }
-        EventBusInstance.getInstance().register(TransactionListener.getInstance());
+        TransactionEventBusInstance.getInstance().register(TransactionListener.getInstance());
     }
     
     private static void doXaTransactionConfiguration() {
