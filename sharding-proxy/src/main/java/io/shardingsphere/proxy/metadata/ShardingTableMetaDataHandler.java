@@ -38,7 +38,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShardingMetaDataHandler {
+public final class ShardingTableMetaDataHandler {
     
     private final DataSource dataSource;
     
@@ -62,7 +62,7 @@ public final class ShardingMetaDataHandler {
     }
     
     private boolean isTableExist(final Statement statement) throws SQLException {
-        statement.executeQuery(String.format("show tables like '%s'", getActualTableName()));
+        statement.executeQuery(String.format("SHOW TABLES LIKE '%s'", getActualTableName()));
         try (ResultSet resultSet = statement.getResultSet()) {
             return resultSet.next();
         }
@@ -70,7 +70,7 @@ public final class ShardingMetaDataHandler {
     
     private List<ColumnMetaData> getExistColumnMeta(final Statement statement) throws SQLException {
         List<ColumnMetaData> result = new LinkedList<>();
-        statement.executeQuery(String.format("desc `%s`;", getActualTableName()));
+        statement.executeQuery(String.format("DESC `%s`;", getActualTableName()));
         try (ResultSet resultSet = statement.getResultSet()) {
             while (resultSet.next()) {
                 result.add(new ColumnMetaData(resultSet.getString("Field"), resultSet.getString("Type"), resultSet.getString("Key")));
@@ -83,13 +83,13 @@ public final class ShardingMetaDataHandler {
      * Get table names from default data source.
      *
      * @return Table names from default data source
-     * @throws SQLException SQL exception.
+     * @throws SQLException SQL exception
      */
     public Collection<String> getTableNamesFromDefaultDataSource() throws SQLException {
         Collection<String> result = new LinkedList<>();
         try (Connection connection = getDataSource().getConnection();
              Statement statement = connection.createStatement()) {
-            statement.executeQuery("show tables;");
+            statement.executeQuery("SHOW TABLES;");
             try (ResultSet resultSet = statement.getResultSet()) {
                 while (resultSet.next()) {
                     result.add(resultSet.getString(1));
