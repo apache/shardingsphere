@@ -19,7 +19,7 @@ package io.shardingsphere.transaction.common.config;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.TransactionType;
-import io.shardingsphere.transaction.TransactionEventBusInstance;
+import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.transaction.common.listener.TransactionListener;
 import io.shardingsphere.transaction.common.spi.TransactionManager;
 
@@ -49,7 +49,7 @@ public abstract class TransactionConfigurationAdapter implements TransactionConf
     
     @Override
     public void registerListener() {
-        TransactionEventBusInstance.getInstance().register(TransactionListener.getInstance());
+        EventBusInstance.getInstance().register(TransactionListener.getInstance());
     }
     
     protected abstract TransactionManager doXaTransactionConfiguration();
