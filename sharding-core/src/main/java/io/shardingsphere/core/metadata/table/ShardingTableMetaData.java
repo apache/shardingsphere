@@ -58,7 +58,7 @@ public abstract class ShardingTableMetaData {
     private final Map<String, TableMetaData> tableMetaDataMap = new HashMap<>();
     
     /**
-     * Initialize sharding metadata.
+     * Initialize sharding meta data.
      *
      * @param shardingRule sharding rule
      */
@@ -121,7 +121,8 @@ public abstract class ShardingTableMetaData {
                 return actualTableMetaDataList.get(i);
             }
             if (!actualTableMetaDataList.get(i).equals(actualTableMetaDataList.get(i + 1))) {
-                throw new ShardingException(getErrorMsgOfTableMetaData(logicTableName, actualTableMetaDataList.get(i), actualTableMetaDataList.get(i + 1)));
+                throw new ShardingException("Cannot get uniformed table structure for table `%s`. The different metadata of actual tables is as follows:\n%s\n%s.", 
+                        logicTableName, actualTableMetaDataList.get(i), actualTableMetaDataList.get(i + 1));
             }
         }
         return new TableMetaData();
@@ -134,7 +135,7 @@ public abstract class ShardingTableMetaData {
                 
                 @Override
                 public TableMetaData call() throws SQLException {
-                    return getTableMetaData(each, shardingDataSourceNames, connectionMap);
+                    return loadTableMetaData(new DataNode(shardingDataSourceNames.getRawMasterDataSourceName(each.getDataSourceName()), each.getTableName()), connectionMap);
                 }
             }));
         }
@@ -145,12 +146,7 @@ public abstract class ShardingTableMetaData {
         }
     }
     
-    protected abstract TableMetaData getTableMetaData(DataNode dataNode, ShardingDataSourceNames shardingDataSourceNames, Map<String, Connection> connectionMap) throws SQLException;
-    
-    private String getErrorMsgOfTableMetaData(final String logicTableName, final TableMetaData oldTableMetaData, final TableMetaData newTableMetaData) {
-        return String.format("Cannot get uniformed table structure for %s. The different metadata of actual tables is as follows:\n%s\n%s.",
-                logicTableName, oldTableMetaData.toString(), newTableMetaData.toString());
-    }
+    protected abstract TableMetaData loadTableMetaData(DataNode dataNode, Map<String, Connection> connectionMap) throws SQLException;
     
     /**
      * Judge whether table meta data is empty.
