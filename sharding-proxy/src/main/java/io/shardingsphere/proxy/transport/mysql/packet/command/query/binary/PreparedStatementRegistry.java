@@ -30,6 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Prepared statement registry.
  *
  * @author zhangliang
+ * @author zhangyonglun
  */
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class PreparedStatementRegistry {
@@ -59,15 +60,14 @@ public final class PreparedStatementRegistry {
      * @param sql SQL
      * @return statement ID
      */
-    // TODO :yonglun thread not safe?
     public int register(final String sql) {
-        Integer result = sqlToStatementIdMap.get(sql);
-        if (null != result) {
-            return result;
-        }
         int statementId = sequence.incrementAndGet();
-        statementIdToSQLMap.putIfAbsent(statementId, sql);
-        sqlToStatementIdMap.putIfAbsent(sql, statementId);
+        Integer previousStatementId = sqlToStatementIdMap.putIfAbsent(sql, statementId);
+        if (null == previousStatementId) {
+            statementIdToSQLMap.putIfAbsent(statementId, sql);
+        } else {
+            return previousStatementId;
+        }
         return statementId;
     }
     
