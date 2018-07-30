@@ -15,10 +15,10 @@
  * </p>
  */
 
-package io.shardingsphere.core.transaction.event;
+package io.shardingsphere.transaction.common.event;
 
 import io.shardingsphere.core.constant.TCLType;
-import io.shardingsphere.core.transaction.TransactionContextHolder;
+import io.shardingsphere.transaction.common.TransactionContextHolder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

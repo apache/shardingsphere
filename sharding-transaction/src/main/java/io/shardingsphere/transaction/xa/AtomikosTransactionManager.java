@@ -18,8 +18,8 @@
 package io.shardingsphere.transaction.xa;
 
 import com.atomikos.icatch.jta.UserTransactionManager;
-import io.shardingsphere.core.transaction.event.TransactionEvent;
-import io.shardingsphere.core.transaction.spi.TransactionManager;
+import io.shardingsphere.transaction.common.event.TransactionEvent;
+import io.shardingsphere.transaction.common.spi.TransactionManager;
 
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;

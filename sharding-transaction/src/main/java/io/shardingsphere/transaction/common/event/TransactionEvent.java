@@ -15,30 +15,39 @@
  * </p>
  */
 
-package io.shardingsphere.core.transaction.event;
+package io.shardingsphere.transaction.common.event;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.TCLType;
-import io.shardingsphere.core.exception.ShardingException;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
+import java.util.UUID;
 
 /**
- * XA transaction event.
+ * Abstract Transaction Event.
  *
  * @author zhaojun
  */
+@RequiredArgsConstructor
 @Getter
-public final class XaTransactionEvent extends TransactionEvent {
+public abstract class TransactionEvent {
     
-    private final String sql;
+    private final String id = UUID.randomUUID().toString();
     
-    public XaTransactionEvent(final TCLType tclType, final String sql) {
-        super(tclType);
-        this.sql = sql;
-    }
+    private final TCLType tclType;
     
-    @Override
-    public Optional<ShardingException> getException() {
-        return Optional.fromNullable((ShardingException) super.getException().orNull());
+    @Setter
+    private Exception exception;
+    
+    /**
+     * Get exception.
+     *
+     * @return exception
+     */
+    // TODO why not use sharding exception directly?
+    public Optional<? extends Exception> getException() {
+        return Optional.fromNullable(exception);
     }
 }

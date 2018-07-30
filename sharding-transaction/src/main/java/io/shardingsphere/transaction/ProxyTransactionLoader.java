@@ -15,12 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.util;
+package io.shardingsphere.transaction;
 
 import io.shardingsphere.core.constant.TransactionType;
-import io.shardingsphere.core.transaction.listener.TransactionListener;
-import io.shardingsphere.core.transaction.spi.TransactionManager;
-import io.shardingsphere.core.util.EventBusInstance;
+import io.shardingsphere.transaction.common.listener.TransactionListener;
+import io.shardingsphere.transaction.common.spi.TransactionManager;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -51,7 +50,7 @@ public final class ProxyTransactionLoader {
                 break;
             default:
         }
-        EventBusInstance.getInstance().register(TransactionListener.getInstance());
+        TransactionEventBusInstance.getInstance().register(TransactionListener.getInstance());
         return result;
     }
     

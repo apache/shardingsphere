@@ -22,9 +22,9 @@ import io.shardingsphere.core.constant.TCLType;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
-import io.shardingsphere.core.transaction.event.TransactionEvent;
-import io.shardingsphere.core.transaction.event.TransactionEventFactory;
-import io.shardingsphere.core.transaction.event.WeakXaTransactionEvent;
+import io.shardingsphere.transaction.common.event.TransactionEvent;
+import io.shardingsphere.transaction.common.event.TransactionEventFactory;
+import io.shardingsphere.transaction.common.event.WeakXaTransactionEvent;
 import io.shardingsphere.core.util.EventBusInstance;
 
 import javax.sql.DataSource;

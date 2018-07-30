@@ -15,12 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.core.transaction;
+package io.shardingsphere.transaction.common;
 
 import io.shardingsphere.core.constant.TransactionType;
-import io.shardingsphere.core.transaction.event.TransactionEvent;
-import io.shardingsphere.core.transaction.event.WeakXaTransactionEvent;
-import io.shardingsphere.core.transaction.spi.TransactionManager;
+import io.shardingsphere.transaction.common.event.TransactionEvent;
+import io.shardingsphere.transaction.common.event.WeakXaTransactionEvent;
+import io.shardingsphere.transaction.common.spi.TransactionManager;
 import lombok.Getter;
 
 /**

@@ -19,9 +19,9 @@ package io.shardingsphere.proxy.backend.jdbc.transaction;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.TCLType;
-import io.shardingsphere.core.transaction.TransactionContext;
-import io.shardingsphere.core.transaction.TransactionContextHolder;
-import io.shardingsphere.core.transaction.event.XaTransactionEvent;
+import io.shardingsphere.transaction.common.TransactionContext;
+import io.shardingsphere.transaction.common.TransactionContextHolder;
+import io.shardingsphere.transaction.common.event.XaTransactionEvent;
 import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.proxy.config.RuleRegistry;
 

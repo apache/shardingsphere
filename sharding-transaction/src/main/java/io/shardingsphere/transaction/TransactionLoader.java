@@ -18,12 +18,13 @@
 package io.shardingsphere.transaction;
 
 import io.shardingsphere.core.constant.TransactionType;
-import io.shardingsphere.core.transaction.TransactionContext;
-import io.shardingsphere.core.transaction.TransactionContextHolder;
-import io.shardingsphere.core.transaction.event.WeakXaTransactionEvent;
-import io.shardingsphere.core.transaction.event.XaTransactionEvent;
-import io.shardingsphere.core.transaction.listener.TransactionListener;
-import io.shardingsphere.core.transaction.spi.TransactionManager;
+import io.shardingsphere.transaction.common.TransactionContext;
+import io.shardingsphere.transaction.common.TransactionContextHolder;
+import io.shardingsphere.transaction.common.event.WeakXaTransactionEvent;
+import io.shardingsphere.transaction.common.event.XaTransactionEvent;
+import io.shardingsphere.transaction.common.listener.TransactionListener;
+import io.shardingsphere.transaction.common.spi.TransactionManager;
+import io.shardingsphere.transaction.weakxa.WeakXaTransactionManager;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
