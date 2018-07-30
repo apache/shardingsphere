@@ -93,7 +93,7 @@ public abstract class ShardingTableMetaData {
     protected abstract Collection<String> getTableNamesFromDefaultDataSource(String defaultDataSourceName) throws SQLException;
     
     /**
-     * Refresh each tableMetaData by TableRule.
+     * Refresh table meta data.
      *
      * @param tableRule table rule
      * @param shardingRule sharding rule
@@ -103,7 +103,7 @@ public abstract class ShardingTableMetaData {
     }
     
     /**
-     * Refresh each tableMetaData by TableRule.
+     * Refresh table meta data.
      *
      * @param tableRule table rule
      * @param shardingRule sharding rule
