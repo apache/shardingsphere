@@ -70,9 +70,7 @@ Sharding-Sidecar是一个新概念，就像Service Mesh中的数据面板一样�
 - 林嘉琦, Jiaqi Lin, @chidaodezhongsheng Engineer, Dangdang
 - 赵俊, Jun Zhao, @cherrylzhao Senior engineer, Jingdong
 - 岳令, Ling Yue, @ling.yue QA Engineer, Dangdang
-- 李广云, Guangyun Li, Java Expert, Antfin
 - 马晓光, Xiaoguang Ma, Senior engineer, huimai365
-- 刘泽剑, ZeJian Liu, IT Manager, ZeDaYiSheng
 - 陈清阳, QingYang Chen, @beckhampu Senior engineer, Orange Finance
 
 ## Known Risks
@@ -202,9 +200,7 @@ Slack [https://sharding.slack.com](https://sharding.slack.com/)
 - 林嘉琦, Jiaqi Lin
 - 赵俊, Jun Zhao
 - 岳令, Ling Yue
-- 李广云, Guangyun Li
 - 马晓光, Xiaoguang Ma
-- 刘泽剑, ZeJian Liu
 - 陈清阳, QingYang Chen
 
 ## Affiliations
@@ -212,7 +208,7 @@ Slack [https://sharding.slack.com](https://sharding.slack.com/)
 - 京东: Liang Zhang, Yonglun Zhang, Juan Pan, Jun Zhao, Ling Yue
 - 当当: Hao Cao, Kai Wang, Jiaqi Lin
 - 甜橙金融: QingYang Chen
-- 个人开发者: Sheng Wu, Hongtao Gao, Guangyun Li, ZeJian Liu, Xiaoguang Ma
+- 个人开发者: Sheng Wu, Hongtao Gao, Xiaoguang Ma
 
 ## Sponsors
 
