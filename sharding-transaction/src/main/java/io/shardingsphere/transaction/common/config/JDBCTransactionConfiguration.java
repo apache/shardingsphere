@@ -25,13 +25,27 @@ import io.shardingsphere.transaction.common.event.WeakXaTransactionEvent;
 import io.shardingsphere.transaction.common.event.XaTransactionEvent;
 import io.shardingsphere.transaction.common.spi.TransactionManager;
 import io.shardingsphere.transaction.weakxa.WeakXaTransactionManager;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * JDBC transaction configuration.
  *
  * @author zhaojun
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JDBCTransactionConfiguration extends TransactionConfigurationAdapter {
+    
+    private static final JDBCTransactionConfiguration CONFIGURATION = new JDBCTransactionConfiguration();
+    
+    /**
+     * Get singleton instance of {@code JDBCTransactionConfiguration}.
+     *
+     * @return JDBC transaction configuration
+     */
+    public static JDBCTransactionConfiguration getInstance() {
+        return CONFIGURATION;
+    }
     
     @Override
     public void configTransactionContext(final TransactionType transactionType) {
