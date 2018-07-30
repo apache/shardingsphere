@@ -33,7 +33,7 @@ import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusEvent;
 import io.shardingsphere.proxy.backend.common.ProxyMode;
-import io.shardingsphere.proxy.metadata.ProxyShardingMetaData;
+import io.shardingsphere.proxy.metadata.ProxyShardingTableMetaData;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -134,7 +134,7 @@ public final class RuleRegistry {
      * @param executorService executor service
      */
     public void initShardingMetaData(final ExecutorService executorService) {
-        shardingMetaData = new ProxyShardingMetaData(MoreExecutors.listeningDecorator(executorService), dataSourceMap);
+        shardingMetaData = new ProxyShardingTableMetaData(MoreExecutors.listeningDecorator(executorService), dataSourceMap);
         if (!isMasterSlaveOnly()) {
             shardingMetaData.init(shardingRule);
         }

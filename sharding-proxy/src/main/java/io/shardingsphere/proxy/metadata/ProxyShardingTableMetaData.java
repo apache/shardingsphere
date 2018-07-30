@@ -18,40 +18,41 @@
 package io.shardingsphere.proxy.metadata;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
-import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.metadata.TableMetaData;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.rule.ShardingDataSourceNames;
+import io.shardingsphere.proxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import lombok.Getter;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 
 /**
- * Sharding metadata for proxy.
+ * Sharding table meta data for proxy.
  *
  * @author panjuan
  */
 @Getter
-public final class ProxyShardingMetaData extends ShardingMetaData {
+public final class ProxyShardingTableMetaData extends ShardingTableMetaData {
     
-    private final Map<String, DataSource> dataSourceMap;
+    private final JDBCBackendDataSource backendDataSource;
     
-    public ProxyShardingMetaData(final ListeningExecutorService executorService, final Map<String, DataSource> dataSourceMap) {
+    public ProxyShardingTableMetaData(final ListeningExecutorService executorService, final JDBCBackendDataSource backendDataSource) {
         super(executorService);
-        this.dataSourceMap = dataSourceMap;
+        this.backendDataSource = backendDataSource;
     }
     
     @Override
     public TableMetaData getTableMetaData(final DataNode dataNode, final ShardingDataSourceNames shardingDataSourceNames, final Map<String, Connection> connectionMap) throws SQLException {
-        return new ShardingTableMetaDataHandler(dataSourceMap.get(shardingDataSourceNames.getRawMasterDataSourceName(dataNode.getDataSourceName())), dataNode.getTableName()).getTableMetaData();
+        return new ShardingTableMetaDataHandler(
+                backendDataSource.getDataSource(shardingDataSourceNames.getRawMasterDataSourceName(dataNode.getDataSourceName())), dataNode.getTableName()).getTableMetaData();
     }
     
     @Override
     public Collection<String> getTableNamesFromDefaultDataSource(final String defaultDataSourceName) throws SQLException {
-        return new ShardingTableMetaDataHandler(dataSourceMap.get(defaultDataSourceName), "").getTableNamesFromDefaultDataSource();
+        return new ShardingTableMetaDataHandler(backendDataSource.getDataSource(defaultDataSourceName), "").getTableNamesFromDefaultDataSource();
     }
 }
