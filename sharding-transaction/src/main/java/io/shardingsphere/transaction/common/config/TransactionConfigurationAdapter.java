@@ -25,7 +25,9 @@ import io.shardingsphere.transaction.common.listener.TransactionListener;
 import io.shardingsphere.transaction.common.spi.TransactionManager;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ServiceLoader;
 
 /**
@@ -36,12 +38,14 @@ import java.util.ServiceLoader;
 @Slf4j
 public abstract class TransactionConfigurationAdapter implements TransactionConfiguration {
     
+    private static final Map<TransactionType, Optional<TransactionManager>> SPI_RESOURCE = new HashMap<>();
+    
     @Override
     public TransactionManager configTransactionContext(final TransactionType transactionType) {
         TransactionManager result = null;
         switch (transactionType) {
             case XA:
-                result = doXaTransactionConfiguration();
+                result = doXaTransactionConfiguration(transactionType);
                 break;
             case BASE:
                 break;
@@ -55,13 +59,20 @@ public abstract class TransactionConfigurationAdapter implements TransactionConf
         EventBusInstance.getInstance().register(TransactionListener.getInstance());
     }
     
-    protected abstract TransactionManager doXaTransactionConfiguration();
+    protected abstract TransactionManager doXaTransactionConfiguration(TransactionType transactionType);
     
-    protected Optional<TransactionManager> doSPIConfiguration() {
-        List<TransactionManager> transactionManagerList = Lists.newArrayList(ServiceLoader.load(TransactionManager.class).iterator());
-        if (transactionManagerList.size() > 1) {
-            log.info("there is more than one transaction manger existing, chosen first one default.");
+    protected Optional<TransactionManager> doSPIConfiguration(final TransactionType transactionType) {
+        if (SPI_RESOURCE.containsKey(transactionType)) {
+            return SPI_RESOURCE.get(transactionType);
         }
-        return transactionManagerList.isEmpty() ? Optional.<TransactionManager>absent() : Optional.of(transactionManagerList.get(0));
+        synchronized (SPI_RESOURCE) {
+            List<TransactionManager> transactionManagerList = Lists.newArrayList(ServiceLoader.load(TransactionManager.class).iterator());
+            if (transactionManagerList.size() > 1) {
+                log.info("there is more than one transaction manger existing, chosen first one default.");
+            }
+            Optional<TransactionManager> transactionManager = transactionManagerList.isEmpty() ? Optional.<TransactionManager>absent() : Optional.of(transactionManagerList.get(0));
+            SPI_RESOURCE.put(transactionType, transactionManager);
+            return transactionManager;
+        }
     }
 }
