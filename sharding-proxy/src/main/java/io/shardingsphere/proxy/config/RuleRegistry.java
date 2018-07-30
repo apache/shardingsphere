@@ -24,22 +24,24 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.ShardingProperties;
 import io.shardingsphere.core.constant.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.TransactionType;
-import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ProxyAuthority;
 import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.core.transaction.spi.TransactionManager;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusEvent;
-import io.shardingsphere.proxy.backend.common.ProxyMode;
+import io.shardingsphere.proxy.backend.constant.ProxyMode;
+import io.shardingsphere.proxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import io.shardingsphere.proxy.metadata.ProxyShardingTableMetaData;
+import io.shardingsphere.proxy.util.ProxyTransactionLoader;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.sql.DataSource;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -64,7 +66,7 @@ public final class RuleRegistry {
     
     private MasterSlaveRule masterSlaveRule;
     
-    private Map<String, DataSource> dataSourceMap;
+    private JDBCBackendDataSource backendDataSource;
     
     private Map<String, DataSourceParameter> dataSourceConfigurationMap;
     
@@ -73,6 +75,8 @@ public final class RuleRegistry {
     private ProxyMode proxyMode;
     
     private TransactionType transactionType;
+    
+    private TransactionManager transactionManager;
     
     private int maxWorkingThreads;
     
@@ -86,7 +90,7 @@ public final class RuleRegistry {
     
     private ShardingDataSourceMetaData shardingDataSourceMetaData;
     
-    private ShardingMetaData shardingMetaData;
+    private ShardingTableMetaData shardingTableMetaData;
     
     /**
      * Get instance of sharding rule registry.
@@ -108,6 +112,7 @@ public final class RuleRegistry {
         showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         proxyMode = ProxyMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_MODE));
         transactionType = TransactionType.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_MODE));
+        transactionManager = ProxyTransactionLoader.load(transactionType);
         maxWorkingThreads = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_MAX_WORKING_THREADS);
         proxyBackendUseNio = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO);
         proxyBackendSimpleDbConnections = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_SIMPLE_DB_CONNECTIONS);
@@ -117,15 +122,24 @@ public final class RuleRegistry {
         if (null != config.getMasterSlaveRule()) {
             masterSlaveRule = new MasterSlaveRule(config.getMasterSlaveRule().getMasterSlaveRuleConfiguration());
         }
-        dataSourceMap = ProxyRawDataSourceFactory.create(transactionType, config);
-        dataSourceConfigurationMap = new HashMap<>(128, 1);
+        // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
+        backendDataSource = new JDBCBackendDataSource(transactionType, config.getDataSources());
+        dataSourceConfigurationMap = new LinkedHashMap<>(config.getDataSources().size(), 1);
         if (proxyBackendUseNio) {
             for (Entry<String, DataSourceParameter> entry : config.getDataSources().entrySet()) {
                 dataSourceConfigurationMap.put(entry.getKey(), entry.getValue());
             }
         }
         proxyAuthority = config.getProxyAuthority();
-        shardingDataSourceMetaData = new ShardingDataSourceMetaData(dataSourceMap, shardingRule, DatabaseType.MySQL);
+        shardingDataSourceMetaData = new ShardingDataSourceMetaData(getDataSourceURLs(config.getDataSources()), shardingRule, DatabaseType.MySQL);
+    }
+    
+    private static Map<String, String> getDataSourceURLs(final Map<String, DataSourceParameter> dataSourceParameters) {
+        Map<String, String> result = new LinkedHashMap<>(dataSourceParameters.size(), 1);
+        for (Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
+            result.put(entry.getKey(), entry.getValue().getUrl());
+        }
+        return result;
     }
     
     /**
@@ -134,9 +148,9 @@ public final class RuleRegistry {
      * @param executorService executor service
      */
     public void initShardingMetaData(final ExecutorService executorService) {
-        shardingMetaData = new ProxyShardingTableMetaData(MoreExecutors.listeningDecorator(executorService), dataSourceMap);
+        shardingTableMetaData = new ProxyShardingTableMetaData(MoreExecutors.listeningDecorator(executorService), backendDataSource);
         if (!isMasterSlaveOnly()) {
-            shardingMetaData.init(shardingRule);
+            shardingTableMetaData.init(shardingRule);
         }
     }
     
