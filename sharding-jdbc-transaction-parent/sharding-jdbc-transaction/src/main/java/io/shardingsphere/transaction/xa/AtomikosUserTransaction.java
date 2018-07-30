@@ -18,30 +18,25 @@
 package io.shardingsphere.transaction.xa;
 
 import com.atomikos.icatch.jta.UserTransactionManager;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * Hold singleton atomikos userTransaction.
  *
  * @author zhaojun
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AtomikosUserTransaction {
     
-    // TODO why not new here?
-    private static volatile UserTransactionManager transactionManager;
+    private static final UserTransactionManager TRANSACTION_MANAGER = new UserTransactionManager();
     
     /**
-     * Get singleton {@code UserTransactionManager} lazily.
+     * Get singleton of {@code UserTransactionManager}.
      *
      * @return {@code UserTransactionManager}
      */
     public static UserTransactionManager getInstance() {
-        if (null == transactionManager) {
-            synchronized (AtomikosUserTransaction.class) {
-                if (null == transactionManager) {
-                    transactionManager = new UserTransactionManager();
-                }
-            }
-        }
-        return transactionManager;
+        return TRANSACTION_MANAGER;
     }
 }
