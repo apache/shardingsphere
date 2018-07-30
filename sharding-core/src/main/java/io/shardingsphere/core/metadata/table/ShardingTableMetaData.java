@@ -153,11 +153,14 @@ public abstract class ShardingTableMetaData {
     }
     
     /**
-     * Judge whether this database type is supported.
+     * Judge whether table meta data is empty.
      *
-     * @return supported or not
+     * @return whether table meta data is empty
      */
-    public boolean isSupportedDatabaseType() {
+    public boolean hasMetaData() {
+        if (tableMetaDataMap.isEmpty()) {
+            return false;
+        }
         for (TableMetaData each : tableMetaDataMap.values()) {
             if (each.getColumnMetaData().isEmpty()) {
                 return false;
