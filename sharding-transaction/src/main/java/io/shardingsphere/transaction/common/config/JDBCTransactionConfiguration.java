@@ -18,6 +18,7 @@
 package io.shardingsphere.transaction.common.config;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.transaction.common.TransactionContext;
 import io.shardingsphere.transaction.common.TransactionContextFactory;
 import io.shardingsphere.transaction.common.TransactionContextHolder;
@@ -45,8 +46,8 @@ public class JDBCTransactionConfiguration extends TransactionConfigurationAdapte
     }
     
     @Override
-    protected TransactionManager doXaTransactionConfiguration() {
-        Optional<TransactionManager> transactionManager = doSPIConfiguration();
+    protected TransactionManager doXaTransactionConfiguration(final TransactionType transactionType) {
+        Optional<TransactionManager> transactionManager = doSPIConfiguration(transactionType);
         TransactionContext transactionContext = transactionManager.isPresent()
                 ? TransactionContextFactory.newXAContext(transactionManager.get()) : TransactionContextFactory.newWeakXAContext();
         TransactionContextHolder.set(transactionContext);
