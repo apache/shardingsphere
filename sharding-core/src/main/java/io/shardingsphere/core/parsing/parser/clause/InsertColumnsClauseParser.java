@@ -18,7 +18,7 @@
 package io.shardingsphere.core.parsing.parser.clause;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.Assist;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
@@ -36,6 +36,7 @@ import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.util.SQLUtil;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -63,9 +64,9 @@ public final class InsertColumnsClauseParser implements SQLClauseParser {
      * Parse insert columns.
      *
      * @param insertStatement insert statement
-     * @param shardingMetaData sharding meta data
+     * @param shardingTableMetaData sharding table meta data
      */
-    public void parse(final InsertStatement insertStatement, final ShardingMetaData shardingMetaData) {
+    public void parse(final InsertStatement insertStatement, final ShardingTableMetaData shardingTableMetaData) {
         Collection<Column> result = new LinkedList<>();
         String tableName = insertStatement.getTables().getSingleTableName();
         Optional<Column> generateKeyColumn = shardingRule.getGenerateKeyColumn(tableName);
@@ -93,17 +94,18 @@ public final class InsertColumnsClauseParser implements SQLClauseParser {
             insertStatement.setColumnsListLastPosition(lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length());
             lexerEngine.nextToken();
         } else {
-            Collection<String> columnNames = shardingMetaData.getTableMetaDataMap().containsKey(tableName) ? shardingMetaData.getTableMetaDataMap().get(tableName).getAllColumnNames() : new LinkedList<String>();
+            Collection<String> columnNames = shardingTableMetaData.getTableMetaDataMap().containsKey(tableName)
+                    ? shardingTableMetaData.getTableMetaDataMap().get(tableName).getAllColumnNames() : Collections.<String>emptyList();
             int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length() - 1;
             insertStatement.getSqlTokens().add(new InsertColumnToken(beginPosition, "("));
             ItemsToken columnsToken = new ItemsToken(beginPosition);
             columnsToken.setFirstOfItemsSpecial(true);
-            for (String columnName : columnNames) {
-                result.add(new Column(columnName, tableName));
-                if (generateKeyColumn.isPresent() && generateKeyColumn.get().getName().equalsIgnoreCase(columnName)) {
+            for (String each : columnNames) {
+                result.add(new Column(each, tableName));
+                if (generateKeyColumn.isPresent() && generateKeyColumn.get().getName().equalsIgnoreCase(each)) {
                     insertStatement.setGenerateKeyColumnIndex(count);
                 }
-                columnsToken.getItems().add(columnName);
+                columnsToken.getItems().add(each);
                 count++;
             }
             insertStatement.getSqlTokens().add(columnsToken);

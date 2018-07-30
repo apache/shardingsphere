@@ -51,7 +51,7 @@ public class ComStmtClosePacket implements CommandPacket {
     @Override
     public Optional<CommandResponsePackets> execute() {
         log.debug("COM_STMT_CLOSE received for Sharding-Proxy: {}", statementId);
-        // TODO need to clean PreparedStatementRegistry?
+        // TODO :yonglun need to clean PreparedStatementRegistry?
         return Optional.absent();
     }
 }

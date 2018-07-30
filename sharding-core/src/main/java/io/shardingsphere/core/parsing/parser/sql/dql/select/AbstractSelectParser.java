@@ -20,7 +20,7 @@ package io.shardingsphere.core.parsing.parser.sql.dql.select;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.AggregationType;
-import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.Assist;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
@@ -67,7 +67,7 @@ public abstract class AbstractSelectParser implements SQLParser {
     
     private final List<SelectItem> items = new LinkedList<>();
     
-    private final ShardingMetaData shardingMetaData;
+    private final ShardingTableMetaData shardingTableMetaData;
     
     @Override
     public final SelectStatement parse() {
@@ -204,7 +204,7 @@ public abstract class AbstractSelectParser implements SQLParser {
         Preconditions.checkState(starSelectItem.getOwner().isPresent());
         Preconditions.checkState(orderItem.getName().isPresent());
         Optional<Table> table = selectStatement.getTables().find(starSelectItem.getOwner().get());
-        return table.isPresent() && shardingMetaData.hasColumn(table.get().getName(), orderItem.getName().get());
+        return table.isPresent() && shardingTableMetaData.hasColumn(table.get().getName(), orderItem.getName().get());
     }
     
     private boolean containsItemInSelectItems(final SelectStatement selectStatement, final OrderItem orderItem) {

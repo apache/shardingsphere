@@ -17,32 +17,43 @@
 
 package io.shardingsphere.core.metadata.datasource.dialect;
 
-import io.shardingsphere.core.constant.DatabaseType;
+import com.google.common.base.Splitter;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
-import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataParser;
+import lombok.Getter;
 
 import java.net.URI;
 
 /**
- * H2 data source meta data parser.
+ * Data source meta data for H2.
  *
  * @author panjuan
  */
-public final class H2DataSourceMetaDataParser implements DataSourceMetaDataParser {
-    
-    private static final Integer DEFAULT_PORT = -1;
+@Getter
+public final class H2DataSourceMetaData implements DataSourceMetaData {
     
     private static final String DEFAULT_HOST = "localhost";
     
-    @Override
-    public DataSourceMetaData getDataSourceMetaData(final String url, final DatabaseType databaseType) {
+    private final String hostName;
+    
+    private final int port;
+    
+    private final String schemeName;
+    
+    public H2DataSourceMetaData(final String url) {
+        URI uri = getURI(url);
+        hostName = uri.getHost();
+        port = uri.getPort();
+        schemeName = uri.getPath().isEmpty() ? "" : uri.getPath().substring(1);
+    }
+    
+    private URI getURI(final String url) {
         String cleanUrl = url.substring(5);
         if (cleanUrl.contains("h2:~")) {
-            cleanUrl = cleanUrl.split(";")[0];
+            cleanUrl = Splitter.on(";").splitToList(cleanUrl).get(0);
             cleanUrl = cleanUrl.replace(":", "://").replace("~", DEFAULT_HOST);
         } else if (cleanUrl.contains("h2:mem")) {
-            cleanUrl = cleanUrl.split(";")[0];
+            cleanUrl = Splitter.on(";").splitToList(cleanUrl).get(0);
             String[] parts = cleanUrl.split(":");
             if (3 == parts.length) {
                 cleanUrl = parts[0] + "://" + parts[1] + "/" + parts[2];
@@ -50,10 +61,15 @@ public final class H2DataSourceMetaDataParser implements DataSourceMetaDataParse
         } else {
             throw new ShardingException("The URL of JDBC is not supported.");
         }
-        URI uri = URI.create(cleanUrl);
-        if (null == uri.getHost()) {
+        URI result = URI.create(cleanUrl);
+        if (null == result.getHost()) {
             throw new ShardingException("The URL of JDBC is not supported.");
         }
-        return new DataSourceMetaData(uri.getHost(), -1 == uri.getPort() ? DEFAULT_PORT : uri.getPort(), uri.getPath().isEmpty() ? "" : uri.getPath().substring(1), databaseType);
+        return result;
+    }
+    
+    @Override
+    public boolean isInSameDatabaseInstance(final DataSourceMetaData dataSourceMetaData) {
+        return hostName.equals(dataSourceMetaData.getHostName()) && port == dataSourceMetaData.getPort() && schemeName.equals(dataSourceMetaData.getSchemeName());
     }
 }

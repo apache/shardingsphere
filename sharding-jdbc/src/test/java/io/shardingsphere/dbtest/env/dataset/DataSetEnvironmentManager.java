@@ -18,14 +18,15 @@
 package io.shardingsphere.dbtest.env.dataset;
 
 import com.google.common.base.Joiner;
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.util.InlineExpressionParser;
 import io.shardingsphere.dbtest.cases.assertion.root.SQLValue;
 import io.shardingsphere.dbtest.cases.assertion.root.SQLValueGroup;
+import io.shardingsphere.dbtest.cases.dataset.DataSet;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetColumn;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
 import io.shardingsphere.dbtest.cases.dataset.row.DataSetRow;
-import io.shardingsphere.dbtest.cases.dataset.DataSet;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
@@ -74,12 +75,13 @@ public final class DataSetEnvironmentManager {
             DataNode dataNode = entry.getKey();
             List<DataSetRow> dataSetRows = entry.getValue();
             DataSetMetadata dataSetMetadata = dataSet.findMetadata(dataNode);
-            String insertSQL = generateInsertSQL(dataNode.getTableName(), dataSetMetadata.getColumns());
             List<SQLValueGroup> sqlValueGroups = new LinkedList<>();
             for (DataSetRow row : dataSetRows) {
                 sqlValueGroups.add(new SQLValueGroup(dataSetMetadata, row.getValues()));
             }
             try (Connection connection = dataSourceMap.get(dataNode.getDataSourceName()).getConnection()) {
+                String insertSQL = generateInsertSQL(generateTableName(dataNode.getTableName(), DatabaseType.valueFrom(connection.getMetaData().getDatabaseProductName())),
+                    dataSetMetadata.getColumns());
                 executeBatch(connection, insertSQL, sqlValueGroups);
             }
         }
@@ -137,7 +139,8 @@ public final class DataSetEnvironmentManager {
     private void clear(final String dataSourceName, final Collection<String> tableNames) throws SQLException {
         try (Connection connection = dataSourceMap.get(dataSourceName).getConnection()) {
             for (String each : tableNames) {
-                try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("TRUNCATE TABLE %s", each))) {
+                String tableName = generateTableName(each, DatabaseType.valueFrom(connection.getMetaData().getDatabaseProductName()));
+                try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("TRUNCATE TABLE %s", tableName))) {
                     preparedStatement.executeUpdate();
                     // CHECKSTYLE:OFF
                 } catch (final SQLException ex) {
@@ -168,8 +171,22 @@ public final class DataSetEnvironmentManager {
                 result.put(dataNode.getDataSourceName(), new LinkedList<String>());
             }
             result.get(dataNode.getDataSourceName()).add(dataNode.getTableName());
-            
         }
         return result;
+    }
+    
+    private String generateTableName(final String tableName, final DatabaseType databaseType) {
+        switch (databaseType) {
+            case H2:
+            case PostgreSQL:
+            case Oracle:
+                return "\"" + tableName + "\"";
+            case MySQL:
+                return "`" + tableName + "`";
+            case SQLServer:
+                return "[" + tableName + "]";
+            default:
+                throw new UnsupportedOperationException(String.format("Cannot support database [%s].", databaseType));
+        }
     }
 }

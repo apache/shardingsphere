@@ -18,7 +18,7 @@
 package io.shardingsphere.core.parsing.parser.sql.dml.insert;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.sql.MySQLInsertParser;
 import io.shardingsphere.core.parsing.parser.dialect.oracle.sql.OracleInsertParser;
@@ -43,20 +43,20 @@ public final class InsertParserFactory {
      * @param dbType database type
      * @param shardingRule databases and tables sharding rule
      * @param lexerEngine lexical analysis engine
-     * @param shardingMetaData sharding meta data
+     * @param shardingTableMetaData sharding meta data
      * @return insert parser instance
      */
-    public static AbstractInsertParser newInstance(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingMetaData shardingMetaData) {
+    public static AbstractInsertParser newInstance(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingTableMetaData shardingTableMetaData) {
         switch (dbType) {
             case H2:
             case MySQL:
-                return new MySQLInsertParser(shardingRule, lexerEngine, shardingMetaData);
+                return new MySQLInsertParser(shardingRule, lexerEngine, shardingTableMetaData);
             case Oracle:
-                return new OracleInsertParser(shardingRule, lexerEngine, shardingMetaData);
+                return new OracleInsertParser(shardingRule, lexerEngine, shardingTableMetaData);
             case SQLServer:
-                return new SQLServerInsertParser(shardingRule, lexerEngine, shardingMetaData);
+                return new SQLServerInsertParser(shardingRule, lexerEngine, shardingTableMetaData);
             case PostgreSQL:
-                return new PostgreSQLInsertParser(shardingRule, lexerEngine, shardingMetaData);
+                return new PostgreSQLInsertParser(shardingRule, lexerEngine, shardingTableMetaData);
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support database [%s].", dbType));
         }

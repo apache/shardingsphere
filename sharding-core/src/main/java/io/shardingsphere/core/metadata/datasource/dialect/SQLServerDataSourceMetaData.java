@@ -17,30 +17,47 @@
 
 package io.shardingsphere.core.metadata.datasource.dialect;
 
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
-import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataParser;
+import lombok.Getter;
 
 import java.net.URI;
 
 /**
- * SQLServer data source meta data parser.
+ * Data source meta data for SQLServer.
  *
  * @author panjuan
  */
-public final class SQLServerDataSourceMetaDataParser implements DataSourceMetaDataParser {
+@Getter
+public final class SQLServerDataSourceMetaData implements DataSourceMetaData {
     
-    private static final Integer DEFAULT_PORT = 1433;
+    private static final int DEFAULT_PORT = 1433;
     
-    @Override
-    public DataSourceMetaData getDataSourceMetaData(final String url, final DatabaseType databaseType) {
+    private final String hostName;
+    
+    private final int port;
+    
+    private final String schemeName;
+    
+    public SQLServerDataSourceMetaData(final String url) {
+        URI uri = getURI(url);
+        hostName = uri.getHost();
+        port = -1 == uri.getPort() ? DEFAULT_PORT : uri.getPort();
+        schemeName = uri.getPath().isEmpty() ? "" : uri.getPath().substring(1);
+    }
+    
+    private URI getURI(final String url) {
         String cleanUrl = url.substring(5);
         cleanUrl = cleanUrl.replace("microsoft:", "").replace(";DatabaseName=", "/");
-        URI uri = URI.create(cleanUrl);
-        if (null == uri.getHost()) {
+        URI result = URI.create(cleanUrl);
+        if (null == result.getHost()) {
             throw new ShardingException("The URL of JDBC is not supported.");
         }
-        return new DataSourceMetaData(uri.getHost(), -1 == uri.getPort() ? DEFAULT_PORT : uri.getPort(), uri.getPath().isEmpty() ? "" : uri.getPath().substring(1), databaseType);
+        return result;
+    }
+    
+    @Override
+    public boolean isInSameDatabaseInstance(final DataSourceMetaData dataSourceMetaData) {
+        return hostName.equals(dataSourceMetaData.getHostName()) && port == dataSourceMetaData.getPort();
     }
 }

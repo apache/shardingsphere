@@ -15,23 +15,27 @@
  * </p>
  */
 
-package io.shardingsphere.core.metadata.datasource;
+package io.shardingsphere.core.metadata.table;
 
-import io.shardingsphere.core.constant.DatabaseType;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 /**
- * Data source meta data parser.
+ * Column metadata.
  *
  * @author panjuan
  */
-public interface DataSourceMetaDataParser {
+@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode
+@ToString
+public final class ColumnMetaData {
     
-    /**
-     * Get data source meta data.
-     *
-     * @param url data source URL
-     * @param databaseType database type
-     * @return data source meta data
-     */
-    DataSourceMetaData getDataSourceMetaData(String url, DatabaseType databaseType);
+    private final String columnName;
+    
+    private final String columnType;
+    
+    private final String keyType;
 }

@@ -19,6 +19,7 @@ package io.shardingsphere.core.parsing.lexer;
 
 import com.google.common.collect.Sets;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.parsing.lexer.dialect.h2.H2Lexer;
 import io.shardingsphere.core.parsing.lexer.dialect.mysql.MySQLLexer;
 import io.shardingsphere.core.parsing.lexer.dialect.oracle.OracleLexer;
 import io.shardingsphere.core.parsing.lexer.dialect.postgresql.PostgreSQLLexer;
@@ -205,6 +206,9 @@ public final class LexerEngine {
      * @return database type
      */
     public DatabaseType getDatabaseType() {
+        if (lexer instanceof H2Lexer) {
+            return DatabaseType.H2;
+        }
         if (lexer instanceof MySQLLexer) {
             return DatabaseType.MySQL;
         }

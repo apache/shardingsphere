@@ -19,8 +19,8 @@ package io.shardingsphere.core.jdbc.metadata;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.metadata.TableMetaData;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.rule.ShardingDataSourceNames;
 import io.shardingsphere.core.rule.ShardingRule;
@@ -33,12 +33,12 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Sharding metadata for JDBC.
+ * Sharding table meta data for JDBC.
  *
  * @author panjuan
  */
 @Getter
-public final class JDBCShardingMetaData extends ShardingMetaData {
+public final class JDBCShardingTableMetaData extends ShardingTableMetaData {
     
     private final Map<String, DataSource> dataSourceMap;
     
@@ -46,7 +46,7 @@ public final class JDBCShardingMetaData extends ShardingMetaData {
     
     private final DatabaseType databaseType;
     
-    public JDBCShardingMetaData(final ListeningExecutorService executorService, final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType) {
+    public JDBCShardingTableMetaData(final ListeningExecutorService executorService, final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType) {
         super(executorService);
         this.dataSourceMap = dataSourceMap;
         this.shardingRule = shardingRule;

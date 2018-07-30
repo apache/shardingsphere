@@ -19,6 +19,7 @@ package io.shardingsphere.core.metadata.datasource;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
@@ -43,20 +44,21 @@ public class ShardingDataSourceMetaData {
     private Map<String, DataSourceMetaData> getDataSourceMetaDataMap(final Map<String, String> dataSourceURLs, final ShardingRule shardingRule, final DatabaseType databaseType) {
         Map<String, DataSourceMetaData> dataSourceMetaDataMap = new LinkedHashMap<>(dataSourceURLs.size(), 1);
         for (Entry<String, String> entry : dataSourceURLs.entrySet()) {
-            dataSourceMetaDataMap.put(entry.getKey(), DataSourceMetaDataFactory.getDataSourceMetaData(databaseType, entry.getValue()));
+            dataSourceMetaDataMap.put(entry.getKey(), DataSourceMetaDataFactory.newInstance(databaseType, entry.getValue()));
         }
-        return handleMasterSlaveDataSourceNames(shardingRule, dataSourceMetaDataMap);
+        return handleMasterSlaveDataSources(shardingRule, dataSourceMetaDataMap);
     }
     
-    private Map<String, DataSourceMetaData> handleMasterSlaveDataSourceNames(final ShardingRule shardingRule, final Map<String, DataSourceMetaData> dataSourceMetaDataMap) {
+    private Map<String, DataSourceMetaData> handleMasterSlaveDataSources(final ShardingRule shardingRule, final Map<String, DataSourceMetaData> dataSourceMetaDataMap) {
         Map<String, DataSourceMetaData> result = new LinkedHashMap<>();
         if (shardingRule.getMasterSlaveRules().isEmpty()) {
             return dataSourceMetaDataMap;
         }
         for (Entry<String, DataSourceMetaData> entry : dataSourceMetaDataMap.entrySet()) {
-            Optional<String> masterSlaveRuleNameOptional = shardingRule.tryFindMasterSlaveRuleName(entry.getKey());
-            if (masterSlaveRuleNameOptional.isPresent()) {
-                result.put(masterSlaveRuleNameOptional.get(), entry.getValue());
+            Optional<MasterSlaveRule> masterSlaveRule = shardingRule.findMasterSlaveRule(entry.getKey());
+            // TODO original DataSourceMetaData do not remove?
+            if (masterSlaveRule.isPresent()) {
+                result.put(masterSlaveRule.get().getName(), entry.getValue());
             }
         }
         return result;

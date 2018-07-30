@@ -15,26 +15,15 @@
  * </p>
  */
 
-package io.shardingsphere.core.rewrite.placeholder;
+package io.shardingsphere.core.metadata;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import io.shardingsphere.core.metadata.datasource.dialect.MySQLDataSourceMetaDataTest;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
-/**
- * Table placeholder for rewrite.
- *
- * @author zhangliang
- */
-@RequiredArgsConstructor
-@Getter
-public final class TablePlaceholder implements ShardingPlaceholder {
-    
-    private final String logicTableName;
-    
-    private final String originalLiterals;
-    
-    @Override
-    public String toString() {
-        return logicTableName;
-    }
+@RunWith(Suite.class)
+@Suite.SuiteClasses({
+        MySQLDataSourceMetaDataTest.class
+    })
+public class AllMetaDataTests {
 }

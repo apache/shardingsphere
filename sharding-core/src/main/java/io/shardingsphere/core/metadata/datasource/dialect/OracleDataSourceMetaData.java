@@ -17,39 +17,57 @@
 
 package io.shardingsphere.core.metadata.datasource.dialect;
 
-import io.shardingsphere.core.constant.DatabaseType;
+import com.google.common.base.Splitter;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
-import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataParser;
+import lombok.Getter;
 
 import java.net.URI;
+import java.util.List;
 
 /**
- * Oracle data source meta data parser.
+ * Data source meta data for Oracle.
  *
  * @author panjuan
  */
-public final class OracleDataSourceMetaDataParser implements DataSourceMetaDataParser {
+@Getter
+public final class OracleDataSourceMetaData implements DataSourceMetaData {
     
-    private static final Integer DEFAULT_PORT = 1521;
+    private static final int DEFAULT_PORT = 1521;
     
-    @Override
-    public DataSourceMetaData getDataSourceMetaData(final String url, final DatabaseType databaseType) {
+    private final String hostName;
+    
+    private final int port;
+    
+    private final String schemeName;
+    
+    public OracleDataSourceMetaData(final String url) {
+        URI uri = getURI(url);
+        hostName = uri.getHost();
+        port = -1 == uri.getPort() ? DEFAULT_PORT : uri.getPort();
+        schemeName = uri.getPath().isEmpty() ? "" : uri.getPath().substring(1);
+    }
+    
+    private URI getURI(final String url) {
         String cleanUrl = url.substring(5);
         if (cleanUrl.contains("oracle:thin:@//")) {
             cleanUrl = cleanUrl.replace("oracle:thin:@//", "oracle://");
         } else if (cleanUrl.contains("oracle:thin:@")) {
             cleanUrl = cleanUrl.replace("oracle:thin:@", "oracle://");
         }
-    
-        String[] parts = cleanUrl.split(":");
-        if (4 == parts.length) {
-            cleanUrl = parts[0] + ":" + parts[1] + ":" + parts[2] + "/" + parts[3];
+        List<String> parts = Splitter.on(":").splitToList(cleanUrl);
+        if (4 == parts.size()) {
+            cleanUrl = parts.get(0) + ":" + parts.get(1) + ":" + parts.get(2) + "/" + parts.get(3);
         }
-        URI uri = URI.create(cleanUrl);
-        if (null == uri.getHost()) {
+        URI result = URI.create(cleanUrl);
+        if (null == result.getHost()) {
             throw new ShardingException("The URL of JDBC is not supported.");
         }
-        return new DataSourceMetaData(uri.getHost(), -1 == uri.getPort() ? DEFAULT_PORT : uri.getPort(), uri.getPath().isEmpty() ? "" : uri.getPath().substring(1), databaseType);
+        return result;
+    }
+    
+    @Override
+    public boolean isInSameDatabaseInstance(final DataSourceMetaData dataSourceMetaData) {
+        return hostName.equals(dataSourceMetaData.getHostName()) && port == dataSourceMetaData.getPort();
     }
 }
