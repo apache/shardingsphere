@@ -36,9 +36,9 @@ public abstract class AbstractShardingBothDataBasesAndTablesSpringDBUnitTest ext
     }
     
     private void insertData() throws SQLException {
-        String orderSql = "INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (?, ?, ?)";
-        String orderItemSql = "INSERT INTO `t_order_item` (`order_item_id`, `order_id`, `user_id`, `status`) VALUES (?, ?, ?, ?)";
-        String configSql = "INSERT INTO `t_config` (`id`, `status`) VALUES (?, ?)";
+        String orderSql = "INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?)";
+        String orderItemSql = "INSERT INTO t_order_item (order_item_id, order_id, user_id, status) VALUES (?, ?, ?, ?)";
+        String configSql = "INSERT INTO t_config (id, status) VALUES (?, ?)";
         for (int orderId = 1; orderId <= 4; orderId++) {
             for (int userId = 1; userId <= 2; userId++) {
                 try (Connection connection = getShardingDataSource().getConnection()) {
@@ -76,8 +76,8 @@ public abstract class AbstractShardingBothDataBasesAndTablesSpringDBUnitTest ext
     }
     
     private void selectData() throws SQLException {
-        String sql = "SELECT i.order_id, i.order_item_id  FROM `t_order` o JOIN `t_order_item` i ON o.user_id = i.user_id AND o.order_id = i.order_id"
-            + " WHERE o.`user_id` = ? AND o.`order_id` = ? AND i.`order_id` = ? ORDER BY i.order_item_id DESC";
+        String sql = "SELECT i.order_id, i.order_item_id  FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id"
+            + " WHERE o.user_id = ? AND o.order_id = ? AND i.order_id = ? ORDER BY i.order_item_id DESC";
         try (Connection connection = getShardingDataSource().getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setInt(1, 1);
