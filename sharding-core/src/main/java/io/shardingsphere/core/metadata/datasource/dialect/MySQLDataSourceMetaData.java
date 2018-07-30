@@ -42,7 +42,6 @@ public final class MySQLDataSourceMetaData implements DataSourceMetaData {
     public MySQLDataSourceMetaData(final String url) {
         URI uri = getURI(url);
         hostName = uri.getHost();
-        // TODO when equals -1 ?
         port = -1 == uri.getPort() ? DEFAULT_PORT : uri.getPort();
         schemeName = uri.getPath().isEmpty() ? "" : uri.getPath().substring(1);
     }

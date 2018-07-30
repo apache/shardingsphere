@@ -32,8 +32,6 @@ import java.net.URI;
 @Getter
 public final class H2DataSourceMetaData implements DataSourceMetaData {
     
-    private static final int DEFAULT_PORT = -1;
-    
     private static final String DEFAULT_HOST = "localhost";
     
     private final String hostName;
@@ -45,8 +43,7 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
     public H2DataSourceMetaData(final String url) {
         URI uri = getURI(url);
         hostName = uri.getHost();
-        // TODO when equals -1 ?
-        port = -1 == uri.getPort() ? DEFAULT_PORT : uri.getPort();
+        port = uri.getPort();
         schemeName = uri.getPath().isEmpty() ? "" : uri.getPath().substring(1);
     }
     
