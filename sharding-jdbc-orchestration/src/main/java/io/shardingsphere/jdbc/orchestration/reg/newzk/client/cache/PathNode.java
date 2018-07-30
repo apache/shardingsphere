@@ -131,4 +131,12 @@ public final class PathNode {
             node.delete(lexerEngine.getCurrentToken().getLiterals(), lexerEngine);
         }
     }
+    
+    public PathNode get(final PathResolve pathResolve) {
+        pathResolve.next();
+        if (pathResolve.isEnd()) {
+            return children.get(pathResolve.getCurrent());
+        }
+        return children.get(pathResolve.getCurrent()).get(pathResolve);
+    }
 }

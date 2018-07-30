@@ -313,13 +313,14 @@ public final class PathTree {
         if (realPath.equals(rootNode.get().getKey())) {
             return rootNode.get();
         }
-        // todo iterator -> token LexerEngine
-        Iterator<String> iterator = keyIterator(realPath);
-        if (iterator.hasNext()) {
-            return rootNode.get().get(iterator);
+        
+        PathResolve pathResolve = new PathResolve(realPath);
+        pathResolve.next();
+        if (pathResolve.isEnd()) {
+            log.info("path node get() hit root!");
+            return rootNode.get();
         }
-        log.debug("{} not exist", realPath);
-        return null;
+        return rootNode.get().get(pathResolve);
     }
     
     /**

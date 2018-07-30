@@ -61,7 +61,7 @@ class PathResolve {
                 length = path.length();
             }
         }
-        // todo
+        
         ended = position >= length;
     }
     
@@ -70,7 +70,6 @@ class PathResolve {
     */
     public void next() {
         if (isEnd()) {
-            current = null;
             return;
         }
         int nodeBegin = ++position;
@@ -79,6 +78,5 @@ class PathResolve {
             checkEnd();
         }
         current = path.substring(nodeBegin, position);
-        System.out.println(current);
     }
 }
