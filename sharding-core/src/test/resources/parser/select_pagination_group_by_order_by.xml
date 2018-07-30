@@ -6,16 +6,16 @@
             <table name="t_order_item" alias="i" />
         </tables>
         <tokens>
-            <table-token begin-position="22" original-literals="`t_order`" />
-            <table-token begin-position="39" original-literals="`t_order_item`" />
+            <table-token begin-position="22" original-literals="t_order" />
+            <table-token begin-position="37" original-literals="t_order_item" />
             <items-token begin-position="17">
                 <items>
                     <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
                     <item>i.item_id AS GROUP_BY_DERIVED_0 </item>
                 </items>
             </items-token>
-            <offset-token begin-position="220" offset="5" />
-            <row-count-token begin-position="223" row-count="3" />
+            <offset-token begin-position="212" offset="5" />
+            <row-count-token begin-position="215" row-count="3" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -44,10 +44,10 @@
             <table name="t_order_item" alias="i" />
         </tables>
         <tokens>
-            <table-token begin-position="22" original-literals="`t_order`" />
-            <table-token begin-position="39" original-literals="`t_order_item`" />
-            <offset-token begin-position="220" offset="5" />
-            <row-count-token begin-position="223" row-count="3" />
+            <table-token begin-position="22" original-literals="t_order" />
+            <table-token begin-position="37" original-literals="t_order_item" />
+            <offset-token begin-position="212" offset="5" />
+            <row-count-token begin-position="215" row-count="3" />
             <items-token begin-position="17">
                 <items>
                     <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
