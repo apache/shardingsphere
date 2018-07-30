@@ -18,6 +18,7 @@
 package io.shardingsphere.transaction.common.config;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.transaction.TransactionEventBusInstance;
 import io.shardingsphere.transaction.common.listener.TransactionListener;
 import io.shardingsphere.transaction.common.spi.TransactionManager;
@@ -33,9 +34,23 @@ import java.util.ServiceLoader;
 public abstract class TransactionConfigurationAdapter implements TransactionConfiguration {
     
     @Override
+    public void configTransactionContext(final TransactionType transactionType) {
+        switch (transactionType) {
+            case XA:
+                doXaTransactionConfiguration();
+                break;
+            case BASE:
+                break;
+            default:
+        }
+    }
+    
+    @Override
     public void registerListener() {
         TransactionEventBusInstance.getInstance().register(TransactionListener.getInstance());
     }
+    
+    protected abstract void doXaTransactionConfiguration();
     
     protected Optional<TransactionManager> doSPIConfiguration() {
         Iterator<TransactionManager> iterator = ServiceLoader.load(TransactionManager.class).iterator();
