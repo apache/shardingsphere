@@ -17,9 +17,10 @@
 
 package io.shardingsphere.proxy.frontend.mysql;
 
+import com.google.common.base.Optional;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.shardingsphere.proxy.backend.jdbc.BackendConnection;
+import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.proxy.frontend.common.FrontendHandler;
 import io.shardingsphere.proxy.frontend.common.executor.ExecutorGroup;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
@@ -27,8 +28,8 @@ import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketFactory;
-import io.shardingsphere.proxy.transport.mysql.packet.command.QueryCommandPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryCommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
@@ -93,15 +94,20 @@ public final class MySQLFrontendHandler extends FrontendHandler {
             try (MySQLPacketPayload payload = new MySQLPacketPayload(message);
                  BackendConnection backendConnection = new BackendConnection()) {
                 CommandPacket commandPacket = getCommandPacket(payload, backendConnection);
-                CommandResponsePackets responsePackets = commandPacket.execute();
-                for (DatabasePacket each : responsePackets.getPackets()) {
+                Optional<CommandResponsePackets> responsePackets = commandPacket.execute();
+                if (!responsePackets.isPresent()) {
+                    return;
+                }
+                for (DatabasePacket each : responsePackets.get().getPackets()) {
                     context.writeAndFlush(each);
                 }
-                if (commandPacket instanceof QueryCommandPacket && !(responsePackets.getHeadPacket() instanceof OKPacket) && !(responsePackets.getHeadPacket() instanceof ErrPacket)) {
-                    writeMoreResults((QueryCommandPacket) commandPacket, responsePackets.getPackets().size());
+                if (commandPacket instanceof QueryCommandPacket && !(responsePackets.get().getHeadPacket() instanceof OKPacket) && !(responsePackets.get().getHeadPacket() instanceof ErrPacket)) {
+                    writeMoreResults((QueryCommandPacket) commandPacket, responsePackets.get().getPackets().size());
                 }
             } catch (final SQLException ex) {
                 context.writeAndFlush(new ErrPacket(++currentSequenceId, ex));
+            } catch (final Exception ex) {
+                context.writeAndFlush(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
             }
         }
         
@@ -114,7 +120,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
         private void writeMoreResults(final QueryCommandPacket queryCommandPacket, final int headPacketsCount) throws SQLException {
             currentSequenceId = headPacketsCount;
             while (queryCommandPacket.next()) {
-                // TODO try to use wait notify
+                // TODO: yonglun try to use wait notify
                 while (!context.channel().isWritable()) {
                     continue;
                 }

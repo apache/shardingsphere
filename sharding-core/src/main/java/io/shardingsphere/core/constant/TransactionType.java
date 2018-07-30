@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 public enum TransactionType {
     
     /**
-     * default local transaction.
+     * Default local transaction.
      */
     NONE(""),
     

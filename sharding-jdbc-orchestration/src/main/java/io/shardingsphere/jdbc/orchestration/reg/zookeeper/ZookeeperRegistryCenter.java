@@ -37,6 +37,7 @@ import org.apache.zookeeper.KeeperException.OperationTimeoutException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.ACL;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -218,7 +219,7 @@ public final class ZookeeperRegistryCenter implements RegistryCenter {
         cache.getListenable().addListener(new TreeCacheListener() {
             
             @Override
-            public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws Exception {
+            public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws UnsupportedEncodingException {
                 ChildData data = event.getData();
                 if (null == data || null == data.getPath()) {
                     return;

@@ -17,8 +17,7 @@
 
 package io.shardingsphere.proxy.backend;
 
-import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 
 import java.sql.SQLException;
 
@@ -47,8 +46,8 @@ public interface BackendHandler {
     /**
      * Get result value.
      *
-     * @return database packet of result value
+     * @return result packet
      * @throws SQLException SQL exception
      */
-    DatabasePacket getResultValue() throws SQLException;
+    ResultPacket getResultValue() throws SQLException;
 }

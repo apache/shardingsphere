@@ -219,7 +219,7 @@ public final class StatementExecutor {
         List<Boolean> result = executorEngine.execute(sqlType, statementUnits, new ExecuteCallback<Boolean>() {
             
             @Override
-            public Boolean execute(final BaseStatementUnit baseStatementUnit) throws Exception {
+            public Boolean execute(final BaseStatementUnit baseStatementUnit) throws SQLException {
                 return executor.execute(baseStatementUnit.getStatement(), baseStatementUnit.getSqlExecutionUnit().getSqlUnit().getSql());
             }
         });

@@ -19,46 +19,40 @@ package io.shardingsphere.proxy.backend.jdbc.transaction;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.TCLType;
-import io.shardingsphere.core.transaction.TransactionContext;
-import io.shardingsphere.core.transaction.TransactionContextHolder;
-import io.shardingsphere.core.transaction.event.XaTransactionEvent;
 import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.proxy.config.RuleRegistry;
+import io.shardingsphere.transaction.common.TransactionContextFactory;
+import io.shardingsphere.transaction.common.TransactionContextHolder;
+import io.shardingsphere.transaction.common.event.XaTransactionEvent;
 
 import javax.transaction.Status;
+import java.sql.SQLException;
 
 /**
  * Execute XA transaction intercept.
  *
  * @author zhaojun
  */
-public class XaTransactionEngine extends TransactionEngine {
+public final class XaTransactionEngine extends TransactionEngine {
     
-    private final RuleRegistry ruleRegistry = RuleRegistry.getInstance();
+    private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
     
     public XaTransactionEngine(final String sql) {
         super(sql);
     }
     
     @Override
-    public XaTransactionEngine execute() throws Exception {
+    public boolean execute() throws SQLException {
         Optional<TCLType> tclType = parseSQL();
-        if (tclType.isPresent() && isAvailable(tclType)) {
-            XaTransactionEvent xaTransactionEvent = new XaTransactionEvent(getSql());
-            xaTransactionEvent.setTclType(tclType.get());
-            TransactionContextHolder.set(new TransactionContext(ruleRegistry.getTransactionManager(), ruleRegistry.getTransactionType(), XaTransactionEvent.class));
-            EventBusInstance.getInstance().post(xaTransactionEvent);
-            setNeedProcessByBackendHandler(false);
+        if (tclType.isPresent() && isInTransaction(tclType.get())) {
+            TransactionContextHolder.set(TransactionContextFactory.newXAContext(RULE_REGISTRY.getTransactionManager()));
+            EventBusInstance.getInstance().post(new XaTransactionEvent(tclType.get(), getSql()));
+            return true;
         }
-        return this;
+        return false;
     }
     
-    private boolean isAvailable(final Optional<TCLType> tclType) throws Exception {
-        switch (tclType.orNull()) {
-            case ROLLBACK:
-                return tclType.isPresent() && Status.STATUS_NO_TRANSACTION != ruleRegistry.getTransactionManager().getStatus();
-            default:
-                return tclType.isPresent();
-        }
+    private boolean isInTransaction(final TCLType tclType) throws SQLException {
+        return TCLType.ROLLBACK != tclType || Status.STATUS_NO_TRANSACTION != RULE_REGISTRY.getTransactionManager().getStatus();
     }
 }

@@ -22,7 +22,7 @@ import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.merger.dql.common.MemoryMergedResult;
 import io.shardingsphere.core.merger.dql.common.MemoryQueryResultRow;
-import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
 
@@ -51,16 +51,16 @@ public final class ShowTablesMergedResult extends MemoryMergedResult {
     
     private final Set<String> tableNames = new HashSet<>();
     
-    private final ShardingMetaData shardingMetaData;
+    private final ShardingTableMetaData shardingTableMetaData;
     
     static {
         LABEL_AND_INDEX_MAP.put("Tables_in_" + ShardingConstant.LOGIC_SCHEMA_NAME, 1);
     }
     
-    public ShowTablesMergedResult(final ShardingRule shardingRule, final List<QueryResult> queryResults, final ShardingMetaData shardingMetaData) throws SQLException {
+    public ShowTablesMergedResult(final ShardingRule shardingRule, final List<QueryResult> queryResults, final ShardingTableMetaData shardingTableMetaData) throws SQLException {
         super(LABEL_AND_INDEX_MAP);
         this.shardingRule = shardingRule;
-        this.shardingMetaData = shardingMetaData;
+        this.shardingTableMetaData = shardingTableMetaData;
         memoryResultSetRows = init(queryResults);
     }
     
@@ -86,8 +86,7 @@ public final class ShowTablesMergedResult extends MemoryMergedResult {
     }
     
     private void addMemoryQueryResultRows(final List<MemoryQueryResultRow> result, final MemoryQueryResultRow memoryResultSetRow, final String actualTableName) {
-        if ((shardingMetaData.getTableMetaDataMap().isEmpty() || shardingMetaData.getTableMetaDataMap().keySet().contains(actualTableName)
-                || !shardingMetaData.isSupportedDatabaseType()) && tableNames.add(actualTableName)) {
+        if ((!shardingTableMetaData.hasMetaData() || shardingTableMetaData.getTableMetaDataMap().keySet().contains(actualTableName)) && tableNames.add(actualTableName)) {
             result.add(memoryResultSetRow);
         }
     }

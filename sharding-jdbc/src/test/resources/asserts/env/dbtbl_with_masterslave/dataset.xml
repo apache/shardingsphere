@@ -19,6 +19,10 @@
         <column name="id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
+    <metadata data-nodes="master_db_${0..9}.select,slave_db_${0..9}.select">
+        <column name="id" type="numeric" />
+        <column name="status" type="varchar" />
+    </metadata>
     <row data-node="master_db_0.t_order_0" values="1000, 10, init" />
     <row data-node="master_db_0.t_order_1" values="1001, 10, init" />
     <row data-node="master_db_0.t_order_2" values="1002, 10, init" />
@@ -329,6 +333,16 @@
     <row data-node="master_db_7.t_broadcast_table" values="1, init" />
     <row data-node="master_db_8.t_broadcast_table" values="1, init" />
     <row data-node="master_db_9.t_broadcast_table" values="1, init" />
+    <row data-node="master_db_0.select" values="1, init" />
+    <row data-node="master_db_1.select" values="1, init" />
+    <row data-node="master_db_2.select" values="1, init" />
+    <row data-node="master_db_3.select" values="1, init" />
+    <row data-node="master_db_4.select" values="1, init" />
+    <row data-node="master_db_5.select" values="1, init" />
+    <row data-node="master_db_6.select" values="1, init" />
+    <row data-node="master_db_7.select" values="1, init" />
+    <row data-node="master_db_8.select" values="1, init" />
+    <row data-node="master_db_9.select" values="1, init" />
     <row data-node="master_db_0.t_global" values="1, global_master" />
     <row data-node="slave_db_0.t_order_0" values="1000, 10, init_slave" />
     <row data-node="slave_db_0.t_order_1" values="1001, 10, init_slave" />
@@ -640,5 +654,15 @@
     <row data-node="slave_db_7.t_broadcast_table" values="1, init_slave" />
     <row data-node="slave_db_8.t_broadcast_table" values="1, init_slave" />
     <row data-node="slave_db_9.t_broadcast_table" values="1, init_slave" />
+    <row data-node="slave_db_0.select" values="1, init_slave" />
+    <row data-node="slave_db_1.select" values="1, init_slave" />
+    <row data-node="slave_db_2.select" values="1, init_slave" />
+    <row data-node="slave_db_3.select" values="1, init_slave" />
+    <row data-node="slave_db_4.select" values="1, init_slave" />
+    <row data-node="slave_db_5.select" values="1, init_slave" />
+    <row data-node="slave_db_6.select" values="1, init_slave" />
+    <row data-node="slave_db_7.select" values="1, init_slave" />
+    <row data-node="slave_db_8.select" values="1, init_slave" />
+    <row data-node="slave_db_9.select" values="1, init_slave" />
     <row data-node="slave_db_0.t_global" values="1, global_slave" />
 </dataset>

@@ -22,10 +22,12 @@ import io.shardingsphere.core.constant.TCLType;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
-import io.shardingsphere.core.transaction.event.TransactionEvent;
-import io.shardingsphere.core.transaction.event.TransactionEventFactory;
-import io.shardingsphere.core.transaction.event.WeakXaTransactionEvent;
 import io.shardingsphere.core.util.EventBusInstance;
+import io.shardingsphere.transaction.common.TransactionContextHolder;
+import io.shardingsphere.transaction.common.config.JDBCTransactionConfiguration;
+import io.shardingsphere.transaction.common.event.TransactionEvent;
+import io.shardingsphere.transaction.common.event.TransactionEventFactory;
+import io.shardingsphere.transaction.common.event.WeakXaTransactionEvent;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -62,6 +64,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
      * @throws SQLException SQL exception
      */
     public final Connection getConnection(final String dataSourceName) throws SQLException {
+        JDBCTransactionConfiguration.getInstance().configTransactionContext(TransactionContextHolder.get().getTransactionType());
         if (cachedConnections.containsKey(dataSourceName)) {
             return cachedConnections.get(dataSourceName);
         }
@@ -88,23 +91,17 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     public final void setAutoCommit(final boolean autoCommit) {
         this.autoCommit = autoCommit;
         recordMethodInvocation(Connection.class, "setAutoCommit", new Class[] {boolean.class}, new Object[] {autoCommit});
-        TransactionEvent transactionEvent = buildTransactionEvent();
-        transactionEvent.setTclType(TCLType.BEGIN);
-        EventBusInstance.getInstance().post(transactionEvent);
+        EventBusInstance.getInstance().post(buildTransactionEvent(TCLType.BEGIN));
     }
     
     @Override
     public final void commit() {
-        TransactionEvent transactionEvent = buildTransactionEvent();
-        transactionEvent.setTclType(TCLType.COMMIT);
-        EventBusInstance.getInstance().post(transactionEvent);
+        EventBusInstance.getInstance().post(buildTransactionEvent(TCLType.COMMIT));
     }
     
     @Override
     public final void rollback() {
-        TransactionEvent transactionEvent = buildTransactionEvent();
-        transactionEvent.setTclType(TCLType.ROLLBACK);
-        EventBusInstance.getInstance().post(transactionEvent);
+        EventBusInstance.getInstance().post(buildTransactionEvent(TCLType.ROLLBACK));
     }
     
     @Override
@@ -112,6 +109,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         closed = true;
         HintManagerHolder.clear();
         MasterVisitedManager.clear();
+        TransactionContextHolder.clear();
         Collection<SQLException> exceptions = new LinkedList<>();
         for (Connection each : cachedConnections.values()) {
             try {
@@ -179,8 +177,8 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     public final void setHoldability(final int holdability) {
     }
     
-    private TransactionEvent buildTransactionEvent() {
-        TransactionEvent result = TransactionEventFactory.create();
+    private TransactionEvent buildTransactionEvent(final TCLType tclType) {
+        TransactionEvent result = TransactionEventFactory.create(tclType);
         if (result instanceof WeakXaTransactionEvent) {
             WeakXaTransactionEvent weakXaTransactionEvent = (WeakXaTransactionEvent) result;
             weakXaTransactionEvent.setCachedConnections(cachedConnections);

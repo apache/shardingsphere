@@ -21,7 +21,6 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.proxy.config.DataSourceConfig;
 import io.shardingsphere.proxy.transport.common.codec.PacketCodecFactory;
 import lombok.RequiredArgsConstructor;
 

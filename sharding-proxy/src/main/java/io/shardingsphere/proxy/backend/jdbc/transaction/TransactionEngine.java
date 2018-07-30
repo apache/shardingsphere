@@ -23,24 +23,26 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.sql.SQLException;
+
 /**
  * Abstract transaction engine.
  *
  * @author zhaojun
  */
 @RequiredArgsConstructor
+@Getter
+@Setter
 public abstract class TransactionEngine {
     
-    @Getter
-    @Setter
-    private boolean isNeedProcessByBackendHandler = true;
-    
-    @Getter
     private final String sql;
     
+    // TODO :yonglun move to TCLParser
     protected Optional<TCLType> parseSQL() {
         switch (sql.toUpperCase()) {
-            case "BEGIN": case "START TRANSACTION": case "SET AUTOCOMMIT=0":
+            case "BEGIN": 
+            case "START TRANSACTION":
+            case "SET AUTOCOMMIT=0":
                 return Optional.of(TCLType.BEGIN);
             case "COMMIT":
                 return Optional.of(TCLType.COMMIT);
@@ -52,10 +54,10 @@ public abstract class TransactionEngine {
     }
     
     /**
-     * Execute transaction with binding tm.
+     * Execute transaction with binding transaction manager.
      *
-     * @return TransactionEngine
-     * @throws Exception Exception
+     * @return skip or not skip access backend databases 
+     * @throws SQLException SQL exception
      */
-    public abstract TransactionEngine execute() throws Exception;
+    public abstract boolean execute() throws SQLException;
 }

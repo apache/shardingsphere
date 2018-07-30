@@ -19,7 +19,7 @@ package io.shardingsphere.proxy.backend.jdbc.execute.response;
 
 import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteResponseUnit;
 import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteUpdateResponseUnit;
-import io.shardingsphere.proxy.transport.mysql.packet.command.reponse.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import lombok.Getter;
 
@@ -57,7 +57,7 @@ public final class ExecuteUpdateResponse implements ExecuteResponse {
         long lastInsertId = 0;
         for (OKPacket each : packets) {
             affectedRows += each.getAffectedRows();
-            // TODO consider about insert multiple values
+            // TODO :yonglun consider about insert multiple values
             lastInsertId = each.getLastInsertId();
         }
         return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId));

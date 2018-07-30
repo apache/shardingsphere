@@ -19,7 +19,6 @@ package io.shardingsphere.proxy.backend.netty;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.proxy.backend.netty.mysql.MySQLBackendHandler;
-import io.shardingsphere.proxy.config.DataSourceConfig;
 
 /**
  * Backend handler factory for netty.

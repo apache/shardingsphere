@@ -46,7 +46,7 @@ import java.net.MalformedURLException;
  */
 public final class ShardingProxy {
     
-    private final RuleRegistry ruleRegistry = RuleRegistry.getInstance();
+    private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
     
     private final ExecutorContext executorContext = ExecutorContext.getInstance();
     
@@ -55,7 +55,7 @@ public final class ShardingProxy {
     private EventLoopGroup workerGroup;
     
     public ShardingProxy() {
-        ruleRegistry.initShardingMetaData(executorContext.getExecutorService());
+        RULE_REGISTRY.initShardingMetaData(executorContext.getExecutorService());
     }
     
     /**
@@ -67,7 +67,7 @@ public final class ShardingProxy {
      */
     public void start(final int port) throws InterruptedException, MalformedURLException {
         try {
-            if (ruleRegistry.isProxyBackendUseNio()) {
+            if (RULE_REGISTRY.isProxyBackendUseNio()) {
                 ShardingProxyClient.getInstance().start();
             }
             ServerBootstrap bootstrap = new ServerBootstrap();
@@ -83,7 +83,7 @@ public final class ShardingProxy {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
             executorContext.getExecutorService().shutdown();
-            if (ruleRegistry.isProxyBackendUseNio()) {
+            if (RULE_REGISTRY.isProxyBackendUseNio()) {
                 ShardingProxyClient.getInstance().stop();
             }
         }
@@ -98,7 +98,7 @@ public final class ShardingProxy {
     }
     
     private void groupsEpoll(final ServerBootstrap bootstrap) {
-        workerGroup = new EpollEventLoopGroup(ruleRegistry.getMaxWorkingThreads());
+        workerGroup = new EpollEventLoopGroup(RULE_REGISTRY.getMaxWorkingThreads());
         bootstrap.group(bossGroup, workerGroup)
                 .channel(EpollServerSocketChannel.class)
                 .option(EpollChannelOption.SO_BACKLOG, 128)
@@ -110,7 +110,7 @@ public final class ShardingProxy {
     }
     
     private void groupsNio(final ServerBootstrap bootstrap) {
-        workerGroup = new NioEventLoopGroup(ruleRegistry.getMaxWorkingThreads());
+        workerGroup = new NioEventLoopGroup(RULE_REGISTRY.getMaxWorkingThreads());
         bootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .option(ChannelOption.SO_BACKLOG, 128)

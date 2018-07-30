@@ -24,7 +24,7 @@
         </dependency>
         <dependency>
             <groupId>io.shardingsphere</groupId>
-            <artifactId>sharding-jdbc-transaction</artifactId>
+            <artifactId>sharding-transaction</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

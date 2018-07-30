@@ -346,12 +346,21 @@ public final class ShardingRule {
     }
     
     /**
-     * Get master data source name.
-     *
-     * @param masterSlaveRuleName master-slave rule name.
-     * @return master dataSource name or master-slave rule name
+     * Find actual default data source name.
+     * 
+     * <p>If use master-slave rule, return master data source name.</p>
+     * 
+     * @return actual default data source name
      */
-    public String getMasterDataSourceName(final String masterSlaveRuleName) {
+    public Optional<String> findActualDefaultDataSourceName() {
+        String result = shardingDataSourceNames.getDefaultDataSourceName();
+        if (Strings.isNullOrEmpty(result)) {
+            return Optional.absent();
+        }
+        return Optional.of(getMasterDataSourceName(result));
+    }
+    
+    private String getMasterDataSourceName(final String masterSlaveRuleName) {
         for (MasterSlaveRule each : masterSlaveRules) {
             if (each.getName().equals(masterSlaveRuleName)) {
                 return each.getMasterDataSourceName();
@@ -361,18 +370,15 @@ public final class ShardingRule {
     }
     
     /**
-     * Get master slave rule name optional.
+     * Find master slave rule.
      *
      * @param dataSourceName data source name
-     * @return master slave rule name
+     * @return master slave rule
      */
-    public Optional<String> tryFindMasterSlaveRuleName(final String dataSourceName) {
-        if (masterSlaveRules.isEmpty()) {
-            return Optional.absent();
-        }
+    public Optional<MasterSlaveRule> findMasterSlaveRule(final String dataSourceName) {
         for (MasterSlaveRule each : masterSlaveRules) {
             if (each.containDataSourceName(dataSourceName)) {
-                return Optional.fromNullable(each.getName());
+                return Optional.of(each);
             }
         }
         return Optional.absent();
