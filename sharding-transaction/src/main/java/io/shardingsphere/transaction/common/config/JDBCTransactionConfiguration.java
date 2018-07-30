@@ -20,11 +20,9 @@ package io.shardingsphere.transaction.common.config;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.transaction.common.TransactionContext;
+import io.shardingsphere.transaction.common.TransactionContextFactory;
 import io.shardingsphere.transaction.common.TransactionContextHolder;
-import io.shardingsphere.transaction.common.event.WeakXaTransactionEvent;
-import io.shardingsphere.transaction.common.event.XaTransactionEvent;
 import io.shardingsphere.transaction.common.spi.TransactionManager;
-import io.shardingsphere.transaction.weakxa.WeakXaTransactionManager;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -61,8 +59,8 @@ public class JDBCTransactionConfiguration extends TransactionConfigurationAdapte
     
     private void doXaTransactionConfiguration() {
         Optional<TransactionManager> transactionManager = doSPIConfiguration();
-        TransactionContext transactionContext = transactionManager.isPresent() ? new TransactionContext(transactionManager.get(), TransactionType.XA, XaTransactionEvent.class)
-                : new TransactionContext(new WeakXaTransactionManager(), TransactionType.XA, WeakXaTransactionEvent.class);
+        TransactionContext transactionContext = transactionManager.isPresent()
+                ? TransactionContextFactory.newXAContext(transactionManager.get()) : TransactionContextFactory.newWeakXAContext();
         TransactionContextHolder.set(transactionContext);
     }
 }
