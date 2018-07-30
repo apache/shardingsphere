@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.transaction;
+package io.shardingsphere.transaction.common;
 
 /**
  * Hold transaction context for current thread.
@@ -47,5 +47,12 @@ public final class TransactionContextHolder {
      */
     public static void set(final TransactionContext context) {
         CONTEXT.set(context);
+    }
+    
+    /**
+     * Clear transaction context for current thread.
+     */
+    public static void clear() {
+        CONTEXT.remove();
     }
 }

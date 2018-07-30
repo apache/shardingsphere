@@ -15,34 +15,28 @@
  * </p>
  */
 
-package io.shardingsphere.core.transaction.spi;
+package io.shardingsphere.transaction.xa;
 
-import io.shardingsphere.core.transaction.event.TransactionEvent;
+import com.atomikos.icatch.jta.UserTransactionManager;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Hold transaction event for current thread.
+ * Hold singleton atomikos userTransaction.
  *
  * @author zhaojun
  */
-public class TransactionEventHolder {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class AtomikosUserTransaction {
     
-    private static Class<? extends TransactionEvent> transactionEvent;
-    
-    /**
-     * Set transactionEvent.
-     *
-     * @param clazz class type of TransactionEvent
-     */
-    public static synchronized void set(final Class<? extends TransactionEvent> clazz) {
-        transactionEvent = clazz;
-    }
+    private static final UserTransactionManager TRANSACTION_MANAGER = new UserTransactionManager();
     
     /**
-     * Get transactionEvent class type.
+     * Get singleton of {@code UserTransactionManager}.
      *
-     * @return transactionEvent class type
+     * @return {@code UserTransactionManager}
      */
-    public static Class<? extends TransactionEvent> get() {
-        return transactionEvent;
+    public static UserTransactionManager getInstance() {
+        return TRANSACTION_MANAGER;
     }
 }

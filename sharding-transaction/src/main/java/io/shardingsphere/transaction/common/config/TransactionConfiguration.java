@@ -15,30 +15,29 @@
  * </p>
  */
 
-package io.shardingsphere.core.transaction.event;
+package io.shardingsphere.transaction.common.config;
 
-import com.google.common.base.Optional;
-import io.shardingsphere.core.constant.TCLType;
-import io.shardingsphere.core.exception.ShardingException;
-import lombok.Getter;
+import io.shardingsphere.core.constant.TransactionType;
+import io.shardingsphere.transaction.common.spi.TransactionManager;
 
 /**
- * XA transaction event.
+ * Execute transaction manager configuration.
  *
  * @author zhaojun
  */
-@Getter
-public final class XaTransactionEvent extends TransactionEvent {
+public interface TransactionConfiguration {
     
-    private final String sql;
+    /**
+     * Config transaction context, then binding to current thread.
+     *
+     * @param transactionType transaction type
+     * @return transaction manager
+     */
+    TransactionManager configTransactionContext(TransactionType transactionType);
     
-    public XaTransactionEvent(final TCLType tclType, final String sql) {
-        super(tclType);
-        this.sql = sql;
-    }
-    
-    @Override
-    public Optional<ShardingException> getException() {
-        return Optional.fromNullable((ShardingException) super.getException().orNull());
-    }
+    /**
+     * Subscribe transaction event using listener, register into event bus.
+     */
+    void registerListener();
+  
 }

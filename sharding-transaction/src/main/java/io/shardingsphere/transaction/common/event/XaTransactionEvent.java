@@ -15,32 +15,26 @@
  * </p>
  */
 
-package io.shardingsphere.core.transaction.event;
+package io.shardingsphere.transaction.common.event;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.TCLType;
 import io.shardingsphere.core.exception.ShardingException;
 import lombok.Getter;
-import lombok.Setter;
-
-import java.sql.Connection;
-import java.util.Map;
 
 /**
- * Weak XA transaction event.
+ * XA transaction event.
  *
  * @author zhaojun
  */
 @Getter
-@Setter
-public final class WeakXaTransactionEvent extends TransactionEvent {
+public final class XaTransactionEvent extends TransactionEvent {
     
-    private Map<String, Connection> cachedConnections;
+    private final String sql;
     
-    private boolean autoCommit = true;
-    
-    public WeakXaTransactionEvent(final TCLType tclType) {
+    public XaTransactionEvent(final TCLType tclType, final String sql) {
         super(tclType);
+        this.sql = sql;
     }
     
     @Override
