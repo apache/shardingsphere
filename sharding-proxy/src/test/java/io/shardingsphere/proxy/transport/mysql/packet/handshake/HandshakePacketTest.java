@@ -10,42 +10,42 @@ public class HandshakePacketTest {
     }
     
     @Test
-    public void testWrite() {
+    public void assertWrite() {
     }
     
     @Test
-    public void testGetProtocolVersion() {
+    public void assertGetProtocolVersion() {
     }
     
     @Test
-    public void testGetServerVersion() {
+    public void assertGetServerVersion() {
     }
     
     @Test
-    public void testGetCapabilityFlagsLower() {
+    public void assertGetCapabilityFlagsLower() {
     }
     
     @Test
-    public void testGetCharacterSet() {
+    public void assertGetCharacterSet() {
     }
     
     @Test
-    public void testGetStatusFlag() {
+    public void assertGetStatusFlag() {
     }
     
     @Test
-    public void testGetCapabilityFlagsUpper() {
+    public void assertGetCapabilityFlagsUpper() {
     }
     
     @Test
-    public void testGetSequenceId() {
+    public void assertGetSequenceId() {
     }
     
     @Test
-    public void testGetConnectionId() {
+    public void assertGetConnectionId() {
     }
     
     @Test
-    public void testGetAuthPluginData() {
+    public void assertGetAuthPluginData() {
     }
 }
