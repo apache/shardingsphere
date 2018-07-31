@@ -51,4 +51,10 @@ public class AuthPluginDataTest {
     public void testGetAuthPluginDataPart2() {
         assertThat(authPluginData.getAuthPluginDataPart2(), is(part2));
     }
+    
+    @Test
+    public void testGetAuthPluginDataWithoutArguments() {
+        AuthPluginData authPluginData = new AuthPluginData();
+        assertThat(authPluginData.getAuthPluginData().length, is(20));
+    }
 }
