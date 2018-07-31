@@ -29,7 +29,7 @@ import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.jdbc.core.resultset.GeneratedKeysResultSet;
 import io.shardingsphere.core.jdbc.core.resultset.ShardingResultSet;
-import io.shardingsphere.core.jdbc.metadata.dialect.JDBCShardingRefreshHandler;
+import io.shardingsphere.core.jdbc.metadata.JDBCShardingRefreshHandler;
 import io.shardingsphere.core.merger.JDBCQueryResult;
 import io.shardingsphere.core.merger.MergeEngine;
 import io.shardingsphere.core.merger.MergeEngineFactory;

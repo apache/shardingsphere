@@ -70,14 +70,14 @@ public abstract class AbstractBaseIntegrateSQLParsingTest {
         tableMetaDataMap.put("t_place", getTableMetaData(Arrays.asList("user_new_id", "guid")));
         ShardingTableMetaData result = Mockito.mock(ShardingTableMetaData.class);
         when(result.getTableMetaDataMap()).thenReturn(tableMetaDataMap);
-        when(result.hasColumn("t_order_item", "item_id")).thenReturn(true);
+        when(result.containsColumn("t_order_item", "item_id")).thenReturn(true);
         return result;
     }
     
     private static TableMetaData getTableMetaData(final List<String> columnNames) {
         List<ColumnMetaData> columnMetaDataList = new ArrayList<>();
         for (String columnName : columnNames) {
-            columnMetaDataList.add(new ColumnMetaData(columnName, "int(11)", ""));
+            columnMetaDataList.add(new ColumnMetaData(columnName, "int(11)", false));
         }
         return new TableMetaData(columnMetaDataList);
     }

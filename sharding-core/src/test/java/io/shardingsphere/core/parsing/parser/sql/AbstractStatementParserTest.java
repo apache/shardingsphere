@@ -73,7 +73,7 @@ public abstract class AbstractStatementParserTest {
     private static TableMetaData getTableMetaData(final List<String> columnNames) {
         List<ColumnMetaData> columnMetaDataList = new ArrayList<>();
         for (String columnName : columnNames) {
-            columnMetaDataList.add(new ColumnMetaData(columnName, "int(11)", ""));
+            columnMetaDataList.add(new ColumnMetaData(columnName, "int(11)", false));
         }
         return new TableMetaData(columnMetaDataList);
     }
