@@ -21,8 +21,8 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.util.EventBusInstance;
-import io.shardingsphere.transaction.common.listener.TransactionListener;
-import io.shardingsphere.transaction.common.spi.TransactionManager;
+import io.shardingsphere.transaction.api.TransactionManager;
+import io.shardingsphere.transaction.listener.TransactionListener;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.common.spi;
+package io.shardingsphere.transaction.api;
 
 import io.shardingsphere.transaction.event.TransactionEvent;
 import java.sql.SQLException;

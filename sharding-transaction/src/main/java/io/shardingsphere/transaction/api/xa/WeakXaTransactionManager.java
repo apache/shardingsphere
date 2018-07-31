@@ -15,11 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa;
+package io.shardingsphere.transaction.api.xa;
 
+import io.shardingsphere.transaction.api.TransactionManager;
 import io.shardingsphere.transaction.event.TransactionEvent;
 import io.shardingsphere.transaction.event.WeakXaTransactionEvent;
-import io.shardingsphere.transaction.common.spi.TransactionManager;
 
 import java.sql.Connection;
 import java.sql.SQLException;

@@ -18,10 +18,10 @@
 package io.shardingsphere.transaction.common;
 
 import io.shardingsphere.core.constant.TransactionType;
+import io.shardingsphere.transaction.api.TransactionManager;
 import io.shardingsphere.transaction.event.WeakXaTransactionEvent;
 import io.shardingsphere.transaction.event.XaTransactionEvent;
-import io.shardingsphere.transaction.common.spi.TransactionManager;
-import io.shardingsphere.transaction.xa.WeakXaTransactionManager;
+import io.shardingsphere.transaction.api.xa.WeakXaTransactionManager;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

@@ -18,7 +18,7 @@
 package io.shardingsphere.transaction.common.config;
 
 import io.shardingsphere.core.constant.TransactionType;
-import io.shardingsphere.transaction.common.spi.TransactionManager;
+import io.shardingsphere.transaction.api.TransactionManager;
 
 /**
  * Execute transaction manager configuration.
