@@ -69,34 +69,12 @@ public abstract class AbstractSQLTest {
         try {
             Properties prop = new Properties();
             prop.load(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/env.properties"));
-            boolean initialized = null == prop.getProperty("initialized") ? false : Boolean.valueOf(prop.getProperty("initialized"));
-            String databases = prop.getProperty("databases");
-            if (!Strings.isNullOrEmpty(databases)) {
-                for (String each : databases.split(",")) {
-                    databaseTypes.add(findDatabaseType(each.trim()));
-                }
-            }
-            if (initialized) {
-                createJdbcSchema(DatabaseType.H2);
-            } else {
-                for (DatabaseType each : getDatabaseTypes()) {
-                    createJdbcSchema(each);
-                }
-            }
+            createJdbcSchema(DatabaseType.H2);
         } catch (final IOException ex) {
             ex.printStackTrace();
         }
     }
-    
-    private static DatabaseType findDatabaseType(final String databaseType) {
-        for (DatabaseType each : DatabaseType.values()) {
-            if (each.name().equalsIgnoreCase(databaseType)) {
-                return each;
-            }
-        }
-        throw new RuntimeException("Can't find database type of:" + databaseType);
-    }
-    
+
     private static void createJdbcSchema(final DatabaseType dbType) {
         try {
             Connection conn;
