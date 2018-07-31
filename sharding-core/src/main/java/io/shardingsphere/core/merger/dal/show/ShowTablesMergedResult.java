@@ -72,7 +72,9 @@ public final class ShowTablesMergedResult extends MemoryMergedResult {
                 String actualTableName = memoryResultSetRow.getCell(1).toString();
                 Optional<TableRule> tableRule = shardingRule.tryFindTableRuleByActualTable(actualTableName);
                 if (!tableRule.isPresent()) {
-                    addMemoryQueryResultRows(result, memoryResultSetRow, actualTableName);
+                    if ((!shardingTableMetaData.hasMetaData() || shardingTableMetaData.getTableMetaDataMap().keySet().contains(actualTableName)) && tableNames.add(actualTableName)) {
+                        result.add(memoryResultSetRow);
+                    }
                 } else if (tableNames.add(tableRule.get().getLogicTable())) {
                     memoryResultSetRow.setCell(1, tableRule.get().getLogicTable());
                     result.add(memoryResultSetRow);
@@ -83,12 +85,6 @@ public final class ShowTablesMergedResult extends MemoryMergedResult {
             setCurrentResultSetRow(result.get(0));
         }
         return result.iterator();
-    }
-    
-    private void addMemoryQueryResultRows(final List<MemoryQueryResultRow> result, final MemoryQueryResultRow memoryResultSetRow, final String actualTableName) {
-        if ((!shardingTableMetaData.hasMetaData() || shardingTableMetaData.getTableMetaDataMap().keySet().contains(actualTableName)) && tableNames.add(actualTableName)) {
-            result.add(memoryResultSetRow);
-        }
     }
     
     @Override
