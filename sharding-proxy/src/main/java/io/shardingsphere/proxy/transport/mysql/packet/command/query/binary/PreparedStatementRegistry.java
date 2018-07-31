@@ -59,13 +59,13 @@ public final class PreparedStatementRegistry {
      * @return statement ID
      */
     public int register(final String sql) {
-        int statementId = sequence.incrementAndGet();
-        Integer previousStatementId = sqlToStatementIdMap.putIfAbsent(sql, statementId);
-        if (null == previousStatementId) {
-            statementIdToPreparedStatementUnitMap.putIfAbsent(statementId, new PreparedStatementUnit(sql));
-        } else {
-            return previousStatementId;
+        Integer result = sqlToStatementIdMap.get(sql);
+        if (null != result) {
+            return result;
         }
+        int statementId = sequence.incrementAndGet();
+        statementIdToPreparedStatementUnitMap.putIfAbsent(statementId, new PreparedStatementUnit(sql));
+        sqlToStatementIdMap.putIfAbsent(sql, statementId);
         return statementId;
     }
     
