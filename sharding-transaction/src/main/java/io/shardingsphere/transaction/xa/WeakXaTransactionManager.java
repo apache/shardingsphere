@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.weakxa;
+package io.shardingsphere.transaction.xa;
 
 import io.shardingsphere.transaction.common.event.TransactionEvent;
 import io.shardingsphere.transaction.common.event.WeakXaTransactionEvent;
