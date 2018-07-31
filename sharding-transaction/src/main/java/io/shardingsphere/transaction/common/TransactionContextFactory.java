@@ -49,6 +49,6 @@ public class TransactionContextFactory {
      * @return weak XA transaction context
      */
     public static TransactionContext newWeakXAContext() {
-        return new TransactionContext(new WeakXaTransactionManager(), TransactionType.XA, WeakXaTransactionEvent.class);
+        return new TransactionContext(WeakXaTransactionManager.getInstance(), TransactionType.XA, WeakXaTransactionEvent.class);
     }
 }
