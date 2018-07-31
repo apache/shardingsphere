@@ -44,8 +44,6 @@ public final class ProxyShardingTableMetaData extends ShardingTableMetaData {
     
     private static final String SHOW_TABLES = "SHOW TABLES";
     
-    private static final String SHOW_TABLES_LIKE = "SHOW TABLES LIKE '%s'";
-    
     private static final String DESC = "DESC `%s`";
     
     private final JDBCBackendDataSource backendDataSource;
@@ -77,12 +75,12 @@ public final class ProxyShardingTableMetaData extends ShardingTableMetaData {
     public TableMetaData loadTableMetaData(final DataNode dataNode, final Map<String, Connection> connectionMap) throws SQLException {
         try (Connection connection = backendDataSource.getDataSource(dataNode.getDataSourceName()).getConnection();
              Statement statement = connection.createStatement()) {
-            return isTableExist(statement, dataNode.getTableName()) ? new TableMetaData(getColumnMetaDataList(statement, dataNode.getTableName())) : new TableMetaData();
+            return isTableExist(connection, dataNode.getTableName()) ? new TableMetaData(getColumnMetaDataList(statement, dataNode.getTableName())) : new TableMetaData();
         }
     }
     
-    private boolean isTableExist(final Statement statement, final String actualTableName) throws SQLException {
-        try (ResultSet resultSet = statement.executeQuery(String.format(SHOW_TABLES_LIKE, actualTableName))) {
+    private boolean isTableExist(final Connection connection, final String actualTableName) throws SQLException {
+        try (ResultSet resultSet = connection.getMetaData().getTables(null, null, actualTableName, null)) {
             return resultSet.next();
         }
     }

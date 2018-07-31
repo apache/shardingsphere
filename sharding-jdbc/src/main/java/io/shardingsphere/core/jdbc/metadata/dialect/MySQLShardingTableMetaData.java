@@ -39,8 +39,6 @@ public final class MySQLShardingTableMetaData extends JDBCShardingTableMetaData 
     
     private static final String SHOW_TABLES = "SHOW TABLES";
     
-    private static final String SHOW_TABLES_LIKE = "SHOW TABLES LIKE '%s'";
-    
     private static final String DESC = "DESC `%s`";
     
     public MySQLShardingTableMetaData(final ListeningExecutorService executorService, final Map<String, DataSource> dataSourceMap) {
@@ -50,16 +48,6 @@ public final class MySQLShardingTableMetaData extends JDBCShardingTableMetaData 
     @Override
     protected String getAllTableNamesSQL() {
         return SHOW_TABLES;
-    }
-    
-    @Override
-    protected boolean isTableExist(final Connection connection, final String actualTableName) throws SQLException {
-        try (Statement statement = connection.createStatement()) {
-            statement.execute(String.format(SHOW_TABLES_LIKE, actualTableName));
-            try (ResultSet resultSet = statement.getResultSet()) {
-                return resultSet.next();
-            }
-        }
     }
     
     @Override

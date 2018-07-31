@@ -89,7 +89,11 @@ public abstract class JDBCShardingTableMetaData extends ShardingTableMetaData {
         }
     }
     
-    protected abstract boolean isTableExist(Connection connection, String actualTableName) throws SQLException;
+    private boolean isTableExist(final Connection connection, final String actualTableName) throws SQLException {
+        try (ResultSet resultSet = connection.getMetaData().getTables(null, null, actualTableName, null)) {
+            return resultSet.next();
+        }
+    }
     
     protected abstract List<ColumnMetaData> getColumnMetaDataList(Connection connection, String actualTableName) throws SQLException;
 }
