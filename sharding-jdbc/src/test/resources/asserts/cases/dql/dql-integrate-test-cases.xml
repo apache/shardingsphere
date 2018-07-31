@@ -63,6 +63,21 @@
         <assertion parameters="10:int, 11:int, 1009:int, 1108:int, none:String" expected-data-file="empty_order_item.xml" />
     </dql-test-case>
     
+    <dql-test-case sql-case-id="select_keyword_table_name_with_back_quotes">
+        <assertion parameters="10:int, 11:int, 1001:int, 1100:int, init:String" expected-data-file="select_sharding_route_with_broadcast_table.xml" />
+        <assertion parameters="10:int, 11:int, 1009:int, 1108:int, none:String" expected-data-file="empty_order_item.xml" />
+    </dql-test-case>
+    
+    <dql-test-case sql-case-id="select_keyword_table_name_with_double_quotes">
+        <assertion parameters="10:int, 11:int, 1001:int, 1100:int, init:String" expected-data-file="select_sharding_route_with_broadcast_table.xml" />
+        <assertion parameters="10:int, 11:int, 1009:int, 1108:int, none:String" expected-data-file="empty_order_item.xml" />
+    </dql-test-case>
+    
+    <dql-test-case sql-case-id="select_keyword_table_name_with_square_brackets">
+        <assertion parameters="10:int, 11:int, 1001:int, 1100:int, init:String" expected-data-file="select_sharding_route_with_broadcast_table.xml" />
+        <assertion parameters="10:int, 11:int, 1009:int, 1108:int, none:String" expected-data-file="empty_order_item.xml" />
+    </dql-test-case>
+    
     <dql-test-case sql-case-id="select_alias_as_keyword">
         <assertion parameters="100001:int" expected-data-file="select_alias_as_keyword.xml" />
     </dql-test-case>
@@ -273,7 +288,11 @@
         <assertion parameters="10:int, 19:int, 1000:int, 1909:int, 2:int" expected-data-file="select_pagination_with_row_count.xml" />
     </dql-test-case>
     
-    <dql-test-case sql-case-id="select_pagination_with_limit">
+    <dql-test-case sql-case-id="select_pagination_with_limit_with_back_quotes">
+        <assertion parameters="10:int, 19:int, 1000:int, 1909:int, 2:int, 2:int" expected-data-file="select_pagination_with_offset_and_row_count.xml" />
+    </dql-test-case>
+    
+    <dql-test-case sql-case-id="select_pagination_with_limit_with_double_quotes">
         <assertion parameters="10:int, 19:int, 1000:int, 1909:int, 2:int, 2:int" expected-data-file="select_pagination_with_offset_and_row_count.xml" />
     </dql-test-case>
     

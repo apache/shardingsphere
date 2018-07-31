@@ -15,26 +15,26 @@
  * </p>
  */
 
-package io.shardingsphere.core.rewrite.placeholder;
+package io.shardingsphere.proxy.transport.mysql.packet.command.query.binary;
 
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute.PreparedStatementParameterHeader;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
+import java.util.List;
 
 /**
- * Table placeholder for rewrite.
+ * SQL element.
  *
- * @author zhangliang
+ * @author zhangyonglun
  */
 @RequiredArgsConstructor
 @Getter
-public final class TablePlaceholder implements ShardingPlaceholder {
+@Setter
+public final class PreparedStatementUnit {
     
-    private final String logicTableName;
+    private final String sql;
     
-    private final String originalLiterals;
-    
-    @Override
-    public String toString() {
-        return logicTableName;
-    }
+    private List<PreparedStatementParameterHeader> preparedStatementParameterHeaders;
 }
