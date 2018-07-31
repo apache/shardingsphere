@@ -32,19 +32,19 @@ public class ShardingDataSourceMetaDataTest {
     }
     
     private ShardingRule getMasterSlaveShardingRule() {
-        TableRuleConfiguration tableRuleConfig_0 = new TableRuleConfiguration();
-        tableRuleConfig_0.setLogicTable("t_order");
-        tableRuleConfig_0.setActualDataNodes("ms_${0..2}.t_order_${0..1}");
-        TableRuleConfiguration tableRuleConfig_1 = new TableRuleConfiguration();
-        tableRuleConfig_1.setLogicTable("t_order_item");
-        tableRuleConfig_1.setActualDataNodes("single.t_order_item");
+        TableRuleConfiguration tableRuleConfig0 = new TableRuleConfiguration();
+        tableRuleConfig0.setLogicTable("t_order");
+        tableRuleConfig0.setActualDataNodes("ms_${0..2}.t_order_${0..1}");
+        TableRuleConfiguration tableRuleConfig1 = new TableRuleConfiguration();
+        tableRuleConfig1.setLogicTable("t_order_item");
+        tableRuleConfig1.setActualDataNodes("single.t_order_item");
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        MasterSlaveRuleConfiguration MasterSlaveConfig_0 = new MasterSlaveRuleConfiguration("ms_0", "master_0", Arrays.asList("slave_0"));
-        MasterSlaveRuleConfiguration MasterSlaveConfig_1 = new MasterSlaveRuleConfiguration("ms_1", "master_1", Arrays.asList("slave_1"));
-        MasterSlaveRuleConfiguration MasterSlaveConfig_2 = new MasterSlaveRuleConfiguration("ms_2", "master_2", Arrays.asList("slave_2"));
-        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig_0);
-        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig_1);
-        shardingRuleConfig.getMasterSlaveRuleConfigs().addAll(Lists.newArrayList(MasterSlaveConfig_0, MasterSlaveConfig_1, MasterSlaveConfig_2));
+        MasterSlaveRuleConfiguration MasterSlaveConfig0 = new MasterSlaveRuleConfiguration("ms_0", "master_0", Arrays.asList("slave_0"));
+        MasterSlaveRuleConfiguration MasterSlaveConfig1 = new MasterSlaveRuleConfiguration("ms_1", "master_1", Arrays.asList("slave_1"));
+        MasterSlaveRuleConfiguration MasterSlaveConfig2 = new MasterSlaveRuleConfiguration("ms_2", "master_2", Arrays.asList("slave_2"));
+        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig0);
+        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig1);
+        shardingRuleConfig.getMasterSlaveRuleConfigs().addAll(Lists.newArrayList(MasterSlaveConfig0, MasterSlaveConfig1, MasterSlaveConfig2));
         return new ShardingRule(shardingRuleConfig, Lists.newArrayList("single", "master_0", "master_1", "master_2", "slave_0", "slave_1", "slave_2"));
     }
     
