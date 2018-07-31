@@ -38,22 +38,22 @@ public class AuthPluginDataTest {
     }
     
     @Test
-    public void testGetAuthPluginData() {
+    public void assertGetAuthPluginData() {
         assertThat(authPluginData.getAuthPluginData(), is(Bytes.concat(part1, part2)));
     }
     
     @Test
-    public void testGetAuthPluginDataPart1() {
+    public void assertGetAuthPluginDataPart1() {
         assertThat(authPluginData.getAuthPluginDataPart1(), is(part1));
     }
     
     @Test
-    public void testGetAuthPluginDataPart2() {
+    public void assertGetAuthPluginDataPart2() {
         assertThat(authPluginData.getAuthPluginDataPart2(), is(part2));
     }
     
     @Test
-    public void testGetAuthPluginDataWithoutArguments() {
+    public void assertGetAuthPluginDataWithoutArguments() {
         AuthPluginData authPluginData = new AuthPluginData();
         assertThat(authPluginData.getAuthPluginData().length, is(20));
     }
