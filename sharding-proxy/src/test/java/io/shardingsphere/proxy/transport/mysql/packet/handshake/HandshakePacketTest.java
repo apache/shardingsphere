@@ -26,8 +26,9 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
 
 public class HandshakePacketTest {
     
@@ -38,53 +39,54 @@ public class HandshakePacketTest {
     private final byte[] part2 = {68, 102, 53, 122, 65, 49, 84, 79, 85, 115, 116, 113};
     
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         AuthPluginData authPluginData = new AuthPluginData(part1, part2);
         handshakePacket = new HandshakePacket(1, authPluginData);
     }
     
     @Test
     public void assertWrite() {
+    
     }
     
     @Test
     public void assertGetProtocolVersion() {
-        assertEquals(handshakePacket.getProtocolVersion(), ServerInfo.PROTOCOL_VERSION);
+        assertThat(handshakePacket.getProtocolVersion(), is(ServerInfo.PROTOCOL_VERSION));
     }
     
     @Test
     public void assertGetServerVersion() {
-        assertEquals(handshakePacket.getServerVersion(), ServerInfo.SERVER_VERSION);
+        assertThat(handshakePacket.getServerVersion(), is(ServerInfo.SERVER_VERSION));
     }
     
     @Test
     public void assertGetCapabilityFlagsLower() {
-        assertEquals(handshakePacket.getCapabilityFlagsLower(), CapabilityFlag.calculateHandshakeCapabilityFlagsLower());
+        assertThat(handshakePacket.getCapabilityFlagsLower(), is(CapabilityFlag.calculateHandshakeCapabilityFlagsLower()));
     }
     
     @Test
     public void assertGetCapabilityFlagsUpper() {
-        assertEquals(handshakePacket.getCapabilityFlagsUpper(), CapabilityFlag.calculateHandshakeCapabilityFlagsUpper());
+        assertThat(handshakePacket.getCapabilityFlagsUpper(), is(CapabilityFlag.calculateHandshakeCapabilityFlagsUpper()));
     }
     
     @Test
     public void assertGetCharacterSet() {
-        assertEquals(handshakePacket.getCharacterSet(), ServerInfo.CHARSET);
+        assertThat(handshakePacket.getCharacterSet(), is(ServerInfo.CHARSET));
     }
     
     @Test
     public void assertGetStatusFlag() {
-        assertEquals(handshakePacket.getStatusFlag(), StatusFlag.SERVER_STATUS_AUTOCOMMIT);
+        assertThat(handshakePacket.getStatusFlag(), is(StatusFlag.SERVER_STATUS_AUTOCOMMIT));
     }
     
     @Test
     public void assertGetSequenceId() {
-        assertEquals(handshakePacket.getSequenceId(), 0);
+        assertThat(handshakePacket.getSequenceId(), is(0));
     }
     
     @Test
     public void assertGetConnectionId() {
-        assertEquals(handshakePacket.getConnectionId(), 1);
+        assertThat(handshakePacket.getConnectionId(), is(1));
     }
     
     @Test
