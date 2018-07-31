@@ -54,14 +54,22 @@ public class ShardingDataSourceMetaDataTest {
     }
     
     @Test
-    public void testGetAllInstanceDataSourceNames() {
+    public void testGetAllInstanceDataSourceNamesForMasterSlaveShardingRule() {
         assertEquals(masterSlaveShardingDataSourceMetaData.getAllInstanceDataSourceNames(), Lists.newArrayList("ms_0", "ms_2"));
+    }
+    
+    @Test
+    public void testGetAllInstanceDataSourceNamesForShardingRule() {
         assertEquals(shardingDataSourceMetaData.getAllInstanceDataSourceNames(), Lists.newArrayList("ds_0"));
     }
     
     @Test
-    public void testGetActualSchemaName() {
+    public void testGetActualSchemaNameForMasterSlaveShardingRule() {
         assertEquals(masterSlaveShardingDataSourceMetaData.getActualSchemaName("ms_0"), "master_0");
+    }
+    
+    @Test
+    public void testGetActualSchemaNameForShardingRule() {
         assertEquals(shardingDataSourceMetaData.getActualSchemaName("ds_0"), "db_0");
     }
 }
