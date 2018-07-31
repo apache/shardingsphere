@@ -83,7 +83,6 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
         statementId = payload.readInt4();
         flags = payload.readInt1();
         Preconditions.checkArgument(ITERATION_COUNT == payload.readInt4());
-        // TODO why parse twice in here and prepared?
         SQLStatement sqlStatement = new SQLParsingEngine(DatabaseType.MySQL, PREPARED_STATEMENT_REGISTRY.getSQL(statementId), RULE_REGISTRY.getShardingRule(), null).parse(true);
         nullBitmap = new NullBitmap(sqlStatement.getParametersIndex(), RESERVED_BIT_LENGTH);
         for (int i = 0; i < nullBitmap.getNullBitmap().length; i++) {

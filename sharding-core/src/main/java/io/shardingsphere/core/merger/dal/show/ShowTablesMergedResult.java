@@ -86,8 +86,7 @@ public final class ShowTablesMergedResult extends MemoryMergedResult {
     }
     
     private void addMemoryQueryResultRows(final List<MemoryQueryResultRow> result, final MemoryQueryResultRow memoryResultSetRow, final String actualTableName) {
-        if ((shardingTableMetaData.getTableMetaDataMap().isEmpty() || shardingTableMetaData.getTableMetaDataMap().keySet().contains(actualTableName)
-                || !shardingTableMetaData.isSupportedDatabaseType()) && tableNames.add(actualTableName)) {
+        if ((!shardingTableMetaData.hasMetaData() || shardingTableMetaData.getTableMetaDataMap().keySet().contains(actualTableName)) && tableNames.add(actualTableName)) {
             result.add(memoryResultSetRow);
         }
     }

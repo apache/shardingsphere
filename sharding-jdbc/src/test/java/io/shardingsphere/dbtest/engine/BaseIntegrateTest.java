@@ -155,8 +155,14 @@ public abstract class BaseIntegrateTest {
             return connection.getMetaData().getURL();
         }
     }
-    
+
     protected static void createDatabasesAndTables() {
+        createDatabases();
+        dropTables();
+        createTables();
+    }
+
+    protected static void createDatabases() {
         try {
             for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
                 SchemaEnvironmentManager.dropDatabase(each);
@@ -164,9 +170,13 @@ public abstract class BaseIntegrateTest {
             for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
                 SchemaEnvironmentManager.createDatabase(each);
             }
-            for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
-                SchemaEnvironmentManager.dropTable(each);
-            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    protected static void createTables() {
+        try {
             for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
                 SchemaEnvironmentManager.createTable(each);
             }
@@ -174,7 +184,7 @@ public abstract class BaseIntegrateTest {
             ex.printStackTrace();
         }
     }
-    
+
     protected static void dropDatabases() {
         try {
             for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
@@ -184,7 +194,17 @@ public abstract class BaseIntegrateTest {
             ex.printStackTrace();
         }
     }
-    
+
+    protected static void dropTables() {
+        try {
+            for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
+                SchemaEnvironmentManager.dropTable(each);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
     @After
     public void tearDown() {
         if (dataSource instanceof ShardingDataSource) {

@@ -37,12 +37,11 @@ public abstract class TransactionEngine {
     
     private final String sql;
     
-    // TODO move to TCLParser
+    // TODO :yonglun move to TCLParser
     protected Optional<TCLType> parseSQL() {
         switch (sql.toUpperCase()) {
             case "BEGIN": 
             case "START TRANSACTION":
-                // TODO SET AUTOCOMMIT=0 is not transaction begin flag? 
             case "SET AUTOCOMMIT=0":
                 return Optional.of(TCLType.BEGIN);
             case "COMMIT":

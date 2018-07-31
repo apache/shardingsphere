@@ -48,11 +48,11 @@ public class GenerateKeyDBUnitTest extends AbstractSpringDBUnitTest {
     public void assertGenerateKey() throws SQLException {
         try (Connection connection = getShardingDataSource().getConnection();
              Statement statement = connection.createStatement()) {
-            statement.execute("INSERT INTO `t_order` (`user_id`, `status`) VALUES (1, 'init')", Statement.RETURN_GENERATED_KEYS);
+            statement.execute("INSERT INTO t_order (user_id, status) VALUES (1, 'init')", Statement.RETURN_GENERATED_KEYS);
             ResultSet generateKeyResultSet = statement.getGeneratedKeys();
             assertTrue(generateKeyResultSet.next());
             assertThat(generateKeyResultSet.getLong(1), is(101L));
-            statement.execute("INSERT INTO `t_order_item` (`order_id`, `user_id`, `status`) VALUES (101, 1, 'init')", Statement.RETURN_GENERATED_KEYS);
+            statement.execute("INSERT INTO t_order_item (order_id, user_id, status) VALUES (101, 1, 'init')", Statement.RETURN_GENERATED_KEYS);
             generateKeyResultSet = statement.getGeneratedKeys();
             assertTrue(generateKeyResultSet.next());
             assertThat(generateKeyResultSet.getLong(1), is(99L));

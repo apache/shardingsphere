@@ -15,42 +15,33 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.lexer.dialect.sqlserver;
+package io.shardingsphere.core.parsing.lexer.dialect.h2;
 
 import io.shardingsphere.core.parsing.lexer.Lexer;
 import io.shardingsphere.core.parsing.lexer.analyzer.CharType;
 import io.shardingsphere.core.parsing.lexer.analyzer.Dictionary;
+import io.shardingsphere.core.parsing.lexer.dialect.mysql.MySQLKeyword;
 
 /**
- * SQLServer Lexical analysis.
+ * H2 Lexical analysis.
  *
- * @author zhangliang
+ * @author zhangyonglun
  */
-public final class SQLServerLexer extends Lexer {
+public final class H2Lexer extends Lexer {
     
-    private static Dictionary dictionary = new Dictionary(SQLServerKeyword.values());
+    private static Dictionary dictionary = new Dictionary(MySQLKeyword.values());
     
-    public SQLServerLexer(final String input) {
+    public H2Lexer(final String input) {
         super(input, dictionary);
     }
     
     @Override
-    protected boolean isHintBegin() {
-        return '/' == getCurrentChar(0) && '*' == getCurrentChar(1) && '!' == getCurrentChar(2);
-    }
-    
-    @Override
-    protected boolean isVariableBegin() {
-        return '@' == getCurrentChar(0);
-    }
-    
-    @Override
-    protected boolean isSupportNChars() {
-        return true;
-    }
-    
-    @Override
     protected boolean isIdentifierBegin(final char ch) {
-        return CharType.isAlphabet(ch) || '[' == ch || '_' == ch || '$' == ch;
+        return CharType.isAlphabet(ch) || '\"' == ch || '_' == ch || '$' == ch;
+    }
+    
+    @Override
+    protected boolean isCharsBegin() {
+        return '\'' == getCurrentChar(0);
     }
 }

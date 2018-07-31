@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.metadata.table;
 
-import com.google.common.base.Strings;
+import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -58,7 +58,7 @@ public abstract class ShardingTableMetaData {
     private final Map<String, TableMetaData> tableMetaDataMap = new HashMap<>();
     
     /**
-     * Initialize sharding metadata.
+     * Initialize sharding meta data.
      *
      * @param shardingRule sharding rule
      */
@@ -74,27 +74,26 @@ public abstract class ShardingTableMetaData {
     
     private Collection<TableRule> getTableRules(final ShardingRule shardingRule) throws SQLException {
         Collection<TableRule> result = new LinkedList<>(shardingRule.getTableRules());
-        String defaultDataSourceName = shardingRule.getShardingDataSourceNames().getDefaultDataSourceName();
-        if (!Strings.isNullOrEmpty(defaultDataSourceName)) {
-            Collection<String> defaultTableNames = getTableNamesFromDefaultDataSource(shardingRule.getMasterDataSourceName(defaultDataSourceName));
-            for (String each : defaultTableNames) {
-                result.add(shardingRule.getTableRule(each));
-            }
+        result.addAll(getDefaultTableRules(shardingRule));
+        return result;
+    }
+    
+    private Collection<TableRule> getDefaultTableRules(final ShardingRule shardingRule) throws SQLException {
+        Optional<String> defaultDataSourceName = shardingRule.findActualDefaultDataSourceName();
+        if (!defaultDataSourceName.isPresent()) {
+            return Collections.emptyList();
+        }
+        Collection<TableRule> result = new LinkedList<>();
+        for (String each : getTableNamesFromDefaultDataSource(defaultDataSourceName.get())) {
+            result.add(shardingRule.getTableRule(each));
         }
         return result;
     }
     
-    /**
-     * Get table names from default data source.
-     *
-     * @param defaultDataSourceName default data source name.
-     * @return table names from default data source
-     * @throws SQLException SQL exception.
-     */
-    public abstract Collection<String> getTableNamesFromDefaultDataSource(String defaultDataSourceName) throws SQLException;
+    protected abstract Collection<String> getTableNamesFromDefaultDataSource(String defaultDataSourceName) throws SQLException;
     
     /**
-     * Refresh each tableMetaData by TableRule.
+     * Refresh table meta data.
      *
      * @param tableRule table rule
      * @param shardingRule sharding rule
@@ -104,7 +103,7 @@ public abstract class ShardingTableMetaData {
     }
     
     /**
-     * Refresh each tableMetaData by TableRule.
+     * Refresh table meta data.
      *
      * @param tableRule table rule
      * @param shardingRule sharding rule
@@ -122,7 +121,8 @@ public abstract class ShardingTableMetaData {
                 return actualTableMetaDataList.get(i);
             }
             if (!actualTableMetaDataList.get(i).equals(actualTableMetaDataList.get(i + 1))) {
-                throw new ShardingException(getErrorMsgOfTableMetaData(logicTableName, actualTableMetaDataList.get(i), actualTableMetaDataList.get(i + 1)));
+                throw new ShardingException("Cannot get uniformed table structure for table `%s`. The different metadata of actual tables is as follows:\n%s\n%s.", 
+                        logicTableName, actualTableMetaDataList.get(i), actualTableMetaDataList.get(i + 1));
             }
         }
         return new TableMetaData();
@@ -135,7 +135,7 @@ public abstract class ShardingTableMetaData {
                 
                 @Override
                 public TableMetaData call() throws SQLException {
-                    return getTableMetaData(each, shardingDataSourceNames, connectionMap);
+                    return loadTableMetaData(new DataNode(shardingDataSourceNames.getRawMasterDataSourceName(each.getDataSourceName()), each.getTableName()), connectionMap);
                 }
             }));
         }
@@ -146,28 +146,17 @@ public abstract class ShardingTableMetaData {
         }
     }
     
-    /**d
-     * Get column metadata implementing by concrete handler.
-     *
-     * @param dataNode DataNode
-     * @param shardingDataSourceNames ShardingDataSourceNames
-     * @param connectionMap connection map from sharding connection
-     * @return ColumnMetaData
-     * @throws SQLException SQL exception
-     */
-    public abstract TableMetaData getTableMetaData(DataNode dataNode, ShardingDataSourceNames shardingDataSourceNames, Map<String, Connection> connectionMap) throws SQLException;
-    
-    private String getErrorMsgOfTableMetaData(final String logicTableName, final TableMetaData oldTableMetaData, final TableMetaData newTableMetaData) {
-        return String.format("Cannot get uniformed table structure for %s. The different metadata of actual tables is as follows:\n%s\n%s.",
-                logicTableName, oldTableMetaData.toString(), newTableMetaData.toString());
-    }
+    protected abstract TableMetaData loadTableMetaData(DataNode dataNode, Map<String, Connection> connectionMap) throws SQLException;
     
     /**
-     * Judge whether this database type is supported.
+     * Judge whether table meta data is empty.
      *
-     * @return supported or not
+     * @return whether table meta data is empty
      */
-    public boolean isSupportedDatabaseType() {
+    public boolean hasMetaData() {
+        if (tableMetaDataMap.isEmpty()) {
+            return false;
+        }
         for (TableMetaData each : tableMetaDataMap.values()) {
             if (each.getColumnMetaData().isEmpty()) {
                 return false;

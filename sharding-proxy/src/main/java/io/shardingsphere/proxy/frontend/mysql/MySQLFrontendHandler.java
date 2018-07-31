@@ -120,7 +120,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
         private void writeMoreResults(final QueryCommandPacket queryCommandPacket, final int headPacketsCount) throws SQLException {
             currentSequenceId = headPacketsCount;
             while (queryCommandPacket.next()) {
-                // TODO try to use wait notify
+                // TODO: yonglun try to use wait notify
                 while (!context.channel().isWritable()) {
                     continue;
                 }
