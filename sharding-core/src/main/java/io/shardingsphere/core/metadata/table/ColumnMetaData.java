@@ -35,7 +35,9 @@ public final class ColumnMetaData {
     
     private final String columnName;
     
+    // TODO plan to use?
     private final String columnType;
     
+    // TODO plan to use? 
     private final String keyType;
 }

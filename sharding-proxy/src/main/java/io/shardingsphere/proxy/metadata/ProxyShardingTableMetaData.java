@@ -85,6 +85,7 @@ public final class ProxyShardingTableMetaData extends ShardingTableMetaData {
         }
     }
     
+    // TODO use connection.getMetaData().getColumns
     private List<ColumnMetaData> getColumnMetaDataList(final Statement statement, final String actualTableName) throws SQLException {
         List<ColumnMetaData> result = new LinkedList<>();
         try (ResultSet resultSet = statement.executeQuery(String.format(DESC, actualTableName))) {
