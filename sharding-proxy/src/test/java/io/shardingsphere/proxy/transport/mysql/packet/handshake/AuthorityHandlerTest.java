@@ -19,7 +19,8 @@ package io.shardingsphere.proxy.transport.mysql.packet.handshake;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class AuthorityHandlerTest {
     
@@ -27,6 +28,6 @@ public class AuthorityHandlerTest {
     
     @Test
     public void assertGetAuthPluginData() {
-        assertEquals(authorityHandler.getAuthPluginData().getAuthPluginData().length, 20);
+        assertThat(authorityHandler.getAuthPluginData().getAuthPluginData().length, is(20));
     }
 }
