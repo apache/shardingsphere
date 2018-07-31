@@ -189,23 +189,6 @@ public abstract class ShardingTableMetaData {
     }
     
     /**
-     * Judge whether table meta data is empty.
-     *
-     * @return whether table meta data is empty
-     */
-    public boolean hasMetaData() {
-        if (tableMetaDataMap.isEmpty()) {
-            return false;
-        }
-        for (TableMetaData each : tableMetaDataMap.values()) {
-            if (each.getColumnMetaData().isEmpty()) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    /**
      * Judge contains column from table meta data or not.
      * 
      * @param tableName table name
