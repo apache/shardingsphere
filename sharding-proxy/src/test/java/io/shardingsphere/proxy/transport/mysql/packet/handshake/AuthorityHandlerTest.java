@@ -43,10 +43,11 @@ public class AuthorityHandlerTest {
     private final AuthorityHandler authorityHandler = new AuthorityHandler();
     
     private final byte[] part1 = {84, 85, 115, 77, 68, 116, 85, 78};
+
     private final byte[] part2 = {83, 121, 75, 81, 87, 56, 120, 112, 73, 109, 77, 69};
     
     @Before
-    public void setUp() throws IOException, NoSuchFieldException, IllegalAccessException  {
+    public void setUp() throws IOException, NoSuchFieldException, IllegalAccessException {
         OrchestrationProxyConfiguration config = loadLocalConfiguration(new File(AuthorityHandlerTest.class.getResource("/conf/config.yaml").getFile()));
         RULE_REGISTRY.init(config);
         reviseAuthorityHandler();
