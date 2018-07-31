@@ -17,26 +17,38 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.handshake;
 
+import com.google.common.primitives.Bytes;
+import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class AuthPluginDataTest {
     
-    AuthPluginData authPluginData = new AuthPluginData();
+    private AuthPluginData authPluginData;
+    
+    private final byte[] part1 = {106, 105, 55, 122, 117, 98, 115, 109};
+    
+    private final byte[] part2 = {68, 102, 53, 122, 65, 49, 84, 79, 85, 115, 116, 113};
+    
+    @Before
+    public void setUp() {
+        authPluginData = new AuthPluginData(part1, part2);
+    }
     
     @Test
     public void testGetAuthPluginData() {
-        assertEquals(authPluginData.getAuthPluginData().length, 20);
+        assertThat(authPluginData.getAuthPluginData(), is(Bytes.concat(part1, part2)));
     }
     
     @Test
     public void testGetAuthPluginDataPart1() {
-        assertEquals(authPluginData.getAuthPluginDataPart1().length, 8);
+        assertThat(authPluginData.getAuthPluginDataPart1(), is(part1));
     }
     
     @Test
     public void testGetAuthPluginDataPart2() {
-        assertEquals(authPluginData.getAuthPluginDataPart2().length, 12);
+        assertThat(authPluginData.getAuthPluginDataPart2(), is(part2));
     }
 }
