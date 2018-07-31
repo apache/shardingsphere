@@ -24,8 +24,9 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.ShardingProperties;
 import io.shardingsphere.core.constant.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.TransactionType;
-import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ProxyAuthority;
@@ -88,9 +89,7 @@ public final class RuleRegistry {
     
     private ProxyAuthority proxyAuthority;
     
-    private ShardingDataSourceMetaData shardingDataSourceMetaData;
-    
-    private ShardingTableMetaData shardingTableMetaData;
+    private ShardingMetaData metaData;
     
     /**
      * Get instance of sharding rule registry.
@@ -124,22 +123,8 @@ public final class RuleRegistry {
         }
         // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
         backendDataSource = new JDBCBackendDataSource(transactionType, config.getDataSources());
-        dataSourceConfigurationMap = new LinkedHashMap<>(config.getDataSources().size(), 1);
-        if (proxyBackendUseNio) {
-            for (Entry<String, DataSourceParameter> entry : config.getDataSources().entrySet()) {
-                dataSourceConfigurationMap.put(entry.getKey(), entry.getValue());
-            }
-        }
+        dataSourceConfigurationMap = config.getDataSources();
         proxyAuthority = config.getProxyAuthority();
-        shardingDataSourceMetaData = new ShardingDataSourceMetaData(getDataSourceURLs(config.getDataSources()), shardingRule, DatabaseType.MySQL);
-    }
-    
-    private static Map<String, String> getDataSourceURLs(final Map<String, DataSourceParameter> dataSourceParameters) {
-        Map<String, String> result = new LinkedHashMap<>(dataSourceParameters.size(), 1);
-        for (Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
-            result.put(entry.getKey(), entry.getValue().getUrl());
-        }
-        return result;
     }
     
     /**
@@ -148,10 +133,20 @@ public final class RuleRegistry {
      * @param executorService executor service
      */
     public void initShardingMetaData(final ExecutorService executorService) {
-        shardingTableMetaData = new ProxyShardingTableMetaData(MoreExecutors.listeningDecorator(executorService), backendDataSource);
+        ShardingDataSourceMetaData shardingDataSourceMetaData = new ShardingDataSourceMetaData(getDataSourceURLs(dataSourceConfigurationMap), shardingRule, DatabaseType.MySQL);
+        ShardingTableMetaData shardingTableMetaData = new ProxyShardingTableMetaData(MoreExecutors.listeningDecorator(executorService), backendDataSource);
         if (!isMasterSlaveOnly()) {
             shardingTableMetaData.init(shardingRule);
         }
+        metaData = new ShardingMetaData(shardingDataSourceMetaData, shardingTableMetaData);
+    }
+    
+    private static Map<String, String> getDataSourceURLs(final Map<String, DataSourceParameter> dataSourceParameters) {
+        Map<String, String> result = new LinkedHashMap<>(dataSourceParameters.size(), 1);
+        for (Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
+            result.put(entry.getKey(), entry.getValue().getUrl());
+        }
+        return result;
     }
     
     /**

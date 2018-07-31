@@ -42,35 +42,34 @@ public class ShardingDataSourceMetaData {
     }
     
     private Map<String, DataSourceMetaData> getDataSourceMetaDataMap(final Map<String, String> dataSourceURLs, final ShardingRule shardingRule, final DatabaseType databaseType) {
+        Map<String, DataSourceMetaData> dataSourceMetaData = getDataSourceMetaDataMapForSharding(dataSourceURLs, databaseType);
+        return shardingRule.getMasterSlaveRules().isEmpty() ? dataSourceMetaData : getDataSourceMetaDataMapForMasterSlave(shardingRule, dataSourceMetaData);
+    }
+    
+    private Map<String, DataSourceMetaData> getDataSourceMetaDataMapForSharding(final Map<String, String> dataSourceURLs, final DatabaseType databaseType) {
         Map<String, DataSourceMetaData> result = new LinkedHashMap<>(dataSourceURLs.size(), 1);
         for (Entry<String, String> entry : dataSourceURLs.entrySet()) {
             result.put(entry.getKey(), DataSourceMetaDataFactory.newInstance(databaseType, entry.getValue()));
         }
-        handleMasterSlaveDataSources(shardingRule, result);
         return result;
     }
     
-    private void handleMasterSlaveDataSources(final ShardingRule shardingRule, final Map<String, DataSourceMetaData> result) {
-        if (shardingRule.getMasterSlaveRules().isEmpty()) {
-            return;
-        }
-        Collection<String> toRemove = new LinkedList<>();
-        Map<String, DataSourceMetaData> toAdd = new LinkedHashMap<>();
-        for (Entry<String, DataSourceMetaData> entry : result.entrySet()) {
+    private Map<String, DataSourceMetaData> getDataSourceMetaDataMapForMasterSlave(final ShardingRule shardingRule, final Map<String, DataSourceMetaData> dataSourceMetaDataMap) {
+        Map<String, DataSourceMetaData> result = new LinkedHashMap<>(dataSourceMetaDataMap);
+        for (Entry<String, DataSourceMetaData> entry : dataSourceMetaDataMap.entrySet()) {
             Optional<MasterSlaveRule> masterSlaveRule = shardingRule.findMasterSlaveRule(entry.getKey());
             if (masterSlaveRule.isPresent() && masterSlaveRule.get().getMasterDataSourceName().equals(entry.getKey())) {
-                toRemove.add(masterSlaveRule.get().getMasterDataSourceName());
-                toRemove.addAll(masterSlaveRule.get().getSlaveDataSourceNames());
-                toAdd.put(masterSlaveRule.get().getName(), entry.getValue());
+                reviseMasterSlaveMetaData(result, entry.getValue(), masterSlaveRule.get());
             }
         }
-        removeInvalidDataSourceMetaData(result, toRemove);
-        result.putAll(toAdd);
+        return result;
     }
     
-    private void removeInvalidDataSourceMetaData(final Map<String, DataSourceMetaData> result, final Collection<String> toRemovedKeys) {
-        for (String each : toRemovedKeys) {
-            result.remove(each);
+    private void reviseMasterSlaveMetaData(final Map<String, DataSourceMetaData> dataSourceMetaDataMap, final DataSourceMetaData masterSlaveDataSourceMetaData, final MasterSlaveRule masterSlaveRule) {
+        dataSourceMetaDataMap.put(masterSlaveRule.getName(), masterSlaveDataSourceMetaData);
+        dataSourceMetaDataMap.remove(masterSlaveRule.getMasterDataSourceName());
+        for (String each : masterSlaveRule.getSlaveDataSourceNames()) {
+            dataSourceMetaDataMap.remove(each);
         }
     }
     

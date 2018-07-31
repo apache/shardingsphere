@@ -66,7 +66,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     
     private SQLRouteResult doShardingRoute(final String sql, final DatabaseType databaseType) {
         PreparedStatementRoutingEngine routingEngine = new PreparedStatementRoutingEngine(
-                sql, RULE_REGISTRY.getShardingRule(), RULE_REGISTRY.getShardingTableMetaData(), databaseType, RULE_REGISTRY.isShowSQL(), RULE_REGISTRY.getShardingDataSourceMetaData());
+                sql, RULE_REGISTRY.getShardingRule(), RULE_REGISTRY.getMetaData().getTable(), databaseType, RULE_REGISTRY.isShowSQL(), RULE_REGISTRY.getMetaData().getDataSource());
         return routingEngine.route(Lists.transform(preparedStatementParameters, new Function<PreparedStatementParameter, Object>() {
             
             @Override

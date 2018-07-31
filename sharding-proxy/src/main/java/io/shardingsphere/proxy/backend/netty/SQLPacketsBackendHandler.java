@@ -112,7 +112,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     
     private CommandResponsePackets executeForSharding() {
         StatementRoutingEngine routingEngine = new StatementRoutingEngine(
-                RULE_REGISTRY.getShardingRule(), RULE_REGISTRY.getShardingTableMetaData(), databaseType, RULE_REGISTRY.isShowSQL(), RULE_REGISTRY.getShardingDataSourceMetaData());
+                RULE_REGISTRY.getShardingRule(), RULE_REGISTRY.getMetaData().getTable(), databaseType, RULE_REGISTRY.isShowSQL(), RULE_REGISTRY.getMetaData().getDataSource());
         SQLRouteResult routeResult = routingEngine.route(rebuilder.sql());
         if (routeResult.getExecutionUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1));
@@ -190,8 +190,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     
     private CommandResponsePackets mergeDQLorDAL(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets, final List<QueryResult> queryResults) {
         try {
-            mergedResult = MergeEngineFactory.newInstance(RULE_REGISTRY.getShardingRule(), queryResults,
-                    sqlStatement, RULE_REGISTRY.getShardingTableMetaData()).merge();
+            mergedResult = MergeEngineFactory.newInstance(RULE_REGISTRY.getShardingRule(), queryResults, sqlStatement, RULE_REGISTRY.getMetaData().getTable()).merge();
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex));
         }
