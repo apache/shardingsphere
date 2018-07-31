@@ -35,6 +35,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -92,8 +93,15 @@ public class PathTreeTest extends BaseTest {
     }
     
     @Test
-    public void assertDelete() {
-        
+    public void assertDelete() throws KeeperException, InterruptedException {
+        final String key = "a/b/bb";
+        final String value = "bbb11";
+        pathTree.watch();
+        testClient.createAllNeedPath(key, value, CreateMode.PERSISTENT);
+        Thread.sleep(200);
+        assertThat(pathTree.getValue(key), is(value.getBytes(ZookeeperConstants.UTF_8)));
+        pathTree.delete(key);
+        assertNull(pathTree.getValue(key));
     }
 
     @Test
