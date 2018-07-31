@@ -25,7 +25,7 @@ public class ShardingDataSourceMetaDataTest {
     public void setUp() {
         Map<String, String> masterSlaveShardingDataSourceURLs = new LinkedHashMap<String, String>() {{ put("single", "jdbc:mysql://127.0.0.1:3306/single"); put("master_0", "jdbc:mysql://127.0.0.1:3306/master_0");
         put("master_1", "jdbc:mysql://127.0.0.1:3306/master_1"); put("master_2", "jdbc:mysql://127.0.0.1:3307/master_2"); put("slave_0", "jdbc:mysql://127.0.0.2:3306/slave_0");
-            put("slave_1", "jdbc:mysql://127.0.0.2:3306/slave_1"); put("slave_2", "jdbc:mysql://127.0.0.2:3307/slave_2");}};
+        put("slave_1", "jdbc:mysql://127.0.0.2:3306/slave_1"); put("slave_2", "jdbc:mysql://127.0.0.2:3307/slave_2");}};
         masterSlaveShardingDataSourceMetaData = new ShardingDataSourceMetaData(masterSlaveShardingDataSourceURLs, getMasterSlaveShardingRule(), DatabaseType.MySQL);
         Map<String, String> shardingDataSourceURLs = new LinkedHashMap<String, String>() {{ put("ds_0", "jdbc:mysql://127.0.0.1:3306/db_0"); put("ds_1", "jdbc:mysql://127.0.0.1:3306/db_1"); }};
         shardingDataSourceMetaData = new ShardingDataSourceMetaData(shardingDataSourceURLs, getShardingRule(), DatabaseType.MySQL);
@@ -58,22 +58,22 @@ public class ShardingDataSourceMetaDataTest {
     }
     
     @Test
-    public void testGetAllInstanceDataSourceNamesForMasterSlaveShardingRule() {
+    public void assertGetAllInstanceDataSourceNamesForMasterSlaveShardingRule() {
         assertEquals(masterSlaveShardingDataSourceMetaData.getAllInstanceDataSourceNames(), Lists.newArrayList("single", "ms_2"));
     }
     
     @Test
-    public void testGetAllInstanceDataSourceNamesForShardingRule() {
+    public void assertGetAllInstanceDataSourceNamesForShardingRule() {
         assertEquals(shardingDataSourceMetaData.getAllInstanceDataSourceNames(), Lists.newArrayList("ds_0"));
     }
     
     @Test
-    public void testGetActualSchemaNameForMasterSlaveShardingRule() {
+    public void assertGetActualSchemaNameForMasterSlaveShardingRule() {
         assertEquals(masterSlaveShardingDataSourceMetaData.getActualSchemaName("ms_0"), "master_0");
     }
     
     @Test
-    public void testGetActualSchemaNameForShardingRule() {
+    public void assertGetActualSchemaNameForShardingRule() {
         assertEquals(shardingDataSourceMetaData.getActualSchemaName("ds_0"), "db_0");
     }
 }
