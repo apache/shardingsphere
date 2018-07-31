@@ -25,32 +25,33 @@ import io.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMe
 import io.shardingsphere.core.metadata.datasource.dialect.SQLServerDataSourceMetaData;
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 
 public class DataSourceMetaDataFactoryTest {
     
     @Test
     public void assertAllNewInstanceForH2() {
-        assertTrue(DataSourceMetaDataFactory.newInstance(DatabaseType.H2, "jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL") instanceof H2DataSourceMetaData);
+        assertThat(DataSourceMetaDataFactory.newInstance(DatabaseType.H2, "jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"), instanceOf(H2DataSourceMetaData.class));
     }
     
     @Test
     public void assertAllNewInstanceForMySQL() {
-        assertTrue(DataSourceMetaDataFactory.newInstance(DatabaseType.MySQL, "jdbc:mysql://127.0.0.1:3306/db_0") instanceof MySQLDataSourceMetaData);
+        assertThat(DataSourceMetaDataFactory.newInstance(DatabaseType.MySQL, "jdbc:mysql://127.0.0.1:3306/db_0"), instanceOf(MySQLDataSourceMetaData.class));
     }
     
     @Test
     public void assertAllNewInstanceForOracle() {
-        assertTrue(DataSourceMetaDataFactory.newInstance(DatabaseType.Oracle, "jdbc:oracle:thin:@//127.0.0.1:3306/ds_0") instanceof OracleDataSourceMetaData);
+        assertThat(DataSourceMetaDataFactory.newInstance(DatabaseType.Oracle, "jdbc:oracle:thin:@//127.0.0.1:3306/ds_0"), instanceOf(OracleDataSourceMetaData.class));
     }
     
     @Test
     public void assertAllNewInstanceForPostgreSQL() {
-        assertTrue(DataSourceMetaDataFactory.newInstance(DatabaseType.PostgreSQL, "jdbc:postgresql://127.0.0.1:3306/ds_0") instanceof PostgreSQLDataSourceMetaData);
+        assertThat(DataSourceMetaDataFactory.newInstance(DatabaseType.PostgreSQL, "jdbc:postgresql://127.0.0.1:3306/ds_0"), instanceOf(PostgreSQLDataSourceMetaData.class));
     }
     
     @Test
     public void assertAllNewInstanceForSQLServer() {
-        assertTrue(DataSourceMetaDataFactory.newInstance(DatabaseType.SQLServer, "jdbc:microsoft:sqlserver://127.0.0.1:3306;DatabaseName=ds_0") instanceof SQLServerDataSourceMetaData);
+        assertThat(DataSourceMetaDataFactory.newInstance(DatabaseType.SQLServer, "jdbc:microsoft:sqlserver://127.0.0.1:3306;DatabaseName=ds_0"), instanceOf(SQLServerDataSourceMetaData.class));
     }
 }
