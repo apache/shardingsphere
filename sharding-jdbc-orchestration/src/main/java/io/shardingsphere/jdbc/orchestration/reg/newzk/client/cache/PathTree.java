@@ -51,6 +51,8 @@ public final class PathTree {
     
     private final AtomicReference<PathNode> rootNode = new AtomicReference<>();
     
+    private final List<String> watcherKeys = new ArrayList<>();
+    
     private boolean executorStart;
     
     private ScheduledExecutorService cacheService;
@@ -221,13 +223,7 @@ public final class PathTree {
         final String key = zookeeperEventListener.getKey();
         log.debug("PathTree Watch:{}", key);
         client.registerWatch(rootNode.get().getKey(), zookeeperEventListener);
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            @Override
-            public void run() {
-                log.debug("PathTree Unregister Watch:{}", key);
-                client.unregisterWatch(key);
-            }
-        }));
+        watcherKeys.add(key);
     }
     
     private void processNodeChange(final String path) {
@@ -379,6 +375,11 @@ public final class PathTree {
                 stopRefresh();
             }
             deleteAllChildren(rootNode.get());
+            if (!watcherKeys.isEmpty()) {
+                for (String each : watcherKeys) {
+                    client.unregisterWatch(each);
+                }
+            }
             // CHECKSTYLE:OFF
         } catch (final Exception ex){
             // CHECKSTYLE:ON
