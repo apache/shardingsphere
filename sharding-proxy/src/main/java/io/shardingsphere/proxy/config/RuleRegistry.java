@@ -35,8 +35,8 @@ import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusEvent
 import io.shardingsphere.proxy.backend.constant.ProxyMode;
 import io.shardingsphere.proxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import io.shardingsphere.proxy.metadata.ProxyShardingTableMetaData;
+import io.shardingsphere.transaction.api.TransactionManager;
 import io.shardingsphere.transaction.common.config.ProxyTransactionConfiguration;
-import io.shardingsphere.transaction.common.spi.TransactionManager;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

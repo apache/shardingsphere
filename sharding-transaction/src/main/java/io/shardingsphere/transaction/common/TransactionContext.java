@@ -18,9 +18,9 @@
 package io.shardingsphere.transaction.common;
 
 import io.shardingsphere.core.constant.TransactionType;
+import io.shardingsphere.transaction.api.TransactionManager;
 import io.shardingsphere.transaction.common.event.TransactionEvent;
 import io.shardingsphere.transaction.common.event.WeakXaTransactionEvent;
-import io.shardingsphere.transaction.common.spi.TransactionManager;
 import lombok.Getter;
 
 /**

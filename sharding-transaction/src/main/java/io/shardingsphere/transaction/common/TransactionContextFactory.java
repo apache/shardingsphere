@@ -18,10 +18,10 @@
 package io.shardingsphere.transaction.common;
 
 import io.shardingsphere.core.constant.TransactionType;
+import io.shardingsphere.transaction.api.TransactionManager;
 import io.shardingsphere.transaction.common.event.WeakXaTransactionEvent;
 import io.shardingsphere.transaction.common.event.XaTransactionEvent;
-import io.shardingsphere.transaction.common.spi.TransactionManager;
-import io.shardingsphere.transaction.weakxa.WeakXaTransactionManager;
+import io.shardingsphere.transaction.api.xa.WeakXaTransactionManager;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -49,6 +49,6 @@ public class TransactionContextFactory {
      * @return weak XA transaction context
      */
     public static TransactionContext newWeakXAContext() {
-        return new TransactionContext(new WeakXaTransactionManager(), TransactionType.XA, WeakXaTransactionEvent.class);
+        return new TransactionContext(WeakXaTransactionManager.getInstance(), TransactionType.XA, WeakXaTransactionEvent.class);
     }
 }

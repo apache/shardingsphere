@@ -15,11 +15,13 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.weakxa;
+package io.shardingsphere.transaction.api.xa;
 
+import io.shardingsphere.transaction.api.TransactionManager;
 import io.shardingsphere.transaction.common.event.TransactionEvent;
 import io.shardingsphere.transaction.common.event.WeakXaTransactionEvent;
-import io.shardingsphere.transaction.common.spi.TransactionManager;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -31,7 +33,19 @@ import java.util.LinkedList;
  *
  * @author zhaojun
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WeakXaTransactionManager implements TransactionManager {
+    
+    private static final WeakXaTransactionManager TRANSACTION_MANAGER = new WeakXaTransactionManager();
+    
+    /**
+     * Get singleton instance of {@code WeakXaTransactionManager}.
+     *
+     * @return weak XA transaction manager
+     */
+    public static WeakXaTransactionManager getInstance() {
+        return TRANSACTION_MANAGER;
+    }
     
     @Override
     public void begin(final TransactionEvent transactionEvent) throws SQLException {

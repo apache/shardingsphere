@@ -15,29 +15,37 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.common.config;
+package io.shardingsphere.transaction.api.base;
 
-import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.transaction.api.TransactionManager;
+import io.shardingsphere.transaction.common.event.TransactionEvent;
+
+import java.sql.SQLException;
 
 /**
- * Execute transaction manager configuration.
+ * Saga transaction manager for sharding-sphere.
  *
  * @author zhaojun
  */
-public interface TransactionConfiguration {
+public class SagaTransactionManager implements TransactionManager {
     
-    /**
-     * Config transaction context, then binding to current thread.
-     *
-     * @param transactionType transaction type
-     * @return transaction manager
-     */
-    TransactionManager configTransactionContext(TransactionType transactionType);
+    @Override
+    public void begin(final TransactionEvent transactionEvent) throws SQLException {
     
-    /**
-     * Subscribe transaction event using listener, register into event bus.
-     */
-    void registerListener();
-  
+    }
+    
+    @Override
+    public void commit(final TransactionEvent transactionEvent) throws SQLException {
+    
+    }
+    
+    @Override
+    public void rollback(final TransactionEvent transactionEvent) throws SQLException {
+    
+    }
+    
+    @Override
+    public int getStatus() throws SQLException {
+        return 0;
+    }
 }

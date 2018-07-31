@@ -20,9 +20,9 @@ package io.shardingsphere.transaction.common.config;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.TransactionType;
+import io.shardingsphere.transaction.api.TransactionManager;
 import io.shardingsphere.transaction.common.TransactionContextFactory;
 import io.shardingsphere.transaction.common.TransactionContextHolder;
-import io.shardingsphere.transaction.common.spi.TransactionManager;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
