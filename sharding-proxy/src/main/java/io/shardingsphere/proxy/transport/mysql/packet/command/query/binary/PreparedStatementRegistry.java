@@ -39,7 +39,7 @@ public final class PreparedStatementRegistry {
     
     private final ConcurrentMap<String, Integer> sqlToStatementIdMap = new ConcurrentHashMap<>(65535, 1);
     
-    private final ConcurrentMap<Integer, PreparedStatementUnit> statementIdToPreparedStatementUnitMap = new ConcurrentHashMap<>(65535, 1);
+    private final ConcurrentMap<Integer, BinaryPreparedStatementUnit> statementIdToBinaryPreparedStatementUnitMap = new ConcurrentHashMap<>(65535, 1);
     
     private final AtomicInteger sequence = new AtomicInteger();
     
@@ -59,13 +59,13 @@ public final class PreparedStatementRegistry {
      * @return statement ID
      */
     public int register(final String sql) {
-        int statementId = sequence.incrementAndGet();
-        Integer previousStatementId = sqlToStatementIdMap.putIfAbsent(sql, statementId);
-        if (null == previousStatementId) {
-            statementIdToPreparedStatementUnitMap.putIfAbsent(statementId, new PreparedStatementUnit(sql));
-        } else {
-            return previousStatementId;
+        Integer result = sqlToStatementIdMap.get(sql);
+        if (null != result) {
+            return result;
         }
+        int statementId = sequence.incrementAndGet();
+        statementIdToBinaryPreparedStatementUnitMap.putIfAbsent(statementId, new BinaryPreparedStatementUnit(sql));
+        sqlToStatementIdMap.putIfAbsent(sql, statementId);
         return statementId;
     }
     
@@ -76,7 +76,7 @@ public final class PreparedStatementRegistry {
      * @return SQL
      */
     public String getSQL(final int statementId) {
-        return statementIdToPreparedStatementUnitMap.get(statementId).getSql();
+        return statementIdToBinaryPreparedStatementUnitMap.get(statementId).getSql();
     }
     
     /**
@@ -86,7 +86,7 @@ public final class PreparedStatementRegistry {
      * @param preparedStatementParameterHeaders prepared statement parameter headers
      */
     public void setParameterHeaders(final int statementId, final List<PreparedStatementParameterHeader> preparedStatementParameterHeaders) {
-        statementIdToPreparedStatementUnitMap.get(statementId).setPreparedStatementParameterHeaders(preparedStatementParameterHeaders);
+        statementIdToBinaryPreparedStatementUnitMap.get(statementId).setPreparedStatementParameterHeaders(preparedStatementParameterHeaders);
     }
     
     /**
@@ -96,6 +96,6 @@ public final class PreparedStatementRegistry {
      * @return prepared statement parameters
      */
     public List<PreparedStatementParameterHeader> getParameterHeader(final int statementId) {
-        return statementIdToPreparedStatementUnitMap.get(statementId).getPreparedStatementParameterHeaders();
+        return statementIdToBinaryPreparedStatementUnitMap.get(statementId).getPreparedStatementParameterHeaders();
     }
 }

@@ -32,7 +32,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class PreparedStatementUnit {
+public final class BinaryPreparedStatementUnit {
     
     private final String sql;
     
