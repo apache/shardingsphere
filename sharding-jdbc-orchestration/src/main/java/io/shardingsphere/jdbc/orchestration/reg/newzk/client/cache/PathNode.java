@@ -94,7 +94,7 @@ public final class PathNode {
         if (children.containsKey(pathResolve.getCurrent())) {
             return children.get(pathResolve.getCurrent()).set(pathResolve, value);
         }
-        PathNode result = new PathNode(pathResolve.getCurrent());
+        PathNode result = new PathNode(pathResolve.getCurrent(), ZookeeperConstants.NOTHING_DATA);
         this.attachChild(result);
         result.set(pathResolve, value);
         return result;

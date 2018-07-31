@@ -17,6 +17,7 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
@@ -141,9 +142,7 @@ public final class PathTree {
             return;
         }
         try {
-            if (executorStart) {
-                throw new IllegalArgumentException("period already set");
-            }
+            Preconditions.checkState(!executorStart, "period already set");
             long threadPeriod = period;
             if (threadPeriod < 1) {
                 threadPeriod = ZookeeperConstants.THREAD_PERIOD;
@@ -157,9 +156,7 @@ public final class PathTree {
                     if (PathStatus.RELEASE == getStatus()) {
                         try {
                             load();
-                            // CHECKSTYLE:OFF
-                        } catch (final Exception ex) {
-                            // CHECKSTYLE:ON
+                        } catch (final KeeperException | InterruptedException ex) {
                             log.error(ex.getMessage(), ex);
                         }
                     }
@@ -169,6 +166,7 @@ public final class PathTree {
             Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
                 @Override
                 public void run() {
+                    log.debug("cacheService stop");
                     stopRefresh();
                 }
             }));
