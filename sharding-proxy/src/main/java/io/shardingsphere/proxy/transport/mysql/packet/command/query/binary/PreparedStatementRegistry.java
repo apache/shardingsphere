@@ -39,7 +39,7 @@ public final class PreparedStatementRegistry {
     
     private final ConcurrentMap<String, Integer> sqlToStatementIdMap = new ConcurrentHashMap<>(65535, 1);
     
-    private final ConcurrentMap<Integer, SQLElement> statementIdToSQLElementMap = new ConcurrentHashMap<>(65535, 1);
+    private final ConcurrentMap<Integer, PreparedStatementUnit> statementIdToPreparedStatementUnitMap = new ConcurrentHashMap<>(65535, 1);
     
     private final AtomicInteger sequence = new AtomicInteger();
     
@@ -62,7 +62,7 @@ public final class PreparedStatementRegistry {
         int statementId = sequence.incrementAndGet();
         Integer previousStatementId = sqlToStatementIdMap.putIfAbsent(sql, statementId);
         if (null == previousStatementId) {
-            statementIdToSQLElementMap.putIfAbsent(statementId, new SQLElement(sql));
+            statementIdToPreparedStatementUnitMap.putIfAbsent(statementId, new PreparedStatementUnit(sql));
         } else {
             return previousStatementId;
         }
@@ -76,7 +76,7 @@ public final class PreparedStatementRegistry {
      * @return SQL
      */
     public String getSQL(final int statementId) {
-        return statementIdToSQLElementMap.get(statementId).getSql();
+        return statementIdToPreparedStatementUnitMap.get(statementId).getSql();
     }
     
     /**
@@ -86,7 +86,7 @@ public final class PreparedStatementRegistry {
      * @param preparedStatementParameterHeaders prepared statement parameter headers
      */
     public void setParameterHeaders(final int statementId, final List<PreparedStatementParameterHeader> preparedStatementParameterHeaders) {
-        statementIdToSQLElementMap.get(statementId).setPreparedStatementParameterHeaders(preparedStatementParameterHeaders);
+        statementIdToPreparedStatementUnitMap.get(statementId).setPreparedStatementParameterHeaders(preparedStatementParameterHeaders);
     }
     
     /**
@@ -96,6 +96,6 @@ public final class PreparedStatementRegistry {
      * @return prepared statement parameters
      */
     public PreparedStatementParameterHeader getParameterHeader(final int statementId) {
-        return statementIdToSQLElementMap.get(statementId).getPreparedStatementParameterHeaders().iterator().next();
+        return statementIdToPreparedStatementUnitMap.get(statementId).getPreparedStatementParameterHeaders().iterator().next();
     }
 }

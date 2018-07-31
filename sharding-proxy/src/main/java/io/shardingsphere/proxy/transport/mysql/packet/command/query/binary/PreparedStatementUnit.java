@@ -32,7 +32,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class SQLElement {
+public class PreparedStatementUnit {
     
     private final String sql;
     
