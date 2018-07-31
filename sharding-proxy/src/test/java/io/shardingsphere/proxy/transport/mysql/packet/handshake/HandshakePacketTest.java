@@ -33,9 +33,9 @@ public class HandshakePacketTest {
     
     private HandshakePacket handshakePacket;
     
-    private byte[] part1 = {106, 105, 55, 122, 117, 98, 115, 109};
+    private final byte[] part1 = {106, 105, 55, 122, 117, 98, 115, 109};
     
-    private byte[] part2 = {68, 102, 53, 122, 65, 49, 84, 79, 85, 115, 116, 113};
+    private final byte[] part2 = {68, 102, 53, 122, 65, 49, 84, 79, 85, 115, 116, 113};
     
     @Before
     public void setUp() throws Exception {
