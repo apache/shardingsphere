@@ -53,7 +53,7 @@ public final class JDBCShardingRefreshHandler extends AbstractRefreshHandler {
      * @return {@code JDBCShardingRefreshHandler}
      */
     public static JDBCShardingRefreshHandler build(final SQLStatement sqlStatement, final ShardingConnection connection) {
-        return new JDBCShardingRefreshHandler(connection, sqlStatement, connection.getShardingContext().getShardingTableMetaData(), connection.getShardingContext().getShardingRule());
+        return new JDBCShardingRefreshHandler(connection, sqlStatement, connection.getShardingContext().getMetaData().getTable(), connection.getShardingContext().getShardingRule());
     }
     
     @Override

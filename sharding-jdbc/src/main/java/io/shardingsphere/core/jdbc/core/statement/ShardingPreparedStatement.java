@@ -122,9 +122,8 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         this.resultSetHoldability = resultSetHoldability;
         this.sql = sql;
         ShardingContext shardingContext = connection.getShardingContext();
-        routingEngine = new PreparedStatementRoutingEngine(
-                sql, shardingContext.getShardingRule(), shardingContext.getShardingTableMetaData(), shardingContext.getDatabaseType(),
-                shardingContext.isShowSQL(), shardingContext.getShardingDataSourceMetaData());
+        routingEngine = new PreparedStatementRoutingEngine(sql, shardingContext.getShardingRule(), 
+                shardingContext.getMetaData().getTable(), shardingContext.getDatabaseType(), shardingContext.isShowSQL(), shardingContext.getMetaData().getDataSource());
     }
     
     @Override
@@ -139,8 +138,8 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             for (ResultSet each : resultSets) {
                 queryResults.add(new JDBCQueryResult(each));
             }
-            MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getShardingContext().getShardingRule(),
-                    queryResults, routeResult.getSqlStatement(), connection.getShardingContext().getShardingTableMetaData());
+            MergeEngine mergeEngine = MergeEngineFactory.newInstance(
+                    connection.getShardingContext().getShardingRule(), queryResults, routeResult.getSqlStatement(), connection.getShardingContext().getMetaData().getTable());
             result = new ShardingResultSet(resultSets, merge(mergeEngine), this);
         } finally {
             clearBatch();
@@ -310,8 +309,8 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             queryResults.add(new JDBCQueryResult(resultSet));
         }
         if (routeResult.getSqlStatement() instanceof SelectStatement || routeResult.getSqlStatement() instanceof DALStatement) {
-            MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getShardingContext().getShardingRule(), queryResults,
-                    routeResult.getSqlStatement(), connection.getShardingContext().getShardingTableMetaData());
+            MergeEngine mergeEngine = MergeEngineFactory.newInstance(
+                    connection.getShardingContext().getShardingRule(), queryResults, routeResult.getSqlStatement(), connection.getShardingContext().getMetaData().getTable());
             currentResultSet = new ShardingResultSet(resultSets, merge(mergeEngine), this);
         }
         return currentResultSet;

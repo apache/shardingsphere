@@ -18,7 +18,6 @@
 package io.shardingsphere.opentracing;
 
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import io.opentracing.NoopTracerFactory;
 import io.opentracing.mock.MockTracer;
@@ -47,11 +46,17 @@ import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class MergeEventListenerTest {
     
@@ -72,18 +77,28 @@ public final class MergeEventListenerTest {
     }
     
     @Before
-    public void setUp() {
+    public void setUp() throws SQLException {
         TRACER.reset();
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("t_order");
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        Map<String, DataSource> dataSourceMap = Maps.newHashMap();
-        dataSourceMap.put("ds_0", null);
-        dataSourceMap.put("ds_1", null);
+        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
+        dataSourceMap.put("ds_0", mockDataSource());
+        dataSourceMap.put("ds_1", mockDataSource());
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, dataSourceMap.keySet());
         shardingContext = new ShardingContext(dataSourceMap, shardingRule, DatabaseType.MySQL, null, null, true);
         mergeEngine = new DALMergeEngine(null, null, new ShowDatabasesStatement(), null);
+    }
+    
+    private DataSource mockDataSource() throws SQLException {
+        DataSource result = mock(DataSource.class);
+        Connection connection = mock(Connection.class);
+        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        when(databaseMetaData.getURL()).thenReturn("jdbc:mysql://127.0.0.1:3306/ds");
+        when(connection.getMetaData()).thenReturn(databaseMetaData);
+        when(result.getConnection()).thenReturn(connection);
+        return result;
     }
     
     @Test
@@ -93,7 +108,6 @@ public final class MergeEventListenerTest {
         mergeMethod.setAccessible(true);
         mergeMethod.invoke(statement, mergeEngine);
         assertThat(TRACER.finishedSpans().size(), is(1));
-        
     }
     
     @Test
