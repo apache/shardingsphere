@@ -23,11 +23,18 @@ public class ShardingDataSourceMetaDataTest {
     
     @Before
     public void setUp() {
-        Map<String, String> masterSlaveShardingDataSourceURLs = new LinkedHashMap<String, String>() {{ put("single", "jdbc:mysql://127.0.0.1:3306/single"); put("master_0", "jdbc:mysql://127.0.0.1:3306/master_0");
-        put("master_1", "jdbc:mysql://127.0.0.1:3306/master_1"); put("master_2", "jdbc:mysql://127.0.0.1:3307/master_2"); put("slave_0", "jdbc:mysql://127.0.0.2:3306/slave_0");
-        put("slave_1", "jdbc:mysql://127.0.0.2:3306/slave_1"); put("slave_2", "jdbc:mysql://127.0.0.2:3307/slave_2");}};
+        Map<String, String> masterSlaveShardingDataSourceURLs = new LinkedHashMap<>();
+        masterSlaveShardingDataSourceURLs.put("single", "jdbc:mysql://127.0.0.1:3306/single");
+        masterSlaveShardingDataSourceURLs.put("master_0", "jdbc:mysql://127.0.0.1:3306/master_0");
+        masterSlaveShardingDataSourceURLs.put("master_1", "jdbc:mysql://127.0.0.1:3306/master_1");
+        masterSlaveShardingDataSourceURLs.put("master_2", "jdbc:mysql://127.0.0.1:3307/master_2");
+        masterSlaveShardingDataSourceURLs.put("slave_0", "jdbc:mysql://127.0.0.2:3306/slave_0");
+        masterSlaveShardingDataSourceURLs.put("slave_1", "jdbc:mysql://127.0.0.2:3306/slave_1");
+        masterSlaveShardingDataSourceURLs.put("slave_2", "jdbc:mysql://127.0.0.2:3307/slave_2");
         masterSlaveShardingDataSourceMetaData = new ShardingDataSourceMetaData(masterSlaveShardingDataSourceURLs, getMasterSlaveShardingRule(), DatabaseType.MySQL);
-        Map<String, String> shardingDataSourceURLs = new LinkedHashMap<String, String>() {{ put("ds_0", "jdbc:mysql://127.0.0.1:3306/db_0"); put("ds_1", "jdbc:mysql://127.0.0.1:3306/db_1"); }};
+        Map<String, String> shardingDataSourceURLs = new LinkedHashMap<String, String>();
+        shardingDataSourceURLs.put("ds_0", "jdbc:mysql://127.0.0.1:3306/db_0");
+        shardingDataSourceURLs.put("ds_1", "jdbc:mysql://127.0.0.1:3306/db_1");
         shardingDataSourceMetaData = new ShardingDataSourceMetaData(shardingDataSourceURLs, getShardingRule(), DatabaseType.MySQL);
     }
     
@@ -39,12 +46,12 @@ public class ShardingDataSourceMetaDataTest {
         tableRuleConfig1.setLogicTable("t_order_item");
         tableRuleConfig1.setActualDataNodes("single.t_order_item");
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        MasterSlaveRuleConfiguration MasterSlaveConfig0 = new MasterSlaveRuleConfiguration("ms_0", "master_0", Arrays.asList("slave_0"));
-        MasterSlaveRuleConfiguration MasterSlaveConfig1 = new MasterSlaveRuleConfiguration("ms_1", "master_1", Arrays.asList("slave_1"));
-        MasterSlaveRuleConfiguration MasterSlaveConfig2 = new MasterSlaveRuleConfiguration("ms_2", "master_2", Arrays.asList("slave_2"));
+        MasterSlaveRuleConfiguration masterSlaveConfig0 = new MasterSlaveRuleConfiguration("ms_0", "master_0", Arrays.asList("slave_0"));
+        MasterSlaveRuleConfiguration masterSlaveConfig1 = new MasterSlaveRuleConfiguration("ms_1", "master_1", Arrays.asList("slave_1"));
+        MasterSlaveRuleConfiguration masterSlaveConfig2 = new MasterSlaveRuleConfiguration("ms_2", "master_2", Arrays.asList("slave_2"));
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig0);
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig1);
-        shardingRuleConfig.getMasterSlaveRuleConfigs().addAll(Lists.newArrayList(MasterSlaveConfig0, MasterSlaveConfig1, MasterSlaveConfig2));
+        shardingRuleConfig.getMasterSlaveRuleConfigs().addAll(Lists.newArrayList(masterSlaveConfig0, masterSlaveConfig1, masterSlaveConfig2));
         return new ShardingRule(shardingRuleConfig, Lists.newArrayList("single", "master_0", "master_1", "master_2", "slave_0", "slave_1", "slave_2"));
     }
     
