@@ -20,6 +20,7 @@ package io.shardingsphere.core.metadata;
 import io.shardingsphere.core.metadata.datasource.dialect.H2DataSourceMetaDataTest;
 import io.shardingsphere.core.metadata.datasource.dialect.MySQLDataSourceMetaDataTest;
 import io.shardingsphere.core.metadata.datasource.dialect.OracleDataSourceMetaDataTest;
+import io.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaDataTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -28,6 +29,7 @@ import org.junit.runners.Suite;
         H2DataSourceMetaDataTest.class,
         MySQLDataSourceMetaDataTest.class,
         OracleDataSourceMetaDataTest.class,
+        PostgreSQLDataSourceMetaDataTest.class,
     })
 public class AllMetaDataTests {
 }
