@@ -18,6 +18,7 @@
 package io.shardingsphere.proxy.metadata;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
+import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.rule.DataNode;
@@ -25,8 +26,12 @@ import io.shardingsphere.proxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import lombok.Getter;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,6 +42,12 @@ import java.util.Map;
 @Getter
 public final class ProxyShardingTableMetaData extends ShardingTableMetaData {
     
+    private static final String SHOW_TABLES = "SHOW TABLES";
+    
+    private static final String SHOW_TABLES_LIKE = "SHOW TABLES LIKE '%s'";
+    
+    private static final String DESC = "DESC `%s`";
+    
     private final JDBCBackendDataSource backendDataSource;
     
     public ProxyShardingTableMetaData(final ListeningExecutorService executorService, final JDBCBackendDataSource backendDataSource) {
@@ -46,11 +57,43 @@ public final class ProxyShardingTableMetaData extends ShardingTableMetaData {
     
     @Override
     public Collection<String> getTableNamesFromDefaultDataSource(final String defaultDataSourceName) throws SQLException {
-        return new ShardingTableMetaDataHandler(backendDataSource.getDataSource(defaultDataSourceName), "").getTableNamesFromDefaultDataSource();
+        try (Connection connection = backendDataSource.getDataSource(defaultDataSourceName).getConnection();
+             Statement statement = connection.createStatement()) {
+            return getAllTableNames(statement);
+        }
+    }
+    
+    private Collection<String> getAllTableNames(final Statement statement) throws SQLException {
+        Collection<String> result = new LinkedList<>();
+        try (ResultSet resultSet = statement.executeQuery(SHOW_TABLES)) {
+            while (resultSet.next()) {
+                result.add(resultSet.getString(1));
+            }
+        }
+        return result;
     }
     
     @Override
     public TableMetaData loadTableMetaData(final DataNode dataNode, final Map<String, Connection> connectionMap) throws SQLException {
-        return new ShardingTableMetaDataHandler(backendDataSource.getDataSource(dataNode.getDataSourceName()), dataNode.getTableName()).getTableMetaData();
+        try (Connection connection = backendDataSource.getDataSource(dataNode.getDataSourceName()).getConnection();
+             Statement statement = connection.createStatement()) {
+            return isTableExist(statement, dataNode.getTableName()) ? new TableMetaData(getColumnMetaDataList(statement, dataNode.getTableName())) : new TableMetaData();
+        }
+    }
+    
+    private boolean isTableExist(final Statement statement, final String actualTableName) throws SQLException {
+        try (ResultSet resultSet = statement.executeQuery(String.format(SHOW_TABLES_LIKE, actualTableName))) {
+            return resultSet.next();
+        }
+    }
+    
+    private List<ColumnMetaData> getColumnMetaDataList(final Statement statement, final String actualTableName) throws SQLException {
+        List<ColumnMetaData> result = new LinkedList<>();
+        try (ResultSet resultSet = statement.executeQuery(String.format(DESC, actualTableName))) {
+            while (resultSet.next()) {
+                result.add(new ColumnMetaData(resultSet.getString("Field"), resultSet.getString("Type"), resultSet.getString("Key")));
+            }
+        }
+        return result;
     }
 }

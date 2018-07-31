@@ -87,7 +87,7 @@ public abstract class ShardingMetaDataHandler {
         Collection<String> result = new LinkedList<>();
         try (Connection connection = getDataSource().getConnection();
              Statement statement = connection.createStatement()) {
-            statement.execute("show tables;");
+            statement.execute("SHOW TABLES");
             try (ResultSet resultSet = statement.getResultSet()) {
                 while (resultSet.next()) {
                     result.add(resultSet.getString(1));
