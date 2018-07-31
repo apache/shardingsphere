@@ -20,7 +20,6 @@ package io.shardingsphere.core.jdbc.metadata.dialect;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import io.shardingsphere.core.jdbc.metadata.JDBCShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
-import io.shardingsphere.core.rule.ShardingRule;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -40,8 +39,8 @@ public final class H2ShardingTableMetaData extends JDBCShardingTableMetaData {
     
     private static final String SHOW_COLUMNS = "SHOW COLUMNS FROM \"%s\"";
     
-    public H2ShardingTableMetaData(final ListeningExecutorService executorService, final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) {
-        super(executorService, dataSourceMap, shardingRule);
+    public H2ShardingTableMetaData(final ListeningExecutorService executorService, final Map<String, DataSource> dataSourceMap) {
+        super(executorService, dataSourceMap);
     }
     
     @Override

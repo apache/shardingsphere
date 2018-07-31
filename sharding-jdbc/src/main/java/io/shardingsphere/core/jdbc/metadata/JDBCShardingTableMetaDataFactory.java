@@ -22,7 +22,6 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.jdbc.metadata.dialect.DefaultShardingTableMetaData;
 import io.shardingsphere.core.jdbc.metadata.dialect.H2ShardingTableMetaData;
 import io.shardingsphere.core.jdbc.metadata.dialect.MySQLShardingTableMetaData;
-import io.shardingsphere.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -43,18 +42,16 @@ public final class JDBCShardingTableMetaDataFactory {
      * @param databaseType database type
      * @param executorService executor service
      * @param dataSourceMap data source map
-     * @param shardingRule sharding rule
      * @return new instance of JDBC sharding table meta data
      */
-    public static JDBCShardingTableMetaData newInstance(
-            final DatabaseType databaseType, final ListeningExecutorService executorService, final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) {
+    public static JDBCShardingTableMetaData newInstance(final DatabaseType databaseType, final ListeningExecutorService executorService, final Map<String, DataSource> dataSourceMap) {
         switch (databaseType) {
             case H2:
-                return new H2ShardingTableMetaData(executorService, dataSourceMap, shardingRule);
+                return new H2ShardingTableMetaData(executorService, dataSourceMap);
             case MySQL:
-                return new MySQLShardingTableMetaData(executorService, dataSourceMap, shardingRule);
+                return new MySQLShardingTableMetaData(executorService, dataSourceMap);
             default:
-                return new DefaultShardingTableMetaData(executorService, dataSourceMap, shardingRule);
+                return new DefaultShardingTableMetaData(executorService, dataSourceMap);
         }
     }
 }

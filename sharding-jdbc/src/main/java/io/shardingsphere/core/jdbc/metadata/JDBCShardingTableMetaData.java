@@ -22,8 +22,6 @@ import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.rule.DataNode;
-import io.shardingsphere.core.rule.ShardingRule;
-import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -41,17 +39,13 @@ import java.util.Map;
  * @author panjuan
  * @author zhangliang
  */
-@Getter
 public abstract class JDBCShardingTableMetaData extends ShardingTableMetaData {
     
     private final Map<String, DataSource> dataSourceMap;
     
-    private final ShardingRule shardingRule;
-    
-    public JDBCShardingTableMetaData(final ListeningExecutorService executorService, final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) {
+    public JDBCShardingTableMetaData(final ListeningExecutorService executorService, final Map<String, DataSource> dataSourceMap) {
         super(executorService);
         this.dataSourceMap = dataSourceMap;
-        this.shardingRule = shardingRule;
     }
     
     @Override

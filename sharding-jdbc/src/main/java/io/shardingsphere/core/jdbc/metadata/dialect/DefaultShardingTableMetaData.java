@@ -20,7 +20,6 @@ package io.shardingsphere.core.jdbc.metadata.dialect;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import io.shardingsphere.core.jdbc.metadata.JDBCShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
-import io.shardingsphere.core.rule.ShardingRule;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -37,8 +36,8 @@ import java.util.Map;
  */
 public final class DefaultShardingTableMetaData extends JDBCShardingTableMetaData {
     
-    public DefaultShardingTableMetaData(final ListeningExecutorService executorService, final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) {
-        super(executorService, dataSourceMap, shardingRule);
+    public DefaultShardingTableMetaData(final ListeningExecutorService executorService, final Map<String, DataSource> dataSourceMap) {
+        super(executorService, dataSourceMap);
     }
     
     @Override

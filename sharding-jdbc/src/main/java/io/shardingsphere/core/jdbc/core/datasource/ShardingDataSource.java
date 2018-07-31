@@ -68,7 +68,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         executorEngine = new ExecutorEngine(executorSize);
-        ShardingTableMetaData shardingTableMetaData = JDBCShardingTableMetaDataFactory.newInstance(getDatabaseType(), executorEngine.getExecutorService(), dataSourceMap, shardingRule);
+        ShardingTableMetaData shardingTableMetaData = JDBCShardingTableMetaDataFactory.newInstance(getDatabaseType(), executorEngine.getExecutorService(), dataSourceMap);
         shardingTableMetaData.init(shardingRule);
         boolean showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         shardingContext = new ShardingContext(dataSourceMap, shardingRule, getDatabaseType(), executorEngine, shardingTableMetaData, showSQL);
@@ -91,7 +91,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
             originalExecutorEngine.close();
         }
         boolean newShowSQL = newShardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
-        ShardingTableMetaData shardingMetaData = JDBCShardingTableMetaDataFactory.newInstance(getDatabaseType(), executorEngine.getExecutorService(), newDataSourceMap, newShardingRule);
+        ShardingTableMetaData shardingMetaData = JDBCShardingTableMetaDataFactory.newInstance(getDatabaseType(), executorEngine.getExecutorService(), newDataSourceMap);
         shardingMetaData.init(newShardingRule);
         shardingProperties = newShardingProperties;
         shardingContext = new ShardingContext(newDataSourceMap, newShardingRule, getDatabaseType(), executorEngine, shardingMetaData, newShowSQL);

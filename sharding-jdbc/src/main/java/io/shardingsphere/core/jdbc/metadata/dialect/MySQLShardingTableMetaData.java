@@ -20,7 +20,6 @@ package io.shardingsphere.core.jdbc.metadata.dialect;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import io.shardingsphere.core.jdbc.metadata.JDBCShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
-import io.shardingsphere.core.rule.ShardingRule;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -44,8 +43,8 @@ public final class MySQLShardingTableMetaData extends JDBCShardingTableMetaData 
     
     private static final String DESC = "DESC `%s`";
     
-    public MySQLShardingTableMetaData(final ListeningExecutorService executorService, final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) {
-        super(executorService, dataSourceMap, shardingRule);
+    public MySQLShardingTableMetaData(final ListeningExecutorService executorService, final Map<String, DataSource> dataSourceMap) {
+        super(executorService, dataSourceMap);
     }
     
     @Override
