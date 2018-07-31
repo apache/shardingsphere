@@ -32,7 +32,6 @@ import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.ZooDefs;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -96,8 +95,7 @@ public class PathTreeTest extends BaseTest {
     public void assertDelete() {
         
     }
-    
-    @Ignore
+
     @Test
     public void assertWatch() throws KeeperException, InterruptedException {
         final String key = "a/b/bb";

@@ -128,20 +128,8 @@ public abstract class BaseClient implements IClient {
     public void registerWatch(final String key, final ZookeeperEventListener zookeeperEventListener) {
         final String path = PathUtil.getRealPath(rootNode, key);
         zookeeperEventListener.setPath(path);
-        checkPath(path);
         context.getWatchers().put(zookeeperEventListener.getKey(), zookeeperEventListener);
         log.debug("register watcher:{}", path);
-    }
-    
-    private void checkPath(final String path) {
-        try {
-            if (checkExists(path)) {
-                return;
-            }
-        } catch (final KeeperException | InterruptedException ex) {
-            // ignore
-        }
-        context.getWaitCheckPaths().add(path);
     }
     
     @Override

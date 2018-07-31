@@ -17,19 +17,14 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache;
 
-import io.shardingsphere.core.parsing.lexer.LexerEngine;
-import io.shardingsphere.core.parsing.lexer.token.Assist;
-import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.Iterator;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /*
  * Zookeeper node cache.
@@ -97,24 +92,11 @@ public final class PathNode {
         pathResolve.next();
         log.debug("PathNode set:{},value:{}", pathResolve.getCurrent(), value);
         if (children.containsKey(pathResolve.getCurrent())) {
-            if (pathResolve.isEnd()) {
-                PathNode result = children.get(pathResolve.getCurrent());
-                result.setValue(value.getBytes(ZookeeperConstants.UTF_8));
-                return result;
-            } else {
-                set(pathResolve, value);
-            }
+            return children.get(pathResolve.getCurrent()).set(pathResolve, value);
         }
-        PathNode result;
-        PathNode current = new PathNode(pathResolve.getCurrent());
-        this.attachChild(current);
-        do {
-            pathResolve.next();
-            result = new PathNode(pathResolve.getCurrent());
-            current.attachChild(result);
-            current = result;
-        }
-        while (!pathResolve.isEnd());
+        PathNode result = new PathNode(pathResolve.getCurrent());
+        this.attachChild(result);
+        result.set(pathResolve, value);
         return result;
     }
     

@@ -17,8 +17,6 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache;
 
-import java.util.ArrayList;
-import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

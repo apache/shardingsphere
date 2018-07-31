@@ -17,7 +17,6 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

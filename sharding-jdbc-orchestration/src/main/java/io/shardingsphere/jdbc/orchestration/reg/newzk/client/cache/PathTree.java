@@ -324,7 +324,8 @@ public final class PathTree {
                 this.setStatus(PathStatus.CHANGING);
                 final String realPath = provider.getRealPath(path);
                 final PathResolve pathResolve = new PathResolve(realPath);
-                rootNode.get().set(pathResolve, realPath);
+                pathResolve.next();
+                rootNode.get().set(pathResolve, value);
                 this.setStatus(PathStatus.RELEASE);
             } else {
                 try {
