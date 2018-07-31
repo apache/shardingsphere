@@ -57,7 +57,7 @@ public class ShardingDataSourceMetaData {
         for (Entry<String, DataSourceMetaData> entry : dataSourceMetaDataMap.entrySet()) {
             Optional<MasterSlaveRule> masterSlaveRule = shardingRule.findMasterSlaveRule(entry.getKey());
             // TODO original DataSourceMetaData do not remove?
-            if (masterSlaveRule.isPresent()) {
+            if (masterSlaveRule.isPresent() && masterSlaveRule.get().getMasterDataSourceName().equals(entry.getKey())) {
                 result.put(masterSlaveRule.get().getName(), entry.getValue());
             }
         }
