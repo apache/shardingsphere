@@ -25,7 +25,6 @@ import io.shardingsphere.core.rule.DataNode;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -69,12 +68,6 @@ public abstract class JDBCShardingTableMetaData extends ShardingTableMetaData {
     private TableMetaData getTableMetaData(final DataSource dataSource, final String actualTableName) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             return getTableMetaData(connection, actualTableName);
-        }
-    }
-    
-    private boolean isTableExist(final Connection connection, final String actualTableName) throws SQLException {
-        try (ResultSet resultSet = connection.getMetaData().getTables(null, null, actualTableName, null)) {
-            return resultSet.next();
         }
     }
     

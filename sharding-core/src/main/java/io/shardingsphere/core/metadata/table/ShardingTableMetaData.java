@@ -157,6 +157,12 @@ public abstract class ShardingTableMetaData {
         }
     }
     
+    protected boolean isTableExist(final Connection connection, final String actualTableName) throws SQLException {
+        try (ResultSet resultSet = connection.getMetaData().getTables(null, null, actualTableName, null)) {
+            return resultSet.next();
+        }
+    }
+    
     /**
      * Judge whether table meta data is empty.
      *

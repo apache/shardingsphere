@@ -65,12 +65,6 @@ public final class ProxyShardingTableMetaData extends ShardingTableMetaData {
         }
     }
     
-    private boolean isTableExist(final Connection connection, final String actualTableName) throws SQLException {
-        try (ResultSet resultSet = connection.getMetaData().getTables(null, null, actualTableName, null)) {
-            return resultSet.next();
-        }
-    }
-    
     // TODO :panjuan use connection.getMetaData().getColumns
     private List<ColumnMetaData> getColumnMetaDataList(final Statement statement, final String actualTableName) throws SQLException {
         List<ColumnMetaData> result = new LinkedList<>();
