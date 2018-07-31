@@ -49,10 +49,6 @@ public final class AuthorityHandler {
      * @return login success or failure.
      */
     public boolean login(final String username, final byte[] authResponse) {
-        System.out.println("login!!!!1");
-        System.out.println(Arrays.toString(authResponse));
-        System.out.println(Arrays.toString(authPluginData.getAuthPluginDataPart1()));
-        System.out.println(Arrays.toString(authPluginData.getAuthPluginDataPart2()));
         ProxyAuthority proxyAuthority = RULE_REGISTRY.getProxyAuthority();
         if (Strings.isNullOrEmpty(proxyAuthority.getPassword())) {
             return proxyAuthority.getUsername().equals(username);
