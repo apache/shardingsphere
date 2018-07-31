@@ -18,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 public class ShardingDataSourceMetaDataTest {
     
     private ShardingDataSourceMetaData masterSlaveShardingDataSourceMetaData;
+    
     private ShardingDataSourceMetaData shardingDataSourceMetaData;
     
     @Before
