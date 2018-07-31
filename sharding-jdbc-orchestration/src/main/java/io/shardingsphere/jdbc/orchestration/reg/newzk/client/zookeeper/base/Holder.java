@@ -27,6 +27,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
@@ -94,7 +95,9 @@ public class Holder {
                 if (event.getType() == Event.EventType.None) {
                     return;
                 }
-                processUsualListener(event);
+                if (Event.EventType.NodeDeleted == event.getType() || checkPath(event.getPath())) {
+                    processUsualListener(event);
+                }
             }
         };
     }
@@ -138,6 +141,15 @@ public class Holder {
                 }
             }
         }
+    }
+    
+    private boolean checkPath(final String path) {
+        try {
+            return zooKeeper.exists(path, true) != null;
+        } catch (final KeeperException | InterruptedException ex) {
+            // ignore
+        }
+        return false;
     }
     
     /**
