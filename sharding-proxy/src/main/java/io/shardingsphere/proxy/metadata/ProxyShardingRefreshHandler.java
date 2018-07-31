@@ -46,7 +46,7 @@ public final class ProxyShardingRefreshHandler extends AbstractRefreshHandler {
      * @return {@code ProxyShardingRefreshHandler}
      */
     public static ProxyShardingRefreshHandler build(final SQLStatement sqlStatement) {
-        return new ProxyShardingRefreshHandler(sqlStatement, RULE_REGISTRY.getShardingTableMetaData(), RULE_REGISTRY.getShardingRule());
+        return new ProxyShardingRefreshHandler(sqlStatement, RULE_REGISTRY.getMetaData().getTable(), RULE_REGISTRY.getShardingRule());
     }
     
     @Override

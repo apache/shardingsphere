@@ -64,6 +64,7 @@ public final class ShowCreateTableMergedResult extends MemoryMergedResult {
                 MemoryQueryResultRow memoryResultSetRow = new MemoryQueryResultRow(each);
                 String tableName = memoryResultSetRow.getCell(1).toString();
                 Optional<TableRule> tableRule = shardingRule.tryFindTableRuleByActualTable(tableName);
+                // TODO :panjuan add default datasource
                 if (tableRule.isPresent()) {
                     String logicTableName = tableRule.get().getLogicTable();
                     memoryResultSetRow.setCell(1, logicTableName);
