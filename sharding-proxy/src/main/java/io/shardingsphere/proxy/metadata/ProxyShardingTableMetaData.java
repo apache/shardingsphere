@@ -56,8 +56,8 @@ public final class ProxyShardingTableMetaData extends ShardingTableMetaData {
     }
     
     @Override
-    public Collection<String> getTableNamesFromDefaultDataSource(final String defaultDataSourceName) throws SQLException {
-        try (Connection connection = backendDataSource.getDataSource(defaultDataSourceName).getConnection();
+    public Collection<String> getAllTableNames(final String dataSourceName) throws SQLException {
+        try (Connection connection = backendDataSource.getDataSource(dataSourceName).getConnection();
              Statement statement = connection.createStatement()) {
             return getAllTableNames(statement);
         }

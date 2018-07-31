@@ -17,7 +17,10 @@
 
 package io.shardingsphere.core.jdbc.metadata.dialect;
 
+import com.google.common.util.concurrent.ListeningExecutorService;
+import io.shardingsphere.core.jdbc.metadata.JDBCShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
+import io.shardingsphere.core.rule.ShardingRule;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -26,32 +29,38 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
- * MySQL table metadata handler.
+ * Sharding table meta data for MySQL.
  *
- * @author panjuan
- * @author zhaojun
+ * @author zhangliang
  */
-public final class H2ShardingMetaDataHandler extends ShardingMetaDataHandler {
-
-    public H2ShardingMetaDataHandler(final DataSource dataSource, final String actualTableName) {
-        super(dataSource, actualTableName);
+public final class H2ShardingTableMetaData extends JDBCShardingTableMetaData {
+    
+    private static final String SHOW_COLUMNS = "SHOW COLUMNS FROM \"%s\"";
+    
+    public H2ShardingTableMetaData(final ListeningExecutorService executorService, final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) {
+        super(executorService, dataSourceMap, shardingRule);
     }
-
+    
     @Override
-    public boolean isTableExist(final Connection connection) throws SQLException {
-        try (ResultSet resultSet = connection.getMetaData().getTables(null, null, getActualTableName(), null)) {
+    protected String getAllTableNamesSQL() {
+        return "";
+    }
+    
+    @Override
+    protected boolean isTableExist(final Connection connection, final String actualTableName) throws SQLException {
+        try (ResultSet resultSet = connection.getMetaData().getTables(null, null, actualTableName, null)) {
             return resultSet.next();
         }
     }
-
+    
     @Override
-    public List<ColumnMetaData> getExistColumnMeta(final Connection connection) throws SQLException {
+    protected List<ColumnMetaData> getColumnMetaDataList(final Connection connection, final String actualTableName) throws SQLException {
         List<ColumnMetaData> result = new LinkedList<>();
         try (Statement statement = connection.createStatement()) {
-            statement.executeQuery(String.format("show columns from \"%s\";", getActualTableName()));
-            try (ResultSet resultSet = statement.getResultSet()) {
+            try (ResultSet resultSet = statement.executeQuery(String.format(SHOW_COLUMNS, actualTableName))) {
                 while (resultSet.next()) {
                     result.add(new ColumnMetaData(resultSet.getString("FIELD"), resultSet.getString("TYPE"), resultSet.getString("KEY")));
                 }

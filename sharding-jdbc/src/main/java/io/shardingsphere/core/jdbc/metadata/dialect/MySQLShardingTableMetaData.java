@@ -17,7 +17,10 @@
 
 package io.shardingsphere.core.jdbc.metadata.dialect;
 
+import com.google.common.util.concurrent.ListeningExecutorService;
+import io.shardingsphere.core.jdbc.metadata.JDBCShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
+import io.shardingsphere.core.rule.ShardingRule;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -26,34 +29,45 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
- * MySQL table metadata handler.
+ * Sharding table meta data for MySQL.
  *
- * @author panjuan
- * @author zhaojun
+ * @author zhangliang
  */
-public final class MySQLShardingMetaDataHandler extends ShardingMetaDataHandler {
-
-    public MySQLShardingMetaDataHandler(final DataSource dataSource, final String actualTableName) {
-        super(dataSource, actualTableName);
+public final class MySQLShardingTableMetaData extends JDBCShardingTableMetaData {
+    
+    private static final String SHOW_TABLES = "SHOW TABLES";
+    
+    private static final String SHOW_TABLES_LIKE = "SHOW TABLES LIKE '%s'";
+    
+    private static final String DESC = "DESC `%s`";
+    
+    public MySQLShardingTableMetaData(final ListeningExecutorService executorService, final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) {
+        super(executorService, dataSourceMap, shardingRule);
     }
-
+    
     @Override
-    public boolean isTableExist(final Connection connection) throws SQLException {
+    protected String getAllTableNamesSQL() {
+        return SHOW_TABLES;
+    }
+    
+    @Override
+    protected boolean isTableExist(final Connection connection, final String actualTableName) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            statement.execute(String.format("show tables like '%s'", getActualTableName()));
+            statement.execute(String.format(SHOW_TABLES_LIKE, actualTableName));
             try (ResultSet resultSet = statement.getResultSet()) {
                 return resultSet.next();
             }
         }
     }
-
+    
     @Override
-    public List<ColumnMetaData> getExistColumnMeta(final Connection connection) throws SQLException {
+    protected List<ColumnMetaData> getColumnMetaDataList(final Connection connection, final String actualTableName) throws SQLException {
         List<ColumnMetaData> result = new LinkedList<>();
         try (Statement statement = connection.createStatement()) {
-            statement.execute(String.format("desc `%s`;", getActualTableName()));
+            statement.execute(String.format(DESC, actualTableName));
             try (ResultSet resultSet = statement.getResultSet()) {
                 while (resultSet.next()) {
                     result.add(new ColumnMetaData(resultSet.getString("Field"), resultSet.getString("Type"), resultSet.getString("Key")));

@@ -28,7 +28,6 @@ import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -49,7 +48,6 @@ import java.util.concurrent.ExecutionException;
  */
 @RequiredArgsConstructor
 @Getter
-@Slf4j
 public abstract class ShardingTableMetaData {
     
     private final ListeningExecutorService executorService;
@@ -83,13 +81,13 @@ public abstract class ShardingTableMetaData {
             return Collections.emptyList();
         }
         Collection<TableRule> result = new LinkedList<>();
-        for (String each : getTableNamesFromDefaultDataSource(defaultDataSourceName.get())) {
+        for (String each : getAllTableNames(defaultDataSourceName.get())) {
             result.add(shardingRule.getTableRule(each));
         }
         return result;
     }
     
-    protected abstract Collection<String> getTableNamesFromDefaultDataSource(String defaultDataSourceName) throws SQLException;
+    protected abstract Collection<String> getAllTableNames(String dataSourceName) throws SQLException;
     
     /**
      * Refresh table meta data.
