@@ -50,25 +50,27 @@ public class ShardingDataSourceMetaData {
         return result;
     }
     
-    private void handleMasterSlaveDataSources(final ShardingRule shardingRule, final Map<String, DataSourceMetaData> dataSourceMetaDataMap) {
+    private void handleMasterSlaveDataSources(final ShardingRule shardingRule, final Map<String, DataSourceMetaData> result) {
         if (shardingRule.getMasterSlaveRules().isEmpty()) {
             return;
         }
-        Collection<String> toRemovedKeys = new LinkedList<>();
-        for (Entry<String, DataSourceMetaData> entry : dataSourceMetaDataMap.entrySet()) {
-            final Optional<MasterSlaveRule> masterSlaveRule = shardingRule.findMasterSlaveRule(entry.getKey());
+        Collection<String> toRemove = new LinkedList<>();
+        Map<String, DataSourceMetaData> toAdd = new LinkedHashMap<>();
+        for (Entry<String, DataSourceMetaData> entry : result.entrySet()) {
+            Optional<MasterSlaveRule> masterSlaveRule = shardingRule.findMasterSlaveRule(entry.getKey());
             if (masterSlaveRule.isPresent() && masterSlaveRule.get().getMasterDataSourceName().equals(entry.getKey())) {
-                toRemovedKeys.add(masterSlaveRule.get().getMasterDataSourceName());
-                toRemovedKeys.addAll(masterSlaveRule.get().getSlaveDataSourceNames());
-                dataSourceMetaDataMap.put(masterSlaveRule.get().getName(), entry.getValue());
+                toRemove.add(masterSlaveRule.get().getMasterDataSourceName());
+                toRemove.addAll(masterSlaveRule.get().getSlaveDataSourceNames());
+                toAdd.put(masterSlaveRule.get().getName(), entry.getValue());
             }
         }
-        removeDataSourceMetaData(dataSourceMetaDataMap, toRemovedKeys);
+        removeInvalidDataSourceMetaData(result, toRemove);
+        result.putAll(toAdd);
     }
     
-    private void removeDataSourceMetaData(final Map<String, DataSourceMetaData> dataSourceMetaDataMap, final Collection<String> toRemovedKeys) {
+    private void removeInvalidDataSourceMetaData(final Map<String, DataSourceMetaData> result, final Collection<String> toRemovedKeys) {
         for (String each : toRemovedKeys) {
-            dataSourceMetaDataMap.remove(each);
+            result.remove(each);
         }
     }
     
