@@ -95,7 +95,7 @@ public final class PreparedStatementRegistry {
      * @param statementId statement ID
      * @return prepared statement parameters
      */
-    public PreparedStatementParameterHeader getParameterHeader(final int statementId) {
-        return statementIdToPreparedStatementUnitMap.get(statementId).getPreparedStatementParameterHeaders().iterator().next();
+    public List<PreparedStatementParameterHeader> getParameterHeader(final int statementId) {
+        return statementIdToPreparedStatementUnitMap.get(statementId).getPreparedStatementParameterHeaders();
     }
 }
