@@ -44,11 +44,6 @@ public final class H2ShardingTableMetaData extends JDBCShardingTableMetaData {
     }
     
     @Override
-    protected String getAllTableNamesSQL() {
-        return "";
-    }
-    
-    @Override
     protected List<ColumnMetaData> getColumnMetaDataList(final Connection connection, final String actualTableName) throws SQLException {
         List<ColumnMetaData> result = new LinkedList<>();
         try (Statement statement = connection.createStatement()) {

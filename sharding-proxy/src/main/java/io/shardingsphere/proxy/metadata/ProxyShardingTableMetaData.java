@@ -29,7 +29,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -54,21 +53,8 @@ public final class ProxyShardingTableMetaData extends ShardingTableMetaData {
     }
     
     @Override
-    public Collection<String> getAllTableNames(final String dataSourceName) throws SQLException {
-        try (Connection connection = backendDataSource.getDataSource(dataSourceName).getConnection();
-             Statement statement = connection.createStatement()) {
-            return getAllTableNames(statement);
-        }
-    }
-    
-    private Collection<String> getAllTableNames(final Statement statement) throws SQLException {
-        Collection<String> result = new LinkedList<>();
-        try (ResultSet resultSet = statement.executeQuery(SHOW_TABLES)) {
-            while (resultSet.next()) {
-                result.add(resultSet.getString(1));
-            }
-        }
-        return result;
+    protected Connection getConnection(final String dataSourceName) throws SQLException {
+        return backendDataSource.getDataSource(dataSourceName).getConnection();
     }
     
     @Override

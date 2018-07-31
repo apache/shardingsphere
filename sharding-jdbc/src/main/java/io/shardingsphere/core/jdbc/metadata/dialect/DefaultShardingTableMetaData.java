@@ -23,8 +23,6 @@ import io.shardingsphere.core.metadata.table.ColumnMetaData;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -38,18 +36,6 @@ public final class DefaultShardingTableMetaData extends JDBCShardingTableMetaDat
     
     public DefaultShardingTableMetaData(final ListeningExecutorService executorService, final Map<String, DataSource> dataSourceMap) {
         super(executorService, dataSourceMap);
-    }
-    
-    @Override
-    protected String getAllTableNamesSQL() {
-        return "";
-    }
-    
-    @Override
-    protected boolean isTableExist(final Connection connection, final String actualTableName) throws SQLException {
-        try (ResultSet resultSet = connection.getMetaData().getTables(null, null, actualTableName, null)) {
-            return resultSet.next();
-        }
     }
     
     @Override

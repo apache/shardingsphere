@@ -27,9 +27,6 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -49,23 +46,9 @@ public abstract class JDBCShardingTableMetaData extends ShardingTableMetaData {
     }
     
     @Override
-    public Collection<String> getAllTableNames(final String dataSourceName) throws SQLException {
-        Collection<String> result = new LinkedList<>();
-        if ("".equals(getAllTableNamesSQL())) {
-            return result;
-        }
-        try (Connection connection = dataSourceMap.get(dataSourceName).getConnection();
-             Statement statement = connection.createStatement()) {
-            try (ResultSet resultSet = statement.executeQuery(getAllTableNamesSQL())) {
-                while (resultSet.next()) {
-                    result.add(resultSet.getString(1));
-                }
-            }
-            return result;
-        }
+    protected Connection getConnection(final String dataSourceName) throws SQLException {
+        return dataSourceMap.get(dataSourceName).getConnection();
     }
-    
-    protected abstract String getAllTableNamesSQL();
     
     @Override
     public TableMetaData loadTableMetaData(final DataNode dataNode, final Map<String, Connection> connectionMap) throws SQLException {

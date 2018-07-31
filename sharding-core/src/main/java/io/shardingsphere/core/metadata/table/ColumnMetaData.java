@@ -35,9 +35,7 @@ public final class ColumnMetaData {
     
     private final String columnName;
     
-    // TODO :panjuan plan to use?
     private final String columnType;
     
-    // TODO :panjuan plan to use? 
     private final String keyType;
 }

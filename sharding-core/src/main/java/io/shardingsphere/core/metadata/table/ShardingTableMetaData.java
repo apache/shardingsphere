@@ -30,6 +30,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
@@ -87,7 +88,18 @@ public abstract class ShardingTableMetaData {
         return result;
     }
     
-    protected abstract Collection<String> getAllTableNames(String dataSourceName) throws SQLException;
+    private Collection<String> getAllTableNames(final String dataSourceName) throws SQLException {
+        Collection<String> result = new LinkedList<>();
+        try (Connection connection = getConnection(dataSourceName);
+             ResultSet resultSet = connection.getMetaData().getTables(null, null, null, null)) {
+            while (resultSet.next()) {
+                result.add(resultSet.getString("TABLE_NAME"));
+            }
+        }
+        return result;
+    }
+    
+    protected abstract Connection getConnection(String dataSourceName) throws SQLException;
     
     /**
      * Refresh table meta data.

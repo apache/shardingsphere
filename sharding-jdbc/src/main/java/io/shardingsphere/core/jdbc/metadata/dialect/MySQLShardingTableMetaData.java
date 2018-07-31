@@ -37,17 +37,10 @@ import java.util.Map;
  */
 public final class MySQLShardingTableMetaData extends JDBCShardingTableMetaData {
     
-    private static final String SHOW_TABLES = "SHOW TABLES";
-    
     private static final String DESC = "DESC `%s`";
     
     public MySQLShardingTableMetaData(final ListeningExecutorService executorService, final Map<String, DataSource> dataSourceMap) {
         super(executorService, dataSourceMap);
-    }
-    
-    @Override
-    protected String getAllTableNamesSQL() {
-        return SHOW_TABLES;
     }
     
     @Override
