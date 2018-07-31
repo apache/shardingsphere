@@ -108,7 +108,6 @@ public final class MergeEventListenerTest {
         mergeMethod.setAccessible(true);
         mergeMethod.invoke(statement, mergeEngine);
         assertThat(TRACER.finishedSpans().size(), is(1));
-        
     }
     
     @Test
