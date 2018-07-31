@@ -114,9 +114,8 @@ public abstract class ShardingTableMetaData {
     
     private TableMetaData loadTableMetaData(final TableRule tableRule, final ShardingDataSourceNames shardingDataSourceNames, final Map<String, Connection> connectionMap) {
         List<TableMetaData> actualTableMetaDataList = loadActualTableMetaDataList(tableRule.getActualDataNodes(), shardingDataSourceNames, connectionMap);
-        TableMetaData result = actualTableMetaDataList.iterator().next();
-        checkUniformed(result, actualTableMetaDataList, tableRule.getLogicTable());
-        return result;
+        checkUniformed(tableRule.getLogicTable(), actualTableMetaDataList);
+        return actualTableMetaDataList.iterator().next();
     }
     
     protected abstract TableMetaData loadTableMetaData(DataNode dataNode, Map<String, Connection> connectionMap) throws SQLException;
@@ -139,7 +138,8 @@ public abstract class ShardingTableMetaData {
         }
     }
     
-    private void checkUniformed(final TableMetaData sample, final List<TableMetaData> actualTableMetaDataList, final String logicTableName) {
+    private void checkUniformed(final String logicTableName, final List<TableMetaData> actualTableMetaDataList) {
+        final TableMetaData sample = actualTableMetaDataList.iterator().next();
         for (TableMetaData each : actualTableMetaDataList) {
             if (!sample.equals(each)) {
                 throw new ShardingException("Cannot get uniformed table structure for `%s`. The different meta data of actual tables are as follows:\n%s\n%s.", logicTableName, sample, each);
