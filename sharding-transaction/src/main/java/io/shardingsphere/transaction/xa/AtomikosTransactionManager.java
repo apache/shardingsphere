@@ -18,7 +18,7 @@
 package io.shardingsphere.transaction.xa;
 
 import com.atomikos.icatch.jta.UserTransactionManager;
-import io.shardingsphere.transaction.common.event.TransactionEvent;
+import io.shardingsphere.transaction.event.TransactionEvent;
 import io.shardingsphere.transaction.common.spi.TransactionManager;
 
 import javax.transaction.HeuristicMixedException;

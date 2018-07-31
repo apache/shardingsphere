@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.common.event;
+package io.shardingsphere.transaction.event;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.TCLType;
