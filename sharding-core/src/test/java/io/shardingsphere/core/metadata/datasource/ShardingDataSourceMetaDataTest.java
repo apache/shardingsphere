@@ -9,7 +9,7 @@ import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -46,9 +46,9 @@ public class ShardingDataSourceMetaDataTest {
         tableRuleConfig1.setLogicTable("t_order_item");
         tableRuleConfig1.setActualDataNodes("single.t_order_item");
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        MasterSlaveRuleConfiguration masterSlaveConfig0 = new MasterSlaveRuleConfiguration("ms_0", "master_0", Arrays.asList("slave_0"));
-        MasterSlaveRuleConfiguration masterSlaveConfig1 = new MasterSlaveRuleConfiguration("ms_1", "master_1", Arrays.asList("slave_1"));
-        MasterSlaveRuleConfiguration masterSlaveConfig2 = new MasterSlaveRuleConfiguration("ms_2", "master_2", Arrays.asList("slave_2"));
+        MasterSlaveRuleConfiguration masterSlaveConfig0 = new MasterSlaveRuleConfiguration("ms_0", "master_0", Collections.singleton("slave_0"));
+        MasterSlaveRuleConfiguration masterSlaveConfig1 = new MasterSlaveRuleConfiguration("ms_1", "master_1", Collections.singleton("slave_1"));
+        MasterSlaveRuleConfiguration masterSlaveConfig2 = new MasterSlaveRuleConfiguration("ms_2", "master_2", Collections.singleton("slave_2"));
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig0);
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig1);
         shardingRuleConfig.getMasterSlaveRuleConfigs().addAll(Lists.newArrayList(masterSlaveConfig0, masterSlaveConfig1, masterSlaveConfig2));
