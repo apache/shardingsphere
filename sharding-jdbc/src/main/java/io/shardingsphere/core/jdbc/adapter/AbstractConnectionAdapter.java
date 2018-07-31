@@ -25,9 +25,9 @@ import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.transaction.common.TransactionContextHolder;
 import io.shardingsphere.transaction.common.config.JDBCTransactionConfiguration;
-import io.shardingsphere.transaction.event.TransactionEvent;
-import io.shardingsphere.transaction.event.TransactionEventFactory;
-import io.shardingsphere.transaction.event.WeakXaTransactionEvent;
+import io.shardingsphere.transaction.common.event.TransactionEvent;
+import io.shardingsphere.transaction.common.event.TransactionEventFactory;
+import io.shardingsphere.transaction.common.event.WeakXaTransactionEvent;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

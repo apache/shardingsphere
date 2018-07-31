@@ -15,13 +15,13 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.listener;
+package io.shardingsphere.transaction.common.listener;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.transaction.api.TransactionManager;
 import io.shardingsphere.transaction.common.TransactionContextHolder;
-import io.shardingsphere.transaction.event.TransactionEvent;
+import io.shardingsphere.transaction.common.event.TransactionEvent;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

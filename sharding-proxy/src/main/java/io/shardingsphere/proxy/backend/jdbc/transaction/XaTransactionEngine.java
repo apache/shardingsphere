@@ -23,7 +23,7 @@ import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.transaction.common.TransactionContextFactory;
 import io.shardingsphere.transaction.common.TransactionContextHolder;
-import io.shardingsphere.transaction.event.XaTransactionEvent;
+import io.shardingsphere.transaction.common.event.XaTransactionEvent;
 
 import javax.transaction.Status;
 import java.sql.SQLException;

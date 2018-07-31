@@ -18,8 +18,8 @@
 package io.shardingsphere.transaction.api.xa;
 
 import io.shardingsphere.transaction.api.TransactionManager;
-import io.shardingsphere.transaction.event.TransactionEvent;
-import io.shardingsphere.transaction.event.WeakXaTransactionEvent;
+import io.shardingsphere.transaction.common.event.TransactionEvent;
+import io.shardingsphere.transaction.common.event.WeakXaTransactionEvent;
 
 import java.sql.Connection;
 import java.sql.SQLException;
