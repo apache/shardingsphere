@@ -39,6 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -119,12 +120,13 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
     }
     
     private void setParameterHeaderFromCache(final int numParameters) {
+        Iterator<PreparedStatementParameterHeader> preparedStatementParameterHeaderIterator = PREPARED_STATEMENT_REGISTRY.getParameterHeader(statementId).iterator();
         for (int i = 0; i < numParameters; i++) {
             if (nullBitmap.isParameterNull(i)) {
                 preparedStatementParameters.add(new PreparedStatementParameter(NULL_PARAMETER_DEFAULT_COLUMN_TYPE, NULL_PARAMETER_DEFAULT_UNSIGNED_FLAG, null));
                 continue;
             }
-            PreparedStatementParameterHeader preparedStatementParameterHeader = PREPARED_STATEMENT_REGISTRY.getParameterHeader(statementId);
+            PreparedStatementParameterHeader preparedStatementParameterHeader = preparedStatementParameterHeaderIterator.next();
             preparedStatementParameters.add(new PreparedStatementParameter(preparedStatementParameterHeader.getColumnType(), preparedStatementParameterHeader.getUnsignedFlag()));
         }
     }

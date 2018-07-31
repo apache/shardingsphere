@@ -32,7 +32,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -110,26 +109,19 @@ public abstract class ShardingTableMetaData {
      * @param connectionMap connection map passing from sharding connection
      */
     public void refresh(final TableRule tableRule, final ShardingRule shardingRule, final Map<String, Connection> connectionMap) {
-        tableMetaDataMap.put(tableRule.getLogicTable(), getFinalTableMetaData(tableRule.getLogicTable(), tableRule.getActualDataNodes(), shardingRule.getShardingDataSourceNames(), connectionMap));
+        tableMetaDataMap.put(tableRule.getLogicTable(), loadTableMetaData(tableRule, shardingRule.getShardingDataSourceNames(), connectionMap));
     }
     
-    private TableMetaData getFinalTableMetaData(
-            final String logicTableName, final List<DataNode> actualDataNodes, final ShardingDataSourceNames shardingDataSourceNames, final Map<String, Connection> connectionMap) {
-        List<TableMetaData> actualTableMetaDataList = getAllActualTableMetaData(actualDataNodes, shardingDataSourceNames, connectionMap);
-        for (int i = 0; i < actualTableMetaDataList.size(); i++) {
-            if (actualTableMetaDataList.size() - 1 == i) {
-                return actualTableMetaDataList.get(i);
-            }
-            if (!actualTableMetaDataList.get(i).equals(actualTableMetaDataList.get(i + 1))) {
-                throw new ShardingException("Cannot get uniformed table structure for table `%s`. The different metadata of actual tables is as follows:\n%s\n%s.", 
-                        logicTableName, actualTableMetaDataList.get(i), actualTableMetaDataList.get(i + 1));
-            }
-        }
-        return new TableMetaData();
+    private TableMetaData loadTableMetaData(final TableRule tableRule, final ShardingDataSourceNames shardingDataSourceNames, final Map<String, Connection> connectionMap) {
+        List<TableMetaData> actualTableMetaDataList = loadActualTableMetaDataList(tableRule.getActualDataNodes(), shardingDataSourceNames, connectionMap);
+        checkUniformed(tableRule.getLogicTable(), actualTableMetaDataList);
+        return actualTableMetaDataList.iterator().next();
     }
     
-    private List<TableMetaData> getAllActualTableMetaData(final List<DataNode> actualDataNodes, final ShardingDataSourceNames shardingDataSourceNames, final Map<String, Connection> connectionMap) {
-        List<ListenableFuture<TableMetaData>> result = new ArrayList<>();
+    protected abstract TableMetaData loadTableMetaData(DataNode dataNode, Map<String, Connection> connectionMap) throws SQLException;
+    
+    private List<TableMetaData> loadActualTableMetaDataList(final List<DataNode> actualDataNodes, final ShardingDataSourceNames shardingDataSourceNames, final Map<String, Connection> connectionMap) {
+        List<ListenableFuture<TableMetaData>> result = new LinkedList<>();
         for (final DataNode each : actualDataNodes) {
             result.add(executorService.submit(new Callable<TableMetaData>() {
                 
@@ -146,7 +138,14 @@ public abstract class ShardingTableMetaData {
         }
     }
     
-    protected abstract TableMetaData loadTableMetaData(DataNode dataNode, Map<String, Connection> connectionMap) throws SQLException;
+    private void checkUniformed(final String logicTableName, final List<TableMetaData> actualTableMetaDataList) {
+        final TableMetaData sample = actualTableMetaDataList.iterator().next();
+        for (TableMetaData each : actualTableMetaDataList) {
+            if (!sample.equals(each)) {
+                throw new ShardingException("Cannot get uniformed table structure for `%s`. The different meta data of actual tables are as follows:\n%s\n%s.", logicTableName, sample, each);
+            }
+        }
+    }
     
     /**
      * Judge whether table meta data is empty.
