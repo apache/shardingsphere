@@ -458,5 +458,4 @@ public final class ShardingRuleTest {
         result.setTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("column", new TestPreciseShardingAlgorithm()));
         return result;
     }
-    
 }
