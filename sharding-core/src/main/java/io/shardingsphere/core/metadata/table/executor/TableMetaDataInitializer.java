@@ -24,8 +24,12 @@ import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -35,12 +39,12 @@ import java.util.Map;
  */
 public final class TableMetaDataInitializer {
     
-    private final TableLoader tableLoader;
+    private final TableMetaDataExecutorAdapter executorAdapter;
     
     private final TableMetaDataLoader tableMetaDataLoader;
     
     public TableMetaDataInitializer(final ListeningExecutorService executorService, final TableMetaDataExecutorAdapter executorAdapter) {
-        tableLoader = new TableLoader(executorAdapter);
+        this.executorAdapter = executorAdapter;
         tableMetaDataLoader = new TableMetaDataLoader(executorService, executorAdapter);
     }
     
@@ -72,8 +76,19 @@ public final class TableMetaDataInitializer {
         Map<String, TableMetaData> result = new HashMap<>(shardingRule.getTableRules().size(), 1);
         Optional<String> actualDefaultDataSourceName = shardingRule.findActualDefaultDataSourceName();
         if (actualDefaultDataSourceName.isPresent()) {
-            for (String each : tableLoader.getAllTableNames(actualDefaultDataSourceName.get())) {
+            for (String each : getAllTableNames(actualDefaultDataSourceName.get())) {
                 result.put(each, tableMetaDataLoader.loadTableMetaData(each, shardingRule));
+            }
+        }
+        return result;
+    }
+    
+    private Collection<String> getAllTableNames(final String dataSourceName) throws SQLException {
+        Collection<String> result = new LinkedList<>();
+        try (Connection connection = executorAdapter.getConnection(dataSourceName);
+             ResultSet resultSet = connection.getMetaData().getTables(null, null, null, null)) {
+            while (resultSet.next()) {
+                result.add(resultSet.getString("TABLE_NAME"));
             }
         }
         return result;
