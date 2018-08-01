@@ -33,7 +33,6 @@ import io.shardingsphere.proxy.backend.jdbc.execute.response.ExecuteQueryRespons
 import io.shardingsphere.proxy.backend.jdbc.execute.response.ExecuteResponse;
 import io.shardingsphere.proxy.backend.jdbc.execute.response.ExecuteUpdateResponse;
 import io.shardingsphere.proxy.config.RuleRegistry;
-import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryResponsePackets;
@@ -94,7 +93,7 @@ public final class JDBCBackendHandler implements BackendHandler {
         }
         executeResponse = executeEngine.execute(routeResult, isReturnGeneratedKeys);
         if (!RULE_REGISTRY.isMasterSlaveOnly() && SQLType.DDL == sqlStatement.getType() && !sqlStatement.getTables().isEmpty()) {
-            new ProxyShardingRefreshHandler(sqlStatement.getTables().getSingleTableName()).execute();
+            RULE_REGISTRY.getMetaData().getTable().refresh(RULE_REGISTRY.getShardingRule().getTableRule(sqlStatement.getTables().getSingleTableName()), RULE_REGISTRY.getShardingRule());
         }
         return merge(sqlStatement);
     }
