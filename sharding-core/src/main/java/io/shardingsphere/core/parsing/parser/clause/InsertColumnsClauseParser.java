@@ -36,7 +36,6 @@ import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.util.SQLUtil;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -94,19 +93,19 @@ public final class InsertColumnsClauseParser implements SQLClauseParser {
             insertStatement.setColumnsListLastPosition(lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length());
             lexerEngine.nextToken();
         } else {
-            Collection<String> columnNames = shardingTableMetaData.getTableMetaDataMap().containsKey(tableName)
-                    ? shardingTableMetaData.getTableMetaDataMap().get(tableName).getAllColumnNames() : Collections.<String>emptyList();
             int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length() - 1;
             insertStatement.getSqlTokens().add(new InsertColumnToken(beginPosition, "("));
             ItemsToken columnsToken = new ItemsToken(beginPosition);
             columnsToken.setFirstOfItemsSpecial(true);
-            for (String each : columnNames) {
-                result.add(new Column(each, tableName));
-                if (generateKeyColumn.isPresent() && generateKeyColumn.get().getName().equalsIgnoreCase(each)) {
-                    insertStatement.setGenerateKeyColumnIndex(count);
+            if (shardingTableMetaData.containsTable(tableName)) {
+                for (String each : shardingTableMetaData.getAllColumnNames(tableName)) {
+                    result.add(new Column(each, tableName));
+                    if (generateKeyColumn.isPresent() && generateKeyColumn.get().getName().equalsIgnoreCase(each)) {
+                        insertStatement.setGenerateKeyColumnIndex(count);
+                    }
+                    columnsToken.getItems().add(each);
+                    count++;
                 }
-                columnsToken.getItems().add(each);
-                count++;
             }
             insertStatement.getSqlTokens().add(columnsToken);
             insertStatement.getSqlTokens().add(new InsertColumnToken(beginPosition, ")"));
