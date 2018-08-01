@@ -39,7 +39,7 @@ import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.merger.event.EventMergeType;
 import io.shardingsphere.core.merger.event.ResultSetMergeEvent;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.metadata.table.TableMetaDataLoader;
+import io.shardingsphere.core.metadata.table.executor.TableMetaDataLoader;
 import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;

@@ -20,6 +20,9 @@ package io.shardingsphere.core.metadata.table;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.core.metadata.table.executor.TableLoader;
+import io.shardingsphere.core.metadata.table.executor.TableMetaDataExecutorAdapter;
+import io.shardingsphere.core.metadata.table.executor.TableMetaDataLoader;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
 

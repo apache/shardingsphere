@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.metadata.table;
+package io.shardingsphere.core.metadata.table.executor;
 
 import java.sql.Connection;
 import java.sql.SQLException;

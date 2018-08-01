@@ -17,7 +17,7 @@
 
 package io.shardingsphere.proxy.metadata;
 
-import io.shardingsphere.core.metadata.table.TableMetaDataExecutorAdapter;
+import io.shardingsphere.core.metadata.table.executor.TableMetaDataExecutorAdapter;
 import io.shardingsphere.proxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import lombok.RequiredArgsConstructor;
 
