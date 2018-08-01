@@ -99,7 +99,7 @@ public final class JDBCBackendHandler implements BackendHandler {
             String logicTableName = sqlStatement.getTables().getSingleTableName();
             TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(
                     ExecutorContext.getInstance().getExecutorService(), new ProxyTableMetaDataExecutorAdapter(RULE_REGISTRY.getBackendDataSource()));
-            RULE_REGISTRY.getMetaData().getTable().put(logicTableName, tableMetaDataLoader.loadTableMetaData(logicTableName, RULE_REGISTRY.getShardingRule()));
+            RULE_REGISTRY.getMetaData().getTable().put(logicTableName, tableMetaDataLoader.load(logicTableName, RULE_REGISTRY.getShardingRule()));
         }
         return merge(sqlStatement);
     }

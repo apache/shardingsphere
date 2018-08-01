@@ -67,7 +67,7 @@ public final class TableMetaDataInitializer {
     private Map<String, TableMetaData> loadShardingTables(final ShardingRule shardingRule) {
         Map<String, TableMetaData> result = new HashMap<>(shardingRule.getTableRules().size(), 1);
         for (TableRule each : shardingRule.getTableRules()) {
-            result.put(each.getLogicTable(), tableMetaDataLoader.loadTableMetaData(each.getLogicTable(), shardingRule));
+            result.put(each.getLogicTable(), tableMetaDataLoader.load(each.getLogicTable(), shardingRule));
         }
         return result;
     }
@@ -77,7 +77,7 @@ public final class TableMetaDataInitializer {
         Optional<String> actualDefaultDataSourceName = shardingRule.findActualDefaultDataSourceName();
         if (actualDefaultDataSourceName.isPresent()) {
             for (String each : getAllTableNames(actualDefaultDataSourceName.get())) {
-                result.put(each, tableMetaDataLoader.loadTableMetaData(each, shardingRule));
+                result.put(each, tableMetaDataLoader.load(each, shardingRule));
             }
         }
         return result;

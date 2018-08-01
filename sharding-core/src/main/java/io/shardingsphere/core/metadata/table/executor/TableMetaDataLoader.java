@@ -57,27 +57,28 @@ public final class TableMetaDataLoader {
      *
      * @param logicTableName logic table name
      * @param shardingRule sharding rule
+     * @return table meta data
      */
-    public TableMetaData loadTableMetaData(final String logicTableName, final ShardingRule shardingRule) {
-        return loadTableMetaData(shardingRule.getTableRuleByLogicTableName(logicTableName), shardingRule.getShardingDataSourceNames());
+    public TableMetaData load(final String logicTableName, final ShardingRule shardingRule) {
+        return load(shardingRule.getTableRuleByLogicTableName(logicTableName), shardingRule.getShardingDataSourceNames());
     }
     
-    private TableMetaData loadTableMetaData(final TableRule tableRule, final ShardingDataSourceNames shardingDataSourceNames) {
+    private TableMetaData load(final TableRule tableRule, final ShardingDataSourceNames shardingDataSourceNames) {
         List<TableMetaData> actualTableMetaDataList = loadActualTableMetaDataList(tableRule.getActualDataNodes(), shardingDataSourceNames);
         checkUniformed(tableRule.getLogicTable(), actualTableMetaDataList);
         return actualTableMetaDataList.iterator().next();
     }
     
-    private TableMetaData loadTableMetaData(final DataNode dataNode) throws SQLException {
+    private TableMetaData load(final DataNode dataNode) throws SQLException {
         if (executorAdapter.isAutoClose()) {
             try (Connection connection = executorAdapter.getConnection(dataNode.getDataSourceName())) {
-                return loadTableMetaData(connection, dataNode);
+                return load(connection, dataNode);
             }
         }
-        return loadTableMetaData(executorAdapter.getConnection(dataNode.getDataSourceName()), dataNode);
+        return load(executorAdapter.getConnection(dataNode.getDataSourceName()), dataNode);
     }
     
-    private TableMetaData loadTableMetaData(final Connection connection, final DataNode dataNode) throws SQLException {
+    private TableMetaData load(final Connection connection, final DataNode dataNode) throws SQLException {
         return new TableMetaData(isTableExist(connection, dataNode.getTableName()) ? getColumnMetaDataList(connection, dataNode.getTableName()) : Collections.<ColumnMetaData>emptyList());
     }
     
@@ -117,7 +118,7 @@ public final class TableMetaDataLoader {
                 
                 @Override
                 public TableMetaData call() throws SQLException {
-                    return loadTableMetaData(new DataNode(shardingDataSourceNames.getRawMasterDataSourceName(each.getDataSourceName()), each.getTableName()));
+                    return load(new DataNode(shardingDataSourceNames.getRawMasterDataSourceName(each.getDataSourceName()), each.getTableName()));
                 }
             }));
         }
