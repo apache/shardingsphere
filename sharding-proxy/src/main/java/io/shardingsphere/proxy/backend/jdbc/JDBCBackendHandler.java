@@ -33,7 +33,6 @@ import io.shardingsphere.proxy.backend.jdbc.execute.response.ExecuteQueryRespons
 import io.shardingsphere.proxy.backend.jdbc.execute.response.ExecuteResponse;
 import io.shardingsphere.proxy.backend.jdbc.execute.response.ExecuteUpdateResponse;
 import io.shardingsphere.proxy.config.RuleRegistry;
-import io.shardingsphere.proxy.metadata.ProxyShardingRefreshHandler;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryResponsePackets;
@@ -93,8 +92,8 @@ public final class JDBCBackendHandler implements BackendHandler {
                     ServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "unknown_table"));
         }
         executeResponse = executeEngine.execute(routeResult, isReturnGeneratedKeys);
-        if (!RULE_REGISTRY.isMasterSlaveOnly()) {
-            ProxyShardingRefreshHandler.build(sqlStatement).execute();
+        if (!RULE_REGISTRY.isMasterSlaveOnly() && SQLType.DDL == sqlStatement.getType() && !sqlStatement.getTables().isEmpty()) {
+            RULE_REGISTRY.getMetaData().getTable().refresh(sqlStatement.getTables().getSingleTableName(), RULE_REGISTRY.getShardingRule());
         }
         return merge(sqlStatement);
     }
