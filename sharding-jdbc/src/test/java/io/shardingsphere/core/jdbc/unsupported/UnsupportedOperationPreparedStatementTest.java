@@ -39,10 +39,6 @@ public final class UnsupportedOperationPreparedStatementTest extends AbstractSha
     
     private final List<PreparedStatement> statements = new ArrayList<>();
     
-    public UnsupportedOperationPreparedStatementTest(final DatabaseType databaseType) {
-        super(databaseType);
-    }
-    
     @Before
     public void init() {
         ShardingConnection shardingConnection = getShardingDataSource().getConnection();

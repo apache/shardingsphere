@@ -48,10 +48,6 @@ public final class UnsupportedUpdateOperationResultSetTest extends AbstractShard
     
     private final List<ResultSet> resultSets = new ArrayList<>();
     
-    public UnsupportedUpdateOperationResultSetTest(final DatabaseType databaseType) {
-        super(databaseType);
-    }
-    
     @Before
     public void init() throws SQLException {
         ShardingConnection shardingConnection = getShardingDataSource().getConnection();

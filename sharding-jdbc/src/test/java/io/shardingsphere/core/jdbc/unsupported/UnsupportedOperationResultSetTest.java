@@ -43,10 +43,6 @@ public final class UnsupportedOperationResultSetTest extends AbstractShardingJDB
     
     private final List<ResultSet> resultSets = new ArrayList<>();
     
-    public UnsupportedOperationResultSetTest(final DatabaseType databaseType) {
-        super(databaseType);
-    }
-    
     @Before
     public void init() throws SQLException {
         ShardingConnection connection = getShardingDataSource().getConnection();

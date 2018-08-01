@@ -115,8 +115,6 @@ public abstract class AbstractSQLTest {
     
     protected abstract List<String> getInitDataSetFiles();
     
-    protected abstract DatabaseType getCurrentDatabaseType();
-    
     protected final Map<DatabaseType, Map<String, DataSource>> createDataSourceMap() {
         for (String each : getInitDataSetFiles()) {
             String dbName = getDatabaseName(each);
@@ -172,19 +170,15 @@ public abstract class AbstractSQLTest {
     }
     
     protected final void importDataSet() throws Exception {
-        for (DatabaseType databaseType : getDatabaseTypes()) {
-            if (databaseType == getCurrentDatabaseType() || null == getCurrentDatabaseType()) {
-                DatabaseEnvironment dbEnv = new DatabaseEnvironment(databaseType);
-                for (String each : getInitDataSetFiles()) {
-                    InputStream is = AbstractSQLTest.class.getClassLoader().getResourceAsStream(each);
-                    IDataSet dataSet = new FlatXmlDataSetBuilder().build(new InputStreamReader(is));
-                    IDatabaseTester databaseTester = new ShardingJdbcDatabaseTester(dbEnv.getDriverClassName(), dbEnv.getURL(getDatabaseName(each)),
-                            dbEnv.getUsername(), dbEnv.getPassword(), dbEnv.getSchema(getDatabaseName(each)));
-                    databaseTester.setSetUpOperation(DatabaseOperation.CLEAN_INSERT);
-                    databaseTester.setDataSet(dataSet);
-                    databaseTester.onSetup();
-                }
-            }
+        DatabaseEnvironment dbEnv = new DatabaseEnvironment(DatabaseType.H2);
+        for (String each : getInitDataSetFiles()) {
+            InputStream is = AbstractSQLTest.class.getClassLoader().getResourceAsStream(each);
+            IDataSet dataSet = new FlatXmlDataSetBuilder().build(new InputStreamReader(is));
+            IDatabaseTester databaseTester = new ShardingJdbcDatabaseTester(dbEnv.getDriverClassName(), dbEnv.getURL(getDatabaseName(each)),
+                    dbEnv.getUsername(), dbEnv.getPassword(), dbEnv.getSchema(getDatabaseName(each)));
+            databaseTester.setSetUpOperation(DatabaseOperation.CLEAN_INSERT);
+            databaseTester.setDataSet(dataSet);
+            databaseTester.onSetup();
         }
     }
 }
