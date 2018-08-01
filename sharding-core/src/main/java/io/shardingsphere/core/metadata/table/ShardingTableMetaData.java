@@ -22,13 +22,9 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
-import lombok.Setter;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -41,15 +37,14 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ShardingTableMetaData {
     
+    private final TableLoader tableLoader;
+    
     private final TableMetaDataLoader tableMetaDataLoader;
     
     private final Map<String, TableMetaData> tableMetaDataMap = new ConcurrentHashMap<>();
     
-    @Setter
-    private TableMetaDataExecutorAdapter executorAdapter;
-    
     public ShardingTableMetaData(final ListeningExecutorService executorService, final TableMetaDataExecutorAdapter executorAdapter) {
-        this.executorAdapter = executorAdapter;
+        tableLoader = new TableLoader(executorAdapter);
         tableMetaDataLoader = new TableMetaDataLoader(executorService, executorAdapter);
     }
     
@@ -76,25 +71,14 @@ public class ShardingTableMetaData {
     private void initDefaultTables(final ShardingRule shardingRule) throws SQLException {
         Optional<String> actualDefaultDataSourceName = shardingRule.findActualDefaultDataSourceName();
         if (actualDefaultDataSourceName.isPresent()) {
-            for (String each : getAllTableNames(actualDefaultDataSourceName.get())) {
+            for (String each : tableLoader.getAllTableNames(actualDefaultDataSourceName.get())) {
                 tableMetaDataMap.put(each, tableMetaDataLoader.loadTableMetaData(each, shardingRule));
             }
         }
     }
     
-    private Collection<String> getAllTableNames(final String dataSourceName) throws SQLException {
-        Collection<String> result = new LinkedList<>();
-        try (Connection connection = executorAdapter.getConnection(dataSourceName);
-             ResultSet resultSet = connection.getMetaData().getTables(null, null, null, null)) {
-            while (resultSet.next()) {
-                result.add(resultSet.getString("TABLE_NAME"));
-            }
-        }
-        return result;
-    }
-    
     /**
-     * Put table meta data.
+     * Add table meta data.
      * 
      * @param logicTableName logic table name
      * @param tableMetaData table meta data
