@@ -18,15 +18,12 @@
 package io.shardingsphere.proxy.metadata;
 
 import io.shardingsphere.core.metadata.table.AbstractRefreshHandler;
-import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.rule.TableRule;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Refresh table metadata of proxy sharding.
+ * Sharding table meta data refreshing handler for proxy.
  *
  * @author zhaojun
  */
@@ -35,26 +32,14 @@ public final class ProxyShardingRefreshHandler extends AbstractRefreshHandler {
     
     private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
     
-    private ProxyShardingRefreshHandler(final SQLStatement sqlStatement, final ShardingTableMetaData shardingMetaData, final ShardingRule shardingRule) {
-        super(sqlStatement, shardingMetaData, shardingRule);
-    }
-    
-    /**
-     * Create new instance of {@code ProxyShardingRefreshHandler}.
-     *
-     * @param sqlStatement SQL statement
-     * @return {@code ProxyShardingRefreshHandler}
-     */
-    public static ProxyShardingRefreshHandler build(final SQLStatement sqlStatement) {
-        return new ProxyShardingRefreshHandler(sqlStatement, RULE_REGISTRY.getMetaData().getTable(), RULE_REGISTRY.getShardingRule());
+    public ProxyShardingRefreshHandler(final SQLStatement sqlStatement) {
+        super(sqlStatement, RULE_REGISTRY.getMetaData().getTable(), RULE_REGISTRY.getShardingRule());
     }
     
     @Override
     public void execute() {
         if (isNeedRefresh()) {
-            String logicTable = getSqlStatement().getTables().getSingleTableName();
-            TableRule tableRule = getShardingRule().getTableRule(logicTable);
-            getShardingTableMetaData().refresh(tableRule, getShardingRule());
+            getShardingTableMetaData().refresh(getShardingRule().getTableRule(getSqlStatement().getTables().getSingleTableName()), getShardingRule());
         }
     }
 }

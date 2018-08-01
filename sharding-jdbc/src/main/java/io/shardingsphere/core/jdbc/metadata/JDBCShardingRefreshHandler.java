@@ -19,10 +19,8 @@ package io.shardingsphere.core.jdbc.metadata;
 
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.metadata.table.AbstractRefreshHandler;
-import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.DataNode;
-import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
 
 import java.sql.Connection;
@@ -31,7 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Refresh table metadata of JDBC sharding.
+ * Sharding table meta data refreshing handler for JDBC.
  *
  * @author zhaojun
  */
@@ -39,21 +37,9 @@ public final class JDBCShardingRefreshHandler extends AbstractRefreshHandler {
     
     private final ShardingConnection shardingConnection;
     
-    private JDBCShardingRefreshHandler(
-            final ShardingConnection shardingConnection, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData, final ShardingRule shardingRule) {
-        super(sqlStatement, shardingTableMetaData, shardingRule);
+    public JDBCShardingRefreshHandler(final SQLStatement sqlStatement, final ShardingConnection shardingConnection) {
+        super(sqlStatement, shardingConnection.getShardingContext().getMetaData().getTable(), shardingConnection.getShardingContext().getShardingRule());
         this.shardingConnection = shardingConnection;
-    }
-    
-    /**
-     * create new instance of {@code JDBCShardingRefreshHandler}.
-     *
-     * @param sqlStatement SQL statement
-     * @param connection {@code ShardingConnection}
-     * @return {@code JDBCShardingRefreshHandler}
-     */
-    public static JDBCShardingRefreshHandler build(final SQLStatement sqlStatement, final ShardingConnection connection) {
-        return new JDBCShardingRefreshHandler(connection, sqlStatement, connection.getShardingContext().getMetaData().getTable(), connection.getShardingContext().getShardingRule());
     }
     
     @Override

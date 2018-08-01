@@ -94,7 +94,7 @@ public final class JDBCBackendHandler implements BackendHandler {
         }
         executeResponse = executeEngine.execute(routeResult, isReturnGeneratedKeys);
         if (!RULE_REGISTRY.isMasterSlaveOnly()) {
-            ProxyShardingRefreshHandler.build(sqlStatement).execute();
+            new ProxyShardingRefreshHandler(sqlStatement).execute();
         }
         return merge(sqlStatement);
     }

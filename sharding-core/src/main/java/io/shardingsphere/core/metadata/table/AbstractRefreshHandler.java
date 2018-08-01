@@ -26,7 +26,7 @@ import lombok.Getter;
 import java.sql.SQLException;
 
 /**
- * abstract class for refreshing sharding metadata.
+ * Sharding table meta data refreshing handler.
  *
  * @author zhaojun
  */
@@ -47,12 +47,7 @@ public abstract class AbstractRefreshHandler {
      */
     public abstract void execute() throws SQLException;
     
-    /**
-     * Whether need refresh table meta data.
-     *
-     * @return need refresh table meta data or not
-     */
-    public boolean isNeedRefresh() {
+    protected boolean isNeedRefresh() {
         return SQLType.DDL == sqlStatement.getType() && !sqlStatement.getTables().isEmpty();
     }
 }

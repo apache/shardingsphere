@@ -126,7 +126,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
             return generateExecutor(sql).executeUpdate();
         } finally {
             if (null != routeResult && null != connection) {
-                JDBCShardingRefreshHandler.build(routeResult.getSqlStatement(), connection).execute();
+                new JDBCShardingRefreshHandler(routeResult.getSqlStatement(), connection).execute();
             }
             currentResultSet = null;
         }
@@ -170,7 +170,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
             return generateExecutor(sql).execute();
         } finally {
             if (null != routeResult && null != connection) {
-                JDBCShardingRefreshHandler.build(routeResult.getSqlStatement(), connection).execute();
+                new JDBCShardingRefreshHandler(routeResult.getSqlStatement(), connection).execute();
             }
             currentResultSet = null;
         }
