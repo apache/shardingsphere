@@ -384,10 +384,6 @@ public final class PathTree {
                     client.unregisterWatch(each);
                 }
             }
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex){
-            // CHECKSTYLE:ON
-            log.warn("PathTree close:{}", ex.getMessage());
         } finally {
             lock.unlock();
         }

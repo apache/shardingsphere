@@ -114,9 +114,7 @@ public class Holder {
                 try {
                     log.warn("startWatcher Event.KeeperState.Expired");
                     reset();
-                    // CHECKSTYLE:OFF
-                } catch (final Exception ex) {
-                    // CHECKSTYLE:ON
+                } catch (final IOException | InterruptedException ex) {
                     log.error("event state Expired:{}", ex.getMessage(), ex);
                 }
             } else if (Watcher.Event.KeeperState.Disconnected == event.getState()) {
@@ -146,8 +144,7 @@ public class Holder {
     private boolean checkPath(final String path) {
         try {
             return zooKeeper.exists(path, true) != null;
-        } catch (final KeeperException | InterruptedException ex) {
-            // ignore
+        } catch (final KeeperException | InterruptedException ignore) {
         }
         return false;
     }
@@ -181,9 +178,7 @@ public class Holder {
             connected = false;
             log.debug("zk closed");
             this.context.close();
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
+        } catch (final InterruptedException ex) {
             log.warn("Holder close:{}", ex.getMessage());
         }
     }

@@ -80,9 +80,7 @@ public abstract class LeaderElection {
                         return;
                     }
                     executeContention(realNode, provider);
-                    // CHECKSTYLE:OFF
-                } catch (final Exception ex){
-                    // CHECKSTYLE:ON
+                } catch (final KeeperException | InterruptedException ex) {
                     log.error("Listener Exception executeContention:{}", ex.getMessage(), ex);
                 }
             }
@@ -93,9 +91,7 @@ public abstract class LeaderElection {
                 action();
                 done = true;
                 callback();
-                // CHECKSTYLE:OFF
-            } catch (final Exception ex){
-                // CHECKSTYLE:ON
+            } catch (final KeeperException | InterruptedException ex) {
                 log.error("action Exception executeContention:{}", ex.getMessage(), ex);
             }
             provider.delete(contendNode);

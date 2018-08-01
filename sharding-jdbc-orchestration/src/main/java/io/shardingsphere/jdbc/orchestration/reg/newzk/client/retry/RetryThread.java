@@ -27,6 +27,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.apache.zookeeper.KeeperException;
 
 /*
  * Async retry.
@@ -85,9 +86,7 @@ public final class RetryThread extends Thread {
                     boolean result;
                     try {
                         result = operation.executeOperation();
-                        // CHECKSTYLE:OFF
-                    } catch (final Exception ex) {
-                        // CHECKSTYLE:ON
+                    } catch (final KeeperException | InterruptedException ex) {
                         result = false;
                         log.error("retry disrupt operation:{}, ex:{}", operation.toString(), ex.getMessage());
                     }

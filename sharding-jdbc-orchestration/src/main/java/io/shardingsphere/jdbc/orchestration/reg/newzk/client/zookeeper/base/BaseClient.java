@@ -107,9 +107,7 @@ public abstract class BaseClient implements IClient {
             if (rootExist) {
                 this.deleteNamespace();
             }
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
+        } catch (final KeeperException | InterruptedException ex) {
             log.error("zk client close delete root error:{}", ex.getMessage(), ex);
         }
         holder.close();
