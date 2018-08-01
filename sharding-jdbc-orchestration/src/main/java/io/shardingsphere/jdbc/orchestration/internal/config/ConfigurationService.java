@@ -209,7 +209,9 @@ public final class ConfigurationService {
      */
     public Map<String, DataSource> loadDataSourceMap() {
         try {
-            return DataSourceConverter.dataSourceMapFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH)));
+            Map<String, DataSource> result = DataSourceConverter.dataSourceMapFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH)));
+            Preconditions.checkState(null != result && !result.isEmpty(), "No available data source configuration to load.");
+            return result;
         } catch (final Exception ex) {
             throw new ShardingConfigurationException("No available data source configuration to load.");
         }
