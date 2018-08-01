@@ -31,21 +31,28 @@ weight = 4
 
 ### 拓扑图展示
 
-![拓扑图](http://ovfotjrsi.bkt.clouddn.com/apm/apm-topology.png)
+![拓扑图](http://ovfotjrsi.bkt.clouddn.com/apm/apm-topology-new.png)
 
 从图中看，虽然用户访问一次应用，但是每个数据库访问了两次。这是由于本次访问涉及到每个库中的两个分表，所以一共访问了四张表。
 
 ### 跟踪数据展示
 
-![拓扑图](http://ovfotjrsi.bkt.clouddn.com/apm/apm-trace.png)
+![拓扑图](http://ovfotjrsi.bkt.clouddn.com/apm/apm-trace-new.png)
 
-从跟踪图中能够看到这四次访问。
+从跟踪图中可以能够看到SQL路由、执行和最终结果归并的情况。
 
-`/SJDBC/TRUNK/*` : 表示本次SQL的总体执行性能。
+`/SHARDING-SPHERE/ROUTING/` : 表示本次SQL的解析路由性能。
 
+![解析路由节点](http://ovfotjrsi.bkt.clouddn.com/apm/apm-route-span.png)
 
-![逻辑执行节点](http://ovfotjrsi.bkt.clouddn.com/apm/apm-trunk-span.png)
+`/SHARDING-SPHERE/EXECUTE/{SQLType}` : 表示本次SQL的总体执行性能。
 
-`/SJDBC/BRANCH/*` : 表示具体执行的实际SQL的性能。
+![逻辑执行节点](http://ovfotjrsi.bkt.clouddn.com/apm/apm-execute-overall-span.png)
 
-![实际访问节点](http://ovfotjrsi.bkt.clouddn.com/apm/apm-branch-span.png)
+`/SHARDING-SPHERE/EXECUTE/{operation}` : 表示具体执行的实际SQL的性能。
+
+![实际访问节点](http://ovfotjrsi.bkt.clouddn.com/apm/apm-execute-span.png)
+
+`/SHARDING-SPHERE/MERGE/` : 表示执行结果归并的性能。
+
+![结果归并节点](http://ovfotjrsi.bkt.clouddn.com/apm/apm-merge-span.png)
