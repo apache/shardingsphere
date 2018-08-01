@@ -245,7 +245,6 @@ shardingRule:
     proxy.max.working.threads: 16
     sql.show: false
 
-   
 proxyAuthority:
   username: root
   password:
