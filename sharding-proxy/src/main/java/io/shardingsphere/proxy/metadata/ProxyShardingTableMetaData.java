@@ -18,6 +18,7 @@
 package io.shardingsphere.proxy.metadata;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
+import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.rule.DataNode;
@@ -25,6 +26,7 @@ import io.shardingsphere.proxy.backend.jdbc.datasource.JDBCBackendDataSource;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -49,7 +51,7 @@ public final class ProxyShardingTableMetaData extends ShardingTableMetaData {
     @Override
     public TableMetaData loadTableMetaData(final DataNode dataNode, final Map<String, Connection> connectionMap) throws SQLException {
         try (Connection connection = backendDataSource.getDataSource(dataNode.getDataSourceName()).getConnection()) {
-            return isTableExist(connection, dataNode.getTableName()) ? new TableMetaData(getColumnMetaDataList(connection, dataNode.getTableName())) : new TableMetaData();
+            return new TableMetaData(isTableExist(connection, dataNode.getTableName()) ? getColumnMetaDataList(connection, dataNode.getTableName()) : Collections.<ColumnMetaData>emptyList());
         }
     }
 }
