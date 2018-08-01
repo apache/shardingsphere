@@ -23,7 +23,6 @@ import io.shardingsphere.proxy.config.RuleRegistry;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -41,7 +40,7 @@ public class AuthorityHandlerTest {
     private final byte[] part2 = {83, 121, 75, 81, 87, 56, 120, 112, 73, 109, 77, 69};
     
     @Before
-    public void setUp() throws IOException, NoSuchFieldException, IllegalAccessException {
+    public void setUp() throws NoSuchFieldException, IllegalAccessException {
         reviseRuleRegistry();
         reviseAuthorityHandler();
     }
