@@ -18,7 +18,6 @@
 package io.shardingsphere.proxy.metadata;
 
 import io.shardingsphere.core.metadata.table.RefreshHandler;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import lombok.RequiredArgsConstructor;
 
@@ -32,10 +31,10 @@ public final class ProxyShardingRefreshHandler implements RefreshHandler {
     
     private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
     
-    private final SQLStatement sqlStatement;
+    private final String logicTableName;
     
     @Override
     public void execute() {
-        RULE_REGISTRY.getMetaData().getTable().refresh(RULE_REGISTRY.getShardingRule().getTableRule(sqlStatement.getTables().getSingleTableName()), RULE_REGISTRY.getShardingRule());
+        RULE_REGISTRY.getMetaData().getTable().refresh(RULE_REGISTRY.getShardingRule().getTableRule(logicTableName), RULE_REGISTRY.getShardingRule());
     }
 }

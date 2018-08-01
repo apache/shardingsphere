@@ -161,7 +161,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             if (routeResult != null && connection != null) {
                 SQLStatement sqlStatement = routeResult.getSqlStatement();
                 if (SQLType.DDL == sqlStatement.getType() && !sqlStatement.getTables().isEmpty()) {
-                    new JDBCShardingRefreshHandler(sqlStatement, connection).execute();
+                    new JDBCShardingRefreshHandler(sqlStatement.getTables().getSingleTableName(), connection).execute();
                 }
             }
             clearBatch();
@@ -179,7 +179,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             if (null != routeResult && null != connection) {
                 SQLStatement sqlStatement = routeResult.getSqlStatement();
                 if (SQLType.DDL == sqlStatement.getType() && !sqlStatement.getTables().isEmpty()) {
-                    new JDBCShardingRefreshHandler(sqlStatement, connection).execute();
+                    new JDBCShardingRefreshHandler(sqlStatement.getTables().getSingleTableName(), connection).execute();
                 }
             }
             clearBatch();

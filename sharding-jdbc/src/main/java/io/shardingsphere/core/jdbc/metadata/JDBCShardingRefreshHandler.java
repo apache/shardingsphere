@@ -19,7 +19,6 @@ package io.shardingsphere.core.jdbc.metadata;
 
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.metadata.table.RefreshHandler;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.rule.TableRule;
 import lombok.RequiredArgsConstructor;
@@ -37,16 +36,15 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class JDBCShardingRefreshHandler implements RefreshHandler {
     
-    private final SQLStatement sqlStatement;
+    private final String logicTableName;
     
     private final ShardingConnection shardingConnection;
     
     @Override
     public void execute() throws SQLException {
-        String logicTable = sqlStatement.getTables().getSingleTableName();
-        Map<String, Connection> connectionMap = getConnectionMap(shardingConnection.getShardingContext().getShardingRule().getTableRule(logicTable));
+        Map<String, Connection> connectionMap = getConnectionMap(shardingConnection.getShardingContext().getShardingRule().getTableRule(logicTableName));
         shardingConnection.getShardingContext().getMetaData().getTable().refresh(
-                shardingConnection.getShardingContext().getShardingRule().getTableRule(logicTable), shardingConnection.getShardingContext().getShardingRule(), connectionMap);
+                shardingConnection.getShardingContext().getShardingRule().getTableRule(logicTableName), shardingConnection.getShardingContext().getShardingRule(), connectionMap);
     }
 
     private Map<String, Connection> getConnectionMap(final TableRule tableRule) throws SQLException {

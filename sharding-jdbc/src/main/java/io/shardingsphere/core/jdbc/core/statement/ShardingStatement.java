@@ -130,7 +130,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
             if (null != routeResult && null != connection) {
                 SQLStatement sqlStatement = routeResult.getSqlStatement();
                 if (SQLType.DDL == sqlStatement.getType() && !sqlStatement.getTables().isEmpty()) {
-                    new JDBCShardingRefreshHandler(sqlStatement, connection).execute();
+                    new JDBCShardingRefreshHandler(sqlStatement.getTables().getSingleTableName(), connection).execute();
                 }
             }
             currentResultSet = null;
@@ -177,7 +177,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
             if (null != routeResult && null != connection) {
                 SQLStatement sqlStatement = routeResult.getSqlStatement();
                 if (SQLType.DDL == sqlStatement.getType() && !sqlStatement.getTables().isEmpty()) {
-                    new JDBCShardingRefreshHandler(sqlStatement, connection).execute();
+                    new JDBCShardingRefreshHandler(sqlStatement.getTables().getSingleTableName(), connection).execute();
                 }
             }
             currentResultSet = null;
