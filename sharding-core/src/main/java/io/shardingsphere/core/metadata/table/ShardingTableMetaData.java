@@ -85,7 +85,7 @@ public abstract class ShardingTableMetaData {
         }
         Collection<TableRule> result = new LinkedList<>();
         for (String each : getAllTableNames(defaultDataSourceName.get())) {
-            result.add(shardingRule.getTableRule(each));
+            result.add(shardingRule.getTableRuleByLogicTableName(each));
         }
         return result;
     }
