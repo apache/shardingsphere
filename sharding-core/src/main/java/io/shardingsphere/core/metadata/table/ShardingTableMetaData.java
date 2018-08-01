@@ -26,7 +26,6 @@ import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.rule.ShardingDataSourceNames;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.Connection;
@@ -54,7 +53,6 @@ public abstract class ShardingTableMetaData {
     
     private final ListeningExecutorService executorService;
     
-    @Getter
     private final Map<String, TableMetaData> tableMetaDataMap = new HashMap<>();
     
     /**
@@ -189,6 +187,16 @@ public abstract class ShardingTableMetaData {
     }
     
     /**
+     * Judge contains table from table meta data or not.
+     *
+     * @param tableName table name
+     * @return contains table from table meta data or not
+     */
+    public boolean containsTable(final String tableName) {
+        return tableMetaDataMap.containsKey(tableName);
+    }
+    
+    /**
      * Judge contains column from table meta data or not.
      * 
      * @param tableName table name
@@ -196,6 +204,16 @@ public abstract class ShardingTableMetaData {
      * @return contains column from table meta data or not
      */
     public boolean containsColumn(final String tableName, final String column) {
-        return tableMetaDataMap.containsKey(tableName) && tableMetaDataMap.get(tableName).getAllColumnNames().contains(column.toLowerCase());
+        return containsTable(tableName) && tableMetaDataMap.get(tableName).getAllColumnNames().contains(column.toLowerCase());
+    }
+    
+    /**
+     * Get all column names via table.
+     *
+     * @param tableName table name
+     * @return column names.
+     */
+    public Collection<String> getAllColumnNames(final String tableName) {
+        return tableMetaDataMap.get(tableName).getAllColumnNames();
     }
 }
