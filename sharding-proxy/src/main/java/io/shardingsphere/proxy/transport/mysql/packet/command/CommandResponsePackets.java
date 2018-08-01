@@ -25,13 +25,13 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Command response packet.
+ * Command response packets.
  *
  * @author zhangyonglun
  */
 @NoArgsConstructor
 @Getter
-public final class CommandResponsePackets {
+public class CommandResponsePackets {
     
     private final Collection<DatabasePacket> packets = new LinkedList<>();
     

@@ -30,7 +30,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import io.shardingsphere.proxy.backend.ShardingProxyClient;
+import io.shardingsphere.proxy.backend.netty.ShardingProxyClient;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.frontend.common.netty.ServerHandlerInitializer;
 import io.shardingsphere.proxy.util.ExecutorContext;
@@ -46,7 +46,7 @@ import java.net.MalformedURLException;
  */
 public final class ShardingProxy {
     
-    private final RuleRegistry ruleRegistry = RuleRegistry.getInstance();
+    private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
     
     private final ExecutorContext executorContext = ExecutorContext.getInstance();
     
@@ -55,7 +55,7 @@ public final class ShardingProxy {
     private EventLoopGroup workerGroup;
     
     public ShardingProxy() {
-        ruleRegistry.initShardingMetaData(executorContext.getUserGroup());
+        RULE_REGISTRY.initShardingMetaData(executorContext.getExecutorService());
     }
     
     /**
@@ -67,11 +67,12 @@ public final class ShardingProxy {
      */
     public void start(final int port) throws InterruptedException, MalformedURLException {
         try {
-            if (ruleRegistry.isProxyBackendUseNio()) {
+            if (RULE_REGISTRY.isProxyBackendUseNio()) {
                 ShardingProxyClient.getInstance().start();
             }
             ServerBootstrap bootstrap = new ServerBootstrap();
-            if (executorContext.canUseEpoll()) {
+            bossGroup = createEventLoopGroup();
+            if (bossGroup instanceof EpollEventLoopGroup) {
                 groupsEpoll(bootstrap);
             } else {
                 groupsNio(bootstrap);
@@ -81,16 +82,23 @@ public final class ShardingProxy {
         } finally {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
-            executorContext.getUserGroup().shutdownGracefully();
-            if (ruleRegistry.isProxyBackendUseNio()) {
+            executorContext.getExecutorService().shutdown();
+            if (RULE_REGISTRY.isProxyBackendUseNio()) {
                 ShardingProxyClient.getInstance().stop();
             }
         }
     }
     
+    private EventLoopGroup createEventLoopGroup() {
+        try {
+            return new EpollEventLoopGroup(1);
+        } catch (final UnsatisfiedLinkError ex) {
+            return new NioEventLoopGroup(1);
+        }
+    }
+    
     private void groupsEpoll(final ServerBootstrap bootstrap) {
-        bossGroup = new EpollEventLoopGroup(1);
-        workerGroup = new EpollEventLoopGroup(ruleRegistry.getMaxWorkingThreads());
+        workerGroup = new EpollEventLoopGroup(RULE_REGISTRY.getMaxWorkingThreads());
         bootstrap.group(bossGroup, workerGroup)
                 .channel(EpollServerSocketChannel.class)
                 .option(EpollChannelOption.SO_BACKLOG, 128)
@@ -102,8 +110,7 @@ public final class ShardingProxy {
     }
     
     private void groupsNio(final ServerBootstrap bootstrap) {
-        bossGroup = new NioEventLoopGroup(1);
-        workerGroup = new NioEventLoopGroup(ruleRegistry.getMaxWorkingThreads());
+        workerGroup = new NioEventLoopGroup(RULE_REGISTRY.getMaxWorkingThreads());
         bootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .option(ChannelOption.SO_BACKLOG, 128)

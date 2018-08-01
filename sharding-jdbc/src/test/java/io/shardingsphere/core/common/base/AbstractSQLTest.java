@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.common.base;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import io.shardingsphere.core.common.env.DatabaseEnvironment;
 import io.shardingsphere.core.common.env.ShardingJdbcDatabaseTester;
@@ -69,34 +68,12 @@ public abstract class AbstractSQLTest {
         try {
             Properties prop = new Properties();
             prop.load(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/env.properties"));
-            boolean initialized = null == prop.getProperty("initialized") ? false : Boolean.valueOf(prop.getProperty("initialized"));
-            String databases = prop.getProperty("databases");
-            if (!Strings.isNullOrEmpty(databases)) {
-                for (String each : databases.split(",")) {
-                    databaseTypes.add(findDatabaseType(each.trim()));
-                }
-            }
-            if (initialized) {
-                createJdbcSchema(DatabaseType.H2);
-            } else {
-                for (DatabaseType each : getDatabaseTypes()) {
-                    createJdbcSchema(each);
-                }
-            }
+            createJdbcSchema(DatabaseType.H2);
         } catch (final IOException ex) {
             ex.printStackTrace();
         }
     }
-    
-    private static DatabaseType findDatabaseType(final String databaseType) {
-        for (DatabaseType each : DatabaseType.values()) {
-            if (each.name().equalsIgnoreCase(databaseType)) {
-                return each;
-            }
-        }
-        throw new RuntimeException("Can't find database type of:" + databaseType);
-    }
-    
+
     private static void createJdbcSchema(final DatabaseType dbType) {
         try {
             Connection conn;
@@ -137,8 +114,6 @@ public abstract class AbstractSQLTest {
     }
     
     protected abstract List<String> getInitDataSetFiles();
-    
-    protected abstract DatabaseType getCurrentDatabaseType();
     
     protected final Map<DatabaseType, Map<String, DataSource>> createDataSourceMap() {
         for (String each : getInitDataSetFiles()) {
@@ -195,19 +170,15 @@ public abstract class AbstractSQLTest {
     }
     
     protected final void importDataSet() throws Exception {
-        for (DatabaseType databaseType : getDatabaseTypes()) {
-            if (databaseType == getCurrentDatabaseType() || null == getCurrentDatabaseType()) {
-                DatabaseEnvironment dbEnv = new DatabaseEnvironment(databaseType);
-                for (String each : getInitDataSetFiles()) {
-                    InputStream is = AbstractSQLTest.class.getClassLoader().getResourceAsStream(each);
-                    IDataSet dataSet = new FlatXmlDataSetBuilder().build(new InputStreamReader(is));
-                    IDatabaseTester databaseTester = new ShardingJdbcDatabaseTester(dbEnv.getDriverClassName(), dbEnv.getURL(getDatabaseName(each)),
-                            dbEnv.getUsername(), dbEnv.getPassword(), dbEnv.getSchema(getDatabaseName(each)));
-                    databaseTester.setSetUpOperation(DatabaseOperation.CLEAN_INSERT);
-                    databaseTester.setDataSet(dataSet);
-                    databaseTester.onSetup();
-                }
-            }
+        DatabaseEnvironment dbEnv = new DatabaseEnvironment(DatabaseType.H2);
+        for (String each : getInitDataSetFiles()) {
+            InputStream is = AbstractSQLTest.class.getClassLoader().getResourceAsStream(each);
+            IDataSet dataSet = new FlatXmlDataSetBuilder().build(new InputStreamReader(is));
+            IDatabaseTester databaseTester = new ShardingJdbcDatabaseTester(dbEnv.getDriverClassName(), dbEnv.getURL(getDatabaseName(each)),
+                    dbEnv.getUsername(), dbEnv.getPassword(), dbEnv.getSchema(getDatabaseName(each)));
+            databaseTester.setSetUpOperation(DatabaseOperation.CLEAN_INSERT);
+            databaseTester.setDataSet(dataSet);
+            databaseTester.onSetup();
         }
     }
 }

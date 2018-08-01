@@ -20,6 +20,8 @@ package io.shardingsphere.jdbc.orchestration.yaml;
 import io.shardingsphere.jdbc.orchestration.util.EmbedTestingServer;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.h2.tools.RunScript;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.BeforeClass;
 
 import javax.sql.DataSource;
@@ -30,6 +32,19 @@ import java.util.Arrays;
 import java.util.List;
 
 public abstract class AbstractYamlDataSourceTest {
+    
+    private long tick;
+    
+    @Before
+    public void start() {
+        tick = System.currentTimeMillis();
+    }
+    
+    @After
+    public void stop () {
+        System.out.println(System.currentTimeMillis() - tick);
+        tick = 0;
+    }
     
     @BeforeClass
     public static void createSchema() throws SQLException {

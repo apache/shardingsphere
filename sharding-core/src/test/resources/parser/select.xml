@@ -279,6 +279,84 @@
         </order-by-columns>
     </parser-result>
     
+    <parser-result sql-case-id="select_keyword_table_name_with_back_quotes" parameters="1, 2, 9, 10, 'init'">
+        <tables>
+            <table name="t_order" alias="o"/>
+            <table name="t_order_item" alias="i"/>
+        </tables>
+        <tokens>
+            <table-token begin-position="16" original-literals="t_order" />
+            <table-token begin-position="31" original-literals="t_order_item" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="user_id" table-name="t_order" operator="IN">
+                    <value index="0" literal="1" type="int" />
+                    <value index="1" literal="2" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                    <value index="2" literal="9" type="int" />
+                    <value index="3" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+        <order-by-columns>
+            <order-by-column owner="i" name="item_id" order-direction="ASC" />
+        </order-by-columns>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_keyword_table_name_with_double_quotes" parameters="1, 2, 9, 10, 'init'">
+        <tables>
+            <table name="t_order" alias="o"/>
+            <table name="t_order_item" alias="i"/>
+        </tables>
+        <tokens>
+            <table-token begin-position="16" original-literals="t_order" />
+            <table-token begin-position="31" original-literals="t_order_item" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="user_id" table-name="t_order" operator="IN">
+                    <value index="0" literal="1" type="int" />
+                    <value index="1" literal="2" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                    <value index="2" literal="9" type="int" />
+                    <value index="3" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+        <order-by-columns>
+            <order-by-column owner="i" name="item_id" order-direction="ASC" />
+        </order-by-columns>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_keyword_table_name_with_square_brackets" parameters="1, 2, 9, 10, 'init'">
+        <tables>
+            <table name="t_order" alias="o"/>
+            <table name="t_order_item" alias="i"/>
+        </tables>
+        <tokens>
+            <table-token begin-position="16" original-literals="t_order" />
+            <table-token begin-position="31" original-literals="t_order_item" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="user_id" table-name="t_order" operator="IN">
+                    <value index="0" literal="1" type="int" />
+                    <value index="1" literal="2" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                    <value index="2" literal="9" type="int" />
+                    <value index="3" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+        <order-by-columns>
+            <order-by-column owner="i" name="item_id" order-direction="ASC" />
+        </order-by-columns>
+    </parser-result>
+    
     <parser-result sql-case-id="select_alias_as_keyword" parameters="1">
         <tables>
             <table name="t_order_item" alias="length" />
@@ -313,7 +391,7 @@
             </and-condition>
         </or-condition>
     </parser-result>
-
+    
     <parser-result sql-case-id="select_equal_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', 100, 200, 1">
         <tables>
             <table name="t_place" />
@@ -329,7 +407,7 @@
             </and-condition>
         </or-condition>
     </parser-result>
-
+    
     <parser-result sql-case-id="select_in_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1">
         <tables>
             <table name="t_place" />
@@ -345,7 +423,7 @@
             </and-condition>
         </or-condition>
     </parser-result>
-
+    
     <parser-result sql-case-id="select_between_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1">
         <tables>
             <table name="t_place" />
@@ -361,4 +439,17 @@
             </and-condition>
         </or-condition>
     </parser-result>
+    
+    <parser-result sql-case-id="select_with_double_quotes" parameters="1">
+        <tables>
+            <table name="t_order_item" />
+        </tables>
+        <tokens>
+            <table-token begin-position="14" original-literals="&quot;t_order_item&quot;" />
+        </tokens>
+        <order-by-columns>
+            <order-by-column name="item_id" order-direction="ASC" />
+        </order-by-columns>
+    </parser-result>
+    
 </parser-result-sets>

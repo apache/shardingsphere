@@ -79,5 +79,5 @@ public final class ZookeeperConfiguration implements RegistryCenterConfiguration
      *
      * <p>Default is ZookeeperRegistryCenter</p>
      */
-    private boolean useNative;
+    private boolean useNative = true;
 }

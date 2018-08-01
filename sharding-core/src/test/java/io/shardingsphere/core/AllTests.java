@@ -21,6 +21,7 @@ import io.shardingsphere.core.api.AllApiTests;
 import io.shardingsphere.core.constant.AllConstantsTests;
 import io.shardingsphere.core.hint.AllHintTests;
 import io.shardingsphere.core.merger.AllMergerTests;
+import io.shardingsphere.core.metadata.AllMetaDataTests;
 import io.shardingsphere.core.optimizer.AllOptimizerTests;
 import io.shardingsphere.core.parsing.AllParsingTests;
 import io.shardingsphere.core.rewrite.AllRewriteTests;
@@ -35,7 +36,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
         AllConstantsTests.class, 
         AllApiTests.class, 
-        AllUtilTests.class, 
+        AllUtilTests.class,
+        AllMetaDataTests.class, 
         AllParsingTests.class,
         AllOptimizerTests.class, 
         AllRewriteTests.class, 

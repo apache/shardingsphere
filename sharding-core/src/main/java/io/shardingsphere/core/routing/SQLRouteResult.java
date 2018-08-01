@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.routing;
 
-import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.routing.router.sharding.GeneratedKey;
 import lombok.Getter;
@@ -65,14 +64,5 @@ public final class SQLRouteResult {
             result.get(each.getDataSource()).add(each.getSqlUnit());
         }
         return result;
-    }
-
-    /**
-     * Whether SQL route result can refresh table meta data.
-     *
-     * @return SQL route result can refresh table meta data or not
-     */
-    public boolean canRefreshMetaData() {
-        return SQLType.DDL == sqlStatement.getType() && !sqlStatement.getTables().isEmpty();
     }
 }

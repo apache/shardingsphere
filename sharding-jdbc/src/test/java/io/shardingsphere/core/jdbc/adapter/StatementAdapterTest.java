@@ -53,15 +53,11 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
     
     private String sql = JDBCTestSQL.SELECT_GROUP_BY_USER_ID_SQL;
     
-    public StatementAdapterTest(final DatabaseType databaseType) {
-        super(databaseType);
-    }
-    
     @Before
     public void init() {
         ShardingConnection shardingConnection = getShardingDataSource().getConnection();
         shardingConnections.add(shardingConnection);
-        statements.put(getCurrentDatabaseType(), shardingConnection.createStatement());
+        statements.put(DatabaseType.H2, shardingConnection.createStatement());
     }
     
     @After

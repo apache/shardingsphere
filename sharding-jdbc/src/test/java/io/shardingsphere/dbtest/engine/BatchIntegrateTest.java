@@ -35,7 +35,9 @@ import io.shardingsphere.test.sql.SQLCasesLoader;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.runners.Parameterized.Parameters;
 
 import javax.xml.bind.JAXBContext;
@@ -87,6 +89,16 @@ public abstract class BatchIntegrateTest extends BaseIntegrateTest {
     @Parameters(name = "{0} -> Rule:{2} -> {3}")
     public static Collection<Object[]> getParameters() {
         return IntegrateTestParameters.getParametersWithCase(SQLType.DML);
+    }
+    
+    @BeforeClass
+    public static void initDatabasesAndTables(){
+        createDatabasesAndTables();
+    }
+    
+    @AfterClass
+    public static void destroyDatabasesAndTables(){
+        dropDatabases();
     }
     
     @Before

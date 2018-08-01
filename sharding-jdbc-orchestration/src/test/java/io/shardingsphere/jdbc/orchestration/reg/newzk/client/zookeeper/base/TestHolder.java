@@ -44,8 +44,7 @@ public class TestHolder extends Holder {
             if (Watcher.Event.KeeperState.SyncConnected == event.getState()) {
                 try {
                     Thread.sleep(1000);
-                } catch (final InterruptedException ex) {
-                    //ignore
+                } catch (final InterruptedException ignored) {
                 }
                 this.setConnected(true);
                 connecting.countDown();

@@ -18,6 +18,7 @@
 package io.shardingsphere.core.parsing.lexer.dialect.postgresql;
 
 import io.shardingsphere.core.parsing.lexer.Lexer;
+import io.shardingsphere.core.parsing.lexer.analyzer.CharType;
 import io.shardingsphere.core.parsing.lexer.analyzer.Dictionary;
 
 /**
@@ -31,5 +32,15 @@ public final class PostgreSQLLexer extends Lexer {
     
     public PostgreSQLLexer(final String input) {
         super(input, dictionary);
+    }
+    
+    @Override
+    protected boolean isIdentifierBegin(final char ch) {
+        return CharType.isAlphabet(ch) || '\"' == ch || '_' == ch;
+    }
+    
+    @Override
+    protected boolean isCharsBegin() {
+        return '\'' == getCurrentChar(0);
     }
 }

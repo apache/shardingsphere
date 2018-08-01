@@ -18,21 +18,16 @@
 package io.shardingsphere.core.metadata.datasource;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.metadata.datasource.dialect.OracleDataSourceMetaDataParser;
-import io.shardingsphere.core.metadata.datasource.dialect.SQLServerDataSourceMetaDataParser;
-import io.shardingsphere.core.metadata.datasource.dialect.H2DataSourceMetaDataParser;
-import io.shardingsphere.core.metadata.datasource.dialect.MySQLDataSourceMetaDataParser;
-import io.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaDataParser;
+import io.shardingsphere.core.metadata.datasource.dialect.H2DataSourceMetaData;
+import io.shardingsphere.core.metadata.datasource.dialect.MySQLDataSourceMetaData;
+import io.shardingsphere.core.metadata.datasource.dialect.OracleDataSourceMetaData;
+import io.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaData;
+import io.shardingsphere.core.metadata.datasource.dialect.SQLServerDataSourceMetaData;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
-
 /**
- * Data source meta data factory.
+ * Data source meta data builder.
  *
  * @author panjuan
  */
@@ -40,36 +35,24 @@ import java.sql.SQLException;
 public final class DataSourceMetaDataFactory {
     
     /**
-     * Get data source meta data.
+     * Create new instance of data source meta data.
      *
      * @param databaseType database type
-     * @param dataSource data source
+     * @param url data source URL
      * @return data source meta data
      */
-    public static DataSourceMetaData getDataSourceMetaData(final DatabaseType databaseType, final DataSource dataSource) {
-        return createDataSourceMetaDataParser(databaseType).getDataSourceMetaData(getDataSourceURL(dataSource), databaseType);
-    }
-    
-    private static String getDataSourceURL(final DataSource dataSource) {
-        try (Connection connection = dataSource.getConnection()) {
-            return connection.getMetaData().getURL();
-        } catch (final SQLException ex) {
-            throw new ShardingException(ex);
-        }
-    }
-    
-    private static DataSourceMetaDataParser createDataSourceMetaDataParser(final DatabaseType databaseType) {
+    public static DataSourceMetaData newInstance(final DatabaseType databaseType, final String url) {
         switch (databaseType) {
             case H2:
-                return new H2DataSourceMetaDataParser();
+                return new H2DataSourceMetaData(url);
             case MySQL:
-                return new MySQLDataSourceMetaDataParser();
+                return new MySQLDataSourceMetaData(url);
             case Oracle:
-                return new OracleDataSourceMetaDataParser();
+                return new OracleDataSourceMetaData(url);
             case PostgreSQL:
-                return new PostgreSQLDataSourceMetaDataParser();
+                return new PostgreSQLDataSourceMetaData(url);
             case SQLServer:
-                return new SQLServerDataSourceMetaDataParser();
+                return new SQLServerDataSourceMetaData(url);
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support database [%s].", databaseType));
         }

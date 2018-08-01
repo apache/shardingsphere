@@ -34,10 +34,6 @@ public final class UnsupportedOperationConnectionTest extends AbstractShardingJD
     
     private final List<ShardingConnection> shardingConnections = new ArrayList<>();
     
-    public UnsupportedOperationConnectionTest(final DatabaseType databaseType) {
-        super(databaseType);
-    }
-    
     @Before
     public void init() {
         shardingConnections.add(getShardingDataSource().getConnection());

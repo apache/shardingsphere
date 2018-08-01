@@ -17,15 +17,17 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command;
 
+import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
-import io.shardingsphere.proxy.transport.mysql.packet.command.statement.close.ComStmtClosePacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute.ComStmtExecutePacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.statement.prepare.ComStmtPreparePacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.text.fieldlist.ComFieldListPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.text.initdb.ComInitDbPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.text.ping.ComPingPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ComQueryPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.text.quit.ComQuitPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.admin.UnsupportedCommandPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.close.ComStmtClosePacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute.ComStmtExecutePacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.prepare.ComStmtPreparePacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.text.fieldlist.ComFieldListPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.admin.initdb.ComInitDbPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.admin.ping.ComPingPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.text.query.ComQueryPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.admin.quit.ComQuitPacket;
 
 /**
  * Command packet factory.
@@ -41,9 +43,10 @@ public final class CommandPacketFactory {
      * @param sequenceId sequence id
      * @param connectionId MySQL connection id
      * @param payload MySQL packet payload
+     * @param backendConnection backend connection
      * @return Command packet
      */
-    public static CommandPacket getCommandPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload) {
+    public static CommandPacket getCommandPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         int commandPacketTypeValue = payload.readInt1();
         CommandPacketType type = CommandPacketType.valueOf(commandPacketTypeValue);
         switch (type) {
@@ -52,13 +55,13 @@ public final class CommandPacketFactory {
             case COM_INIT_DB:
                 return new ComInitDbPacket(sequenceId, payload);
             case COM_FIELD_LIST:
-                return new ComFieldListPacket(sequenceId, connectionId, payload);
+                return new ComFieldListPacket(sequenceId, connectionId, payload, backendConnection);
             case COM_QUERY:
-                return new ComQueryPacket(sequenceId, connectionId, payload);
+                return new ComQueryPacket(sequenceId, connectionId, payload, backendConnection);
             case COM_STMT_PREPARE:
                 return new ComStmtPreparePacket(sequenceId, payload);
             case COM_STMT_EXECUTE:
-                return new ComStmtExecutePacket(sequenceId, payload);
+                return new ComStmtExecutePacket(sequenceId, payload, backendConnection);
             case COM_STMT_CLOSE:
                 return new ComStmtClosePacket(sequenceId, payload);
             case COM_PING:

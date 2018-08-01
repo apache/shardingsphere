@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.parser.dialect.sqlserver.sql;
 
-import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.parser.dialect.sqlserver.clause.facade.SQLServerInsertClauseParserFacade;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.AbstractInsertParser;
@@ -31,7 +31,7 @@ import io.shardingsphere.core.rule.ShardingRule;
  */
 public final class SQLServerInsertParser extends AbstractInsertParser {
     
-    public SQLServerInsertParser(final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingMetaData shardingMetaData) {
-        super(shardingRule, shardingMetaData, lexerEngine, new SQLServerInsertClauseParserFacade(shardingRule, lexerEngine));
+    public SQLServerInsertParser(final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingTableMetaData shardingTableMetaData) {
+        super(shardingRule, shardingTableMetaData, lexerEngine, new SQLServerInsertClauseParserFacade(shardingRule, lexerEngine));
     }
 }

@@ -24,6 +24,7 @@ import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -33,7 +34,7 @@ import static org.junit.Assert.assertThat;
 public final class DefaultKeyGeneratorTest {
     
     @Test
-    public void assertGenerateKey() throws Exception {
+    public void assertGenerateKey() throws ExecutionException, InterruptedException {
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         final int taskNumber = threadNumber << 2;

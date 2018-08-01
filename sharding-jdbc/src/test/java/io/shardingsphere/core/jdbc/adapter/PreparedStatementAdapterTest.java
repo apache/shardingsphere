@@ -55,10 +55,6 @@ public final class PreparedStatementAdapterTest extends AbstractShardingJDBCData
     
     private final List<PreparedStatement> preparedStatements = new ArrayList<>();
     
-    public PreparedStatementAdapterTest(final DatabaseType databaseType) {
-        super(databaseType);
-    }
-    
     @Before
     public void init() {
         ShardingConnection shardingConnection = getShardingDataSource().getConnection();

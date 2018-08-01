@@ -37,10 +37,6 @@ public final class UnsupportedOperationStatementTest extends AbstractShardingJDB
     
     private final List<Statement> statements = new ArrayList<>();
     
-    public UnsupportedOperationStatementTest(final DatabaseType databaseType) {
-        super(databaseType);
-    }
-    
     @Before
     public void init() {
         ShardingConnection connection = getShardingDataSource().getConnection();

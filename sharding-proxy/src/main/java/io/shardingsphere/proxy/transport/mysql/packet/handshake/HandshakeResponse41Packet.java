@@ -20,6 +20,7 @@ package io.shardingsphere.proxy.transport.mysql.packet.handshake;
 import io.shardingsphere.proxy.transport.mysql.constant.CapabilityFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
@@ -30,8 +31,11 @@ import lombok.Getter;
  * @author zhangliang
  * @author wangkai
  */
+@AllArgsConstructor
 @Getter
-public final class HandshakeResponse41Packet extends MySQLPacket {
+public final class HandshakeResponse41Packet implements MySQLPacket {
+    
+    private final int sequenceId;
     
     private int capabilityFlags;
     
@@ -46,7 +50,7 @@ public final class HandshakeResponse41Packet extends MySQLPacket {
     private String database;
     
     public HandshakeResponse41Packet(final MySQLPacketPayload payload) {
-        super(payload.readInt1());
+        sequenceId = payload.readInt1();
         capabilityFlags = payload.readInt4();
         maxPacketSize = payload.readInt4();
         characterSet = payload.readInt1();
@@ -54,17 +58,6 @@ public final class HandshakeResponse41Packet extends MySQLPacket {
         username = payload.readStringNul();
         readAuthResponse(payload);
         readDatabase(payload);
-    }
-    
-    public HandshakeResponse41Packet(
-            final int sequenceId, final int capabilityFlags, final int maxPacketSize, final int characterSet, final String username, final byte[] authResponse, final String database) {
-        super(sequenceId);
-        this.capabilityFlags = capabilityFlags;
-        this.maxPacketSize = maxPacketSize;
-        this.characterSet = characterSet;
-        this.username = username;
-        this.authResponse = authResponse;
-        this.database = database;
     }
     
     private void readAuthResponse(final MySQLPacketPayload payload) {
