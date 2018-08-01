@@ -18,6 +18,7 @@
 package io.shardingsphere.core.jdbc.metadata;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
+import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.rule.DataNode;
@@ -25,6 +26,7 @@ import io.shardingsphere.core.rule.DataNode;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -56,7 +58,7 @@ public final class JDBCShardingTableMetaData extends ShardingTableMetaData {
     }
     
     private TableMetaData getTableMetaData(final Connection connection, final String actualTableName) throws SQLException {
-        return isTableExist(connection, actualTableName) ? new TableMetaData(getColumnMetaDataList(connection, actualTableName)) : new TableMetaData();
+        return new TableMetaData(isTableExist(connection, actualTableName) ? getColumnMetaDataList(connection, actualTableName) : Collections.<ColumnMetaData>emptyList());
     }
     
     private TableMetaData getTableMetaData(final DataSource dataSource, final String actualTableName) throws SQLException {
