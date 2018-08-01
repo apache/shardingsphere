@@ -49,14 +49,14 @@ public class PathUtil {
         if (!root.startsWith(ZookeeperConstants.PATH_SEPARATOR)) {
             rootPath = ZookeeperConstants.PATH_SEPARATOR + root;
         }
-        String subPath = path;
+        String realPath = path;
         if (!path.startsWith(ZookeeperConstants.PATH_SEPARATOR)) {
-            subPath = ZookeeperConstants.PATH_SEPARATOR + path;
+            realPath = ZookeeperConstants.PATH_SEPARATOR + path;
         }
-        if (!subPath.startsWith(rootPath)) {
-            return rootPath + subPath;
+        if (!realPath.startsWith(rootPath)) {
+            return rootPath + realPath;
         }
-        return path;
+        return realPath;
     }
     
     /**
