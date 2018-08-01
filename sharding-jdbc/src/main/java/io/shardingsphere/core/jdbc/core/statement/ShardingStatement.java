@@ -26,6 +26,7 @@ import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.jdbc.core.resultset.GeneratedKeysResultSet;
 import io.shardingsphere.core.jdbc.core.resultset.ShardingResultSet;
+import io.shardingsphere.core.jdbc.metadata.ConnectionHoldJDBCTableMetaDataExecutorAdapter;
 import io.shardingsphere.core.merger.JDBCQueryResult;
 import io.shardingsphere.core.merger.MergeEngine;
 import io.shardingsphere.core.merger.MergeEngineFactory;
@@ -33,6 +34,7 @@ import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.merger.event.EventMergeType;
 import io.shardingsphere.core.merger.event.ResultSetMergeEvent;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
@@ -246,7 +248,9 @@ public class ShardingStatement extends AbstractStatementAdapter {
     private void refreshTableMetaData() throws SQLException {
         if (null != routeResult && null != connection && SQLType.DDL == routeResult.getSqlStatement().getType() && !routeResult.getSqlStatement().getTables().isEmpty()) {
             String logicTableName = routeResult.getSqlStatement().getTables().getSingleTableName();
-            connection.getShardingContext().getMetaData().getTable().refresh(logicTableName, connection.getShardingContext().getShardingRule(), connection.getConnections(logicTableName));
+            ShardingTableMetaData shardingTableMetaData = connection.getShardingContext().getMetaData().getTable();
+            shardingTableMetaData.setExecutorAdapter(new ConnectionHoldJDBCTableMetaDataExecutorAdapter(connection.getConnections(logicTableName)));
+            shardingTableMetaData.refresh(logicTableName, connection.getShardingContext().getShardingRule());
         }
     }
     
