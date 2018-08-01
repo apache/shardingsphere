@@ -237,7 +237,9 @@ public final class ConfigurationService {
      */
     public ShardingRuleConfiguration loadShardingRuleConfiguration() {
         try {
-            return ShardingConfigurationConverter.shardingRuleConfigFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.SHARDING_RULE_NODE_PATH)));
+            ShardingRuleConfiguration result = ShardingConfigurationConverter.shardingRuleConfigFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.SHARDING_RULE_NODE_PATH)));
+            Preconditions.checkState(null != result && !result.getTableRuleConfigs().isEmpty(), "No available sharding rule configuration to load.");
+            return result;
         } catch (final Exception ex) {
             throw new ShardingConfigurationException("No available sharding rule configuration to load.");
         }
