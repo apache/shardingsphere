@@ -18,29 +18,19 @@
 package io.shardingsphere.core.metadata.table;
 
 import com.google.common.base.Optional;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.rule.DataNode;
-import io.shardingsphere.core.rule.ShardingDataSourceNames;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
-import lombok.AllArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Sharding table meta data.
@@ -49,15 +39,19 @@ import java.util.concurrent.ExecutionException;
  * @author zhaojun
  * @author zhangliang
  */
-@AllArgsConstructor
 public class ShardingTableMetaData {
     
-    private final ListeningExecutorService executorService;
+    private final TableMetaDataLoader tableMetaDataLoader;
     
-    private final Map<String, TableMetaData> tableMetaDataMap = new HashMap<>();
+    private final Map<String, TableMetaData> tableMetaDataMap = new ConcurrentHashMap<>();
     
     @Setter
     private TableMetaDataExecutorAdapter executorAdapter;
+    
+    public ShardingTableMetaData(final ListeningExecutorService executorService, final TableMetaDataExecutorAdapter executorAdapter) {
+        this.executorAdapter = executorAdapter;
+        tableMetaDataLoader = new TableMetaDataLoader(executorService, executorAdapter);
+    }
     
     /**
      * Initialize sharding meta data.
@@ -75,7 +69,7 @@ public class ShardingTableMetaData {
     
     private void initLogicTables(final ShardingRule shardingRule) {
         for (TableRule each : shardingRule.getTableRules()) {
-            refresh(each.getLogicTable(), shardingRule);
+            tableMetaDataMap.put(each.getLogicTable(), tableMetaDataLoader.loadTableMetaData(each.getLogicTable(), shardingRule));
         }
     }
     
@@ -83,7 +77,7 @@ public class ShardingTableMetaData {
         Optional<String> actualDefaultDataSourceName = shardingRule.findActualDefaultDataSourceName();
         if (actualDefaultDataSourceName.isPresent()) {
             for (String each : getAllTableNames(actualDefaultDataSourceName.get())) {
-                refresh(each, shardingRule);
+                tableMetaDataMap.put(each, tableMetaDataLoader.loadTableMetaData(each, shardingRule));
             }
         }
     }
@@ -100,88 +94,13 @@ public class ShardingTableMetaData {
     }
     
     /**
-     * Refresh table meta data.
-     *
+     * Put table meta data.
+     * 
      * @param logicTableName logic table name
-     * @param shardingRule sharding rule
+     * @param tableMetaData table meta data
      */
-    public void refresh(final String logicTableName, final ShardingRule shardingRule) {
-        tableMetaDataMap.put(logicTableName, loadTableMetaData(shardingRule.getTableRule(logicTableName), shardingRule.getShardingDataSourceNames()));
-    }
-    
-    private TableMetaData loadTableMetaData(final TableRule tableRule, final ShardingDataSourceNames shardingDataSourceNames) {
-        List<TableMetaData> actualTableMetaDataList = loadActualTableMetaDataList(tableRule.getActualDataNodes(), shardingDataSourceNames);
-        checkUniformed(tableRule.getLogicTable(), actualTableMetaDataList);
-        return actualTableMetaDataList.iterator().next();
-    }
-    
-    private TableMetaData loadTableMetaData(final DataNode dataNode) throws SQLException {
-        if (executorAdapter.isAutoClose()) {
-            try (Connection connection = executorAdapter.getConnection(dataNode.getDataSourceName())) {
-                return loadTableMetaData(connection, dataNode);
-            }
-        }
-        return loadTableMetaData(executorAdapter.getConnection(dataNode.getDataSourceName()), dataNode);
-    }
-    
-    private TableMetaData loadTableMetaData(final Connection connection, final DataNode dataNode) throws SQLException {
-        return new TableMetaData(isTableExist(connection, dataNode.getTableName()) ? getColumnMetaDataList(connection, dataNode.getTableName()) : Collections.<ColumnMetaData>emptyList());
-    }
-    
-    private boolean isTableExist(final Connection connection, final String actualTableName) throws SQLException {
-        try (ResultSet resultSet = connection.getMetaData().getTables(null, null, actualTableName, null)) {
-            return resultSet.next();
-        }
-    }
-    
-    private List<ColumnMetaData> getColumnMetaDataList(final Connection connection, final String actualTableName) throws SQLException {
-        List<ColumnMetaData> result = new LinkedList<>();
-        Collection<String> primaryKeys = getPrimaryKeys(connection, actualTableName);
-        try (ResultSet resultSet = connection.getMetaData().getColumns(null, null, actualTableName, null)) {
-            while (resultSet.next()) {
-                String columnName = resultSet.getString("COLUMN_NAME");
-                String columnType = resultSet.getString("TYPE_NAME");
-                result.add(new ColumnMetaData(columnName, columnType, primaryKeys.contains(columnName)));
-            }
-        }
-        return result;
-    }
-    
-    private Collection<String> getPrimaryKeys(final Connection connection, final String actualTableName) throws SQLException {
-        Collection<String> result = new HashSet<>();
-        try (ResultSet resultSet = connection.getMetaData().getPrimaryKeys(null, null, actualTableName)) {
-            while (resultSet.next()) {
-                result.add(resultSet.getString("COLUMN_NAME"));
-            }
-        }
-        return result;
-    }
-    
-    private List<TableMetaData> loadActualTableMetaDataList(final List<DataNode> actualDataNodes, final ShardingDataSourceNames shardingDataSourceNames) {
-        List<ListenableFuture<TableMetaData>> result = new LinkedList<>();
-        for (final DataNode each : actualDataNodes) {
-            result.add(executorService.submit(new Callable<TableMetaData>() {
-                
-                @Override
-                public TableMetaData call() throws SQLException {
-                    return loadTableMetaData(new DataNode(shardingDataSourceNames.getRawMasterDataSourceName(each.getDataSourceName()), each.getTableName()));
-                }
-            }));
-        }
-        try {
-            return Futures.allAsList(result).get();
-        } catch (final InterruptedException | ExecutionException ex) {
-            throw new ShardingException(ex);
-        }
-    }
-    
-    private void checkUniformed(final String logicTableName, final List<TableMetaData> actualTableMetaDataList) {
-        final TableMetaData sample = actualTableMetaDataList.iterator().next();
-        for (TableMetaData each : actualTableMetaDataList) {
-            if (!sample.equals(each)) {
-                throw new ShardingException("Cannot get uniformed table structure for `%s`. The different meta data of actual tables are as follows:\n%s\n%s.", logicTableName, sample, each);
-            }
-        }
+    public void put(final String logicTableName, final TableMetaData tableMetaData) {
+        tableMetaDataMap.put(logicTableName, tableMetaData);
     }
     
     /**

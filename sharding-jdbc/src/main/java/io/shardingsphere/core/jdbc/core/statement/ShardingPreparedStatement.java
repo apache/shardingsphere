@@ -39,6 +39,7 @@ import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.merger.event.EventMergeType;
 import io.shardingsphere.core.merger.event.ResultSetMergeEvent;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import io.shardingsphere.core.metadata.table.TableMetaDataLoader;
 import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
@@ -215,8 +216,9 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         if (null != routeResult && null != connection && SQLType.DDL == routeResult.getSqlStatement().getType() && !routeResult.getSqlStatement().getTables().isEmpty()) {
             String logicTableName = routeResult.getSqlStatement().getTables().getSingleTableName();
             ShardingTableMetaData shardingTableMetaData = connection.getShardingContext().getMetaData().getTable();
-            shardingTableMetaData.setExecutorAdapter(new ConnectionHoldJDBCTableMetaDataExecutorAdapter(logicTableName, connection));
-            shardingTableMetaData.refresh(logicTableName, connection.getShardingContext().getShardingRule());
+            TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(
+                    connection.getShardingContext().getExecutorEngine().getExecutorService(), new ConnectionHoldJDBCTableMetaDataExecutorAdapter(logicTableName, connection));
+            shardingTableMetaData.put(logicTableName, tableMetaDataLoader.loadTableMetaData(logicTableName, connection.getShardingContext().getShardingRule()));
         }
     }
     
