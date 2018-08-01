@@ -18,9 +18,11 @@
 package io.shardingsphere.proxy.transport.mysql.packet.handshake;
 
 import com.google.common.primitives.Bytes;
+import io.netty.buffer.ByteBuf;
 import io.shardingsphere.proxy.transport.mysql.constant.CapabilityFlag;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerInfo;
 import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
+import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,6 +31,9 @@ import java.util.Arrays;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class HandshakePacketTest {
     
@@ -46,7 +51,12 @@ public class HandshakePacketTest {
     
     @Test
     public void assertWrite() {
-    
+        ByteBuf byteBuf = mock(ByteBuf.class);
+        MySQLPacketPayload payload = new MySQLPacketPayload(byteBuf);
+        when(byteBuf.writeByte(anyInt())).thenReturn(byteBuf);
+        when(byteBuf.writeBytes(byteBuf)).thenReturn(byteBuf);
+        handshakePacket.write(payload);
+        assertThat(handshakePacket.getSequenceId(), is(0));
     }
     
     @Test
