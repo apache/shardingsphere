@@ -28,13 +28,14 @@ import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -46,14 +47,14 @@ import java.util.concurrent.ExecutionException;
  *
  * @author panjuan
  * @author zhaojun
+ * @author zhangliang
  */
 @RequiredArgsConstructor
-@Getter
-@Slf4j
 public abstract class ShardingTableMetaData {
     
     private final ListeningExecutorService executorService;
     
+    @Getter
     private final Map<String, TableMetaData> tableMetaDataMap = new HashMap<>();
     
     /**
@@ -83,13 +84,24 @@ public abstract class ShardingTableMetaData {
             return Collections.emptyList();
         }
         Collection<TableRule> result = new LinkedList<>();
-        for (String each : getTableNamesFromDefaultDataSource(defaultDataSourceName.get())) {
+        for (String each : getAllTableNames(defaultDataSourceName.get())) {
             result.add(shardingRule.getTableRule(each));
         }
         return result;
     }
     
-    protected abstract Collection<String> getTableNamesFromDefaultDataSource(String defaultDataSourceName) throws SQLException;
+    private Collection<String> getAllTableNames(final String dataSourceName) throws SQLException {
+        Collection<String> result = new LinkedList<>();
+        try (Connection connection = getConnection(dataSourceName);
+             ResultSet resultSet = connection.getMetaData().getTables(null, null, null, null)) {
+            while (resultSet.next()) {
+                result.add(resultSet.getString("TABLE_NAME"));
+            }
+        }
+        return result;
+    }
+    
+    protected abstract Connection getConnection(String dataSourceName) throws SQLException;
     
     /**
      * Refresh table meta data.
@@ -147,31 +159,43 @@ public abstract class ShardingTableMetaData {
         }
     }
     
-    /**
-     * Judge whether table meta data is empty.
-     *
-     * @return whether table meta data is empty
-     */
-    public boolean hasMetaData() {
-        if (tableMetaDataMap.isEmpty()) {
-            return false;
+    protected boolean isTableExist(final Connection connection, final String actualTableName) throws SQLException {
+        try (ResultSet resultSet = connection.getMetaData().getTables(null, null, actualTableName, null)) {
+            return resultSet.next();
         }
-        for (TableMetaData each : tableMetaDataMap.values()) {
-            if (each.getColumnMetaData().isEmpty()) {
-                return false;
+    }
+    
+    protected List<ColumnMetaData> getColumnMetaDataList(final Connection connection, final String actualTableName) throws SQLException {
+        List<ColumnMetaData> result = new LinkedList<>();
+        Collection<String> primaryKeys = getPrimaryKeys(connection, actualTableName);
+        try (ResultSet resultSet = connection.getMetaData().getColumns(null, null, actualTableName, null)) {
+            while (resultSet.next()) {
+                String columnName = resultSet.getString("COLUMN_NAME");
+                String columnType = resultSet.getString("TYPE_NAME");
+                result.add(new ColumnMetaData(columnName, columnType, primaryKeys.contains(columnName)));
             }
         }
-        return true;
+        return result;
+    }
+    
+    private Collection<String> getPrimaryKeys(final Connection connection, final String actualTableName) throws SQLException {
+        Collection<String> result = new HashSet<>();
+        try (ResultSet resultSet = connection.getMetaData().getPrimaryKeys(null, null, actualTableName)) {
+            while (resultSet.next()) {
+                result.add(resultSet.getString("COLUMN_NAME"));
+            }
+        }
+        return result;
     }
     
     /**
-     * Judge has column from table meta data or not.
+     * Judge contains column from table meta data or not.
      * 
      * @param tableName table name
      * @param column column
-     * @return has column from table meta data or not
+     * @return contains column from table meta data or not
      */
-    public boolean hasColumn(final String tableName, final String column) {
+    public boolean containsColumn(final String tableName, final String column) {
         return tableMetaDataMap.containsKey(tableName) && tableMetaDataMap.get(tableName).getAllColumnNames().contains(column.toLowerCase());
     }
 }

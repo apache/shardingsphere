@@ -37,5 +37,4 @@ public class PreparedStatementParameterHeader implements Serializable {
     private final ColumnType columnType;
     
     private final int unsignedFlag;
-    
 }

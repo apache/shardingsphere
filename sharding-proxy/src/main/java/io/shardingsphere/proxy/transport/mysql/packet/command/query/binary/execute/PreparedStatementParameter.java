@@ -28,16 +28,36 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public final class PreparedStatementParameter extends PreparedStatementParameterHeader {
+public final class PreparedStatementParameter {
+    
+    private final PreparedStatementParameterHeader preparedStatementParameterHeader;
     
     private Object value;
     
     public PreparedStatementParameter(final ColumnType columnType, final int unsignedFlag) {
-        super(columnType, unsignedFlag);
+        preparedStatementParameterHeader = new PreparedStatementParameterHeader(columnType, unsignedFlag);
     }
     
     public PreparedStatementParameter(final ColumnType columnType, final int unsignedFlag, final String value) {
-        super(columnType, unsignedFlag);
+        preparedStatementParameterHeader = new PreparedStatementParameterHeader(columnType, unsignedFlag);
         this.value = value;
+    }
+    
+    /**
+     * Get column type.
+     *
+     * @return column type
+     */
+    public ColumnType getColumnType() {
+        return preparedStatementParameterHeader.getColumnType();
+    }
+    
+    /**
+     * Get unsigned flag.
+     *
+     * @return unsigned flag
+     */
+    public int getUnsignedFlag() {
+        return preparedStatementParameterHeader.getUnsignedFlag();
     }
 }

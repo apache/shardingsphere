@@ -75,7 +75,7 @@ public final class ShardingConnectionTest {
         dataSourceMap.put(DS_NAME, masterSlaveDataSource);
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, dataSourceMap.keySet());
         ListeningExecutorService executorService = Mockito.mock(ListeningExecutorService.class);
-        ShardingTableMetaData shardingTableMetaData = new JDBCShardingTableMetaData(executorService, dataSourceMap, shardingRule, null);
+        ShardingTableMetaData shardingTableMetaData = new JDBCShardingTableMetaData(executorService, dataSourceMap);
         ShardingContext shardingContext = new ShardingContext(dataSourceMap, shardingRule, DatabaseType.H2, null, shardingTableMetaData, false);
         connection = new ShardingConnection(shardingContext);
     }

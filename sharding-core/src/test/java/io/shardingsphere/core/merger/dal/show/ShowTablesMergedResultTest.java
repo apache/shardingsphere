@@ -66,8 +66,6 @@ public final class ShowTablesMergedResultTest {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>();
         tableMetaDataMap.put("table", new TableMetaData());
         when(shardingTableMetaData.getTableMetaDataMap()).thenReturn(tableMetaDataMap);
-//        when(shardingTableMetaData.getTableMetaDataMap().keySet()).thenReturn(new HashSet<String>(){{add("table");}});
-        
         resultSet = mock(ResultSet.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
@@ -96,9 +94,16 @@ public final class ShowTablesMergedResultTest {
     }
     
     @Test
-    public void assertNextForActualTableNameNotInTableRule() throws SQLException {
-        when(resultSet.getObject(1)).thenReturn("table_3");
+    public void assertNextForActualTableNameNotInTableRuleWithDefaultDataSource() throws SQLException {
+        when(resultSet.getObject(1)).thenReturn("table");
         ShowTablesMergedResult showTablesMergedResult = new ShowTablesMergedResult(shardingRule, queryResults, shardingTableMetaData);
         assertTrue(showTablesMergedResult.next());
+    }
+    
+    @Test
+    public void assertNextForActualTableNameNotInTableRuleWithoutDefaultDataSource() throws SQLException {
+        when(resultSet.getObject(1)).thenReturn("table_3");
+        ShowTablesMergedResult showTablesMergedResult = new ShowTablesMergedResult(shardingRule, queryResults, shardingTableMetaData);
+        assertFalse(showTablesMergedResult.next());
     }
 }

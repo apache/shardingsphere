@@ -18,50 +18,50 @@
 package io.shardingsphere.core.jdbc.metadata;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.rule.DataNode;
-import io.shardingsphere.core.rule.ShardingRule;
-import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Map;
 
 /**
  * Sharding table meta data for JDBC.
  *
  * @author panjuan
+ * @author zhangliang
  */
-@Getter
 public final class JDBCShardingTableMetaData extends ShardingTableMetaData {
     
     private final Map<String, DataSource> dataSourceMap;
     
-    private final ShardingRule shardingRule;
-    
-    private final DatabaseType databaseType;
-    
-    public JDBCShardingTableMetaData(final ListeningExecutorService executorService, final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType) {
+    public JDBCShardingTableMetaData(final ListeningExecutorService executorService, final Map<String, DataSource> dataSourceMap) {
         super(executorService);
         this.dataSourceMap = dataSourceMap;
-        this.shardingRule = shardingRule;
-        this.databaseType = databaseType;
     }
     
     @Override
-    public Collection<String> getTableNamesFromDefaultDataSource(final String defaultDataSourceName) throws SQLException {
-        return ShardingMetaDataHandlerFactory.newInstance(dataSourceMap.get(defaultDataSourceName), "", databaseType).getTableNamesFromDefaultDataSource();
+    protected Connection getConnection(final String dataSourceName) throws SQLException {
+        return dataSourceMap.get(dataSourceName).getConnection();
     }
     
     @Override
     public TableMetaData loadTableMetaData(final DataNode dataNode, final Map<String, Connection> connectionMap) throws SQLException {
         if (connectionMap.containsKey(dataNode.getDataSourceName())) {
-            return ShardingMetaDataHandlerFactory.newInstance(dataNode.getTableName(), databaseType).getTableMetaData(connectionMap.get(dataNode.getDataSourceName()));
+            return getTableMetaData(connectionMap.get(dataNode.getDataSourceName()), dataNode.getTableName());
         }
-        return ShardingMetaDataHandlerFactory.newInstance(dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName(), databaseType).getTableMetaData();
+        return getTableMetaData(dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName());
+    }
+    
+    private TableMetaData getTableMetaData(final Connection connection, final String actualTableName) throws SQLException {
+        return isTableExist(connection, actualTableName) ? new TableMetaData(getColumnMetaDataList(connection, actualTableName)) : new TableMetaData();
+    }
+    
+    private TableMetaData getTableMetaData(final DataSource dataSource, final String actualTableName) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            return getTableMetaData(connection, actualTableName);
+        }
     }
 }

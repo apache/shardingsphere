@@ -37,5 +37,5 @@ public final class ColumnMetaData {
     
     private final String columnType;
     
-    private final String keyType;
+    private final boolean primaryKey;
 }

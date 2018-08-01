@@ -22,11 +22,9 @@ import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.proxy.backend.jdbc.datasource.JDBCBackendDataSource;
-import lombok.Getter;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -34,7 +32,6 @@ import java.util.Map;
  *
  * @author panjuan
  */
-@Getter
 public final class ProxyShardingTableMetaData extends ShardingTableMetaData {
     
     private final JDBCBackendDataSource backendDataSource;
@@ -45,12 +42,14 @@ public final class ProxyShardingTableMetaData extends ShardingTableMetaData {
     }
     
     @Override
-    public Collection<String> getTableNamesFromDefaultDataSource(final String defaultDataSourceName) throws SQLException {
-        return new ShardingTableMetaDataHandler(backendDataSource.getDataSource(defaultDataSourceName), "").getTableNamesFromDefaultDataSource();
+    protected Connection getConnection(final String dataSourceName) throws SQLException {
+        return backendDataSource.getDataSource(dataSourceName).getConnection();
     }
     
     @Override
     public TableMetaData loadTableMetaData(final DataNode dataNode, final Map<String, Connection> connectionMap) throws SQLException {
-        return new ShardingTableMetaDataHandler(backendDataSource.getDataSource(dataNode.getDataSourceName()), dataNode.getTableName()).getTableMetaData();
+        try (Connection connection = backendDataSource.getDataSource(dataNode.getDataSourceName()).getConnection()) {
+            return isTableExist(connection, dataNode.getTableName()) ? new TableMetaData(getColumnMetaDataList(connection, dataNode.getTableName())) : new TableMetaData();
+        }
     }
 }

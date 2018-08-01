@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.jdbc.metadata.dialect;
+package io.shardingsphere.core.jdbc.metadata;
 
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.metadata.table.AbstractRefreshHandler;
@@ -66,11 +66,11 @@ public final class JDBCShardingRefreshHandler extends AbstractRefreshHandler {
     }
 
     private Map<String, Connection> getConnectionMap(final TableRule tableRule) throws SQLException {
-        Map<String, Connection> connectionMap = new HashMap<>();
+        Map<String, Connection> result = new HashMap<>();
         for (DataNode each : tableRule.getActualDataNodes()) {
             String dataSourceName = getShardingRule().getShardingDataSourceNames().getRawMasterDataSourceName(each.getDataSourceName());
-            connectionMap.put(dataSourceName, shardingConnection.getConnection(dataSourceName));
+            result.put(dataSourceName, shardingConnection.getConnection(dataSourceName));
         }
-        return connectionMap;
+        return result;
     }
 }
