@@ -61,7 +61,7 @@
 #    #                      Meanwhile, the cost of the memory will be increased.
 #    proxy.mode: MEMORY_STRICTLY
 #    proxy.transaction.mode: NONE
-#    proxy.max.working.threads: 16
+#    proxy.max.working.threads: 16  # The default value is availableProcessors * 2.
 #    sql.show: false
 
 #orchestration:
