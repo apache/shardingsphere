@@ -25,7 +25,7 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.fixture.TestDataSource;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingsphere.core.jdbc.metadata.AutoClosedJDBCTableMetaDataExecutorAdapter;
+import io.shardingsphere.core.jdbc.metadata.DataSourceMapTableMetaDataExecutorAdapter;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.After;
@@ -75,7 +75,7 @@ public final class ShardingConnectionTest {
         dataSourceMap.put(DS_NAME, masterSlaveDataSource);
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, dataSourceMap.keySet());
         ListeningExecutorService executorService = Mockito.mock(ListeningExecutorService.class);
-        ShardingTableMetaData shardingTableMetaData = new ShardingTableMetaData(executorService, new AutoClosedJDBCTableMetaDataExecutorAdapter(dataSourceMap));
+        ShardingTableMetaData shardingTableMetaData = new ShardingTableMetaData(executorService, new DataSourceMapTableMetaDataExecutorAdapter(dataSourceMap));
         ShardingContext shardingContext = new ShardingContext(dataSourceMap, shardingRule, DatabaseType.H2, null, shardingTableMetaData, false);
         connection = new ShardingConnection(shardingContext);
     }
