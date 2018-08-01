@@ -18,7 +18,9 @@
 package io.shardingsphere.core.parsing.integrate.engine;
 
 import com.google.common.base.Preconditions;
+import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.yaml.sharding.YamlShardingConfiguration;
 import lombok.AccessLevel;
@@ -26,14 +28,13 @@ import lombok.Getter;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
-
-import static org.mockito.Mockito.when;
+import java.util.HashMap;
+import java.util.Map;
 
 @RunWith(Parameterized.class)
 public abstract class AbstractBaseIntegrateSQLParsingTest {
@@ -58,14 +59,12 @@ public abstract class AbstractBaseIntegrateSQLParsingTest {
     }
     
     private static ShardingTableMetaData buildShardingTableMetaData() {
-        ShardingTableMetaData result = Mockito.mock(ShardingTableMetaData.class);
-        when(result.containsTable("t_order")).thenReturn(true);
-        when(result.containsTable("t_order_item")).thenReturn(true);
-        when(result.containsTable("t_place")).thenReturn(true);
-        when(result.getAllColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "user_id"));
-        when(result.getAllColumnNames("t_order_item")).thenReturn(Arrays.asList("item_id", "order_id", "user_id", "status", "c_date"));
-        when(result.getAllColumnNames("t_place")).thenReturn(Arrays.asList("user_new_id", "guid"));
-        when(result.containsColumn("t_order_item", "item_id")).thenReturn(true);
-        return result;
+    
+        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
+        tableMetaDataMap.put("t_order", new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", "int", true), new ColumnMetaData("user_id", "int", false))));
+        tableMetaDataMap.put("t_order_item", new TableMetaData(Arrays.asList(new ColumnMetaData("item_id", "int", true), new ColumnMetaData("order_id", "int", false), 
+                new ColumnMetaData("user_id", "int", false), new ColumnMetaData("status", "varchar", false), new ColumnMetaData("c_date", "timestamp", false))));
+        tableMetaDataMap.put("t_place", new TableMetaData(Arrays.asList(new ColumnMetaData("user_new_id", "int", true), new ColumnMetaData("user_new_id", "int", false))));
+        return new ShardingTableMetaData(tableMetaDataMap);
     }
 }
