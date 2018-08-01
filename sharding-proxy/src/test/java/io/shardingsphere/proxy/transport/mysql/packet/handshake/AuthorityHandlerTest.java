@@ -17,19 +17,13 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.handshake;
 
-import com.google.common.base.Preconditions;
 import com.google.common.primitives.Bytes;
-import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
+import io.shardingsphere.core.rule.ProxyAuthority;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import org.junit.Before;
 import org.junit.Test;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -48,9 +42,17 @@ public class AuthorityHandlerTest {
     
     @Before
     public void setUp() throws IOException, NoSuchFieldException, IllegalAccessException {
-        OrchestrationProxyConfiguration config = loadLocalConfiguration(new File(AuthorityHandlerTest.class.getResource("/conf/config.yaml").getFile()));
-        RULE_REGISTRY.init(config);
+        reviseRuleRegistry();
         reviseAuthorityHandler();
+    }
+    
+    private void reviseRuleRegistry() throws NoSuchFieldException, IllegalAccessException {
+        ProxyAuthority proxyAuthority = new ProxyAuthority();
+        proxyAuthority.setUsername("root");
+        proxyAuthority.setPassword("root");
+        Field field = RULE_REGISTRY.getClass().getDeclaredField("proxyAuthority");
+        field.setAccessible(true);
+        field.set(RULE_REGISTRY, proxyAuthority);
     }
     
     private void reviseAuthorityHandler() throws NoSuchFieldException, IllegalAccessException {
@@ -58,18 +60,6 @@ public class AuthorityHandlerTest {
         Field field = authorityHandler.getClass().getDeclaredField("authPluginData");
         field.setAccessible(true);
         field.set(authorityHandler, authPluginData);
-    }
-    
-    private OrchestrationProxyConfiguration loadLocalConfiguration(final File yamlFile) throws IOException {
-        try (FileInputStream fileInputStream = new FileInputStream(yamlFile); InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")) {
-            OrchestrationProxyConfiguration result = new Yaml(new Constructor(OrchestrationProxyConfiguration.class)).loadAs(inputStreamReader, OrchestrationProxyConfiguration.class);
-            Preconditions.checkNotNull(result, String.format("Configuration file `%s` is invalid.", yamlFile.getName()));
-            Preconditions.checkState(!result.getDataSources().isEmpty(), "Data sources configuration can not be empty.");
-            Preconditions.checkState(null != result.getShardingRule() || null != result.getMasterSlaveRule() || null != result.getOrchestration(), "Configuration invalid, sharding rule, local and orchestration configuration can not be both null.");
-            Preconditions.checkNotNull(result.getProxyAuthority().getUsername(), "Authority configuration is invalid.");
-            return result;
-        }
-    
     }
     
     @Test
