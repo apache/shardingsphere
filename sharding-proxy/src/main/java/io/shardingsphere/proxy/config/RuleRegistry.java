@@ -27,6 +27,7 @@ import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import io.shardingsphere.core.metadata.table.executor.TableMetaDataInitializer;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ProxyAuthority;
@@ -134,7 +135,8 @@ public final class RuleRegistry {
      */
     public void initShardingMetaData(final ExecutorService executorService) {
         ShardingDataSourceMetaData shardingDataSourceMetaData = new ShardingDataSourceMetaData(getDataSourceURLs(dataSourceConfigurationMap), shardingRule, DatabaseType.MySQL);
-        ShardingTableMetaData shardingTableMetaData = new ShardingTableMetaData(shardingRule, MoreExecutors.listeningDecorator(executorService), new ProxyTableMetaDataExecutorAdapter(backendDataSource));
+        ShardingTableMetaData shardingTableMetaData = new ShardingTableMetaData(
+                new TableMetaDataInitializer(MoreExecutors.listeningDecorator(executorService), new ProxyTableMetaDataExecutorAdapter(backendDataSource)).load(shardingRule));
         metaData = new ShardingMetaData(shardingDataSourceMetaData, shardingTableMetaData);
     }
     

@@ -17,19 +17,10 @@
 
 package io.shardingsphere.core.metadata.table;
 
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.metadata.table.executor.TableLoader;
-import io.shardingsphere.core.metadata.table.executor.TableMetaDataExecutorAdapter;
-import io.shardingsphere.core.metadata.table.executor.TableMetaDataLoader;
-import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.rule.TableRule;
+import lombok.RequiredArgsConstructor;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Sharding table meta data.
@@ -38,43 +29,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author zhaojun
  * @author zhangliang
  */
+@RequiredArgsConstructor
 public class ShardingTableMetaData {
     
-    private final TableLoader tableLoader;
-    
-    private final TableMetaDataLoader tableMetaDataLoader;
-    
-    private final Map<String, TableMetaData> tableMetaDataMap = new ConcurrentHashMap<>();
-    
-    public ShardingTableMetaData(final ShardingRule shardingRule, final ListeningExecutorService executorService, final TableMetaDataExecutorAdapter executorAdapter) {
-        tableLoader = new TableLoader(executorAdapter);
-        tableMetaDataLoader = new TableMetaDataLoader(executorService, executorAdapter);
-        init(shardingRule);
-    }
-    
-    private void init(final ShardingRule shardingRule) {
-        try {
-            initLogicTables(shardingRule);
-            initDefaultTables(shardingRule);
-        } catch (final SQLException ex) {
-            throw new ShardingException(ex);
-        }
-    }
-    
-    private void initLogicTables(final ShardingRule shardingRule) {
-        for (TableRule each : shardingRule.getTableRules()) {
-            tableMetaDataMap.put(each.getLogicTable(), tableMetaDataLoader.loadTableMetaData(each.getLogicTable(), shardingRule));
-        }
-    }
-    
-    private void initDefaultTables(final ShardingRule shardingRule) throws SQLException {
-        Optional<String> actualDefaultDataSourceName = shardingRule.findActualDefaultDataSourceName();
-        if (actualDefaultDataSourceName.isPresent()) {
-            for (String each : tableLoader.getAllTableNames(actualDefaultDataSourceName.get())) {
-                tableMetaDataMap.put(each, tableMetaDataLoader.loadTableMetaData(each, shardingRule));
-            }
-        }
-    }
+    private final Map<String, TableMetaData> tableMetaDataMap;
     
     /**
      * Add table meta data.
