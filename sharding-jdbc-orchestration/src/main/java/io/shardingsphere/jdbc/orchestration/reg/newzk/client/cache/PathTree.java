@@ -231,6 +231,10 @@ public final class PathTree {
             final String value = provider.getDataString(path);
             put(path, value);
         } catch (final KeeperException | InterruptedException ex) {
+            if (ex instanceof KeeperException.NoNodeException) {
+                log.debug(ex.getMessage());
+                return;
+            }
             log.error("PathTree put error : " + ex.getMessage());
         }
     }

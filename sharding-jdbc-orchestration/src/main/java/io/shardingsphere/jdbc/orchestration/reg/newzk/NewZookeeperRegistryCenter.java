@@ -247,6 +247,7 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
     private void addCacheData(final String cachePath) {
         PathTree cache = new PathTree(cachePath, client);
         try {
+            // The load() may be no need
             cache.load();
             cache.watch();
             // CHECKSTYLE:OFF
