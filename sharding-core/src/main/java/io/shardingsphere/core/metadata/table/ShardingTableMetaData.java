@@ -115,7 +115,7 @@ public abstract class ShardingTableMetaData {
      * @param connectionMap connection map passing from sharding connection
      */
     public void refresh(final String logicTableName, final ShardingRule shardingRule, final Map<String, Connection> connectionMap) {
-        tableMetaDataMap.put(logicTableName, loadTableMetaData(shardingRule.getTableRule(logicTableName), shardingRule.getShardingDataSourceNames(), connectionMap));
+        tableMetaDataMap.put(logicTableName, loadTableMetaData(shardingRule.getTableRuleByLogicTableName(logicTableName), shardingRule.getShardingDataSourceNames(), connectionMap));
     }
     
     private TableMetaData loadTableMetaData(final TableRule tableRule, final ShardingDataSourceNames shardingDataSourceNames, final Map<String, Connection> connectionMap) {
