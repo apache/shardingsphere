@@ -30,7 +30,6 @@ import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.jdbc.core.resultset.GeneratedKeysResultSet;
 import io.shardingsphere.core.jdbc.core.resultset.ShardingResultSet;
-import io.shardingsphere.core.jdbc.metadata.JDBCShardingRefreshHandler;
 import io.shardingsphere.core.merger.JDBCQueryResult;
 import io.shardingsphere.core.merger.MergeEngine;
 import io.shardingsphere.core.merger.MergeEngineFactory;
@@ -38,7 +37,6 @@ import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.merger.event.EventMergeType;
 import io.shardingsphere.core.merger.event.ResultSetMergeEvent;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
@@ -158,12 +156,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             return new PreparedStatementExecutor(
                     connection.getShardingContext().getExecutorEngine(), routeResult.getSqlStatement().getType(), preparedStatementUnits).executeUpdate();
         } finally {
-            if (routeResult != null && connection != null) {
-                SQLStatement sqlStatement = routeResult.getSqlStatement();
-                if (SQLType.DDL == sqlStatement.getType() && !sqlStatement.getTables().isEmpty()) {
-                    new JDBCShardingRefreshHandler(sqlStatement.getTables().getSingleTableName(), connection).execute();
-                }
-            }
+            refreshTableMetaData();
             clearBatch();
         }
     }
@@ -176,12 +169,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             return new PreparedStatementExecutor(
                     connection.getShardingContext().getExecutorEngine(), routeResult.getSqlStatement().getType(), preparedStatementUnits).execute();
         } finally {
-            if (null != routeResult && null != connection) {
-                SQLStatement sqlStatement = routeResult.getSqlStatement();
-                if (SQLType.DDL == sqlStatement.getType() && !sqlStatement.getTables().isEmpty()) {
-                    new JDBCShardingRefreshHandler(sqlStatement.getTables().getSingleTableName(), connection).execute();
-                }
-            }
+            refreshTableMetaData();
             clearBatch();
         }
     }
@@ -203,7 +191,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         return returnGeneratedKeys ? connection.prepareStatement(sqlExecutionUnit.getSqlUnit().getSql(), Statement.RETURN_GENERATED_KEYS)
                 : connection.prepareStatement(sqlExecutionUnit.getSqlUnit().getSql(), resultSetType, resultSetConcurrency, resultSetHoldability);
     }
-
+    
     private void sqlRoute() {
         SqlRoutingEvent event = new SqlRoutingEvent(sql);
         EventBusInstance.getInstance().post(event);
@@ -220,7 +208,14 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         event.setEventRoutingType(EventRoutingType.ROUTE_SUCCESS);
         EventBusInstance.getInstance().post(event);
     }
-
+    
+    private void refreshTableMetaData() throws SQLException {
+        if (null != routeResult && null != connection && SQLType.DDL == routeResult.getSqlStatement().getType() && !routeResult.getSqlStatement().getTables().isEmpty()) {
+            String logicTableName = routeResult.getSqlStatement().getTables().getSingleTableName();
+            connection.getShardingContext().getMetaData().getTable().refresh(logicTableName, connection.getShardingContext().getShardingRule(), connection.getConnections(logicTableName));
+        }
+    }
+    
     @Override
     public void clearBatch() {
         currentResultSet = null;
