@@ -50,7 +50,7 @@ public final class TableMetaDataLoader {
     
     private final ListeningExecutorService executorService;
     
-    private final TableMetaDataExecutorAdapter executorAdapter;
+    private final TableMetaDataConnectionManager executorAdapter;
     
     /**
      * Load table meta data.

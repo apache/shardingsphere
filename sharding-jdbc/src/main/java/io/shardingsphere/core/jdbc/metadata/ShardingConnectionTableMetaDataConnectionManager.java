@@ -18,19 +18,19 @@
 package io.shardingsphere.core.jdbc.metadata;
 
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
-import io.shardingsphere.core.metadata.table.executor.TableMetaDataExecutorAdapter;
+import io.shardingsphere.core.metadata.table.executor.TableMetaDataConnectionManager;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * Table meta data executor adapter for JDBC with sharding connection.
+ * Manager of connection which for table meta data loader of sharding connection.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class ShardingConnectionTableMetaDataExecutorAdapter implements TableMetaDataExecutorAdapter {
+public final class ShardingConnectionTableMetaDataConnectionManager implements TableMetaDataConnectionManager {
     
     private final String logicTableName;
     

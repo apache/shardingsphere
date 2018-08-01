@@ -39,11 +39,11 @@ import java.util.Map;
  */
 public final class TableMetaDataInitializer {
     
-    private final TableMetaDataExecutorAdapter executorAdapter;
+    private final TableMetaDataConnectionManager executorAdapter;
     
     private final TableMetaDataLoader tableMetaDataLoader;
     
-    public TableMetaDataInitializer(final ListeningExecutorService executorService, final TableMetaDataExecutorAdapter executorAdapter) {
+    public TableMetaDataInitializer(final ListeningExecutorService executorService, final TableMetaDataConnectionManager executorAdapter) {
         this.executorAdapter = executorAdapter;
         tableMetaDataLoader = new TableMetaDataLoader(executorService, executorAdapter);
     }

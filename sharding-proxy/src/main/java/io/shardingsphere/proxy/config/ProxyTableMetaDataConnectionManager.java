@@ -17,7 +17,7 @@
 
 package io.shardingsphere.proxy.config;
 
-import io.shardingsphere.core.metadata.table.executor.TableMetaDataExecutorAdapter;
+import io.shardingsphere.core.metadata.table.executor.TableMetaDataConnectionManager;
 import io.shardingsphere.proxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import lombok.RequiredArgsConstructor;
 
@@ -25,12 +25,12 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * Table meta data executor adapter for proxy.
+ * Manager of connection which for table meta data loader of proxy.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class ProxyTableMetaDataExecutorAdapter implements TableMetaDataExecutorAdapter {
+public final class ProxyTableMetaDataConnectionManager implements TableMetaDataConnectionManager {
     
     private final JDBCBackendDataSource backendDataSource;
     

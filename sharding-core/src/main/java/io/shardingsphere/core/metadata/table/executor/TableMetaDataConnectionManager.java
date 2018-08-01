@@ -21,11 +21,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * Table meta data executor adapter.
+ * Manager of connection which for table meta data loader.
  *
  * @author zhangliang
  */
-public interface TableMetaDataExecutorAdapter {
+public interface TableMetaDataConnectionManager {
     
     /**
      * Get connection.
@@ -38,6 +38,7 @@ public interface TableMetaDataExecutorAdapter {
     
     /**
      * Is auto close created connection or not.
+     * 
      * @return auto close or not
      */
     boolean isAutoClose();

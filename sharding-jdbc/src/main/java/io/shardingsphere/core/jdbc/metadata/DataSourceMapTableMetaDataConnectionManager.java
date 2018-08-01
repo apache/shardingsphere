@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.jdbc.metadata;
 
-import io.shardingsphere.core.metadata.table.executor.TableMetaDataExecutorAdapter;
+import io.shardingsphere.core.metadata.table.executor.TableMetaDataConnectionManager;
 import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
@@ -26,12 +26,12 @@ import java.sql.SQLException;
 import java.util.Map;
 
 /**
- * Table meta data executor adapter for JDBC with data source map.
+ * Manager of connection which for table meta data loader of data source map.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class DataSourceMapTableMetaDataExecutorAdapter implements TableMetaDataExecutorAdapter {
+public final class DataSourceMapTableMetaDataConnectionManager implements TableMetaDataConnectionManager {
     
     private final Map<String, DataSource> dataSourceMap;
     
