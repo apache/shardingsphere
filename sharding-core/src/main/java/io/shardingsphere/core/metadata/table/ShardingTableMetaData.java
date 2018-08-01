@@ -30,7 +30,7 @@ import java.util.Map;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public class ShardingTableMetaData {
+public final class ShardingTableMetaData {
     
     private final Map<String, TableMetaData> tableMetaDataMap;
     
