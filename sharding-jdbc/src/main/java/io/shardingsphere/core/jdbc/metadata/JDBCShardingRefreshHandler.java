@@ -60,8 +60,8 @@ public final class JDBCShardingRefreshHandler extends AbstractRefreshHandler {
     public void execute() throws SQLException {
         if (isNeedRefresh()) {
             String logicTable = getSqlStatement().getTables().getSingleTableName();
-            Map<String, Connection> connectionMap = getConnectionMap(getShardingRule().getTableRule(logicTable));
-            getShardingTableMetaData().refresh(getShardingRule().getTableRule(logicTable), getShardingRule(), connectionMap);
+            Map<String, Connection> connectionMap = getConnectionMap(getShardingRule().getTableRuleByLogicTableName(logicTable));
+            getShardingTableMetaData().refresh(getShardingRule().getTableRuleByLogicTableName(logicTable), getShardingRule(), connectionMap);
         }
     }
 

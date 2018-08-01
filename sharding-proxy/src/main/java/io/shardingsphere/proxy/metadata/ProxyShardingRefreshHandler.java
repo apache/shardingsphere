@@ -53,7 +53,7 @@ public final class ProxyShardingRefreshHandler extends AbstractRefreshHandler {
     public void execute() {
         if (isNeedRefresh()) {
             String logicTable = getSqlStatement().getTables().getSingleTableName();
-            TableRule tableRule = getShardingRule().getTableRule(logicTable);
+            TableRule tableRule = getShardingRule().getTableRuleByLogicTableName(logicTable);
             getShardingTableMetaData().refresh(tableRule, getShardingRule());
         }
     }
