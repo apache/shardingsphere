@@ -222,7 +222,7 @@ public final class ConfigurationService {
      */
     public Map<String, DataSourceParameter> loadDataSources() {
         try {
-            Map<String, DataSourceParameter> result =  DataSourceParameterConverter.dataSourceParameterMapFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH)));
+            Map<String, DataSourceParameter> result = DataSourceParameterConverter.dataSourceParameterMapFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH)));
             Preconditions.checkState(null != result && !result.isEmpty(), "No available data source configuration to load.");
             return result;
         } catch (final Exception ex) {
