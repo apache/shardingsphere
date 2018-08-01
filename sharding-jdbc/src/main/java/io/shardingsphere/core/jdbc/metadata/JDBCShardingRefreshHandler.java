@@ -18,10 +18,11 @@
 package io.shardingsphere.core.jdbc.metadata;
 
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
-import io.shardingsphere.core.metadata.table.AbstractRefreshHandler;
+import io.shardingsphere.core.metadata.table.RefreshHandler;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.rule.TableRule;
+import lombok.RequiredArgsConstructor;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -33,28 +34,25 @@ import java.util.Map;
  *
  * @author zhaojun
  */
-public final class JDBCShardingRefreshHandler extends AbstractRefreshHandler {
+@RequiredArgsConstructor
+public final class JDBCShardingRefreshHandler implements RefreshHandler {
+    
+    private final SQLStatement sqlStatement;
     
     private final ShardingConnection shardingConnection;
     
-    public JDBCShardingRefreshHandler(final SQLStatement sqlStatement, final ShardingConnection shardingConnection) {
-        super(sqlStatement, shardingConnection.getShardingContext().getMetaData().getTable(), shardingConnection.getShardingContext().getShardingRule());
-        this.shardingConnection = shardingConnection;
-    }
-    
     @Override
     public void execute() throws SQLException {
-        if (isNeedRefresh()) {
-            String logicTable = getSqlStatement().getTables().getSingleTableName();
-            Map<String, Connection> connectionMap = getConnectionMap(getShardingRule().getTableRule(logicTable));
-            getShardingTableMetaData().refresh(getShardingRule().getTableRule(logicTable), getShardingRule(), connectionMap);
-        }
+        String logicTable = sqlStatement.getTables().getSingleTableName();
+        Map<String, Connection> connectionMap = getConnectionMap(shardingConnection.getShardingContext().getShardingRule().getTableRule(logicTable));
+        shardingConnection.getShardingContext().getMetaData().getTable().refresh(
+                shardingConnection.getShardingContext().getShardingRule().getTableRule(logicTable), shardingConnection.getShardingContext().getShardingRule(), connectionMap);
     }
 
     private Map<String, Connection> getConnectionMap(final TableRule tableRule) throws SQLException {
         Map<String, Connection> result = new HashMap<>();
         for (DataNode each : tableRule.getActualDataNodes()) {
-            String dataSourceName = getShardingRule().getShardingDataSourceNames().getRawMasterDataSourceName(each.getDataSourceName());
+            String dataSourceName = shardingConnection.getShardingContext().getShardingRule().getShardingDataSourceNames().getRawMasterDataSourceName(each.getDataSourceName());
             result.put(dataSourceName, shardingConnection.getConnection(dataSourceName));
         }
         return result;

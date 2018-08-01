@@ -137,7 +137,10 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
             packets.add(queryResult.getCommandResponsePackets());
         }
         CommandResponsePackets result = merge(routeResult.getSqlStatement(), packets, queryResults);
-        new ProxyShardingRefreshHandler(routeResult.getSqlStatement()).execute();
+        SQLStatement sqlStatement = routeResult.getSqlStatement();
+        if (!RULE_REGISTRY.isMasterSlaveOnly() && SQLType.DDL == sqlStatement.getType() && !sqlStatement.getTables().isEmpty()) {
+            new ProxyShardingRefreshHandler(sqlStatement).execute();
+        }
         return result;
     }
     

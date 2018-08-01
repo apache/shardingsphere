@@ -17,29 +17,25 @@
 
 package io.shardingsphere.proxy.metadata;
 
-import io.shardingsphere.core.metadata.table.AbstractRefreshHandler;
+import io.shardingsphere.core.metadata.table.RefreshHandler;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.proxy.config.RuleRegistry;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Sharding table meta data refreshing handler for proxy.
  *
  * @author zhaojun
  */
-@Slf4j
-public final class ProxyShardingRefreshHandler extends AbstractRefreshHandler {
+@RequiredArgsConstructor
+public final class ProxyShardingRefreshHandler implements RefreshHandler {
     
     private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
     
-    public ProxyShardingRefreshHandler(final SQLStatement sqlStatement) {
-        super(sqlStatement, RULE_REGISTRY.getMetaData().getTable(), RULE_REGISTRY.getShardingRule());
-    }
+    private final SQLStatement sqlStatement;
     
     @Override
     public void execute() {
-        if (isNeedRefresh()) {
-            getShardingTableMetaData().refresh(getShardingRule().getTableRule(getSqlStatement().getTables().getSingleTableName()), getShardingRule());
-        }
+        RULE_REGISTRY.getMetaData().getTable().refresh(RULE_REGISTRY.getShardingRule().getTableRule(sqlStatement.getTables().getSingleTableName()), RULE_REGISTRY.getShardingRule());
     }
 }

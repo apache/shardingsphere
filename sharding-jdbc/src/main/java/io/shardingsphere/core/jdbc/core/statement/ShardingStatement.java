@@ -18,6 +18,7 @@
 package io.shardingsphere.core.jdbc.core.statement;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.type.statement.StatementExecutor;
 import io.shardingsphere.core.executor.type.statement.StatementUnit;
 import io.shardingsphere.core.jdbc.adapter.AbstractStatementAdapter;
@@ -33,6 +34,7 @@ import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.merger.event.EventMergeType;
 import io.shardingsphere.core.merger.event.ResultSetMergeEvent;
+import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
@@ -126,7 +128,10 @@ public class ShardingStatement extends AbstractStatementAdapter {
             return generateExecutor(sql).executeUpdate();
         } finally {
             if (null != routeResult && null != connection) {
-                new JDBCShardingRefreshHandler(routeResult.getSqlStatement(), connection).execute();
+                SQLStatement sqlStatement = routeResult.getSqlStatement();
+                if (SQLType.DDL == sqlStatement.getType() && !sqlStatement.getTables().isEmpty()) {
+                    new JDBCShardingRefreshHandler(sqlStatement, connection).execute();
+                }
             }
             currentResultSet = null;
         }
@@ -170,7 +175,10 @@ public class ShardingStatement extends AbstractStatementAdapter {
             return generateExecutor(sql).execute();
         } finally {
             if (null != routeResult && null != connection) {
-                new JDBCShardingRefreshHandler(routeResult.getSqlStatement(), connection).execute();
+                SQLStatement sqlStatement = routeResult.getSqlStatement();
+                if (SQLType.DDL == sqlStatement.getType() && !sqlStatement.getTables().isEmpty()) {
+                    new JDBCShardingRefreshHandler(sqlStatement, connection).execute();
+                }
             }
             currentResultSet = null;
         }

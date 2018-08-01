@@ -17,12 +17,6 @@
 
 package io.shardingsphere.core.metadata.table;
 
-import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.rule.ShardingRule;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 import java.sql.SQLException;
 
 /**
@@ -30,24 +24,12 @@ import java.sql.SQLException;
  *
  * @author zhaojun
  */
-@AllArgsConstructor
-@Getter
-public abstract class AbstractRefreshHandler {
-
-    private final SQLStatement sqlStatement;
-
-    private ShardingTableMetaData shardingTableMetaData;
-
-    private ShardingRule shardingRule;
-
+public interface RefreshHandler {
+    
     /**
-     * execute refresh sharding table metadata.
+     * Execute refresh sharding table metadata.
      *
      * @throws SQLException SQL exception
      */
-    public abstract void execute() throws SQLException;
-    
-    protected boolean isNeedRefresh() {
-        return SQLType.DDL == sqlStatement.getType() && !sqlStatement.getTables().isEmpty();
-    }
+    void execute() throws SQLException;
 }
