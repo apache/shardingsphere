@@ -211,11 +211,11 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         EventBusInstance.getInstance().post(event);
     }
     
-    private void refreshTableMetaData() throws SQLException {
+    private void refreshTableMetaData() {
         if (null != routeResult && null != connection && SQLType.DDL == routeResult.getSqlStatement().getType() && !routeResult.getSqlStatement().getTables().isEmpty()) {
             String logicTableName = routeResult.getSqlStatement().getTables().getSingleTableName();
             ShardingTableMetaData shardingTableMetaData = connection.getShardingContext().getMetaData().getTable();
-            shardingTableMetaData.setExecutorAdapter(new ConnectionHoldJDBCTableMetaDataExecutorAdapter(connection.getConnections(logicTableName)));
+            shardingTableMetaData.setExecutorAdapter(new ConnectionHoldJDBCTableMetaDataExecutorAdapter(logicTableName, connection));
             shardingTableMetaData.refresh(logicTableName, connection.getShardingContext().getShardingRule());
         }
     }
