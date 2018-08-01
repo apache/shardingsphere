@@ -222,7 +222,9 @@ public final class ConfigurationService {
      */
     public Map<String, DataSourceParameter> loadDataSources() {
         try {
-            return DataSourceParameterConverter.dataSourceParameterMapFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH)));
+            Map<String, DataSourceParameter> result =  DataSourceParameterConverter.dataSourceParameterMapFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH)));
+            Preconditions.checkState(null != result && !result.isEmpty(), "No available data source configuration to load.");
+            return result;
         } catch (final Exception ex) {
             throw new ShardingConfigurationException("No available data source configuration to load.");
         }
@@ -269,7 +271,8 @@ public final class ConfigurationService {
      */
     public MasterSlaveRuleConfiguration loadMasterSlaveRuleConfiguration() {
         try {
-            return MasterSlaveConfigurationConverter.masterSlaveRuleConfigFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH)));
+            MasterSlaveRuleConfiguration result = MasterSlaveConfigurationConverter.masterSlaveRuleConfigFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH)));
+            Preconditions.checkState(null !=result && !result.isEmpty(), "No available data source configuration to load.");
         } catch (final Exception ex) {
             throw new ShardingConfigurationException("No available master slave rule configuration to load.");
         }
@@ -303,9 +306,10 @@ public final class ConfigurationService {
      */
     public OrchestrationProxyConfiguration loadProxyConfiguration() {
         try {
-            OrchestrationProxyConfiguration orchestrationProxyConfiguration = ProxyConfigurationConverter.proxyConfigFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.PROXY_RULE_NODE_PATH)));
-            Preconditions.checkState(!Strings.isNullOrEmpty(orchestrationProxyConfiguration.getProxyAuthority().getUsername()), "Authority configuration is invalid.");
-            return orchestrationProxyConfiguration;
+            OrchestrationProxyConfiguration result = ProxyConfigurationConverter.proxyConfigFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.PROXY_RULE_NODE_PATH)));
+            Preconditions.checkState(!Strings.isNullOrEmpty(result.getProxyAuthority().getUsername()), "Authority configuration is invalid.");
+            Preconditions.checkState(null != result.getShardingRule() || null != result.getMasterSlaveRule(), "Sharding rule or Master slave rule can not be both null.");
+            return result;
         } catch (final Exception ex) {
             throw new ShardingConfigurationException("No available proxy configuration to load.");
         }
