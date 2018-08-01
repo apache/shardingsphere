@@ -21,7 +21,9 @@ import org.junit.Test;
 
 import java.lang.reflect.Field;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class ConnectionIdGeneratorTest {
@@ -38,7 +40,7 @@ public class ConnectionIdGeneratorTest {
         Field currentId = generator.getClass().getDeclaredField("currentId");
         currentId.setAccessible(true);
         currentId.setInt(generator, 2147483647);
-        assertEquals(1, generator.nextId());
+        assertThat(generator.nextId(), is(1));
     }
     
     @Test
