@@ -272,7 +272,9 @@ public final class ConfigurationService {
     public MasterSlaveRuleConfiguration loadMasterSlaveRuleConfiguration() {
         try {
             MasterSlaveRuleConfiguration result = MasterSlaveConfigurationConverter.masterSlaveRuleConfigFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH)));
-            Preconditions.checkState(null !=result && !result.isEmpty(), "No available data source configuration to load.");
+            Preconditions.checkState(null != result && !Strings.isNullOrEmpty(result.getMasterDataSourceName()), "No available master slave rule configuration to load.");
+            return result;
+            
         } catch (final Exception ex) {
             throw new ShardingConfigurationException("No available master slave rule configuration to load.");
         }
