@@ -1,4 +1,4 @@
-package io.shardingsphere.proxy.transport.mysql.packet.handshake;/*
+/*
  * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +14,8 @@ package io.shardingsphere.proxy.transport.mysql.packet.handshake;/*
  * limitations under the License.
  * </p>
  */
+
+package io.shardingsphere.proxy.transport.mysql.packet.handshake;
 
 import io.netty.buffer.ByteBuf;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
@@ -32,11 +34,15 @@ public class HandshakeResponse41PacketTest {
     
     private HandshakeResponse41Packet handshakeResponse41Packet;
     
+    private MySQLPacketPayload payload;
+    
     @Before
     public void setUp() {
         ByteBuf byteBuf = mock(ByteBuf.class);
+        payload = new MySQLPacketPayload(byteBuf);
+        when(byteBuf.writeByte(anyInt())).thenReturn(byteBuf);
+        when(byteBuf.writeBytes(byteBuf)).thenReturn(byteBuf);
         byte b = 0;
-        MySQLPacketPayload payload = new MySQLPacketPayload(byteBuf);
         when(byteBuf.readByte()).thenReturn(b);
         when(byteBuf.readIntLE()).thenReturn(0);
         when(byteBuf.bytesBefore((byte) 0)).thenReturn(0);
@@ -47,10 +53,8 @@ public class HandshakeResponse41PacketTest {
     
     @Test
     public void testWrite() {
-        ByteBuf byteBuf = mock(ByteBuf.class);
-        MySQLPacketPayload payload = new MySQLPacketPayload(byteBuf);
-        when(byteBuf.writeByte(anyInt())).thenReturn(byteBuf);
-        when(byteBuf.writeBytes(byteBuf)).thenReturn(byteBuf);
+        handshakeResponse41Packet.write(payload);
+        assertThat(handshakeResponse41Packet.getSequenceId(), is(0));
     }
     
     @Test
