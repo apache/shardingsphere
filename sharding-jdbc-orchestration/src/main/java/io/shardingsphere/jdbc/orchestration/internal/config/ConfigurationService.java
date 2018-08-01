@@ -17,6 +17,7 @@
 
 package io.shardingsphere.jdbc.orchestration.internal.config;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
@@ -302,7 +303,9 @@ public final class ConfigurationService {
      */
     public OrchestrationProxyConfiguration loadProxyConfiguration() {
         try {
-            return ProxyConfigurationConverter.proxyConfigFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.PROXY_RULE_NODE_PATH)));
+            OrchestrationProxyConfiguration orchestrationProxyConfiguration = ProxyConfigurationConverter.proxyConfigFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.PROXY_RULE_NODE_PATH)));
+            Preconditions.checkState(!Strings.isNullOrEmpty(orchestrationProxyConfiguration.getProxyAuthority().getUsername()), "Authority configuration is invalid.");
+            return orchestrationProxyConfiguration;
         } catch (final Exception ex) {
             throw new ShardingConfigurationException("No available proxy configuration to load.");
         }
