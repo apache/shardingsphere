@@ -53,3 +53,4 @@ public final class MySQLDataSourceMetaDataTest {
         assertThat(actual.isInSameDatabaseInstance(target), is(true));
     }
 }
+

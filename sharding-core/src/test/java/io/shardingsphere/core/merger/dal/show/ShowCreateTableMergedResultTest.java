@@ -106,11 +106,4 @@ public final class ShowCreateTableMergedResultTest {
         ShowCreateTableMergedResult showCreateTableMergedResult = new ShowCreateTableMergedResult(shardingRule, queryResults);
         assertTrue(showCreateTableMergedResult.next());
     }
-    
-    @Test
-    public void assertNextForTableRuleIsNotPresent() throws SQLException {
-        when(resultSet.getObject(1)).thenReturn("table_3");
-        ShowCreateTableMergedResult showCreateTableMergedResult = new ShowCreateTableMergedResult(shardingRule, queryResults);
-        assertFalse(showCreateTableMergedResult.next());
-    }
 }
