@@ -15,38 +15,40 @@
  * </p>
  */
 
-package io.shardingsphere.core.metadata.table;
+package io.shardingsphere.core.metadata.table.executor;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Table metadata.
+ * Table loader.
  *
- * @author panjuan
+ * @author zhangliang
  */
 @RequiredArgsConstructor
-@Getter
-@EqualsAndHashCode
-@ToString
-public final class TableMetaData {
+public final class TableLoader {
     
-    private final Collection<ColumnMetaData> columnMetaData;
+    private final TableMetaDataExecutorAdapter executorAdapter;
     
     /**
-     * Get all column names.
+     * Get all table names.
      *
-     * @return column names
+     * @param dataSourceName data source name
+     * @return table names
+     * @throws SQLException SQL exception
      */
-    public Collection<String> getAllColumnNames() {
+    public Collection<String> getAllTableNames(final String dataSourceName) throws SQLException {
         Collection<String> result = new LinkedList<>();
-        for (ColumnMetaData each : columnMetaData) {
-            result.add(each.getColumnName().toLowerCase());
+        try (Connection connection = executorAdapter.getConnection(dataSourceName);
+             ResultSet resultSet = connection.getMetaData().getTables(null, null, null, null)) {
+            while (resultSet.next()) {
+                result.add(resultSet.getString("TABLE_NAME"));
+            }
         }
         return result;
     }

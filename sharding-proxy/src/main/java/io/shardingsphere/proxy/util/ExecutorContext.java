@@ -17,11 +17,11 @@
 
 package io.shardingsphere.proxy.util;
 
+import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import lombok.Getter;
 
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
@@ -34,7 +34,7 @@ public final class ExecutorContext {
     private static final ExecutorContext INSTANCE = new ExecutorContext();
     
     @Getter
-    private final ExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(RuleRegistry.getInstance().getMaxWorkingThreads()));
+    private final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(RuleRegistry.getInstance().getMaxWorkingThreads()));
     
     /**
      * Get executor context instance.

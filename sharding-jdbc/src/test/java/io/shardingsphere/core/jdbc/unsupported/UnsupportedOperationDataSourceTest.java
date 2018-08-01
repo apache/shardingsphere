@@ -26,10 +26,6 @@ import java.sql.SQLFeatureNotSupportedException;
 
 public final class UnsupportedOperationDataSourceTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
-    public UnsupportedOperationDataSourceTest(final DatabaseType databaseType) {
-        super(databaseType);
-    }
-    
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetLoginTimeout() throws SQLException {
         getShardingDataSource().getLoginTimeout();

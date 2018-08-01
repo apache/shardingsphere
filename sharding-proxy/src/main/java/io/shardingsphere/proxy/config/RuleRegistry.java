@@ -36,7 +36,7 @@ import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfigura
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusEvent;
 import io.shardingsphere.proxy.backend.constant.ProxyMode;
 import io.shardingsphere.proxy.backend.jdbc.datasource.JDBCBackendDataSource;
-import io.shardingsphere.proxy.metadata.ProxyShardingTableMetaData;
+import io.shardingsphere.proxy.metadata.ProxyTableMetaDataExecutorAdapter;
 import io.shardingsphere.proxy.util.ProxyTransactionLoader;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -134,7 +134,7 @@ public final class RuleRegistry {
      */
     public void initShardingMetaData(final ExecutorService executorService) {
         ShardingDataSourceMetaData shardingDataSourceMetaData = new ShardingDataSourceMetaData(getDataSourceURLs(dataSourceConfigurationMap), shardingRule, DatabaseType.MySQL);
-        ShardingTableMetaData shardingTableMetaData = new ProxyShardingTableMetaData(MoreExecutors.listeningDecorator(executorService), backendDataSource);
+        ShardingTableMetaData shardingTableMetaData = new ShardingTableMetaData(MoreExecutors.listeningDecorator(executorService), new ProxyTableMetaDataExecutorAdapter(backendDataSource));
         if (!isMasterSlaveOnly()) {
             shardingTableMetaData.init(shardingRule);
         }

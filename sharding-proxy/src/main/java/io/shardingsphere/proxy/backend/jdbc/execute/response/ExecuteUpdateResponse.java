@@ -57,8 +57,9 @@ public final class ExecuteUpdateResponse implements ExecuteResponse {
         long lastInsertId = 0;
         for (OKPacket each : packets) {
             affectedRows += each.getAffectedRows();
-            // TODO :yonglun consider about insert multiple values
-            lastInsertId = each.getLastInsertId();
+            if (each.getLastInsertId() > lastInsertId) {
+                lastInsertId = each.getLastInsertId();
+            }
         }
         return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId));
     }

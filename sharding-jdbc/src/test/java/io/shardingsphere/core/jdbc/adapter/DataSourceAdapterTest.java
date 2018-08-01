@@ -40,10 +40,6 @@ import static org.mockito.Mockito.when;
 
 public final class DataSourceAdapterTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
-    public DataSourceAdapterTest(final DatabaseType databaseType) {
-        super(databaseType);
-    }
-    
     @Test
     public void assertUnwrapSuccess() throws SQLException {
         assertThat(getShardingDataSource().unwrap(Object.class), is((Object) getShardingDataSource()));

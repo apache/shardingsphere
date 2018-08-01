@@ -23,6 +23,7 @@ import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.MergedResult;
+import io.shardingsphere.core.metadata.table.executor.TableMetaDataLoader;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.routing.SQLRouteResult;
@@ -33,11 +34,13 @@ import io.shardingsphere.proxy.backend.jdbc.execute.response.ExecuteQueryRespons
 import io.shardingsphere.proxy.backend.jdbc.execute.response.ExecuteResponse;
 import io.shardingsphere.proxy.backend.jdbc.execute.response.ExecuteUpdateResponse;
 import io.shardingsphere.proxy.config.RuleRegistry;
+import io.shardingsphere.proxy.metadata.ProxyTableMetaDataExecutorAdapter;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
+import io.shardingsphere.proxy.util.ExecutorContext;
 import lombok.RequiredArgsConstructor;
 
 import javax.transaction.Status;
@@ -93,7 +96,10 @@ public final class JDBCBackendHandler implements BackendHandler {
         }
         executeResponse = executeEngine.execute(routeResult, isReturnGeneratedKeys);
         if (!RULE_REGISTRY.isMasterSlaveOnly() && SQLType.DDL == sqlStatement.getType() && !sqlStatement.getTables().isEmpty()) {
-            RULE_REGISTRY.getMetaData().getTable().refresh(sqlStatement.getTables().getSingleTableName(), RULE_REGISTRY.getShardingRule());
+            String logicTableName = sqlStatement.getTables().getSingleTableName();
+            TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(
+                    ExecutorContext.getInstance().getExecutorService(), new ProxyTableMetaDataExecutorAdapter(RULE_REGISTRY.getBackendDataSource()));
+            RULE_REGISTRY.getMetaData().getTable().put(logicTableName, tableMetaDataLoader.loadTableMetaData(logicTableName, RULE_REGISTRY.getShardingRule()));
         }
         return merge(sqlStatement);
     }
