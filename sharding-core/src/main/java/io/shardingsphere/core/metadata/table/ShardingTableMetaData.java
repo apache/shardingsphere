@@ -46,17 +46,13 @@ public class ShardingTableMetaData {
     
     private final Map<String, TableMetaData> tableMetaDataMap = new ConcurrentHashMap<>();
     
-    public ShardingTableMetaData(final ListeningExecutorService executorService, final TableMetaDataExecutorAdapter executorAdapter) {
+    public ShardingTableMetaData(final ShardingRule shardingRule, final ListeningExecutorService executorService, final TableMetaDataExecutorAdapter executorAdapter) {
         tableLoader = new TableLoader(executorAdapter);
         tableMetaDataLoader = new TableMetaDataLoader(executorService, executorAdapter);
+        init(shardingRule);
     }
     
-    /**
-     * Initialize sharding meta data.
-     *
-     * @param shardingRule sharding rule
-     */
-    public void init(final ShardingRule shardingRule) {
+    private void init(final ShardingRule shardingRule) {
         try {
             initLogicTables(shardingRule);
             initDefaultTables(shardingRule);
