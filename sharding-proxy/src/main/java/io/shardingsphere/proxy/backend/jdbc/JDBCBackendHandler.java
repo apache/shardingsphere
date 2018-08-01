@@ -34,7 +34,7 @@ import io.shardingsphere.proxy.backend.jdbc.execute.response.ExecuteQueryRespons
 import io.shardingsphere.proxy.backend.jdbc.execute.response.ExecuteResponse;
 import io.shardingsphere.proxy.backend.jdbc.execute.response.ExecuteUpdateResponse;
 import io.shardingsphere.proxy.config.RuleRegistry;
-import io.shardingsphere.proxy.metadata.ProxyTableMetaDataExecutorAdapter;
+import io.shardingsphere.proxy.config.ProxyTableMetaDataExecutorAdapter;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryResponsePackets;

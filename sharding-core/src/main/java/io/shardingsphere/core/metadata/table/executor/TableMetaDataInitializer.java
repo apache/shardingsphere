@@ -50,6 +50,7 @@ public final class TableMetaDataInitializer {
     
     /**
      * Load all table meta data.
+     * 
      * @param shardingRule sharding rule
      * @return all table meta data
      */

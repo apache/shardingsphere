@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.metadata;
+package io.shardingsphere.proxy.config;
 
 import io.shardingsphere.core.metadata.table.executor.TableMetaDataExecutorAdapter;
 import io.shardingsphere.proxy.backend.jdbc.datasource.JDBCBackendDataSource;
