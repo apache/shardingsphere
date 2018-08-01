@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.common.base;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import io.shardingsphere.core.common.env.DatabaseEnvironment;
 import io.shardingsphere.core.common.env.ShardingJdbcDatabaseTester;
