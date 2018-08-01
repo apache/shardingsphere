@@ -43,8 +43,7 @@ public final class JDBCShardingRefreshHandler implements RefreshHandler {
     @Override
     public void execute() throws SQLException {
         Map<String, Connection> connectionMap = getConnectionMap(shardingConnection.getShardingContext().getShardingRule().getTableRule(logicTableName));
-        shardingConnection.getShardingContext().getMetaData().getTable().refresh(
-                shardingConnection.getShardingContext().getShardingRule().getTableRule(logicTableName), shardingConnection.getShardingContext().getShardingRule(), connectionMap);
+        shardingConnection.getShardingContext().getMetaData().getTable().refresh(logicTableName, shardingConnection.getShardingContext().getShardingRule(), connectionMap);
     }
 
     private Map<String, Connection> getConnectionMap(final TableRule tableRule) throws SQLException {

@@ -62,30 +62,26 @@ public abstract class ShardingTableMetaData {
      */
     public void init(final ShardingRule shardingRule) {
         try {
-            for (TableRule each : getTableRules(shardingRule)) {
-                refresh(each, shardingRule);
-            }
+            initLogicTables(shardingRule);
+            initDefaultTables(shardingRule);
         } catch (final SQLException ex) {
             throw new ShardingException(ex);
         }
     }
     
-    private Collection<TableRule> getTableRules(final ShardingRule shardingRule) throws SQLException {
-        Collection<TableRule> result = new LinkedList<>(shardingRule.getTableRules());
-        result.addAll(getDefaultTableRules(shardingRule));
-        return result;
+    private void initLogicTables(final ShardingRule shardingRule) {
+        for (TableRule each : shardingRule.getTableRules()) {
+            refresh(each.getLogicTable(), shardingRule);
+        }
     }
     
-    private Collection<TableRule> getDefaultTableRules(final ShardingRule shardingRule) throws SQLException {
-        Optional<String> defaultDataSourceName = shardingRule.findActualDefaultDataSourceName();
-        if (!defaultDataSourceName.isPresent()) {
-            return Collections.emptyList();
+    private void initDefaultTables(final ShardingRule shardingRule) throws SQLException {
+        Optional<String> actualDefaultDataSourceName = shardingRule.findActualDefaultDataSourceName();
+        if (actualDefaultDataSourceName.isPresent()) {
+            for (String each : getAllTableNames(actualDefaultDataSourceName.get())) {
+                refresh(each, shardingRule);
+            }
         }
-        Collection<TableRule> result = new LinkedList<>();
-        for (String each : getAllTableNames(defaultDataSourceName.get())) {
-            result.add(shardingRule.getTableRule(each));
-        }
-        return result;
     }
     
     private Collection<String> getAllTableNames(final String dataSourceName) throws SQLException {
@@ -104,22 +100,22 @@ public abstract class ShardingTableMetaData {
     /**
      * Refresh table meta data.
      *
-     * @param tableRule table rule
+     * @param logicTableName logic table name
      * @param shardingRule sharding rule
      */
-    public void refresh(final TableRule tableRule, final ShardingRule shardingRule) {
-        refresh(tableRule, shardingRule, Collections.<String, Connection>emptyMap());
+    public void refresh(final String logicTableName, final ShardingRule shardingRule) {
+        refresh(logicTableName, shardingRule, Collections.<String, Connection>emptyMap());
     }
     
     /**
      * Refresh table meta data.
      *
-     * @param tableRule table rule
+     * @param logicTableName logic table name
      * @param shardingRule sharding rule
      * @param connectionMap connection map passing from sharding connection
      */
-    public void refresh(final TableRule tableRule, final ShardingRule shardingRule, final Map<String, Connection> connectionMap) {
-        tableMetaDataMap.put(tableRule.getLogicTable(), loadTableMetaData(tableRule, shardingRule.getShardingDataSourceNames(), connectionMap));
+    public void refresh(final String logicTableName, final ShardingRule shardingRule, final Map<String, Connection> connectionMap) {
+        tableMetaDataMap.put(logicTableName, loadTableMetaData(shardingRule.getTableRule(logicTableName), shardingRule.getShardingDataSourceNames(), connectionMap));
     }
     
     private TableMetaData loadTableMetaData(final TableRule tableRule, final ShardingDataSourceNames shardingDataSourceNames, final Map<String, Connection> connectionMap) {

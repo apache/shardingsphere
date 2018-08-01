@@ -93,7 +93,7 @@ public final class JDBCBackendHandler implements BackendHandler {
         }
         executeResponse = executeEngine.execute(routeResult, isReturnGeneratedKeys);
         if (!RULE_REGISTRY.isMasterSlaveOnly() && SQLType.DDL == sqlStatement.getType() && !sqlStatement.getTables().isEmpty()) {
-            RULE_REGISTRY.getMetaData().getTable().refresh(RULE_REGISTRY.getShardingRule().getTableRule(sqlStatement.getTables().getSingleTableName()), RULE_REGISTRY.getShardingRule());
+            RULE_REGISTRY.getMetaData().getTable().refresh(sqlStatement.getTables().getSingleTableName(), RULE_REGISTRY.getShardingRule());
         }
         return merge(sqlStatement);
     }
