@@ -59,7 +59,7 @@ public final class TableMetaDataLoader {
      * @param shardingRule sharding rule
      */
     public TableMetaData loadTableMetaData(final String logicTableName, final ShardingRule shardingRule) {
-        return loadTableMetaData(shardingRule.getTableRule(logicTableName), shardingRule.getShardingDataSourceNames());
+        return loadTableMetaData(shardingRule.getTableRuleByLogicTableName(logicTableName), shardingRule.getShardingDataSourceNames());
     }
     
     private TableMetaData loadTableMetaData(final TableRule tableRule, final ShardingDataSourceNames shardingDataSourceNames) {
