@@ -8,12 +8,8 @@
     <logger name="io.shardingsphere" level="info" additivity="false">
         <appender-ref ref="console"/>
     </logger>
-    <logger name="org.dbunit" level="info" additivity="false">
-        <appender-ref ref="console"/>
-    </logger>
     <logger name="io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler" level="off" />
-    <logger name="org.dbunit.database.DatabaseTableMetaData" level="off" />
-    
+
     <root>
         <level value="error" />
         <appender-ref ref="console" />
