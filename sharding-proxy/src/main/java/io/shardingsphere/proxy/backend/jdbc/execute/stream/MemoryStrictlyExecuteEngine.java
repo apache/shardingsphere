@@ -73,9 +73,8 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
     private List<Future<ExecuteResponseUnit>> asyncExecute(final boolean isReturnGeneratedKeys, final Collection<SQLExecutionUnit> sqlExecutionUnits) throws SQLException {
         List<Future<ExecuteResponseUnit>> result = new LinkedList<>();
         for (SQLExecutionUnit each : sqlExecutionUnits) {
-            final String dataSourceName = each.getDataSource();
             final String actualSQL = each.getSqlUnit().getSql();
-            final Statement statement = getJdbcExecutorWrapper().createStatement(backendConnection.getConnection(dataSourceName), actualSQL, isReturnGeneratedKeys);
+            final Statement statement = getJdbcExecutorWrapper().createStatement(backendConnection.getConnection(each.getDataSource()), actualSQL, isReturnGeneratedKeys);
             result.add(getExecutorService().submit(new Callable<ExecuteResponseUnit>() {
                 
                 @Override
