@@ -19,23 +19,18 @@ package io.shardingsphere.core.common.base;
 
 import com.google.common.collect.Sets;
 import io.shardingsphere.core.common.env.DatabaseEnvironment;
-import io.shardingsphere.core.common.env.ShardingJdbcDatabaseTester;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
+import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.dbunit.IDatabaseTester;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.dbunit.operation.DatabaseOperation;
 import org.h2.tools.RunScript;
 import org.junit.AfterClass;
 
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.sql.Connection;
@@ -160,16 +155,13 @@ public abstract class AbstractSQLTest {
         }
     }
     
-    protected final void importDataSet() throws Exception {
-        DatabaseEnvironment dbEnv = new DatabaseEnvironment(DatabaseType.H2);
-        for (String each : getInitDataSetFiles()) {
-            InputStream is = AbstractSQLTest.class.getClassLoader().getResourceAsStream(each);
-            IDataSet dataSet = new FlatXmlDataSetBuilder().build(new InputStreamReader(is));
-            IDatabaseTester databaseTester = new ShardingJdbcDatabaseTester(dbEnv.getDriverClassName(), dbEnv.getURL(getDatabaseName(each)),
-                    dbEnv.getUsername(), dbEnv.getPassword(), dbEnv.getSchema(getDatabaseName(each)));
-            databaseTester.setSetUpOperation(DatabaseOperation.CLEAN_INSERT);
-            databaseTester.setDataSet(dataSet);
-            databaseTester.onSetup();
+    protected final void importDataSet() {
+        try {
+            ShardingConnection conn = shardingDataSource.getConnection();
+            RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/jdbc_data.sql")));
+            conn.close();
+        } catch (final SQLException ex) {
+            ex.printStackTrace();
         }
     }
 }

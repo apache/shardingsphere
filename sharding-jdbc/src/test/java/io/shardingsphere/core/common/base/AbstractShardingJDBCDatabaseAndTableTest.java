@@ -39,7 +39,7 @@ import java.util.Map;
 public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractSQLTest {
 
     @Before
-    public void cleanAndInitTable() throws Exception {
+    public void cleanAndInitTable() {
         importDataSet();
     }
 
