@@ -101,7 +101,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
     }
     
     private void setParameterTypes(final MySQLPacketPayload payload, final int parametersCount) {
-        List<BinaryStatementParameterType> parameterHeaders = new ArrayList<>(parametersCount);
+        List<BinaryStatementParameterType> parameterTypes = new ArrayList<>(parametersCount);
         for (int parameterIndex = 0; parameterIndex < parametersCount; parameterIndex++) {
             if (nullBitmap.isNullParameter(parameterIndex)) {
                 binaryStatementParameters.add(new BinaryStatementParameter(NULL_PARAMETER_DEFAULT_COLUMN_TYPE, NULL_PARAMETER_DEFAULT_UNSIGNED_FLAG));
@@ -109,20 +109,21 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
             }
             ColumnType columnType = ColumnType.valueOf(payload.readInt1());
             int unsignedFlag = payload.readInt1();
-            binaryStatementParameters.add(new BinaryStatementParameter(columnType, unsignedFlag));
-            parameterHeaders.add(new BinaryStatementParameterType(columnType, unsignedFlag));
+            BinaryStatementParameter binaryStatementParameter = new BinaryStatementParameter(columnType, unsignedFlag);
+            binaryStatementParameters.add(binaryStatementParameter);
+            parameterTypes.add(binaryStatementParameter.getType());
         }
-        binaryStatement.setParameterTypes(parameterHeaders);
+        binaryStatement.setParameterTypes(parameterTypes);
     }
     
     private void setParameterTypesFromCache(final int parametersCount) {
-        Iterator<BinaryStatementParameterType> parameterHeaders = binaryStatement.getParameterTypes().iterator();
+        Iterator<BinaryStatementParameterType> parameterTypes = binaryStatement.getParameterTypes().iterator();
         for (int i = 0; i < parametersCount; i++) {
             if (nullBitmap.isNullParameter(i)) {
                 binaryStatementParameters.add(new BinaryStatementParameter(NULL_PARAMETER_DEFAULT_COLUMN_TYPE, NULL_PARAMETER_DEFAULT_UNSIGNED_FLAG));
                 continue;
             }
-            BinaryStatementParameterType preparedStatementParameterHeader = parameterHeaders.next();
+            BinaryStatementParameterType preparedStatementParameterHeader = parameterTypes.next();
             binaryStatementParameters.add(new BinaryStatementParameter(preparedStatementParameterHeader.getColumnType(), preparedStatementParameterHeader.getUnsignedFlag()));
         }
     }
