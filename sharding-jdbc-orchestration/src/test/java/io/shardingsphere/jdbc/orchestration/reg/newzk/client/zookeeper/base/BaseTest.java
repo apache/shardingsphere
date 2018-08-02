@@ -33,8 +33,7 @@ public class BaseTest {
     protected void sleep(final long tick) {
         try {
             Thread.sleep(tick);
-        } catch (final InterruptedException ex) {
-            // ignore
+        } catch (final InterruptedException ignore) {
         }
     }
 }
