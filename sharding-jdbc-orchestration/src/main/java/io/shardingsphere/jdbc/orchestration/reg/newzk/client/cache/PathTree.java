@@ -231,7 +231,7 @@ public final class PathTree {
             final String value = provider.getDataString(path);
             put(path, value);
         } catch (final KeeperException | InterruptedException ex) {
-            if (ex instanceof KeeperException.NoNodeException) {
+            if (ex instanceof KeeperException.NoNodeException || ex instanceof KeeperException.ConnectionLossException) {
                 log.debug(ex.getMessage());
                 return;
             }

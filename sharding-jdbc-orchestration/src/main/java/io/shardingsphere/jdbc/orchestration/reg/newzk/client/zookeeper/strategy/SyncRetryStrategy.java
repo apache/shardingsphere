@@ -20,6 +20,7 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayRetryPolicy;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.RetryCallable;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.RetryResultCallable;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -52,7 +53,7 @@ public class SyncRetryStrategy extends UsualStrategy {
 
     @Override
     public byte[] getData(final String key) throws KeeperException, InterruptedException {
-        RetryCallable<byte[]> retryCallable = new RetryCallable<byte[]>(getProvider(), delayRetryPolicy) {
+        RetryResultCallable<byte[]> retryCallable = new RetryResultCallable<byte[]>(getProvider(), delayRetryPolicy) {
             
             @Override
             public void call() throws KeeperException, InterruptedException {
@@ -64,7 +65,7 @@ public class SyncRetryStrategy extends UsualStrategy {
     
     @Override
     public boolean checkExists(final String key) throws KeeperException, InterruptedException {
-        RetryCallable<Boolean> retryCallable = new RetryCallable<Boolean>(getProvider(), delayRetryPolicy) {
+        RetryResultCallable<Boolean> retryCallable = new RetryResultCallable<Boolean>(getProvider(), delayRetryPolicy) {
             
             @Override
             public void call() throws KeeperException, InterruptedException {
@@ -76,7 +77,7 @@ public class SyncRetryStrategy extends UsualStrategy {
     
     @Override
     public boolean checkExists(final String key, final Watcher watcher) throws KeeperException, InterruptedException {
-        RetryCallable<Boolean> retryCallable = new RetryCallable<Boolean>(getProvider(), delayRetryPolicy) {
+        RetryResultCallable<Boolean> retryCallable = new RetryResultCallable<Boolean>(getProvider(), delayRetryPolicy) {
             
             @Override
             public void call() throws KeeperException, InterruptedException {
@@ -88,7 +89,7 @@ public class SyncRetryStrategy extends UsualStrategy {
     
     @Override
     public List<String> getChildren(final String key) throws KeeperException, InterruptedException {
-        RetryCallable<List<String>> retryCallable = new RetryCallable<List<String>>(getProvider(), delayRetryPolicy) {
+        RetryResultCallable<List<String>> retryCallable = new RetryResultCallable<List<String>>(getProvider(), delayRetryPolicy) {
             
             @Override
             public void call() throws KeeperException, InterruptedException {
