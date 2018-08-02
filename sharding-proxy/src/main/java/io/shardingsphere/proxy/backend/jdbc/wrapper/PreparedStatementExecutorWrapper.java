@@ -28,7 +28,7 @@ import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingsphere.proxy.config.RuleRegistry;
-import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute.PreparedStatementParameter;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.BinaryStatementParameter;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.Connection;
@@ -48,7 +48,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     
     private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
     
-    private final List<PreparedStatementParameter> preparedStatementParameters;
+    private final List<BinaryStatementParameter> binaryStatementParameters;
     
     @Override
     public SQLRouteResult route(final String sql, final DatabaseType databaseType) {
@@ -67,10 +67,10 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     private SQLRouteResult doShardingRoute(final String sql, final DatabaseType databaseType) {
         PreparedStatementRoutingEngine routingEngine = new PreparedStatementRoutingEngine(
                 sql, RULE_REGISTRY.getShardingRule(), RULE_REGISTRY.getMetaData().getTable(), databaseType, RULE_REGISTRY.isShowSQL(), RULE_REGISTRY.getMetaData().getDataSource());
-        return routingEngine.route(Lists.transform(preparedStatementParameters, new Function<PreparedStatementParameter, Object>() {
+        return routingEngine.route(Lists.transform(binaryStatementParameters, new Function<BinaryStatementParameter, Object>() {
             
             @Override
-            public Object apply(final PreparedStatementParameter input) {
+            public Object apply(final BinaryStatementParameter input) {
                 return input.getValue();
             }
         }));
@@ -79,8 +79,8 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     @Override
     public Statement createStatement(final Connection connection, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
         PreparedStatement result = isReturnGeneratedKeys ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sql);
-        for (int i = 0; i < preparedStatementParameters.size(); i++) {
-            result.setObject(i + 1, preparedStatementParameters.get(i).getValue());
+        for (int i = 0; i < binaryStatementParameters.size(); i++) {
+            result.setObject(i + 1, binaryStatementParameters.get(i).getValue());
         }
         return result;
     }

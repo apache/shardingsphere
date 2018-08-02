@@ -22,13 +22,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * Binary prepared statement parameter header.
+ * Binary prepared statement parameter type.
  *
  * @author zhangyonglun
  */
 @AllArgsConstructor
 @Getter
-public final class BinaryStatementParameterHeader {
+public final class BinaryStatementParameterType {
     
     private final ColumnType columnType;
     
