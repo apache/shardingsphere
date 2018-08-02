@@ -41,5 +41,11 @@ public abstract class TestResultCallable extends RetryResultCallable {
         test();
     }
     
+    /**
+     * Test exec.
+     *
+     * @throws KeeperException Zookeeper Exception
+     * @throws InterruptedException InterruptedException
+     */
     public abstract void test() throws KeeperException, InterruptedException;
 }
