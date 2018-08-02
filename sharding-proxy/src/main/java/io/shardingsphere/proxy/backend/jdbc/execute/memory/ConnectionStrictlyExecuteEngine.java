@@ -36,6 +36,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -72,20 +73,27 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
     private List<Future<Collection<ExecuteResponseUnit>>> asyncExecute(final boolean isReturnGeneratedKeys, final Map<String, Collection<SQLUnit>> sqlUnitGroups) throws SQLException {
         List<Future<Collection<ExecuteResponseUnit>>> result = new LinkedList<>();
         for (Entry<String, Collection<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
-            final Connection connection = backendConnection.getConnection(entry.getKey());
-            final Collection<SQLUnit> sqlUnits = entry.getValue();
+            final Map<SQLUnit, Statement> sqlUnitStatementMap = createSQLUnitStatement(entry.getKey(), entry.getValue(), isReturnGeneratedKeys);
             result.add(getExecutorService().submit(new Callable<Collection<ExecuteResponseUnit>>() {
                 
                 @Override
                 public Collection<ExecuteResponseUnit> call() throws SQLException {
                     Collection<ExecuteResponseUnit> result = new LinkedList<>();
-                    for (SQLUnit each : sqlUnits) {
-                        Statement statement = getJdbcExecutorWrapper().createStatement(connection, each.getSql(), isReturnGeneratedKeys);
-                        result.add(executeWithoutMetadata(statement, each.getSql(), isReturnGeneratedKeys));
+                    for (Entry<SQLUnit, Statement> each : sqlUnitStatementMap.entrySet()) {
+                        result.add(executeWithoutMetadata(each.getValue(), each.getKey().getSql(), isReturnGeneratedKeys));
                     }
                     return result;
                 }
             }));
+        }
+        return result;
+    }
+    
+    private Map<SQLUnit, Statement> createSQLUnitStatement(final String dataSourceName, final Collection<SQLUnit> sqlUnits, final boolean isReturnGeneratedKeys) throws SQLException {
+        Map<SQLUnit, Statement> result = new HashMap<>(sqlUnits.size(), 1);
+        Connection connection = backendConnection.getConnection(dataSourceName);
+        for (SQLUnit each : sqlUnits) {
+            result.put(each, getJdbcExecutorWrapper().createStatement(connection, each.getSql(), isReturnGeneratedKeys));
         }
         return result;
     }

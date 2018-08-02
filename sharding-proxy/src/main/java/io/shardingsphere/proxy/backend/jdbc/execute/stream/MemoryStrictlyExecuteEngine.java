@@ -70,16 +70,15 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
                 ? getExecuteQueryResponse((ExecuteQueryResponseUnit) firstResponseUnit, futureList) : getExecuteUpdateResponse((ExecuteUpdateResponseUnit) firstResponseUnit, futureList);
     }
     
-    private List<Future<ExecuteResponseUnit>> asyncExecute(final boolean isReturnGeneratedKeys, final Collection<SQLExecutionUnit> sqlExecutionUnits) {
+    private List<Future<ExecuteResponseUnit>> asyncExecute(final boolean isReturnGeneratedKeys, final Collection<SQLExecutionUnit> sqlExecutionUnits) throws SQLException {
         List<Future<ExecuteResponseUnit>> result = new LinkedList<>();
         for (SQLExecutionUnit each : sqlExecutionUnits) {
-            final String dataSourceName = each.getDataSource();
             final String actualSQL = each.getSqlUnit().getSql();
+            final Statement statement = getJdbcExecutorWrapper().createStatement(backendConnection.getConnection(each.getDataSource()), actualSQL, isReturnGeneratedKeys);
             result.add(getExecutorService().submit(new Callable<ExecuteResponseUnit>() {
                 
                 @Override
                 public ExecuteResponseUnit call() throws SQLException {
-                    Statement statement = getJdbcExecutorWrapper().createStatement(backendConnection.getConnection(dataSourceName), actualSQL, isReturnGeneratedKeys);
                     return executeWithoutMetadata(statement, actualSQL, isReturnGeneratedKeys);
                 }
             }));
