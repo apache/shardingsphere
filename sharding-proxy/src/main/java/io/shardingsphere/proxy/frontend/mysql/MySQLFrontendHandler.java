@@ -80,8 +80,20 @@ public final class MySQLFrontendHandler extends FrontendHandler {
         new ExecutorGroup(context.channel().id()).getExecutorService().execute(new CommandExecutor(context, message));
     }
     
+    @Override
+    public void channelWritabilityChanged(final ChannelHandlerContext context) {
+        context.fireChannelWritabilityChanged();
+        if (context.channel().isWritable()) {
+            // TODO :yonglun MySQLFrontendHandler line 124, trigger here
+            synchronized (this) {
+                System.out.println("notify");
+                this.notifyAll();
+            }
+        }
+    }
+    
     @RequiredArgsConstructor
-    static class CommandExecutor implements Runnable {
+    class CommandExecutor implements Runnable {
         
         private final ChannelHandlerContext context;
         
@@ -122,7 +134,13 @@ public final class MySQLFrontendHandler extends FrontendHandler {
             while (queryCommandPacket.next()) {
                 // TODO: yonglun try to use wait notify
                 while (!context.channel().isWritable()) {
-                    continue;
+                    synchronized (MySQLFrontendHandler.this) {
+                        try {
+                            System.out.println("wait");
+                            MySQLFrontendHandler.this.wait();
+                        } catch (final InterruptedException ignore) {
+                        }
+                    }
                 }
                 DatabasePacket resultValue = queryCommandPacket.getResultValue();
                 currentSequenceId = resultValue.getSequenceId();
