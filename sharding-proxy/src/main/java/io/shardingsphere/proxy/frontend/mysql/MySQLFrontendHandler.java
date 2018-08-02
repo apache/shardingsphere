@@ -106,7 +106,9 @@ public final class MySQLFrontendHandler extends FrontendHandler {
                 }
             } catch (final SQLException ex) {
                 context.writeAndFlush(new ErrPacket(++currentSequenceId, ex));
+                // CHECKSTYLE: OFF
             } catch (final Exception ex) {
+                // CHECKSTYLE: ON
                 context.writeAndFlush(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
             }
         }

@@ -31,7 +31,7 @@ import static org.junit.Assert.assertTrue;
 
 public class AuthorityHandlerTest {
     
-    private final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
+    private final RuleRegistry ruleRegistry = RuleRegistry.getInstance();
     
     private final AuthorityHandler authorityHandler = new AuthorityHandler();
     
@@ -49,9 +49,9 @@ public class AuthorityHandlerTest {
         ProxyAuthority proxyAuthority = new ProxyAuthority();
         proxyAuthority.setUsername("root");
         proxyAuthority.setPassword("root");
-        Field field = RULE_REGISTRY.getClass().getDeclaredField("proxyAuthority");
+        Field field = ruleRegistry.getClass().getDeclaredField("proxyAuthority");
         field.setAccessible(true);
-        field.set(RULE_REGISTRY, proxyAuthority);
+        field.set(ruleRegistry, proxyAuthority);
     }
     
     private void reviseAuthorityHandler() throws NoSuchFieldException, IllegalAccessException {
@@ -69,7 +69,7 @@ public class AuthorityHandlerTest {
     
     @Test
     public void assertLoginWithoutPassword() {
-        RULE_REGISTRY.getProxyAuthority().setPassword("");
+        ruleRegistry.getProxyAuthority().setPassword("");
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
         assertTrue(authorityHandler.login("root", authResponse));
     }

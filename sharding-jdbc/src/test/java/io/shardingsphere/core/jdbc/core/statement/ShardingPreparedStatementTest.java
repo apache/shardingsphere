@@ -19,7 +19,6 @@ package io.shardingsphere.core.jdbc.core.statement;
 
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.common.base.AbstractShardingJDBCDatabaseAndTableTest;
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.executor.event.DMLExecutionEvent;
 import io.shardingsphere.core.executor.event.EventExecutionType;
 import io.shardingsphere.core.jdbc.JDBCTestSQL;

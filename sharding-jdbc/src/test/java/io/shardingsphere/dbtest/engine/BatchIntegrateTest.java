@@ -92,7 +92,7 @@ public abstract class BatchIntegrateTest extends BaseIntegrateTest {
     }
     
     @BeforeClass
-    public static void initDatabasesAndTables(){
+    public static void initDatabasesAndTables() {
         createDatabasesAndTables();
     }
     

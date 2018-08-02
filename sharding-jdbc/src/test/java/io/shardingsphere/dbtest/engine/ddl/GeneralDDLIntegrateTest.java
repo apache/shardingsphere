@@ -17,6 +17,7 @@
 
 package io.shardingsphere.dbtest.engine.ddl;
 
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.dbtest.cases.assertion.ddl.DDLIntegrateTestCaseAssertion;
@@ -65,7 +66,7 @@ public final class GeneralDDLIntegrateTest extends BaseDDLIntegrateTest {
         try (Connection connection = getDataSource().getConnection()) {
             dropTableIfExisted(connection);
             if (!Strings.isNullOrEmpty(assertion.getInitSql())) {
-                for (String sql : assertion.getInitSql().split(";")) {
+                for (String sql : Splitter.on(";").trimResults().splitToList(assertion.getInitSql())) {
                     connection.prepareStatement(sql).executeUpdate();
                 }
             }
