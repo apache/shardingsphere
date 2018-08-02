@@ -20,24 +20,25 @@ package io.shardingsphere.proxy.transport.mysql.packet.command.query.binary;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Prepared statement registry.
+ * Binary prepared statement registry.
  *
  * @author zhangliang
  * @author zhangyonglun
  */
 @NoArgsConstructor(access = AccessLevel.NONE)
-public final class PreparedStatementRegistry {
+public final class BinaryStatementRegistry {
     
-    private static final PreparedStatementRegistry INSTANCE = new PreparedStatementRegistry();
+    private static final BinaryStatementRegistry INSTANCE = new BinaryStatementRegistry();
     
-    private final ConcurrentMap<String, Integer> sqlToStatementIdMap = new ConcurrentHashMap<>(65535, 1);
+    private final ConcurrentMap<String, Integer> statementIdAssigner = new ConcurrentHashMap<>(65535, 1);
     
-    private final ConcurrentMap<Integer, BinaryPreparedStatementUnit> statementIdToBinaryPreparedStatementUnitMap = new ConcurrentHashMap<>(65535, 1);
+    private final ConcurrentMap<Integer, BinaryStatement> binaryStatements = new ConcurrentHashMap<>(65535, 1);
     
     private final AtomicInteger sequence = new AtomicInteger();
     
@@ -46,7 +47,7 @@ public final class PreparedStatementRegistry {
      * 
      * @return prepared statement registry instance
      */
-    public static PreparedStatementRegistry getInstance() {
+    public static BinaryStatementRegistry getInstance() {
         return INSTANCE;
     }
     
@@ -58,23 +59,33 @@ public final class PreparedStatementRegistry {
      * @return statement ID
      */
     public int register(final String sql, final int parametersCount) {
-        Integer result = sqlToStatementIdMap.get(sql);
+        Integer result = statementIdAssigner.get(sql);
         if (null != result) {
             return result;
         }
-        int statementId = sequence.incrementAndGet();
-        statementIdToBinaryPreparedStatementUnitMap.putIfAbsent(statementId, new BinaryPreparedStatementUnit(sql, parametersCount));
-        sqlToStatementIdMap.putIfAbsent(sql, statementId);
-        return statementId;
+        result = sequence.incrementAndGet();
+        statementIdAssigner.putIfAbsent(sql, result);
+        binaryStatements.putIfAbsent(result, new BinaryStatement(sql, parametersCount));
+        return result;
     }
     
     /**
-     * Get binary prepared statement unit.
+     * Get binary prepared statement.
      *
      * @param statementId statement ID
-     * @return binary prepared statement unit
+     * @return binary prepared statement
      */
-    public BinaryPreparedStatementUnit getBinaryPreparedStatementUnit(final int statementId) {
-        return statementIdToBinaryPreparedStatementUnitMap.get(statementId);
+    public BinaryStatement getBinaryStatement(final int statementId) {
+        return binaryStatements.get(statementId);
+    }
+    
+    /**
+     * Set parameter headers.
+     * 
+     * @param statementId statement ID
+     * @param parameterHeaders parameter headers
+     */
+    public void setParameterHeader(final int statementId, final List<BinaryStatementParameterHeader> parameterHeaders) {
+        binaryStatements.get(statementId).setParameterHeaders(parameterHeaders);
     }
 }

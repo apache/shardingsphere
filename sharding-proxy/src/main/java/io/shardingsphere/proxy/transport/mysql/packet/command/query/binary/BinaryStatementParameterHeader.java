@@ -15,24 +15,20 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute;
+package io.shardingsphere.proxy.transport.mysql.packet.command.query.binary;
 
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.io.Serializable;
-
 /**
- * Prepared statement parameter header.
+ * Binary prepared statement parameter header.
  *
  * @author zhangyonglun
  */
 @AllArgsConstructor
 @Getter
-public class PreparedStatementParameterHeader implements Serializable {
-    
-    private static final long serialVersionUID = -672589695838350689L;
+public final class BinaryStatementParameterHeader {
     
     private final ColumnType columnType;
     

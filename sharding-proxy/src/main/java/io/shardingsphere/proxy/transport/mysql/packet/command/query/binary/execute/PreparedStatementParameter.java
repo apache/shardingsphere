@@ -18,6 +18,7 @@
 package io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute;
 
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.BinaryStatementParameterHeader;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,16 +31,16 @@ import lombok.Setter;
 @Setter
 public final class PreparedStatementParameter {
     
-    private final PreparedStatementParameterHeader preparedStatementParameterHeader;
+    private final BinaryStatementParameterHeader preparedStatementParameterHeader;
     
     private Object value;
     
     public PreparedStatementParameter(final ColumnType columnType, final int unsignedFlag) {
-        preparedStatementParameterHeader = new PreparedStatementParameterHeader(columnType, unsignedFlag);
+        preparedStatementParameterHeader = new BinaryStatementParameterHeader(columnType, unsignedFlag);
     }
     
     public PreparedStatementParameter(final ColumnType columnType, final int unsignedFlag, final String value) {
-        preparedStatementParameterHeader = new PreparedStatementParameterHeader(columnType, unsignedFlag);
+        preparedStatementParameterHeader = new BinaryStatementParameterHeader(columnType, unsignedFlag);
         this.value = value;
     }
     
