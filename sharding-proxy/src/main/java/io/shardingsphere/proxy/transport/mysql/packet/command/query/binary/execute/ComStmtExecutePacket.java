@@ -120,7 +120,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
             preparedStatementParameters.add(new PreparedStatementParameter(columnType, unsignedFlag));
             parameterHeaders.add(new BinaryStatementParameterHeader(columnType, unsignedFlag));
         }
-        BinaryStatementRegistry.getInstance().setParameterHeader(statementId, parameterHeaders);
+        binaryStatement.setParameterHeaders(parameterHeaders);
     }
     
     private void setParameterHeaderFromCache(final int numParameters) {
