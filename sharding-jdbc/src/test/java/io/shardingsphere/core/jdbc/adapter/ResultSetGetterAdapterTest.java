@@ -52,7 +52,6 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     
     private final String columnName = "user_id";
     
-
     @Before
     public void init() throws SQLException {
         ShardingConnection shardingConnection = getShardingDataSource().getConnection();

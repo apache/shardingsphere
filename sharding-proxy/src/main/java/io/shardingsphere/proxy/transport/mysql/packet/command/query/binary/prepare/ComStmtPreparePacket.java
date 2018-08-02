@@ -57,7 +57,6 @@ public final class ComStmtPreparePacket implements CommandPacket {
     public ComStmtPreparePacket(final int sequenceId, final MySQLPacketPayload payload) {
         this.sequenceId = sequenceId;
         sql = payload.readStringEOF();
-        
     }
     
     @Override
