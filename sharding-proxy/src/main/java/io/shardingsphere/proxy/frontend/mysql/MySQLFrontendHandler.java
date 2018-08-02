@@ -82,11 +82,8 @@ public final class MySQLFrontendHandler extends FrontendHandler {
     
     @Override
     public void channelWritabilityChanged(final ChannelHandlerContext context) {
-        context.fireChannelWritabilityChanged();
         if (context.channel().isWritable()) {
-            // TODO :yonglun MySQLFrontendHandler line 124, trigger here
             synchronized (this) {
-                System.out.println("notify");
                 this.notifyAll();
             }
         }
@@ -132,11 +129,9 @@ public final class MySQLFrontendHandler extends FrontendHandler {
         private void writeMoreResults(final QueryCommandPacket queryCommandPacket, final int headPacketsCount) throws SQLException {
             currentSequenceId = headPacketsCount;
             while (queryCommandPacket.next()) {
-                // TODO: yonglun try to use wait notify
                 while (!context.channel().isWritable()) {
                     synchronized (MySQLFrontendHandler.this) {
                         try {
-                            System.out.println("wait");
                             MySQLFrontendHandler.this.wait();
                         } catch (final InterruptedException ignore) {
                         }
