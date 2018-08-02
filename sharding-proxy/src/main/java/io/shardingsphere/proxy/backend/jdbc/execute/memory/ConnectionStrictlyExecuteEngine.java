@@ -90,8 +90,8 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
     }
     
     private Map<SQLUnit, Statement> createSQLUnitStatement(final String dataSourceName, final Collection<SQLUnit> sqlUnits, final boolean isReturnGeneratedKeys) throws SQLException {
-        final Map<SQLUnit, Statement> result = new HashMap<>();
-        final Connection connection = backendConnection.getConnection(dataSourceName);
+        Map<SQLUnit, Statement> result = new HashMap<>(sqlUnits.size(), 1);
+        Connection connection = backendConnection.getConnection(dataSourceName);
         for (SQLUnit each : sqlUnits) {
             result.put(each, getJdbcExecutorWrapper().createStatement(connection, each.getSql(), isReturnGeneratedKeys));
         }
