@@ -53,8 +53,6 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
     
     private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
     
-    private static final PreparedStatementRegistry PREPARED_STATEMENT_REGISTRY = PreparedStatementRegistry.getInstance();
-    
     private static final int ITERATION_COUNT = 1;
     
     private static final int RESERVED_BIT_LENGTH = 0;
@@ -82,7 +80,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
     public ComStmtExecutePacket(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         this.sequenceId = sequenceId;
         statementId = payload.readInt4();
-        binaryPreparedStatementUnit = PREPARED_STATEMENT_REGISTRY.getBinaryPreparedStatementUnit(statementId);
+        binaryPreparedStatementUnit = PreparedStatementRegistry.getInstance().getBinaryPreparedStatementUnit(statementId);
         flags = payload.readInt1();
         Preconditions.checkArgument(ITERATION_COUNT == payload.readInt4());
         int parametersCount = binaryPreparedStatementUnit.getParametersCount();
@@ -121,7 +119,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
             preparedStatementParameters.add(new PreparedStatementParameter(columnType, unsignedFlag));
             parameterHeaders.add(new PreparedStatementParameterHeader(columnType, unsignedFlag));
         }
-        PREPARED_STATEMENT_REGISTRY.setParameterHeaders(statementId, parameterHeaders);
+        binaryPreparedStatementUnit.setPreparedStatementParameterHeaders(parameterHeaders);
     }
     
     private void setParameterHeaderFromCache(final int numParameters) {

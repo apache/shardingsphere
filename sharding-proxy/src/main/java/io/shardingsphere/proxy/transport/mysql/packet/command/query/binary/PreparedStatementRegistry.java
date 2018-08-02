@@ -17,11 +17,9 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command.query.binary;
 
-import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute.PreparedStatementParameterHeader;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -78,15 +76,5 @@ public final class PreparedStatementRegistry {
      */
     public BinaryPreparedStatementUnit getBinaryPreparedStatementUnit(final int statementId) {
         return statementIdToBinaryPreparedStatementUnitMap.get(statementId);
-    }
-    
-    /**
-     * Set parameter headers.
-     *
-     * @param statementId statement ID
-     * @param preparedStatementParameterHeaders prepared statement parameter headers
-     */
-    public void setParameterHeaders(final int statementId, final List<PreparedStatementParameterHeader> preparedStatementParameterHeaders) {
-        statementIdToBinaryPreparedStatementUnitMap.get(statementId).setPreparedStatementParameterHeaders(preparedStatementParameterHeaders);
     }
 }
