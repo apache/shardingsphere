@@ -71,7 +71,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
      */
     public Map<String, Connection> getConnections(final String logicTableName) throws SQLException {
         Map<String, Connection> result = new HashMap<>();
-        for (DataNode each : shardingContext.getShardingRule().getTableRule(logicTableName).getActualDataNodes()) {
+        for (DataNode each : shardingContext.getShardingRule().getTableRuleByLogicTableName(logicTableName).getActualDataNodes()) {
             String dataSourceName = shardingContext.getShardingRule().getShardingDataSourceNames().getRawMasterDataSourceName(each.getDataSourceName());
             result.put(dataSourceName, getConnection(dataSourceName));
         }

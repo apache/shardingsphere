@@ -22,7 +22,9 @@ import io.shardingsphere.core.api.algorithm.fixture.TestComplexKeysShardingAlgor
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.api.config.strategy.ComplexShardingStrategyConfiguration;
+import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
 
 import javax.sql.DataSource;
@@ -30,6 +32,8 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -57,9 +61,8 @@ public abstract class AbstractStatementParserTest {
     }
     
     protected final ShardingTableMetaData createShardingTableMetaData() {
-        ShardingTableMetaData result = mock(ShardingTableMetaData.class);
-        when(result.containsTable("TABLE_XXX")).thenReturn(true);
-        when(result.getAllColumnNames("TABLE_XXX")).thenReturn(Arrays.asList("field1", "field2"));
-        return result;
+        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(1, 1);
+        tableMetaDataMap.put("TABLE_XXX", new TableMetaData(Arrays.asList(new ColumnMetaData("field1", "varchar", false), new ColumnMetaData("field2", "varchar", false))));
+        return new ShardingTableMetaData(tableMetaDataMap);
     }
 }

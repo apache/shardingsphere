@@ -15,9 +15,8 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.util;
+package io.shardingsphere.proxy.transport.mysql.packet.handshake;
 
-import io.shardingsphere.proxy.transport.mysql.packet.handshake.RandomGenerator;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

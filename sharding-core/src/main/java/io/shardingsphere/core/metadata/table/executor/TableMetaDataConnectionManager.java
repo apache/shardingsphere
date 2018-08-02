@@ -17,39 +17,29 @@
 
 package io.shardingsphere.core.metadata.table.executor;
 
-import lombok.RequiredArgsConstructor;
-
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.LinkedList;
 
 /**
- * Table loader.
+ * Manager of connection which for table meta data loader.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-public final class TableLoader {
-    
-    private final TableMetaDataExecutorAdapter executorAdapter;
+public interface TableMetaDataConnectionManager {
     
     /**
-     * Get all table names.
-     *
+     * Get connection.
+     * 
      * @param dataSourceName data source name
-     * @return table names
+     * @return connection
      * @throws SQLException SQL exception
      */
-    public Collection<String> getAllTableNames(final String dataSourceName) throws SQLException {
-        Collection<String> result = new LinkedList<>();
-        try (Connection connection = executorAdapter.getConnection(dataSourceName);
-             ResultSet resultSet = connection.getMetaData().getTables(null, null, null, null)) {
-            while (resultSet.next()) {
-                result.add(resultSet.getString("TABLE_NAME"));
-            }
-        }
-        return result;
-    }
+    Connection getConnection(String dataSourceName) throws SQLException;
+    
+    /**
+     * Is auto close created connection or not.
+     * 
+     * @return auto close or not
+     */
+    boolean isAutoClose();
 }

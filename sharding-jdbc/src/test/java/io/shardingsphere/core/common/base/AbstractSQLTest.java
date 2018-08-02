@@ -50,7 +50,7 @@ import java.util.Set;
 
 public abstract class AbstractSQLTest {
     
-    private static Map<DatabaseType, ShardingDataSource> shardingDataSources = new HashMap<>();
+    protected static ShardingDataSource shardingDataSource;
     
     private static Set<DatabaseType> databaseTypes = Sets.newHashSet(DatabaseType.H2);
     
@@ -58,10 +58,6 @@ public abstract class AbstractSQLTest {
     
     static {
         init();
-    }
-    
-    protected static Map<DatabaseType, ShardingDataSource> getShardingDataSources() {
-        return shardingDataSources;
     }
     
     private static synchronized void init() {
@@ -131,13 +127,12 @@ public abstract class AbstractSQLTest {
     
     @AfterClass
     public static void clear() throws SQLException, ReflectiveOperationException {
-        if (!shardingDataSources.isEmpty()) {
-            for (ShardingDataSource each : shardingDataSources.values()) {
-                each.close();
-                closeDataSources(getDataSourceMap(each).values());
-            }
-            shardingDataSources.clear();
+        if (shardingDataSource == null) {
+            return;
         }
+        shardingDataSource.close();
+        closeDataSources(getDataSourceMap(shardingDataSource).values());
+        shardingDataSource = null;
     }
     
     private void createDataSources(final String dbName, final DatabaseType type) {

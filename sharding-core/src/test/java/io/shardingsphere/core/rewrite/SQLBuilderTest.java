@@ -19,25 +19,37 @@ package io.shardingsphere.core.rewrite;
 
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.TablePlaceholder;
 import io.shardingsphere.core.rule.ShardingRule;
+import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class SQLBuilderTest {
+    
+    private ShardingDataSourceMetaData shardingDataSourceMetaData;
+    
+    @Before
+    public void setUp() {
+        Map<String, String> shardingDataSourceURLs = new LinkedHashMap<>();
+        shardingDataSourceURLs.put("ds0", "jdbc:mysql://127.0.0.1:3306/actual_db");
+        shardingDataSourceURLs.put("ds1", "jdbc:mysql://127.0.0.1:3306/actual_db");
+        shardingDataSourceMetaData = new ShardingDataSourceMetaData(shardingDataSourceURLs, createShardingRule(), DatabaseType.MySQL);
+    }
     
     @Test
     public void assertAppendLiteralsOnly() {
@@ -116,11 +128,11 @@ public final class SQLBuilderTest {
         sqlBuilder.appendLiterals("CREATE TABLE ");
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_0", "table_0"));
         sqlBuilder.appendLiterals(" ON ");
-        sqlBuilder.appendPlaceholder(new SchemaPlaceholder("ds", "table_0"));
+        sqlBuilder.appendPlaceholder(new SchemaPlaceholder("ds0", "table_0"));
         Map<String, String> tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_0", "table_1");
-        ShardingDataSourceMetaData shardingDataSourceMetaData = Mockito.mock(ShardingDataSourceMetaData.class);
-        Mockito.when(shardingDataSourceMetaData.getActualSchemaName(Mockito.anyString())).thenReturn("actual_db");
+//        ShardingDataSourceMetaData shardingDataSourceMetaData = Mockito.mock(ShardingDataSourceMetaData.class);
+//        Mockito.when(shardingDataSourceMetaData.getActualSchemaName(Mockito.anyString())).thenReturn("actual_db");
         assertThat(sqlBuilder.toSQL(null, tableTokens, createShardingRule(), shardingDataSourceMetaData).getSql(), is("SHOW CREATE TABLE table_1 ON actual_db"));
     }
     
@@ -182,8 +194,6 @@ public final class SQLBuilderTest {
         sqlBuilder.appendPlaceholder(new SchemaPlaceholder("ds", "table_0"));
         Map<String, String> tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_0", "table_1");
-        ShardingDataSourceMetaData shardingDataSourceMetaData = Mockito.mock(ShardingDataSourceMetaData.class);
-        Mockito.when(shardingDataSourceMetaData.getActualSchemaName(Mockito.anyString())).thenReturn("actual_db");
         assertThat(sqlBuilder.toSQL(null, tableTokens, createShardingRule(), shardingDataSourceMetaData).getSql(), is("SHOW CREATE TABLE `table_1` ON actual_db"));
     }
     
@@ -245,8 +255,6 @@ public final class SQLBuilderTest {
         sqlBuilder.appendPlaceholder(new SchemaPlaceholder("ds", "table_0"));
         Map<String, String> tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_0", "table_1");
-        ShardingDataSourceMetaData shardingDataSourceMetaData = Mockito.mock(ShardingDataSourceMetaData.class);
-        Mockito.when(shardingDataSourceMetaData.getActualSchemaName(Mockito.anyString())).thenReturn("actual_db");
         assertThat(sqlBuilder.toSQL(null, tableTokens, createShardingRule(), shardingDataSourceMetaData).getSql(), is("SHOW CREATE TABLE \"table_1\" ON actual_db"));
     }
     

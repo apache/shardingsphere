@@ -15,29 +15,28 @@
  * </p>
  */
 
-package io.shardingsphere.core.jdbc.metadata;
+package io.shardingsphere.proxy.config;
 
-import io.shardingsphere.core.metadata.table.executor.TableMetaDataExecutorAdapter;
+import io.shardingsphere.core.metadata.table.executor.TableMetaDataConnectionManager;
+import io.shardingsphere.proxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import lombok.RequiredArgsConstructor;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Map;
 
 /**
- * Table meta data executor adapter for JDBC with data source map.
+ * Manager of connection which for table meta data loader of proxy.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class DataSourceMapTableMetaDataExecutorAdapter implements TableMetaDataExecutorAdapter {
+public final class ProxyTableMetaDataConnectionManager implements TableMetaDataConnectionManager {
     
-    private final Map<String, DataSource> dataSourceMap;
+    private final JDBCBackendDataSource backendDataSource;
     
     @Override
     public Connection getConnection(final String dataSourceName) throws SQLException {
-        return dataSourceMap.get(dataSourceName).getConnection();
+        return backendDataSource.getDataSource(dataSourceName).getConnection();
     }
     
     @Override

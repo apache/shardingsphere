@@ -33,7 +33,7 @@ import java.util.Map.Entry;
  *
  * @author panjuan
  */
-public class ShardingDataSourceMetaData {
+public final class ShardingDataSourceMetaData {
     
     private final Map<String, DataSourceMetaData> dataSourceMetaDataMap;
     

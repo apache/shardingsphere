@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.OrderDirection;
+import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.optimizer.condition.ShardingCondition;
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;
 import io.shardingsphere.core.optimizer.insert.InsertShardingCondition;
@@ -41,7 +42,6 @@ import io.shardingsphere.core.parsing.parser.token.OrderByToken;
 import io.shardingsphere.core.parsing.parser.token.RowCountToken;
 import io.shardingsphere.core.parsing.parser.token.SchemaToken;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
-import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.routing.type.RoutingTable;
 import io.shardingsphere.core.routing.type.TableUnit;
 import io.shardingsphere.core.rule.DataNode;
@@ -49,11 +49,13 @@ import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.yaml.sharding.YamlShardingConfiguration;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -82,7 +84,7 @@ public final class SQLRewriteEngineTest {
     private ShardingDataSourceMetaData shardingDataSourceMetaData;
     
     @Before
-    public void setUp() throws IOException {
+    public void setUp() throws IOException, SQLException {
         URL url = SQLRewriteEngineTest.class.getClassLoader().getResource("yaml/rewrite-rule.yaml");
         Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
         YamlShardingConfiguration yamlShardingConfig = YamlShardingConfiguration.unmarshal(new File(url.getFile()));
@@ -93,8 +95,18 @@ public final class SQLRewriteEngineTest {
         dmlStatement = new DMLStatement();
         tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_x", "table_1");
-        shardingDataSourceMetaData = Mockito.mock(ShardingDataSourceMetaData.class);
-        Mockito.when(shardingDataSourceMetaData.getActualSchemaName(Mockito.anyString())).thenReturn("actual_db");
+        shardingDataSourceMetaData = new ShardingDataSourceMetaData(getDataSourceURLs(yamlShardingConfig), shardingRule, DatabaseType.H2);
+    }
+    
+    private Map<String, String> getDataSourceURLs(final YamlShardingConfiguration yamlShardingConfig) throws SQLException {
+        Map<String, DataSource> dataSources = yamlShardingConfig.getDataSources();
+        Map<String, String> result = new LinkedHashMap<>();
+        for (Map.Entry<String, DataSource> entry : dataSources.entrySet()) {
+            try (Connection connection = entry.getValue().getConnection()) {
+                result.put(entry.getKey(), connection.getMetaData().getURL());
+            }
+        }
+        return result;
     }
     
     @Test
@@ -425,7 +437,7 @@ public final class SQLRewriteEngineTest {
         selectStatement.getSqlTokens().add(new TableToken(18, 0, "table_x"));
         selectStatement.getSqlTokens().add(new SchemaToken(29, "table_x", "table_x"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SHOW CREATE TABLE table_x ON table_x", DatabaseType.MySQL, selectStatement, null, Collections.emptyList());
-        assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SHOW CREATE TABLE table_y ON actual_db"));
+        assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SHOW CREATE TABLE table_y ON db0"));
     }
     
     @Test
@@ -458,7 +470,7 @@ public final class SQLRewriteEngineTest {
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SHOW COLUMNS FROM table_x FROM 'sharding_db'", DatabaseType.MySQL, showTablesStatement, null, Collections.emptyList());
         Map<String, String> logicAndActualTableMap = new LinkedHashMap<>();
         logicAndActualTableMap.put("table_x", "table_x");
-        assertThat(rewriteEngine.rewrite(false).toSQL(null, logicAndActualTableMap, shardingRule, shardingDataSourceMetaData).getSql(), is("SHOW COLUMNS FROM table_x FROM actual_db"));
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, logicAndActualTableMap, shardingRule, shardingDataSourceMetaData).getSql(), is("SHOW COLUMNS FROM table_x FROM db0"));
     }
     
     @Test

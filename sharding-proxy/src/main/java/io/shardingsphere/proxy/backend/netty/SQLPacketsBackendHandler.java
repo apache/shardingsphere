@@ -37,7 +37,7 @@ import io.shardingsphere.proxy.backend.BackendHandler;
 import io.shardingsphere.proxy.backend.ResultPacket;
 import io.shardingsphere.proxy.backend.netty.mysql.MySQLQueryResult;
 import io.shardingsphere.proxy.config.RuleRegistry;
-import io.shardingsphere.proxy.metadata.ProxyTableMetaDataExecutorAdapter;
+import io.shardingsphere.proxy.config.ProxyTableMetaDataConnectionManager;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
@@ -143,8 +143,8 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
         if (!RULE_REGISTRY.isMasterSlaveOnly() && SQLType.DDL == sqlStatement.getType() && !sqlStatement.getTables().isEmpty()) {
             String logicTableName = sqlStatement.getTables().getSingleTableName();
             TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(
-                    ExecutorContext.getInstance().getExecutorService(), new ProxyTableMetaDataExecutorAdapter(RULE_REGISTRY.getBackendDataSource()));
-            RULE_REGISTRY.getMetaData().getTable().put(logicTableName, tableMetaDataLoader.loadTableMetaData(logicTableName, RULE_REGISTRY.getShardingRule()));
+                    ExecutorContext.getInstance().getExecutorService(), new ProxyTableMetaDataConnectionManager(RULE_REGISTRY.getBackendDataSource()));
+            RULE_REGISTRY.getMetaData().getTable().put(logicTableName, tableMetaDataLoader.load(logicTableName, RULE_REGISTRY.getShardingRule()));
         }
         return result;
     }

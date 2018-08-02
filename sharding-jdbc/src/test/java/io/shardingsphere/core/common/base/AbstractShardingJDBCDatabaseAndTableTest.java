@@ -45,7 +45,7 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
     
     @Before
     public void initShardingDataSources() throws SQLException {
-        if (!getShardingDataSources().isEmpty()) {
+        if (null != shardingDataSource) {
             return;
         }
         
@@ -77,7 +77,7 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
             shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new PreciseOrderShardingAlgorithm(), new RangeOrderShardingAlgorithm()));
             shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", new PreciseOrderShardingAlgorithm(), new RangeOrderShardingAlgorithm()));
             ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, entry.getValue().keySet());
-            getShardingDataSources().put(entry.getKey(), new ShardingDataSource(entry.getValue(), shardingRule));
+            shardingDataSource = new ShardingDataSource(entry.getValue(), shardingRule);
         }
     }
     
@@ -87,6 +87,6 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
     }
     
     protected ShardingDataSource getShardingDataSource() {
-        return getShardingDataSources().get(DatabaseType.H2);
+        return shardingDataSource;
     }
 }
