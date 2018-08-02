@@ -37,13 +37,13 @@ import java.util.List;
 
 @TestExecutionListeners(inheritListeners = false, listeners =
     {DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class})
-public abstract class AbstractSpringDBUnitTest extends AbstractJUnit4SpringContextTests {
+public abstract class AbstractSpringJUnitTest extends AbstractJUnit4SpringContextTests {
     
     @Resource
     @Getter
     private ShardingDataSource shardingDataSource;
     
-    private final ClassLoader classLoader = AbstractSpringDBUnitTest.class.getClassLoader();
+    private final ClassLoader classLoader = AbstractSpringJUnitTest.class.getClassLoader();
     
     @Before
     public void createSchema() throws SQLException {

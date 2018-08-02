@@ -27,7 +27,7 @@ import java.sql.SQLException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public abstract class AbstractShardingBothDataBasesAndTablesSpringDBUnitTest extends AbstractSpringDBUnitTest {
+public abstract class AbstractShardingBothDataBasesAndTablesJUnitTest extends AbstractSpringJUnitTest {
     
     @Test
     public void assertWithAllPlaceholders() throws SQLException {

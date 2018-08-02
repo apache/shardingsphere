@@ -17,7 +17,7 @@
 
 package io.shardingsphere.jdbc.spring.cases;
 
-import io.shardingsphere.jdbc.spring.AbstractShardingBothDataBasesAndTablesSpringDBUnitTest;
+import io.shardingsphere.jdbc.spring.AbstractShardingBothDataBasesAndTablesJUnitTest;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -26,7 +26,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 @ContextConfiguration(locations = "classpath:META-INF/rdb/withNamespaceLogicIndex.xml")
-public final class WithNamespaceLogicIndexTest extends AbstractShardingBothDataBasesAndTablesSpringDBUnitTest {
+public final class WithNamespaceLogicIndexTest extends AbstractShardingBothDataBasesAndTablesJUnitTest {
     
     @Test
     public void assertIndex() throws SQLException {
