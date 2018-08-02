@@ -65,7 +65,7 @@ public abstract class BaseClientTest extends BaseTest {
         getZooKeeper(testClient);
     }
     
-    private ZooKeeper getZooKeeper(final IClient client) {
+    protected ZooKeeper getZooKeeper(final IClient client) {
         return ((BaseClient) client).getHolder().getZooKeeper();
     }
     
