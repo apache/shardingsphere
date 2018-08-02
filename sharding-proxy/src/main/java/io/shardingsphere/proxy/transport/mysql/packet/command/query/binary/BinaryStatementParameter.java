@@ -17,24 +17,19 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command.query.binary;
 
-import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Binary prepared statement parameter.
  *
  * @author zhangyonglun
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
 public final class BinaryStatementParameter {
     
     private final BinaryStatementParameterType type;
     
-    private Object value;
-    
-    public BinaryStatementParameter(final ColumnType columnType, final int unsignedFlag) {
-        type = new BinaryStatementParameterType(columnType, unsignedFlag);
-    }
+    private final Object value;
 }
