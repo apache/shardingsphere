@@ -24,11 +24,11 @@ import lombok.Getter;
  *
  * @author zhangyonglun
  */
-@Getter
 public final class NullBitmap {
     
     private final int offset;
     
+    @Getter
     private final int[] nullBitmap;
     
     public NullBitmap(final int columnsNumbers, final int offset) {

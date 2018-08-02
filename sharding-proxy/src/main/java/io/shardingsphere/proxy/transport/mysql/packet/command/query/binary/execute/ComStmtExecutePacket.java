@@ -86,17 +86,12 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
         flags = payload.readInt1();
         Preconditions.checkArgument(ITERATION_COUNT == payload.readInt4());
         int parametersCount = binaryStatement.getParametersCount();
-        if (parametersCount > 0) {
-            nullBitmap = new NullBitmap(parametersCount, NULL_BITMAP_OFFSET);
-            for (int i = 0; i < nullBitmap.getNullBitmap().length; i++) {
-                nullBitmap.getNullBitmap()[i] = payload.readInt1();
-            }
-            newParametersBoundFlag = NewParametersBoundFlag.valueOf(payload.readInt1());
-            setParameterList(payload, parametersCount);
-        } else {
-            nullBitmap = null;
-            newParametersBoundFlag = null;
+        nullBitmap = new NullBitmap(parametersCount, NULL_BITMAP_OFFSET);
+        for (int i = 0; i < nullBitmap.getNullBitmap().length; i++) {
+            nullBitmap.getNullBitmap()[i] = payload.readInt1();
         }
+        newParametersBoundFlag = NewParametersBoundFlag.valueOf(payload.readInt1());
+        setParameterList(payload, parametersCount);
         jdbcBackendHandler = new JDBCBackendHandler(binaryStatement.getSql(), JDBCExecuteEngineFactory.createBinaryProtocolInstance(binaryStatementParameters, backendConnection));
     }
     
@@ -109,9 +104,9 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
         setParameterValue(payload, parametersCount);
     }
     
-    private void setParameterHeader(final MySQLPacketPayload payload, final int numParameters) {
+    private void setParameterHeader(final MySQLPacketPayload payload, final int parametersCount) {
         List<BinaryStatementParameterType> parameterHeaders = new ArrayList<>(32);
-        for (int i = 0; i < numParameters; i++) {
+        for (int i = 0; i < parametersCount; i++) {
             if (nullBitmap.isParameterNull(i)) {
                 binaryStatementParameters.add(new BinaryStatementParameter(NULL_PARAMETER_DEFAULT_COLUMN_TYPE, NULL_PARAMETER_DEFAULT_UNSIGNED_FLAG, null));
                 continue;
@@ -124,9 +119,9 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
         binaryStatement.setParameterTypes(parameterHeaders);
     }
     
-    private void setParameterHeaderFromCache(final int numParameters) {
+    private void setParameterHeaderFromCache(final int parametersCount) {
         Iterator<BinaryStatementParameterType> parameterHeaders = binaryStatement.getParameterTypes().iterator();
-        for (int i = 0; i < numParameters; i++) {
+        for (int i = 0; i < parametersCount; i++) {
             if (nullBitmap.isParameterNull(i)) {
                 binaryStatementParameters.add(new BinaryStatementParameter(NULL_PARAMETER_DEFAULT_COLUMN_TYPE, NULL_PARAMETER_DEFAULT_UNSIGNED_FLAG, null));
                 continue;
@@ -136,8 +131,8 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
         }
     }
     
-    private void setParameterValue(final MySQLPacketPayload payload, final int numParameters) {
-        for (int i = 0; i < numParameters; i++) {
+    private void setParameterValue(final MySQLPacketPayload payload, final int parametersCount) {
+        for (int i = 0; i < parametersCount; i++) {
             if (nullBitmap.isParameterNull(i)) {
                 continue;
             }
@@ -152,14 +147,10 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
         payload.writeInt4(statementId);
         payload.writeInt1(flags);
         payload.writeInt4(ITERATION_COUNT);
-        if (null != nullBitmap) {
-            for (int each : nullBitmap.getNullBitmap()) {
-                payload.writeInt1(each);
-            }
+        for (int each : nullBitmap.getNullBitmap()) {
+            payload.writeInt1(each);
         }
-        if (null != newParametersBoundFlag) {
-            payload.writeInt1(newParametersBoundFlag.getValue());
-        }
+        payload.writeInt1(newParametersBoundFlag.getValue());
         for (BinaryStatementParameter each : binaryStatementParameters) {
             payload.writeInt1(each.getType().getColumnType().getValue());
             payload.writeInt1(each.getType().getUnsignedFlag());
