@@ -71,23 +71,13 @@ public final class PreparedStatementRegistry {
     }
     
     /**
-     * Get SQL.
+     * Get binary prepared statement unit.
      *
      * @param statementId statement ID
-     * @return SQL
+     * @return binary prepared statement unit
      */
-    public String getSQL(final int statementId) {
-        return statementIdToBinaryPreparedStatementUnitMap.get(statementId).getSql();
-    }
-    
-    /**
-     * Get parameters count.
-     *
-     * @param statementId statement ID
-     * @return parameters count
-     */
-    public int getParametersCount(final int statementId) {
-        return statementIdToBinaryPreparedStatementUnitMap.get(statementId).getParametersCount();
+    public BinaryPreparedStatementUnit getBinaryPreparedStatementUnit(final int statementId) {
+        return statementIdToBinaryPreparedStatementUnitMap.get(statementId);
     }
     
     /**
@@ -98,15 +88,5 @@ public final class PreparedStatementRegistry {
      */
     public void setParameterHeaders(final int statementId, final List<PreparedStatementParameterHeader> preparedStatementParameterHeaders) {
         statementIdToBinaryPreparedStatementUnitMap.get(statementId).setPreparedStatementParameterHeaders(preparedStatementParameterHeaders);
-    }
-    
-    /**
-     * Get parameter header.
-     *
-     * @param statementId statement ID
-     * @return prepared statement parameters
-     */
-    public List<PreparedStatementParameterHeader> getParameterHeader(final int statementId) {
-        return statementIdToBinaryPreparedStatementUnitMap.get(statementId).getPreparedStatementParameterHeaders();
     }
 }
