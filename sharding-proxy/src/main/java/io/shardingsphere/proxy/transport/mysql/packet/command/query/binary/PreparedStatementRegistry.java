@@ -56,15 +56,16 @@ public final class PreparedStatementRegistry {
      * Register SQL.
      * 
      * @param sql SQL
+     * @param parametersCount parameters count
      * @return statement ID
      */
-    public int register(final String sql) {
+    public int register(final String sql, final int parametersCount) {
         Integer result = sqlToStatementIdMap.get(sql);
         if (null != result) {
             return result;
         }
         int statementId = sequence.incrementAndGet();
-        statementIdToBinaryPreparedStatementUnitMap.putIfAbsent(statementId, new BinaryPreparedStatementUnit(sql));
+        statementIdToBinaryPreparedStatementUnitMap.putIfAbsent(statementId, new BinaryPreparedStatementUnit(sql, parametersCount));
         sqlToStatementIdMap.putIfAbsent(sql, statementId);
         return statementId;
     }
@@ -77,6 +78,16 @@ public final class PreparedStatementRegistry {
      */
     public String getSQL(final int statementId) {
         return statementIdToBinaryPreparedStatementUnitMap.get(statementId).getSql();
+    }
+    
+    /**
+     * Get parameters count.
+     *
+     * @param statementId statement ID
+     * @return parameters count
+     */
+    public int getParametersCount(final int statementId) {
+        return statementIdToBinaryPreparedStatementUnitMap.get(statementId).getParametersCount();
     }
     
     /**

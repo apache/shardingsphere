@@ -19,20 +19,17 @@ package io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.exec
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.parsing.SQLParsingEngine;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.proxy.backend.ResultPacket;
-import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.proxy.backend.jdbc.JDBCBackendHandler;
+import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.proxy.backend.jdbc.execute.JDBCExecuteEngineFactory;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.constant.NewParametersBoundFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
-import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryCommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryCommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.PreparedStatementRegistry;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +42,7 @@ import java.util.List;
 /**
  * COM_STMT_EXECUTE command packet.
  * 
- * @see <a href="https://dev.mysql.com/doc/internals/en/com-stmt-execute.html">COM_QUERY</a>
+ * @see <a href="https://dev.mysql.com/doc/internals/en/com-stmt-execute.html">COM_STMT_EXECUTE</a>
  *
  * @author zhangyonglun
  */
@@ -84,13 +81,13 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
         statementId = payload.readInt4();
         flags = payload.readInt1();
         Preconditions.checkArgument(ITERATION_COUNT == payload.readInt4());
-        SQLStatement sqlStatement = new SQLParsingEngine(DatabaseType.MySQL, PREPARED_STATEMENT_REGISTRY.getSQL(statementId), RULE_REGISTRY.getShardingRule(), null).parse(true);
-        nullBitmap = new NullBitmap(sqlStatement.getParametersIndex(), RESERVED_BIT_LENGTH);
+        int parametersCount = PREPARED_STATEMENT_REGISTRY.getParametersCount(statementId);
+        nullBitmap = new NullBitmap(parametersCount, RESERVED_BIT_LENGTH);
         for (int i = 0; i < nullBitmap.getNullBitmap().length; i++) {
             nullBitmap.getNullBitmap()[i] = payload.readInt1();
         }
         newParametersBoundFlag = NewParametersBoundFlag.valueOf(payload.readInt1());
-        setParameterList(payload, sqlStatement.getParametersIndex(), newParametersBoundFlag);
+        setParameterList(payload, parametersCount, newParametersBoundFlag);
         jdbcBackendHandler = new JDBCBackendHandler(
                 PREPARED_STATEMENT_REGISTRY.getSQL(statementId), JDBCExecuteEngineFactory.createBinaryProtocolInstance(preparedStatementParameters, backendConnection));
     }
