@@ -27,17 +27,17 @@ import lombok.Getter;
 @Getter
 public final class NullBitmap {
     
-    private final int reservedBitLength;
+    private final int offset;
     
     private final int[] nullBitmap;
     
-    public NullBitmap(final int numColumns, final int reservedBitLength) {
-        this.reservedBitLength = reservedBitLength;
-        nullBitmap = new int[calculateBitmapBytes(numColumns, reservedBitLength)];
+    public NullBitmap(final int columnsNumbers, final int offset) {
+        this.offset = offset;
+        nullBitmap = new int[calculateBitmapBytes(columnsNumbers, offset)];
     }
     
-    private int calculateBitmapBytes(final int numColumns, final int reservedBitLength) {
-        return (numColumns + reservedBitLength + 7) / 8;
+    private int calculateBitmapBytes(final int columnsNumbers, final int offset) {
+        return (columnsNumbers + offset + 7) / 8;
     }
     
     /**
@@ -46,8 +46,8 @@ public final class NullBitmap {
      * @param index index
      */
     public void setNullBit(final int index) {
-        int bytePosition = (index + reservedBitLength) / 8;
-        int bitPositionInCurrentByte = (index + reservedBitLength) % 8;
+        int bytePosition = (index + offset) / 8;
+        int bitPositionInCurrentByte = (index + offset) % 8;
         nullBitmap[bytePosition] = 1 << bitPositionInCurrentByte;
     }
     

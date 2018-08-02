@@ -38,7 +38,7 @@ public final class BinaryResultSetRowPacket implements MySQLPacket {
     
     private static final int PACKET_HEADER = 0x00;
     
-    private static final int RESERVED_BIT_LENGTH = 2;
+    private static final int NULL_BITMAP_OFFSET = 2;
     
     private final int sequenceId;
     
@@ -51,7 +51,7 @@ public final class BinaryResultSetRowPacket implements MySQLPacket {
     @Override
     public void write(final MySQLPacketPayload payload) {
         payload.writeInt1(PACKET_HEADER);
-        NullBitmap nullBitmap = new NullBitmap(numColumns, RESERVED_BIT_LENGTH);
+        NullBitmap nullBitmap = new NullBitmap(numColumns, NULL_BITMAP_OFFSET);
         for (int i = 0; i < numColumns; i++) {
             if (null == data.get(i)) {
                 nullBitmap.setNullBit(i);

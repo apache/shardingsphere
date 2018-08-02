@@ -56,7 +56,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
     
     private static final int ITERATION_COUNT = 1;
     
-    private static final int RESERVED_BIT_LENGTH = 0;
+    private static final int NULL_BITMAP_OFFSET = 0;
     
     private static final ColumnType NULL_PARAMETER_DEFAULT_COLUMN_TYPE = ColumnType.MYSQL_TYPE_STRING;
     
@@ -86,7 +86,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
         Preconditions.checkArgument(ITERATION_COUNT == payload.readInt4());
         int parametersCount = binaryStatement.getParametersCount();
         if (parametersCount > 0) {
-            nullBitmap = new NullBitmap(parametersCount, RESERVED_BIT_LENGTH);
+            nullBitmap = new NullBitmap(parametersCount, NULL_BITMAP_OFFSET);
             for (int i = 0; i < nullBitmap.getNullBitmap().length; i++) {
                 nullBitmap.getNullBitmap()[i] = payload.readInt1();
             }
