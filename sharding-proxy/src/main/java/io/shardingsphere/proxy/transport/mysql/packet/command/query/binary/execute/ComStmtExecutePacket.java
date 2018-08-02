@@ -73,7 +73,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
     
     private final NewParametersBoundFlag newParametersBoundFlag;
     
-    private final List<BinaryStatementParameter> binaryStatementParameters = new ArrayList<>(32);
+    private final List<BinaryStatementParameter> binaryStatementParameters;
     
     private final BinaryStatement binaryStatement;
     
@@ -91,6 +91,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
             nullBitmap.getNullBitmap()[i] = payload.readInt1();
         }
         newParametersBoundFlag = NewParametersBoundFlag.valueOf(payload.readInt1());
+        binaryStatementParameters = new ArrayList<>(parametersCount);
         if (NewParametersBoundFlag.PARAMETER_TYPE_EXIST == newParametersBoundFlag) {
             setParameterTypes(payload, parametersCount);
         } else {
