@@ -38,14 +38,10 @@ public final class TableMetaData {
     
     private final Collection<ColumnMetaData> columnMetaData;
     
-    public TableMetaData() {
-        columnMetaData = new LinkedList<>();
-    }
-    
     /**
      * Get all column names.
      *
-     * @return column name list.
+     * @return column names
      */
     public Collection<String> getAllColumnNames() {
         Collection<String> result = new LinkedList<>();

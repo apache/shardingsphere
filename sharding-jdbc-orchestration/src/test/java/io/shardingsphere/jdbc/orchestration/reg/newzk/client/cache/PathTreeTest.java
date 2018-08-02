@@ -18,11 +18,13 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.ClientFactory;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseTest;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.TestSupport;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
 import io.shardingsphere.jdbc.orchestration.util.EmbedTestingServer;
+import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -30,12 +32,11 @@ import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.ZooDefs;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.IOException;
-
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -92,22 +93,120 @@ public class PathTreeTest extends BaseTest {
         }
     }
     
-    @Ignore
+    @Test
+    public void assertGetChildren() throws KeeperException, InterruptedException {
+        final String keyB = "a/b";
+        final String valueB = "bbb11";
+
+        final String keyC = "a/c";
+        final String valueC = "ccc11";
+        
+        try {
+            pathTree.watch();
+            testClient.createAllNeedPath(keyB, valueB, CreateMode.PERSISTENT);
+            Thread.sleep(200);
+            testClient.createAllNeedPath(keyC, valueC, CreateMode.PERSISTENT);
+            Thread.sleep(200);
+    
+            assertThat(pathTree.getChildren("a"), hasItems(valueB, valueC));
+        } finally {
+            testClient.deleteCurrentBranch(keyC);
+            testClient.deleteCurrentBranch(keyB);
+        }
+    }
+    
+    @Test
+    public void assertPut() throws KeeperException, InterruptedException {
+        final String key = "a/b/bb";
+        final String value = "bbb11";
+        pathTree.put(key, value);
+        assertThat(pathTree.getValue("a"), is(ZookeeperConstants.NOTHING_DATA));
+        assertThat(pathTree.getValue("a/b"), is(ZookeeperConstants.NOTHING_DATA));
+        assertThat(pathTree.getValue(key), is(value.getBytes(ZookeeperConstants.UTF_8)));
+    }
+    
+    @Test
+    public void assertGetValue() throws KeeperException, InterruptedException {
+        final String key = "a/b/bb";
+        final String value = "bbb11";
+        try {
+            pathTree.watch();
+            testClient.createAllNeedPath(key, value, CreateMode.PERSISTENT);
+            Thread.sleep(200);
+            assertThat(pathTree.getValue(key), is(value.getBytes(ZookeeperConstants.UTF_8)));
+        } finally {
+            testClient.deleteCurrentBranch(key);
+        }
+    }
+    
+    @Test
+    public void assertDelete() throws KeeperException, InterruptedException {
+        final String key = "a/b/bb";
+        final String value = "bbb11";
+        try {
+            pathTree.watch();
+            testClient.createAllNeedPath(key, value, CreateMode.PERSISTENT);
+            Thread.sleep(200);
+            pathTree.delete(key);
+            assertNull(pathTree.getValue(key));
+        } finally {
+            testClient.deleteCurrentBranch(key);
+        }
+    }
+
     @Test
     public void assertWatch() throws KeeperException, InterruptedException {
-        final String keyB = "a/b/bb";
-        final String valueB = "bbb11";
+        final String key = "a/b/bb";
+        final String value = "bbb11";
+        final String valueNew = "111";
         try {
             createRootOnly(testClient);
             pathTree.watch();
-    
-            testClient.createAllNeedPath(keyB, valueB, CreateMode.PERSISTENT);
-            testClient.update(keyB, "111");
+
+            testClient.createAllNeedPath(key, value, CreateMode.PERSISTENT);
+            Thread.sleep(200);
+            testClient.update(key, valueNew);
             
             Thread.sleep(1000);
-            assertThat(new String(pathTree.getValue(keyB)), is(valueB));
+            assertThat(pathTree.getValue(key), is(valueNew.getBytes(ZookeeperConstants.UTF_8)));
         } finally {
-            testClient.deleteCurrentBranch(keyB);
+            testClient.deleteCurrentBranch(key);
+        }
+    }
+    
+    @Test
+    public void assertRefreshPeriodic() throws KeeperException, InterruptedException {
+        final String key = "a/b/bb";
+        final String value = "bbb11";
+        final String valueNew = "111";
+        try {
+            testClient.createAllNeedPath(key, value, CreateMode.PERSISTENT);
+            pathTree.refreshPeriodic(100);
+            sleep(2000);
+            assertThat(pathTree.getValue(key), is(value.getBytes(ZookeeperConstants.UTF_8)));
+            testClient.update(key, valueNew);
+            sleep(2000);
+            assertThat(pathTree.getValue(key), is(valueNew.getBytes(ZookeeperConstants.UTF_8)));
+            
+            pathTree.refreshPeriodic(10);
+        } catch (final IllegalStateException ex) {
+            assertThat(ex.getMessage(), is("period already set"));
+        } finally {
+            pathTree.stopRefresh();
+            testClient.deleteCurrentBranch(key);
+        }
+    }
+    
+    @Test
+    public void assertStopRefresh() throws KeeperException, InterruptedException {
+        try {
+            pathTree.refreshPeriodic(1);
+            sleep(100);
+            pathTree.refreshPeriodic(1);
+        } catch (final IllegalStateException ex) {
+            assertThat(ex.getMessage(), is("period already set"));
+            pathTree.stopRefresh();
+            pathTree.refreshPeriodic(1);
         }
     }
 }

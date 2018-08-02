@@ -43,11 +43,12 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
     
     /**
      * Create master-slave data source.
-     *
+     * 
      * @param dataSourceMap data source map
      * @param masterSlaveRuleConfig master-slave rule configuration
-     * @param orchestrationConfig orchestration configuration
      * @param configMap config map
+     * @param props properties
+     * @param orchestrationConfig orchestration configuration
      * @return master-slave data source
      * @throws SQLException SQL exception
      */

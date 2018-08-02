@@ -90,37 +90,36 @@ public class InsertValuesClauseParser implements SQLClauseParser {
     private void parseValues(final InsertStatement insertStatement) {
         int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
         int endPosition;
+        int startParametersIndex;
         insertStatement.getSqlTokens().add(new InsertValuesToken(beginPosition, insertStatement.getTables().getSingleTableName()));
         do {
             beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
+            startParametersIndex = insertStatement.getParametersIndex();
             lexerEngine.accept(Symbol.LEFT_PAREN);
             List<SQLExpression> sqlExpressions = new LinkedList<>();
-            int columnsCount = 0;
+            int count = 0;
             do {
                 sqlExpressions.add(basicExpressionParser.parse(insertStatement));
                 skipsDoubleColon();
-                columnsCount++;
+                count++;
             } while (lexerEngine.skipIfEqual(Symbol.COMMA));
-            removeGenerateKeyColumn(insertStatement, columnsCount);
-            columnsCount = 0;
-            int parametersCount = 0;
+            removeGenerateKeyColumn(insertStatement, count);
+            count = 0;
             AndCondition andCondition = new AndCondition();
             for (Column each : insertStatement.getColumns()) {
-                SQLExpression sqlExpression = sqlExpressions.get(columnsCount);
+                SQLExpression sqlExpression = sqlExpressions.get(count);
                 if (shardingRule.isShardingColumn(each)) {
                     andCondition.getConditions().add(new Condition(each, sqlExpression));
                 }
-                if (insertStatement.getGenerateKeyColumnIndex() == columnsCount) {
+                if (insertStatement.getGenerateKeyColumnIndex() == count) {
                     insertStatement.getGeneratedKeyConditions().add(createGeneratedKeyCondition(each, sqlExpression));
                 }
-                columnsCount++;
-                if (sqlExpression instanceof SQLPlaceholderExpression) {
-                    parametersCount++;
-                }
+                count++;
             }
             endPosition = lexerEngine.getCurrentToken().getEndPosition();
             lexerEngine.accept(Symbol.RIGHT_PAREN);
-            insertStatement.getInsertValues().getInsertValues().add(new InsertValue(DefaultKeyword.VALUES, lexerEngine.getInput().substring(beginPosition, endPosition), parametersCount));
+            InsertValue insertValue = new InsertValue(DefaultKeyword.VALUES, lexerEngine.getInput().substring(beginPosition, endPosition), insertStatement.getParametersIndex() - startParametersIndex);
+            insertStatement.getInsertValues().getInsertValues().add(insertValue);
             insertStatement.getConditions().getOrCondition().getAndConditions().add(andCondition);
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));
         insertStatement.setInsertValuesListLastPosition(endPosition);

@@ -33,7 +33,7 @@ import java.util.Map.Entry;
  *
  * @author panjuan
  */
-public class ShardingDataSourceMetaData {
+public final class ShardingDataSourceMetaData {
     
     private final Map<String, DataSourceMetaData> dataSourceMetaDataMap;
     
@@ -42,26 +42,35 @@ public class ShardingDataSourceMetaData {
     }
     
     private Map<String, DataSourceMetaData> getDataSourceMetaDataMap(final Map<String, String> dataSourceURLs, final ShardingRule shardingRule, final DatabaseType databaseType) {
-        Map<String, DataSourceMetaData> dataSourceMetaDataMap = new LinkedHashMap<>(dataSourceURLs.size(), 1);
-        for (Entry<String, String> entry : dataSourceURLs.entrySet()) {
-            dataSourceMetaDataMap.put(entry.getKey(), DataSourceMetaDataFactory.newInstance(databaseType, entry.getValue()));
-        }
-        return handleMasterSlaveDataSources(shardingRule, dataSourceMetaDataMap);
+        Map<String, DataSourceMetaData> dataSourceMetaData = getDataSourceMetaDataMapForSharding(dataSourceURLs, databaseType);
+        return shardingRule.getMasterSlaveRules().isEmpty() ? dataSourceMetaData : getDataSourceMetaDataMapForMasterSlave(shardingRule, dataSourceMetaData);
     }
     
-    private Map<String, DataSourceMetaData> handleMasterSlaveDataSources(final ShardingRule shardingRule, final Map<String, DataSourceMetaData> dataSourceMetaDataMap) {
-        Map<String, DataSourceMetaData> result = new LinkedHashMap<>();
-        if (shardingRule.getMasterSlaveRules().isEmpty()) {
-            return dataSourceMetaDataMap;
+    private Map<String, DataSourceMetaData> getDataSourceMetaDataMapForSharding(final Map<String, String> dataSourceURLs, final DatabaseType databaseType) {
+        Map<String, DataSourceMetaData> result = new LinkedHashMap<>(dataSourceURLs.size(), 1);
+        for (Entry<String, String> entry : dataSourceURLs.entrySet()) {
+            result.put(entry.getKey(), DataSourceMetaDataFactory.newInstance(databaseType, entry.getValue()));
         }
+        return result;
+    }
+    
+    private Map<String, DataSourceMetaData> getDataSourceMetaDataMapForMasterSlave(final ShardingRule shardingRule, final Map<String, DataSourceMetaData> dataSourceMetaDataMap) {
+        Map<String, DataSourceMetaData> result = new LinkedHashMap<>(dataSourceMetaDataMap);
         for (Entry<String, DataSourceMetaData> entry : dataSourceMetaDataMap.entrySet()) {
             Optional<MasterSlaveRule> masterSlaveRule = shardingRule.findMasterSlaveRule(entry.getKey());
-            // TODO original DataSourceMetaData do not remove?
-            if (masterSlaveRule.isPresent()) {
-                result.put(masterSlaveRule.get().getName(), entry.getValue());
+            if (masterSlaveRule.isPresent() && masterSlaveRule.get().getMasterDataSourceName().equals(entry.getKey())) {
+                reviseMasterSlaveMetaData(result, entry.getValue(), masterSlaveRule.get());
             }
         }
         return result;
+    }
+    
+    private void reviseMasterSlaveMetaData(final Map<String, DataSourceMetaData> dataSourceMetaDataMap, final DataSourceMetaData masterSlaveDataSourceMetaData, final MasterSlaveRule masterSlaveRule) {
+        dataSourceMetaDataMap.put(masterSlaveRule.getName(), masterSlaveDataSourceMetaData);
+        dataSourceMetaDataMap.remove(masterSlaveRule.getMasterDataSourceName());
+        for (String each : masterSlaveRule.getSlaveDataSourceNames()) {
+            dataSourceMetaDataMap.remove(each);
+        }
     }
     
     /**

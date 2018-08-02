@@ -18,7 +18,6 @@
 package io.shardingsphere.core.jdbc.adapter;
 
 import io.shardingsphere.core.common.base.AbstractShardingJDBCDatabaseAndTableTest;
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.jdbc.core.statement.ShardingPreparedStatement;
 import io.shardingsphere.core.jdbc.util.JDBCTestSQL;
@@ -54,10 +53,6 @@ public final class PreparedStatementAdapterTest extends AbstractShardingJDBCData
     private final List<ShardingConnection> shardingConnections = new ArrayList<>();
     
     private final List<PreparedStatement> preparedStatements = new ArrayList<>();
-    
-    public PreparedStatementAdapterTest(final DatabaseType databaseType) {
-        super(databaseType);
-    }
     
     @Before
     public void init() {

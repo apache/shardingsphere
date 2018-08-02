@@ -67,7 +67,7 @@ public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
     }
 
     @BeforeClass
-    public static void initDatabases(){
+    public static void initDatabases() {
         createDatabases();
     }
 

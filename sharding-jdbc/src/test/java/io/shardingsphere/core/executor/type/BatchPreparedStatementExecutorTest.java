@@ -145,7 +145,6 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     }
     
     private Collection<BatchPreparedStatementUnit> createPreparedStatementUnits(final String sql, final PreparedStatement preparedStatement, final String dataSource, final int addBatchTimes) {
-        Collection<BatchPreparedStatementUnit> result = new LinkedList<>();
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals(sql);
         BatchPreparedStatementUnit batchPreparedStatementUnit = 
@@ -155,6 +154,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
             batchPreparedStatementUnit.getSqlExecutionUnit().getSqlUnit().getParameterSets().add(Collections.<Object>singletonList(i + 1));
             batchPreparedStatementUnit.mapAddBatchCount(i);
         }
+        Collection<BatchPreparedStatementUnit> result = new LinkedList<>();
         result.add(batchPreparedStatementUnit);
         return result;
     }

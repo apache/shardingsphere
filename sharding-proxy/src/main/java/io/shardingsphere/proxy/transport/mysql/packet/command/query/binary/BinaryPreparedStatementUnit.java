@@ -36,5 +36,7 @@ public final class BinaryPreparedStatementUnit {
     
     private final String sql;
     
+    private final int parametersCount;
+    
     private List<PreparedStatementParameterHeader> preparedStatementParameterHeaders;
 }

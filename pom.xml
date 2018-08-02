@@ -45,7 +45,6 @@
         <hikari-cp.version>2.4.11</hikari-cp.version>
         <junit.version>4.12</junit.version>
         <hamcrest.version>1.3</hamcrest.version>
-        <dbunit.version>2.5.3</dbunit.version>
         <mockito.version>2.7.21</mockito.version>
         <grpc.version>1.7.0</grpc.version>
         <protobuf.version>3.4.0</protobuf.version>
@@ -191,12 +190,6 @@
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.dbunit</groupId>
-                <artifactId>dbunit</artifactId>
-                <version>${dbunit.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>

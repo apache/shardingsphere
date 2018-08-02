@@ -74,7 +74,7 @@ public final class TableBroadcastRoutingEngine implements RoutingEngine {
     
     private Collection<TableUnit> getAllTableUnits(final String logicTableName) {
         Collection<TableUnit> result = new LinkedList<>();
-        TableRule tableRule = shardingRule.getTableRule(logicTableName);
+        TableRule tableRule = shardingRule.getTableRuleByLogicTableName(logicTableName);
         for (DataNode each : tableRule.getActualDataNodes()) {
             TableUnit tableUnit = new TableUnit(each.getDataSourceName());
             tableUnit.getRoutingTables().add(new RoutingTable(logicTableName, each.getTableName()));

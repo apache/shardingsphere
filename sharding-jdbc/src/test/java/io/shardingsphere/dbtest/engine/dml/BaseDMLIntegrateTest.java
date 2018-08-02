@@ -62,7 +62,7 @@ public abstract class BaseDMLIntegrateTest extends SingleIntegrateTest {
     }
 
     @BeforeClass
-    public static void initDatabasesAndTables(){
+    public static void initDatabasesAndTables() {
         createDatabasesAndTables();
     }
 

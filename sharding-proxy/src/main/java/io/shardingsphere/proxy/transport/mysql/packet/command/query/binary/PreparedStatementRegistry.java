@@ -56,27 +56,28 @@ public final class PreparedStatementRegistry {
      * Register SQL.
      * 
      * @param sql SQL
+     * @param parametersCount parameters count
      * @return statement ID
      */
-    public int register(final String sql) {
+    public int register(final String sql, final int parametersCount) {
         Integer result = sqlToStatementIdMap.get(sql);
         if (null != result) {
             return result;
         }
         int statementId = sequence.incrementAndGet();
-        statementIdToBinaryPreparedStatementUnitMap.putIfAbsent(statementId, new BinaryPreparedStatementUnit(sql));
+        statementIdToBinaryPreparedStatementUnitMap.putIfAbsent(statementId, new BinaryPreparedStatementUnit(sql, parametersCount));
         sqlToStatementIdMap.putIfAbsent(sql, statementId);
         return statementId;
     }
     
     /**
-     * Get SQL.
+     * Get binary prepared statement unit.
      *
      * @param statementId statement ID
-     * @return SQL
+     * @return binary prepared statement unit
      */
-    public String getSQL(final int statementId) {
-        return statementIdToBinaryPreparedStatementUnitMap.get(statementId).getSql();
+    public BinaryPreparedStatementUnit getBinaryPreparedStatementUnit(final int statementId) {
+        return statementIdToBinaryPreparedStatementUnitMap.get(statementId);
     }
     
     /**
@@ -87,15 +88,5 @@ public final class PreparedStatementRegistry {
      */
     public void setParameterHeaders(final int statementId, final List<PreparedStatementParameterHeader> preparedStatementParameterHeaders) {
         statementIdToBinaryPreparedStatementUnitMap.get(statementId).setPreparedStatementParameterHeaders(preparedStatementParameterHeaders);
-    }
-    
-    /**
-     * Get parameter header.
-     *
-     * @param statementId statement ID
-     * @return prepared statement parameters
-     */
-    public List<PreparedStatementParameterHeader> getParameterHeader(final int statementId) {
-        return statementIdToBinaryPreparedStatementUnitMap.get(statementId).getPreparedStatementParameterHeaders();
     }
 }

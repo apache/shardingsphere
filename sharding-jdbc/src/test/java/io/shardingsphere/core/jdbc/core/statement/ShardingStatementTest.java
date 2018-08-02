@@ -18,7 +18,6 @@
 package io.shardingsphere.core.jdbc.core.statement;
 
 import io.shardingsphere.core.common.base.AbstractShardingJDBCDatabaseAndTableTest;
-import io.shardingsphere.core.constant.DatabaseType;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -35,41 +34,33 @@ public final class ShardingStatementTest extends AbstractShardingJDBCDatabaseAnd
     
     private String sql = "INSERT INTO t_order_item(order_id, user_id, status) VALUES (%d, %d, '%s')";
     
-    public ShardingStatementTest(final DatabaseType databaseType) {
-        super(databaseType);
-    }
-    
     @Test
     public void assertGetGeneratedKeys() throws SQLException {
-        if (DatabaseType.PostgreSQL != getCurrentDatabaseType()) {
-            try (
-                    Connection connection = getShardingDataSource().getConnection();
-                    Statement stmt = connection.createStatement()) {
-                assertFalse(stmt.execute(String.format(sql, 1, 1, "init")));
-                assertFalse(stmt.execute(String.format(sql, 1, 1, "init"), Statement.NO_GENERATED_KEYS));
-                assertFalse(stmt.execute(String.format(sql, 1, 1, "init"), Statement.RETURN_GENERATED_KEYS));
-                ResultSet generatedKeysResultSet = stmt.getGeneratedKeys();
-                assertTrue(generatedKeysResultSet.next());
-                assertThat(generatedKeysResultSet.getLong(1), is(3L));
-                assertFalse(stmt.execute(String.format(sql, 1, 1, "init"), new int[]{1}));
-                generatedKeysResultSet = stmt.getGeneratedKeys();
-                assertTrue(generatedKeysResultSet.next());
-                assertThat(generatedKeysResultSet.getLong(1), is(4L));
-                assertFalse(stmt.execute(String.format(sql, 1, 1, "init"), new String[]{"user_id"}));
-                generatedKeysResultSet = stmt.getGeneratedKeys();
-                assertTrue(generatedKeysResultSet.next());
-                assertThat(generatedKeysResultSet.getLong(1), is(5L));
-                assertFalse(stmt.execute(String.format(sql, 1, 1, "init"), new int[]{2}));
-                generatedKeysResultSet = stmt.getGeneratedKeys();
-                assertTrue(generatedKeysResultSet.next());
-                assertThat(generatedKeysResultSet.getLong(1), is(6L));
-                if (DatabaseType.Oracle != getCurrentDatabaseType()) {
-                    assertFalse(stmt.execute(String.format(sql, 1, 1, "init"), new String[]{"no"}));
-                    generatedKeysResultSet = stmt.getGeneratedKeys();
-                    assertTrue(generatedKeysResultSet.next());
-                    assertThat(generatedKeysResultSet.getLong(1), is(7L));
-                }
-            }
+        try (
+                Connection connection = getShardingDataSource().getConnection();
+                Statement stmt = connection.createStatement()) {
+            assertFalse(stmt.execute(String.format(sql, 1, 1, "init")));
+            assertFalse(stmt.execute(String.format(sql, 1, 1, "init"), Statement.NO_GENERATED_KEYS));
+            assertFalse(stmt.execute(String.format(sql, 1, 1, "init"), Statement.RETURN_GENERATED_KEYS));
+            ResultSet generatedKeysResultSet = stmt.getGeneratedKeys();
+            assertTrue(generatedKeysResultSet.next());
+            assertThat(generatedKeysResultSet.getLong(1), is(3L));
+            assertFalse(stmt.execute(String.format(sql, 1, 1, "init"), new int[]{1}));
+            generatedKeysResultSet = stmt.getGeneratedKeys();
+            assertTrue(generatedKeysResultSet.next());
+            assertThat(generatedKeysResultSet.getLong(1), is(4L));
+            assertFalse(stmt.execute(String.format(sql, 1, 1, "init"), new String[]{"user_id"}));
+            generatedKeysResultSet = stmt.getGeneratedKeys();
+            assertTrue(generatedKeysResultSet.next());
+            assertThat(generatedKeysResultSet.getLong(1), is(5L));
+            assertFalse(stmt.execute(String.format(sql, 1, 1, "init"), new int[]{2}));
+            generatedKeysResultSet = stmt.getGeneratedKeys();
+            assertTrue(generatedKeysResultSet.next());
+            assertThat(generatedKeysResultSet.getLong(1), is(6L));
+            assertFalse(stmt.execute(String.format(sql, 1, 1, "init"), new String[]{"no"}));
+            generatedKeysResultSet = stmt.getGeneratedKeys();
+            assertTrue(generatedKeysResultSet.next());
+            assertThat(generatedKeysResultSet.getLong(1), is(7L));
         }
     }
 }

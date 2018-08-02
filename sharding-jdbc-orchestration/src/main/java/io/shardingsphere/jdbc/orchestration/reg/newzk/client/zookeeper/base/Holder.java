@@ -20,17 +20,17 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 import com.google.common.base.Strings;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
+import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
-
-import java.io.IOException;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 /*
  * Zookeeper connection holder.
@@ -85,20 +85,18 @@ public class Holder {
         return new Watcher() {
             
             public void process(final WatchedEvent event) {
+                log.debug("event-----------:" + event.toString());
                 processConnection(event);
+                if (!isConnected()) {
+                    return;
+                }
                 processGlobalListener(event);
-                // todo filter event type or path, add watch
-                //reWatch(event);
+                // todo filter event type or path
                 if (event.getType() == Event.EventType.None) {
                     return;
                 }
-                if (!context.getWatchers().isEmpty()) {
-                    for (ZookeeperEventListener zookeeperEventListener : context.getWatchers().values()) {
-                        if (zookeeperEventListener.getPath() == null || event.getPath().startsWith(zookeeperEventListener.getPath())) {
-                            log.debug("listener process:{}, listener:{}", zookeeperEventListener.getPath(), zookeeperEventListener.getKey());
-                            zookeeperEventListener.process(event);
-                        }
-                    }
+                if (Event.EventType.NodeDeleted == event.getType() || checkPath(event.getPath())) {
+                    processUsualListener(event);
                 }
             }
         };
@@ -116,9 +114,7 @@ public class Holder {
                 try {
                     log.warn("startWatcher Event.KeeperState.Expired");
                     reset();
-                    // CHECKSTYLE:OFF
-                } catch (final Exception ex) {
-                    // CHECKSTYLE:ON
+                } catch (final IOException | InterruptedException ex) {
                     log.error("event state Expired:{}", ex.getMessage(), ex);
                 }
             } else if (Watcher.Event.KeeperState.Disconnected == event.getState()) {
@@ -132,6 +128,25 @@ public class Holder {
             context.getGlobalZookeeperEventListener().process(event);
             log.debug("Holder {} process", ZookeeperConstants.GLOBAL_LISTENER_KEY);
         }
+    }
+    
+    private void processUsualListener(final WatchedEvent event) {
+        if (!context.getWatchers().isEmpty()) {
+            for (ZookeeperEventListener zookeeperEventListener : context.getWatchers().values()) {
+                if (zookeeperEventListener.getPath() == null || event.getPath().startsWith(zookeeperEventListener.getPath())) {
+                    log.debug("listener process:{}, listener:{}", zookeeperEventListener.getPath(), zookeeperEventListener.getKey());
+                    zookeeperEventListener.process(event);
+                }
+            }
+        }
+    }
+    
+    private boolean checkPath(final String path) {
+        try {
+            return zooKeeper.exists(path, true) != null;
+        } catch (final KeeperException | InterruptedException ignore) {
+        }
+        return false;
     }
     
     /**
@@ -163,9 +178,7 @@ public class Holder {
             connected = false;
             log.debug("zk closed");
             this.context.close();
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
+        } catch (final InterruptedException ex) {
             log.warn("Holder close:{}", ex.getMessage());
         }
     }

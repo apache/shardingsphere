@@ -63,7 +63,7 @@
 #    proxy.transaction.mode: NONE
 #    proxy.max.working.threads: 16  # The default value is availableProcessors * 2.
 #    sql.show: false
-
+#
 #orchestration:
 #  name: orchestration_ds
 #  type: SHARDING
@@ -71,7 +71,7 @@
 #  zookeeper:
 #    namespace: orchestration
 #    serverLists: localhost:2181
-
+#
 #proxyAuthority:
 #  username: root
 #  password: root
