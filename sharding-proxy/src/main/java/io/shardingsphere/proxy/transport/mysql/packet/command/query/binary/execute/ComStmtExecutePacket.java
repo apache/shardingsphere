@@ -30,8 +30,9 @@ import io.shardingsphere.proxy.transport.mysql.constant.NewParametersBoundFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryCommandPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.BinaryPreparedStatementUnit;
-import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.PreparedStatementRegistry;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.BinaryStatement;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.BinaryStatementRegistry;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.BinaryStatementParameterHeader;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -73,17 +74,17 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
     
     private final List<PreparedStatementParameter> preparedStatementParameters = new ArrayList<>(32);
     
-    private final BinaryPreparedStatementUnit binaryPreparedStatementUnit;
+    private final BinaryStatement binaryStatement;
     
     private final JDBCBackendHandler jdbcBackendHandler;
     
     public ComStmtExecutePacket(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         this.sequenceId = sequenceId;
         statementId = payload.readInt4();
-        binaryPreparedStatementUnit = PreparedStatementRegistry.getInstance().getBinaryPreparedStatementUnit(statementId);
+        binaryStatement = BinaryStatementRegistry.getInstance().getBinaryStatement(statementId);
         flags = payload.readInt1();
         Preconditions.checkArgument(ITERATION_COUNT == payload.readInt4());
-        int parametersCount = binaryPreparedStatementUnit.getParametersCount();
+        int parametersCount = binaryStatement.getParametersCount();
         if (parametersCount > 0) {
             nullBitmap = new NullBitmap(parametersCount, RESERVED_BIT_LENGTH);
             for (int i = 0; i < nullBitmap.getNullBitmap().length; i++) {
@@ -95,7 +96,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
             nullBitmap = null;
             newParametersBoundFlag = null;
         }
-        jdbcBackendHandler = new JDBCBackendHandler(binaryPreparedStatementUnit.getSql(), JDBCExecuteEngineFactory.createBinaryProtocolInstance(preparedStatementParameters, backendConnection));
+        jdbcBackendHandler = new JDBCBackendHandler(binaryStatement.getSql(), JDBCExecuteEngineFactory.createBinaryProtocolInstance(preparedStatementParameters, backendConnection));
     }
     
     private void setParameterList(final MySQLPacketPayload payload, final int numParameters, final NewParametersBoundFlag newParametersBoundFlag) {
@@ -108,7 +109,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
     }
     
     private void setParameterHeader(final MySQLPacketPayload payload, final int numParameters) {
-        List<PreparedStatementParameterHeader> parameterHeaders = new ArrayList<>(32);
+        List<BinaryStatementParameterHeader> parameterHeaders = new ArrayList<>(32);
         for (int i = 0; i < numParameters; i++) {
             if (nullBitmap.isParameterNull(i)) {
                 preparedStatementParameters.add(new PreparedStatementParameter(NULL_PARAMETER_DEFAULT_COLUMN_TYPE, NULL_PARAMETER_DEFAULT_UNSIGNED_FLAG, null));
@@ -117,19 +118,19 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
             ColumnType columnType = ColumnType.valueOf(payload.readInt1());
             int unsignedFlag = payload.readInt1();
             preparedStatementParameters.add(new PreparedStatementParameter(columnType, unsignedFlag));
-            parameterHeaders.add(new PreparedStatementParameterHeader(columnType, unsignedFlag));
+            parameterHeaders.add(new BinaryStatementParameterHeader(columnType, unsignedFlag));
         }
-        binaryPreparedStatementUnit.setPreparedStatementParameterHeaders(parameterHeaders);
+        binaryStatement.setParameterHeaders(parameterHeaders);
     }
     
     private void setParameterHeaderFromCache(final int numParameters) {
-        Iterator<PreparedStatementParameterHeader> parameterHeaders = binaryPreparedStatementUnit.getPreparedStatementParameterHeaders().iterator();
+        Iterator<BinaryStatementParameterHeader> parameterHeaders = binaryStatement.getParameterHeaders().iterator();
         for (int i = 0; i < numParameters; i++) {
             if (nullBitmap.isParameterNull(i)) {
                 preparedStatementParameters.add(new PreparedStatementParameter(NULL_PARAMETER_DEFAULT_COLUMN_TYPE, NULL_PARAMETER_DEFAULT_UNSIGNED_FLAG, null));
                 continue;
             }
-            PreparedStatementParameterHeader preparedStatementParameterHeader = parameterHeaders.next();
+            BinaryStatementParameterHeader preparedStatementParameterHeader = parameterHeaders.next();
             preparedStatementParameters.add(new PreparedStatementParameter(preparedStatementParameterHeader.getColumnType(), preparedStatementParameterHeader.getUnsignedFlag()));
         }
     }

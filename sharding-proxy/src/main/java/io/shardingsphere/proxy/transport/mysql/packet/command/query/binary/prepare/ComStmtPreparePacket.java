@@ -30,7 +30,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
-import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.PreparedStatementRegistry;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.BinaryStatementRegistry;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +47,7 @@ public final class ComStmtPreparePacket implements CommandPacket {
     
     private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
     
-    private static final PreparedStatementRegistry PREPARED_STATEMENT_REGISTRY = PreparedStatementRegistry.getInstance();
+    private static final BinaryStatementRegistry PREPARED_STATEMENT_REGISTRY = BinaryStatementRegistry.getInstance();
     
     @Getter
     private final int sequenceId;

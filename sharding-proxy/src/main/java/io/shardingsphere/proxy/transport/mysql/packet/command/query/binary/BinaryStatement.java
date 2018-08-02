@@ -17,7 +17,6 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command.query.binary;
 
-import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute.PreparedStatementParameterHeader;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -25,18 +24,18 @@ import lombok.Setter;
 import java.util.List;
 
 /**
- * SQL element.
+ * Binary prepared statement.
  *
  * @author zhangyonglun
  */
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class BinaryPreparedStatementUnit {
+public final class BinaryStatement {
     
     private final String sql;
     
     private final int parametersCount;
     
-    private List<PreparedStatementParameterHeader> preparedStatementParameterHeaders;
+    private List<BinaryStatementParameterHeader> parameterHeaders;
 }
