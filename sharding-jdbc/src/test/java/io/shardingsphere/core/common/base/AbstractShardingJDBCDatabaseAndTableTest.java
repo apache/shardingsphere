@@ -37,12 +37,12 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractSQLTest {
-    
+
     @Before
     public void cleanAndInitTable() throws Exception {
         importDataSet();
     }
-    
+
     @Before
     public void initShardingDataSources() throws SQLException {
         if (null != shardingDataSource) {
