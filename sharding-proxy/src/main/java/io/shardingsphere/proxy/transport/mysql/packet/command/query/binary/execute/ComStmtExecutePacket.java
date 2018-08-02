@@ -91,24 +91,20 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
             nullBitmap.getNullBitmap()[i] = payload.readInt1();
         }
         newParametersBoundFlag = NewParametersBoundFlag.valueOf(payload.readInt1());
-        setParameterList(payload, parametersCount);
+        if (NewParametersBoundFlag.PARAMETER_TYPE_EXIST == newParametersBoundFlag) {
+            setParameterTypes(payload, parametersCount);
+        } else {
+            setParameterTypesFromCache(parametersCount);
+        }
+        setParameterValues(payload, parametersCount);
         jdbcBackendHandler = new JDBCBackendHandler(binaryStatement.getSql(), JDBCExecuteEngineFactory.createBinaryProtocolInstance(binaryStatementParameters, backendConnection));
     }
     
-    private void setParameterList(final MySQLPacketPayload payload, final int parametersCount) {
-        if (NewParametersBoundFlag.PARAMETER_TYPE_EXIST == newParametersBoundFlag) {
-            setParameterHeader(payload, parametersCount);
-        } else if (NewParametersBoundFlag.PARAMETER_TYPE_NOT_EXIST == newParametersBoundFlag) {
-            setParameterHeaderFromCache(parametersCount);
-        }
-        setParameterValue(payload, parametersCount);
-    }
-    
-    private void setParameterHeader(final MySQLPacketPayload payload, final int parametersCount) {
-        List<BinaryStatementParameterType> parameterHeaders = new ArrayList<>(32);
-        for (int i = 0; i < parametersCount; i++) {
-            if (nullBitmap.isParameterNull(i)) {
-                binaryStatementParameters.add(new BinaryStatementParameter(NULL_PARAMETER_DEFAULT_COLUMN_TYPE, NULL_PARAMETER_DEFAULT_UNSIGNED_FLAG, null));
+    private void setParameterTypes(final MySQLPacketPayload payload, final int parametersCount) {
+        List<BinaryStatementParameterType> parameterHeaders = new ArrayList<>(parametersCount);
+        for (int parameterIndex = 0; parameterIndex < parametersCount; parameterIndex++) {
+            if (nullBitmap.isNullParameter(parameterIndex)) {
+                binaryStatementParameters.add(new BinaryStatementParameter(NULL_PARAMETER_DEFAULT_COLUMN_TYPE, NULL_PARAMETER_DEFAULT_UNSIGNED_FLAG));
                 continue;
             }
             ColumnType columnType = ColumnType.valueOf(payload.readInt1());
@@ -119,11 +115,11 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
         binaryStatement.setParameterTypes(parameterHeaders);
     }
     
-    private void setParameterHeaderFromCache(final int parametersCount) {
+    private void setParameterTypesFromCache(final int parametersCount) {
         Iterator<BinaryStatementParameterType> parameterHeaders = binaryStatement.getParameterTypes().iterator();
         for (int i = 0; i < parametersCount; i++) {
-            if (nullBitmap.isParameterNull(i)) {
-                binaryStatementParameters.add(new BinaryStatementParameter(NULL_PARAMETER_DEFAULT_COLUMN_TYPE, NULL_PARAMETER_DEFAULT_UNSIGNED_FLAG, null));
+            if (nullBitmap.isNullParameter(i)) {
+                binaryStatementParameters.add(new BinaryStatementParameter(NULL_PARAMETER_DEFAULT_COLUMN_TYPE, NULL_PARAMETER_DEFAULT_UNSIGNED_FLAG));
                 continue;
             }
             BinaryStatementParameterType preparedStatementParameterHeader = parameterHeaders.next();
@@ -131,9 +127,9 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
         }
     }
     
-    private void setParameterValue(final MySQLPacketPayload payload, final int parametersCount) {
+    private void setParameterValues(final MySQLPacketPayload payload, final int parametersCount) {
         for (int i = 0; i < parametersCount; i++) {
-            if (nullBitmap.isParameterNull(i)) {
+            if (nullBitmap.isNullParameter(i)) {
                 continue;
             }
             BinaryStatementParameter binaryStatementParameter = binaryStatementParameters.get(i);

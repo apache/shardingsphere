@@ -35,11 +35,6 @@ public final class BinaryStatementParameter {
     private Object value;
     
     public BinaryStatementParameter(final ColumnType columnType, final int unsignedFlag) {
-        this(columnType, unsignedFlag, null);
-    }
-    
-    public BinaryStatementParameter(final ColumnType columnType, final int unsignedFlag, final String value) {
         type = new BinaryStatementParameterType(columnType, unsignedFlag);
-        this.value = value;
     }
 }

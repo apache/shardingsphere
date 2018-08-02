@@ -41,6 +41,18 @@ public final class NullBitmap {
     }
     
     /**
+     * Judge parameter is null or not null.
+     *
+     * @param index column index
+     * @return parameter is null or not null
+     */
+    public boolean isNullParameter(final int index) {
+        int bytePosition = (index + offset) / 8;
+        int bitPosition = (index + offset) % 8;
+        return (nullBitmap[bytePosition] & (1 << bitPosition)) != 0;
+    }
+    
+    /**
      * Set null bit.
      *
      * @param index index
@@ -49,17 +61,5 @@ public final class NullBitmap {
         int bytePosition = (index + offset) / 8;
         int bitPositionInCurrentByte = (index + offset) % 8;
         nullBitmap[bytePosition] = 1 << bitPositionInCurrentByte;
-    }
-    
-    /**
-     * Judge parameter is null or not null.
-     *
-     * @param index column index
-     * @return parameter is null or not null
-     */
-    public boolean isParameterNull(final int index) {
-        int bytePosition = index / 8;
-        int bitPosition = index % 8;
-        return (nullBitmap[bytePosition] & (1 << bitPosition)) != 0;
     }
 }
