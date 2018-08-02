@@ -20,6 +20,7 @@ package io.shardingsphere.proxy.transport.mysql.packet.command.query.binary;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -76,5 +77,15 @@ public final class BinaryStatementRegistry {
      */
     public BinaryStatement getBinaryStatement(final int statementId) {
         return binaryStatements.get(statementId);
+    }
+    
+    /**
+     * Set parameter headers.
+     * 
+     * @param statementId statement ID
+     * @param parameterHeaders parameter headers
+     */
+    public void setParameterHeader(final int statementId, final List<BinaryStatementParameterHeader> parameterHeaders) {
+        binaryStatements.get(statementId).setParameterHeaders(parameterHeaders);
     }
 }
