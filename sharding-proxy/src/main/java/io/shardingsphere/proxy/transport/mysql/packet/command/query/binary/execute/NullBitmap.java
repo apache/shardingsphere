@@ -33,10 +33,10 @@ public final class NullBitmap {
     
     public NullBitmap(final int columnsNumbers, final int offset) {
         this.offset = offset;
-        nullBitmap = new int[calculateBitmapBytes(columnsNumbers, offset)];
+        nullBitmap = new int[calculateLength(columnsNumbers, offset)];
     }
     
-    private int calculateBitmapBytes(final int columnsNumbers, final int offset) {
+    private int calculateLength(final int columnsNumbers, final int offset) {
         return (columnsNumbers + offset + 7) / 8;
     }
     
