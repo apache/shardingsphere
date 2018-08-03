@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.constant;
+package io.shardingsphere.core.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
