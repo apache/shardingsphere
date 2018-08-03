@@ -72,11 +72,12 @@ public class RawJdbcRepository {
     }
     
     private void queryWithEqual() throws SQLException {
-        String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=?";
+        String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND status=?";
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, 10);
+            preparedStatement.setString(2, "init");
             printQuery(preparedStatement);
         }
     }
