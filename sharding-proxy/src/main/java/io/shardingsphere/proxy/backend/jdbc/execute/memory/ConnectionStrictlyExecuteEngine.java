@@ -53,11 +53,8 @@ import java.util.concurrent.Future;
  */
 public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
     
-    private final BackendConnection backendConnection;
-    
     public ConnectionStrictlyExecuteEngine(final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper) {
-        super(jdbcExecutorWrapper);
-        this.backendConnection = backendConnection;
+        super(backendConnection, jdbcExecutorWrapper);
     }
     
     @Override
@@ -91,7 +88,7 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
     
     private Map<SQLUnit, Statement> createSQLUnitStatement(final String dataSourceName, final Collection<SQLUnit> sqlUnits, final boolean isReturnGeneratedKeys) throws SQLException {
         Map<SQLUnit, Statement> result = new HashMap<>(sqlUnits.size(), 1);
-        Connection connection = backendConnection.getConnection(dataSourceName);
+        Connection connection = getBackendConnection().getConnection(dataSourceName);
         for (SQLUnit each : sqlUnits) {
             result.put(each, getJdbcExecutorWrapper().createStatement(connection, each.getSql(), isReturnGeneratedKeys));
         }
@@ -101,7 +98,7 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
     private Collection<ExecuteResponseUnit> syncExecute(final boolean isReturnGeneratedKeys, final String dataSourceName, final Collection<SQLUnit> sqlUnits) throws SQLException {
         Collection<ExecuteResponseUnit> result = new LinkedList<>();
         boolean hasMetaData = false;
-        Connection connection = backendConnection.getConnection(dataSourceName);
+        Connection connection = getBackendConnection().getConnection(dataSourceName);
         for (SQLUnit each : sqlUnits) {
             String actualSQL = each.getSql();
             Statement statement = getJdbcExecutorWrapper().createStatement(connection, actualSQL, isReturnGeneratedKeys);
