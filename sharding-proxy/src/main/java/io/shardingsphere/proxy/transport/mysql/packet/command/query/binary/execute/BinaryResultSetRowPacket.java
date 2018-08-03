@@ -61,7 +61,7 @@ public final class BinaryResultSetRowPacket implements MySQLPacket {
             payload.writeInt1(each);
         }
         for (int i = 0; i < columnsCount; i++) {
-            BinaryProtocolValue.getInstance().write(columnTypes.get(i), data.get(i), payload);
+            new BinaryProtocolValue(columnTypes.get(i), payload).write(data.get(i));
         }
     }
 }

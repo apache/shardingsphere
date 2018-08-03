@@ -19,8 +19,7 @@ package io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.exec
 
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -32,28 +31,19 @@ import java.util.Date;
  *
  * @author zhangyonglun
  */
-@NoArgsConstructor(access = AccessLevel.NONE)
+@RequiredArgsConstructor
 public final class BinaryProtocolValue {
     
-    private static final BinaryProtocolValue INSTANCE = new BinaryProtocolValue();
+    private final ColumnType columnType;
     
-    /**
-     * Get binary protocol value utility instance.
-     *
-     * @return binary protocol value utility
-     */
-    public static BinaryProtocolValue getInstance() {
-        return INSTANCE;
-    }
+    private final MySQLPacketPayload payload;
     
     /**
      * Read binary protocol value.
      *
-     * @param columnType column type
-     * @param payload MySQL packet payload
-     * @return binary value
+     * @return binary value result
      */
-    public Object read(final ColumnType columnType, final MySQLPacketPayload payload) {
+    public Object read() {
         switch (columnType) {
             case MYSQL_TYPE_STRING:
             case MYSQL_TYPE_VARCHAR:
@@ -97,11 +87,9 @@ public final class BinaryProtocolValue {
     /**
      * Write binary protocol value.
      *
-     * @param columnType column type
-     * @param payload MySQL packet pay load
-     * @param binaryData binary data
+     * @param binaryData binary data to be written
      */
-    public void write(final ColumnType columnType, final Object binaryData, final MySQLPacketPayload payload) {
+    public void write(final Object binaryData) {
         switch (columnType) {
             case MYSQL_TYPE_STRING:
             case MYSQL_TYPE_VARCHAR:
