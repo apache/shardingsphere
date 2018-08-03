@@ -34,6 +34,7 @@ chapter = true
 * [美利金融](https://www.mljr.com/)
 * [团贷网](https://www.tuandai.com/)
 * [京东金融](http://jr.jd.com/)
+* [策赢平台](https://www.cypfintech.com/)
 
 ## 信息资讯
 
@@ -69,6 +70,7 @@ chapter = true
 * [创安家](http://www.41soo.com/)
 * [CIBN微视听](http://www.91vst.com/)
 * [oppo](http://www.oppo.com/)
+* [科大讯飞](http://www.iflytek.com/)
 
 ## 企业服务
 

@@ -34,6 +34,7 @@ Organizations using Sharding in chronological order.
 * [mljr](https://www.mljr.com/)
 * [tuandai](https://www.tuandai.com/)
 * [JD Finance](http://jr.jd.com/)
+* [cypfintech](https://www.cypfintech.com/)
 
 ## Information
 
@@ -69,6 +70,7 @@ Organizations using Sharding in chronological order.
 * [41soo](http://www.41soo.com/)
 * [CIBN](http://www.91vst.com/)
 * [oppo](http://www.oppo.com/)
+* [iflytek](http://www.iflytek.com/)
 
 ## Enterprise
 
