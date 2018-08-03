@@ -47,19 +47,23 @@ public final class NullBitmap {
      * @return parameter is null or not null
      */
     public boolean isNullParameter(final int index) {
-        int bytePosition = (index + offset) / 8;
-        int bitPosition = (index + offset) % 8;
-        return (nullBitmap[bytePosition] & (1 << bitPosition)) != 0;
+        return (nullBitmap[getBytePosition(index)] & (1 << getBitPosition(index))) != 0;
     }
     
     /**
      * Set null bit.
      *
-     * @param index index
+     * @param index column index
      */
     public void setNullBit(final int index) {
-        int bytePosition = (index + offset) / 8;
-        int bitPositionInCurrentByte = (index + offset) % 8;
-        nullBitmap[bytePosition] = 1 << bitPositionInCurrentByte;
+        nullBitmap[getBytePosition(index)] = 1 << getBitPosition(index);
+    }
+    
+    private int getBytePosition(final int index) {
+        return (index + offset) / 8;
+    }
+    
+    private int getBitPosition(final int index) {
+        return (index + offset) % 8;
     }
 }
