@@ -21,7 +21,9 @@ import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.proxy.config.RuleRegistry;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -37,6 +39,10 @@ public final class BackendConnection implements AutoCloseable {
     
     private final Collection<Connection> cachedConnections = new CopyOnWriteArrayList<>();
     
+    private final Collection<Statement> cachedStatements = new CopyOnWriteArrayList<>();
+    
+    private final Collection<ResultSet> cachedResultSets = new CopyOnWriteArrayList<>();
+    
     /**
      * Get connection of current thread datasource.
      *
@@ -50,8 +56,38 @@ public final class BackendConnection implements AutoCloseable {
         return result;
     }
     
+    /**
+     * Set statement.
+     *
+     * @param statement statement
+     */
+    public void setStatement(final Statement statement) {
+        cachedStatements.add(statement);
+    }
+    
+    /**
+     * Set result set.
+     *
+     * @param resultSet result set
+     */
+    public void setResultSet(final ResultSet resultSet) {
+        cachedResultSets.add(resultSet);
+    }
+    
     @Override
     public void close() {
+        try {
+            for (ResultSet each : cachedResultSets) {
+                each.close();
+            }
+        } catch (final SQLException ignored) {
+        }
+        try {
+            for (Statement each : cachedStatements) {
+                each.close();
+            }
+        } catch (final SQLException ignored) {
+        }
         try {
             for (Connection each : cachedConnections) {
                 each.close();
