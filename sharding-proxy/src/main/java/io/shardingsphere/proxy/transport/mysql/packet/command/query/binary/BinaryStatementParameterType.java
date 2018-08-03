@@ -33,8 +33,4 @@ public final class BinaryStatementParameterType {
     private final ColumnType columnType;
     
     private final int unsignedFlag;
-    
-    public BinaryStatementParameterType() {
-        this(ColumnType.MYSQL_TYPE_NULL, 0);
-    }
 }

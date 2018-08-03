@@ -38,7 +38,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -94,28 +93,20 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
     private List<BinaryStatementParameterType> getParameterTypes(final MySQLPacketPayload payload, final int parametersCount) {
         List<BinaryStatementParameterType> result = new ArrayList<>(parametersCount);
         for (int parameterIndex = 0; parameterIndex < parametersCount; parameterIndex++) {
-            if (nullBitmap.isNullParameter(parameterIndex)) {
-                payload.readInt1();
-                payload.readInt1();
-            } else {
-                ColumnType columnType = ColumnType.valueOf(payload.readInt1());
-                int unsignedFlag = payload.readInt1();
-                result.add(new BinaryStatementParameterType(columnType, unsignedFlag));
-            }
+            ColumnType columnType = ColumnType.valueOf(payload.readInt1());
+            int unsignedFlag = payload.readInt1();
+            result.add(new BinaryStatementParameterType(columnType, unsignedFlag));
         }
         return result;
     }
     
     private List<BinaryStatementParameter> getParameters(final MySQLPacketPayload payload, final int parametersCount) {
         List<BinaryStatementParameter> result = new ArrayList<>(parametersCount);
-        Iterator<BinaryStatementParameterType> parameterTypes = binaryStatement.getParameterTypes().iterator();
         for (int parameterIndex = 0; parameterIndex < parametersCount; parameterIndex++) {
-            if (nullBitmap.isNullParameter(parameterIndex)) {
-                result.add(new BinaryStatementParameter(new BinaryStatementParameterType(), null));
-                continue;
-            }
-            BinaryStatementParameterType parameterType = parameterTypes.next();
-            result.add(new BinaryStatementParameter(parameterType, BinaryProtocolValueUtility.getInstance().readBinaryProtocolValue(parameterType.getColumnType(), payload)));
+            BinaryStatementParameterType parameterType = binaryStatement.getParameterTypes().get(parameterIndex);
+            Object value = nullBitmap.isNullParameter(parameterIndex)
+                    ? null : BinaryProtocolValueUtility.getInstance().readBinaryProtocolValue(parameterType.getColumnType(), payload);
+            result.add(new BinaryStatementParameter(parameterType, value));
         }
         return result;
     }
