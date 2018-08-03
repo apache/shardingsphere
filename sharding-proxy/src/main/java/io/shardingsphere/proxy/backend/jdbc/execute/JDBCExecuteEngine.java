@@ -19,6 +19,7 @@ package io.shardingsphere.proxy.backend.jdbc.execute;
 
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.proxy.backend.SQLExecuteEngine;
+import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteQueryResponseUnit;
 import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteResponseUnit;
 import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteUpdateResponseUnit;
@@ -56,6 +57,8 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
     
     private final List<QueryResult> queryResults = new LinkedList<>();
     
+    private final BackendConnection backendConnection;
+    
     private final ExecutorService executorService = ExecutorContext.getInstance().getExecutorService();
     
     private final JDBCExecutorWrapper jdbcExecutorWrapper;
@@ -65,11 +68,13 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
     private List<ColumnType> columnTypes;
     
     protected ExecuteResponseUnit executeWithMetadata(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
+        getBackendConnection().setStatement(statement);
         setFetchSize(statement);
         if (!jdbcExecutorWrapper.executeSQL(statement, sql, isReturnGeneratedKeys)) {
             return new ExecuteUpdateResponseUnit(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0));
         }
         ResultSet resultSet = statement.getResultSet();
+        getBackendConnection().setResultSet(resultSet);
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         if (0 == resultSetMetaData.getColumnCount()) {
             return new ExecuteUpdateResponseUnit(new OKPacket(1));
@@ -78,11 +83,14 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
     }
     
     protected ExecuteResponseUnit executeWithoutMetadata(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
+        getBackendConnection().setStatement(statement);
         setFetchSize(statement);
         if (!jdbcExecutorWrapper.executeSQL(statement, sql, isReturnGeneratedKeys)) {
             return new ExecuteUpdateResponseUnit(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0));
         }
-        return new ExecuteQueryResponseUnit(null, createQueryResult(statement.getResultSet()));
+        ResultSet resultSet = statement.getResultSet();
+        getBackendConnection().setResultSet(resultSet);
+        return new ExecuteQueryResponseUnit(null, createQueryResult(resultSet));
     }
     
     protected abstract void setFetchSize(Statement statement) throws SQLException;
