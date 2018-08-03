@@ -21,7 +21,7 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.provider.BaseProvider;
 import org.apache.zookeeper.KeeperException;
 
-public abstract class TestResultCallable extends RetryResultCallable {
+public abstract class TestResultCallable<T> extends RetryResultCallable<T> {
     
     private int count;
     
