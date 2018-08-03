@@ -19,6 +19,7 @@ package io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.exec
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import io.shardingsphere.proxy.backend.BackendHandler;
 import io.shardingsphere.proxy.backend.ResultPacket;
 import io.shardingsphere.proxy.backend.jdbc.JDBCBackendHandler;
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
@@ -69,7 +70,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
     
     private final List<BinaryStatementParameter> parameters;
     
-    private final JDBCBackendHandler jdbcBackendHandler;
+    private final BackendHandler backendHandler;
     
     public ComStmtExecutePacket(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         this.sequenceId = sequenceId;
@@ -87,7 +88,8 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
             binaryStatement.setParameterTypes(getParameterTypes(payload, parametersCount));
         }
         parameters = getParameters(payload, parametersCount);
-        jdbcBackendHandler = new JDBCBackendHandler(binaryStatement.getSql(), JDBCExecuteEngineFactory.createBinaryProtocolInstance(parameters, backendConnection));
+        // TODO netty backend not implemented yet
+        backendHandler = new JDBCBackendHandler(binaryStatement.getSql(), JDBCExecuteEngineFactory.createBinaryProtocolInstance(parameters, backendConnection));
     }
     
     private List<BinaryStatementParameterType> getParameterTypes(final MySQLPacketPayload payload, final int parametersCount) {
@@ -130,17 +132,17 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
     @Override
     public Optional<CommandResponsePackets> execute() {
         log.debug("COM_STMT_EXECUTE received for Sharding-Proxy: {}", statementId);
-        return Optional.of(jdbcBackendHandler.execute());
+        return Optional.of(backendHandler.execute());
     }
     
     @Override
     public boolean next() throws SQLException {
-        return jdbcBackendHandler.next();
+        return backendHandler.next();
     }
     
     @Override
     public DatabasePacket getResultValue() throws SQLException {
-        ResultPacket resultPacket = jdbcBackendHandler.getResultValue();
+        ResultPacket resultPacket = backendHandler.getResultValue();
         return new BinaryResultSetRowPacket(resultPacket.getSequenceId(), resultPacket.getColumnCount(), resultPacket.getData(), resultPacket.getColumnTypes());
     }
 }
