@@ -107,7 +107,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
         for (int parameterIndex = 0; parameterIndex < parametersCount; parameterIndex++) {
             BinaryStatementParameterType parameterType = binaryStatement.getParameterTypes().get(parameterIndex);
             Object value = nullBitmap.isNullParameter(parameterIndex)
-                    ? null : BinaryProtocolValueUtility.getInstance().readBinaryProtocolValue(parameterType.getColumnType(), payload);
+                    ? null : BinaryProtocolValue.getInstance().read(parameterType.getColumnType(), payload);
             result.add(new BinaryStatementParameter(parameterType, value));
         }
         return result;

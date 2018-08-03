@@ -42,7 +42,7 @@ public final class BinaryResultSetRowPacket implements MySQLPacket {
     
     private final int sequenceId;
     
-    private final int numColumns;
+    private final int columnsCount;
     
     private final List<Object> data;
     
@@ -51,17 +51,17 @@ public final class BinaryResultSetRowPacket implements MySQLPacket {
     @Override
     public void write(final MySQLPacketPayload payload) {
         payload.writeInt1(PACKET_HEADER);
-        NullBitmap nullBitmap = new NullBitmap(numColumns, NULL_BITMAP_OFFSET);
-        for (int i = 0; i < numColumns; i++) {
-            if (null == data.get(i)) {
-                nullBitmap.setNullBit(i);
+        NullBitmap nullBitmap = new NullBitmap(columnsCount, NULL_BITMAP_OFFSET);
+        for (int columnIndex = 0; columnIndex < columnsCount; columnIndex++) {
+            if (null == data.get(columnIndex)) {
+                nullBitmap.setNullBit(columnIndex);
             }
         }
         for (int each : nullBitmap.getNullBitmap()) {
             payload.writeInt1(each);
         }
-        for (int i = 0; i < numColumns; i++) {
-            BinaryProtocolValueUtility.getInstance().writeBinaryProtocolValue(columnTypes.get(i), data.get(i), payload);
+        for (int i = 0; i < columnsCount; i++) {
+            BinaryProtocolValue.getInstance().write(columnTypes.get(i), data.get(i), payload);
         }
     }
 }
