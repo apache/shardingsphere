@@ -56,12 +56,12 @@ public final class JDBCExecuteEngineFactory {
     /**
      * Create instance for binary protocol.
      *
-     * @param binaryStatementParameters parameters of binary prepared statement
+     * @param parameters parameters of binary prepared statement
      * @param backendConnection backend connection
      * @return instance for binary protocol
      */
-    public static JDBCExecuteEngine createBinaryProtocolInstance(final List<BinaryStatementParameter> binaryStatementParameters, final BackendConnection backendConnection) {
-        JDBCExecutorWrapper jdbcExecutorWrapper = new PreparedStatementExecutorWrapper(binaryStatementParameters);
+    public static JDBCExecuteEngine createBinaryProtocolInstance(final List<BinaryStatementParameter> parameters, final BackendConnection backendConnection) {
+        JDBCExecutorWrapper jdbcExecutorWrapper = new PreparedStatementExecutorWrapper(parameters);
         return ProxyMode.MEMORY_STRICTLY == RULE_REGISTRY.getProxyMode()
                 ? new MemoryStrictlyExecuteEngine(backendConnection, jdbcExecutorWrapper) : new ConnectionStrictlyExecuteEngine(backendConnection, jdbcExecutorWrapper);
     }

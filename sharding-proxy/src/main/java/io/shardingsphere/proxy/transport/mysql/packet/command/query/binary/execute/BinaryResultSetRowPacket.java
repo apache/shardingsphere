@@ -33,17 +33,18 @@ import java.util.List;
  * @author zhangyonglun
  */
 @RequiredArgsConstructor
-@Getter
 public final class BinaryResultSetRowPacket implements MySQLPacket {
     
     private static final int PACKET_HEADER = 0x00;
     
     private static final int NULL_BITMAP_OFFSET = 2;
     
+    @Getter
     private final int sequenceId;
     
     private final int columnsCount;
     
+    @Getter
     private final List<Object> data;
     
     private final List<ColumnType> columnTypes;

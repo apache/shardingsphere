@@ -48,7 +48,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     
     private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
     
-    private final List<BinaryStatementParameter> binaryStatementParameters;
+    private final List<BinaryStatementParameter> parameters;
     
     @Override
     public SQLRouteResult route(final String sql, final DatabaseType databaseType) {
@@ -67,7 +67,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     private SQLRouteResult doShardingRoute(final String sql, final DatabaseType databaseType) {
         PreparedStatementRoutingEngine routingEngine = new PreparedStatementRoutingEngine(
                 sql, RULE_REGISTRY.getShardingRule(), RULE_REGISTRY.getMetaData().getTable(), databaseType, RULE_REGISTRY.isShowSQL(), RULE_REGISTRY.getMetaData().getDataSource());
-        return routingEngine.route(Lists.transform(binaryStatementParameters, new Function<BinaryStatementParameter, Object>() {
+        return routingEngine.route(Lists.transform(parameters, new Function<BinaryStatementParameter, Object>() {
             
             @Override
             public Object apply(final BinaryStatementParameter input) {
@@ -79,8 +79,8 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     @Override
     public Statement createStatement(final Connection connection, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
         PreparedStatement result = isReturnGeneratedKeys ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sql);
-        for (int i = 0; i < binaryStatementParameters.size(); i++) {
-            result.setObject(i + 1, binaryStatementParameters.get(i).getValue());
+        for (int i = 0; i < parameters.size(); i++) {
+            result.setObject(i + 1, parameters.get(i).getValue());
         }
         return result;
     }
