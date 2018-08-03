@@ -71,7 +71,6 @@ public class SyncRetryStrategyTest extends UsualClientTest {
             }
         };
         callable.exec();
-        
         assertTrue(getTestClient().checkExists(key));
         new UsualStrategy(provider).deleteCurrentBranch(key);
         assertFalse(getTestClient().checkExists(key));
@@ -92,24 +91,22 @@ public class SyncRetryStrategyTest extends UsualClientTest {
         
         TestCallable callable = getDeleteBranch(keyC);
         callable.exec();
-    
         assertFalse(getTestClient().checkExists(keyC));
         assertTrue(getTestClient().checkExists("a"));
     
         callable = getDeleteBranch(keyB);
         callable.exec();
-    
         assertFalse(getTestClient().checkExists(PathUtil.checkPath(TestSupport.ROOT)));
         getTestClient().createAllNeedPath(keyB, "bbb11", CreateMode.PERSISTENT);
         assertTrue(getTestClient().checkExists(keyB));
         
         callable.exec();
-    
         assertFalse(getTestClient().checkExists(PathUtil.checkPath(TestSupport.ROOT)));
     }
     
     private TestCallable getDeleteBranch(final String key) {
         return new TestCallable(provider, DelayRetryPolicy.defaultDelayPolicy()) {
+            
             @Override
             public void test() throws KeeperException, InterruptedException {
                 getTestClient().useExecStrategy(StrategyType.USUAL);
@@ -133,7 +130,6 @@ public class SyncRetryStrategyTest extends UsualClientTest {
                 setResult(provider.exists(provider.getRealPath(key)));
             }
         };
-
         assertTrue(Boolean.valueOf(callable.getResult().toString()));
     
         getTestClient().useExecStrategy(StrategyType.USUAL);
@@ -204,7 +200,7 @@ public class SyncRetryStrategyTest extends UsualClientTest {
         final String key = "a";
         final String value = "aa";
         final String newValue = "aaa";
-//        getTestClient().deleteCurrentBranch(key);
+        getTestClient().deleteCurrentBranch(key);
         getTestClient().createAllNeedPath(key, value, CreateMode.PERSISTENT);
         assertThat(getTestClient().getDataString(key), is(value));
     
@@ -216,7 +212,6 @@ public class SyncRetryStrategyTest extends UsualClientTest {
             }
         };
         callable.exec();
-    
         assertThat(getTestClient().getDataString(key), is(newValue));
         getTestClient().deleteCurrentBranch(key);
     }
@@ -237,7 +232,6 @@ public class SyncRetryStrategyTest extends UsualClientTest {
             }
         };
         callable.exec();
-    
         assertNull(getZooKeeper(getTestClient()).exists(PathUtil.getRealPath(TestSupport.ROOT, key), false));
         assertNotNull(getZooKeeper(getTestClient()).exists(PathUtil.checkPath(TestSupport.ROOT), false));
         super.deleteRoot(getTestClient());

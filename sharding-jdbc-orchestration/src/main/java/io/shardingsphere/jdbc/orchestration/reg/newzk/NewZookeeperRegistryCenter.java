@@ -56,12 +56,12 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
     private final Map<String, PathTree> caches = new HashMap<>();
     
     public NewZookeeperRegistryCenter(final ZookeeperConfiguration zkConfig) {
-        ClientFactory creator = buildCreator(zkConfig);
+        final ClientFactory creator = buildCreator(zkConfig);
         client = initClient(creator, zkConfig);
     }
     
     private ClientFactory buildCreator(final ZookeeperConfiguration zkConfig) {
-        ClientFactory creator = new ClientFactory();
+        final ClientFactory creator = new ClientFactory();
         creator.setClientNamespace(zkConfig.getNamespace())
                 .newClient(zkConfig.getServerLists(), zkConfig.getSessionTimeoutMilliseconds())
                 .setRetryPolicy(new DelayRetryPolicy(zkConfig.getBaseSleepTimeMilliseconds(), zkConfig.getMaxRetries(), zkConfig.getMaxSleepTimeMilliseconds()));
@@ -91,7 +91,7 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
     
     @Override
     public String get(final String key) {
-        PathTree cache = findTreeCache(key);
+        final PathTree cache = findTreeCache(key);
         if (null == cache) {
             return getDirectly(key);
         }
@@ -134,7 +134,7 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
     @Override
     public List<String> getChildrenKeys(final String key) {
         try {
-            List<String> result = client.getChildren(key);
+            final List<String> result = client.getChildren(key);
             Collections.sort(result, new Comparator<String>() {
                 
                 @Override
@@ -230,9 +230,8 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
     }
     
     private void addCacheData(final String cachePath) {
-        PathTree cache = new PathTree(cachePath, client);
+        final PathTree cache = new PathTree(cachePath, client);
         try {
-            // The load() may be no need
             cache.load();
             cache.watch();
         } catch (final KeeperException | InterruptedException ex) {
