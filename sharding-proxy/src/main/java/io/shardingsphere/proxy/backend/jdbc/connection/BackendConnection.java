@@ -25,6 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -57,43 +58,77 @@ public final class BackendConnection implements AutoCloseable {
     }
     
     /**
-     * Set statement.
+     * Add statement.
      *
-     * @param statement statement
+     * @param statement statement to be added
      */
-    public void setStatement(final Statement statement) {
+    public void add(final Statement statement) {
         cachedStatements.add(statement);
     }
     
     /**
-     * Set result set.
+     * Add result set.
      *
-     * @param resultSet result set
+     * @param resultSet result set to be added
      */
-    public void setResultSet(final ResultSet resultSet) {
+    public void add(final ResultSet resultSet) {
         cachedResultSets.add(resultSet);
     }
     
     @Override
-    public void close() {
-        try {
-            for (ResultSet each : cachedResultSets) {
-                each.close();
-            }
-        } catch (final SQLException ignored) {
-        }
-        try {
-            for (Statement each : cachedStatements) {
-                each.close();
-            }
-        } catch (final SQLException ignored) {
-        }
-        try {
-            for (Connection each : cachedConnections) {
-                each.close();
-            }
-        } catch (final SQLException ignored) {
-        }
+    public void close() throws SQLException {
+        Collection<SQLException> exceptions = new LinkedList<>();
+        exceptions.addAll(closeResultSets());
+        exceptions.addAll(closeStatements());
+        exceptions.addAll(closeConnections());
         MasterVisitedManager.clear();
+        throwSQLExceptionIfNecessary(exceptions);
+    }
+    
+    private Collection<SQLException> closeResultSets() {
+        Collection<SQLException> result = new LinkedList<>();
+        for (ResultSet each : cachedResultSets) {
+            try {
+                each.close();
+            } catch (final SQLException ex) {
+                result.add(ex);
+            }
+        }
+        return result;
+    }
+    
+    private Collection<SQLException> closeStatements() {
+        Collection<SQLException> result = new LinkedList<>();
+        for (Statement each : cachedStatements) {
+            try {
+                each.close();
+            } catch (final SQLException ex) {
+                result.add(ex);
+            }
+        }
+        return result;
+    }
+    
+    private Collection<SQLException> closeConnections() {
+        Collection<SQLException> result = new LinkedList<>();
+        for (Connection each : cachedConnections) {
+            try {
+                each.close();
+            } catch (SQLException ex) {
+                result.add(ex);
+            }
+        }
+        return result;
+    }
+    
+    private void throwSQLExceptionIfNecessary(final Collection<SQLException> exceptions) throws SQLException {
+        if (exceptions.isEmpty()) {
+            return;
+        }
+        SQLException ex = new SQLException();
+        for (SQLException each : exceptions) {
+            ex.setNextException(each);
+        }
+        throw ex;
     }
 }

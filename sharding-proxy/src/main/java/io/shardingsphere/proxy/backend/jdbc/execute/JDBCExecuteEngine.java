@@ -68,13 +68,13 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
     private List<ColumnType> columnTypes;
     
     protected ExecuteResponseUnit executeWithMetadata(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
-        getBackendConnection().setStatement(statement);
+        backendConnection.add(statement);
         setFetchSize(statement);
         if (!jdbcExecutorWrapper.executeSQL(statement, sql, isReturnGeneratedKeys)) {
             return new ExecuteUpdateResponseUnit(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0));
         }
         ResultSet resultSet = statement.getResultSet();
-        getBackendConnection().setResultSet(resultSet);
+        backendConnection.add(resultSet);
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         if (0 == resultSetMetaData.getColumnCount()) {
             return new ExecuteUpdateResponseUnit(new OKPacket(1));
@@ -83,13 +83,13 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
     }
     
     protected ExecuteResponseUnit executeWithoutMetadata(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
-        getBackendConnection().setStatement(statement);
+        backendConnection.add(statement);
         setFetchSize(statement);
         if (!jdbcExecutorWrapper.executeSQL(statement, sql, isReturnGeneratedKeys)) {
             return new ExecuteUpdateResponseUnit(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0));
         }
         ResultSet resultSet = statement.getResultSet();
-        getBackendConnection().setResultSet(resultSet);
+        backendConnection.add(resultSet);
         return new ExecuteQueryResponseUnit(null, createQueryResult(resultSet));
     }
     
