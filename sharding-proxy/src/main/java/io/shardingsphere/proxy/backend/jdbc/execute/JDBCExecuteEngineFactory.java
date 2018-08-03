@@ -17,7 +17,7 @@
 
 package io.shardingsphere.proxy.backend.jdbc.execute;
 
-import io.shardingsphere.proxy.backend.constant.ProxyMode;
+import io.shardingsphere.core.constant.ProxyMode;
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.proxy.backend.jdbc.execute.memory.ConnectionStrictlyExecuteEngine;
 import io.shardingsphere.proxy.backend.jdbc.execute.stream.MemoryStrictlyExecuteEngine;
