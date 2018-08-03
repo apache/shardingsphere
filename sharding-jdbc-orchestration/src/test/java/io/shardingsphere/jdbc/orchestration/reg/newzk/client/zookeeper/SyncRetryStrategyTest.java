@@ -147,7 +147,7 @@ public class SyncRetryStrategyTest extends UsualClientTest {
         TestResultCallable<String> callable = getData("a");
         assertThat(callable.getResult(), is(""));
         callable = getData(key);
-        assertThat(callable.getResult().toString(), is("bbb11"));
+        assertThat(callable.getResult(), is("bbb11"));
         
         getTestClient().useExecStrategy(StrategyType.USUAL);
         getTestClient().deleteCurrentBranch(key);
