@@ -31,7 +31,6 @@ import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryCommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.BinaryStatement;
-import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.BinaryStatementParameter;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.BinaryStatementParameterType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.BinaryStatementRegistry;
 import lombok.Getter;
@@ -68,7 +67,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
     
     private final NewParametersBoundFlag newParametersBoundFlag;
     
-    private final List<BinaryStatementParameter> parameters;
+    private final List<Object> parameters;
     
     private final BackendHandler backendHandler;
     
@@ -102,12 +101,10 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
         return result;
     }
     
-    private List<BinaryStatementParameter> getParameters(final MySQLPacketPayload payload, final int parametersCount) {
-        List<BinaryStatementParameter> result = new ArrayList<>(parametersCount);
+    private List<Object> getParameters(final MySQLPacketPayload payload, final int parametersCount) {
+        List<Object> result = new ArrayList<>(parametersCount);
         for (int parameterIndex = 0; parameterIndex < parametersCount; parameterIndex++) {
-            BinaryStatementParameterType parameterType = binaryStatement.getParameterTypes().get(parameterIndex);
-            Object value = nullBitmap.isNullParameter(parameterIndex) ? null : new BinaryProtocolValue(parameterType.getColumnType(), payload).read();
-            result.add(new BinaryStatementParameter(parameterType, value));
+            result.add(nullBitmap.isNullParameter(parameterIndex) ? null : new BinaryProtocolValue(binaryStatement.getParameterTypes().get(parameterIndex).getColumnType(), payload).read());
         }
         return result;
     }
@@ -121,10 +118,13 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
             payload.writeInt1(each);
         }
         payload.writeInt1(newParametersBoundFlag.getValue());
-        for (BinaryStatementParameter each : parameters) {
-            payload.writeInt1(each.getType().getColumnType().getValue());
-            payload.writeInt1(each.getType().getUnsignedFlag());
-            payload.writeStringLenenc((String) each.getValue());
+        int count = 0;
+        for (Object each : parameters) {
+            BinaryStatementParameterType parameterType = binaryStatement.getParameterTypes().get(count);
+            payload.writeInt1(parameterType.getColumnType().getValue());
+            payload.writeInt1(parameterType.getUnsignedFlag());
+            payload.writeStringLenenc(null == each ? "" : each.toString());
+            count++;
         }
     }
     
