@@ -31,21 +31,28 @@ The application is a ` SpringBoot ` application, using ` Sharding-Sphere ` to ac
 
 ### Topology diagram
 
-![The topology diagram](http://ovfotjrsi.bkt.clouddn.com/apm/apm-topology.png)
+![The topology diagram](http://ovfotjrsi.bkt.clouddn.com/apm/apm-topology-new.png)
 
 Although the user accesses the application once, each database is accessed twice. This is because this visit involves two splitting tables in each database, four tables in total.
 
 ### Tracking diagram
 
-![The topology diagram](http://ovfotjrsi.bkt.clouddn.com/apm/apm-trace.png)
+![The topology diagram](http://ovfotjrsi.bkt.clouddn.com/apm/apm-trace-new.png)
 
-Four visits in total in this figure.
+You can see SQL routing, execution and final result set merge in this figure.
 
-`/SJDBC/TRUNK/*`: Represents the overall execution performance of this SQL.
+`/SHARDING-SPHERE/ROUTING/`: Represents the parsing and routing performance of this SQL.
 
+![The parsing and routing node](http://ovfotjrsi.bkt.clouddn.com/apm/apm-route-span.png)
 
-![The logical execution node](http://ovfotjrsi.bkt.clouddn.com/apm/apm-trunk-span.png)
+`/SHARDING-SPHERE/EXECUTE/{SQLType}`: Represents the overall execution performance of this SQL.
 
-`/SJDBC/BRANCH/*`: Represents the performance of the actual SQL.
+![The logical execution node](http://ovfotjrsi.bkt.clouddn.com/apm/apm-execute-overall-span.png)
 
-![The actual access node](http://ovfotjrsi.bkt.clouddn.com/apm/apm-branch-span.png)
+`/SHARDING-SPHERE/EXECUTE/{operation}`: Represents the performance of the actual SQL.
+
+![The actual access node](http://ovfotjrsi.bkt.clouddn.com/apm/apm-execute-span.png)
+
+`/SHARDING-SPHERE/MERGE/`: Represents the performance of performing merge results.
+
+![The actual access node](http://ovfotjrsi.bkt.clouddn.com/apm/apm-merge-span.png)
