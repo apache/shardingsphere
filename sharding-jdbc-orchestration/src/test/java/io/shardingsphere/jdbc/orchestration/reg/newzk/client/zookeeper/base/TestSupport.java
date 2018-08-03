@@ -42,9 +42,7 @@ public class TestSupport {
             
             @Override
             public void process(final WatchedEvent event) {
-                log.debug("==========================================================");
                 log.debug(event.toString());
-                log.debug("==========================================================");
             }
         };
     }
