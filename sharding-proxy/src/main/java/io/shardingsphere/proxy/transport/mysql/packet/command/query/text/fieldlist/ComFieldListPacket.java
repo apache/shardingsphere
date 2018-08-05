@@ -54,8 +54,6 @@ public final class ComFieldListPacket implements CommandPacket, CommandPacketReb
     @Getter
     private final int sequenceId;
     
-    private final int connectionId;
-    
     private final String table;
     
     private final String fieldWildcard;
@@ -64,10 +62,9 @@ public final class ComFieldListPacket implements CommandPacket, CommandPacketReb
     
     public ComFieldListPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         this.sequenceId = sequenceId;
-        this.connectionId = connectionId;
         table = payload.readStringNul();
         fieldWildcard = payload.readStringEOF();
-        backendHandler = BackendHandlerFactory.newTextProtocolInstance(String.format(SQL, table, ShardingConstant.LOGIC_SCHEMA_NAME), backendConnection, DatabaseType.MySQL, this);
+        backendHandler = BackendHandlerFactory.newTextProtocolInstance(connectionId, String.format(SQL, table, ShardingConstant.LOGIC_SCHEMA_NAME), backendConnection, DatabaseType.MySQL, this);
     }
     
     @Override
@@ -95,11 +92,6 @@ public final class ComFieldListPacket implements CommandPacket, CommandPacketReb
         }
         result.getPackets().add(new EofPacket(++currentSequenceId));
         return result;
-    }
-    
-    @Override
-    public int connectionId() {
-        return connectionId;
     }
     
     @Override

@@ -54,8 +54,6 @@ public final class ComQueryPacket implements QueryCommandPacket, CommandPacketRe
     @Getter
     private final int sequenceId;
     
-    private final int connectionId;
-    
     private final String sql;
     
     private final BackendHandler backendHandler;
@@ -64,15 +62,13 @@ public final class ComQueryPacket implements QueryCommandPacket, CommandPacketRe
     
     public ComQueryPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         this.sequenceId = sequenceId;
-        this.connectionId = connectionId;
         sql = payload.readStringEOF();
-        backendHandler = BackendHandlerFactory.newTextProtocolInstance(sql, backendConnection, DatabaseType.MySQL, this);
+        backendHandler = BackendHandlerFactory.newTextProtocolInstance(connectionId, sql, backendConnection, DatabaseType.MySQL, this);
         transactionEngine = TransactionEngineFactory.create(sql);
     }
     
     public ComQueryPacket(final int sequenceId, final int connectionId, final String sql) {
         this.sequenceId = sequenceId;
-        this.connectionId = connectionId;
         this.sql = sql;
         backendHandler = null;
         transactionEngine = null;
@@ -99,11 +95,6 @@ public final class ComQueryPacket implements QueryCommandPacket, CommandPacketRe
     public DatabasePacket getResultValue() throws SQLException {
         ResultPacket resultPacket = backendHandler.getResultValue();
         return new TextResultSetRowPacket(resultPacket.getSequenceId(), resultPacket.getData());
-    }
-    
-    @Override
-    public int connectionId() {
-        return connectionId;
     }
     
     @Override

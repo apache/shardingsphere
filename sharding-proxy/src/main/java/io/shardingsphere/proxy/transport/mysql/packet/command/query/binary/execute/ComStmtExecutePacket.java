@@ -60,8 +60,6 @@ public final class ComStmtExecutePacket implements QueryCommandPacket, CommandPa
     @Getter
     private final int sequenceId;
     
-    private final int connectionId;
-    
     private final int statementId;
     
     private final BinaryStatement binaryStatement;
@@ -78,7 +76,6 @@ public final class ComStmtExecutePacket implements QueryCommandPacket, CommandPa
     
     public ComStmtExecutePacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         this.sequenceId = sequenceId;
-        this.connectionId = connectionId;
         statementId = payload.readInt4();
         binaryStatement = BinaryStatementRegistry.getInstance().getBinaryStatement(statementId);
         flags = payload.readInt1();
@@ -93,7 +90,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket, CommandPa
             binaryStatement.setParameterTypes(getParameterTypes(payload, parametersCount));
         }
         parameters = getParameters(payload, parametersCount);
-        backendHandler = BackendHandlerFactory.newBinaryProtocolInstance(binaryStatement.getSql(), parameters, backendConnection, DatabaseType.MySQL, this);
+        backendHandler = BackendHandlerFactory.newBinaryProtocolInstance(connectionId, binaryStatement.getSql(), parameters, backendConnection, DatabaseType.MySQL, this);
     }
     
     private List<BinaryStatementParameterType> getParameterTypes(final MySQLPacketPayload payload, final int parametersCount) {
@@ -148,11 +145,6 @@ public final class ComStmtExecutePacket implements QueryCommandPacket, CommandPa
     public DatabasePacket getResultValue() throws SQLException {
         ResultPacket resultPacket = backendHandler.getResultValue();
         return new BinaryResultSetRowPacket(resultPacket.getSequenceId(), resultPacket.getColumnCount(), resultPacket.getData(), resultPacket.getColumnTypes());
-    }
-    
-    @Override
-    public int connectionId() {
-        return connectionId;
     }
     
     @Override
