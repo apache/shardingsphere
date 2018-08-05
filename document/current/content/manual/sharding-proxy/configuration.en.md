@@ -60,7 +60,7 @@ shardingRule:
   defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
   
   props:
-    proxy.mode: MEMORY_STRICTLY
+    connection.mode: MEMORY_STRICTLY
     proxy.transaction.mode: NONE
     proxy.max.working.threads: 16
     sql.show: false
@@ -113,7 +113,7 @@ masterSlaveRule:
     - ds_slave1
     
   props:
-    proxy.mode: MEMORY_STRICTLY
+    connection.mode: MEMORY_STRICTLY
     proxy.transaction.mode: NONE
     proxy.max.working.threads: 16
     sql.show: false
@@ -240,7 +240,7 @@ shardingRule:
           master-slave-key1: master-slave-value1
 
   props:
-    proxy.mode: MEMORY_STRICTLY
+    connection.mode: MEMORY_STRICTLY
     proxy.transaction.mode: NONE
     proxy.max.working.threads: 16
     sql.show: false
@@ -310,7 +310,7 @@ masterSlaveRule: #Ignore read-write splitting rule configuration, same as Shardi
     #                  The benefit of this approach is saving memory for Proxy by Stream ResultSet.
     # CONNECTION_STRICTLY: Proxy will release connections after get the overall rows from the ResultSet.
     #                      Meanwhile, the cost of the memory will be increased.
-    proxy.mode: 
+    connection.mode: 
     proxy.transaction.mode: #Transaction mode.
     proxy.max.working.threads: # Max threads will connect to databases.The default value is available processors * 2
     sql.show: false
