@@ -70,7 +70,7 @@ import java.util.concurrent.TimeoutException;
  */
 @Slf4j
 @Getter
-public final class SQLPacketsBackendHandler implements BackendHandler {
+public final class NettyBackendHandler implements BackendHandler {
     
     private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
     
@@ -78,7 +78,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     
     private final DatabaseType databaseType;
     
-    private final Map<String, List<Channel>> channelsMap = Maps.newHashMap();
+    private final Map<String, List<Channel>> channelMap = Maps.newHashMap();
     
     private SynchronizedFuture synchronizedFuture;
     
@@ -88,7 +88,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     
     private MergedResult mergedResult;
     
-    public SQLPacketsBackendHandler(final CommandPacketRebuilder rebuilder, final DatabaseType databaseType) {
+    public NettyBackendHandler(final CommandPacketRebuilder rebuilder, final DatabaseType databaseType) {
         this.rebuilder = rebuilder;
         this.databaseType = databaseType;
     }
@@ -151,12 +151,12 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     
     private void executeCommand(final String dataSourceName, final String sql) {
         try {
-            if (null == channelsMap.get(dataSourceName)) {
-                channelsMap.put(dataSourceName, Lists.<Channel>newArrayList());
+            if (null == channelMap.get(dataSourceName)) {
+                channelMap.put(dataSourceName, Lists.<Channel>newArrayList());
             }
             SimpleChannelPool pool = ShardingProxyClient.getInstance().getPoolMap().get(dataSourceName);
             Channel channel = pool.acquire().get(RULE_REGISTRY.getProxyBackendConnectionTimeout(), TimeUnit.SECONDS);
-            channelsMap.get(dataSourceName).add(channel);
+            channelMap.get(dataSourceName).add(channel);
             MySQLResultCache.getInstance().putConnection(channel.id().asShortText(), rebuilder.connectionId());
             channel.writeAndFlush(rebuilder.rebuild(rebuilder.sequenceId(), rebuilder.connectionId(), sql));
         } catch (final InterruptedException | ExecutionException | TimeoutException ex) {
@@ -208,7 +208,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     @Override
     public boolean next() throws SQLException {
         if (null == mergedResult || !mergedResult.next()) {
-            for (Entry<String, List<Channel>> entry : channelsMap.entrySet()) {
+            for (Entry<String, List<Channel>> entry : channelMap.entrySet()) {
                 for (Channel each : entry.getValue()) {
                     ShardingProxyClient.getInstance().getPoolMap().get(entry.getKey()).release(each);
                 }
