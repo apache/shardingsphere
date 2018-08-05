@@ -33,7 +33,8 @@ import io.netty.handler.logging.LoggingHandler;
 import io.shardingsphere.proxy.backend.netty.ShardingProxyClient;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.frontend.common.netty.ServerHandlerInitializer;
-import io.shardingsphere.proxy.util.ExecutorContext;
+import io.shardingsphere.proxy.util.BackendExecutorContext;
+import io.shardingsphere.proxy.util.FrontendExecutorContext;
 
 import java.net.MalformedURLException;
 
@@ -48,14 +49,16 @@ public final class ShardingProxy {
     
     private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
     
-    private final ExecutorContext executorContext = ExecutorContext.getInstance();
+    private final FrontendExecutorContext frontendExecutorContext = FrontendExecutorContext.getInstance();
+    
+    private final BackendExecutorContext backendExecutorContext = BackendExecutorContext.getInstance();
     
     private EventLoopGroup bossGroup;
     
     private EventLoopGroup workerGroup;
     
     public ShardingProxy() {
-        RULE_REGISTRY.initShardingMetaData(executorContext.getExecutorService());
+        RULE_REGISTRY.initShardingMetaData(backendExecutorContext.getExecutorService());
     }
     
     /**
@@ -82,7 +85,8 @@ public final class ShardingProxy {
         } finally {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
-            executorContext.getExecutorService().shutdown();
+            frontendExecutorContext.getExecutorService().shutdown();
+            backendExecutorContext.getExecutorService().shutdown();
             if (RULE_REGISTRY.getBackendNIOConfig().isUseNIO()) {
                 ShardingProxyClient.getInstance().stop();
             }
@@ -100,25 +104,25 @@ public final class ShardingProxy {
     private void groupsEpoll(final ServerBootstrap bootstrap) {
         workerGroup = new EpollEventLoopGroup(RULE_REGISTRY.getExecutorSize());
         bootstrap.group(bossGroup, workerGroup)
-                .channel(EpollServerSocketChannel.class)
-                .option(EpollChannelOption.SO_BACKLOG, 128)
-                .option(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(8 * 1024 * 1024, 16 * 1024 * 1024))
-                .option(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                .childOption(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                .handler(new LoggingHandler(LogLevel.INFO))
-                .childHandler(new ServerHandlerInitializer());
+            .channel(EpollServerSocketChannel.class)
+            .option(EpollChannelOption.SO_BACKLOG, 128)
+            .option(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(8 * 1024 * 1024, 16 * 1024 * 1024))
+            .option(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+            .childOption(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+            .handler(new LoggingHandler(LogLevel.INFO))
+            .childHandler(new ServerHandlerInitializer());
     }
     
     private void groupsNio(final ServerBootstrap bootstrap) {
         workerGroup = new NioEventLoopGroup(RULE_REGISTRY.getExecutorSize());
         bootstrap.group(bossGroup, workerGroup)
-                .channel(NioServerSocketChannel.class)
-                .option(ChannelOption.SO_BACKLOG, 128)
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 100)
-                .option(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(8 * 1024 * 1024, 16 * 1024 * 1024))
-                .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                .handler(new LoggingHandler(LogLevel.INFO))
-                .childHandler(new ServerHandlerInitializer());
+            .channel(NioServerSocketChannel.class)
+            .option(ChannelOption.SO_BACKLOG, 128)
+            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 100)
+            .option(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(8 * 1024 * 1024, 16 * 1024 * 1024))
+            .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+            .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+            .handler(new LoggingHandler(LogLevel.INFO))
+            .childHandler(new ServerHandlerInitializer());
     }
 }

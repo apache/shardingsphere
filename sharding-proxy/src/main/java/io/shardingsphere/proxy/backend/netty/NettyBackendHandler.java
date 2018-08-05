@@ -44,7 +44,7 @@ import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
-import io.shardingsphere.proxy.util.ExecutorContext;
+import io.shardingsphere.proxy.util.BackendExecutorContext;
 import io.shardingsphere.proxy.util.MySQLResultCache;
 import io.shardingsphere.proxy.util.SynchronizedFuture;
 import lombok.Getter;
@@ -145,7 +145,7 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
         if (!RULE_REGISTRY.isMasterSlaveOnly() && SQLType.DDL == sqlStatement.getType() && !sqlStatement.getTables().isEmpty()) {
             String logicTableName = sqlStatement.getTables().getSingleTableName();
             TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(
-                    ExecutorContext.getInstance().getExecutorService(), new ProxyTableMetaDataConnectionManager(RULE_REGISTRY.getBackendDataSource()));
+                    BackendExecutorContext.getInstance().getExecutorService(), new ProxyTableMetaDataConnectionManager(RULE_REGISTRY.getBackendDataSource()));
             RULE_REGISTRY.getMetaData().getTable().put(logicTableName, tableMetaDataLoader.load(logicTableName, RULE_REGISTRY.getShardingRule()));
         }
         return result;

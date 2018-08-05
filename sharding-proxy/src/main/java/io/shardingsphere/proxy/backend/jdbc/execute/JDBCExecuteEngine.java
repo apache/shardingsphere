@@ -30,7 +30,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.query.ColumnDefini
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.FieldCountPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
-import io.shardingsphere.proxy.util.ExecutorContext;
+import io.shardingsphere.proxy.util.BackendExecutorContext;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -59,7 +59,7 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
     
     private final BackendConnection backendConnection;
     
-    private final ExecutorService executorService = ExecutorContext.getInstance().getExecutorService();
+    private final ExecutorService executorService = BackendExecutorContext.getInstance().getExecutorService();
     
     private final JDBCExecutorWrapper jdbcExecutorWrapper;
     

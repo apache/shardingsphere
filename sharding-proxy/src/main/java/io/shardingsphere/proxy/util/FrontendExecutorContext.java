@@ -25,23 +25,23 @@ import lombok.Getter;
 import java.util.concurrent.Executors;
 
 /**
- * Executor context.
+ * Frontend executor context.
  *
- * @author zhangliang
+ * @author zhangyonglun
  */
-public final class ExecutorContext {
+public final class FrontendExecutorContext {
     
-    private static final ExecutorContext INSTANCE = new ExecutorContext();
+    private static final FrontendExecutorContext INSTANCE = new FrontendExecutorContext();
     
     @Getter
     private final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(RuleRegistry.getInstance().getExecutorSize()));
     
     /**
-     * Get executor context instance.
+     * Get frontend executor context instance.
      * 
-     * @return instance of executor context
+     * @return instance of frontend executor context
      */
-    public static ExecutorContext getInstance() {
+    public static FrontendExecutorContext getInstance() {
         return INSTANCE;
     }
 }
