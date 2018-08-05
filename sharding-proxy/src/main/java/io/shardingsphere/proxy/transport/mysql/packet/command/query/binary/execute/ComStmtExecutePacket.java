@@ -20,13 +20,10 @@ package io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.exec
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.proxy.backend.BackendHandler;
 import io.shardingsphere.proxy.backend.BackendHandlerFactory;
 import io.shardingsphere.proxy.backend.ResultPacket;
-import io.shardingsphere.proxy.backend.jdbc.JDBCBackendHandler;
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
-import io.shardingsphere.proxy.backend.jdbc.execute.JDBCExecuteEngineFactory;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
@@ -96,7 +93,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket, CommandPa
             binaryStatement.setParameterTypes(getParameterTypes(payload, parametersCount));
         }
         parameters = getParameters(payload, parametersCount);
-        backendHandler = BackendHandlerFactory.newBinaryProtocolInstance(sql(), parameters, backendConnection, DatabaseType.MySQL, this);
+        backendHandler = BackendHandlerFactory.newBinaryProtocolInstance(binaryStatement.getSql(), parameters, backendConnection, DatabaseType.MySQL, this);
     }
     
     private List<BinaryStatementParameterType> getParameterTypes(final MySQLPacketPayload payload, final int parametersCount) {
@@ -161,11 +158,6 @@ public final class ComStmtExecutePacket implements QueryCommandPacket, CommandPa
     @Override
     public int sequenceId() {
         return getSequenceId();
-    }
-    
-    @Override
-    public String sql() {
-        return binaryStatement.getSql();
     }
     
     @Override

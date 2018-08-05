@@ -112,11 +112,6 @@ public final class ComQueryPacket implements QueryCommandPacket, CommandPacketRe
     }
     
     @Override
-    public String sql() {
-        return sql;
-    }
-    
-    @Override
     public CommandPacket rebuild(final Object... params) {
         return new ComQueryPacket((int) params[0], (int) params[1], (String) params[2]);
     }

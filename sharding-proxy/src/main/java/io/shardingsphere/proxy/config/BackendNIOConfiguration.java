@@ -15,36 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.transport.common.packet;
+package io.shardingsphere.proxy.config;
 
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Command packet rebuilder.
+ * Configuration of use NIO to connection backend databases.
  *
- * @author linjiaqi
+ * @author zhangliang
  */
-public interface CommandPacketRebuilder {
+@RequiredArgsConstructor
+@Getter
+public final class BackendNIOConfiguration {
     
-    /**
-     * Get connection id.
-     * 
-     * @return connection id
-     */
-    int connectionId();
+    private final boolean useNIO;
     
-    /**
-     * Get sequence id.
-     * 
-     * @return sequence id
-     */
-    int sequenceId();
+    private final int maxConnections;
     
-    /**
-     * CommandPacket rebuild by params.
-     * 
-     * @param params rebuild params
-     * @return rebuild command packet
-     */
-    CommandPacket rebuild(Object... params);
+    private final int connectionTimeoutSeconds;
 }

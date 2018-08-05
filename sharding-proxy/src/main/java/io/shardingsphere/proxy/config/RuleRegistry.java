@@ -75,17 +75,13 @@ public final class RuleRegistry {
     
     private ConnectionMode connectionMode;
     
+    private int executorSize;
+    
+    private BackendNIOConfiguration backendNIOConfig;
+    
     private TransactionType transactionType;
     
     private TransactionManager transactionManager;
-    
-    private int executorSize;
-    
-    private boolean proxyBackendUseNio;
-    
-    private int proxyBackendSimpleDbConnections;
-    
-    private int proxyBackendConnectionTimeout;
     
     private ProxyAuthority proxyAuthority;
     
@@ -113,9 +109,12 @@ public final class RuleRegistry {
         transactionType = TransactionType.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_MODE));
         transactionManager = ProxyTransactionLoader.load(transactionType);
         executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
-        proxyBackendUseNio = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO);
-        proxyBackendSimpleDbConnections = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_SIMPLE_DB_CONNECTIONS);
-        proxyBackendConnectionTimeout = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT);
+        // TODO :jiaqi force off use NIO for backend, this feature is not complete yet
+        boolean useNIO = false;
+//        boolean proxyBackendUseNio = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO);
+        int databaseConnectionCount = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_MAX_CONNECTIONS);
+        int connectionTimeoutSeconds = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS);
+        backendNIOConfig = new BackendNIOConfiguration(useNIO, databaseConnectionCount, connectionTimeoutSeconds);
         shardingRule = new ShardingRule(
                 null == config.getShardingRule() ? new ShardingRuleConfiguration() : config.getShardingRule().getShardingRuleConfiguration(), config.getDataSources().keySet());
         if (null != config.getMasterSlaveRule()) {
