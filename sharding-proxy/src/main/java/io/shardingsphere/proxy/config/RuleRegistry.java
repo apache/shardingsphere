@@ -79,7 +79,7 @@ public final class RuleRegistry {
     
     private TransactionManager transactionManager;
     
-    private int maxWorkingThreads;
+    private int executorSize;
     
     private boolean proxyBackendUseNio;
     
@@ -112,7 +112,7 @@ public final class RuleRegistry {
         connectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
         transactionType = TransactionType.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_MODE));
         transactionManager = ProxyTransactionLoader.load(transactionType);
-        maxWorkingThreads = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_MAX_WORKING_THREADS);
+        executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         proxyBackendUseNio = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO);
         proxyBackendSimpleDbConnections = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_SIMPLE_DB_CONNECTIONS);
         proxyBackendConnectionTimeout = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT);

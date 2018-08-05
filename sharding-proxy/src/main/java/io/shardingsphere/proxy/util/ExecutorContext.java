@@ -34,7 +34,7 @@ public final class ExecutorContext {
     private static final ExecutorContext INSTANCE = new ExecutorContext();
     
     @Getter
-    private final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(RuleRegistry.getInstance().getMaxWorkingThreads()));
+    private final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(RuleRegistry.getInstance().getExecutorSize()));
     
     /**
      * Get executor context instance.
