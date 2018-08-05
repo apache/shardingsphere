@@ -43,32 +43,34 @@ public final class BackendHandlerFactory {
      * Create new instance of text protocol backend handler.
      * 
      * @param connectionId connection ID of database connected
+     * @param sequenceId sequence ID of SQL packet
      * @param sql SQL to be executed
      * @param backendConnection backend connection
      * @param databaseType database type
      * @param rebuilder rebuilder
      * @return instance of text protocol backend handler
      */
-    public static BackendHandler newTextProtocolInstance(final int connectionId, final String sql, 
+    public static BackendHandler newTextProtocolInstance(final int connectionId, final int sequenceId, final String sql, 
                                                          final BackendConnection backendConnection, final DatabaseType databaseType, final CommandPacketRebuilder rebuilder) {
         return RULE_REGISTRY.getBackendNIOConfig().isUseNIO()
-                ? new NettyBackendHandler(connectionId, sql, rebuilder, databaseType) : new JDBCBackendHandler(sql, JDBCExecuteEngineFactory.createTextProtocolInstance(backendConnection));
+                ? new NettyBackendHandler(connectionId, sequenceId, sql, rebuilder, databaseType) : new JDBCBackendHandler(sql, JDBCExecuteEngineFactory.createTextProtocolInstance(backendConnection));
     }
     
     /**
      * Create new instance of text protocol backend handler.
      * 
-     * @param sql SQL to be executed
      * @param connectionId connection ID of database connected
+     * @param sequenceId sequence ID of SQL packet
+     * @param sql SQL to be executed
      * @param parameters SQL parameters
      * @param backendConnection backend connection
      * @param databaseType database type
      * @param rebuilder rebuilder
      * @return instance of text protocol backend handler
      */
-    public static BackendHandler newBinaryProtocolInstance(final int connectionId, final String sql, final List<Object> parameters, 
+    public static BackendHandler newBinaryProtocolInstance(final int connectionId, final int sequenceId, final String sql, final List<Object> parameters, 
                                                            final BackendConnection backendConnection, final DatabaseType databaseType, final CommandPacketRebuilder rebuilder) {
-        return RULE_REGISTRY.getBackendNIOConfig().isUseNIO() ? new NettyBackendHandler(connectionId, sql, rebuilder, databaseType)
+        return RULE_REGISTRY.getBackendNIOConfig().isUseNIO() ? new NettyBackendHandler(connectionId, sequenceId, sql, rebuilder, databaseType)
                 : new JDBCBackendHandler(sql, JDBCExecuteEngineFactory.createBinaryProtocolInstance(parameters, backendConnection));
     }
 }

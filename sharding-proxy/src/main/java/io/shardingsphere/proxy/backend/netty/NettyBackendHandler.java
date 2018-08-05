@@ -77,6 +77,8 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
     
     private final int connectionId;
     
+    private final int sequenceId;
+    
     private final String sql;
     
     private final CommandPacketRebuilder rebuilder;
@@ -157,7 +159,7 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
         Channel channel = pool.acquire().get(RULE_REGISTRY.getBackendNIOConfig().getConnectionTimeoutSeconds(), TimeUnit.SECONDS);
         channelMap.get(dataSourceName).add(channel);
         ChannelRegistry.getInstance().putConnectionId(channel.id().asShortText(), connectionId);
-        channel.writeAndFlush(rebuilder.rebuild(rebuilder.sequenceId(), connectionId, sql));
+        channel.writeAndFlush(rebuilder.rebuild(sequenceId, connectionId, sql));
     }
     
     private CommandResponsePackets merge(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets, final List<QueryResult> queryResults) {

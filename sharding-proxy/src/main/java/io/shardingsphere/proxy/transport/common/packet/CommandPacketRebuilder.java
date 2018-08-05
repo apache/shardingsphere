@@ -27,13 +27,6 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 public interface CommandPacketRebuilder {
     
     /**
-     * Get sequence id.
-     * 
-     * @return sequence id
-     */
-    int sequenceId();
-    
-    /**
      * CommandPacket rebuild by params.
      * 
      * @param params rebuild params
