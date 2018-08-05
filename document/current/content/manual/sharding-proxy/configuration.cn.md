@@ -61,7 +61,6 @@ shardingRule:
   
   props:
     connection.mode: MEMORY_STRICTLY
-    proxy.transaction.mode: NONE
     executor.size: 16
     sql.show: false
 
@@ -114,7 +113,6 @@ masterSlaveRule:
     
   props:
     connection.mode: MEMORY_STRICTLY
-    proxy.transaction.mode: NONE
     executor.size: 16
     sql.show: false
 
@@ -241,7 +239,6 @@ shardingRule:
 
   props:
     connection.mode: MEMORY_STRICTLY
-    proxy.transaction.mode: NONE
     executor.size: 16
     sql.show: false
 
@@ -312,7 +309,6 @@ masterSlaveRule: #省略读写分离配置，与Sharding-JDBC配置一致
     # CONNECTION_STRICTLY: 代理在取出ResultSet中的所有数据后会释放连接.
     #                      同时，内存的消耗将会增加.
     connection.mode: 
-    proxy.transaction.mode: 事务模式
     executor.size: 用于设置连接池工作线程个数，默认为CPU核数
     sql.show: false
 ```
