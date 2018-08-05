@@ -38,10 +38,10 @@ import io.shardingsphere.proxy.backend.netty.mysql.MySQLQueryResult;
 import io.shardingsphere.proxy.config.ProxyTableMetaDataConnectionManager;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.runtime.ChannelRegistry;
-import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.text.query.ComQueryPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.proxy.util.BackendExecutorContext;
@@ -80,8 +80,6 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
     private final int sequenceId;
     
     private final String sql;
-    
-    private final CommandPacketRebuilder rebuilder;
     
     private final DatabaseType databaseType;
     
@@ -159,7 +157,7 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
         Channel channel = pool.acquire().get(RULE_REGISTRY.getBackendNIOConfig().getConnectionTimeoutSeconds(), TimeUnit.SECONDS);
         channelMap.get(dataSourceName).add(channel);
         ChannelRegistry.getInstance().putConnectionId(channel.id().asShortText(), connectionId);
-        channel.writeAndFlush(rebuilder.rebuild(sequenceId, connectionId, sql));
+        channel.writeAndFlush(new ComQueryPacket(sequenceId, connectionId, sql));
     }
     
     private CommandResponsePackets merge(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets, final List<QueryResult> queryResults) {

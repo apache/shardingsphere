@@ -25,10 +25,8 @@ import io.shardingsphere.proxy.backend.ResultPacket;
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.proxy.backend.jdbc.transaction.TransactionEngine;
 import io.shardingsphere.proxy.backend.jdbc.transaction.TransactionEngineFactory;
-import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryCommandPacket;
@@ -49,7 +47,7 @@ import java.sql.SQLException;
  * @author zhaojun
  */
 @Slf4j
-public final class ComQueryPacket implements QueryCommandPacket, CommandPacketRebuilder {
+public final class ComQueryPacket implements QueryCommandPacket {
     
     @Getter
     private final int sequenceId;
@@ -63,7 +61,7 @@ public final class ComQueryPacket implements QueryCommandPacket, CommandPacketRe
     public ComQueryPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         this.sequenceId = sequenceId;
         sql = payload.readStringEOF();
-        backendHandler = BackendHandlerFactory.newTextProtocolInstance(connectionId, sequenceId, sql, backendConnection, DatabaseType.MySQL, this);
+        backendHandler = BackendHandlerFactory.newTextProtocolInstance(connectionId, sequenceId, sql, backendConnection, DatabaseType.MySQL);
         transactionEngine = TransactionEngineFactory.create(sql);
     }
     
@@ -95,10 +93,5 @@ public final class ComQueryPacket implements QueryCommandPacket, CommandPacketRe
     public DatabasePacket getResultValue() throws SQLException {
         ResultPacket resultPacket = backendHandler.getResultValue();
         return new TextResultSetRowPacket(resultPacket.getSequenceId(), resultPacket.getData());
-    }
-    
-    @Override
-    public CommandPacket rebuild(final Object... params) {
-        return new ComQueryPacket((int) params[0], (int) params[1], (String) params[2]);
     }
 }

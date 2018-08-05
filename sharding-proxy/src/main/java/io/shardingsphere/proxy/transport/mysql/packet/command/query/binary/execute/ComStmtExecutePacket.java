@@ -24,18 +24,15 @@ import io.shardingsphere.proxy.backend.BackendHandler;
 import io.shardingsphere.proxy.backend.BackendHandlerFactory;
 import io.shardingsphere.proxy.backend.ResultPacket;
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
-import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.constant.NewParametersBoundFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryCommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.BinaryStatement;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.BinaryStatementParameterType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.BinaryStatementRegistry;
-import io.shardingsphere.proxy.transport.mysql.packet.command.query.text.query.ComQueryPacket;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -51,7 +48,7 @@ import java.util.List;
  * @author zhangyonglun
  */
 @Slf4j
-public final class ComStmtExecutePacket implements QueryCommandPacket, CommandPacketRebuilder {
+public final class ComStmtExecutePacket implements QueryCommandPacket {
     
     private static final int ITERATION_COUNT = 1;
     
@@ -90,7 +87,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket, CommandPa
             binaryStatement.setParameterTypes(getParameterTypes(payload, parametersCount));
         }
         parameters = getParameters(payload, parametersCount);
-        backendHandler = BackendHandlerFactory.newBinaryProtocolInstance(connectionId, sequenceId, binaryStatement.getSql(), parameters, backendConnection, DatabaseType.MySQL, this);
+        backendHandler = BackendHandlerFactory.newBinaryProtocolInstance(connectionId, sequenceId, binaryStatement.getSql(), parameters, backendConnection, DatabaseType.MySQL);
     }
     
     private List<BinaryStatementParameterType> getParameterTypes(final MySQLPacketPayload payload, final int parametersCount) {
@@ -145,10 +142,5 @@ public final class ComStmtExecutePacket implements QueryCommandPacket, CommandPa
     public DatabasePacket getResultValue() throws SQLException {
         ResultPacket resultPacket = backendHandler.getResultValue();
         return new BinaryResultSetRowPacket(resultPacket.getSequenceId(), resultPacket.getColumnCount(), resultPacket.getData(), resultPacket.getColumnTypes());
-    }
-    
-    @Override
-    public CommandPacket rebuild(final Object... params) {
-        return new ComQueryPacket((int) params[0], (int) params[1], (String) params[2]);
     }
 }
