@@ -34,6 +34,7 @@ import io.shardingsphere.proxy.backend.netty.ShardingProxyClient;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.frontend.common.netty.ServerHandlerInitializer;
 import io.shardingsphere.proxy.util.BackendExecutorContext;
+import io.shardingsphere.proxy.util.FrontendExecutorContext;
 
 import java.net.MalformedURLException;
 
@@ -47,6 +48,8 @@ import java.net.MalformedURLException;
 public final class ShardingProxy {
     
     private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
+    
+    private final FrontendExecutorContext frontendExecutorContext = FrontendExecutorContext.getInstance();
     
     private final BackendExecutorContext backendExecutorContext = BackendExecutorContext.getInstance();
     
@@ -82,6 +85,7 @@ public final class ShardingProxy {
         } finally {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
+            frontendExecutorContext.getExecutorService().shutdown();
             backendExecutorContext.getExecutorService().shutdown();
             if (RULE_REGISTRY.isProxyBackendUseNio()) {
                 ShardingProxyClient.getInstance().stop();
