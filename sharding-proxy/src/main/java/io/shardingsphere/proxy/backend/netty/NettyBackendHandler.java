@@ -37,6 +37,7 @@ import io.shardingsphere.proxy.backend.ResultPacket;
 import io.shardingsphere.proxy.backend.netty.mysql.MySQLQueryResult;
 import io.shardingsphere.proxy.config.ProxyTableMetaDataConnectionManager;
 import io.shardingsphere.proxy.config.RuleRegistry;
+import io.shardingsphere.proxy.runtime.ChannelRegistry;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
@@ -147,13 +148,13 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
     }
     
     private void executeCommand(final String dataSourceName, final String sql) throws InterruptedException, ExecutionException, TimeoutException {
-        if (null == channelMap.get(dataSourceName)) {
-            channelMap.put(dataSourceName, Lists.<Channel>newArrayList());
+        if (!channelMap.containsKey(dataSourceName)) {
+            channelMap.put(dataSourceName, new ArrayList<Channel>());
         }
         SimpleChannelPool pool = ShardingProxyClient.getInstance().getPoolMap().get(dataSourceName);
         Channel channel = pool.acquire().get(RULE_REGISTRY.getBackendNIOConfig().getConnectionTimeoutSeconds(), TimeUnit.SECONDS);
         channelMap.get(dataSourceName).add(channel);
-        MySQLResultCache.getInstance().putConnection(channel.id().asShortText(), rebuilder.connectionId());
+        ChannelRegistry.getInstance().putConnectionId(channel.id().asShortText(), rebuilder.connectionId());
         channel.writeAndFlush(rebuilder.rebuild(rebuilder.sequenceId(), rebuilder.connectionId(), sql));
     }
     

@@ -34,8 +34,6 @@ public class MySQLResultCache {
     //TODO expire time should be set.
     private final Cache<Integer, SynchronizedFuture> resultCache = CacheBuilder.newBuilder().expireAfterWrite(60, TimeUnit.SECONDS).build();
     
-    private final Cache<String, Integer> connectionCache = CacheBuilder.newBuilder().build();
-    
     /**
      * Get instance of MySQL result cache.
      *
@@ -72,25 +70,5 @@ public class MySQLResultCache {
      */
     public void deleteFuture(final int connectionId) {
         resultCache.invalidate(connectionId);
-    }
-    
-    /**
-     * Put connection id by channel id.
-     *
-     * @param channelId    netty channel id
-     * @param connectionId MySQL connection id
-     */
-    public void putConnection(final String channelId, final int connectionId) {
-        connectionCache.put(channelId, connectionId);
-    }
-    
-    /**
-     * Get connection id by channel id.
-     *
-     * @param channelId netty channel id
-     * @return connectionId MySQL connection id
-     */
-    public int getConnection(final String channelId) {
-        return connectionCache.getIfPresent(channelId);
     }
 }

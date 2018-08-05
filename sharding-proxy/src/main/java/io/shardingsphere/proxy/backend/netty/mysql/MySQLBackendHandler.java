@@ -20,9 +20,10 @@ package io.shardingsphere.proxy.backend.netty.mysql;
 import com.google.common.collect.Maps;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.shardingsphere.proxy.backend.netty.CommandResponsePacketsHandler;
 import io.shardingsphere.proxy.backend.constant.AuthType;
+import io.shardingsphere.proxy.backend.netty.CommandResponsePacketsHandler;
 import io.shardingsphere.proxy.backend.netty.DataSourceConfig;
+import io.shardingsphere.proxy.runtime.ChannelRegistry;
 import io.shardingsphere.proxy.transport.mysql.constant.CapabilityFlag;
 import io.shardingsphere.proxy.transport.mysql.constant.PacketHeader;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerInfo;
@@ -99,7 +100,7 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
             byte[] authResponse = securePasswordAuthentication(dataSourceConfig.getPassword().getBytes(), handshakePacket.getAuthPluginData().getAuthPluginData());
             HandshakeResponse41Packet handshakeResponse41Packet = new HandshakeResponse41Packet(handshakePacket.getSequenceId() + 1, capabilityFlags, 16777215, 
                     ServerInfo.CHARSET, dataSourceConfig.getUsername(), authResponse, dataSourceConfig.getDatabase());
-            MySQLResultCache.getInstance().putConnection(context.channel().id().asShortText(), handshakePacket.getConnectionId());
+            ChannelRegistry.getInstance().putConnectionId(context.channel().id().asShortText(), handshakePacket.getConnectionId());
             context.writeAndFlush(handshakeResponse41Packet);
         } finally {
             payload.close();
@@ -108,7 +109,7 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
     
     @Override
     protected void okPacket(final ChannelHandlerContext context, final MySQLPacketPayload payload) {
-        int connectionId = MySQLResultCache.getInstance().getConnection(context.channel().id().asShortText());
+        int connectionId = ChannelRegistry.getInstance().getConnectionId(context.channel().id().asShortText());
         try {
             MySQLQueryResult mysqlQueryResult = new MySQLQueryResult();
             mysqlQueryResult.setGenericResponse(new OKPacket(payload));
@@ -122,7 +123,7 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
     
     @Override
     protected void errPacket(final ChannelHandlerContext context, final MySQLPacketPayload payload) {
-        int connectionId = MySQLResultCache.getInstance().getConnection(context.channel().id().asShortText());
+        int connectionId = ChannelRegistry.getInstance().getConnectionId(context.channel().id().asShortText());
         try {
             MySQLQueryResult mysqlQueryResult = new MySQLQueryResult();
             mysqlQueryResult.setGenericResponse(new ErrPacket(payload));
@@ -136,7 +137,7 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
     
     @Override
     protected void eofPacket(final ChannelHandlerContext context, final MySQLPacketPayload payload) {
-        int connectionId = MySQLResultCache.getInstance().getConnection(context.channel().id().asShortText());
+        int connectionId = ChannelRegistry.getInstance().getConnectionId(context.channel().id().asShortText());
         MySQLQueryResult mysqlQueryResult = resultMap.get(connectionId);
         if (mysqlQueryResult.isColumnFinished()) {
             mysqlQueryResult.setRowFinished(new EofPacket(payload));
@@ -150,7 +151,7 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
     
     @Override
     protected void commonPacket(final ChannelHandlerContext context, final MySQLPacketPayload payload) {
-        int connectionId = MySQLResultCache.getInstance().getConnection(context.channel().id().asShortText());
+        int connectionId = ChannelRegistry.getInstance().getConnectionId(context.channel().id().asShortText());
         MySQLQueryResult mysqlQueryResult = resultMap.get(connectionId);
         if (mysqlQueryResult == null) {
             mysqlQueryResult = new MySQLQueryResult(payload);
@@ -188,7 +189,7 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
     }
     
     private void setResponse(final ChannelHandlerContext context) {
-        int connectionId = MySQLResultCache.getInstance().getConnection(context.channel().id().asShortText());
+        int connectionId = ChannelRegistry.getInstance().getConnectionId(context.channel().id().asShortText());
         if (MySQLResultCache.getInstance().getFuture(connectionId) != null) {
             MySQLResultCache.getInstance().getFuture(connectionId).setResponse(resultMap.get(connectionId));
         }
