@@ -20,6 +20,7 @@ package io.shardingsphere.core.jdbc.core.datasource;
 import io.shardingsphere.core.api.ConfigMapContext;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.core.constant.ProxyMode;
 import io.shardingsphere.core.constant.ShardingProperties;
 import io.shardingsphere.core.constant.ShardingPropertiesConstant;
 import io.shardingsphere.core.executor.ExecutorEngine;
@@ -72,6 +73,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         ShardingTableMetaData shardingTableMetaData = new ShardingTableMetaData(
                 new TableMetaDataInitializer(executorEngine.getExecutorService(), new DataSourceMapTableMetaDataConnectionManager(dataSourceMap)).load(shardingRule));
         boolean showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
+        ProxyMode proxyMode = ProxyMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_MODE));
         shardingContext = new ShardingContext(dataSourceMap, shardingRule, getDatabaseType(), executorEngine, shardingTableMetaData, showSQL);
     }
     
