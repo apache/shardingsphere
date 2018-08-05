@@ -157,7 +157,7 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
         Channel channel = pool.acquire().get(RULE_REGISTRY.getBackendNIOConfig().getConnectionTimeoutSeconds(), TimeUnit.SECONDS);
         channelMap.get(dataSourceName).add(channel);
         ChannelRegistry.getInstance().putConnectionId(channel.id().asShortText(), connectionId);
-        channel.writeAndFlush(new ComQueryPacket(sequenceId, connectionId, sql));
+        channel.writeAndFlush(new ComQueryPacket(sequenceId, sql));
     }
     
     private CommandResponsePackets merge(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets, final List<QueryResult> queryResults) {

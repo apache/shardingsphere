@@ -65,7 +65,7 @@ public final class ComQueryPacket implements QueryCommandPacket {
         transactionEngine = TransactionEngineFactory.create(sql);
     }
     
-    public ComQueryPacket(final int sequenceId, final int connectionId, final String sql) {
+    public ComQueryPacket(final int sequenceId, final String sql) {
         this.sequenceId = sequenceId;
         this.sql = sql;
         backendHandler = null;
