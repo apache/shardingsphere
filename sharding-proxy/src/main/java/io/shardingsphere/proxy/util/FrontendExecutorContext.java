@@ -37,9 +37,9 @@ public final class FrontendExecutorContext {
     private final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(RuleRegistry.getInstance().getExecutorSize()));
     
     /**
-     * Get executor context instance.
+     * Get frontend executor context instance.
      * 
-     * @return instance of executor context
+     * @return instance of frontend executor context
      */
     public static FrontendExecutorContext getInstance() {
         return INSTANCE;
