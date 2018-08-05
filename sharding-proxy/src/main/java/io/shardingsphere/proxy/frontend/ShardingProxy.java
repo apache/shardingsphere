@@ -49,7 +49,7 @@ public final class ShardingProxy {
     
     private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
     
-    private final FrontendExecutorContext frontendExecutorContex = FrontendExecutorContext.getInstance();
+    private final FrontendExecutorContext frontendExecutorContext = FrontendExecutorContext.getInstance();
     
     private final BackendExecutorContext backendExecutorContext = BackendExecutorContext.getInstance();
     
@@ -85,7 +85,7 @@ public final class ShardingProxy {
         } finally {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
-            frontendExecutorContex.getExecutorService().shutdown();
+            frontendExecutorContext.getExecutorService().shutdown();
             backendExecutorContext.getExecutorService().shutdown();
             if (RULE_REGISTRY.getBackendNIOConfig().isUseNIO()) {
                 ShardingProxyClient.getInstance().stop();
