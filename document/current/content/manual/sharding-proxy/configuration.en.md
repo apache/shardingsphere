@@ -62,7 +62,7 @@ shardingRule:
   props:
     connection.mode: MEMORY_STRICTLY
     proxy.transaction.mode: NONE
-    proxy.max.working.threads: 16
+    executor.size: 16
     sql.show: false
     
 proxyAuthority:
@@ -115,7 +115,7 @@ masterSlaveRule:
   props:
     connection.mode: MEMORY_STRICTLY
     proxy.transaction.mode: NONE
-    proxy.max.working.threads: 16
+    executor.size: 16
     sql.show: false
        
 proxyAuthority:
@@ -242,7 +242,7 @@ shardingRule:
   props:
     connection.mode: MEMORY_STRICTLY
     proxy.transaction.mode: NONE
-    proxy.max.working.threads: 16
+    executor.size: 16
     sql.show: false
     
 proxyAuthority:
@@ -312,7 +312,7 @@ masterSlaveRule: #Ignore read-write splitting rule configuration, same as Shardi
     #                      Meanwhile, the cost of the memory will be increased.
     connection.mode: 
     proxy.transaction.mode: #Transaction mode.
-    proxy.max.working.threads: # Max threads will connect to databases.The default value is available processors * 2
+    executor.size: # Max threads will connect to databases.The default value is available processors count.
     sql.show: false
 ```
 

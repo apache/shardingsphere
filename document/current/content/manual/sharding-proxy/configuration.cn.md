@@ -62,7 +62,7 @@ shardingRule:
   props:
     connection.mode: MEMORY_STRICTLY
     proxy.transaction.mode: NONE
-    proxy.max.working.threads: 16
+    executor.size: 16
     sql.show: false
 
 proxyAuthority:
@@ -115,7 +115,7 @@ masterSlaveRule:
   props:
     connection.mode: MEMORY_STRICTLY
     proxy.transaction.mode: NONE
-    proxy.max.working.threads: 16
+    executor.size: 16
     sql.show: false
 
 proxyAuthority:
@@ -242,7 +242,7 @@ shardingRule:
   props:
     connection.mode: MEMORY_STRICTLY
     proxy.transaction.mode: NONE
-    proxy.max.working.threads: 16
+    executor.size: 16
     sql.show: false
 
 proxyAuthority:
@@ -313,7 +313,7 @@ masterSlaveRule: #省略读写分离配置，与Sharding-JDBC配置一致
     #                      同时，内存的消耗将会增加.
     connection.mode: 
     proxy.transaction.mode: 事务模式
-    proxy.max.working.threads: 用于设置连接池工作线程个数，默认为CPU核数 * 2
+    executor.size: 用于设置连接池工作线程个数，默认为CPU核数
     sql.show: false
 ```
 
