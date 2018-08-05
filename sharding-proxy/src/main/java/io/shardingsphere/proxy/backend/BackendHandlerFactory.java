@@ -48,8 +48,8 @@ public final class BackendHandlerFactory {
      * @return instance of text protocol backend handler
      */
     public static BackendHandler newTextProtocolInstance(final String sql, final BackendConnection backendConnection, final DatabaseType databaseType, final CommandPacketRebuilder rebuilder) {
-        return RULE_REGISTRY.isProxyBackendUseNio()
-                ? new NettyBackendHandler(rebuilder, databaseType) : new JDBCBackendHandler(sql, JDBCExecuteEngineFactory.createTextProtocolInstance(backendConnection));
+        return RULE_REGISTRY.getBackendNIOConfig().isUseNIO()
+            ? new NettyBackendHandler(sql, rebuilder, databaseType) : new JDBCBackendHandler(sql, JDBCExecuteEngineFactory.createTextProtocolInstance(backendConnection));
     }
     
     /**
@@ -61,8 +61,9 @@ public final class BackendHandlerFactory {
      * @param rebuilder rebuilder
      * @return instance of text protocol backend handler
      */
-    public static BackendHandler newBinaryProtocolInstance(final String sql, final List<Object> parameters, final BackendConnection backendConnection, final DatabaseType databaseType, final CommandPacketRebuilder rebuilder) {
-        return RULE_REGISTRY.isProxyBackendUseNio()
-                ? new NettyBackendHandler(rebuilder, databaseType) : new JDBCBackendHandler(sql, JDBCExecuteEngineFactory.createBinaryProtocolInstance(parameters, backendConnection));
+    public static BackendHandler newBinaryProtocolInstance(
+        final String sql, final List<Object> parameters, final BackendConnection backendConnection, final DatabaseType databaseType, final CommandPacketRebuilder rebuilder) {
+        return RULE_REGISTRY.getBackendNIOConfig().isUseNIO()
+            ? new NettyBackendHandler(sql, rebuilder, databaseType) : new JDBCBackendHandler(sql, JDBCExecuteEngineFactory.createBinaryProtocolInstance(parameters, backendConnection));
     }
 }
