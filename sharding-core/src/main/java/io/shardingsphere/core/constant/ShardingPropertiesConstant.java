@@ -54,18 +54,21 @@ public enum ShardingPropertiesConstant {
     EXECUTOR_SIZE("executor.size", String.valueOf(Runtime.getRuntime().availableProcessors()), int.class),
     
     /**
-     * Proxy mode.
+     * Connection mode of connected to databases.
      *
      * <p>
      * MEMORY_STRICTLY:
-     * Proxy holds as many connections as the count of actual tables routed in a database.
+     * Sharding-Sphere holds as many connections as the count of actual tables routed in a database.
      * The benefit of this approach is saving memory for Proxy by Stream ResultSet.
+     * </p>
+     * 
+     * <p>
      * CONNECTION_STRICTLY:
-     * Proxy will release connections after get the overall rows from the ResultSet.
+     * harding-Sphere will release connections after get the overall rows from the ResultSet.
      * Meanwhile, the cost of the memory will be increased.
      * </p>
      */
-    PROXY_MODE("proxy.mode", "MEMORY_STRICTLY", String.class),
+    CONNECTION_MODE("connection.mode", ConnectionMode.MEMORY_STRICTLY.name(), String.class),
     
     PROXY_TRANSACTION_MODE("proxy.transaction.mode", "NONE", String.class),
     

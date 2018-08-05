@@ -15,19 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.constant;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+package io.shardingsphere.core.constant;
 
 /**
- * Proxy Mode.
+ * Connection Mode.
  *
  * @author zhangyonglun
  */
-@RequiredArgsConstructor
-@Getter
-public enum ProxyMode {
+public enum ConnectionMode {
     
     MEMORY_STRICTLY, CONNECTION_STRICTLY
 }
