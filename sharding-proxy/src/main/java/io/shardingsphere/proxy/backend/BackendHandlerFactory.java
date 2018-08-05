@@ -62,7 +62,7 @@ public final class BackendHandlerFactory {
      * @return instance of text protocol backend handler
      */
     public static BackendHandler newBinaryProtocolInstance(
-        final String sql, final List<Object> parameters, final BackendConnection backendConnection, final DatabaseType databaseType, final CommandPacketRebuilder rebuilder) {
+            final String sql, final List<Object> parameters, final BackendConnection backendConnection, final DatabaseType databaseType, final CommandPacketRebuilder rebuilder) {
         return RULE_REGISTRY.getBackendNIOConfig().isUseNIO()
                 ? new NettyBackendHandler(sql, rebuilder, databaseType) : new JDBCBackendHandler(sql, JDBCExecuteEngineFactory.createBinaryProtocolInstance(parameters, backendConnection));
     }
