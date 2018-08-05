@@ -25,13 +25,13 @@ import lombok.Getter;
 import java.util.concurrent.Executors;
 
 /**
- * Executor context.
+ * Backend executor context.
  *
  * @author zhangliang
  */
-public final class ExecutorContext {
+public final class BackendExecutorContext {
     
-    private static final ExecutorContext INSTANCE = new ExecutorContext();
+    private static final BackendExecutorContext INSTANCE = new BackendExecutorContext();
     
     @Getter
     private final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(RuleRegistry.getInstance().getExecutorSize()));
@@ -41,7 +41,7 @@ public final class ExecutorContext {
      * 
      * @return instance of executor context
      */
-    public static ExecutorContext getInstance() {
+    public static BackendExecutorContext getInstance() {
         return INSTANCE;
     }
 }
