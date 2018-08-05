@@ -49,6 +49,8 @@ import java.sql.SQLException;
 @Slf4j
 public final class ComFieldListPacket implements CommandPacket, CommandPacketRebuilder {
     
+    private static final String SQL = "SHOW COLUMNS FROM %s FROM %s";
+    
     @Getter
     private final int sequenceId;
     
@@ -65,7 +67,7 @@ public final class ComFieldListPacket implements CommandPacket, CommandPacketReb
         this.connectionId = connectionId;
         table = payload.readStringNul();
         fieldWildcard = payload.readStringEOF();
-        backendHandler = BackendHandlerFactory.newTextProtocolInstance(sql(), backendConnection, DatabaseType.MySQL, this);
+        backendHandler = BackendHandlerFactory.newTextProtocolInstance(String.format(SQL, table, ShardingConstant.LOGIC_SCHEMA_NAME), backendConnection, DatabaseType.MySQL, this);
     }
     
     @Override
@@ -103,11 +105,6 @@ public final class ComFieldListPacket implements CommandPacket, CommandPacketReb
     @Override
     public int sequenceId() {
         return getSequenceId();
-    }
-    
-    @Override
-    public String sql() {
-        return String.format("SHOW COLUMNS FROM %s FROM %s", table, ShardingConstant.LOGIC_SCHEMA_NAME);
     }
     
     @Override

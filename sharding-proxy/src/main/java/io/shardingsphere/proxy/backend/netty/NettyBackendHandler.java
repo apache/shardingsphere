@@ -74,6 +74,8 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
     
     private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
     
+    private final String sql;
+    
     private final CommandPacketRebuilder rebuilder;
     
     private final DatabaseType databaseType;
@@ -94,23 +96,23 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
     }
     
     private CommandResponsePackets executeForMasterSlave() throws InterruptedException, ExecutionException, TimeoutException {
-        String dataSourceName = new MasterSlaveRouter(RULE_REGISTRY.getMasterSlaveRule(), RULE_REGISTRY.isShowSQL()).route(rebuilder.sql()).iterator().next();
+        String dataSourceName = new MasterSlaveRouter(RULE_REGISTRY.getMasterSlaveRule(), RULE_REGISTRY.isShowSQL()).route(sql).iterator().next();
         synchronizedFuture = new SynchronizedFuture(1);
         MySQLResultCache.getInstance().putFuture(rebuilder.connectionId(), synchronizedFuture);
-        executeCommand(dataSourceName, rebuilder.sql());
+        executeCommand(dataSourceName, sql);
         List<QueryResult> queryResults = synchronizedFuture.get(RULE_REGISTRY.getBackendNIOConfig().getConnectionTimeoutSeconds(), TimeUnit.SECONDS);
         MySQLResultCache.getInstance().deleteFuture(rebuilder.connectionId());
         List<CommandResponsePackets> packets = new LinkedList<>();
         for (QueryResult each : queryResults) {
             packets.add(((MySQLQueryResult) each).getCommandResponsePackets());
         }
-        return merge(new SQLJudgeEngine(rebuilder.sql()).judge(), packets, queryResults);
+        return merge(new SQLJudgeEngine(sql).judge(), packets, queryResults);
     }
     
     private CommandResponsePackets executeForSharding() throws InterruptedException, ExecutionException, TimeoutException {
         StatementRoutingEngine routingEngine = new StatementRoutingEngine(
                 RULE_REGISTRY.getShardingRule(), RULE_REGISTRY.getMetaData().getTable(), databaseType, RULE_REGISTRY.isShowSQL(), RULE_REGISTRY.getMetaData().getDataSource());
-        SQLRouteResult routeResult = routingEngine.route(rebuilder.sql());
+        SQLRouteResult routeResult = routingEngine.route(sql);
         if (routeResult.getExecutionUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1));
         }

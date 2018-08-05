@@ -41,13 +41,6 @@ public interface CommandPacketRebuilder {
     int sequenceId();
     
     /**
-     * Get SQL.
-     * 
-     * @return SQL
-     */
-    String sql();
-    
-    /**
      * CommandPacket rebuild by params.
      * 
      * @param params rebuild params
