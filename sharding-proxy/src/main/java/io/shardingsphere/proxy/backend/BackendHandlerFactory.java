@@ -48,8 +48,8 @@ public final class BackendHandlerFactory {
      * @param databaseType database type
      * @return instance of text protocol backend handler
      */
-    public static BackendHandler newTextProtocolInstance(final int connectionId, final int sequenceId, final String sql, 
-                                                         final BackendConnection backendConnection, final DatabaseType databaseType) {
+    public static BackendHandler newTextProtocolInstance(
+            final int connectionId, final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType) {
         return RULE_REGISTRY.getBackendNIOConfig().isUseNIO()
                 ? new NettyBackendHandler(connectionId, sequenceId, sql, databaseType) : new JDBCBackendHandler(sql, JDBCExecuteEngineFactory.createTextProtocolInstance(backendConnection));
     }
@@ -65,8 +65,8 @@ public final class BackendHandlerFactory {
      * @param databaseType database type
      * @return instance of text protocol backend handler
      */
-    public static BackendHandler newBinaryProtocolInstance(final int connectionId, final int sequenceId, final String sql, final List<Object> parameters, 
-                                                           final BackendConnection backendConnection, final DatabaseType databaseType) {
+    public static BackendHandler newBinaryProtocolInstance(
+            final int connectionId, final int sequenceId, final String sql, final List<Object> parameters, final BackendConnection backendConnection, final DatabaseType databaseType) {
         return RULE_REGISTRY.getBackendNIOConfig().isUseNIO() ? new NettyBackendHandler(connectionId, sequenceId, sql, databaseType)
                 : new JDBCBackendHandler(sql, JDBCExecuteEngineFactory.createBinaryProtocolInstance(parameters, backendConnection));
     }
