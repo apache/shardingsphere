@@ -21,7 +21,7 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.proxy.backend.jdbc.JDBCBackendHandler;
 import io.shardingsphere.proxy.backend.jdbc.execute.JDBCExecuteEngineFactory;
-import io.shardingsphere.proxy.backend.netty.SQLPacketsBackendHandler;
+import io.shardingsphere.proxy.backend.netty.NettyBackendHandler;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
 import lombok.AccessLevel;
@@ -49,7 +49,7 @@ public final class BackendHandlerFactory {
      */
     public static BackendHandler newTextProtocolInstance(final String sql, final BackendConnection backendConnection, final DatabaseType databaseType, final CommandPacketRebuilder rebuilder) {
         return RULE_REGISTRY.getBackendNIOConfig().isUseNIO()
-                ? new SQLPacketsBackendHandler(rebuilder, databaseType) : new JDBCBackendHandler(sql, JDBCExecuteEngineFactory.createTextProtocolInstance(backendConnection));
+                ? new NettyBackendHandler(rebuilder, databaseType) : new JDBCBackendHandler(sql, JDBCExecuteEngineFactory.createTextProtocolInstance(backendConnection));
     }
     
     /**
@@ -64,6 +64,6 @@ public final class BackendHandlerFactory {
     public static BackendHandler newBinaryProtocolInstance(
             final String sql, final List<Object> parameters, final BackendConnection backendConnection, final DatabaseType databaseType, final CommandPacketRebuilder rebuilder) {
         return RULE_REGISTRY.getBackendNIOConfig().isUseNIO()
-                ? new SQLPacketsBackendHandler(rebuilder, databaseType) : new JDBCBackendHandler(sql, JDBCExecuteEngineFactory.createBinaryProtocolInstance(parameters, backendConnection));
+                ? new NettyBackendHandler(rebuilder, databaseType) : new JDBCBackendHandler(sql, JDBCExecuteEngineFactory.createBinaryProtocolInstance(parameters, backendConnection));
     }
 }
