@@ -70,13 +70,13 @@ public enum ShardingPropertiesConstant {
      */
     CONNECTION_MODE("connection.mode", ConnectionMode.MEMORY_STRICTLY.name(), String.class),
     
-    PROXY_TRANSACTION_MODE("proxy.transaction.mode", "NONE", String.class),
+    PROXY_TRANSACTION_MODE("proxy.transaction.mode", TransactionType.NONE.name(), String.class),
     
     PROXY_BACKEND_USE_NIO("proxy.backend.use.nio", Boolean.FALSE.toString(), boolean.class),
     
-    PROXY_BACKEND_SIMPLE_DB_CONNECTIONS("proxy.backend.simple.db.connections", 8 + "", int.class),
+    PROXY_BACKEND_MAX_CONNECTIONS("proxy.backend.max.connections", 8 + "", int.class),
     
-    PROXY_BACKEND_CONNECTION_TIMEOUT("proxy.backend.connection.timeout", 60 + "", int.class);
+    PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS("proxy.backend.connection.timeout.seconds", 60 + "", int.class);
     
     private final String key;
     

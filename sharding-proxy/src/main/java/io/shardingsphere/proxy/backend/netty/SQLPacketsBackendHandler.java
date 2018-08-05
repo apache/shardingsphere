@@ -103,7 +103,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
         synchronizedFuture = new SynchronizedFuture(1);
         MySQLResultCache.getInstance().putFuture(rebuilder.connectionId(), synchronizedFuture);
         executeCommand(dataSourceName, rebuilder.sql());
-        List<QueryResult> queryResults = synchronizedFuture.get(RULE_REGISTRY.getProxyBackendConnectionTimeout(), TimeUnit.SECONDS);
+        List<QueryResult> queryResults = synchronizedFuture.get(RULE_REGISTRY.getBackendNIOConfig().getConnectionTimeoutSeconds(), TimeUnit.SECONDS);
         MySQLResultCache.getInstance().deleteFuture(rebuilder.connectionId());
         List<CommandResponsePackets> packets = new LinkedList<>();
         for (QueryResult each : queryResults) {
@@ -124,7 +124,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             executeCommand(each.getDataSource(), each.getSqlUnit().getSql());
         }
-        List<QueryResult> queryResults = synchronizedFuture.get(RULE_REGISTRY.getProxyBackendConnectionTimeout(), TimeUnit.SECONDS);
+        List<QueryResult> queryResults = synchronizedFuture.get(RULE_REGISTRY.getBackendNIOConfig().getConnectionTimeoutSeconds(), TimeUnit.SECONDS);
         MySQLResultCache.getInstance().deleteFuture(rebuilder.connectionId());
         
         List<CommandResponsePackets> packets = Lists.newArrayListWithCapacity(queryResults.size());
@@ -155,7 +155,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
                 channelsMap.put(dataSourceName, Lists.<Channel>newArrayList());
             }
             SimpleChannelPool pool = ShardingProxyClient.getInstance().getPoolMap().get(dataSourceName);
-            Channel channel = pool.acquire().get(RULE_REGISTRY.getProxyBackendConnectionTimeout(), TimeUnit.SECONDS);
+            Channel channel = pool.acquire().get(RULE_REGISTRY.getBackendNIOConfig().getConnectionTimeoutSeconds(), TimeUnit.SECONDS);
             channelsMap.get(dataSourceName).add(channel);
             MySQLResultCache.getInstance().putConnection(channel.id().asShortText(), rebuilder.connectionId());
             channel.writeAndFlush(rebuilder.rebuild(rebuilder.sequenceId(), rebuilder.connectionId(), sql));
