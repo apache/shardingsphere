@@ -19,6 +19,8 @@ package io.shardingsphere.proxy.util;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.concurrent.TimeUnit;
 
@@ -27,7 +29,8 @@ import java.util.concurrent.TimeUnit;
  *
  * @author wangkai
  */
-public class MySQLResultCache {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class MySQLResultCache {
     
     private static final MySQLResultCache INSTANCE = new MySQLResultCache();
     
