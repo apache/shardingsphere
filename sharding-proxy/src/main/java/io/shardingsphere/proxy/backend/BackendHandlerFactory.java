@@ -27,6 +27,8 @@ import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * Backend handler factory.
  *
@@ -48,5 +50,19 @@ public final class BackendHandlerFactory {
     public static BackendHandler newTextProtocolInstance(final String sql, final BackendConnection backendConnection, final DatabaseType databaseType, final CommandPacketRebuilder rebuilder) {
         return RULE_REGISTRY.isProxyBackendUseNio()
                 ? new SQLPacketsBackendHandler(rebuilder, databaseType) : new JDBCBackendHandler(sql, JDBCExecuteEngineFactory.createTextProtocolInstance(backendConnection));
+    }
+    
+    /**
+     * Create new instance of text protocol backend handler.
+     * @param sql SQL to be executed
+     * @param parameters SQL parameters
+     * @param backendConnection backend connection
+     * @param databaseType database type
+     * @param rebuilder rebuilder
+     * @return instance of text protocol backend handler
+     */
+    public static BackendHandler newBinaryProtocolInstance(final String sql, final List<Object> parameters, final BackendConnection backendConnection, final DatabaseType databaseType, final CommandPacketRebuilder rebuilder) {
+        return RULE_REGISTRY.isProxyBackendUseNio()
+                ? new SQLPacketsBackendHandler(rebuilder, databaseType) : new JDBCBackendHandler(sql, JDBCExecuteEngineFactory.createBinaryProtocolInstance(parameters, backendConnection));
     }
 }
