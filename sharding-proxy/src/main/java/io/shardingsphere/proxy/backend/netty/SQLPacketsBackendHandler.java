@@ -18,7 +18,6 @@
 package io.shardingsphere.proxy.backend.netty;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import io.netty.channel.Channel;
 import io.netty.channel.pool.SimpleChannelPool;
 import io.shardingsphere.core.constant.DatabaseType;
@@ -48,10 +47,12 @@ import io.shardingsphere.proxy.util.ExecutorContext;
 import io.shardingsphere.proxy.util.MySQLResultCache;
 import io.shardingsphere.proxy.util.SynchronizedFuture;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +68,7 @@ import java.util.concurrent.TimeoutException;
  * @author linjiaqi
  * @author panjuan
  */
+@RequiredArgsConstructor
 @Getter
 public final class SQLPacketsBackendHandler extends AbstractBackendHandler {
     
@@ -76,7 +78,7 @@ public final class SQLPacketsBackendHandler extends AbstractBackendHandler {
     
     private final DatabaseType databaseType;
     
-    private final Map<String, List<Channel>> channelsMap = Maps.newHashMap();
+    private final Map<String, List<Channel>> channelsMap = new HashMap<>();
     
     private SynchronizedFuture synchronizedFuture;
     
@@ -85,11 +87,6 @@ public final class SQLPacketsBackendHandler extends AbstractBackendHandler {
     private int columnCount;
     
     private MergedResult mergedResult;
-    
-    public SQLPacketsBackendHandler(final CommandPacketRebuilder rebuilder, final DatabaseType databaseType) {
-        this.rebuilder = rebuilder;
-        this.databaseType = databaseType;
-    }
     
     @Override
     protected CommandResponsePackets execute0() throws InterruptedException, ExecutionException, TimeoutException {
