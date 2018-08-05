@@ -33,8 +33,7 @@ import io.netty.handler.logging.LoggingHandler;
 import io.shardingsphere.proxy.backend.netty.ShardingProxyClient;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.frontend.common.netty.ServerHandlerInitializer;
-import io.shardingsphere.proxy.util.BackendExecutorContext;
-import io.shardingsphere.proxy.util.FrontendExecutorContext;
+import io.shardingsphere.proxy.backend.BackendExecutorContext;
 
 import java.net.MalformedURLException;
 

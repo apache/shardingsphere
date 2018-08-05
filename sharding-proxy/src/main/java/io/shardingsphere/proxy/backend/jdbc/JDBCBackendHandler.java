@@ -39,7 +39,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePac
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
-import io.shardingsphere.proxy.util.BackendExecutorContext;
+import io.shardingsphere.proxy.backend.BackendExecutorContext;
 import lombok.RequiredArgsConstructor;
 
 import javax.transaction.Status;

@@ -30,7 +30,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.query.ColumnDefini
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.FieldCountPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
-import io.shardingsphere.proxy.util.BackendExecutorContext;
+import io.shardingsphere.proxy.backend.BackendExecutorContext;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

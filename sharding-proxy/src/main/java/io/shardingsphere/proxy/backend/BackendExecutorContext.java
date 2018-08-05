@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.util;
+package io.shardingsphere.proxy.backend;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
