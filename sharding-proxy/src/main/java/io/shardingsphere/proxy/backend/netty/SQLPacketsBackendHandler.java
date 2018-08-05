@@ -33,11 +33,11 @@ import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.StatementRoutingEngine;
 import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
-import io.shardingsphere.proxy.backend.BackendHandler;
+import io.shardingsphere.proxy.backend.AbstractBackendHandler;
 import io.shardingsphere.proxy.backend.ResultPacket;
 import io.shardingsphere.proxy.backend.netty.mysql.MySQLQueryResult;
-import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.config.ProxyTableMetaDataConnectionManager;
+import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
@@ -48,7 +48,6 @@ import io.shardingsphere.proxy.util.ExecutorContext;
 import io.shardingsphere.proxy.util.MySQLResultCache;
 import io.shardingsphere.proxy.util.SynchronizedFuture;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -68,9 +67,8 @@ import java.util.concurrent.TimeoutException;
  * @author linjiaqi
  * @author panjuan
  */
-@Slf4j
 @Getter
-public final class SQLPacketsBackendHandler implements BackendHandler {
+public final class SQLPacketsBackendHandler extends AbstractBackendHandler {
     
     private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
     
@@ -94,11 +92,11 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
     }
     
     @Override
-    public CommandResponsePackets execute() {
+    protected CommandResponsePackets execute0() throws InterruptedException, ExecutionException, TimeoutException {
         return RULE_REGISTRY.isMasterSlaveOnly() ? executeForMasterSlave() : executeForSharding();
     }
     
-    private CommandResponsePackets executeForMasterSlave() {
+    private CommandResponsePackets executeForMasterSlave() throws InterruptedException, ExecutionException, TimeoutException {
         String dataSourceName = new MasterSlaveRouter(RULE_REGISTRY.getMasterSlaveRule(), RULE_REGISTRY.isShowSQL()).route(rebuilder.sql()).iterator().next();
         synchronizedFuture = new SynchronizedFuture(1);
         MySQLResultCache.getInstance().putFuture(rebuilder.connectionId(), synchronizedFuture);
@@ -112,7 +110,7 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
         return merge(new SQLJudgeEngine(rebuilder.sql()).judge(), packets, queryResults);
     }
     
-    private CommandResponsePackets executeForSharding() {
+    private CommandResponsePackets executeForSharding() throws InterruptedException, ExecutionException, TimeoutException {
         StatementRoutingEngine routingEngine = new StatementRoutingEngine(
                 RULE_REGISTRY.getShardingRule(), RULE_REGISTRY.getMetaData().getTable(), databaseType, RULE_REGISTRY.isShowSQL(), RULE_REGISTRY.getMetaData().getDataSource());
         SQLRouteResult routeResult = routingEngine.route(rebuilder.sql());
@@ -149,19 +147,15 @@ public final class SQLPacketsBackendHandler implements BackendHandler {
         return result;
     }
     
-    private void executeCommand(final String dataSourceName, final String sql) {
-        try {
-            if (null == channelsMap.get(dataSourceName)) {
-                channelsMap.put(dataSourceName, Lists.<Channel>newArrayList());
-            }
-            SimpleChannelPool pool = ShardingProxyClient.getInstance().getPoolMap().get(dataSourceName);
-            Channel channel = pool.acquire().get(RULE_REGISTRY.getBackendNIOConfig().getConnectionTimeoutSeconds(), TimeUnit.SECONDS);
-            channelsMap.get(dataSourceName).add(channel);
-            MySQLResultCache.getInstance().putConnection(channel.id().asShortText(), rebuilder.connectionId());
-            channel.writeAndFlush(rebuilder.rebuild(rebuilder.sequenceId(), rebuilder.connectionId(), sql));
-        } catch (final InterruptedException | ExecutionException | TimeoutException ex) {
-            log.error(ex.getMessage(), ex);
+    private void executeCommand(final String dataSourceName, final String sql) throws InterruptedException, ExecutionException, TimeoutException {
+        if (null == channelsMap.get(dataSourceName)) {
+            channelsMap.put(dataSourceName, Lists.<Channel>newArrayList());
         }
+        SimpleChannelPool pool = ShardingProxyClient.getInstance().getPoolMap().get(dataSourceName);
+        Channel channel = pool.acquire().get(RULE_REGISTRY.getBackendNIOConfig().getConnectionTimeoutSeconds(), TimeUnit.SECONDS);
+        channelsMap.get(dataSourceName).add(channel);
+        MySQLResultCache.getInstance().putConnection(channel.id().asShortText(), rebuilder.connectionId());
+        channel.writeAndFlush(rebuilder.rebuild(rebuilder.sequenceId(), rebuilder.connectionId(), sql));
     }
     
     private CommandResponsePackets merge(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets, final List<QueryResult> queryResults) {
