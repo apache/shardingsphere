@@ -46,6 +46,6 @@ public class NettyChannelPoolHandler implements ChannelPoolHandler {
     @Override
     public void channelCreated(final Channel channel) {
         log.info("channelCreated. Channel ID: {}" + channel.id().asShortText());
-        channel.pipeline().addLast(new ClientHandlerInitializer(dataSourceConfig));
+        channel.pipeline().addLast(new BackendNettyClientChannelInitializer(dataSourceConfig));
     }
 }

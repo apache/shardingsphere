@@ -30,7 +30,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import io.shardingsphere.proxy.backend.netty.ShardingProxyClient;
+import io.shardingsphere.proxy.backend.netty.BackendNettyClient;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.frontend.common.netty.ServerHandlerInitializer;
 import io.shardingsphere.proxy.backend.BackendExecutorContext;
@@ -70,7 +70,7 @@ public final class ShardingProxy {
     public void start(final int port) throws InterruptedException, MalformedURLException {
         try {
             if (RULE_REGISTRY.getBackendNIOConfig().isUseNIO()) {
-                ShardingProxyClient.getInstance().start();
+                BackendNettyClient.getInstance().start();
             }
             ServerBootstrap bootstrap = new ServerBootstrap();
             bossGroup = createEventLoopGroup();
@@ -87,7 +87,7 @@ public final class ShardingProxy {
             frontendExecutorContext.getExecutorService().shutdown();
             backendExecutorContext.getExecutorService().shutdown();
             if (RULE_REGISTRY.getBackendNIOConfig().isUseNIO()) {
-                ShardingProxyClient.getInstance().stop();
+                BackendNettyClient.getInstance().stop();
             }
         }
     }

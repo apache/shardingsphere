@@ -25,13 +25,13 @@ import io.shardingsphere.proxy.transport.common.codec.PacketCodecFactory;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Channel initializer.
+ * Channel initializer for backend connection netty client.
  *
  * @author wangkai
  * @author linjiaqi
  */
 @RequiredArgsConstructor
-public final class ClientHandlerInitializer extends ChannelInitializer<Channel> {
+public final class BackendNettyClientChannelInitializer extends ChannelInitializer<Channel> {
     
     private final DataSourceConfig dataSourceConfig;
     
