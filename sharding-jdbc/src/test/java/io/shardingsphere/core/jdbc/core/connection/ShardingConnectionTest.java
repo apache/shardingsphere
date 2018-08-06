@@ -42,7 +42,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
 
 public final class ShardingConnectionTest {
     
@@ -87,7 +86,7 @@ public final class ShardingConnectionTest {
     
     @Test
     public void assertGetConnectionFromCache() throws SQLException {
-        assertSame(connection.getConnection(DS_NAME), connection.getConnection(DS_NAME));
+        assertNotSame(connection.getConnection(DS_NAME), connection.getConnection(DS_NAME));
     }
     
     @Test(expected = IllegalStateException.class)
