@@ -24,6 +24,8 @@ import io.shardingsphere.core.constant.ProxyMode;
 import io.shardingsphere.core.constant.ShardingProperties;
 import io.shardingsphere.core.constant.ShardingPropertiesConstant;
 import io.shardingsphere.core.executor.ExecutorEngine;
+import io.shardingsphere.core.executor.type.connection.ConnectionStrictlyExecutorEngine;
+import io.shardingsphere.core.executor.type.memory.MemoryStrictlyExecutorEngine;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
@@ -48,6 +50,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author zhangliang
  * @author zhaojun
+ * @author panjuan
  */
 public class ShardingDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
     
@@ -69,11 +72,11 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         }
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
-        executorEngine = new ExecutorEngine(executorSize);
         ShardingTableMetaData shardingTableMetaData = new ShardingTableMetaData(
                 new TableMetaDataInitializer(executorEngine.getExecutorService(), new DataSourceMapTableMetaDataConnectionManager(dataSourceMap)).load(shardingRule));
         boolean showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         ProxyMode proxyMode = ProxyMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_MODE));
+        executorEngine = ProxyMode.MEMORY_STRICTLY == proxyMode ? new MemoryStrictlyExecutorEngine(executorSize) : new ConnectionStrictlyExecutorEngine(executorSize);
         shardingContext = new ShardingContext(dataSourceMap, shardingRule, getDatabaseType(), executorEngine, shardingTableMetaData, showSQL);
     }
     
@@ -88,9 +91,11 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         ShardingProperties newShardingProperties = new ShardingProperties(null == newProps ? new Properties() : newProps);
         int originalExecutorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         int newExecutorSize = newShardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
-        if (originalExecutorSize != newExecutorSize) {
+        ProxyMode originalProxyMode = ProxyMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_MODE));
+        ProxyMode newProxyMode = ProxyMode.valueOf(newShardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_MODE));
+        if (originalExecutorSize != newExecutorSize || originalProxyMode != newProxyMode) {
             ExecutorEngine originalExecutorEngine = executorEngine;
-            executorEngine = new ExecutorEngine(newExecutorSize);
+            executorEngine = ProxyMode.MEMORY_STRICTLY == newProxyMode ? new MemoryStrictlyExecutorEngine(newExecutorSize) : new ConnectionStrictlyExecutorEngine(newExecutorSize);
             originalExecutorEngine.close();
         }
         boolean newShowSQL = newShardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
