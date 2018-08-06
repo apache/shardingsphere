@@ -40,7 +40,8 @@
 #    # CONNECTION_STRICTLY: Proxy will release connections after get the overall rows from the ResultSet.
 #    #                      Meanwhile, the cost of the memory will be increased.
 #    connection.mode: MEMORY_STRICTLY
-#    executor.size: 16  # The default value is available processors count.
+#    acceptor.size: 16  # The default value is available processors count * 2.
+#    executor.size: 16  # Infinite by default.
 #    sql.show: false
 
 #orchestration:

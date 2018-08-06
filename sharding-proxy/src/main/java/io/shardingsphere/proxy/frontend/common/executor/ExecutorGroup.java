@@ -18,9 +18,9 @@
 package io.shardingsphere.proxy.frontend.common.executor;
 
 import io.netty.channel.ChannelId;
+import io.netty.channel.EventLoopGroup;
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.proxy.config.RuleRegistry;
-import io.shardingsphere.proxy.frontend.FrontendExecutorContext;
 import lombok.RequiredArgsConstructor;
 
 import java.util.concurrent.ExecutorService;
@@ -35,6 +35,8 @@ public final class ExecutorGroup {
     
     private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
     
+    private final EventLoopGroup eventLoopGroup;
+    
     private final ChannelId channelId;
     
     /**
@@ -43,7 +45,6 @@ public final class ExecutorGroup {
      * @return executor service
      */
     public ExecutorService getExecutorService() {
-        return TransactionType.XA.equals(RULE_REGISTRY.getTransactionType()) ? ChannelThreadExecutorGroup.getInstance().get(channelId)
-            : FrontendExecutorContext.getInstance().getExecutorService();
+        return TransactionType.XA.equals(RULE_REGISTRY.getTransactionType()) ? ChannelThreadExecutorGroup.getInstance().get(channelId) : eventLoopGroup;
     }
 }

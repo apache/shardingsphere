@@ -43,15 +43,26 @@ public enum ShardingPropertiesConstant {
     SQL_SHOW("sql.show", Boolean.FALSE.toString(), boolean.class),
     
     /**
+     * Worker group or user group thread max size.
+     *
+     * <p>
+     * Worker group accept tcp connection.
+     * User group accept MySQL command.
+     * Default: CPU cores * 2.
+     * </p>
+     */
+    ACCEPTOR_SIZE("acceptor.size", String.valueOf(Runtime.getRuntime().availableProcessors() * 2), int.class),
+    
+    /**
      * Worker thread max size.
      * 
      * <p>
      * Execute SQL Statement and PrepareStatement will use this thread pool.
      * One sharding data source will use a independent thread pool, it does not share thread pool even different data source in same JVM.
-     * Default: same with CPU cores.
+     * Default: infinite.
      * </p>
      */
-    EXECUTOR_SIZE("executor.size", String.valueOf(Runtime.getRuntime().availableProcessors()), int.class),
+    EXECUTOR_SIZE("executor.size", String.valueOf(0), int.class),
     
     /**
      * Connection mode of connected to databases.

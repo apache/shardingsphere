@@ -45,6 +45,7 @@ shardingRule:
 
   props:
     connection.mode: MEMORY_STRICTLY
+    acceptor.size: 16
     executor.size: 16
     sql.show: false
 
