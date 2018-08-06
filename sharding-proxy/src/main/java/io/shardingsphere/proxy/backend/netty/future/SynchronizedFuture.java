@@ -17,10 +17,10 @@
 
 package io.shardingsphere.proxy.backend.netty.future;
 
-import com.google.common.collect.Lists;
 import io.shardingsphere.core.merger.QueryResult;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
  * @author linjiaqi
  */
 @Slf4j
-public class SynchronizedFuture implements Future<List<QueryResult>> {
+public final class SynchronizedFuture implements Future<List<QueryResult>> {
     
     private final CountDownLatch latch;
     
@@ -43,7 +43,7 @@ public class SynchronizedFuture implements Future<List<QueryResult>> {
     
     public SynchronizedFuture(final int resultSize) {
         latch = new CountDownLatch(resultSize);
-        responses = Lists.newArrayListWithCapacity(resultSize);
+        responses = new ArrayList<>(resultSize);
     }
     
     @Override

@@ -45,6 +45,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 @Slf4j
 public final class MySQLQueryResult implements QueryResult {
+    
     @Getter
     private final CommandResponsePackets commandResponsePackets;
     
