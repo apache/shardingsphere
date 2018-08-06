@@ -20,6 +20,8 @@ package io.shardingsphere.core.jdbc.core.statement;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.ProxyMode;
 import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.executor.type.connection.MemoryQueryResult;
+import io.shardingsphere.core.executor.type.memory.StreamQueryResult;
 import io.shardingsphere.core.executor.type.statement.StatementExecutor;
 import io.shardingsphere.core.executor.type.statement.StatementUnit;
 import io.shardingsphere.core.jdbc.adapter.AbstractStatementAdapter;
@@ -112,17 +114,25 @@ public class ShardingStatement extends AbstractStatementAdapter {
         ResultSet result;
         try {
             List<ResultSet> resultSets = generateExecutor(sql).executeQuery();
-            List<QueryResult> queryResults = new ArrayList<>(resultSets.size());
-            for (ResultSet each : resultSets) {
-                queryResults.add(new JDBCQueryResult(each));
-            }
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(
-                    connection.getShardingContext().getShardingRule(), queryResults, routeResult.getSqlStatement(), connection.getShardingContext().getMetaData().getTable());
+                    connection.getShardingContext().getShardingRule(), getQueryResults(resultSets), routeResult.getSqlStatement(), connection.getShardingContext().getMetaData().getTable());
             result = new ShardingResultSet(resultSets, merge(mergeEngine), this);
         } finally {
             currentResultSet = null;
         }
         currentResultSet = result;
+        return result;
+    }
+    
+    private List<QueryResult> getQueryResults(final List<ResultSet> resultSets) throws SQLException {
+        List<QueryResult> result = new ArrayList<>(resultSets.size());
+        for (ResultSet each : resultSets) {
+            if (ProxyMode.MEMORY_STRICTLY == connection.getShardingContext().getProxyMode()) {
+                result.add(new StreamQueryResult(each));
+            } else {
+                result.add(new MemoryQueryResult(each));
+            }
+        }
         return result;
     }
     
