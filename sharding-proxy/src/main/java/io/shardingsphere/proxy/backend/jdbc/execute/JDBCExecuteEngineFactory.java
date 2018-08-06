@@ -17,7 +17,7 @@
 
 package io.shardingsphere.proxy.backend.jdbc.execute;
 
-import io.shardingsphere.core.constant.ProxyMode;
+import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.proxy.backend.jdbc.execute.memory.ConnectionStrictlyExecuteEngine;
 import io.shardingsphere.proxy.backend.jdbc.execute.stream.MemoryStrictlyExecuteEngine;
@@ -48,7 +48,7 @@ public final class JDBCExecuteEngineFactory {
      */
     public static JDBCExecuteEngine createTextProtocolInstance(final BackendConnection backendConnection) {
         JDBCExecutorWrapper jdbcExecutorWrapper = new StatementExecutorWrapper();
-        return ProxyMode.MEMORY_STRICTLY == RULE_REGISTRY.getProxyMode()
+        return ConnectionMode.MEMORY_STRICTLY == RULE_REGISTRY.getConnectionMode()
                 ? new MemoryStrictlyExecuteEngine(backendConnection, jdbcExecutorWrapper) : new ConnectionStrictlyExecuteEngine(backendConnection, jdbcExecutorWrapper);
     }
     
@@ -61,7 +61,7 @@ public final class JDBCExecuteEngineFactory {
      */
     public static JDBCExecuteEngine createBinaryProtocolInstance(final List<Object> parameters, final BackendConnection backendConnection) {
         JDBCExecutorWrapper jdbcExecutorWrapper = new PreparedStatementExecutorWrapper(parameters);
-        return ProxyMode.MEMORY_STRICTLY == RULE_REGISTRY.getProxyMode()
+        return ConnectionMode.MEMORY_STRICTLY == RULE_REGISTRY.getConnectionMode()
                 ? new MemoryStrictlyExecuteEngine(backendConnection, jdbcExecutorWrapper) : new ConnectionStrictlyExecuteEngine(backendConnection, jdbcExecutorWrapper);
     }
 }
