@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.constant;
+package io.shardingsphere.proxy.backend.netty.client.response;
 
 /**
  * Auth Type.
