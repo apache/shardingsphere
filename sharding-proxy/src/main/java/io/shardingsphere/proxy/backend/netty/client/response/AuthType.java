@@ -24,27 +24,5 @@ package io.shardingsphere.proxy.backend.netty.client.response;
  */
 public enum AuthType {
     
-    /**
-     * Database UN_AUTH.
-     * 
-     */
-    UN_AUTH,
-    
-    /**
-     * Database AUTHING.
-     * 
-     */
-    AUTHING,
-    
-    /**
-     * Database AUTH_SUCCESS.
-     *
-     */
-    AUTH_SUCCESS,
-    
-    /**
-     * Database AUTH_FAILED.
-     *
-     */
-    AUTH_FAILED
+    UN_AUTH, AUTHING, AUTH_FIN
 }
