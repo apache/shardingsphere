@@ -59,7 +59,7 @@ public enum ShardingPropertiesConstant {
      * <p>
      * Execute SQL Statement and PrepareStatement will use this thread pool.
      * One sharding data source will use a independent thread pool, it does not share thread pool even different data source in same JVM.
-     * Default: same with CPU cores.
+     * Default: infinite.
      * </p>
      */
     EXECUTOR_SIZE("executor.size", String.valueOf(0), int.class),
