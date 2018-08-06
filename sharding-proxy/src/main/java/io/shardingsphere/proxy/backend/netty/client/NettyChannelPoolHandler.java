@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class NettyChannelPoolHandler implements ChannelPoolHandler {
     
-    private final DataSourceConfig dataSourceConfig;
+    private final String dataSourceName;
     
     @Override
     public void channelReleased(final Channel channel) {
@@ -47,6 +47,6 @@ public class NettyChannelPoolHandler implements ChannelPoolHandler {
     @Override
     public void channelCreated(final Channel channel) {
         log.info("channelCreated. Channel ID: {}" + channel.id().asShortText());
-        channel.pipeline().addLast(new BackendNettyClientChannelInitializer(dataSourceConfig));
+        channel.pipeline().addLast(new BackendNettyClientChannelInitializer(dataSourceName));
     }
 }

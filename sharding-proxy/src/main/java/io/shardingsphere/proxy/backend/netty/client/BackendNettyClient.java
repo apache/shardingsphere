@@ -32,16 +32,12 @@ import io.netty.channel.pool.FixedChannelPool;
 import io.netty.channel.pool.SimpleChannelPool;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
-import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -66,8 +62,6 @@ public final class BackendNettyClient {
     
     private static final int CONNECTION_TIMEOUT_SECONDS = RULE_REGISTRY.getBackendNIOConfig().getConnectionTimeoutSeconds();
     
-    private final Map<String, DataSourceConfig> dataSourceConfigMap = new HashMap<>();
-    
     private EventLoopGroup workerGroup;
     
     @Getter
@@ -88,14 +82,6 @@ public final class BackendNettyClient {
      * @throws InterruptedException  interrupted exception
      */
     public void start() throws InterruptedException {
-        Map<String, DataSourceParameter> dataSourceConfigurationMap = RULE_REGISTRY.getDataSourceConfigurationMap();
-        for (Entry<String, DataSourceParameter> each : dataSourceConfigurationMap.entrySet()) {
-            String actualDataSourceName = each.getKey();
-            DataSourceParameter dataSourceParameter = each.getValue();
-            DataSourceMetaData dataSourceMetaData = RULE_REGISTRY.getMetaData().getDataSource().getActualDataSourceMetaData(actualDataSourceName);
-            dataSourceConfigMap.put(each.getKey(), new DataSourceConfig(
-                    dataSourceMetaData.getHostName(), dataSourceMetaData.getPort(), dataSourceMetaData.getSchemeName(), dataSourceParameter.getUsername(), dataSourceParameter.getPassword()));
-        }
         Bootstrap bootstrap = new Bootstrap();
         // TODO :jiaqi where to init workerGroup?
         if (workerGroup instanceof EpollEventLoopGroup) {
@@ -140,12 +126,12 @@ public final class BackendNettyClient {
         poolMap = new AbstractChannelPoolMap<String, SimpleChannelPool>() {
             
             @Override
-            protected SimpleChannelPool newPool(final String datasourceName) {
-                DataSourceConfig dataSourceConfig = dataSourceConfigMap.get(datasourceName);
-                return new FixedChannelPool(bootstrap.remoteAddress(dataSourceConfig.getIp(), dataSourceConfig.getPort()), new NettyChannelPoolHandler(dataSourceConfig), MAX_CONNECTIONS);
+            protected SimpleChannelPool newPool(final String dataSourceName) {
+                DataSourceMetaData dataSourceMetaData = RULE_REGISTRY.getMetaData().getDataSource().getActualDataSourceMetaData(dataSourceName);
+                return new FixedChannelPool(bootstrap.remoteAddress(dataSourceMetaData.getHostName(), dataSourceMetaData.getPort()), new NettyChannelPoolHandler(dataSourceName), MAX_CONNECTIONS);
             }
         };
-        for (String each : dataSourceConfigMap.keySet()) {
+        for (String each : RULE_REGISTRY.getDataSourceConfigurationMap().keySet()) {
             SimpleChannelPool pool = poolMap.get(each);
             Channel[] channels = new Channel[MAX_CONNECTIONS];
             for (int i = 0; i < MAX_CONNECTIONS; i++) {

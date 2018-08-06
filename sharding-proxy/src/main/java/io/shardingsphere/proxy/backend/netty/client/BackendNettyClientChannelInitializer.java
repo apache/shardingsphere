@@ -33,13 +33,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class BackendNettyClientChannelInitializer extends ChannelInitializer<Channel> {
     
-    private final DataSourceConfig dataSourceConfig;
+    private final String dataSourceName;
     
     @Override
     protected void initChannel(final Channel channel) {
         ChannelPipeline pipeline = channel.pipeline();
         // TODO load database type from yaml or startup arguments
         pipeline.addLast(PacketCodecFactory.createPacketCodecInstance(DatabaseType.MySQL));
-        pipeline.addLast(NettyBackendHandlerFactory.createBackendHandlerInstance(DatabaseType.MySQL, dataSourceConfig));
+        pipeline.addLast(NettyBackendHandlerFactory.createBackendHandlerInstance(DatabaseType.MySQL, dataSourceName));
     }
 }

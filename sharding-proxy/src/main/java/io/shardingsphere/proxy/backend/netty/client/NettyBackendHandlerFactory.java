@@ -31,13 +31,13 @@ public final class NettyBackendHandlerFactory {
      * Create backend handler instance.
      *
      * @param databaseType database type
-     * @param dataSourceConfig dataSourceConfig
+     * @param dataSourceName data source name
      * @return backend handler instance
      */
-    public static CommandResponsePacketsHandler createBackendHandlerInstance(final DatabaseType databaseType, final DataSourceConfig dataSourceConfig) {
+    public static CommandResponsePacketsHandler createBackendHandlerInstance(final DatabaseType databaseType, final String dataSourceName) {
         switch (databaseType) {
             case MySQL:
-                return new MySQLBackendHandler(dataSourceConfig);
+                return new MySQLBackendHandler(dataSourceName);
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseType));
         }
