@@ -54,7 +54,7 @@ public final class ShardingProxy {
     
     private EventLoopGroup workerGroup;
     
-    private final UserGroupContext userGroupContext = UserGroupContext.getInstance();
+    private EventLoopGroup userGroup;
     
     public ShardingProxy() {
         RULE_REGISTRY.initShardingMetaData(backendExecutorContext.getExecutorService());
@@ -82,9 +82,9 @@ public final class ShardingProxy {
             ChannelFuture future = bootstrap.bind(port).sync();
             future.channel().closeFuture().sync();
         } finally {
+            userGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
-            userGroupContext.getUserGroup().shutdownGracefully();
             backendExecutorContext.getExecutorService().shutdown();
             if (RULE_REGISTRY.getBackendNIOConfig().isUseNIO()) {
                 ShardingProxyClient.getInstance().stop();
@@ -102,7 +102,7 @@ public final class ShardingProxy {
     
     private void groupsEpoll(final ServerBootstrap bootstrap) {
         workerGroup = new EpollEventLoopGroup(RULE_REGISTRY.getAcceptorSize());
-        userGroupContext.setUserGroup(new EpollEventLoopGroup(RULE_REGISTRY.getAcceptorSize()));
+        userGroup = new EpollEventLoopGroup(RULE_REGISTRY.getAcceptorSize());
         bootstrap.group(bossGroup, workerGroup)
             .channel(EpollServerSocketChannel.class)
             .option(EpollChannelOption.SO_BACKLOG, 128)
@@ -110,12 +110,12 @@ public final class ShardingProxy {
             .option(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
             .childOption(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
             .handler(new LoggingHandler(LogLevel.INFO))
-            .childHandler(new ServerHandlerInitializer());
+            .childHandler(new ServerHandlerInitializer(userGroup));
     }
     
     private void groupsNio(final ServerBootstrap bootstrap) {
         workerGroup = new NioEventLoopGroup(RULE_REGISTRY.getAcceptorSize());
-        userGroupContext.setUserGroup(new NioEventLoopGroup(RULE_REGISTRY.getAcceptorSize()));
+        userGroup = new NioEventLoopGroup(RULE_REGISTRY.getAcceptorSize());
         bootstrap.group(bossGroup, workerGroup)
             .channel(NioServerSocketChannel.class)
             .option(ChannelOption.SO_BACKLOG, 128)
@@ -124,6 +124,6 @@ public final class ShardingProxy {
             .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
             .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
             .handler(new LoggingHandler(LogLevel.INFO))
-            .childHandler(new ServerHandlerInitializer());
+            .childHandler(new ServerHandlerInitializer(userGroup));
     }
 }
