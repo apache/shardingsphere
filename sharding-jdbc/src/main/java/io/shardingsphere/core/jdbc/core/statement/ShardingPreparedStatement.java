@@ -290,8 +290,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             preparedBatchStatement.get().getSqlExecutionUnit().getSqlUnit().getParameterSets().add(sqlExecutionUnit.getSqlUnit().getParameterSets().get(0));
             return preparedBatchStatement.get();
         }
-        BatchPreparedStatementUnit result = new BatchPreparedStatementUnit(sqlExecutionUnit, generatePreparedStatement(connection.getConnection(sqlExecutionUnit.getDataSource()),
-                sqlExecutionUnit.getSqlUnit().getSql()));
+        BatchPreparedStatementUnit result = new BatchPreparedStatementUnit(sqlExecutionUnit, generatePreparedStatement(connection.getConnection(sqlExecutionUnit.getDataSource()), sqlExecutionUnit.getSqlUnit().getSql()));
         batchStatementUnits.add(result);
         return result;
     }
