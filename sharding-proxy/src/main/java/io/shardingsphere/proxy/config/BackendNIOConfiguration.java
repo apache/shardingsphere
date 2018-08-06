@@ -15,27 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.netty;
+package io.shardingsphere.proxy.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * DataSourceConfig.
+ * Configuration of use NIO to connection backend databases.
  *
- * @author linjiaqi
+ * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class DataSourceConfig {
+public final class BackendNIOConfiguration {
     
-    private final String ip;
+    private final boolean useNIO;
     
-    private final int port;
+    private final int maxConnections;
     
-    private final String database;
-    
-    private final String username;
-    
-    private final String password;
+    private final int connectionTimeoutSeconds;
 }

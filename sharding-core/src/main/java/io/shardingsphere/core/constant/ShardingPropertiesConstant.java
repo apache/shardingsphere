@@ -43,44 +43,51 @@ public enum ShardingPropertiesConstant {
     SQL_SHOW("sql.show", Boolean.FALSE.toString(), boolean.class),
     
     /**
+     * Worker group or user group thread max size.
+     *
+     * <p>
+     * Worker group accept tcp connection.
+     * User group accept MySQL command.
+     * Default: CPU cores * 2.
+     * </p>
+     */
+    ACCEPTOR_SIZE("acceptor.size", String.valueOf(Runtime.getRuntime().availableProcessors() * 2), int.class),
+    
+    /**
      * Worker thread max size.
      * 
      * <p>
      * Execute SQL Statement and PrepareStatement will use this thread pool.
      * One sharding data source will use a independent thread pool, it does not share thread pool even different data source in same JVM.
-     * Default: same with CPU cores.
+     * Default: infinite.
      * </p>
      */
-    EXECUTOR_SIZE("executor.size", String.valueOf(Runtime.getRuntime().availableProcessors()), int.class),
+    EXECUTOR_SIZE("executor.size", String.valueOf(0), int.class),
     
     /**
-     * Connection mode.
+     * Connection mode of connected to databases.
      *
      * <p>
      * MEMORY_STRICTLY:
-     * Proxy holds as many connections as the count of actual tables routed in a database.
+     * Sharding-Sphere holds as many connections as the count of actual tables routed in a database.
      * The benefit of this approach is saving memory for Proxy by Stream ResultSet.
+     * </p>
+     * 
+     * <p>
      * CONNECTION_STRICTLY:
-     * Proxy will release connections after get the overall rows from the ResultSet.
+     * harding-Sphere will release connections after get the overall rows from the ResultSet.
      * Meanwhile, the cost of the memory will be increased.
      * </p>
      */
-    CONNECTION_MODE("connection.mode", "MEMORY_STRICTLY", String.class),
+    CONNECTION_MODE("connection.mode", ConnectionMode.MEMORY_STRICTLY.name(), String.class),
     
-    PROXY_TRANSACTION_MODE("proxy.transaction.mode", "NONE", String.class),
-    
-    /**
-     * Thread pool size of connect database for Sharding-Proxy.
-     *
-     * <p>Cannot change dynamically, change this value should restart proxy.</p>
-     */
-    PROXY_MAX_WORKING_THREADS("proxy.max.working.threads", Runtime.getRuntime().availableProcessors() * 2 + "", int.class),
+    PROXY_TRANSACTION_MODE("proxy.transaction.mode", TransactionType.NONE.name(), String.class),
     
     PROXY_BACKEND_USE_NIO("proxy.backend.use.nio", Boolean.FALSE.toString(), boolean.class),
     
-    PROXY_BACKEND_SIMPLE_DB_CONNECTIONS("proxy.backend.simple.db.connections", 8 + "", int.class),
+    PROXY_BACKEND_MAX_CONNECTIONS("proxy.backend.max.connections", 8 + "", int.class),
     
-    PROXY_BACKEND_CONNECTION_TIMEOUT("proxy.backend.connection.timeout", 60 + "", int.class);
+    PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS("proxy.backend.connection.timeout.seconds", 60 + "", int.class);
     
     private final String key;
     

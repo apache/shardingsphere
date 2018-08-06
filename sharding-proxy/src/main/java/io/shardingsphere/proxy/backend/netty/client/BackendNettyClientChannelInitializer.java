@@ -15,31 +15,32 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.netty;
+package io.shardingsphere.proxy.backend.netty.client;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.proxy.backend.netty.client.response.ResponseHandlerFactory;
 import io.shardingsphere.proxy.transport.common.codec.PacketCodecFactory;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Channel initializer.
+ * Channel initializer for backend connection netty client.
  *
  * @author wangkai
  * @author linjiaqi
  */
 @RequiredArgsConstructor
-public final class ClientHandlerInitializer extends ChannelInitializer<Channel> {
+public final class BackendNettyClientChannelInitializer extends ChannelInitializer<Channel> {
     
-    private final DataSourceConfig dataSourceConfig;
+    private final String dataSourceName;
     
     @Override
     protected void initChannel(final Channel channel) {
         ChannelPipeline pipeline = channel.pipeline();
         // TODO load database type from yaml or startup arguments
         pipeline.addLast(PacketCodecFactory.createPacketCodecInstance(DatabaseType.MySQL));
-        pipeline.addLast(NettyBackendHandlerFactory.createBackendHandlerInstance(DatabaseType.MySQL, dataSourceConfig));
+        pipeline.addLast(ResponseHandlerFactory.newInstance(DatabaseType.MySQL, dataSourceName));
     }
 }

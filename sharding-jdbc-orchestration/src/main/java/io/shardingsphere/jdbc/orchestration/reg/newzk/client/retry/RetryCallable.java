@@ -19,25 +19,24 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Connection;
-import lombok.Setter;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.KeeperException;
 
 /*
  * Sync retry call.
- * // todo Split up into two classes, one use exec() and other use getResult()
  *
  * @author lidongbo
  */
 @Slf4j
-public abstract class RetryCallable<T> {
+public abstract class RetryCallable {
     
+    @Getter(value = AccessLevel.PROTECTED)
     private final DelayPolicyExecutor delayPolicyExecutor;
     
+    @Getter(value = AccessLevel.PROTECTED)
     private final IProvider provider;
-    
-    @Setter
-    private T result;
     
     public RetryCallable(final IProvider provider, final DelayRetryPolicy delayRetryPolicy) {
         this.delayPolicyExecutor = new DelayPolicyExecutor(delayRetryPolicy);
@@ -51,20 +50,6 @@ public abstract class RetryCallable<T> {
      * @throws InterruptedException InterruptedException
      */
     public abstract void call() throws KeeperException, InterruptedException;
-    
-    /**
-     * Get result.
-     *
-     * @return result
-     * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
-     */
-    public T getResult() throws KeeperException, InterruptedException {
-        if (result == null) {
-            exec();
-        }
-        return result;
-    }
     
     /**
      * Call without result.

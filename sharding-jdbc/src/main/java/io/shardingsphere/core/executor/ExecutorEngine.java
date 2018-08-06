@@ -40,6 +40,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -61,8 +62,13 @@ public abstract class ExecutorEngine implements AutoCloseable {
     private final ListeningExecutorService executorService;
     
     public ExecutorEngine(final int executorSize) {
-        executorService = MoreExecutors.listeningDecorator(new ThreadPoolExecutor(
+        if (0 == executorSize) {
+            executorService = MoreExecutors.listeningDecorator(new ThreadPoolExecutor(
+                0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("Sharding-JDBC-%d").build()));
+        } else {
+            executorService = MoreExecutors.listeningDecorator(new ThreadPoolExecutor(
                 executorSize, executorSize, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("Sharding-JDBC-%d").build()));
+        }
         MoreExecutors.addDelayedShutdownHook(executorService, 60, TimeUnit.SECONDS);
     }
     

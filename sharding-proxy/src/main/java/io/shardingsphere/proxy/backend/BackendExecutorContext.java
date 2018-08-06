@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.util;
+package io.shardingsphere.proxy.backend;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -25,23 +25,28 @@ import lombok.Getter;
 import java.util.concurrent.Executors;
 
 /**
- * Executor context.
+ * Backend executor context.
  *
  * @author zhangliang
  */
-public final class ExecutorContext {
+public final class BackendExecutorContext {
     
-    private static final ExecutorContext INSTANCE = new ExecutorContext();
+    private static final BackendExecutorContext INSTANCE = new BackendExecutorContext();
     
     @Getter
-    private final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(RuleRegistry.getInstance().getMaxWorkingThreads()));
+    private final ListeningExecutorService executorService;
+    
+    private BackendExecutorContext() {
+        int executorSize = RuleRegistry.getInstance().getExecutorSize();
+        executorService = 0 == executorSize ? MoreExecutors.listeningDecorator(Executors.newCachedThreadPool()) : MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(executorSize));
+    }
     
     /**
-     * Get executor context instance.
+     * Get backend executor context instance.
      * 
      * @return instance of executor context
      */
-    public static ExecutorContext getInstance() {
+    public static BackendExecutorContext getInstance() {
         return INSTANCE;
     }
 }

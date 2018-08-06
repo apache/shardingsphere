@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.netty.mysql;
+package io.shardingsphere.proxy.backend.netty.client.response.mysql;
 
 import com.google.common.collect.Lists;
 import io.shardingsphere.core.merger.QueryResult;
@@ -45,6 +45,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 @Slf4j
 public final class MySQLQueryResult implements QueryResult {
+    
     @Getter
     private final CommandResponsePackets commandResponsePackets;
     

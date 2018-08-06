@@ -17,7 +17,6 @@
 
 package io.shardingsphere.proxy.backend.jdbc;
 
-import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.TransactionType;
@@ -27,20 +26,20 @@ import io.shardingsphere.core.metadata.table.executor.TableMetaDataLoader;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.routing.SQLRouteResult;
-import io.shardingsphere.proxy.backend.BackendHandler;
+import io.shardingsphere.proxy.backend.AbstractBackendHandler;
 import io.shardingsphere.proxy.backend.ResultPacket;
 import io.shardingsphere.proxy.backend.jdbc.execute.JDBCExecuteEngine;
 import io.shardingsphere.proxy.backend.jdbc.execute.response.ExecuteQueryResponse;
 import io.shardingsphere.proxy.backend.jdbc.execute.response.ExecuteResponse;
 import io.shardingsphere.proxy.backend.jdbc.execute.response.ExecuteUpdateResponse;
-import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.config.ProxyTableMetaDataConnectionManager;
+import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
-import io.shardingsphere.proxy.util.ExecutorContext;
+import io.shardingsphere.proxy.backend.BackendExecutorContext;
 import lombok.RequiredArgsConstructor;
 
 import javax.transaction.Status;
@@ -55,7 +54,7 @@ import java.util.List;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class JDBCBackendHandler implements BackendHandler {
+public final class JDBCBackendHandler extends AbstractBackendHandler {
     
     private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
     
@@ -70,18 +69,8 @@ public final class JDBCBackendHandler implements BackendHandler {
     private int currentSequenceId;
     
     @Override
-    public CommandResponsePackets execute() {
-        try {
-            return execute(executeEngine.getJdbcExecutorWrapper().route(sql, DatabaseType.MySQL));
-        } catch (final SQLException ex) {
-            return new CommandResponsePackets(new ErrPacket(1, ex));
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            Optional<SQLException> sqlException = findSQLException(ex);
-            return sqlException.isPresent()
-                    ? new CommandResponsePackets(new ErrPacket(1, sqlException.get())) : new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
-        }
+    protected CommandResponsePackets execute0() throws SQLException {
+        return execute(executeEngine.getJdbcExecutorWrapper().route(sql, DatabaseType.MySQL));
     }
     
     private CommandResponsePackets execute(final SQLRouteResult routeResult) throws SQLException {
@@ -98,7 +87,7 @@ public final class JDBCBackendHandler implements BackendHandler {
         if (!RULE_REGISTRY.isMasterSlaveOnly() && SQLType.DDL == sqlStatement.getType() && !sqlStatement.getTables().isEmpty()) {
             String logicTableName = sqlStatement.getTables().getSingleTableName();
             TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(
-                    ExecutorContext.getInstance().getExecutorService(), new ProxyTableMetaDataConnectionManager(RULE_REGISTRY.getBackendDataSource()));
+                    BackendExecutorContext.getInstance().getExecutorService(), new ProxyTableMetaDataConnectionManager(RULE_REGISTRY.getBackendDataSource()));
             RULE_REGISTRY.getMetaData().getTable().put(logicTableName, tableMetaDataLoader.load(logicTableName, RULE_REGISTRY.getShardingRule()));
         }
         return merge(sqlStatement);
@@ -117,22 +106,6 @@ public final class JDBCBackendHandler implements BackendHandler {
         QueryResponsePackets result = ((ExecuteQueryResponse) executeResponse).getQueryResponsePackets();
         currentSequenceId = result.getPackets().size();
         return result;
-    }
-    
-    private Optional<SQLException> findSQLException(final Exception exception) {
-        if (null == exception.getCause()) {
-            return Optional.absent();
-        }
-        if (exception.getCause() instanceof SQLException) {
-            return Optional.of((SQLException) exception.getCause());
-        }
-        if (null == exception.getCause().getCause()) {
-            return Optional.absent();
-        }
-        if (exception.getCause().getCause() instanceof SQLException) {
-            return Optional.of((SQLException) exception.getCause());
-        }
-        return Optional.absent();
     }
     
     @Override

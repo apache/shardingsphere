@@ -20,9 +20,11 @@ package io.shardingsphere.proxy.frontend.mysql;
 import com.google.common.base.Optional;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.EventLoopGroup;
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.proxy.frontend.common.FrontendHandler;
 import io.shardingsphere.proxy.frontend.common.executor.ExecutorGroup;
+import io.shardingsphere.proxy.runtime.ChannelRegistry;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
@@ -37,7 +39,6 @@ import io.shardingsphere.proxy.transport.mysql.packet.handshake.AuthorityHandler
 import io.shardingsphere.proxy.transport.mysql.packet.handshake.ConnectionIdGenerator;
 import io.shardingsphere.proxy.transport.mysql.packet.handshake.HandshakePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.handshake.HandshakeResponse41Packet;
-import io.shardingsphere.proxy.util.MySQLResultCache;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.SQLException;
@@ -52,12 +53,14 @@ import java.sql.SQLException;
 @RequiredArgsConstructor
 public final class MySQLFrontendHandler extends FrontendHandler {
     
+    private final EventLoopGroup eventLoopGroup;
+    
     private final AuthorityHandler authorityHandler = new AuthorityHandler();
     
     @Override
     protected void handshake(final ChannelHandlerContext context) {
         int connectionId = ConnectionIdGenerator.getInstance().nextId();
-        MySQLResultCache.getInstance().putConnection(context.channel().id().asShortText(), connectionId);
+        ChannelRegistry.getInstance().putConnectionId(context.channel().id().asShortText(), connectionId);
         context.writeAndFlush(new HandshakePacket(connectionId, authorityHandler.getAuthPluginData()));
     }
     
@@ -77,7 +80,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
     
     @Override
     protected void executeCommand(final ChannelHandlerContext context, final ByteBuf message) {
-        new ExecutorGroup(context.channel().id()).getExecutorService().execute(new CommandExecutor(context, message));
+        new ExecutorGroup(eventLoopGroup, context.channel().id()).getExecutorService().execute(new CommandExecutor(context, message));
     }
     
     @Override
@@ -115,16 +118,16 @@ public final class MySQLFrontendHandler extends FrontendHandler {
                 }
             } catch (final SQLException ex) {
                 context.writeAndFlush(new ErrPacket(++currentSequenceId, ex));
-                // CHECKSTYLE: OFF
+                // CHECKSTYLE:OFF
             } catch (final Exception ex) {
-                // CHECKSTYLE: ON
+                // CHECKSTYLE:ON
                 context.writeAndFlush(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
             }
         }
         
         private CommandPacket getCommandPacket(final MySQLPacketPayload payload, final BackendConnection backendConnection) {
             int sequenceId = payload.readInt1();
-            int connectionId = MySQLResultCache.getInstance().getConnection(context.channel().id().asShortText());
+            int connectionId = ChannelRegistry.getInstance().getConnectionId(context.channel().id().asShortText());
             return CommandPacketFactory.getCommandPacket(sequenceId, connectionId, payload, backendConnection);
         }
         

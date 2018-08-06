@@ -20,6 +20,7 @@ package io.shardingsphere.proxy.config;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.MoreExecutors;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.ShardingProperties;
 import io.shardingsphere.core.constant.ShardingPropertiesConstant;
@@ -35,7 +36,6 @@ import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.transaction.spi.TransactionManager;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusEvent;
-import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.proxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import io.shardingsphere.proxy.util.ProxyTransactionLoader;
 import lombok.AccessLevel;
@@ -75,17 +75,15 @@ public final class RuleRegistry {
     
     private ConnectionMode connectionMode;
     
+    private int acceptorSize;
+    
+    private int executorSize;
+    
+    private BackendNIOConfiguration backendNIOConfig;
+    
     private TransactionType transactionType;
     
     private TransactionManager transactionManager;
-    
-    private int maxWorkingThreads;
-    
-    private boolean proxyBackendUseNio;
-    
-    private int proxyBackendSimpleDbConnections;
-    
-    private int proxyBackendConnectionTimeout;
     
     private ProxyAuthority proxyAuthority;
     
@@ -112,10 +110,14 @@ public final class RuleRegistry {
         connectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
         transactionType = TransactionType.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_MODE));
         transactionManager = ProxyTransactionLoader.load(transactionType);
-        maxWorkingThreads = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_MAX_WORKING_THREADS);
-        proxyBackendUseNio = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO);
-        proxyBackendSimpleDbConnections = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_SIMPLE_DB_CONNECTIONS);
-        proxyBackendConnectionTimeout = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT);
+        acceptorSize = shardingProperties.getValue(ShardingPropertiesConstant.ACCEPTOR_SIZE);
+        executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
+        // TODO :jiaqi force off use NIO for backend, this feature is not complete yet
+        boolean useNIO = false;
+//        boolean proxyBackendUseNio = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO);
+        int databaseConnectionCount = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_MAX_CONNECTIONS);
+        int connectionTimeoutSeconds = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS);
+        backendNIOConfig = new BackendNIOConfiguration(useNIO, databaseConnectionCount, connectionTimeoutSeconds);
         shardingRule = new ShardingRule(
                 null == config.getShardingRule() ? new ShardingRuleConfiguration() : config.getShardingRule().getShardingRuleConfiguration(), config.getDataSources().keySet());
         if (null != config.getMasterSlaveRule()) {

@@ -17,17 +17,11 @@
 
 package io.shardingsphere.core.constant;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 /**
- * Proxy Mode.
+ * Connection Mode.
  *
  * @author zhangyonglun
- * @author panjuan
  */
-@RequiredArgsConstructor
-@Getter
 public enum ConnectionMode {
     
     MEMORY_STRICTLY, CONNECTION_STRICTLY

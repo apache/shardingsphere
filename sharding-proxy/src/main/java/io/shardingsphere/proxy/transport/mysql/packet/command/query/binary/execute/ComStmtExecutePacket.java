@@ -19,11 +19,11 @@ package io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.exec
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.proxy.backend.BackendHandler;
+import io.shardingsphere.proxy.backend.BackendHandlerFactory;
 import io.shardingsphere.proxy.backend.ResultPacket;
-import io.shardingsphere.proxy.backend.jdbc.JDBCBackendHandler;
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
-import io.shardingsphere.proxy.backend.jdbc.execute.JDBCExecuteEngineFactory;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.constant.NewParametersBoundFlag;
@@ -71,7 +71,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
     
     private final BackendHandler backendHandler;
     
-    public ComStmtExecutePacket(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
+    public ComStmtExecutePacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         this.sequenceId = sequenceId;
         statementId = payload.readInt4();
         binaryStatement = BinaryStatementRegistry.getInstance().getBinaryStatement(statementId);
@@ -87,8 +87,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
             binaryStatement.setParameterTypes(getParameterTypes(payload, parametersCount));
         }
         parameters = getParameters(payload, parametersCount);
-        // TODO netty backend not implemented yet
-        backendHandler = new JDBCBackendHandler(binaryStatement.getSql(), JDBCExecuteEngineFactory.createBinaryProtocolInstance(parameters, backendConnection));
+        backendHandler = BackendHandlerFactory.newBinaryProtocolInstance(connectionId, sequenceId, binaryStatement.getSql(), parameters, backendConnection, DatabaseType.MySQL);
     }
     
     private List<BinaryStatementParameterType> getParameterTypes(final MySQLPacketPayload payload, final int parametersCount) {

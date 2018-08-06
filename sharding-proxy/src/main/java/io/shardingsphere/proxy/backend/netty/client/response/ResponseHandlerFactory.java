@@ -15,29 +15,32 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.netty;
+package io.shardingsphere.proxy.backend.netty.client.response;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.proxy.backend.netty.mysql.MySQLBackendHandler;
+import io.shardingsphere.proxy.backend.netty.client.response.mysql.MySQLResponseHandler;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Backend handler factory for netty.
+ * Response handler factory for using netty connect backend.
  *
  * @author wangkai
  * @author linjiaqi
  */
-public final class NettyBackendHandlerFactory {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ResponseHandlerFactory {
     /**
-     * Create backend handler instance.
+     * Create new instance of response handler factory for using netty connect backend.
      *
      * @param databaseType database type
-     * @param dataSourceConfig dataSourceConfig
-     * @return backend handler instance
+     * @param dataSourceName data source name
+     * @return new instance of response handler factory for using netty connect backend
      */
-    public static CommandResponsePacketsHandler createBackendHandlerInstance(final DatabaseType databaseType, final DataSourceConfig dataSourceConfig) {
+    public static ResponseHandler newInstance(final DatabaseType databaseType, final String dataSourceName) {
         switch (databaseType) {
             case MySQL:
-                return new MySQLBackendHandler(dataSourceConfig);
+                return new MySQLResponseHandler(dataSourceName);
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseType));
         }

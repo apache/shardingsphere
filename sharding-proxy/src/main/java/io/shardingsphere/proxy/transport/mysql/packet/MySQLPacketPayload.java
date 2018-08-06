@@ -220,7 +220,7 @@ public final class MySQLPacketPayload implements AutoCloseable {
         }
         if (value < Math.pow(2, 24)) {
             byteBuf.writeByte(0xfd);
-            byteBuf.writeInt((int) value);
+            byteBuf.writeMediumLE((int) value);
             return;
         }
         byteBuf.writeByte(0xfe);
