@@ -29,7 +29,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
  */
 public abstract class ResponseHandler extends ChannelInboundHandlerAdapter {
     
-    private AuthType authType;
+    private AuthType authType = AuthType.UN_AUTH;
     
     @Override
     public void channelRead(final ChannelHandlerContext context, final Object message) {

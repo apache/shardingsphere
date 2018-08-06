@@ -80,7 +80,8 @@ public final class MySQLResponseHandler extends ResponseHandler {
     protected void auth(final ChannelHandlerContext context, final ByteBuf byteBuf) {
         try (MySQLPacketPayload payload = new MySQLPacketPayload(byteBuf)) {
             HandshakePacket handshakePacket = new HandshakePacket(payload);
-            byte[] authResponse = securePasswordAuthentication(dataSourceParameter.getPassword().getBytes(), handshakePacket.getAuthPluginData().getAuthPluginData());
+            byte[] authResponse = securePasswordAuthentication(
+                    (null == dataSourceParameter.getPassword() ? "" : dataSourceParameter.getPassword()).getBytes(), handshakePacket.getAuthPluginData().getAuthPluginData());
             HandshakeResponse41Packet handshakeResponse41Packet = new HandshakeResponse41Packet(
                     handshakePacket.getSequenceId() + 1, CapabilityFlag.calculateHandshakeCapabilityFlagsLower(), 16777215, ServerInfo.CHARSET, 
                     dataSourceParameter.getUsername(), authResponse, dataSourceMetaData.getSchemeName());
