@@ -17,14 +17,14 @@
 
 package io.shardingsphere.jdbc.spring.cases;
 
-import io.shardingsphere.jdbc.spring.AbstractShardingBothDataBasesAndTablesSpringDBUnitTest;
+import io.shardingsphere.jdbc.spring.AbstractShardingBothDataBasesAndTablesJUnitTest;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Arrays;
 import java.util.List;
 
 @ContextConfiguration(locations = "classpath:META-INF/rdb/withNamespaceForMasterSlaveWithStrategyRef.xml")
-public final class WithNamespaceForMasterSlaveWithStrategyRefTest extends AbstractShardingBothDataBasesAndTablesSpringDBUnitTest {
+public final class WithNamespaceForMasterSlaveWithStrategyRefTest extends AbstractShardingBothDataBasesAndTablesJUnitTest {
     
     @Override
     protected List<String> getSchemaFiles() {

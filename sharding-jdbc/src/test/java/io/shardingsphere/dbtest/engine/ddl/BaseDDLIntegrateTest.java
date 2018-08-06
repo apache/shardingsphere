@@ -28,7 +28,11 @@ import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
 import io.shardingsphere.test.sql.SQLCaseType;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -48,6 +52,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+@Slf4j
 public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
     
     private final DDLIntegrateTestCaseAssertion assertion;
@@ -60,17 +65,38 @@ public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
         this.assertion = assertion;
         databaseType = databaseTypeEnvironment.getDatabaseType();
     }
-    
+
+    @BeforeClass
+    public static void initDatabases() {
+        createDatabases();
+    }
+
+    @AfterClass
+    public static void destroyDatabasesAndTables(){
+        dropDatabases();
+    }
+
     @Before
-    public void insertData() throws SQLException, ParseException, IOException, JAXBException {
+    public void initTables() throws SQLException, ParseException, IOException, JAXBException {
         if (getDatabaseTypeEnvironment().isEnabled()) {
+            if (DatabaseType.H2.equals(getDatabaseTypeEnvironment().getDatabaseType())) {
+                dropTables();
+            }
+            createTables();
             new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(getShardingRuleType()), getDataSourceMap()).initialize();
         }
     }
-    
+
+    @After
+    public void destroyTables() {
+        if (getDatabaseTypeEnvironment().isEnabled()) {
+            dropTables();
+        }
+    }
+
     protected void assertMetadata(final Connection connection) throws IOException, JAXBException, SQLException {
-        // TODO drop index assertion
         if (null == assertion.getExpectedDataFile()) {
+            log.warn("Have empty expectedDataFile `{}`", super.getSql());
             return;
         }
         DataSet expected;

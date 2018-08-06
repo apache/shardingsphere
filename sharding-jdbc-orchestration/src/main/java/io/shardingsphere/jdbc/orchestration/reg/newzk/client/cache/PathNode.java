@@ -17,19 +17,14 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache;
 
-import io.shardingsphere.core.parsing.lexer.LexerEngine;
-import io.shardingsphere.core.parsing.lexer.token.Assist;
-import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.Iterator;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /*
  * Zookeeper node cache.
@@ -89,46 +84,41 @@ public final class PathNode {
         node.setPath(PathUtil.getRealPath(path, node.getKey()));
     }
     
-    PathNode set(final Iterator<String> iterator, final String value) {
-        String key = iterator.next();
-        log.debug("PathNode set:{},value:{}", key, value);
-        PathNode result = children.get(key);
-        if (result == null) {
-            log.debug("set children haven't:{}", key);
-            result = new PathNode(key);
-            children.put(key, result);
+    PathNode set(final PathResolve pathResolve, final String value) {
+        if (pathResolve.isEnd()) {
+            setValue(value.getBytes(ZookeeperConstants.UTF_8));
+            return this;
         }
-        if (iterator.hasNext()) {
-            result.set(iterator, value);
-        } else {
-            result.setValue(value.getBytes(ZookeeperConstants.UTF_8));
+        pathResolve.next();
+        log.debug("PathNode set:{},value:{}", pathResolve.getCurrent(), value);
+        if (children.containsKey(pathResolve.getCurrent())) {
+            return children.get(pathResolve.getCurrent()).set(pathResolve, value);
         }
+        PathNode result = new PathNode(pathResolve.getCurrent(), ZookeeperConstants.NOTHING_DATA);
+        this.attachChild(result);
+        result.set(pathResolve, value);
         return result;
     }
     
-    PathNode get(final Iterator<String> iterator) {
-        String key = iterator.next();
-        log.debug("get:{}", key);
-        PathNode result = children.get(key);
-        if (result == null) {
-            log.debug("get children haven't:{}", key);
-            return null;
+    PathNode get(final PathResolve pathResolve) {
+        pathResolve.next();
+        if (children.containsKey(pathResolve.getCurrent())) {
+            if (pathResolve.isEnd()) {
+                return children.get(pathResolve.getCurrent());
+            }
+            return children.get(pathResolve.getCurrent()).get(pathResolve);
         }
-        if (iterator.hasNext()) {
-            return result.get(iterator);
-        }
-        return result;
+        return null;
     }
     
-    void delete(final String path, final LexerEngine lexerEngine) {
-        if (lexerEngine.getCurrentToken().getType().equals(Assist.END)) {
-            children.remove(path);
-        }
-        if (children.containsKey(path)) {
-            PathNode node = children.get(path);
-            lexerEngine.nextToken();
-            lexerEngine.skipIfEqual(Symbol.SLASH);
-            node.delete(lexerEngine.getCurrentToken().getLiterals(), lexerEngine);
+    void delete(final PathResolve pathResolve) {
+        pathResolve.next();
+        if (children.containsKey(pathResolve.getCurrent())) {
+            if (pathResolve.isEnd()) {
+                children.remove(pathResolve.getCurrent());
+            } else {
+                children.get(pathResolve.getCurrent()).delete(pathResolve);
+            }
         }
     }
 }

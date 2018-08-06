@@ -18,13 +18,13 @@
 package io.shardingsphere.proxy;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusInstance;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.frontend.ShardingProxy;
-import io.shardingsphere.transaction.xa.AtomikosXaTransaction;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
@@ -48,6 +48,8 @@ public final class Bootstrap {
     private static final String DEFAULT_CONFIG_PATH = "/conf/";
     
     private static final String DEFAULT_CONFIG_FILE = "config.yaml";
+    
+    private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
     
     /**
      * Main Entrance.
@@ -73,10 +75,10 @@ public final class Bootstrap {
         ) {
             OrchestrationProxyConfiguration result = new Yaml(new Constructor(OrchestrationProxyConfiguration.class)).loadAs(inputStreamReader, OrchestrationProxyConfiguration.class);
             Preconditions.checkNotNull(result, String.format("Configuration file `%s` is invalid.", yamlFile.getName()));
-            Preconditions.checkState(!result.getDataSources().isEmpty(), "Data sources configuration can not be empty.");
+            Preconditions.checkState(!result.getDataSources().isEmpty() || null != result.getOrchestration(), "Data sources configuration can not be empty.");
             Preconditions.checkState(null != result.getShardingRule() || null != result.getMasterSlaveRule() || null != result.getOrchestration(), 
                     "Configuration invalid, sharding rule, local and orchestration configuration can not be both null.");
-            Preconditions.checkNotNull(result.getProxyAuthority().getUsername(), "Authority configuration is invalid.");
+            Preconditions.checkState(!Strings.isNullOrEmpty(result.getProxyAuthority().getUsername()) || null != result.getOrchestration(), "Authority configuration is invalid.");
             return result;
         }
     }
@@ -100,8 +102,7 @@ public final class Bootstrap {
     }
     
     private static void startWithoutRegistryCenter(final OrchestrationProxyConfiguration config, final int port) throws InterruptedException, MalformedURLException {
-        RuleRegistry.getInstance().init(config);
-        AtomikosXaTransaction.init();
+        RULE_REGISTRY.init(config);
         new ShardingProxy().start(port);
     }
     
@@ -111,13 +112,12 @@ public final class Bootstrap {
                 orchestrationFacade.init(localConfig);
             }
             initRuleRegistry(orchestrationFacade.getConfigService());
-            AtomikosXaTransaction.init();
             new ShardingProxy().start(port);
         }
     }
     
     private static void initRuleRegistry(final ConfigurationService configService) {
-        RuleRegistry.getInstance().init(new OrchestrationProxyConfiguration(configService.loadDataSources(), configService.loadProxyConfiguration()));
-        ProxyEventBusInstance.getInstance().register(RuleRegistry.getInstance());
+        RULE_REGISTRY.init(new OrchestrationProxyConfiguration(configService.loadDataSources(), configService.loadProxyConfiguration()));
+        ProxyEventBusInstance.getInstance().register(RULE_REGISTRY);
     }
 }

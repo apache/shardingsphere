@@ -35,6 +35,7 @@ import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -85,7 +86,7 @@ public class IPKeyGeneratorTest {
     }
     
     @Test
-    public void generateId() throws Exception {
+    public void generateId() throws UnknownHostException, ExecutionException, InterruptedException {
         PowerMockito.mockStatic(InetAddress.class);
         PowerMockito.when(InetAddress.getLocalHost()).thenReturn(address);
         IPKeyGenerator.initWorkerId();

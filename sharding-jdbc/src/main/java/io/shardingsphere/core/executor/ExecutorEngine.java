@@ -43,6 +43,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -159,8 +160,9 @@ public final class ExecutorEngine implements AutoCloseable {
         }
     }
     
-    private <T> List<T> buildResultList(final T firstOutput, final List<ListenableFuture<T>> restResultFutures) throws Exception {
-        List<T> result = new LinkedList<T>() { { add(firstOutput); } };
+    private <T> List<T> buildResultList(final T firstOutput, final List<ListenableFuture<T>> restResultFutures) throws ExecutionException, InterruptedException {
+        List<T> result = new LinkedList<>();
+        result.add(firstOutput);
         for (ListenableFuture<T> each : restResultFutures) {
             result.add(each.get());
         }

@@ -19,9 +19,9 @@ package io.shardingsphere.core.metadata.datasource;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
 
-import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -33,34 +33,44 @@ import java.util.Map.Entry;
  *
  * @author panjuan
  */
-public class ShardingDataSourceMetaData {
+public final class ShardingDataSourceMetaData {
     
     private final Map<String, DataSourceMetaData> dataSourceMetaDataMap;
     
-    public ShardingDataSourceMetaData(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType) {
-        dataSourceMetaDataMap = getDataSourceMetaDataMap(dataSourceMap, shardingRule, databaseType);
+    public ShardingDataSourceMetaData(final Map<String, String> dataSourceURLs, final ShardingRule shardingRule, final DatabaseType databaseType) {
+        dataSourceMetaDataMap = getDataSourceMetaDataMap(dataSourceURLs, shardingRule, databaseType);
     }
     
-    private Map<String, DataSourceMetaData> getDataSourceMetaDataMap(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType) {
-        Map<String, DataSourceMetaData> dataSourceMetaDataMap = new LinkedHashMap<>();
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            dataSourceMetaDataMap.put(entry.getKey(), DataSourceMetaDataFactory.getDataSourceMetaData(databaseType, entry.getValue()));
-        }
-        return handleMasterSlaveDataSourceNames(shardingRule, dataSourceMetaDataMap);
+    private Map<String, DataSourceMetaData> getDataSourceMetaDataMap(final Map<String, String> dataSourceURLs, final ShardingRule shardingRule, final DatabaseType databaseType) {
+        Map<String, DataSourceMetaData> dataSourceMetaData = getDataSourceMetaDataMapForSharding(dataSourceURLs, databaseType);
+        return shardingRule.getMasterSlaveRules().isEmpty() ? dataSourceMetaData : getDataSourceMetaDataMapForMasterSlave(shardingRule, dataSourceMetaData);
     }
     
-    private Map<String, DataSourceMetaData> handleMasterSlaveDataSourceNames(final ShardingRule shardingRule, final Map<String, DataSourceMetaData> dataSourceMetaDataMap) {
-        Map<String, DataSourceMetaData> result = new LinkedHashMap<>();
-        if (shardingRule.getMasterSlaveRules().isEmpty()) {
-            return dataSourceMetaDataMap;
+    private Map<String, DataSourceMetaData> getDataSourceMetaDataMapForSharding(final Map<String, String> dataSourceURLs, final DatabaseType databaseType) {
+        Map<String, DataSourceMetaData> result = new LinkedHashMap<>(dataSourceURLs.size(), 1);
+        for (Entry<String, String> entry : dataSourceURLs.entrySet()) {
+            result.put(entry.getKey(), DataSourceMetaDataFactory.newInstance(databaseType, entry.getValue()));
         }
+        return result;
+    }
+    
+    private Map<String, DataSourceMetaData> getDataSourceMetaDataMapForMasterSlave(final ShardingRule shardingRule, final Map<String, DataSourceMetaData> dataSourceMetaDataMap) {
+        Map<String, DataSourceMetaData> result = new LinkedHashMap<>(dataSourceMetaDataMap);
         for (Entry<String, DataSourceMetaData> entry : dataSourceMetaDataMap.entrySet()) {
-            Optional<String> masterSlaveRuleNameOptional = shardingRule.tryFindMasterSlaveRuleName(entry.getKey());
-            if (masterSlaveRuleNameOptional.isPresent()) {
-                result.put(masterSlaveRuleNameOptional.get(), entry.getValue());
+            Optional<MasterSlaveRule> masterSlaveRule = shardingRule.findMasterSlaveRule(entry.getKey());
+            if (masterSlaveRule.isPresent() && masterSlaveRule.get().getMasterDataSourceName().equals(entry.getKey())) {
+                reviseMasterSlaveMetaData(result, entry.getValue(), masterSlaveRule.get());
             }
         }
         return result;
+    }
+    
+    private void reviseMasterSlaveMetaData(final Map<String, DataSourceMetaData> dataSourceMetaDataMap, final DataSourceMetaData masterSlaveDataSourceMetaData, final MasterSlaveRule masterSlaveRule) {
+        dataSourceMetaDataMap.put(masterSlaveRule.getName(), masterSlaveDataSourceMetaData);
+        dataSourceMetaDataMap.remove(masterSlaveRule.getMasterDataSourceName());
+        for (String each : masterSlaveRule.getSlaveDataSourceNames()) {
+            dataSourceMetaDataMap.remove(each);
+        }
     }
     
     /**

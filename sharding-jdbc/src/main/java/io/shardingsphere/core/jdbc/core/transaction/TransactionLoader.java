@@ -17,7 +17,14 @@
 
 package io.shardingsphere.core.jdbc.core.transaction;
 
-import io.shardingsphere.core.transaction.spi.Transaction;
+import io.shardingsphere.core.constant.TransactionType;
+import io.shardingsphere.core.transaction.TransactionContext;
+import io.shardingsphere.core.transaction.TransactionContextHolder;
+import io.shardingsphere.core.transaction.event.WeakXaTransactionEvent;
+import io.shardingsphere.core.transaction.event.XaTransactionEvent;
+import io.shardingsphere.core.transaction.listener.TransactionListener;
+import io.shardingsphere.core.transaction.spi.TransactionManager;
+import io.shardingsphere.core.util.EventBusInstance;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -35,10 +42,28 @@ public final class TransactionLoader {
     /**
      * Using ServiceLoader to dynamic load spi transaction.
      *
-     * @return transaction SPI
      */
-    public static Transaction load() {
-        Iterator<Transaction> iterator = ServiceLoader.load(Transaction.class).iterator();
-        return iterator.hasNext() ? iterator.next() : new WeakXaTransaction();
+    public static void load() {
+        TransactionContext transactionContext = TransactionContextHolder.get();
+        switch (transactionContext.getTransactionType()) {
+            case XA:
+                doXaTransactionConfiguration();
+                break;
+            case BASE:
+                break;
+            default:
+        }
+        EventBusInstance.getInstance().register(TransactionListener.getInstance());
+    }
+    
+    private static void doXaTransactionConfiguration() {
+        Iterator<TransactionManager> iterator = ServiceLoader.load(TransactionManager.class).iterator();
+        TransactionContext transactionContext;
+        if (iterator.hasNext()) {
+            transactionContext = new TransactionContext(iterator.next(), TransactionType.XA, XaTransactionEvent.class);
+        } else {
+            transactionContext = new TransactionContext(new WeakXaTransactionManager(), TransactionType.XA, WeakXaTransactionEvent.class);
+        }
+        TransactionContextHolder.set(transactionContext);
     }
 }

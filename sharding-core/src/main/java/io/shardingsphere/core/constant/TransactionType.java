@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 public enum TransactionType {
     
     /**
-     * default local transaction.
+     * Default local transaction.
      */
     NONE(""),
     
@@ -38,6 +38,11 @@ public enum TransactionType {
      * XA distribute transaction provided by RDBMS vendor.
      */
     XA("XA"),
+    
+    /**
+     * B.A.S.E distribute transaction.
+     */
+    BASE("BASE"),
     
     /**
      * TCC (Try-Confirm-Cancel) distribute transaction mode.

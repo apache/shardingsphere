@@ -19,7 +19,6 @@ package io.shardingsphere.core.parsing.parser.clause;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
@@ -69,9 +68,8 @@ public class InsertValuesClauseParser implements SQLClauseParser {
      * Parse insert values.
      *
      * @param insertStatement insert statement
-     * @param shardingMetaData sharding meta data
      */
-    public void parse(final InsertStatement insertStatement, final ShardingMetaData shardingMetaData) {
+    public void parse(final InsertStatement insertStatement) {
         Collection<Keyword> valueKeywords = new LinkedList<>();
         valueKeywords.add(DefaultKeyword.VALUES);
         valueKeywords.addAll(Arrays.asList(getSynonymousKeywordsForValues()));
@@ -92,37 +90,36 @@ public class InsertValuesClauseParser implements SQLClauseParser {
     private void parseValues(final InsertStatement insertStatement) {
         int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
         int endPosition;
+        int startParametersIndex;
         insertStatement.getSqlTokens().add(new InsertValuesToken(beginPosition, insertStatement.getTables().getSingleTableName()));
         do {
             beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
+            startParametersIndex = insertStatement.getParametersIndex();
             lexerEngine.accept(Symbol.LEFT_PAREN);
             List<SQLExpression> sqlExpressions = new LinkedList<>();
-            int columnsCount = 0;
+            int count = 0;
             do {
                 sqlExpressions.add(basicExpressionParser.parse(insertStatement));
                 skipsDoubleColon();
-                columnsCount++;
+                count++;
             } while (lexerEngine.skipIfEqual(Symbol.COMMA));
-            removeGenerateKeyColumn(insertStatement, columnsCount);
-            columnsCount = 0;
-            int parametersCount = 0;
+            removeGenerateKeyColumn(insertStatement, count);
+            count = 0;
             AndCondition andCondition = new AndCondition();
             for (Column each : insertStatement.getColumns()) {
-                SQLExpression sqlExpression = sqlExpressions.get(columnsCount);
+                SQLExpression sqlExpression = sqlExpressions.get(count);
                 if (shardingRule.isShardingColumn(each)) {
                     andCondition.getConditions().add(new Condition(each, sqlExpression));
                 }
-                if (insertStatement.getGenerateKeyColumnIndex() == columnsCount) {
+                if (insertStatement.getGenerateKeyColumnIndex() == count) {
                     insertStatement.getGeneratedKeyConditions().add(createGeneratedKeyCondition(each, sqlExpression));
                 }
-                columnsCount++;
-                if (sqlExpression instanceof SQLPlaceholderExpression) {
-                    parametersCount++;
-                }
+                count++;
             }
             endPosition = lexerEngine.getCurrentToken().getEndPosition();
             lexerEngine.accept(Symbol.RIGHT_PAREN);
-            insertStatement.getInsertValues().getInsertValues().add(new InsertValue(DefaultKeyword.VALUES, lexerEngine.getInput().substring(beginPosition, endPosition), parametersCount));
+            InsertValue insertValue = new InsertValue(DefaultKeyword.VALUES, lexerEngine.getInput().substring(beginPosition, endPosition), insertStatement.getParametersIndex() - startParametersIndex);
+            insertStatement.getInsertValues().getInsertValues().add(insertValue);
             insertStatement.getConditions().getOrCondition().getAndConditions().add(andCondition);
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));
         insertStatement.setInsertValuesListLastPosition(endPosition);

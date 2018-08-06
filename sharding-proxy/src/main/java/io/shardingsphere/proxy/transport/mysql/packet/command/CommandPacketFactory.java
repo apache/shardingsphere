@@ -17,16 +17,17 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command;
 
-import io.shardingsphere.proxy.backend.common.jdbc.BackendConnection;
+import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
-import io.shardingsphere.proxy.transport.mysql.packet.command.statement.close.ComStmtClosePacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.statement.execute.ComStmtExecutePacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.statement.prepare.ComStmtPreparePacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.text.fieldlist.ComFieldListPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.text.initdb.ComInitDbPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.text.ping.ComPingPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.text.query.ComQueryPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.text.quit.ComQuitPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.admin.UnsupportedCommandPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.close.ComStmtClosePacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute.ComStmtExecutePacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.prepare.ComStmtPreparePacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.text.fieldlist.ComFieldListPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.admin.initdb.ComInitDbPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.admin.ping.ComPingPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.text.query.ComQueryPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.admin.quit.ComQuitPacket;
 
 /**
  * Command packet factory.
@@ -60,7 +61,7 @@ public final class CommandPacketFactory {
             case COM_STMT_PREPARE:
                 return new ComStmtPreparePacket(sequenceId, payload);
             case COM_STMT_EXECUTE:
-                return new ComStmtExecutePacket(sequenceId, payload, backendConnection);
+                return new ComStmtExecutePacket(sequenceId, connectionId, payload, backendConnection);
             case COM_STMT_CLOSE:
                 return new ComStmtClosePacket(sequenceId, payload);
             case COM_PING:

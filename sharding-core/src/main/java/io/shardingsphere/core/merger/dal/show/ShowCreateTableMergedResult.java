@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.merger.dal.show;
 
-import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.merger.dql.common.MemoryMergedResult;
@@ -63,19 +62,17 @@ public final class ShowCreateTableMergedResult extends MemoryMergedResult {
             while (each.next()) {
                 MemoryQueryResultRow memoryResultSetRow = new MemoryQueryResultRow(each);
                 String tableName = memoryResultSetRow.getCell(1).toString();
-                Optional<TableRule> tableRule = shardingRule.tryFindTableRuleByActualTable(tableName);
-                if (tableRule.isPresent()) {
-                    String logicTableName = tableRule.get().getLogicTable();
-                    memoryResultSetRow.setCell(1, logicTableName);
-                    String createTableDDL = memoryResultSetRow.getCell(2).toString();
-                    SQLParsingEngine sqlParsingEngine = new SQLParsingEngine(DatabaseType.MySQL, createTableDDL, shardingRule, null);
-                    String actualTableName = sqlParsingEngine.parse(true).getTables().getSingleTableName();
-                    if (actualTableName.startsWith("`")) {
-                        logicTableName = "`" + logicTableName + "`";
-                    }
-                    memoryResultSetRow.setCell(2, createTableDDL.replaceFirst(actualTableName, logicTableName));
-                    result.add(memoryResultSetRow);
+                TableRule tableRule = shardingRule.getTableRuleByActualTableName(tableName);
+                String logicTableName = tableRule.getLogicTable();
+                memoryResultSetRow.setCell(1, logicTableName);
+                String createTableDDL = memoryResultSetRow.getCell(2).toString();
+                SQLParsingEngine sqlParsingEngine = new SQLParsingEngine(DatabaseType.MySQL, createTableDDL, shardingRule, null);
+                String actualTableName = sqlParsingEngine.parse(true).getTables().getSingleTableName();
+                if (actualTableName.startsWith("`")) {
+                    logicTableName = "`" + logicTableName + "`";
                 }
+                memoryResultSetRow.setCell(2, createTableDDL.replaceFirst(actualTableName, logicTableName));
+                result.add(memoryResultSetRow);
             }
         }
         if (!result.isEmpty()) {

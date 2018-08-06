@@ -31,6 +31,7 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.ClientFac
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
 import io.shardingsphere.jdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -55,12 +56,12 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
     private final Map<String, PathTree> caches = new HashMap<>();
     
     public NewZookeeperRegistryCenter(final ZookeeperConfiguration zkConfig) {
-        ClientFactory creator = buildCreator(zkConfig);
+        final ClientFactory creator = buildCreator(zkConfig);
         client = initClient(creator, zkConfig);
     }
     
     private ClientFactory buildCreator(final ZookeeperConfiguration zkConfig) {
-        ClientFactory creator = new ClientFactory();
+        final ClientFactory creator = new ClientFactory();
         creator.setClientNamespace(zkConfig.getNamespace())
                 .newClient(zkConfig.getServerLists(), zkConfig.getSessionTimeoutMilliseconds())
                 .setRetryPolicy(new DelayRetryPolicy(zkConfig.getBaseSleepTimeMilliseconds(), zkConfig.getMaxRetries(), zkConfig.getMaxSleepTimeMilliseconds()));
@@ -82,9 +83,7 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
             }
             
             newClient.useExecStrategy(StrategyType.SYNC_RETRY);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
+        } catch (final KeeperException.OperationTimeoutException | IOException | InterruptedException ex) {
             RegExceptionHandler.handleException(ex);
         }
         return newClient;
@@ -92,7 +91,7 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
     
     @Override
     public String get(final String key) {
-        PathTree cache = findTreeCache(key);
+        final PathTree cache = findTreeCache(key);
         if (null == cache) {
             return getDirectly(key);
         }
@@ -116,9 +115,7 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
     public String getDirectly(final String key) {
         try {
             return new String(client.getData(key), Charsets.UTF_8);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
+        } catch (final KeeperException | InterruptedException ex) {
             RegExceptionHandler.handleException(ex);
             return null;
         }
@@ -128,9 +125,7 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
     public boolean isExisted(final String key) {
         try {
             return client.checkExists(key);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
+        } catch (final KeeperException | InterruptedException ex) {
             RegExceptionHandler.handleException(ex);
             return false;
         }
@@ -139,7 +134,7 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
     @Override
     public List<String> getChildrenKeys(final String key) {
         try {
-            List<String> result = client.getChildren(key);
+            final List<String> result = client.getChildren(key);
             Collections.sort(result, new Comparator<String>() {
                 
                 @Override
@@ -148,9 +143,7 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
                 }
             });
             return result;
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
+        } catch (final KeeperException | InterruptedException ex) {
             RegExceptionHandler.handleException(ex);
             return Collections.emptyList();
         }
@@ -164,9 +157,7 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
             } else {
                 update(key, value);
             }
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
+        } catch (final KeeperException | InterruptedException ex) {
             RegExceptionHandler.handleException(ex);
         }
     }
@@ -175,9 +166,7 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
     public void update(final String key, final String value) {
         try {
             client.transaction().check(key, ZookeeperConstants.VERSION).setData(key, value.getBytes(ZookeeperConstants.UTF_8), ZookeeperConstants.VERSION).commit();
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
+        } catch (final KeeperException | InterruptedException ex) {
             RegExceptionHandler.handleException(ex);
         }
     }
@@ -189,9 +178,7 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
                 client.deleteAllChildren(key);
             }
             client.createAllNeedPath(key, value, CreateMode.EPHEMERAL);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
+        } catch (final KeeperException | InterruptedException ex) {
             RegExceptionHandler.handleException(ex);
         }
     }
@@ -236,22 +223,18 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
             byte[] data = client.getData(key);
             client.useExecStrategy(StrategyType.SYNC_RETRY);
             return null == data ? null : new String(data, Charsets.UTF_8);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
+        } catch (final KeeperException | InterruptedException ex) {
             RegExceptionHandler.handleException(ex);
             return null;
         }
     }
     
     private void addCacheData(final String cachePath) {
-        PathTree cache = new PathTree(cachePath, client);
+        final PathTree cache = new PathTree(cachePath, client);
         try {
             cache.load();
             cache.watch();
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
+        } catch (final KeeperException | InterruptedException ex) {
             RegExceptionHandler.handleException(ex);
         }
         caches.put(cachePath + "/", cache);

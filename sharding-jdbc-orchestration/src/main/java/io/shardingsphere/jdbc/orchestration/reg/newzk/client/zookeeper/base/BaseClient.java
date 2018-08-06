@@ -24,6 +24,9 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperCo
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.WatcherCreator;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,10 +35,6 @@ import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.data.ACL;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /*
  * Base client.
@@ -108,9 +107,7 @@ public abstract class BaseClient implements IClient {
             if (rootExist) {
                 this.deleteNamespace();
             }
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
+        } catch (final KeeperException | InterruptedException ex) {
             log.error("zk client close delete root error:{}", ex.getMessage(), ex);
         }
         holder.close();
@@ -127,7 +124,7 @@ public abstract class BaseClient implements IClient {
     
     @Override
     public void registerWatch(final String key, final ZookeeperEventListener zookeeperEventListener) {
-        String path = PathUtil.getRealPath(rootNode, key);
+        final String path = PathUtil.getRealPath(rootNode, key);
         zookeeperEventListener.setPath(path);
         context.getWatchers().put(zookeeperEventListener.getKey(), zookeeperEventListener);
         log.debug("register watcher:{}", path);

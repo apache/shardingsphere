@@ -25,7 +25,9 @@ import io.shardingsphere.dbtest.env.authority.AuthorityEnvironmentManager;
 import io.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
 import io.shardingsphere.test.sql.SQLCaseType;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -42,7 +44,17 @@ public abstract class BaseDCLIntegrateTest extends SingleIntegrateTest {
         authorityEnvironmentManager = new AuthorityEnvironmentManager(
                 EnvironmentPath.getAuthorityResourcesPath(shardingRuleType), getInstanceDataSourceMap(), getDatabaseTypeEnvironment().getDatabaseType());
     }
-    
+
+    @BeforeClass
+    public static void initDatabasesAndTables() {
+        createDatabasesAndTables();
+    }
+
+    @AfterClass
+    public static void destroyDatabasesAndTables(){
+        dropDatabases();
+    }
+
     @Before
     public void insertData() throws SQLException, ParseException, IOException, JAXBException {
         if (getDatabaseTypeEnvironment().isEnabled()) {

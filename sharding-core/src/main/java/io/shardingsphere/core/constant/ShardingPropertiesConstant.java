@@ -54,33 +54,29 @@ public enum ShardingPropertiesConstant {
     EXECUTOR_SIZE("executor.size", String.valueOf(Runtime.getRuntime().availableProcessors()), int.class),
     
     /**
-     * Proxy mode.
+     * Connection mode of connected to databases.
      *
      * <p>
      * MEMORY_STRICTLY:
-     * Proxy holds as many connections as the count of actual tables routed in a database.
+     * Sharding-Sphere holds as many connections as the count of actual tables routed in a database.
      * The benefit of this approach is saving memory for Proxy by Stream ResultSet.
+     * </p>
+     * 
+     * <p>
      * CONNECTION_STRICTLY:
-     * Proxy will release connections after get the overall rows from the ResultSet.
+     * harding-Sphere will release connections after get the overall rows from the ResultSet.
      * Meanwhile, the cost of the memory will be increased.
      * </p>
      */
-    PROXY_MODE("proxy.mode", "MEMORY_STRICTLY", String.class),
+    CONNECTION_MODE("connection.mode", ConnectionMode.MEMORY_STRICTLY.name(), String.class),
     
-    PROXY_TRANSACTION_MODE("proxy.transaction.mode", "NONE", String.class),
-    
-    /**
-     * Thread pool size of connect database for Sharding-Proxy.
-     *
-     * <p>Cannot change dynamically, change this value should restart proxy.</p>
-     */
-    PROXY_MAX_WORKING_THREADS("proxy.max.working.threads", Runtime.getRuntime().availableProcessors() * 2 + "", int.class),
+    PROXY_TRANSACTION_MODE("proxy.transaction.mode", TransactionType.NONE.name(), String.class),
     
     PROXY_BACKEND_USE_NIO("proxy.backend.use.nio", Boolean.FALSE.toString(), boolean.class),
     
-    PROXY_BACKEND_SIMPLE_DB_CONNECTIONS("proxy.backend.simple.db.connections", 8 + "", int.class),
+    PROXY_BACKEND_MAX_CONNECTIONS("proxy.backend.max.connections", 8 + "", int.class),
     
-    PROXY_BACKEND_CONNECTION_TIMEOUT("proxy.backend.connection.timeout", 60 + "", int.class);
+    PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS("proxy.backend.connection.timeout.seconds", 60 + "", int.class);
     
     private final String key;
     

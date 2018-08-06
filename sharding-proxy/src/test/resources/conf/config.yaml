@@ -1,28 +1,22 @@
 dataSources:
-  ds_master_0:
-      url: jdbc:mysql://localhost:3306/demo_ds_master_0?serverTimezone=UTC&useSSL=false
-      username: root
-      password:
-  ds_master_0_slave_0:
-    url: jdbc:mysql://localhost:3306/demo_ds_master_0_slave_0?serverTimezone=UTC&useSSL=false
+  ds_0:
+    url: jdbc:mysql://127.0.0.1:3306/ds_0?serverTimezone=UTC&useSSL=false
     username: root
     password:
-  ds_master_0_slave_1:
-    url: jdbc:mysql://localhost:3306/demo_ds_master_0_slave_1?serverTimezone=UTC&useSSL=false
+    autoCommit: true
+    connectionTimeout: 30000
+    idleTimeout: 60000
+    maxLifetime: 1800000
+    maximumPoolSize: 65
+  ds_1:
+    url: jdbc:mysql://127.0.0.1:3306/ds_1?serverTimezone=UTC&useSSL=false
     username: root
     password:
-  ds_master_1:
-        url: jdbc:mysql://localhost:3306/demo_ds_master_1?serverTimezone=UTC&useSSL=false
-        username: root
-        password:
-  ds_master_1_slave_0:
-    url: jdbc:mysql://localhost:3306/demo_ds_master_1_slave_0?serverTimezone=UTC&useSSL=false
-    username: root
-    password:
-  ds_master_1_slave_1:
-    url: jdbc:mysql://localhost:3306/demo_ds_master_1_slave_1?serverTimezone=UTC&useSSL=false
-    username: root
-    password:
+    autoCommit: true
+    connectionTimeout: 30000
+    idleTimeout: 60000
+    maxLifetime: 1800000
+    maximumPoolSize: 65
 
 shardingRule:
   tables:
@@ -35,32 +29,34 @@ shardingRule:
       keyGeneratorColumnName: order_id
     t_order_item:
       actualDataNodes: ds_${0..1}.t_order_item_${0..1}
-      #绑定表中其余的表的策略与第一张表的策略相同
       tableStrategy:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_item_${order_id % 2}
-
   bindingTables:
     - t_order,t_order_item
-
-  #默认数据库分片策略
   defaultDatabaseStrategy:
     inline:
       shardingColumn: user_id
       algorithmExpression: ds_${user_id % 2}
-
-  masterSlaveRules:
-    ds_0:
-      masterDataSourceName: ds_master_0
-      slaveDataSourceNames: [ds_master_0_slave_0, ds_master_0_slave_1]
-      loadBalanceAlgorithmType: ROUND_ROBIN
-    ds_1:
-      masterDataSourceName: ds_master_1
-      slaveDataSourceNames: [ds_master_1_slave_0, ds_master_1_slave_1]
-      loadBalanceAlgorithmType: ROUND_ROBIN
-
+  defaultTableStrategy:
+    none:
   defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
 
   props:
-    sql.show: true
+    connection.mode: MEMORY_STRICTLY
+    executor.size: 16
+    sql.show: false
+
+orchestration:
+  name: orchestration_ds
+  type: SHARDING
+  overwrite: true
+  zookeeper:
+    namespace: orchestration
+    serverLists: localhost:2181
+
+proxyAuthority:
+  username: root
+  password: root
+

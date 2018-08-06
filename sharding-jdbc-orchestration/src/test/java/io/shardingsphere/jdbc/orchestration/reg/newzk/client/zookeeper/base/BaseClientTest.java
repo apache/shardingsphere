@@ -65,7 +65,7 @@ public abstract class BaseClientTest extends BaseTest {
         getZooKeeper(testClient);
     }
     
-    private ZooKeeper getZooKeeper(final IClient client) {
+    protected ZooKeeper getZooKeeper(final IClient client) {
         return ((BaseClient) client).getHolder().getZooKeeper();
     }
     
@@ -274,25 +274,22 @@ public abstract class BaseClientTest extends BaseTest {
         String key = "a";
         client.registerWatch(key, zookeeperEventListener);
         client.createCurrentOnly(key, "aaa", CreateMode.EPHEMERAL);
-        assertThat(client.getDataString(key), is("aaa"));
+        sleep(100);
 
         String value = "value0";
         client.update(key, value);
-        assertThat(client.getDataString(key), is(value));
-        sleep(200);
+        sleep(100);
         
         String value1 = "value1";
         client.update(key, value1);
-        assertThat(client.getDataString(key), is(value1));
-        sleep(200);
+        sleep(100);
         
         String value2 = "value2";
         client.update(key, value2);
-        assertThat(client.getDataString(key), is(value2));
-        sleep(200);
+        sleep(100);
         
         client.deleteCurrentBranch(key);
-        sleep(200);
+        sleep(100);
         
         //The acquisition value is after the reception of the event,
         //so the value may be not equal.
@@ -305,28 +302,19 @@ public abstract class BaseClientTest extends BaseTest {
             
             @Override
             public void process(final WatchedEvent event) {
-                log.info(event.getPath());
-                log.info(event.getType().name());
-                
                 switch (event.getType()) {
                     case NodeDataChanged:
                     case NodeChildrenChanged:
-                        String result;
                         try {
-                            result = new String(getZooKeeper(client).getData(event.getPath(), false, null));
-                        } catch (final KeeperException | InterruptedException ex) {
-                            log.info("path:{}, type:{}, ex:{}", event.getPath(), event.getType(), ex.getMessage());
-                            return;
+                            actual.add("update_" + event.getPath() + "_" + client.getDataString(event.getPath()));
+                        } catch (final KeeperException | InterruptedException e) {
+                            log.debug(e.getMessage());
                         }
-                        log.info(result);
-                        actual.add("update_" + event.getPath() + "_" + result);
                         break;
                     case NodeDeleted:
                         actual.add("delete_" + event.getPath() + "_");
                         break;
                     default:
-                        actual.add("ignore_" + event.getPath() + "_" + event.getType());
-                        break;
                 }
             }
         };

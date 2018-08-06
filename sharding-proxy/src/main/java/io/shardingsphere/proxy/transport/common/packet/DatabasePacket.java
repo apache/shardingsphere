@@ -26,6 +26,7 @@ public interface DatabasePacket {
     
     /**
      * Get sequence ID.
+     * 
      * @return sequence ID
      */
     int getSequenceId();

@@ -22,7 +22,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.text.quit.ComQuitPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.admin.quit.ComQuitPacket;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;

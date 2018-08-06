@@ -58,7 +58,7 @@ public abstract class SingleIntegrateTest extends BaseIntegrateTest {
         sql = getSQL(sqlCaseId);
         expectedDataFile = getExpectedDataFile(path, shardingRuleType, databaseTypeEnvironment.getDatabaseType(), assertion.getExpectedDataFile());
     }
-    
+
     private String getSQL(final String sqlCaseId) throws ParseException {
         List<String> parameters = new LinkedList<>();
         for (SQLValue each : assertion.getSQLValues()) {
