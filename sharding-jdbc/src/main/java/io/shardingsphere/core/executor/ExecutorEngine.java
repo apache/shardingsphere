@@ -35,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -69,21 +70,22 @@ public abstract class ExecutorEngine implements AutoCloseable {
      * Execute.
      *
      * @param sqlType SQL type
-     * @param baseStatementUnitGroups statement execute unitS
+     * @param baseStatementUnits statement execute unitS
      * @param executeCallback prepared statement execute callback
      * @param <T> class type of return value
      * @return execute result
      * @throws SQLException SQL exception
      */
     public <T> List<T> execute(
-            final SQLType sqlType, final Map<String, Collection<? extends BaseStatementUnit>> baseStatementUnitGroups, final ExecuteCallback<T> executeCallback) throws SQLException {
-        if (baseStatementUnitGroups.isEmpty()) {
+            final SQLType sqlType, final Collection<? extends BaseStatementUnit> baseStatementUnits, final ExecuteCallback<T> executeCallback) throws SQLException {
+        if (baseStatementUnits.isEmpty()) {
             return Collections.emptyList();
         }
-        OverallExecutionEvent event = new OverallExecutionEvent(sqlType, baseStatementUnitGroups.size());
+        OverallExecutionEvent event = new OverallExecutionEvent(sqlType, baseStatementUnits.size());
         EventBusInstance.getInstance().post(event);
+        Iterator<? extends BaseStatementUnit> iterator = baseStatementUnits.iterator();
         try {
-            List<T> result = getExecuteResults(sqlType, baseStatementUnitGroups, executeCallback);
+            List<T> result = getExecuteResults(sqlType, baseStatementUnits, executeCallback);
             event.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
             EventBusInstance.getInstance().post(event);
             return result;
@@ -98,9 +100,9 @@ public abstract class ExecutorEngine implements AutoCloseable {
         }
     }
     
-    protected abstract <T> List<T> getExecuteResults(SQLType sqlType, Map<String, Collection<? extends BaseStatementUnit>> baseStatementUnitGroups, ExecuteCallback<T> executeCallback) throws Exception;
+    protected abstract <T> List<T> getExecuteResults(SQLType sqlType, Collection<? extends BaseStatementUnit> baseStatementUnits, ExecuteCallback<T> executeCallback);
     
-    protected <T> T executeInternal(final SQLType sqlType, final BaseStatementUnit baseStatementUnit, final ExecuteCallback<T> executeCallback,
+    protected  <T> T executeInternal(final SQLType sqlType, final BaseStatementUnit baseStatementUnit, final ExecuteCallback<T> executeCallback,
                                   final boolean isExceptionThrown, final Map<String, Object> dataMap) throws Exception {
         synchronized (baseStatementUnit.getStatement().getConnection()) {
             T result;
