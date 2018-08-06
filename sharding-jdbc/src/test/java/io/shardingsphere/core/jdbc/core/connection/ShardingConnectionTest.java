@@ -21,6 +21,7 @@ import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.constant.ProxyMode;
 import io.shardingsphere.core.fixture.TestDataSource;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
@@ -72,7 +73,7 @@ public final class ShardingConnectionTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put(DS_NAME, masterSlaveDataSource);
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, dataSourceMap.keySet());
-        ShardingContext shardingContext = new ShardingContext(dataSourceMap, shardingRule, DatabaseType.H2, null, new ShardingTableMetaData(Collections.<String, TableMetaData>emptyMap()), false);
+        ShardingContext shardingContext = new ShardingContext(dataSourceMap, shardingRule, DatabaseType.H2, null, new ShardingTableMetaData(Collections.<String, TableMetaData>emptyMap()), false, ProxyMode.MEMORY_STRICTLY);
         connection = new ShardingConnection(shardingContext);
     }
     
