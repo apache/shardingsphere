@@ -40,7 +40,7 @@ import org.junit.runners.Suite.SuiteClasses;
         WithNamespaceForMasterSlaveWithDefaultStrategyTest.class,
         WithNamespaceForMasterSlaveWithStrategyRefTest.class,
         WithNamespaceForMasterSlaveWithStrategyTypeTest.class,
-        GenerateKeyDBUnitTest.class,
+        GenerateKeyJUnitTest.class,
         MasterSlaveNamespaceTest.class,
         ShardingNamespaceTest.class
     })

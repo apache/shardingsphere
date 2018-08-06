@@ -17,9 +17,9 @@
 
 package io.shardingsphere.jdbc.spring.cases;
 
-import io.shardingsphere.jdbc.spring.AbstractShardingBothDataBasesAndTablesSpringDBUnitTest;
+import io.shardingsphere.jdbc.spring.AbstractShardingBothDataBasesAndTablesJUnitTest;
 import org.springframework.test.context.ContextConfiguration;
 
 @ContextConfiguration(locations = "classpath:META-INF/rdb/withNamespaceDifferentTables.xml")
-public final class WithNamespaceDifferentTablesTest extends AbstractShardingBothDataBasesAndTablesSpringDBUnitTest {
+public final class WithNamespaceDifferentTablesTest extends AbstractShardingBothDataBasesAndTablesJUnitTest {
 }

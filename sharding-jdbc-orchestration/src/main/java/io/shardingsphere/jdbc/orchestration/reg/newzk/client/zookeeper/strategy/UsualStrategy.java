@@ -118,7 +118,7 @@ public class UsualStrategy extends BaseStrategy {
         try {
             children = getProvider().getChildren(path);
         } catch (final KeeperException.NoNodeException ex) {
-            log.warn("deleteChildren node not exist:{},e:{}", path, ex.getMessage());
+            log.warn("deleteChildren node not exist:{},ex:{}", path, ex.getMessage());
             return;
         }
         for (String each : children) {
@@ -142,19 +142,25 @@ public class UsualStrategy extends BaseStrategy {
     @Override
     public void deleteCurrentBranch(final String key) throws KeeperException, InterruptedException {
         log.debug("deleteCurrentBranch:{}", key);
-        if (!key.contains(ZookeeperConstants.PATH_SEPARATOR)) {
-            this.deleteOnlyCurrent(key);
-            return;
-        }
         String path = getProvider().getRealPath(key);
-        this.deleteChildren(path, true);
+        try {
+            this.deleteOnlyCurrent(path);
+        } catch (final KeeperException | InterruptedException ex) {
+            if (ex instanceof KeeperException.NotEmptyException) {
+                this.deleteChildren(path, true);
+            } else if (ex instanceof KeeperException.NoNodeException) {
+                log.debug("path:{},ex:{}", path, ex.getMessage());
+            } else {
+                throw ex;
+            }
+        }
         String superPath = path.substring(0, path.lastIndexOf(ZookeeperConstants.PATH_SEPARATOR));
         try {
             this.deleteRecursively(superPath);
-        } catch (KeeperException.NotEmptyException e) {
-            log.warn("deleteCurrentBranch exist children:{},e:{}", path, e.getMessage());
-        } catch (KeeperException.NoNodeException e) {
-            log.warn("deleteCurrentBranch NoNodeException:{},e:{}", superPath, e.getMessage());
+        } catch (final KeeperException.NotEmptyException ex) {
+            log.warn("deleteCurrentBranch exist children:{},ex:{}", path, ex.getMessage());
+        } catch (final KeeperException.NoNodeException ex) {
+            log.debug("deleteCurrentBranch:{},ex:{}", superPath, ex.getMessage());
         }
     }
     
@@ -169,8 +175,8 @@ public class UsualStrategy extends BaseStrategy {
         try {
             this.deleteOnlyCurrent(path);
             this.deleteRecursively(superPath);
-        } catch (KeeperException.NotEmptyException e) {
-            log.info("deleteRecursively exist children:{},e:{}", path, e.getMessage());
+        } catch (final KeeperException.NotEmptyException ex) {
+            log.info("deleteRecursively exist children:{},ex:{}", path, ex.getMessage());
             log.debug("deleteRecursively {} exist other children:{}", path, this.getChildren(path));
         }
     }

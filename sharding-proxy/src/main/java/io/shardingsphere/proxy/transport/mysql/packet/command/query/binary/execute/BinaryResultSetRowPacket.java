@@ -33,17 +33,18 @@ import java.util.List;
  * @author zhangyonglun
  */
 @RequiredArgsConstructor
-@Getter
 public final class BinaryResultSetRowPacket implements MySQLPacket {
     
     private static final int PACKET_HEADER = 0x00;
     
-    private static final int RESERVED_BIT_LENGTH = 2;
+    private static final int NULL_BITMAP_OFFSET = 2;
     
+    @Getter
     private final int sequenceId;
     
-    private final int numColumns;
+    private final int columnsCount;
     
+    @Getter
     private final List<Object> data;
     
     private final List<ColumnType> columnTypes;
@@ -51,17 +52,29 @@ public final class BinaryResultSetRowPacket implements MySQLPacket {
     @Override
     public void write(final MySQLPacketPayload payload) {
         payload.writeInt1(PACKET_HEADER);
-        NullBitmap nullBitmap = new NullBitmap(numColumns, RESERVED_BIT_LENGTH);
-        for (int i = 0; i < numColumns; i++) {
-            if (null == data.get(i)) {
-                nullBitmap.setNullBit(i);
-            }
-        }
-        for (int each : nullBitmap.getNullBitmap()) {
+        writeNullBitmap(payload);
+        writeValues(payload);
+    }
+    
+    private void writeNullBitmap(final MySQLPacketPayload payload) {
+        for (int each : getNullBitmap().getNullBitmap()) {
             payload.writeInt1(each);
         }
-        for (int i = 0; i < numColumns; i++) {
-            BinaryProtocolValueUtility.getInstance().writeBinaryProtocolValue(columnTypes.get(i), data.get(i), payload);
+    }
+    
+    private NullBitmap getNullBitmap() {
+        NullBitmap result = new NullBitmap(columnsCount, NULL_BITMAP_OFFSET);
+        for (int columnIndex = 0; columnIndex < columnsCount; columnIndex++) {
+            if (null == data.get(columnIndex)) {
+                result.setNullBit(columnIndex);
+            }
+        }
+        return result;
+    }
+    
+    private void writeValues(final MySQLPacketPayload payload) {
+        for (int i = 0; i < columnsCount; i++) {
+            new BinaryProtocolValue(columnTypes.get(i), payload).write(data.get(i));
         }
     }
 }

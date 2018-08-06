@@ -59,9 +59,9 @@ public final class ShardingProxyClient {
     
     private static final int WORKER_MAX_THREADS = Runtime.getRuntime().availableProcessors();
     
-    private static final int MAX_CONNECTIONS = RULE_REGISTRY.getProxyBackendSimpleDbConnections();
+    private static final int MAX_CONNECTIONS = RULE_REGISTRY.getBackendNIOConfig().getMaxConnections();
     
-    private static final int CONNECTION_TIMEOUT = RULE_REGISTRY.getProxyBackendConnectionTimeout();
+    private static final int CONNECTION_TIMEOUT_SECONDS = RULE_REGISTRY.getBackendNIOConfig().getConnectionTimeoutSeconds();
     
     private final Map<String, DataSourceConfig> dataSourceConfigMap = Maps.newHashMap();
     
@@ -139,7 +139,7 @@ public final class ShardingProxyClient {
             Channel[] channels = new Channel[MAX_CONNECTIONS];
             for (int i = 0; i < MAX_CONNECTIONS; i++) {
                 try {
-                    channels[i] = pool.acquire().get(CONNECTION_TIMEOUT, TimeUnit.SECONDS);
+                    channels[i] = pool.acquire().get(CONNECTION_TIMEOUT_SECONDS, TimeUnit.SECONDS);
                 } catch (final ExecutionException | TimeoutException ex) {
                     log.error(ex.getMessage(), ex);
                 }

@@ -30,7 +30,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
-import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.PreparedStatementRegistry;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.BinaryStatementRegistry;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +47,7 @@ public final class ComStmtPreparePacket implements CommandPacket {
     
     private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
     
-    private static final PreparedStatementRegistry PREPARED_STATEMENT_REGISTRY = PreparedStatementRegistry.getInstance();
+    private static final BinaryStatementRegistry PREPARED_STATEMENT_REGISTRY = BinaryStatementRegistry.getInstance();
     
     @Getter
     private final int sequenceId;
@@ -57,7 +57,6 @@ public final class ComStmtPreparePacket implements CommandPacket {
     public ComStmtPreparePacket(final int sequenceId, final MySQLPacketPayload payload) {
         this.sequenceId = sequenceId;
         sql = payload.readStringEOF();
-        
     }
     
     @Override
@@ -70,8 +69,8 @@ public final class ComStmtPreparePacket implements CommandPacket {
         log.debug("COM_STMT_PREPARE received for Sharding-Proxy: {}", sql);
         int currentSequenceId = 0;
         SQLStatement sqlStatement = new SQLParsingEngine(DatabaseType.MySQL, sql, RULE_REGISTRY.getShardingRule(), RULE_REGISTRY.getMetaData().getTable()).parse(true);
-        CommandResponsePackets result = new CommandResponsePackets(
-                new ComStmtPrepareOKPacket(++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(sql), getNumColumns(sqlStatement), sqlStatement.getParametersIndex(), 0));
+        CommandResponsePackets result = new CommandResponsePackets(new ComStmtPrepareOKPacket(
+                ++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(sql, sqlStatement.getParametersIndex()), getNumColumns(sqlStatement), sqlStatement.getParametersIndex(), 0));
         for (int i = 0; i < sqlStatement.getParametersIndex(); i++) {
             // TODO add column name
             result.getPackets().add(new ColumnDefinition41Packet(++currentSequenceId, ShardingConstant.LOGIC_SCHEMA_NAME,

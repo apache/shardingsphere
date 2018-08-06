@@ -23,14 +23,12 @@ import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.proxy.backend.BackendHandler;
 import io.shardingsphere.proxy.backend.BackendHandlerFactory;
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
-import io.shardingsphere.proxy.transport.common.packet.CommandPacketRebuilder;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
-import io.shardingsphere.proxy.transport.mysql.packet.command.query.text.query.ComQueryPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import lombok.Getter;
@@ -47,12 +45,12 @@ import java.sql.SQLException;
  * @author wangkai
  */
 @Slf4j
-public final class ComFieldListPacket implements CommandPacket, CommandPacketRebuilder {
+public final class ComFieldListPacket implements CommandPacket {
+    
+    private static final String SQL = "SHOW COLUMNS FROM %s FROM %s";
     
     @Getter
     private final int sequenceId;
-    
-    private final int connectionId;
     
     private final String table;
     
@@ -62,10 +60,9 @@ public final class ComFieldListPacket implements CommandPacket, CommandPacketReb
     
     public ComFieldListPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         this.sequenceId = sequenceId;
-        this.connectionId = connectionId;
         table = payload.readStringNul();
         fieldWildcard = payload.readStringEOF();
-        backendHandler = BackendHandlerFactory.newTextProtocolInstance(sql(), backendConnection, DatabaseType.MySQL, this);
+        backendHandler = BackendHandlerFactory.newTextProtocolInstance(connectionId, sequenceId, String.format(SQL, table, ShardingConstant.LOGIC_SCHEMA_NAME), backendConnection, DatabaseType.MySQL);
     }
     
     @Override
@@ -93,25 +90,5 @@ public final class ComFieldListPacket implements CommandPacket, CommandPacketReb
         }
         result.getPackets().add(new EofPacket(++currentSequenceId));
         return result;
-    }
-    
-    @Override
-    public int connectionId() {
-        return connectionId;
-    }
-    
-    @Override
-    public int sequenceId() {
-        return getSequenceId();
-    }
-    
-    @Override
-    public String sql() {
-        return String.format("SHOW COLUMNS FROM %s FROM %s", table, ShardingConstant.LOGIC_SCHEMA_NAME);
-    }
-    
-    @Override
-    public CommandPacket rebuild(final Object... params) {
-        return new ComQueryPacket((int) params[0], (int) params[1], (String) params[2]);
     }
 }

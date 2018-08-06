@@ -15,26 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute;
+package io.shardingsphere.proxy.config;
 
-import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.io.Serializable;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Prepared statement parameter header.
+ * Configuration of use NIO to connection backend databases.
  *
- * @author zhangyonglun
+ * @author zhangliang
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
-public class PreparedStatementParameterHeader implements Serializable {
+public final class BackendNIOConfiguration {
     
-    private static final long serialVersionUID = -672589695838350689L;
+    private final boolean useNIO;
     
-    private final ColumnType columnType;
+    private final int maxConnections;
     
-    private final int unsignedFlag;
+    private final int connectionTimeoutSeconds;
 }

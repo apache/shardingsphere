@@ -18,7 +18,6 @@
 package io.shardingsphere.core.jdbc.adapter;
 
 import io.shardingsphere.core.common.base.AbstractShardingJDBCDatabaseAndTableTest;
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.jdbc.core.statement.ShardingPreparedStatement;
 import io.shardingsphere.core.jdbc.util.JDBCTestSQL;
@@ -30,7 +29,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.io.Serializable;
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.sql.Blob;
@@ -326,9 +324,7 @@ public final class PreparedStatementAdapterTest extends AbstractShardingJDBCData
         assertThat(((ShardingPreparedStatement) actual).getParameters().get(index - 1), is(parameter));
     }
     
-    private static class SerializableStringReader extends StringReader implements Serializable {
-        
-        private static final long serialVersionUID = 5054305161835171548L;
+    private static class SerializableStringReader extends StringReader {
         
         SerializableStringReader() {
             super("value");

@@ -61,7 +61,7 @@ public final class CommandPacketFactory {
             case COM_STMT_PREPARE:
                 return new ComStmtPreparePacket(sequenceId, payload);
             case COM_STMT_EXECUTE:
-                return new ComStmtExecutePacket(sequenceId, payload, backendConnection);
+                return new ComStmtExecutePacket(sequenceId, connectionId, payload, backendConnection);
             case COM_STMT_CLOSE:
                 return new ComStmtClosePacket(sequenceId, payload);
             case COM_PING:

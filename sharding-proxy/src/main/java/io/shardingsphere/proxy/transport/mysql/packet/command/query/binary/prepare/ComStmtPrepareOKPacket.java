@@ -30,18 +30,18 @@ import lombok.RequiredArgsConstructor;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-@Getter
 public final class ComStmtPrepareOKPacket implements MySQLPacket {
     
     private static final int STATUS = 0x00;
     
+    @Getter
     private final int sequenceId;
     
     private final int statementId;
     
-    private final int numColumns;
+    private final int columnsCount;
     
-    private final int numParameters;
+    private final int ParametersCount;
     
     private final int warningCount;
     
@@ -49,10 +49,10 @@ public final class ComStmtPrepareOKPacket implements MySQLPacket {
     public void write(final MySQLPacketPayload payload) {
         payload.writeInt1(STATUS);
         payload.writeInt4(statementId);
-        // TODO Set numColumns=0 is a workaround to escape jdbc check for now, there's no issues found during a few tests.
+        // TODO Set columnsCount=0 is a workaround to escape jdbc check for now, there's no issues found during a few tests.
         // TODO Column Definition Block should be added in future when the metadata of the columns is cached.
         payload.writeInt2(0);
-        payload.writeInt2(numParameters);
+        payload.writeInt2(ParametersCount);
         payload.writeReserved(1);
         payload.writeInt2(warningCount);
     }

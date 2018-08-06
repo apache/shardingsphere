@@ -116,10 +116,11 @@ public final class OrchestrationFacade implements AutoCloseable {
     
     /**
      * Initialize for master-slave orchestration.
-     *
+     * 
      * @param dataSourceMap data source map
      * @param masterSlaveRuleConfig master-slave rule configuration
      * @param configMap config map
+     * @param props properties
      * @param masterSlaveDataSource master-slave source
      */
     public void init(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, 

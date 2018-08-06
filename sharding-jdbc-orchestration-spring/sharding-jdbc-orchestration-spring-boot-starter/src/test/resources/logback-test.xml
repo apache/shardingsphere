@@ -8,9 +8,6 @@
     <logger name="io.shardingsphere" level="info" additivity="false">
         <appender-ref ref="console"/>
     </logger>
-    <logger name="org.dbunit" level="info" additivity="false">
-        <appender-ref ref="console"/>
-    </logger>
     <logger name="io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler" level="off">
     </logger>
     

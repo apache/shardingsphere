@@ -19,8 +19,7 @@ package io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.exec
 
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -32,28 +31,19 @@ import java.util.Date;
  *
  * @author zhangyonglun
  */
-@NoArgsConstructor(access = AccessLevel.NONE)
-public final class BinaryProtocolValueUtility {
+@RequiredArgsConstructor
+public final class BinaryProtocolValue {
     
-    private static final BinaryProtocolValueUtility INSTANCE = new BinaryProtocolValueUtility();
+    private final ColumnType columnType;
     
-    /**
-     * Get binary protocol value utility instance.
-     *
-     * @return binary protocol value utility
-     */
-    public static BinaryProtocolValueUtility getInstance() {
-        return INSTANCE;
-    }
+    private final MySQLPacketPayload payload;
     
     /**
      * Read binary protocol value.
      *
-     * @param columnType column type
-     * @param payload MySQL packet payload
-     * @return object value
+     * @return binary value result
      */
-    public Object readBinaryProtocolValue(final ColumnType columnType, final MySQLPacketPayload payload) {
+    public Object read() {
         switch (columnType) {
             case MYSQL_TYPE_STRING:
             case MYSQL_TYPE_VARCHAR:
@@ -97,11 +87,9 @@ public final class BinaryProtocolValueUtility {
     /**
      * Write binary protocol value.
      *
-     * @param columnType column type
-     * @param payload MySQL packet pay load
-     * @param objectData object data
+     * @param binaryData binary data to be written
      */
-    public void writeBinaryProtocolValue(final ColumnType columnType, final Object objectData, final MySQLPacketPayload payload) {
+    public void write(final Object binaryData) {
         switch (columnType) {
             case MYSQL_TYPE_STRING:
             case MYSQL_TYPE_VARCHAR:
@@ -116,35 +104,35 @@ public final class BinaryProtocolValueUtility {
             case MYSQL_TYPE_BIT:
             case MYSQL_TYPE_DECIMAL:
             case MYSQL_TYPE_NEWDECIMAL:
-                payload.writeStringLenenc(objectData.toString());
+                payload.writeStringLenenc(binaryData.toString());
                 break;
             case MYSQL_TYPE_LONGLONG:
-                payload.writeInt8((Long) objectData);
+                payload.writeInt8((Long) binaryData);
                 break;
             case MYSQL_TYPE_LONG:
             case MYSQL_TYPE_INT24:
-                payload.writeInt4((Integer) objectData);
+                payload.writeInt4((Integer) binaryData);
                 break;
             case MYSQL_TYPE_SHORT:
             case MYSQL_TYPE_YEAR:
-                payload.writeInt2((Integer) objectData);
+                payload.writeInt2((Integer) binaryData);
                 break;
             case MYSQL_TYPE_TINY:
-                payload.writeInt1((Integer) objectData);
+                payload.writeInt1((Integer) binaryData);
                 break;
             case MYSQL_TYPE_DOUBLE:
-                payload.writeDouble(Double.parseDouble(objectData.toString()));
+                payload.writeDouble(Double.parseDouble(binaryData.toString()));
                 break;
             case MYSQL_TYPE_FLOAT:
-                payload.writeFloat(Float.parseFloat(objectData.toString()));
+                payload.writeFloat(Float.parseFloat(binaryData.toString()));
                 break;
             case MYSQL_TYPE_DATE:
             case MYSQL_TYPE_DATETIME:
             case MYSQL_TYPE_TIMESTAMP:
-                payload.writeDate((Timestamp) objectData);
+                payload.writeDate((Timestamp) binaryData);
                 break;
             case MYSQL_TYPE_TIME:
-                payload.writeTime((Date) objectData);
+                payload.writeTime((Date) binaryData);
                 break;
             default:
                 throw new IllegalArgumentException(String.format("Cannot find MySQL type '%s' in column type when write binary protocol value", columnType));

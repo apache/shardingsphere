@@ -83,13 +83,11 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
     @Test
     public void assertSetPoolable() throws SQLException {
         for (Map.Entry<DatabaseType, Statement> each : statements.entrySet()) {
-            if (DatabaseType.Oracle != each.getKey()) {
-                each.getValue().setPoolable(true);
-                each.getValue().executeQuery(sql);
-                assertPoolable((ShardingStatement) each.getValue(), true, each.getKey());
-                each.getValue().setPoolable(false);
-                assertPoolable((ShardingStatement) each.getValue(), false, each.getKey());
-            }
+            each.getValue().setPoolable(true);
+            each.getValue().executeQuery(sql);
+            assertPoolable((ShardingStatement) each.getValue(), true, each.getKey());
+            each.getValue().setPoolable(false);
+            assertPoolable((ShardingStatement) each.getValue(), false, each.getKey());
         }
     }
     
@@ -98,11 +96,7 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
         assertThat(actual.getRoutedStatements().size(), is(4));
         for (Statement each : actual.getRoutedStatements()) {
             // H2数据库未实现setPoolable方法
-            if (DatabaseType.H2 == type) {
-                assertFalse(each.isPoolable());
-            } else {
-                assertThat(each.isPoolable(), is(poolable));
-            }
+            assertFalse(each.isPoolable());
         }
     }
     
@@ -147,11 +141,7 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
         String sql = "DELETE FROM t_order WHERE status = 'init'";
         for (Map.Entry<DatabaseType, Statement> each : statements.entrySet()) {
             each.getValue().execute(sql);
-            if (DatabaseType.Oracle == each.getKey()) {
-                assertThat(each.getValue().getUpdateCount(), is(-4));
-            } else {
-                assertThat(each.getValue().getUpdateCount(), is(4));
-            }
+            assertThat(each.getValue().getUpdateCount(), is(4));
         }
     }
     
@@ -160,11 +150,7 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
         String sql = "DELETE FROM t_order WHERE status = 'none'";
         for (Map.Entry<DatabaseType, Statement> each : statements.entrySet()) {
             each.getValue().execute(sql);
-            if (DatabaseType.Oracle == each.getKey()) {
-                assertThat(each.getValue().getUpdateCount(), is(-4));
-            } else {
-                assertThat(each.getValue().getUpdateCount(), is(0));
-            }
+            assertThat(each.getValue().getUpdateCount(), is(0));
         }
     }
     
@@ -361,11 +347,9 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
     @Test
     public void assertSetQueryTimeout() throws SQLException {
         for (Map.Entry<DatabaseType, Statement> each : statements.entrySet()) {
-            if (DatabaseType.PostgreSQL != each.getKey()) {
-                each.getValue().executeQuery(sql);
-                each.getValue().setQueryTimeout(10);
-                assertThat(each.getValue().getQueryTimeout(), is(10));
-            }
+            each.getValue().executeQuery(sql);
+            each.getValue().setQueryTimeout(10);
+            assertThat(each.getValue().getQueryTimeout(), is(10));
         }
     }
     

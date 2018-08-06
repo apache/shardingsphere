@@ -187,7 +187,8 @@ public final class ConfigurationService {
     
     private void persistProxyRuleConfiguration(final OrchestrationProxyConfiguration orchestrationProxyConfiguration, final boolean isOverwrite) {
         if (isOverwrite || !hasProxyConfig()) {
-            Preconditions.checkState(null != orchestrationProxyConfiguration.getShardingRule() || null != orchestrationProxyConfiguration.getMasterSlaveRule(), "No available proxy rule configuration for Orchestration.");
+            Preconditions.checkState(null != orchestrationProxyConfiguration.getShardingRule() || null != orchestrationProxyConfiguration.getMasterSlaveRule(), 
+                    "No available proxy rule configuration for Orchestration.");
             regCenter.persist(configNode.getFullPath(ConfigurationNode.PROXY_RULE_NODE_PATH), ProxyConfigurationConverter.proxyConfigToYaml(orchestrationProxyConfiguration));
         }
     }
@@ -214,7 +215,8 @@ public final class ConfigurationService {
      */
     public Map<String, DataSourceParameter> loadDataSources() {
         try {
-            Map<String, DataSourceParameter> result = DataSourceParameterConverter.dataSourceParameterMapFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH)));
+            Map<String, DataSourceParameter> result = DataSourceParameterConverter.dataSourceParameterMapFromYaml(
+                    regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH)));
             Preconditions.checkState(null != result && !result.isEmpty(), "No available data source configuration to load.");
             return result;
         } catch (final Exception ex) {
@@ -265,7 +267,8 @@ public final class ConfigurationService {
      */
     public MasterSlaveRuleConfiguration loadMasterSlaveRuleConfiguration() {
         try {
-            MasterSlaveRuleConfiguration result = MasterSlaveConfigurationConverter.masterSlaveRuleConfigFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH)));
+            MasterSlaveRuleConfiguration result = MasterSlaveConfigurationConverter.masterSlaveRuleConfigFromYaml(
+                    regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH)));
             Preconditions.checkState(null != result && !Strings.isNullOrEmpty(result.getMasterDataSourceName()), "No available master slave rule configuration to load.");
             return result;
             

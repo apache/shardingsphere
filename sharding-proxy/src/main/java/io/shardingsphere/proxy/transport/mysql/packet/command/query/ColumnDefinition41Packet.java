@@ -34,13 +34,13 @@ import java.sql.SQLException;
  *
  * @author zhangliang
  */
-@Getter
 public final class ColumnDefinition41Packet implements MySQLPacket {
     
     private static final String CATALOG = "def";
     
     private static final int NEXT_LENGTH = 0x0c;
     
+    @Getter
     private final int sequenceId;
     
     private final int characterSet;
@@ -53,12 +53,14 @@ public final class ColumnDefinition41Packet implements MySQLPacket {
     
     private final String orgTable;
     
+    @Getter
     private final String name;
     
     private final String orgName;
     
     private final int columnLength;
     
+    @Getter
     private final ColumnType columnType;
     
     private final int decimals;

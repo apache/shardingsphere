@@ -39,7 +39,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(locations = "classpath:META-INF/rdb/withNamespaceGenerateKeyColumns.xml")
-public class GenerateKeyDBUnitTest extends AbstractSpringDBUnitTest {
+public class GenerateKeyJUnitTest extends AbstractSpringJUnitTest {
     
     @Resource
     private ShardingDataSource shardingDataSource;
