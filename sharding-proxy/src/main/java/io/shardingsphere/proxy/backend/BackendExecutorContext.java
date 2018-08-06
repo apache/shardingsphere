@@ -19,6 +19,7 @@ package io.shardingsphere.proxy.backend;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
+import io.shardingsphere.proxy.config.RuleRegistry;
 import lombok.Getter;
 
 import java.util.concurrent.Executors;
@@ -33,7 +34,12 @@ public final class BackendExecutorContext {
     private static final BackendExecutorContext INSTANCE = new BackendExecutorContext();
     
     @Getter
-    private final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newCachedThreadPool());
+    private final ListeningExecutorService executorService;
+    
+    private BackendExecutorContext() {
+        int executorSize = RuleRegistry.getInstance().getExecutorSize();
+        executorService = 0 == executorSize ? MoreExecutors.listeningDecorator(Executors.newCachedThreadPool()) : MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(executorSize));
+    }
     
     /**
      * Get backend executor context instance.

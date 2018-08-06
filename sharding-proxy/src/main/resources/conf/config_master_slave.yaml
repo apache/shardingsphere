@@ -41,7 +41,7 @@
 #    #                      Meanwhile, the cost of the memory will be increased.
 #    connection.mode: MEMORY_STRICTLY
 #    acceptor.size: 16  # The default value is available processors count * 2.
-#    executor.size: 16  # The default value is available processors count.
+#    executor.size: 16  # Infinite by default.
 #    sql.show: false
 
 #orchestration:

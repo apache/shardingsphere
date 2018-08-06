@@ -62,7 +62,7 @@ public enum ShardingPropertiesConstant {
      * Default: same with CPU cores.
      * </p>
      */
-    EXECUTOR_SIZE("executor.size", String.valueOf(Runtime.getRuntime().availableProcessors()), int.class),
+    EXECUTOR_SIZE("executor.size", String.valueOf(0), int.class),
     
     /**
      * Connection mode of connected to databases.
