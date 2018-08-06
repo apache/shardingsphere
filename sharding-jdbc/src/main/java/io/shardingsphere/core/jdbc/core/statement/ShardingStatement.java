@@ -18,6 +18,7 @@
 package io.shardingsphere.core.jdbc.core.statement;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.constant.ProxyMode;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.type.statement.StatementExecutor;
 import io.shardingsphere.core.executor.type.statement.StatementUnit;
@@ -49,13 +50,16 @@ import io.shardingsphere.core.util.EventBusInstance;
 import lombok.AccessLevel;
 import lombok.Getter;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Statement that support sharding.
@@ -209,14 +213,38 @@ public class ShardingStatement extends AbstractStatementAdapter {
     private StatementExecutor generateExecutor(final String sql) throws SQLException {
         clearPrevious();
         sqlRoute(sql);
-        Collection<StatementUnit> statementUnits = new LinkedList<>();
+        if (ProxyMode.MEMORY_STRICTLY == connection.getShardingContext().getProxyMode()) {
+            return new StatementExecutor(connection.getShardingContext().getExecutorEngine(), routeResult.getSqlStatement().getType(), getStatementUnitsForMemoryStrictly());
+        }
+        return new StatementExecutor(connection.getShardingContext().getExecutorEngine(), routeResult.getSqlStatement().getType(), getStatementUnitsForConnectionStrictly());
+    }
+    
+    private Collection<StatementUnit> getStatementUnitsForConnectionStrictly() throws SQLException {
+        Collection<StatementUnit> result = new LinkedList<>();
+        Map<String, Connection> connectionMap = new LinkedHashMap<>();
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
-            Statement statement = connection.getConnection(each.getDataSource()).createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
+            String dataSourceName = each.getDataSource();
+            if (null == connectionMap.get(dataSourceName)) {
+                connectionMap.put(dataSourceName, connection.getConnection(each.getDataSource()));
+            }
+            Statement statement = connectionMap.get(dataSourceName).createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
             replayMethodsInvocation(statement);
-            statementUnits.add(new StatementUnit(each, statement));
+            result.add(new StatementUnit(each, statement));
             routedStatements.add(statement);
         }
-        return new StatementExecutor(connection.getShardingContext().getExecutorEngine(), routeResult.getSqlStatement().getType(), statementUnits);
+        return result;
+    }
+    
+    private Collection<StatementUnit> getStatementUnitsForMemoryStrictly() throws SQLException {
+        Collection<StatementUnit> result = new LinkedList<>();
+        for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
+            String dataSourceName = each.getDataSource();
+            Statement statement = connection.getConnection(dataSourceName).createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
+            replayMethodsInvocation(statement);
+            result.add(new StatementUnit(each, statement));
+            routedStatements.add(statement);
+        }
+        return result;
     }
     
     private void clearPrevious() throws SQLException {
