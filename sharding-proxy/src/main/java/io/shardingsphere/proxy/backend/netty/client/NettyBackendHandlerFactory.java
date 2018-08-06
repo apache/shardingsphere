@@ -15,10 +15,10 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.netty;
+package io.shardingsphere.proxy.backend.netty.client;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.proxy.backend.netty.mysql.MySQLBackendHandler;
+import io.shardingsphere.proxy.backend.netty.client.mysql.MySQLBackendHandler;
 
 /**
  * Backend handler factory for netty.

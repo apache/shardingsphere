@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.netty;
+package io.shardingsphere.proxy.backend.netty.client;
 
 import com.google.common.collect.Maps;
 import io.netty.bootstrap.Bootstrap;

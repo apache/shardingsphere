@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.netty.mysql;
+package io.shardingsphere.proxy.backend.netty.client.mysql;
 
 import com.google.common.collect.Lists;
 import io.shardingsphere.core.merger.QueryResult;

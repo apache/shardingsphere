@@ -15,14 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.netty.mysql;
+package io.shardingsphere.proxy.backend.netty.client.mysql;
 
 import com.google.common.collect.Maps;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.shardingsphere.proxy.backend.constant.AuthType;
-import io.shardingsphere.proxy.backend.netty.CommandResponsePacketsHandler;
-import io.shardingsphere.proxy.backend.netty.DataSourceConfig;
+import io.shardingsphere.proxy.backend.netty.client.CommandResponsePacketsHandler;
+import io.shardingsphere.proxy.backend.netty.client.DataSourceConfig;
 import io.shardingsphere.proxy.runtime.ChannelRegistry;
 import io.shardingsphere.proxy.transport.mysql.constant.CapabilityFlag;
 import io.shardingsphere.proxy.transport.mysql.constant.PacketHeader;
