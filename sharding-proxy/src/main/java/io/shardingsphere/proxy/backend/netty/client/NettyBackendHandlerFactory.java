@@ -19,6 +19,8 @@ package io.shardingsphere.proxy.backend.netty.client;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.proxy.backend.netty.client.mysql.MySQLBackendHandler;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * Backend handler factory for netty.
@@ -26,15 +28,16 @@ import io.shardingsphere.proxy.backend.netty.client.mysql.MySQLBackendHandler;
  * @author wangkai
  * @author linjiaqi
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class NettyBackendHandlerFactory {
     /**
-     * Create backend handler instance.
+     * Create new instance of netty backend handler.
      *
      * @param databaseType database type
      * @param dataSourceName data source name
      * @return backend handler instance
      */
-    public static CommandResponsePacketsHandler createBackendHandlerInstance(final DatabaseType databaseType, final String dataSourceName) {
+    public static CommandResponsePacketsHandler newInstance(final DatabaseType databaseType, final String dataSourceName) {
         switch (databaseType) {
             case MySQL:
                 return new MySQLBackendHandler(dataSourceName);

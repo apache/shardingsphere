@@ -40,6 +40,6 @@ public final class BackendNettyClientChannelInitializer extends ChannelInitializ
         ChannelPipeline pipeline = channel.pipeline();
         // TODO load database type from yaml or startup arguments
         pipeline.addLast(PacketCodecFactory.createPacketCodecInstance(DatabaseType.MySQL));
-        pipeline.addLast(NettyBackendHandlerFactory.createBackendHandlerInstance(DatabaseType.MySQL, dataSourceName));
+        pipeline.addLast(NettyBackendHandlerFactory.newInstance(DatabaseType.MySQL, dataSourceName));
     }
 }
