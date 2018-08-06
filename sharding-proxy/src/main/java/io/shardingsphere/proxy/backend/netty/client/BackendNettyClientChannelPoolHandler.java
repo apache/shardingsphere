@@ -23,14 +23,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * NettyChannelPoolHandler.
+ * Channel pool handler of backend netty client.
  *
  * @author wangkai
  * @author linjiaqi
  */
 @RequiredArgsConstructor
 @Slf4j
-public class NettyChannelPoolHandler implements ChannelPoolHandler {
+public final class BackendNettyClientChannelPoolHandler implements ChannelPoolHandler {
     
     private final String dataSourceName;
     
