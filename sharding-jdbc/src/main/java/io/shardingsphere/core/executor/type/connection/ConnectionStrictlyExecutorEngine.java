@@ -102,6 +102,4 @@ public final class ConnectionStrictlyExecutorEngine extends ExecutorEngine {
         }
         return result;
     }
-    
-    
 }
