@@ -17,31 +17,29 @@
 
 package io.shardingsphere.proxy.frontend;
 
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
-import io.shardingsphere.proxy.config.RuleRegistry;
+import io.netty.channel.EventLoopGroup;
 import lombok.Getter;
-
-import java.util.concurrent.Executors;
+import lombok.Setter;
 
 /**
- * Frontend executor context.
+ * User group context.
  *
  * @author zhangyonglun
  */
-public final class FrontendExecutorContext {
+public final class UserGroupContext {
     
-    private static final FrontendExecutorContext INSTANCE = new FrontendExecutorContext();
+    private static final UserGroupContext INSTANCE = new UserGroupContext();
     
     @Getter
-    private final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(RuleRegistry.getInstance().getExecutorSize()));
+    @Setter
+    private EventLoopGroup userGroup;
     
     /**
-     * Get frontend executor context instance.
+     * Get user group context instance.
      * 
-     * @return instance of frontend executor context
+     * @return instance of user group context
      */
-    public static FrontendExecutorContext getInstance() {
+    public static UserGroupContext getInstance() {
         return INSTANCE;
     }
 }

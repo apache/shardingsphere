@@ -20,7 +20,7 @@ package io.shardingsphere.proxy.frontend.common.executor;
 import io.netty.channel.ChannelId;
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.proxy.config.RuleRegistry;
-import io.shardingsphere.proxy.frontend.FrontendExecutorContext;
+import io.shardingsphere.proxy.frontend.UserGroupContext;
 import lombok.RequiredArgsConstructor;
 
 import java.util.concurrent.ExecutorService;
@@ -44,6 +44,6 @@ public final class ExecutorGroup {
      */
     public ExecutorService getExecutorService() {
         return TransactionType.XA.equals(RULE_REGISTRY.getTransactionType()) ? ChannelThreadExecutorGroup.getInstance().get(channelId)
-            : FrontendExecutorContext.getInstance().getExecutorService();
+            : UserGroupContext.getInstance().getUserGroup();
     }
 }

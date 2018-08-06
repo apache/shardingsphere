@@ -48,13 +48,13 @@ public final class ShardingProxy {
     
     private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
     
-    private final FrontendExecutorContext frontendExecutorContext = FrontendExecutorContext.getInstance();
-    
     private final BackendExecutorContext backendExecutorContext = BackendExecutorContext.getInstance();
     
     private EventLoopGroup bossGroup;
     
     private EventLoopGroup workerGroup;
+    
+    private final UserGroupContext userGroupContext = UserGroupContext.getInstance();
     
     public ShardingProxy() {
         RULE_REGISTRY.initShardingMetaData(backendExecutorContext.getExecutorService());
@@ -84,7 +84,7 @@ public final class ShardingProxy {
         } finally {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
-            frontendExecutorContext.getExecutorService().shutdown();
+            userGroupContext.getUserGroup().shutdownGracefully();
             backendExecutorContext.getExecutorService().shutdown();
             if (RULE_REGISTRY.getBackendNIOConfig().isUseNIO()) {
                 ShardingProxyClient.getInstance().stop();
@@ -102,6 +102,7 @@ public final class ShardingProxy {
     
     private void groupsEpoll(final ServerBootstrap bootstrap) {
         workerGroup = new EpollEventLoopGroup(RULE_REGISTRY.getExecutorSize());
+        userGroupContext.setUserGroup(new EpollEventLoopGroup(RULE_REGISTRY.getExecutorSize()));
         bootstrap.group(bossGroup, workerGroup)
             .channel(EpollServerSocketChannel.class)
             .option(EpollChannelOption.SO_BACKLOG, 128)
@@ -114,6 +115,7 @@ public final class ShardingProxy {
     
     private void groupsNio(final ServerBootstrap bootstrap) {
         workerGroup = new NioEventLoopGroup(RULE_REGISTRY.getExecutorSize());
+        userGroupContext.setUserGroup(new NioEventLoopGroup(RULE_REGISTRY.getExecutorSize()));
         bootstrap.group(bossGroup, workerGroup)
             .channel(NioServerSocketChannel.class)
             .option(ChannelOption.SO_BACKLOG, 128)
