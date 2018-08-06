@@ -17,7 +17,6 @@
 
 package io.shardingsphere.proxy.backend.netty.client;
 
-import com.google.common.collect.Maps;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
@@ -32,6 +31,7 @@ import io.netty.channel.pool.ChannelPoolMap;
 import io.netty.channel.pool.FixedChannelPool;
 import io.netty.channel.pool.SimpleChannelPool;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import lombok.AccessLevel;
@@ -39,8 +39,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
@@ -67,7 +66,7 @@ public final class BackendNettyClient {
     
     private static final int CONNECTION_TIMEOUT_SECONDS = RULE_REGISTRY.getBackendNIOConfig().getConnectionTimeoutSeconds();
     
-    private final Map<String, DataSourceConfig> dataSourceConfigMap = Maps.newHashMap();
+    private final Map<String, DataSourceConfig> dataSourceConfigMap = new HashMap<>();
     
     private EventLoopGroup workerGroup;
     
@@ -86,14 +85,16 @@ public final class BackendNettyClient {
     /**
      * Start backend connection client for netty.
      *
-     * @throws MalformedURLException URL is illegal
      * @throws InterruptedException  interrupted exception
      */
-    public void start() throws MalformedURLException, InterruptedException {
+    public void start() throws InterruptedException {
         Map<String, DataSourceParameter> dataSourceConfigurationMap = RULE_REGISTRY.getDataSourceConfigurationMap();
         for (Entry<String, DataSourceParameter> each : dataSourceConfigurationMap.entrySet()) {
-            URL url = new URL(each.getValue().getUrl().replaceAll("jdbc:mysql:", "http:"));
-            dataSourceConfigMap.put(each.getKey(), new DataSourceConfig(url.getHost(), url.getPort(), url.getPath().substring(1), each.getValue().getUsername(), each.getValue().getPassword()));
+            String actualDataSourceName = each.getKey();
+            DataSourceParameter dataSourceParameter = each.getValue();
+            DataSourceMetaData dataSourceMetaData = RULE_REGISTRY.getMetaData().getDataSource().getActualDataSourceMetaData(actualDataSourceName);
+            dataSourceConfigMap.put(each.getKey(), new DataSourceConfig(
+                    dataSourceMetaData.getHostName(), dataSourceMetaData.getPort(), dataSourceMetaData.getSchemeName(), dataSourceParameter.getUsername(), dataSourceParameter.getPassword()));
         }
         Bootstrap bootstrap = new Bootstrap();
         // TODO :jiaqi where to init workerGroup?
@@ -137,6 +138,7 @@ public final class BackendNettyClient {
     
     private void initPoolMap(final Bootstrap bootstrap) throws InterruptedException {
         poolMap = new AbstractChannelPoolMap<String, SimpleChannelPool>() {
+            
             @Override
             protected SimpleChannelPool newPool(final String datasourceName) {
                 DataSourceConfig dataSourceConfig = dataSourceConfigMap.get(datasourceName);

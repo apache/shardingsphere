@@ -19,8 +19,6 @@ package io.shardingsphere.proxy.backend.netty.client;
 
 import io.netty.channel.Channel;
 import io.netty.channel.pool.ChannelPoolHandler;
-import io.shardingsphere.proxy.backend.netty.client.BackendNettyClientChannelInitializer;
-import io.shardingsphere.proxy.backend.netty.client.DataSourceConfig;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class NettyChannelPoolHandler implements ChannelPoolHandler {
+    
     private final DataSourceConfig dataSourceConfig;
     
     @Override

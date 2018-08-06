@@ -98,12 +98,12 @@ public final class ShardingDataSourceMetaData {
     }
     
     /**
-     * Get actual schema name.
-     *
+     * Get data source meta data.
+     * 
      * @param actualDataSourceName actual data source name
-     * @return actual schema name
+     * @return actual data source meta data
      */
-    public String getActualSchemaName(final String actualDataSourceName) {
-        return dataSourceMetaDataMap.get(actualDataSourceName).getSchemeName();
+    public DataSourceMetaData getActualDataSourceMetaData(final String actualDataSourceName) {
+        return dataSourceMetaDataMap.get(actualDataSourceName);
     }
 }
