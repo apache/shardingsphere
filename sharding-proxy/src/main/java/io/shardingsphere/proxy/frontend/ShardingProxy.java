@@ -30,12 +30,10 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.shardingsphere.proxy.backend.BackendExecutorContext;
 import io.shardingsphere.proxy.backend.netty.client.BackendNettyClient;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.frontend.common.netty.ServerHandlerInitializer;
-import io.shardingsphere.proxy.backend.BackendExecutorContext;
-
-import java.net.MalformedURLException;
 
 /**
  * Sharding-Proxy.
@@ -65,9 +63,8 @@ public final class ShardingProxy {
      *
      * @param port port
      * @throws InterruptedException  interrupted exception
-     * @throws MalformedURLException URL exception
      */
-    public void start(final int port) throws InterruptedException, MalformedURLException {
+    public void start(final int port) throws InterruptedException {
         try {
             if (RULE_REGISTRY.getBackendNIOConfig().isUseNIO()) {
                 BackendNettyClient.getInstance().start();
