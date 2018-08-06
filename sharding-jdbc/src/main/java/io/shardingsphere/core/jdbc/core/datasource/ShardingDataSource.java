@@ -72,11 +72,11 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         }
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
+        ProxyMode proxyMode = ProxyMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_MODE));
+        executorEngine = ProxyMode.MEMORY_STRICTLY == proxyMode ? new MemoryStrictlyExecutorEngine(executorSize) : new ConnectionStrictlyExecutorEngine(executorSize);
         ShardingTableMetaData shardingTableMetaData = new ShardingTableMetaData(
                 new TableMetaDataInitializer(executorEngine.getExecutorService(), new DataSourceMapTableMetaDataConnectionManager(dataSourceMap)).load(shardingRule));
         boolean showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
-        ProxyMode proxyMode = ProxyMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_MODE));
-        executorEngine = ProxyMode.MEMORY_STRICTLY == proxyMode ? new MemoryStrictlyExecutorEngine(executorSize) : new ConnectionStrictlyExecutorEngine(executorSize);
         shardingContext = new ShardingContext(dataSourceMap, shardingRule, getDatabaseType(), executorEngine, shardingTableMetaData, showSQL, proxyMode);
     }
     
