@@ -70,6 +70,7 @@ import java.util.Map;
  * @author caohao
  * @author zhangliang
  * @author zhaojun
+ * @author panjuan
  */
 @Getter
 public class ShardingStatement extends AbstractStatementAdapter {
