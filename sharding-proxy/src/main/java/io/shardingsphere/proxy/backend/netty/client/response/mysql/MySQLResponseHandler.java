@@ -15,15 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.netty.client.mysql;
+package io.shardingsphere.proxy.backend.netty.client.response.mysql;
 
-import com.google.common.collect.Maps;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.proxy.backend.constant.AuthType;
-import io.shardingsphere.proxy.backend.netty.client.CommandResponsePacketsHandler;
+import io.shardingsphere.proxy.backend.netty.client.response.ResponseHandler;
 import io.shardingsphere.proxy.backend.netty.future.FutureRegistry;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.runtime.ChannelRegistry;
@@ -43,23 +42,24 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Backend handler for MySQL.
+ * Response handler for MySQL.
  *
  * @author wangkai
  * @author linjiaqi
  */
 @Slf4j
 @RequiredArgsConstructor
-public class MySQLBackendHandler extends CommandResponsePacketsHandler {
+public final class MySQLResponseHandler extends ResponseHandler {
     
     private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
     
     private final String dataSourceName;
     
-    private final Map<Integer, MySQLQueryResult> resultMap = Maps.newHashMap();
+    private final Map<Integer, MySQLQueryResult> resultMap = new HashMap<>();
     
     private AuthType authType = AuthType.UN_AUTH;
     

@@ -15,19 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.netty.client;
+package io.shardingsphere.proxy.backend.netty.client.response;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 
 /**
- * SQL execute backend handler.
+ * SQL executed response handler.
  *
  * @author wangkai
  * @author linjiaqi
  */
-public abstract class CommandResponsePacketsHandler extends ChannelInboundHandlerAdapter {
+public abstract class ResponseHandler extends ChannelInboundHandlerAdapter {
     
     protected abstract void auth(ChannelHandlerContext context, MySQLPacketPayload payload);
     

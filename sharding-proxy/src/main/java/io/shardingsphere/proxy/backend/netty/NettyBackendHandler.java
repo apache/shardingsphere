@@ -37,7 +37,7 @@ import io.shardingsphere.proxy.backend.ResultPacket;
 import io.shardingsphere.proxy.backend.netty.client.BackendNettyClient;
 import io.shardingsphere.proxy.backend.netty.future.FutureRegistry;
 import io.shardingsphere.proxy.backend.netty.future.SynchronizedFuture;
-import io.shardingsphere.proxy.backend.netty.client.mysql.MySQLQueryResult;
+import io.shardingsphere.proxy.backend.netty.client.response.mysql.MySQLQueryResult;
 import io.shardingsphere.proxy.config.ProxyTableMetaDataConnectionManager;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.runtime.ChannelRegistry;
