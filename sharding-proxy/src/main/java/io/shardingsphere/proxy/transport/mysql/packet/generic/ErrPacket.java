@@ -38,7 +38,10 @@ import java.sql.SQLException;
 @Getter
 public final class ErrPacket implements MySQLPacket {
     
-    private static final int HEADER = 0xff;
+    /**
+     * Header of ERR packet.
+     */
+    public static final int HEADER = 0xff;
     
     private static final String SQL_STATE_MARKER = "#";
     

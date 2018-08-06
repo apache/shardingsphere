@@ -27,7 +27,6 @@ import io.shardingsphere.proxy.backend.netty.future.FutureRegistry;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.runtime.ChannelRegistry;
 import io.shardingsphere.proxy.transport.mysql.constant.CapabilityFlag;
-import io.shardingsphere.proxy.transport.mysql.constant.PacketHeader;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerInfo;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
@@ -66,15 +65,12 @@ public final class MySQLResponseHandler extends ResponseHandler {
     @Override
     public void channelRead(final ChannelHandlerContext context, final Object message) {
         MySQLPacketPayload payload = new MySQLPacketPayload((ByteBuf) message);
-        payload.getByteBuf().markReaderIndex();
-        payload.readInt1();
-        int header = payload.readInt1();
-        payload.getByteBuf().resetReaderIndex();
+        int header = getHeader(payload);
         if (AuthType.UN_AUTH == authType) {
             auth(context, payload);
             authType = AuthType.AUTHING;
         } else if (AuthType.AUTHING == authType) {
-            if (PacketHeader.OK.getValue() == header) {
+            if (OKPacket.HEADER == header) {
                 okPacket(context, payload);
                 authType = AuthType.AUTH_SUCCESS;
             } else {
@@ -84,16 +80,24 @@ public final class MySQLResponseHandler extends ResponseHandler {
         } else if (AuthType.AUTH_FAILED == authType) {
             log.error("mysql auth failed, cannot handle channel read message");
         } else {
-            if (PacketHeader.EOF.getValue() == header) {
+            if (EofPacket.HEADER == header) {
                 eofPacket(context, payload);
-            } else if (PacketHeader.OK.getValue() == header) {
+            } else if (OKPacket.HEADER == header) {
                 okPacket(context, payload);
-            } else if (PacketHeader.ERR.getValue() == header) {
+            } else if (ErrPacket.HEADER == header) {
                 errPacket(context, payload);
             } else {
                 commonPacket(context, payload);
             }
         }
+    }
+    
+    private int getHeader(final MySQLPacketPayload payload) {
+        payload.getByteBuf().markReaderIndex();
+        payload.readInt1();
+        int result = payload.readInt1();
+        payload.getByteBuf().resetReaderIndex();
+        return result;
     }
     
     @Override
@@ -169,12 +173,6 @@ public final class MySQLResponseHandler extends ResponseHandler {
         }
     }
     
-    @Override
-    public void channelInactive(final ChannelHandlerContext ctx) throws Exception {
-        //TODO delete connection map.
-        super.channelInactive(ctx);
-    }
-    
     private byte[] securePasswordAuthentication(final byte[] password, final byte[] authPluginData) {
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
@@ -199,5 +197,11 @@ public final class MySQLResponseHandler extends ResponseHandler {
         if (FutureRegistry.getInstance().get(connectionId) != null) {
             FutureRegistry.getInstance().get(connectionId).setResponse(resultMap.get(connectionId));
         }
+    }
+    
+    @Override
+    public void channelInactive(final ChannelHandlerContext ctx) throws Exception {
+        //TODO delete connection map.
+        super.channelInactive(ctx);
     }
 }

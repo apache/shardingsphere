@@ -36,7 +36,10 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class EofPacket implements MySQLPacket {
     
-    private static final int HEADER = 0xfe;
+    /**
+     * Header of EOF packet.
+     */
+    public static final int HEADER = 0xfe;
     
     private final int sequenceId;
     
