@@ -35,7 +35,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.handshake.HandshakePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.handshake.HandshakeResponse41Packet;
-import io.shardingsphere.proxy.util.MySQLResultCache;
+import io.shardingsphere.proxy.backend.netty.future.FutureRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -190,8 +190,8 @@ public class MySQLBackendHandler extends CommandResponsePacketsHandler {
     
     private void setResponse(final ChannelHandlerContext context) {
         int connectionId = ChannelRegistry.getInstance().getConnectionId(context.channel().id().asShortText());
-        if (MySQLResultCache.getInstance().getFuture(connectionId) != null) {
-            MySQLResultCache.getInstance().getFuture(connectionId).setResponse(resultMap.get(connectionId));
+        if (FutureRegistry.getInstance().get(connectionId) != null) {
+            FutureRegistry.getInstance().get(connectionId).setResponse(resultMap.get(connectionId));
         }
     }
 }

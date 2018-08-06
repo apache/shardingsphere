@@ -33,7 +33,9 @@ import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.StatementRoutingEngine;
 import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingsphere.proxy.backend.AbstractBackendHandler;
+import io.shardingsphere.proxy.backend.BackendExecutorContext;
 import io.shardingsphere.proxy.backend.ResultPacket;
+import io.shardingsphere.proxy.backend.netty.future.FutureRegistry;
 import io.shardingsphere.proxy.backend.netty.mysql.MySQLQueryResult;
 import io.shardingsphere.proxy.config.ProxyTableMetaDataConnectionManager;
 import io.shardingsphere.proxy.config.RuleRegistry;
@@ -44,9 +46,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePac
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.text.query.ComQueryPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
-import io.shardingsphere.proxy.backend.BackendExecutorContext;
-import io.shardingsphere.proxy.util.MySQLResultCache;
-import io.shardingsphere.proxy.util.SynchronizedFuture;
+import io.shardingsphere.proxy.backend.netty.future.SynchronizedFuture;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -101,10 +101,10 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
     private CommandResponsePackets executeForMasterSlave() throws InterruptedException, ExecutionException, TimeoutException {
         String dataSourceName = new MasterSlaveRouter(RULE_REGISTRY.getMasterSlaveRule(), RULE_REGISTRY.isShowSQL()).route(sql).iterator().next();
         synchronizedFuture = new SynchronizedFuture(1);
-        MySQLResultCache.getInstance().putFuture(connectionId, synchronizedFuture);
-        executeCommand(dataSourceName, sql);
+        FutureRegistry.getInstance().put(connectionId, synchronizedFuture);
+        executeSQL(dataSourceName, sql);
         List<QueryResult> queryResults = synchronizedFuture.get(RULE_REGISTRY.getBackendNIOConfig().getConnectionTimeoutSeconds(), TimeUnit.SECONDS);
-        MySQLResultCache.getInstance().deleteFuture(connectionId);
+        FutureRegistry.getInstance().delete(connectionId);
         List<CommandResponsePackets> packets = new LinkedList<>();
         for (QueryResult each : queryResults) {
             packets.add(((MySQLQueryResult) each).getCommandResponsePackets());
@@ -120,12 +120,12 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
             return new CommandResponsePackets(new OKPacket(1));
         }
         synchronizedFuture = new SynchronizedFuture(routeResult.getExecutionUnits().size());
-        MySQLResultCache.getInstance().putFuture(connectionId, synchronizedFuture);
+        FutureRegistry.getInstance().put(connectionId, synchronizedFuture);
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
-            executeCommand(each.getDataSource(), each.getSqlUnit().getSql());
+            executeSQL(each.getDataSource(), each.getSqlUnit().getSql());
         }
         List<QueryResult> queryResults = synchronizedFuture.get(RULE_REGISTRY.getBackendNIOConfig().getConnectionTimeoutSeconds(), TimeUnit.SECONDS);
-        MySQLResultCache.getInstance().deleteFuture(connectionId);
+        FutureRegistry.getInstance().delete(connectionId);
         
         List<CommandResponsePackets> packets = Lists.newArrayListWithCapacity(queryResults.size());
         for (QueryResult each : queryResults) {
@@ -149,7 +149,7 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
         return result;
     }
     
-    private void executeCommand(final String dataSourceName, final String sql) throws InterruptedException, ExecutionException, TimeoutException {
+    private void executeSQL(final String dataSourceName, final String sql) throws InterruptedException, ExecutionException, TimeoutException {
         if (!channelMap.containsKey(dataSourceName)) {
             channelMap.put(dataSourceName, new ArrayList<Channel>());
         }
