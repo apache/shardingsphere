@@ -101,8 +101,8 @@ public final class ShardingProxy {
     }
     
     private void groupsEpoll(final ServerBootstrap bootstrap) {
-        workerGroup = new EpollEventLoopGroup(RULE_REGISTRY.getExecutorSize());
-        userGroupContext.setUserGroup(new EpollEventLoopGroup(RULE_REGISTRY.getExecutorSize()));
+        workerGroup = new EpollEventLoopGroup(RULE_REGISTRY.getAcceptorSize());
+        userGroupContext.setUserGroup(new EpollEventLoopGroup(RULE_REGISTRY.getAcceptorSize()));
         bootstrap.group(bossGroup, workerGroup)
             .channel(EpollServerSocketChannel.class)
             .option(EpollChannelOption.SO_BACKLOG, 128)
@@ -114,8 +114,8 @@ public final class ShardingProxy {
     }
     
     private void groupsNio(final ServerBootstrap bootstrap) {
-        workerGroup = new NioEventLoopGroup(RULE_REGISTRY.getExecutorSize());
-        userGroupContext.setUserGroup(new NioEventLoopGroup(RULE_REGISTRY.getExecutorSize()));
+        workerGroup = new NioEventLoopGroup(RULE_REGISTRY.getAcceptorSize());
+        userGroupContext.setUserGroup(new NioEventLoopGroup(RULE_REGISTRY.getAcceptorSize()));
         bootstrap.group(bossGroup, workerGroup)
             .channel(NioServerSocketChannel.class)
             .option(ChannelOption.SO_BACKLOG, 128)

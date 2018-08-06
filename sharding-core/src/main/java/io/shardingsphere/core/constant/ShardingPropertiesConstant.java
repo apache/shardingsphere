@@ -43,6 +43,17 @@ public enum ShardingPropertiesConstant {
     SQL_SHOW("sql.show", Boolean.FALSE.toString(), boolean.class),
     
     /**
+     * Worker group or user group thread max size.
+     *
+     * <p>
+     * Worker group accept tcp connection.
+     * User group accept MySQL command.
+     * Default: CPU cores * 2.
+     * </p>
+     */
+    ACCEPTOR_SIZE("acceptor.size", String.valueOf(Runtime.getRuntime().availableProcessors() * 2), int.class),
+    
+    /**
      * Worker thread max size.
      * 
      * <p>
