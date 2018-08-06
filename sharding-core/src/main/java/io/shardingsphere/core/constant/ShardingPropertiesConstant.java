@@ -54,7 +54,7 @@ public enum ShardingPropertiesConstant {
     EXECUTOR_SIZE("executor.size", String.valueOf(Runtime.getRuntime().availableProcessors()), int.class),
     
     /**
-     * Proxy mode.
+     * Connection mode.
      *
      * <p>
      * MEMORY_STRICTLY:
@@ -65,7 +65,7 @@ public enum ShardingPropertiesConstant {
      * Meanwhile, the cost of the memory will be increased.
      * </p>
      */
-    PROXY_MODE("proxy.mode", "MEMORY_STRICTLY", String.class),
+    CONNECTION_MODE("connection.mode", "MEMORY_STRICTLY", String.class),
     
     PROXY_TRANSACTION_MODE("proxy.transaction.mode", "NONE", String.class),
     

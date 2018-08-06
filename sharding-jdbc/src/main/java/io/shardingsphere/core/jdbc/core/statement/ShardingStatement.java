@@ -18,7 +18,7 @@
 package io.shardingsphere.core.jdbc.core.statement;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.constant.ProxyMode;
+import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.type.connection.MemoryQueryResult;
 import io.shardingsphere.core.executor.type.memory.StreamQueryResult;
@@ -128,7 +128,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
     private List<QueryResult> getQueryResults(final List<ResultSet> resultSets) throws SQLException {
         List<QueryResult> result = new ArrayList<>(resultSets.size());
         for (ResultSet each : resultSets) {
-            if (ProxyMode.MEMORY_STRICTLY == connection.getShardingContext().getProxyMode()) {
+            if (ConnectionMode.MEMORY_STRICTLY == connection.getShardingContext().getConnectionMode()) {
                 result.add(new StreamQueryResult(each));
             } else {
                 result.add(new MemoryQueryResult(each));
@@ -224,7 +224,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
     private StatementExecutor generateExecutor(final String sql) throws SQLException {
         clearPrevious();
         sqlRoute(sql);
-        if (ProxyMode.MEMORY_STRICTLY == connection.getShardingContext().getProxyMode()) {
+        if (ConnectionMode.MEMORY_STRICTLY == connection.getShardingContext().getConnectionMode()) {
             return new StatementExecutor(connection.getShardingContext().getExecutorEngine(), routeResult.getSqlStatement().getType(), getStatementUnitsForMemoryStrictly());
         }
         return new StatementExecutor(connection.getShardingContext().getExecutorEngine(), routeResult.getSqlStatement().getType(), getStatementUnitsForConnectionStrictly());

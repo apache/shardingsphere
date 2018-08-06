@@ -20,7 +20,7 @@ package io.shardingsphere.core.jdbc.core.statement;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
-import io.shardingsphere.core.constant.ProxyMode;
+import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.type.batch.BatchPreparedStatementExecutor;
 import io.shardingsphere.core.executor.type.batch.BatchPreparedStatementUnit;
@@ -154,7 +154,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     private List<QueryResult> getQueryResults(final List<ResultSet> resultSets) throws SQLException {
         List<QueryResult> result = new ArrayList<>(resultSets.size());
         for (ResultSet each : resultSets) {
-            if (ProxyMode.MEMORY_STRICTLY == connection.getShardingContext().getProxyMode()) {
+            if (ConnectionMode.MEMORY_STRICTLY == connection.getShardingContext().getConnectionMode()) {
                 result.add(new StreamQueryResult(each));
             } else {
                 result.add(new MemoryQueryResult(each));
@@ -191,7 +191,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     
     private Collection<PreparedStatementUnit> route() throws SQLException {
         sqlRoute();
-        if (ProxyMode.MEMORY_STRICTLY == connection.getShardingContext().getProxyMode()) {
+        if (ConnectionMode.MEMORY_STRICTLY == connection.getShardingContext().getConnectionMode()) {
             return getPreparedStatementUnitsForMemoryStrictly();
         }
         return getPreparedStatementUnitsForConnectionStrictly();

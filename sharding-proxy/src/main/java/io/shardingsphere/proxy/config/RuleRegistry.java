@@ -35,7 +35,7 @@ import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.transaction.spi.TransactionManager;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusEvent;
-import io.shardingsphere.core.constant.ProxyMode;
+import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.proxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import io.shardingsphere.proxy.util.ProxyTransactionLoader;
 import lombok.AccessLevel;
@@ -73,7 +73,7 @@ public final class RuleRegistry {
     
     private boolean showSQL;
     
-    private ProxyMode proxyMode;
+    private ConnectionMode connectionMode;
     
     private TransactionType transactionType;
     
@@ -109,7 +109,7 @@ public final class RuleRegistry {
         Properties properties = null == config.getShardingRule() ? config.getMasterSlaveRule().getProps() : config.getShardingRule().getProps();
         ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
         showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
-        proxyMode = ProxyMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_MODE));
+        connectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
         transactionType = TransactionType.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_MODE));
         transactionManager = ProxyTransactionLoader.load(transactionType);
         maxWorkingThreads = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_MAX_WORKING_THREADS);
