@@ -24,6 +24,8 @@ import io.shardingsphere.core.constant.ProxyMode;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.type.batch.BatchPreparedStatementExecutor;
 import io.shardingsphere.core.executor.type.batch.BatchPreparedStatementUnit;
+import io.shardingsphere.core.executor.type.connection.MemoryQueryResult;
+import io.shardingsphere.core.executor.type.memory.StreamQueryResult;
 import io.shardingsphere.core.executor.type.prepared.PreparedStatementExecutor;
 import io.shardingsphere.core.executor.type.prepared.PreparedStatementUnit;
 import io.shardingsphere.core.jdbc.adapter.AbstractShardingPreparedStatementAdapter;
@@ -139,17 +141,25 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             Collection<PreparedStatementUnit> preparedStatementUnits = route();
             List<ResultSet> resultSets = new PreparedStatementExecutor(
                     connection.getShardingContext().getExecutorEngine(), routeResult.getSqlStatement().getType(), preparedStatementUnits).executeQuery();
-            List<QueryResult> queryResults = new ArrayList<>(resultSets.size());
-            for (ResultSet each : resultSets) {
-                queryResults.add(new JDBCQueryResult(each));
-            }
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(
-                    connection.getShardingContext().getShardingRule(), queryResults, routeResult.getSqlStatement(), connection.getShardingContext().getMetaData().getTable());
+                    connection.getShardingContext().getShardingRule(), getQueryResults(resultSets), routeResult.getSqlStatement(), connection.getShardingContext().getMetaData().getTable());
             result = new ShardingResultSet(resultSets, merge(mergeEngine), this);
         } finally {
             clearBatch();
         }
         currentResultSet = result;
+        return result;
+    }
+    
+    private List<QueryResult> getQueryResults(final List<ResultSet> resultSets) throws SQLException {
+        List<QueryResult> result = new ArrayList<>(resultSets.size());
+        for (ResultSet each : resultSets) {
+            if (ProxyMode.MEMORY_STRICTLY == connection.getShardingContext().getProxyMode()) {
+                result.add(new StreamQueryResult(each));
+            } else {
+                result.add(new MemoryQueryResult(each));
+            }
+        }
         return result;
     }
     
