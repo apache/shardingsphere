@@ -118,7 +118,7 @@ public final class MySQLResponseHandler extends ResponseHandler {
     }
     
     @Override
-    protected void authSuccess(final ChannelHandlerContext context, final ByteBuf byteBuf, final int header) {
+    protected void executeCommand(final ChannelHandlerContext context, final ByteBuf byteBuf, final int header) {
         switch (header) {
             case EofPacket.HEADER:
                 eofPacket(context, byteBuf);
@@ -130,12 +130,11 @@ public final class MySQLResponseHandler extends ResponseHandler {
                 errPacket(context, byteBuf);
                 break;
             default:
-                commonPacket(context, byteBuf);
+                commandPacket(context, byteBuf);
         }
     }
     
-    @Override
-    protected void okPacket(final ChannelHandlerContext context, final ByteBuf byteBuf) {
+    private void okPacket(final ChannelHandlerContext context, final ByteBuf byteBuf) {
         int connectionId = ChannelRegistry.getInstance().getConnectionId(context.channel().id().asShortText());
         try (MySQLPacketPayload payload = new MySQLPacketPayload(byteBuf)) {
             MySQLQueryResult mysqlQueryResult = new MySQLQueryResult();
@@ -147,8 +146,7 @@ public final class MySQLResponseHandler extends ResponseHandler {
         }
     }
     
-    @Override
-    protected void errPacket(final ChannelHandlerContext context, final ByteBuf byteBuf) {
+    private void errPacket(final ChannelHandlerContext context, final ByteBuf byteBuf) {
         int connectionId = ChannelRegistry.getInstance().getConnectionId(context.channel().id().asShortText());
         try (MySQLPacketPayload payload = new MySQLPacketPayload(byteBuf)) {
             MySQLQueryResult mysqlQueryResult = new MySQLQueryResult();
@@ -160,8 +158,7 @@ public final class MySQLResponseHandler extends ResponseHandler {
         }
     }
     
-    @Override
-    protected void eofPacket(final ChannelHandlerContext context, final ByteBuf byteBuf) {
+    private void eofPacket(final ChannelHandlerContext context, final ByteBuf byteBuf) {
         int connectionId = ChannelRegistry.getInstance().getConnectionId(context.channel().id().asShortText());
         MySQLQueryResult mysqlQueryResult = resultMap.get(connectionId);
         MySQLPacketPayload payload = new MySQLPacketPayload(byteBuf);
@@ -182,8 +179,7 @@ public final class MySQLResponseHandler extends ResponseHandler {
         }
     }
     
-    @Override
-    protected void commonPacket(final ChannelHandlerContext context, final ByteBuf byteBuf) {
+    private void commandPacket(final ChannelHandlerContext context, final ByteBuf byteBuf) {
         int connectionId = ChannelRegistry.getInstance().getConnectionId(context.channel().id().asShortText());
         MySQLQueryResult mysqlQueryResult = resultMap.get(connectionId);
         MySQLPacketPayload payload = new MySQLPacketPayload(byteBuf);

@@ -45,7 +45,7 @@ public abstract class ResponseHandler extends ChannelInboundHandlerAdapter {
                 authType = AuthType.AUTH_FIN;
                 break;
             case AUTH_FIN:
-                authSuccess(context, byteBuf, header);
+                executeCommand(context, byteBuf, header);
                 break;
             default:
                 throw new UnsupportedOperationException(authType.name());
@@ -58,15 +58,7 @@ public abstract class ResponseHandler extends ChannelInboundHandlerAdapter {
     
     protected abstract void authing(ChannelHandlerContext context, ByteBuf byteBuf, int header);
     
-    protected abstract void authSuccess(ChannelHandlerContext context, ByteBuf byteBuf, int header);
-    
-    protected abstract void eofPacket(ChannelHandlerContext context, ByteBuf byteBuf);
-    
-    protected abstract void okPacket(ChannelHandlerContext context, ByteBuf byteBuf);
-    
-    protected abstract void errPacket(ChannelHandlerContext context, ByteBuf byteBuf);
-    
-    protected abstract void commonPacket(ChannelHandlerContext context, ByteBuf byteBuf);
+    protected abstract void executeCommand(ChannelHandlerContext context, ByteBuf byteBuf, int header);
     
     @Override
     public void channelInactive(final ChannelHandlerContext ctx) throws Exception {
