@@ -66,29 +66,21 @@ public final class MySQLResponseHandler extends ResponseHandler {
     public void channelRead(final ChannelHandlerContext context, final Object message) {
         MySQLPacketPayload payload = new MySQLPacketPayload((ByteBuf) message);
         int header = getHeader(payload);
-        if (AuthType.UN_AUTH == authType) {
-            auth(context, payload);
-            authType = AuthType.AUTHING;
-        } else if (AuthType.AUTHING == authType) {
-            if (OKPacket.HEADER == header) {
-                okPacket(context, payload);
-                authType = AuthType.AUTH_SUCCESS;
-            } else {
-                errPacket(context, payload);
-                authType = AuthType.AUTH_FAILED;
-            }
-        } else if (AuthType.AUTH_FAILED == authType) {
-            log.error("mysql auth failed, cannot handle channel read message");
-        } else {
-            if (EofPacket.HEADER == header) {
-                eofPacket(context, payload);
-            } else if (OKPacket.HEADER == header) {
-                okPacket(context, payload);
-            } else if (ErrPacket.HEADER == header) {
-                errPacket(context, payload);
-            } else {
-                commonPacket(context, payload);
-            }
+        switch (authType) {
+            case UN_AUTH:
+                auth(context, payload);
+                return;
+            case AUTHING:
+                authing(context, payload, header);
+                return;
+            case AUTH_SUCCESS:
+                authSuccess(context, payload, header);
+                return;
+            case AUTH_FAILED:
+                log.error("mysql auth failed, cannot handle channel read message");
+                return;
+            default:
+                throw new UnsupportedOperationException(authType.name());
         }
     }
     
@@ -114,6 +106,29 @@ public final class MySQLResponseHandler extends ResponseHandler {
             context.writeAndFlush(handshakeResponse41Packet);
         } finally {
             payload.close();
+        }
+        authType = AuthType.AUTHING;
+    }
+    
+    private void authing(final ChannelHandlerContext context, final MySQLPacketPayload payload, final int header) {
+        if (OKPacket.HEADER == header) {
+            okPacket(context, payload);
+            authType = AuthType.AUTH_SUCCESS;
+        } else {
+            errPacket(context, payload);
+            authType = AuthType.AUTH_FAILED;
+        }
+    }
+    
+    private void authSuccess(final ChannelHandlerContext context, final MySQLPacketPayload payload, final int header) {
+        if (EofPacket.HEADER == header) {
+            eofPacket(context, payload);
+        } else if (OKPacket.HEADER == header) {
+            okPacket(context, payload);
+        } else if (ErrPacket.HEADER == header) {
+            errPacket(context, payload);
+        } else {
+            commonPacket(context, payload);
         }
     }
     
