@@ -50,11 +50,11 @@ public final class MemoryStrictlyExecutorEngine extends ExecutorEngine {
     protected <T> List<T> getExecuteResults(final SQLType sqlType, final Collection<? extends BaseStatementUnit> baseStatementUnits, final ExecuteCallback<T> executeCallback) throws Exception {
         Iterator<? extends BaseStatementUnit> iterator = baseStatementUnits.iterator();
         T firstOutput = syncExecute(sqlType, iterator.next(), executeCallback);
-        List<ListenableFuture<T>> restFutures = asyncExecute(sqlType, Lists.newArrayList(iterator), executeCallback);
+        Collection<ListenableFuture<T>> restFutures = asyncExecute(sqlType, Lists.newArrayList(iterator), executeCallback);
         return getResultList(firstOutput, restFutures);
     }
     
-    private <T> List<ListenableFuture<T>> asyncExecute(
+    private <T> Collection<ListenableFuture<T>> asyncExecute(
             final SQLType sqlType, final Collection<BaseStatementUnit> baseStatementUnits, final ExecuteCallback<T> executeCallback) {
         List<ListenableFuture<T>> result = new ArrayList<>(baseStatementUnits.size());
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
@@ -75,7 +75,7 @@ public final class MemoryStrictlyExecutorEngine extends ExecutorEngine {
         return executeInternal(sqlType, baseStatementUnit, executeCallback, ExecutorExceptionHandler.isExceptionThrown(), ExecutorDataMap.getDataMap());
     }
     
-    private <T> List<T> getResultList(final T firstOutput, final List<ListenableFuture<T>> restResultFutures) throws ExecutionException, InterruptedException {
+    private <T> List<T> getResultList(final T firstOutput, final Collection<ListenableFuture<T>> restResultFutures) throws ExecutionException, InterruptedException {
         List<T> result = new LinkedList<>();
         result.add(firstOutput);
         for (ListenableFuture<T> each : restResultFutures) {
