@@ -110,34 +110,32 @@ public abstract class ExecutorEngine implements AutoCloseable {
     
     protected <T> T executeInternal(final SQLType sqlType, final BaseStatementUnit baseStatementUnit, final ExecuteCallback<T> executeCallback,
                                   final boolean isExceptionThrown, final Map<String, Object> dataMap) throws Exception {
-        synchronized (baseStatementUnit.getStatement().getConnection()) {
-            T result;
-            ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
-            ExecutorDataMap.setDataMap(dataMap);
-            List<AbstractExecutionEvent> events = new LinkedList<>();
-            for (List<Object> each : baseStatementUnit.getSqlExecutionUnit().getSqlUnit().getParameterSets()) {
-                events.add(getExecutionEvent(sqlType, baseStatementUnit, each));
-            }
-            for (AbstractExecutionEvent event : events) {
-                EventBusInstance.getInstance().post(event);
-            }
-            try {
-                result = executeCallback.execute(baseStatementUnit);
-            } catch (final SQLException ex) {
-                for (AbstractExecutionEvent each : events) {
-                    each.setEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
-                    each.setException(ex);
-                    EventBusInstance.getInstance().post(each);
-                    ExecutorExceptionHandler.handleException(ex);
-                }
-                return null;
-            }
-            for (AbstractExecutionEvent each : events) {
-                each.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
-                EventBusInstance.getInstance().post(each);
-            }
-            return result;
+        T result;
+        ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
+        ExecutorDataMap.setDataMap(dataMap);
+        List<AbstractExecutionEvent> events = new LinkedList<>();
+        for (List<Object> each : baseStatementUnit.getSqlExecutionUnit().getSqlUnit().getParameterSets()) {
+            events.add(getExecutionEvent(sqlType, baseStatementUnit, each));
         }
+        for (AbstractExecutionEvent event : events) {
+            EventBusInstance.getInstance().post(event);
+        }
+        try {
+            result = executeCallback.execute(baseStatementUnit);
+        } catch (final SQLException ex) {
+            for (AbstractExecutionEvent each : events) {
+                each.setEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
+                each.setException(ex);
+                EventBusInstance.getInstance().post(each);
+                ExecutorExceptionHandler.handleException(ex);
+            }
+            return null;
+        }
+        for (AbstractExecutionEvent each : events) {
+            each.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+            EventBusInstance.getInstance().post(each);
+        }
+        return result;
     }
     
     private AbstractExecutionEvent getExecutionEvent(final SQLType sqlType, final BaseStatementUnit baseStatementUnit, final List<Object> parameters) {
