@@ -166,6 +166,9 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
                 return new CommandResponsePackets(each);
             }
         }
+        if (SQLType.TCL == sqlStatement.getType()) {
+            channelRelease();
+        }
         if (SQLType.DML == sqlStatement.getType()) {
             return mergeDML(headPackets);
         }
@@ -207,11 +210,7 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
     @Override
     public boolean next() throws SQLException {
         if (null == mergedResult || !mergedResult.next()) {
-            for (Entry<String, List<Channel>> entry : channelMap.entrySet()) {
-                for (Channel each : entry.getValue()) {
-                    BackendNettyClient.getInstance().getPoolMap().get(entry.getKey()).release(each);
-                }
-            }
+            channelRelease();
             return false;
         }
         return true;
@@ -224,5 +223,13 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
             data.add(mergedResult.getValue(columnIndex, Object.class));
         }
         return new ResultPacket(++currentSequenceId, data, columnCount, Collections.<ColumnType>emptyList());
+    }
+    
+    private void channelRelease() {
+        for (Entry<String, List<Channel>> entry : channelMap.entrySet()) {
+            for (Channel each : entry.getValue()) {
+                BackendNettyClient.getInstance().getPoolMap().get(entry.getKey()).release(each);
+            }
+        }
     }
 }
