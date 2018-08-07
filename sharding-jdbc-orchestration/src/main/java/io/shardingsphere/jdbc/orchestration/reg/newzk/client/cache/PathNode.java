@@ -19,33 +19,29 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-/*
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+/**
  * Zookeeper node cache.
  *
  * @author lidongbo
  */
+@Getter
+@Setter
 @Slf4j
 public final class PathNode {
     
-    @Getter
     private final Map<String, PathNode> children = new ConcurrentHashMap<>();
-
-    @Getter
+    
     private final String nodeKey;
     
-    @Getter(value = AccessLevel.PACKAGE)
-    @Setter(value = AccessLevel.PACKAGE)
     private String path;
-
-    @Getter(value = AccessLevel.PACKAGE)
-    @Setter(value = AccessLevel.PACKAGE)
+    
     private byte[] value;
     
     PathNode(final String key) {
@@ -58,13 +54,8 @@ public final class PathNode {
         this.path = key;
     }
     
-    /**
-     * Attach child node.
-     *
-     * @param node node
-     */
     void attachChild(final PathNode node) {
-        this.children.put(node.nodeKey, node);
+        children.put(node.nodeKey, node);
         node.setPath(PathUtil.getRealPath(path, node.getNodeKey()));
     }
     
@@ -74,7 +65,7 @@ public final class PathNode {
             return this;
         }
         pathResolve.next();
-        log.debug("PathNode set:{},value:{}", pathResolve.getCurrent(), value);
+        log.debug("PathNode set: {}, value: {}", pathResolve.getCurrent(), value);
         if (children.containsKey(pathResolve.getCurrent())) {
             return children.get(pathResolve.getCurrent()).set(pathResolve, value);
         }

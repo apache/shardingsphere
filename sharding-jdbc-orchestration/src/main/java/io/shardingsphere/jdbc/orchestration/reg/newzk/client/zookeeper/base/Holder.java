@@ -20,11 +20,9 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 import com.google.common.base.Strings;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
-import java.io.IOException;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.KeeperException;
@@ -32,11 +30,17 @@ import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 
-/*
+import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
+/**
  * Zookeeper connection holder.
  *
  * @author lidongbo
  */
+@RequiredArgsConstructor
+@Getter
 @Slf4j
 public class Holder {
     
@@ -45,22 +49,16 @@ public class Holder {
     @Getter(value = AccessLevel.PROTECTED)
     private final BaseContext context;
     
-    @Getter
     private ZooKeeper zooKeeper;
     
-    @Getter
     @Setter(value = AccessLevel.PROTECTED)
     private boolean connected;
-    
-    Holder(final BaseContext context) {
-        this.context = context;
-    }
     
     /**
      * Start.
      *
-     * @throws IOException IO Exception
-     * @throws InterruptedException InterruptedException
+     * @throws IOException IO exception
+     * @throws InterruptedException interrupted exception
      */
     public void start() throws IOException, InterruptedException {
         initZookeeper();
@@ -73,25 +71,25 @@ public class Holder {
     }
     
     protected void initZookeeper() throws IOException {
-        log.debug("Holder servers:{},sessionTimeOut:{}", context.getServers(), context.getSessionTimeOut());
+        log.debug("Holder servers: {}, sessionTimeOut: {}", context.getServers(), context.getSessionTimeOut());
         zooKeeper = new ZooKeeper(context.getServers(), context.getSessionTimeOut(), startWatcher());
         if (!Strings.isNullOrEmpty(context.getScheme())) {
             zooKeeper.addAuthInfo(context.getScheme(), context.getAuth());
-            log.debug("Holder scheme:{},auth:{}", context.getScheme(), context.getAuth());
+            log.debug("Holder scheme: {}, auth: {}", context.getScheme(), context.getAuth());
         }
     }
     
     private Watcher startWatcher() {
         return new Watcher() {
             
+            @Override
             public void process(final WatchedEvent event) {
-                log.debug("event-----------:" + event.toString());
                 processConnection(event);
                 if (!isConnected()) {
                     return;
                 }
                 processGlobalListener(event);
-                // todo filter event type or path
+                // TODO filter event type or path
                 if (event.getType() == Event.EventType.None) {
                     return;
                 }
@@ -103,7 +101,7 @@ public class Holder {
     }
     
     protected void processConnection(final WatchedEvent event) {
-        log.debug("BaseClient process event:{}", event.toString());
+        log.debug("BaseClient process event: {}", event.toString());
         if (Watcher.Event.EventType.None == event.getType()) {
             if (Watcher.Event.KeeperState.SyncConnected == event.getState()) {
                 connectLatch.countDown();
@@ -115,7 +113,7 @@ public class Holder {
                     log.warn("startWatcher Event.KeeperState.Expired");
                     reset();
                 } catch (final IOException | InterruptedException ex) {
-                    log.error("event state Expired:{}", ex.getMessage(), ex);
+                    log.error("event state Expired: {}", ex.getMessage(), ex);
                 }
             } else if (Watcher.Event.KeeperState.Disconnected == event.getState()) {
                 connected = false;
@@ -124,7 +122,7 @@ public class Holder {
     }
     
     private void processGlobalListener(final WatchedEvent event) {
-        if (context.getGlobalZookeeperEventListener() != null) {
+        if (null != context.getGlobalZookeeperEventListener()) {
             context.getGlobalZookeeperEventListener().process(event);
             log.debug("Holder {} process", ZookeeperConstants.GLOBAL_LISTENER_KEY);
         }
@@ -133,8 +131,8 @@ public class Holder {
     private void processUsualListener(final WatchedEvent event) {
         if (!context.getWatchers().isEmpty()) {
             for (ZookeeperEventListener zookeeperEventListener : context.getWatchers().values()) {
-                if (zookeeperEventListener.getPath() == null || event.getPath().startsWith(zookeeperEventListener.getPath())) {
-                    log.debug("listener process:{}, listener:{}", zookeeperEventListener.getPath(), zookeeperEventListener.getKey());
+                if (null == zookeeperEventListener.getPath() || event.getPath().startsWith(zookeeperEventListener.getPath())) {
+                    log.debug("listener process: {}, listener: {}", zookeeperEventListener.getPath(), zookeeperEventListener.getKey());
                     zookeeperEventListener.process(event);
                 }
             }
@@ -143,23 +141,21 @@ public class Holder {
     
     private boolean checkPath(final String path) {
         try {
-            return zooKeeper.exists(path, true) != null;
+            return null != zooKeeper.exists(path, true);
         } catch (final KeeperException | InterruptedException ignore) {
+            return false;
         }
-        return false;
     }
     
     /**
      * Reset connection.
      *
-     * @throws IOException IO Exception
-     * @throws InterruptedException InterruptedException
+     * @throws IOException IO exception
+     * @throws InterruptedException interrupted exception
      */
     public void reset() throws IOException, InterruptedException {
-        log.debug("zk reset....................................");
         close();
         start();
-        log.debug("....................................zk reset");
     }
     
     /**
@@ -177,7 +173,7 @@ public class Holder {
             zooKeeper.close();
             connected = false;
             log.debug("zk closed");
-            this.context.close();
+            context.close();
         } catch (final InterruptedException ex) {
             log.warn("Holder close:{}", ex.getMessage());
         }

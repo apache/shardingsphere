@@ -18,12 +18,15 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-/*
- * Delay policy
+/**
+ * Delay policy.
  *
  * @author lidongbo
  */
+@RequiredArgsConstructor
+@Getter
 public class DelayRetryPolicy {
     
     private static final long BASE_DELAY = 10;
@@ -32,32 +35,20 @@ public class DelayRetryPolicy {
     
     private static final int RETRY_COUNT_BOUND = 29;
     
-    @Getter
     private final int retryCount;
     
-    @Getter
     private final long baseDelay;
     
-    @Getter
     private final long delayUpperBound;
     
-    /*
-    * Millis
-    */
     public DelayRetryPolicy(final long baseDelay) {
         this(RETRY_COUNT_BOUND, baseDelay, Integer.MAX_VALUE);
     }
     
-    public DelayRetryPolicy(final int retryCount, final long baseDelay, final long delayUpperBound) {
-        this.retryCount = retryCount;
-        this.baseDelay = baseDelay;
-        this.delayUpperBound = delayUpperBound;
-    }
-    
     /**
-     * Default DelayPolicy.
+     * Default delay policy.
      *
-     * @return DelayPolicy
+     * @return delay policy
      */
     public static DelayRetryPolicy defaultDelayPolicy() {
         return new DelayRetryPolicy(BASE_COUNT, BASE_DELAY, Integer.MAX_VALUE);

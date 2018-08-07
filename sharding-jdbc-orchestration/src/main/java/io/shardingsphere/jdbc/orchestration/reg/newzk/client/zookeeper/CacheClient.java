@@ -30,12 +30,12 @@ import org.apache.zookeeper.KeeperException;
 import java.io.IOException;
 import java.util.List;
 
-/*
+/**
  * Cache Client.
  * 
- * // todo Partially prepared product
  * @author lidongbo
  */
+// TODO Partially prepared product
 @Slf4j
 public final class CacheClient extends UsualClient {
     
@@ -58,7 +58,7 @@ public final class CacheClient extends UsualClient {
     @Override
     public void close() {
         super.close();
-        this.pathTree.close();
+        pathTree.close();
     }
     
     //todo put it here?
@@ -83,11 +83,11 @@ public final class CacheClient extends UsualClient {
     }
     
     private PathTree loadPathTree(final String treeRoot) throws KeeperException, InterruptedException {
-        PathTree tree = new PathTree(treeRoot, this);
-        log.debug("load path tree:{}", treeRoot);
-        tree.load();
-        tree.watch();
-        return tree;
+        PathTree result = new PathTree(treeRoot, this);
+        log.debug("load path result: {}", treeRoot);
+        result.load();
+        result.watch();
+        return result;
     }
     
     @Override
@@ -112,11 +112,11 @@ public final class CacheClient extends UsualClient {
     public byte[] getData(final String key) throws KeeperException, InterruptedException {
         String path = PathUtil.getRealPath(getRootNode(), key);
         byte[] data = pathTree.getValue(path);
-        if (data != null) {
-            log.debug("getData cache hit:{}", data);
+        if (null != data) {
+            log.debug("getData cache hit: {}", key);
             return data;
         }
-        log.debug("getData cache not hit:{}", data);
+        log.debug("getData cache not hit: {}", key);
         return getStrategy().getData(key);
     }
     
@@ -125,10 +125,10 @@ public final class CacheClient extends UsualClient {
         String path = PathUtil.getRealPath(getRootNode(), key);
         List<String> keys = pathTree.getChildren(path);
         if (!keys.isEmpty()) {
-            log.debug("getChildren cache hit:{}", keys);
+            log.debug("getChildren cache hit: {}", keys);
             return keys;
         }
-        log.debug("getChildren cache not hit:{}", keys);
+        log.debug("getChildren cache not hit: {}", keys);
         return getStrategy().getChildren(PathUtil.getRealPath(getRootNode(), key));
     }
 }

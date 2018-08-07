@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.DelayQueue;
 
-/*
+/**
  * Async retry center.
  *
  * @author lidongbo
@@ -41,13 +41,13 @@ public enum AsyncRetryCenter {
     private DelayRetryPolicy delayRetryPolicy;
     
     /**
-     * init.
+     * Initialize.
      *
-     * @param delayRetryPolicy delayRetryPolicy
+     * @param delayRetryPolicy delay retry policy
      */
     public void init(final DelayRetryPolicy delayRetryPolicy) {
         log.debug("delayRetryPolicy init");
-        if (delayRetryPolicy == null) {
+        if (null == delayRetryPolicy) {
             log.warn("delayRetryPolicy is null and auto init with DelayRetryPolicy.defaultDelayPolicy");
             this.delayRetryPolicy = DelayRetryPolicy.defaultDelayPolicy();
             return;
@@ -64,7 +64,7 @@ public enum AsyncRetryCenter {
         }
         retryThread.setName("retry-thread");
         retryThread.start();
-        this.started = true;
+        started = true;
     }
     
     /**
@@ -73,12 +73,12 @@ public enum AsyncRetryCenter {
      * @param operation operation
      */
     public void add(final BaseOperation operation) {
-        if (delayRetryPolicy == null) {
+        if (null == delayRetryPolicy) {
             log.warn("delayRetryPolicy no init and auto init with DelayRetryPolicy.defaultDelayPolicy");
             delayRetryPolicy = DelayRetryPolicy.defaultDelayPolicy();
         }
         operation.setDelayPolicyExecutor(new DelayPolicyExecutor(delayRetryPolicy));
         queue.offer(operation);
-        log.debug("enqueue operation:{}", operation.toString());
+        log.debug("enqueue operation: {}", operation.toString());
     }
 }

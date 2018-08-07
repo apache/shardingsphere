@@ -22,12 +22,12 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.Base
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 
-/*
- * Async retry operation which CreateCurrent action.
+/**
+ * Async retry operation which create current action.
  *
  * @author lidongbo
  */
-public class CreateCurrentOperation extends BaseOperation {
+public final class CreateCurrentOperation extends BaseOperation {
     
     private final String key;
     
@@ -49,6 +49,6 @@ public class CreateCurrentOperation extends BaseOperation {
     
     @Override
     public String toString() {
-        return String.format("CreateCurrentOperation key:%s,value:%s,createMode:%s", key, value, createMode.name());
+        return String.format("CreateCurrentOperation key: %s, value: %s, createMode: %s", key, value, createMode.name());
     }
 }

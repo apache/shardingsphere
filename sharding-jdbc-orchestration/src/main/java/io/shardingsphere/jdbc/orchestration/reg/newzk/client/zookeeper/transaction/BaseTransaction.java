@@ -24,7 +24,7 @@ import org.apache.zookeeper.data.ACL;
 
 import java.util.List;
 
-/*
+/**
  * Base transaction.
  *
  * @author lidongbo
@@ -37,10 +37,10 @@ public class BaseTransaction {
      * @param path key
      * @param data value
      * @param acl acl
-     * @param createMode createMode
-     * @return ZKTransaction
+     * @param createMode create mode
+     * @return zookeeper transaction
      */
-    public ZKTransaction create(final String path, final byte[] data, final List<ACL> acl, final CreateMode createMode) {
+    public ZooKeeperTransaction create(final String path, final byte[] data, final List<ACL> acl, final CreateMode createMode) {
         throw new UnsupportedOperationException("check zk version!");
     }
     
@@ -48,9 +48,9 @@ public class BaseTransaction {
      * Delete target node.
      *
      * @param path key
-     * @return ZKTransaction
+     * @return zookeeper transaction
      */
-    public ZKTransaction delete(final String path) {
+    public ZooKeeperTransaction delete(final String path) {
         throw new UnsupportedOperationException("check zk version!");
     }
     
@@ -59,9 +59,9 @@ public class BaseTransaction {
      *
      * @param path key
      * @param version version
-     * @return ZKTransaction
+     * @return zookeeper transaction
      */
-    public ZKTransaction delete(final String path, final int version) {
+    public ZooKeeperTransaction delete(final String path, final int version) {
         throw new UnsupportedOperationException("check zk version!");
     }
     
@@ -69,9 +69,9 @@ public class BaseTransaction {
      * Check target node.
      *
      * @param path key
-     * @return ZKTransaction
+     * @return zookeeper transaction
      */
-    public ZKTransaction check(final String path) {
+    public ZooKeeperTransaction check(final String path) {
         throw new UnsupportedOperationException("check zk version!");
     }
     
@@ -81,9 +81,9 @@ public class BaseTransaction {
      *
      * @param path key
      * @param version version
-     * @return ZKTransaction
+     * @return zookeeper transaction
      */
-    public ZKTransaction check(final String path, final int version) {
+    public ZooKeeperTransaction check(final String path, final int version) {
         throw new UnsupportedOperationException("check zk version!");
     }
     
@@ -92,9 +92,9 @@ public class BaseTransaction {
      *
      * @param path key
      * @param data data
-     * @return ZKTransaction
+     * @return zookeeper transaction
      */
-    public ZKTransaction setData(final String path, final byte[] data) {
+    public ZooKeeperTransaction setData(final String path, final byte[] data) {
         throw new UnsupportedOperationException("check zk version!");
     }
     
@@ -104,9 +104,9 @@ public class BaseTransaction {
      * @param path key
      * @param data data
      * @param version version
-     * @return ZKTransaction
+     * @return zookeeper transaction
      */
-    public ZKTransaction setData(final String path, final byte[] data, final int version) {
+    public ZooKeeperTransaction setData(final String path, final byte[] data, final int version) {
         throw new UnsupportedOperationException("check zk version!");
     }
     
@@ -114,8 +114,8 @@ public class BaseTransaction {
      * Commit.
      *
      * @return operation result
-     * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
+     * @throws KeeperException zookeeper exception
+     * @throws InterruptedException interrupted exception
      */
     public List<OpResult> commit() throws InterruptedException, KeeperException {
         throw new UnsupportedOperationException("check zk version!");

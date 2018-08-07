@@ -21,8 +21,8 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseOperation;
 import org.apache.zookeeper.KeeperException;
 
-/*
- * Async retry operation which Update action.
+/**
+ * Async retry operation which update action.
  *
  * @author lidongbo
  */
@@ -45,6 +45,6 @@ public class UpdateOperation extends BaseOperation {
     
     @Override
     public String toString() {
-        return String.format("UpdateOperation key:%s,value:%s", key, value);
+        return String.format("UpdateOperation key: %s, value: %s", key, value);
     }
 }

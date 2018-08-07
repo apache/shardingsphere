@@ -27,7 +27,7 @@ import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 
-/*
+/**
  * Competition of node write permission.
  * It is not recommended to be used as a global variable.
  *
@@ -36,41 +36,24 @@ import org.apache.zookeeper.WatchedEvent;
 @Slf4j
 public abstract class LeaderElection {
     
+    private int retryCount = ZookeeperConstants.NODE_ELECTION_RETRY;
+    
     private boolean done;
-    
-    private int retryCount;
-    
-    public LeaderElection() {
-        retryCount = ZookeeperConstants.NODE_ELECTION_RETRY;
-    }
-
-    private boolean contend(final String node, final IProvider provider, final ZookeeperEventListener zookeeperEventListener) throws KeeperException, InterruptedException {
-        boolean success = false;
-        try {
-            // todo EPHEMERAL_SEQUENTIAL check index value
-            provider.create(node, ZookeeperConstants.CLIENT_ID, CreateMode.EPHEMERAL);
-            success = true;
-        } catch (final KeeperException.NodeExistsException ex) {
-            log.info("contend not success");
-            // TODO or changing_key node value == current client id
-            provider.exists(node, WatcherCreator.deleteWatcher(zookeeperEventListener));
-        }
-        return success;
-    }
     
     /**
      * Listener will be register when the contention of the path is unsuccessful.
      *
-     * @param nodeBeContend nodeBeContend
+     * @param nodeBeContend node be contend
      * @param provider provider
-     * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
+     * @throws KeeperException zookeeper exception
+     * @throws InterruptedException interrupted exception
     */
     public void executeContention(final String nodeBeContend, final IProvider provider) throws KeeperException, InterruptedException {
         boolean canBegin;
         final String realNode = provider.getRealPath(nodeBeContend);
-        final String contendNode = PathUtil.getRealPath(realNode, ZookeeperConstants.CHANGING_KEY);
-        canBegin = this.contend(contendNode, provider, new ZookeeperEventListener(contendNode) {
+        String contendNode = PathUtil.getRealPath(realNode, ZookeeperConstants.CHANGING_KEY);
+        canBegin = contend(contendNode, provider, new ZookeeperEventListener(contendNode) {
+            
             @Override
             public void process(final WatchedEvent event) {
                 try {
@@ -85,7 +68,6 @@ public abstract class LeaderElection {
                 }
             }
         });
-    
         if (canBegin) {
             try {
                 action();
@@ -96,6 +78,20 @@ public abstract class LeaderElection {
             }
             provider.delete(contendNode);
         }
+    }
+    
+    private boolean contend(final String node, final IProvider provider, final ZookeeperEventListener zookeeperEventListener) throws KeeperException, InterruptedException {
+        boolean result = false;
+        try {
+            // TODO EPHEMERAL_SEQUENTIAL check index value
+            provider.create(node, ZookeeperConstants.CLIENT_ID, CreateMode.EPHEMERAL);
+            result = true;
+        } catch (final KeeperException.NodeExistsException ex) {
+            log.info("contend not result");
+            // TODO or changing_key node value == current client id
+            provider.exists(node, WatcherCreator.deleteWatcher(zookeeperEventListener));
+        }
+        return result;
     }
     
     /**
@@ -112,10 +108,10 @@ public abstract class LeaderElection {
     }
     
     /**
-     * Contend exec.
+     * Contend execute.
      *
-     * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
+     * @throws KeeperException zookeeper exception
+     * @throws InterruptedException interrupted exception
      */
     public abstract void action() throws KeeperException, InterruptedException;
     
@@ -123,6 +119,5 @@ public abstract class LeaderElection {
      * Callback.
      */
     public void callback() {
-        
     }
 }

@@ -24,44 +24,43 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.KeeperException;
 
-/*
+/**
  * Sync retry call.
  *
  * @author lidongbo
  */
 @Slf4j
+@Getter(value = AccessLevel.PROTECTED)
 public abstract class RetryCallable {
     
-    @Getter(value = AccessLevel.PROTECTED)
-    private final DelayPolicyExecutor delayPolicyExecutor;
-    
-    @Getter(value = AccessLevel.PROTECTED)
     private final IProvider provider;
     
+    private final DelayPolicyExecutor delayPolicyExecutor;
+    
     public RetryCallable(final IProvider provider, final DelayRetryPolicy delayRetryPolicy) {
-        this.delayPolicyExecutor = new DelayPolicyExecutor(delayRetryPolicy);
         this.provider = provider;
+        delayPolicyExecutor = new DelayPolicyExecutor(delayRetryPolicy);
     }
     
     /**
      * Call the action.
      *
-     * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
+     * @throws KeeperException zookeeper exception
+     * @throws InterruptedException interrupted exception
      */
     public abstract void call() throws KeeperException, InterruptedException;
     
     /**
      * Call without result.
      *
-     * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
+     * @throws KeeperException zookeeper exception
+     * @throws InterruptedException interrupted exception
      */
     public void exec() throws KeeperException, InterruptedException {
         try {
             call();
         } catch (final KeeperException ex) {
-            log.warn("exec KeeperException:{}", ex.getMessage());
+            log.warn("exec KeeperException: {}", ex.getMessage());
             delayPolicyExecutor.next();
             if (Connection.needReset(ex)) {
                 provider.resetConnection();
@@ -74,7 +73,7 @@ public abstract class RetryCallable {
         for (;;) {
             long delay = delayPolicyExecutor.getNextTick() - System.currentTimeMillis();
             if (delay > 0) {
-                log.debug("exec delay:{}", delay);
+                log.debug("exec delay: {}", delay);
                 Thread.sleep(delay);
             } else {
                 if (delayPolicyExecutor.hasNext()) {
