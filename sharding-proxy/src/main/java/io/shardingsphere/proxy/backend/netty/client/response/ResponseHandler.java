@@ -17,9 +17,9 @@
 
 package io.shardingsphere.proxy.backend.netty.client.response;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 
 /**
  * SQL executed response handler.
@@ -29,13 +29,30 @@ import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
  */
 public abstract class ResponseHandler extends ChannelInboundHandlerAdapter {
     
-    protected abstract void auth(ChannelHandlerContext context, MySQLPacketPayload payload);
+    private boolean authorized;
     
-    protected abstract void eofPacket(ChannelHandlerContext context, MySQLPacketPayload payload);
+    @Override
+    public void channelRead(final ChannelHandlerContext context, final Object message) {
+        ByteBuf byteBuf = (ByteBuf) message;
+        int header = getHeader(byteBuf);
+        
+        if (!authorized) {
+            auth(context, byteBuf);
+            authorized = true;
+        } else {
+            executeCommand(context, byteBuf, header);
+        }
+    }
     
-    protected abstract void okPacket(ChannelHandlerContext context, MySQLPacketPayload payload);
+    protected abstract int getHeader(ByteBuf byteBuf);
     
-    protected abstract void errPacket(ChannelHandlerContext context, MySQLPacketPayload payload);
+    protected abstract void auth(ChannelHandlerContext context, ByteBuf byteBuf);
     
-    protected abstract void commonPacket(ChannelHandlerContext context, MySQLPacketPayload payload);
+    protected abstract void executeCommand(ChannelHandlerContext context, ByteBuf byteBuf, int header);
+    
+    @Override
+    public void channelInactive(final ChannelHandlerContext ctx) throws Exception {
+        //TODO delete connection map
+        super.channelInactive(ctx);
+    }
 }

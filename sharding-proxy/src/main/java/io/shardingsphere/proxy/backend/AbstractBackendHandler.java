@@ -47,6 +47,9 @@ public abstract class AbstractBackendHandler implements BackendHandler {
     protected abstract CommandResponsePackets execute0() throws Exception;
     
     private Optional<SQLException> findSQLException(final Exception exception) {
+        if (exception instanceof SQLException) {
+            return Optional.of((SQLException) exception);
+        }
         if (null == exception.getCause()) {
             return Optional.absent();
         }
@@ -57,7 +60,7 @@ public abstract class AbstractBackendHandler implements BackendHandler {
             return Optional.absent();
         }
         if (exception.getCause().getCause() instanceof SQLException) {
-            return Optional.of((SQLException) exception.getCause());
+            return Optional.of((SQLException) exception.getCause().getCause());
         }
         return Optional.absent();
     }

@@ -88,24 +88,27 @@ public final class MySQLQueryResult implements QueryResult {
     }
     
     /**
-     * Set GenericResponse to the CommandResponsePackets.
-     * @param mysqlPacket mysqlPacket
+     * Set generic response to command response packets.
+     * 
+     * @param mysqlPacket MySQL packet
      */
     public void setGenericResponse(final MySQLPacket mysqlPacket) {
         commandResponsePackets.getPackets().add(mysqlPacket);
     }
     
     /**
-     * Whether the QueryResult is needed to add ColumnDefinition.
-     * @return whether the columnCount is larger than columnDefinitions's size
+     * Whether query result is needed to add column definition.
+     * 
+     * @return whether the column count is larger than column definitions's size
      */
     public boolean needColumnDefinition() {
         return columnCount > columnDefinitions.size();
     }
     
     /**
-     * Add ColumnDefinition to the QueryResult.
-     * @param columnDefinition columnDefinition
+     * Add column definition.
+     * 
+     * @param columnDefinition column definition
      */
     public void addColumnDefinition(final ColumnDefinition41Packet columnDefinition) {
         commandResponsePackets.getPackets().add(columnDefinition);
@@ -116,16 +119,17 @@ public final class MySQLQueryResult implements QueryResult {
     }
     
     /**
-     * Add TextResultSetRow to the QueryResult.
-     * @param textResultSetRow textResultSetRow
+     * Add text result set row.
+     * 
+     * @param textResultSetRow text result set row
      */
     public void addTextResultSetRow(final TextResultSetRowPacket textResultSetRow) {
         put(textResultSetRow);
     }
     
     /**
-     * Set Column Finished.
-     * @param eofPacket eofPacket
+     * Set column finished.
+     * @param eofPacket eof packet
      */
     public void setColumnFinished(final EofPacket eofPacket) {
         commandResponsePackets.getPackets().add(eofPacket);
@@ -134,8 +138,8 @@ public final class MySQLQueryResult implements QueryResult {
     }
     
     /**
-     * Set Row Finished.
-     * @param eofPacket eofPacket
+     * Set row finished.
+     * @param eofPacket eof packet
      */
     public void setRowFinished(final EofPacket eofPacket) {
         put(eofPacket);
