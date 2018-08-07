@@ -80,7 +80,7 @@ Database Mesh的关注重点在于如何将分布式的数据访问应用与数�
 * 分库 + 分表
 * 读写分离
 * 支持聚合，分组，排序，分页，OR，关联查询等复杂查询语句
-* 支持DML，DDL，TCL以及数据库管理语句
+* 支持DML，DDL，TCL，DCL以及数据库管理语句
 * 支持=，BETWEEN，IN的分片操作符
 * 自定义的灵活分片策略，支持多分片键共用，支持行表达式
 * 基于Hint的强制路由
@@ -88,12 +88,16 @@ Database Mesh的关注重点在于如何将分布式的数据访问应用与数�
 
 ### 分布式事务
 
-* XA分布式事务
+* XA强一致事务
 * 最大努力送达型事务
-* TCC型事务(TBD)
+* Saga事务 (Doing)
 
 ### 数据库治理
 
 * 配置中心，配置动态化
 * 客户端熔断
 * 支持Open Tracing
+
+## 规划线路图
+
+![Roadmap](http://ovfotjrsi.bkt.clouddn.com/roadmap_cn.png)

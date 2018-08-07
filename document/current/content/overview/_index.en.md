@@ -82,7 +82,7 @@ By using Database Mesh, applications and databases will form a large grid system
 * Both databases and tables sharding.
 * Read-write splitting supported.
 * Aggregation functions, GROUP BY, ORDER BY, LIMIT, OR, and JOIN DQL supported.
-* DML, DDL, TCL and database management command supported.
+* DML, DDL, TCL , DCL and database management command supported.
 * Sharding operator `=`, `BETWEEN` and `IN` supported.
 * Sharding algorithm customization and inline expression supported.
 * Forced route based on hint.
@@ -92,10 +92,14 @@ By using Database Mesh, applications and databases will form a large grid system
 
 * XA transaction supported.
 * Best-Effort-Delivery transaction supported.
-* Try-Confirm-Cancel transaction (TBD) supported.
+* Saga transaction (Doing) supported.
 
 ### Database Orchestration
 
 * Configuration center dynamic configuration supported.
 * Circuit breaker supported.
 * Open tracing supported.
+
+## Roadmap
+
+![Roadmap](http://ovfotjrsi.bkt.clouddn.com/roadmap_en.png)
