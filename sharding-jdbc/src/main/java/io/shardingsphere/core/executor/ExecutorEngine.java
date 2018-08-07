@@ -89,7 +89,6 @@ public abstract class ExecutorEngine implements AutoCloseable {
         }
         OverallExecutionEvent event = new OverallExecutionEvent(sqlType, baseStatementUnits.size());
         EventBusInstance.getInstance().post(event);
-        Iterator<? extends BaseStatementUnit> iterator = baseStatementUnits.iterator();
         try {
             List<T> result = getExecuteResults(sqlType, baseStatementUnits, executeCallback);
             event.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
