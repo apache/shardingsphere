@@ -34,8 +34,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class PathNode {
     
+    @Getter
     private final Map<String, PathNode> children = new ConcurrentHashMap<>();
 
+    @Getter
     private final String nodeKey;
     
     @Getter(value = AccessLevel.PACKAGE)
@@ -57,31 +59,13 @@ public final class PathNode {
     }
     
     /**
-     * Get children.
-     *
-     * @return children
-     */
-    public Map<String, PathNode> getChildren() {
-        return children;
-    }
-    
-    /**
-     * Get key.
-     *
-     * @return node key
-     */
-    public String getKey() {
-        return this.nodeKey;
-    }
-    
-    /**
      * Attach child node.
      *
      * @param node node
      */
-    public void attachChild(final PathNode node) {
+    void attachChild(final PathNode node) {
         this.children.put(node.nodeKey, node);
-        node.setPath(PathUtil.getRealPath(path, node.getKey()));
+        node.setPath(PathUtil.getRealPath(path, node.getNodeKey()));
     }
     
     PathNode set(final PathResolve pathResolve, final String value) {

@@ -92,8 +92,8 @@ public final class PathTree {
                 log.debug("loading status:{}", status);
                 status = PathStatus.CHANGING;
     
-                final PathNode newRoot = new PathNode(rootNode.get().getKey());
-                final List<String> children = provider.getChildren(PathUtil.checkPath(rootNode.get().getKey()));
+                final PathNode newRoot = new PathNode(rootNode.get().getNodeKey());
+                final List<String> children = provider.getChildren(PathUtil.checkPath(rootNode.get().getNodeKey()));
                 children.remove(ZookeeperConstants.CHANGING_KEY);
                 attachIntoNode(children, newRoot);
                 rootNode.set(newRoot);
@@ -190,7 +190,7 @@ public final class PathTree {
      * Watch data change.
      */
     public void watch() {
-        watch(new ZookeeperEventListener(rootNode.get().getKey()) {
+        watch(new ZookeeperEventListener(rootNode.get().getNodeKey()) {
             @Override
             public void process(final WatchedEvent event) {
                 String path = event.getPath();
@@ -222,7 +222,7 @@ public final class PathTree {
         }
         final String key = zookeeperEventListener.getKey();
         log.debug("PathTree Watch:{}", key);
-        client.registerWatch(rootNode.get().getKey(), zookeeperEventListener);
+        client.registerWatch(rootNode.get().getNodeKey(), zookeeperEventListener);
         watcherKeys.add(key);
     }
     
