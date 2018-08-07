@@ -37,6 +37,7 @@ import java.util.Map.Entry;
  * Query result for memory loading.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public final class MemoryQueryResult implements QueryResult {
     
