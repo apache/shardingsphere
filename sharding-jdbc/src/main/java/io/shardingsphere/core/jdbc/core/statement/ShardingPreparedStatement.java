@@ -34,7 +34,6 @@ import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.jdbc.core.resultset.GeneratedKeysResultSet;
 import io.shardingsphere.core.jdbc.core.resultset.ShardingResultSet;
 import io.shardingsphere.core.jdbc.metadata.ShardingConnectionTableMetaDataConnectionManager;
-import io.shardingsphere.core.merger.JDBCQueryResult;
 import io.shardingsphere.core.merger.MergeEngine;
 import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.MergedResult;
@@ -348,7 +347,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         for (PreparedStatement each : routedStatements) {
             ResultSet resultSet = each.getResultSet();
             resultSets.add(resultSet);
-            queryResults.add(new JDBCQueryResult(resultSet));
+            queryResults.add(new MemoryQueryResult(resultSet));
         }
         if (routeResult.getSqlStatement() instanceof SelectStatement || routeResult.getSqlStatement() instanceof DALStatement) {
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(
