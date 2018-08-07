@@ -31,10 +31,8 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.mockito.Mockito.mock;
@@ -63,18 +61,8 @@ public abstract class AbstractStatementParserTest {
     }
     
     protected final ShardingTableMetaData createShardingTableMetaData() {
-        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>();
-        tableMetaDataMap.put("TABLE_XXX", getTableMetaData(Arrays.asList("field1", "field2")));
-        ShardingTableMetaData result = mock(ShardingTableMetaData.class);
-        when(result.getTableMetaDataMap()).thenReturn(tableMetaDataMap);
-        return result;
-    }
-    
-    private static TableMetaData getTableMetaData(final List<String> columnNames) {
-        List<ColumnMetaData> columnMetaDataList = new ArrayList<>();
-        for (String columnName : columnNames) {
-            columnMetaDataList.add(new ColumnMetaData(columnName, "int(11)", ""));
-        }
-        return new TableMetaData(columnMetaDataList);
+        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(1, 1);
+        tableMetaDataMap.put("TABLE_XXX", new TableMetaData(Arrays.asList(new ColumnMetaData("field1", "varchar", false), new ColumnMetaData("field2", "varchar", false))));
+        return new ShardingTableMetaData(tableMetaDataMap);
     }
 }

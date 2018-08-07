@@ -19,7 +19,6 @@ package io.shardingsphere.core.jdbc.core.statement;
 
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.common.base.AbstractShardingJDBCDatabaseAndTableTest;
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.executor.event.DMLExecutionEvent;
 import io.shardingsphere.core.executor.event.EventExecutionType;
 import io.shardingsphere.core.jdbc.JDBCTestSQL;
@@ -42,10 +41,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDatabaseAndTableTest {
-    
-    public ShardingPreparedStatementTest(final DatabaseType databaseType) {
-        super(databaseType);
-    }
     
     @Test
     public void assertAddBatch() throws SQLException {
@@ -87,10 +82,8 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
             preparedStatement.setString(4, "BATCH");
             preparedStatement.addBatch();
             int[] result = preparedStatement.executeBatch();
-            if (DatabaseType.Oracle != getCurrentDatabaseType()) {
-                for (int rs : result) {
-                    assertThat(rs, is(1));
-                }
+            for (int rs : result) {
+                assertThat(rs, is(1));
             }
         }
         EventBusInstance.getInstance().unregister(listener);
@@ -98,10 +91,6 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
     
     @Test
     public void assertAddBatchWithoutGenerateKeyColumn() throws SQLException {
-        // TODO 调研oracle为什么不可以
-        if (DatabaseType.Oracle == getCurrentDatabaseType()) {
-            return;
-        }
         String sql = SQLPlaceholderUtil.replacePreparedStatement(JDBCTestSQL.INSERT_WITH_AUTO_INCREMENT_COLUMN_SQL);
         try (
                 Connection connection = getShardingDataSource().getConnection();
@@ -158,10 +147,6 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
     
     @Test
     public void assertAddBatchWithGenerateKeyColumn() throws SQLException {
-        // TODO 调研oracle为什么不可以
-        if (DatabaseType.Oracle == getCurrentDatabaseType()) {
-            return;
-        }
         try (
                 Connection connection = getShardingDataSource().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(JDBCTestSQL.INSERT_ORDER_ITEM_WITH_ALL_PLACEHOLDERS_SQL, Statement.RETURN_GENERATED_KEYS);
@@ -237,15 +222,9 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
     
             int[] result = preparedStatement.executeBatch();
             assertThat(result.length, is(3));
-            if (DatabaseType.Oracle == getCurrentDatabaseType()) {
-                assertThat(result[0], is(-2));
-                assertThat(result[1], is(-2));
-                assertThat(result[2], is(-2));
-            } else {
-                assertThat(result[0], is(4));
-                assertThat(result[1], is(0));
-                assertThat(result[2], is(4));
-            }
+            assertThat(result[0], is(4));
+            assertThat(result[1], is(0));
+            assertThat(result[2], is(4));
         }
     }
     

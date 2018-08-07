@@ -23,6 +23,9 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.Holder;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
+import java.io.IOException;
+import java.util.List;
+import java.util.Stack;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -31,9 +34,6 @@ import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.data.ACL;
-
-import java.util.List;
-import java.util.Stack;
 
 /*
  * Base provider.
@@ -94,13 +94,21 @@ public class BaseProvider implements IProvider {
     
     @Override
     public void create(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
+        if (exists(key)) {
+            log.debug("node exist:{}", key);
+            return;
+        }
         holder.getZooKeeper().create(key, value.getBytes(ZookeeperConstants.UTF_8), authorities, createMode);
         log.debug("BaseProvider createCurrentOnly:{}", key);
     }
 
     @Override
-    public void update(final String key, final String value) throws KeeperException, InterruptedException {
-        holder.getZooKeeper().setData(key, value.getBytes(ZookeeperConstants.UTF_8), ZookeeperConstants.VERSION);
+    public boolean update(final String key, final String value) throws KeeperException, InterruptedException {
+        if (exists(key)) {
+            holder.getZooKeeper().setData(key, value.getBytes(ZookeeperConstants.UTF_8), ZookeeperConstants.VERSION);
+            return true;
+        }
+        return false;
     }
     
     @Override
@@ -145,9 +153,7 @@ public class BaseProvider implements IProvider {
     public void resetConnection() {
         try {
             holder.reset();
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
+        } catch (final InterruptedException | IOException ex) {
             log.error("resetConnection Exception:{}", ex.getMessage(), ex);
         }
     }

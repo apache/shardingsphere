@@ -36,7 +36,10 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class OKPacket implements MySQLPacket {
     
-    private static final int HEADER = 0x00;
+    /**
+     * Header of OK packet.
+     */
+    public static final int HEADER = 0x00;
     
     private static final int STATUS_FLAG = StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue();
     

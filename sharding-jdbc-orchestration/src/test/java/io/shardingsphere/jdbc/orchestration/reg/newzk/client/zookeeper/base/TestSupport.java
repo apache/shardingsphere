@@ -17,6 +17,11 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.zookeeper.WatchedEvent;
+
+@Slf4j
 public class TestSupport {
     
     public static final String AUTH = "digest";
@@ -26,4 +31,19 @@ public class TestSupport {
     public static final int SESSION_TIMEOUT = 200000;
     
     public static final String ROOT = "test";
+    
+    /**
+     * Test exec.
+     *
+     * @return listener ZookeeperEventListener
+     */
+    public static ZookeeperEventListener buildListener() {
+        return new ZookeeperEventListener() {
+            
+            @Override
+            public void process(final WatchedEvent event) {
+                log.debug(event.toString());
+            }
+        };
+    }
 }

@@ -48,17 +48,13 @@ public final class ResultSetAdapterTest extends AbstractShardingJDBCDatabaseAndT
     
     private final Map<DatabaseType, ResultSet> resultSets = new HashMap<>();
     
-    public ResultSetAdapterTest(final DatabaseType databaseType) {
-        super(databaseType);
-    }
-    
     @Before
     public void init() throws SQLException {
         ShardingConnection shardingConnection = getShardingDataSource().getConnection();
         shardingConnections.add(shardingConnection);
         Statement statement = shardingConnection.createStatement();
         statements.add(statement);
-        resultSets.put(getCurrentDatabaseType(), statement.executeQuery(JDBCTestSQL.SELECT_GROUP_BY_USER_ID_SQL));
+        resultSets.put(DatabaseType.H2, statement.executeQuery(JDBCTestSQL.SELECT_GROUP_BY_USER_ID_SQL));
     }
     
     @After

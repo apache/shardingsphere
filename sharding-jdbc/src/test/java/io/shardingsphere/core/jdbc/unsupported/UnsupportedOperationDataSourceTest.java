@@ -18,17 +18,12 @@
 package io.shardingsphere.core.jdbc.unsupported;
 
 import io.shardingsphere.core.common.base.AbstractShardingJDBCDatabaseAndTableTest;
-import io.shardingsphere.core.constant.DatabaseType;
 import org.junit.Test;
 
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 
 public final class UnsupportedOperationDataSourceTest extends AbstractShardingJDBCDatabaseAndTableTest {
-    
-    public UnsupportedOperationDataSourceTest(final DatabaseType databaseType) {
-        super(databaseType);
-    }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetLoginTimeout() throws SQLException {

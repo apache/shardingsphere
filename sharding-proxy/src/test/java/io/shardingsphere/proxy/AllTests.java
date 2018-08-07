@@ -17,14 +17,24 @@
 
 package io.shardingsphere.proxy;
 
-import io.shardingsphere.proxy.util.RandomGeneratorTest;
+import io.shardingsphere.proxy.transport.mysql.packet.handshake.AuthPluginDataTest;
+import io.shardingsphere.proxy.transport.mysql.packet.handshake.AuthorityHandlerTest;
+import io.shardingsphere.proxy.transport.mysql.packet.handshake.ConnectionIdGeneratorTest;
+import io.shardingsphere.proxy.transport.mysql.packet.handshake.HandshakePacketTest;
+import io.shardingsphere.proxy.transport.mysql.packet.handshake.HandshakeResponse41PacketTest;
+import io.shardingsphere.proxy.transport.mysql.packet.handshake.RandomGeneratorTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        RandomGeneratorTest.class,
-    })
+        AuthorityHandlerTest.class,
+        AuthPluginDataTest.class,
+        ConnectionIdGeneratorTest.class,
+        HandshakePacketTest.class,
+        HandshakeResponse41PacketTest.class,
+        RandomGeneratorTest.class
+})
 public class AllTests {
 }

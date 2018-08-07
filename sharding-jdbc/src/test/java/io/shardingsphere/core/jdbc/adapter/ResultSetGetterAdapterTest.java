@@ -52,10 +52,6 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     
     private final String columnName = "user_id";
     
-    public ResultSetGetterAdapterTest(final DatabaseType databaseType) {
-        super(databaseType);
-    }
-    
     @Before
     public void init() throws SQLException {
         ShardingConnection shardingConnection = getShardingDataSource().getConnection();
@@ -64,7 +60,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
         statements.add(statement);
         ResultSet resultSet = statement.executeQuery(JDBCTestSQL.SELECT_ORDER_BY_USER_ID_SQL);
         resultSet.next();
-        resultSets.put(getCurrentDatabaseType(), resultSet);
+        resultSets.put(DatabaseType.H2, resultSet);
     }
     
     @After

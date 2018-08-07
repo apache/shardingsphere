@@ -204,7 +204,7 @@ public abstract class AbstractSelectParser implements SQLParser {
         Preconditions.checkState(starSelectItem.getOwner().isPresent());
         Preconditions.checkState(orderItem.getName().isPresent());
         Optional<Table> table = selectStatement.getTables().find(starSelectItem.getOwner().get());
-        return table.isPresent() && shardingTableMetaData.hasColumn(table.get().getName(), orderItem.getName().get());
+        return table.isPresent() && shardingTableMetaData.containsColumn(table.get().getName(), orderItem.getName().get());
     }
     
     private boolean containsItemInSelectItems(final SelectStatement selectStatement, final OrderItem orderItem) {

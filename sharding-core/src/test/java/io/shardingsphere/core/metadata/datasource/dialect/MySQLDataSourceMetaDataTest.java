@@ -45,4 +45,12 @@ public final class MySQLDataSourceMetaDataTest {
     public void assertGetALLPropertiesFailure() {
         new MySQLDataSourceMetaData("jdbc:mysql:xxxxxxxx");
     }
+    
+    @Test
+    public void assertIsInSameDatabaseInstance() {
+        MySQLDataSourceMetaData target = new MySQLDataSourceMetaData("jdbc:mysql://127.0.0.1:3306/ds_0");
+        MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData("jdbc:mysql://127.0.0.1/ds_0?serverTimezone=UTC&useSSL=false");
+        assertThat(actual.isInSameDatabaseInstance(target), is(true));
+    }
 }
+

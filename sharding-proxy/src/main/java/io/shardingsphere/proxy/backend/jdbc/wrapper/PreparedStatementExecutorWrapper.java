@@ -17,8 +17,6 @@
 
 package io.shardingsphere.proxy.backend.jdbc.wrapper;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.SQLJudgeEngine;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -28,7 +26,6 @@ import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingsphere.proxy.config.RuleRegistry;
-import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute.PreparedStatementParameter;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.Connection;
@@ -48,7 +45,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     
     private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
     
-    private final List<PreparedStatementParameter> preparedStatementParameters;
+    private final List<Object> parameters;
     
     @Override
     public SQLRouteResult route(final String sql, final DatabaseType databaseType) {
@@ -65,22 +62,15 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     }
     
     private SQLRouteResult doShardingRoute(final String sql, final DatabaseType databaseType) {
-        PreparedStatementRoutingEngine routingEngine = new PreparedStatementRoutingEngine(
-                sql, RULE_REGISTRY.getShardingRule(), RULE_REGISTRY.getShardingTableMetaData(), databaseType, RULE_REGISTRY.isShowSQL(), RULE_REGISTRY.getShardingDataSourceMetaData());
-        return routingEngine.route(Lists.transform(preparedStatementParameters, new Function<PreparedStatementParameter, Object>() {
-            
-            @Override
-            public Object apply(final PreparedStatementParameter input) {
-                return input.getValue();
-            }
-        }));
+        return new PreparedStatementRoutingEngine(
+                sql, RULE_REGISTRY.getShardingRule(), RULE_REGISTRY.getMetaData().getTable(), databaseType, RULE_REGISTRY.isShowSQL(), RULE_REGISTRY.getMetaData().getDataSource()).route(parameters);
     }
     
     @Override
     public Statement createStatement(final Connection connection, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
         PreparedStatement result = isReturnGeneratedKeys ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sql);
-        for (int i = 0; i < preparedStatementParameters.size(); i++) {
-            result.setObject(i + 1, preparedStatementParameters.get(i).getValue());
+        for (int i = 0; i < parameters.size(); i++) {
+            result.setObject(i + 1, parameters.get(i));
         }
         return result;
     }

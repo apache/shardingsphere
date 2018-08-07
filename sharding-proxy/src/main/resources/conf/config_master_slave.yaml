@@ -39,9 +39,9 @@
 #    #                  The benefit of this approach is saving memory for Proxy by Stream ResultSet.
 #    # CONNECTION_STRICTLY: Proxy will release connections after get the overall rows from the ResultSet.
 #    #                      Meanwhile, the cost of the memory will be increased.
-#    proxy.mode: MEMORY_STRICTLY
-#    proxy.transaction.mode: NONE
-#    proxy.max.working.threads: 16
+#    connection.mode: MEMORY_STRICTLY
+#    acceptor.size: 16  # The default value is available processors count * 2.
+#    executor.size: 16  # Infinite by default.
 #    sql.show: false
 
 #orchestration:

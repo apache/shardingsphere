@@ -53,11 +53,8 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
     
     private static final Integer FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
     
-    private final BackendConnection backendConnection;
-    
     public MemoryStrictlyExecuteEngine(final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper) {
-        super(jdbcExecutorWrapper);
-        this.backendConnection = backendConnection;
+        super(backendConnection, jdbcExecutorWrapper);
     }
     
     @Override
@@ -70,16 +67,15 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
                 ? getExecuteQueryResponse((ExecuteQueryResponseUnit) firstResponseUnit, futureList) : getExecuteUpdateResponse((ExecuteUpdateResponseUnit) firstResponseUnit, futureList);
     }
     
-    private List<Future<ExecuteResponseUnit>> asyncExecute(final boolean isReturnGeneratedKeys, final Collection<SQLExecutionUnit> sqlExecutionUnits) {
+    private List<Future<ExecuteResponseUnit>> asyncExecute(final boolean isReturnGeneratedKeys, final Collection<SQLExecutionUnit> sqlExecutionUnits) throws SQLException {
         List<Future<ExecuteResponseUnit>> result = new LinkedList<>();
         for (SQLExecutionUnit each : sqlExecutionUnits) {
-            final String dataSourceName = each.getDataSource();
             final String actualSQL = each.getSqlUnit().getSql();
+            final Statement statement = getJdbcExecutorWrapper().createStatement(getBackendConnection().getConnection(each.getDataSource()), actualSQL, isReturnGeneratedKeys);
             result.add(getExecutorService().submit(new Callable<ExecuteResponseUnit>() {
                 
                 @Override
                 public ExecuteResponseUnit call() throws SQLException {
-                    Statement statement = getJdbcExecutorWrapper().createStatement(backendConnection.getConnection(dataSourceName), actualSQL, isReturnGeneratedKeys);
                     return executeWithoutMetadata(statement, actualSQL, isReturnGeneratedKeys);
                 }
             }));
@@ -89,7 +85,7 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
     
     private ExecuteResponseUnit syncExecute(final boolean isReturnGeneratedKeys, final SQLExecutionUnit sqlExecutionUnit) throws SQLException {
         Statement statement = getJdbcExecutorWrapper().createStatement(
-                backendConnection.getConnection(sqlExecutionUnit.getDataSource()), sqlExecutionUnit.getSqlUnit().getSql(), isReturnGeneratedKeys);
+                getBackendConnection().getConnection(sqlExecutionUnit.getDataSource()), sqlExecutionUnit.getSqlUnit().getSql(), isReturnGeneratedKeys);
         return executeWithMetadata(statement, sqlExecutionUnit.getSqlUnit().getSql(), isReturnGeneratedKeys);
     }
     

@@ -23,21 +23,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLPlaceholderUtil {
-    
-    /**
-     * Replace statement.
-     * 
-     * @param str string
-     * @param args arguments
-     * @return replaced string
-     */
-    public static String replaceStatement(final String str, final Object[] args) {
-        if (args.length == 0) {
-            return str;
-        }
-        return String.format(str, args).replace("%%", "%");
-    }
-    
+
     /**
      * Replace prepared statement.
      * @param str string

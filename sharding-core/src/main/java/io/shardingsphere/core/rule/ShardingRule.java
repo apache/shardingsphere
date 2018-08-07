@@ -77,7 +77,7 @@ public final class ShardingRule {
         for (String group : shardingRuleConfig.getBindingTableGroups()) {
             List<TableRule> tableRulesForBinding = new LinkedList<>();
             for (String logicTableNameForBindingTable : StringUtil.splitWithComma(group)) {
-                tableRulesForBinding.add(getTableRule(logicTableNameForBindingTable));
+                tableRulesForBinding.add(getTableRuleByLogicTableName(logicTableNameForBindingTable));
             }
             bindingTableRules.add(new BindingTableRule(tableRulesForBinding));
         }
@@ -122,12 +122,29 @@ public final class ShardingRule {
     }
     
     /**
+     * Find table rule though actual table name.
+     *
+     * @param actualTableName actual table name
+     * @return table rule
+     */
+    public TableRule getTableRuleByActualTableName(final String actualTableName) {
+        Optional<TableRule> tableRule = tryFindTableRuleByActualTable(actualTableName.toLowerCase());
+        if (tableRule.isPresent()) {
+            return tableRule.get();
+        }
+        if (!Strings.isNullOrEmpty(shardingDataSourceNames.getDefaultDataSourceName())) {
+            return createTableRuleWithDefaultDataSource(actualTableName.toLowerCase());
+        }
+        throw new ShardingConfigurationException("Cannot find table rule and default data source with actual table: '%s'", actualTableName);
+    }
+    
+    /**
      * Find table rule though logic table name.
      *
      * @param logicTableName logic table name
      * @return table rule
      */
-    public TableRule getTableRule(final String logicTableName) {
+    public TableRule getTableRuleByLogicTableName(final String logicTableName) {
         Optional<TableRule> tableRule = tryFindTableRuleByLogicTable(logicTableName.toLowerCase());
         if (tableRule.isPresent()) {
             return tableRule.get();
@@ -321,7 +338,7 @@ public final class ShardingRule {
      * @return data node
      */
     public DataNode findDataNode(final String dataSourceName, final String logicTableName) {
-        TableRule tableRule = getTableRule(logicTableName);
+        TableRule tableRule = getTableRuleByLogicTableName(logicTableName);
         for (DataNode each : tableRule.getActualDataNodes()) {
             if (shardingDataSourceNames.getDataSourceNames().contains(each.getDataSourceName()) && (null == dataSourceName || each.getDataSourceName().equals(dataSourceName))) {
                 return each;
@@ -342,7 +359,7 @@ public final class ShardingRule {
      * @return is logic index or not
      */
     public boolean isLogicIndex(final String logicIndexName, final String logicTableName) {
-        return logicIndexName.equals(getTableRule(logicTableName).getLogicIndex());
+        return logicIndexName.equals(getTableRuleByLogicTableName(logicTableName).getLogicIndex());
     }
     
     /**

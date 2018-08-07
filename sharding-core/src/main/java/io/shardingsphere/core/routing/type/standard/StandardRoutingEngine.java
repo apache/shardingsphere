@@ -58,7 +58,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
     
     @Override
     public RoutingResult route() {
-        TableRule tableRule = shardingRule.getTableRule(logicTableName);
+        TableRule tableRule = shardingRule.getTableRuleByLogicTableName(logicTableName);
         Collection<String> databaseShardingColumns = shardingRule.getDatabaseShardingStrategy(tableRule).getShardingColumns();
         Collection<String> tableShardingColumns = shardingRule.getTableShardingStrategy(tableRule).getShardingColumns();
         Collection<DataNode> routedDataNodes = new LinkedHashSet<>();
