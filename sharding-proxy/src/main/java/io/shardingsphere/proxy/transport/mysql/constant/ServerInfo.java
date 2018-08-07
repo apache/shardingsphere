@@ -32,7 +32,7 @@ public interface ServerInfo {
     /**
      * Server version.
      */
-    String SERVER_VERSION = "5.6.0-Sharding-Proxy 3.0.0.M2";
+    String SERVER_VERSION = "5.6.0-Sharding-Proxy 3.0.0.M3";
     
     /**
      * Charset code 0x21 is utf8_general_ci.
