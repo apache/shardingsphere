@@ -29,34 +29,24 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
  */
 public abstract class ResponseHandler extends ChannelInboundHandlerAdapter {
     
-    private AuthType authType = AuthType.UN_AUTH;
+    private boolean authorized;
     
     @Override
     public void channelRead(final ChannelHandlerContext context, final Object message) {
         ByteBuf byteBuf = (ByteBuf) message;
         int header = getHeader(byteBuf);
-        switch (authType) {
-            case UN_AUTH:
-                auth(context, byteBuf);
-                authType = AuthType.AUTHING;
-                break;
-            case AUTHING:
-                authing(context, byteBuf, header);
-                authType = AuthType.AUTH_FIN;
-                break;
-            case AUTH_FIN:
-                executeCommand(context, byteBuf, header);
-                break;
-            default:
-                throw new UnsupportedOperationException(authType.name());
+        
+        if (!authorized) {
+            auth(context, byteBuf);
+            authorized = true;
+        } else {
+            executeCommand(context, byteBuf, header);
         }
     }
     
     protected abstract int getHeader(ByteBuf byteBuf);
     
     protected abstract void auth(ChannelHandlerContext context, ByteBuf byteBuf);
-    
-    protected abstract void authing(ChannelHandlerContext context, ByteBuf byteBuf, int header);
     
     protected abstract void executeCommand(ChannelHandlerContext context, ByteBuf byteBuf, int header);
     

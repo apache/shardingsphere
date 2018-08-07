@@ -109,15 +109,6 @@ public final class MySQLResponseHandler extends ResponseHandler {
     }
     
     @Override
-    protected void authing(final ChannelHandlerContext context, final ByteBuf byteBuf, final int header) {
-        if (OKPacket.HEADER == header) {
-            okPacket(context, byteBuf);
-        } else {
-            errPacket(context, byteBuf);
-        }
-    }
-    
-    @Override
     protected void executeCommand(final ChannelHandlerContext context, final ByteBuf byteBuf, final int header) {
         switch (header) {
             case EofPacket.HEADER:
