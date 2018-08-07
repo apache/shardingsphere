@@ -347,7 +347,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         for (PreparedStatement each : routedStatements) {
             ResultSet resultSet = each.getResultSet();
             resultSets.add(resultSet);
-            queryResults.add(new MemoryQueryResult(resultSet));
+            queryResults.add(new StreamQueryResult(resultSet));
         }
         if (routeResult.getSqlStatement() instanceof SelectStatement || routeResult.getSqlStatement() instanceof DALStatement) {
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(
