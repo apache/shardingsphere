@@ -62,9 +62,8 @@ shardingRule:
   defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
   
   props:
-    proxy.mode: MEMORY_STRICTLY
-    proxy.transaction.mode: NONE
-    proxy.max.working.threads: 16
+    connection.mode: MEMORY_STRICTLY
+    executor.size: 16
     sql.show: false
 
 proxyAuthority:
@@ -114,9 +113,8 @@ masterSlaveRule:
     - ds_slave1
     
   props:
-    proxy.mode: MEMORY_STRICTLY
-    proxy.transaction.mode: NONE
-    proxy.max.working.threads: 16
+    connection.mode: MEMORY_STRICTLY
+    executor.size: 16
     sql.show: false
 
 proxyAuthority:
@@ -235,9 +233,8 @@ shardingRule:
           master-slave-key1: master-slave-value1
 
   props:
-    proxy.mode: MEMORY_STRICTLY
-    proxy.transaction.mode: NONE
-    proxy.max.working.threads: 16
+    connection.mode: MEMORY_STRICTLY
+    executor.size: 16
     sql.show: false
 
 proxyAuthority:
@@ -306,9 +303,8 @@ masterSlaveRule: #省略读写分离配置，与Sharding-JDBC配置一致
     #                  这种方式的好处是利用流式ResultSet来节省内存.
     # CONNECTION_STRICTLY: 代理在取出ResultSet中的所有数据后会释放连接.
     #                      同时，内存的消耗将会增加.
-    proxy.mode: 
-    proxy.transaction.mode: 事务模式
-    proxy.max.working.threads: 用于设置连接池工作线程个数，默认为CPU核数 * 2
+    connection.mode: 
+    executor.size: 用于设置连接池工作线程个数，默认为CPU核数
     sql.show: false
 ```
 

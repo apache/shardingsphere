@@ -12,7 +12,7 @@ weight = 4
 
 ```xml
 <dependency>
-    <groupId>shardingsphere</groupId>
+    <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-jdbc-orchestration</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
@@ -23,15 +23,15 @@ weight = 4
 ```java
     // 省略配置dataSourceMap以及shardingRuleConfig
     // ...
-    
+
     // 配置基于Zookeeper的注册中心
     ZookeeperConfiguration zkConfig = new ZookeeperConfiguration();
     zkConfig.setServerLists("localhost:2181");
     zkConfig.setNamespace("sharding-sphere-orchestration");
-    
+
     // 配置数据治理
     OrchestrationConfiguration orchConfig = new OrchestrationConfiguration("orchestration-sharding-data-source", zkConfig, false, OrchestrationConfiguration.SHARDING);
-    
+
     // 获取数据源对象
     DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties(), orchConfig);
 ```
@@ -61,14 +61,14 @@ orchestration:
 ```xml
 <!-- for spring boot -->
 <dependency>
-    <groupId>shardingsphere</groupId>
+    <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-jdbc-orchestration-spring-boot-starter</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
 
 <!-- for spring namespace -->
 <dependency>
-    <groupId>shardingsphere</groupId>
+    <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-jdbc-orchestration-spring-namespace</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
@@ -89,11 +89,11 @@ sharding.jdbc.config.orchestration.zookeeper.namespace=sharding-jdbc-orchestrati
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/orchestration/sharding" 
-    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/orchestration/sharding"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans.xsd
-                        http://shardingsphere.io/schema/shardingsphere/orchestration/sharding 
+                        http://shardingsphere.io/schema/shardingsphere/orchestration/sharding
                         http://shardingsphere.io/schema/shardingsphere/orchestration/sharding/sharding.xsd
                         ">
     <sharding:data-source id="shardingDatabaseTableDataSource" registry-center-ref="regCenter" />
