@@ -50,6 +50,9 @@ public final class JDBCXABackendDataSourceFactory implements JDBCBackendDataSour
         result.setProperty("URL", dataSourceParameter.getUrl());
         result.setProperty("pinGlobalTxToPhysicalConnection", Boolean.TRUE.toString());
         result.setProperty("autoReconnect", Boolean.TRUE.toString());
+        result.setProperty("useServerPrepStmts", Boolean.TRUE.toString());
+        result.setProperty("cachePrepStmts", Boolean.TRUE.toString());
+        result.setProperty("netTimeoutForStreamingResults", "0");
         return result;
     }
 }
