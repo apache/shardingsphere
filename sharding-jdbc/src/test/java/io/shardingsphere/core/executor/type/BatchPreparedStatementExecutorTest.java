@@ -84,8 +84,6 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         assertThat(actual.executeBatch(), is(new int[] {30, 60}));
         verify(preparedStatement1).executeBatch();
         verify(preparedStatement2).executeBatch();
-        verify(preparedStatement1).getConnection();
-        verify(preparedStatement2).getConnection();
         verify(getEventCaller(), times(2)).verifySQLType(SQLType.DML);
         verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(4)).verifyDataSource("ds_1");
@@ -131,8 +129,6 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         assertThat(actual.executeBatch(), is(new int[] {0, 0}));
         verify(preparedStatement1).executeBatch();
         verify(preparedStatement2).executeBatch();
-        verify(preparedStatement1).getConnection();
-        verify(preparedStatement2).getConnection();
         verify(getEventCaller(), times(2)).verifySQLType(SQLType.DML);
         verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(4)).verifyDataSource("ds_1");
