@@ -27,12 +27,12 @@
 1. [ISSUE #701](https://github.com/sharding-sphere/sharding-sphere/issues/701) 缓存SQL解析结果以提升性能
 1. [ISSUE #773](https://github.com/sharding-sphere/sharding-sphere/issues/773) 支持不包含列名的INSERT语句的分片与自增主键
 1. [ISSUE #935](https://github.com/sharding-sphere/sharding-sphere/issues/935) 取代JSON格式，而将Yaml格式的配置文件存储在注册中心
-1. [ISSUE #1004](https://github.com/sharding-sphere/sharding-sphere/issues/1004) 支持在使用读写分离规则时，配置props属性
+1. [ISSUE #1004](https://github.com/sharding-sphere/sharding-sphere/issues/1004) props属性可在分片和读写分离规则配置时独立使用
 
 #### Sharding-JDBC
 
-1. [ISSUE #652](https://github.com/sharding-sphere/sharding-sphere/issues/652) Spring Boot Starter 2.x支持
-1. [ISSUE #702](https://github.com/sharding-sphere/sharding-sphere/issues/702) 支持以 $->{..} 作为inline表达式的标记
+1. [ISSUE #652](https://github.com/sharding-sphere/sharding-sphere/issues/652) `Spring Boot Starter` 2.X支持
+1. [ISSUE #702](https://github.com/sharding-sphere/sharding-sphere/issues/702) 支持以 `$->{..}` 作为行表达式的标记
 1. [ISSUE #719](https://github.com/sharding-sphere/sharding-sphere/issues/719) 支持Spring bean的方式在命名空间中注入自增序列生成器对象
 1. [ISSUE #720](https://github.com/sharding-sphere/sharding-sphere/issues/720) 支持Spring bean的方式在命名空间中注入分片算法对象
 
@@ -41,19 +41,19 @@
 #### 内核
 
 1. [ISSUE #628](https://github.com/sharding-sphere/sharding-sphere/issues/628) 支持PostgreSQL的数据类型jsonb
-1. [ISSUE #646](https://github.com/sharding-sphere/sharding-sphere/issues/646) 当SELECT ITEMS中的别名与GROUP BY或ORDER BY的真实列名对应时，无需补列
+1. [ISSUE #646](https://github.com/sharding-sphere/sharding-sphere/issues/646) 当SELECT ITEMS中的别名与GROUP BY或ORDER BY的真实列名对应时无需补列
 1. [ISSUE #806](https://github.com/sharding-sphere/sharding-sphere/issues/806) `NOT IN`解析异常
 1. [ISSUE #827](https://github.com/sharding-sphere/sharding-sphere/issues/827) 将`SELECT * FROM table WHERE id IN ()`这种SQL跳出死循环
 1. [ISSUE #919](https://github.com/sharding-sphere/sharding-sphere/issues/919) 使用Groovy解析行表达式可能导致内存泄漏
 1. [ISSUE #993](https://github.com/sharding-sphere/sharding-sphere/issues/993) 无法解析PostgreSQL的双引号占位符
-1. [ISSUE #1015](https://github.com/sharding-sphere/sharding-sphere/issues/1015) 支持使用`SELECT id, COUNT(*) FROM table GROUP BY 1,2`
+1. [ISSUE #1015](https://github.com/sharding-sphere/sharding-sphere/issues/1015) 支持SQL `SELECT id, COUNT(*) FROM table GROUP BY 1,2`
 
 #### Sharding-JDBC
 
 1. [ISSUE #372](https://github.com/sharding-sphere/sharding-sphere/issues/372) 同一PreparedStatement反复使用导致路由缓存未清理
 1. [ISSUE #629](https://github.com/sharding-sphere/sharding-sphere/issues/629) 支持JDBC中设置事务隔离级别
-1. [ISSUE #735](https://github.com/sharding-sphere/sharding-sphere/issues/735) 在Mybatis中使用RoundRobinMasterSlaveLoadBalanceAlgorithm算法路由存在问题
-1. [ISSUE #1011](https://github.com/sharding-sphere/sharding-sphere/issues/1011) 无法在Spring Boot的yaml中处理占位符
+1. [ISSUE #735](https://github.com/sharding-sphere/sharding-sphere/issues/735) 在Mybatis中使用`Round-robin`的读写分离算法路由存在问题
+1. [ISSUE #1011](https://github.com/sharding-sphere/sharding-sphere/issues/1011) 无法在`Spring Boot`的`YAML`中处理占位符
 
 ## 2.0.3
 
