@@ -45,6 +45,7 @@ public final class JDBCRawBackendDataSourceFactory implements JDBCBackendDataSou
         config.setMaximumPoolSize(dataSourceParameter.getMaximumPoolSize());
         config.addDataSourceProperty("useServerPrepStmts", "true");
         config.addDataSourceProperty("cachePrepStmts", "true");
+        config.addDataSourceProperty("netTimeoutForStreamingResults", 0);
         return new HikariDataSource(config);
     }
 }
