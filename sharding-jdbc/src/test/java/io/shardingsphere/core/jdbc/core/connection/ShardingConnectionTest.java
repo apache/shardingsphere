@@ -21,6 +21,7 @@ import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.fixture.TestDataSource;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
@@ -41,7 +42,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
 
 public final class ShardingConnectionTest {
     
@@ -72,7 +72,7 @@ public final class ShardingConnectionTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put(DS_NAME, masterSlaveDataSource);
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, dataSourceMap.keySet());
-        ShardingContext shardingContext = new ShardingContext(dataSourceMap, shardingRule, DatabaseType.H2, null, new ShardingTableMetaData(Collections.<String, TableMetaData>emptyMap()), false);
+        ShardingContext shardingContext = new ShardingContext(dataSourceMap, shardingRule, DatabaseType.H2, null, new ShardingTableMetaData(Collections.<String, TableMetaData>emptyMap()), false, ConnectionMode.MEMORY_STRICTLY);
         connection = new ShardingConnection(shardingContext);
     }
     
@@ -86,7 +86,7 @@ public final class ShardingConnectionTest {
     
     @Test
     public void assertGetConnectionFromCache() throws SQLException {
-        assertSame(connection.getConnection(DS_NAME), connection.getConnection(DS_NAME));
+        assertNotSame(connection.getConnection(DS_NAME), connection.getConnection(DS_NAME));
     }
     
     @Test(expected = IllegalStateException.class)

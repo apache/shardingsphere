@@ -36,7 +36,7 @@ public final class WeakXaTransactionManager implements TransactionManager {
     @Override
     public void begin(final TransactionEvent transactionEvent) throws SQLException {
         WeakXaTransactionEvent weakXaTransactionEvent = (WeakXaTransactionEvent) transactionEvent;
-        for (Connection each : weakXaTransactionEvent.getCachedConnections().values()) {
+        for (Connection each : weakXaTransactionEvent.getCachedConnections()) {
             each.setAutoCommit(weakXaTransactionEvent.isAutoCommit());
         }
     }
@@ -45,7 +45,7 @@ public final class WeakXaTransactionManager implements TransactionManager {
     public void commit(final TransactionEvent transactionEvent) throws SQLException {
         WeakXaTransactionEvent weakXaTransactionEvent = (WeakXaTransactionEvent) transactionEvent;
         Collection<SQLException> exceptions = new LinkedList<>();
-        for (Connection each : weakXaTransactionEvent.getCachedConnections().values()) {
+        for (Connection each : weakXaTransactionEvent.getCachedConnections()) {
             try {
                 each.commit();
             } catch (final SQLException ex) {
@@ -59,7 +59,7 @@ public final class WeakXaTransactionManager implements TransactionManager {
     public void rollback(final TransactionEvent transactionEvent) throws SQLException {
         WeakXaTransactionEvent weakXaTransactionEvent = (WeakXaTransactionEvent) transactionEvent;
         Collection<SQLException> exceptions = new LinkedList<>();
-        for (Connection each : weakXaTransactionEvent.getCachedConnections().values()) {
+        for (Connection each : weakXaTransactionEvent.getCachedConnections()) {
             try {
                 each.rollback();
             } catch (final SQLException ex) {

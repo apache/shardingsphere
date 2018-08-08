@@ -33,9 +33,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Adapter for {@code Connection}.
@@ -44,7 +44,7 @@ import java.util.Map;
  */
 public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOperationConnection {
     
-    private final Map<String, Connection> cachedConnections = new HashMap<>();
+    private final Collection<Connection> cachedConnections = new CopyOnWriteArrayList<>();
     
     private boolean autoCommit = true;
     
@@ -62,13 +62,10 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
      * @throws SQLException SQL exception
      */
     public final Connection getConnection(final String dataSourceName) throws SQLException {
-        if (cachedConnections.containsKey(dataSourceName)) {
-            return cachedConnections.get(dataSourceName);
-        }
         DataSource dataSource = getDataSourceMap().get(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);
         Connection result = dataSource.getConnection();
-        cachedConnections.put(dataSourceName, result);
+        cachedConnections.add(result);
         replayMethodsInvocation(result);
         return result;
     }
@@ -76,7 +73,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     protected abstract Map<String, DataSource> getDataSourceMap();
     
     protected void removeCache(final Connection connection) {
-        cachedConnections.values().remove(connection);
+        cachedConnections.remove(connection);
     }
     
     @Override
@@ -107,7 +104,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         HintManagerHolder.clear();
         MasterVisitedManager.clear();
         Collection<SQLException> exceptions = new LinkedList<>();
-        for (Connection each : cachedConnections.values()) {
+        for (Connection each : cachedConnections) {
             try {
                 each.close();
             } catch (final SQLException ex) {
@@ -131,24 +128,24 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     public final void setReadOnly(final boolean readOnly) throws SQLException {
         this.readOnly = readOnly;
         recordMethodInvocation(Connection.class, "setReadOnly", new Class[] {boolean.class}, new Object[] {readOnly});
-        for (Connection each : cachedConnections.values()) {
+        for (Connection each : cachedConnections) {
             each.setReadOnly(readOnly);
         }
     }
     
     @Override
     public final int getTransactionIsolation() throws SQLException {
-        if (cachedConnections.values().isEmpty()) {
+        if (cachedConnections.isEmpty()) {
             return transactionIsolation;
         }
-        return cachedConnections.values().iterator().next().getTransactionIsolation();
+        return cachedConnections.iterator().next().getTransactionIsolation();
     }
     
     @Override
     public final void setTransactionIsolation(final int level) throws SQLException {
         transactionIsolation = level;
         recordMethodInvocation(Connection.class, "setTransactionIsolation", new Class[] {int.class}, new Object[] {level});
-        for (Connection each : cachedConnections.values()) {
+        for (Connection each : cachedConnections) {
             each.setTransactionIsolation(level);
         }
     }

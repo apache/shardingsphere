@@ -24,7 +24,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.sql.Connection;
-import java.util.Map;
+import java.util.Collection;
 
 /**
  * Weak XA transaction event.
@@ -35,7 +35,7 @@ import java.util.Map;
 @Setter
 public final class WeakXaTransactionEvent extends TransactionEvent {
     
-    private Map<String, Connection> cachedConnections;
+    private Collection<Connection> cachedConnections;
     
     private boolean autoCommit = true;
     

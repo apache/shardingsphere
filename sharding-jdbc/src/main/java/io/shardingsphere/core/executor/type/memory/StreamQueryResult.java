@@ -15,8 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.core.merger;
+package io.shardingsphere.core.executor.type.memory;
 
+import io.shardingsphere.core.merger.QueryResult;
 import lombok.RequiredArgsConstructor;
 
 import java.io.InputStream;
@@ -34,12 +35,13 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 
 /**
- * Query result form database for JDBC.
+ * Query result for stream loading.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @RequiredArgsConstructor
-public final class JDBCQueryResult implements QueryResult {
+public final class StreamQueryResult implements QueryResult {
     
     private final ResultSet resultSet;
     
