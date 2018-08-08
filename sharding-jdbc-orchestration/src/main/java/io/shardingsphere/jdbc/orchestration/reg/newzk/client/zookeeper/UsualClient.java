@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/*
+/**
  * Usually use client.
  *
  * @author lidongbo
@@ -61,7 +61,7 @@ public class UsualClient extends BaseClient {
     
     @Override
     public void close() {
-        this.strategies.clear();
+        strategies.clear();
         super.close();
     }
     
@@ -130,7 +130,7 @@ public class UsualClient extends BaseClient {
     
     @Override
     public void createCurrentOnly(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
-        this.createNamespace();
+        createNamespace();
         if (getRootNode().equals(key)) {
             return;
         }
@@ -139,7 +139,7 @@ public class UsualClient extends BaseClient {
     
     @Override
     public void createAllNeedPath(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
-        this.createNamespace();
+        createNamespace();
         if (getRootNode().equals(key)) {
             return;
         }
@@ -174,7 +174,7 @@ public class UsualClient extends BaseClient {
         strategy.deleteAllChildren(key);
         if (getRootNode().equals(key)) {
             setRootExist(false);
-            log.debug("deleteAllChildren delete root:{}", getRootNode());
+            log.debug("deleteAllChildren delete root: {}", getRootNode());
         }
     }
     
@@ -183,7 +183,7 @@ public class UsualClient extends BaseClient {
         strategy.deleteCurrentBranch(key);
         if (!strategy.checkExists(getRootNode())) {
             setRootExist(false);
-            log.debug("deleteCurrentBranch delete root:{}", getRootNode());
+            log.debug("deleteCurrentBranch delete root: {}", getRootNode());
         }
     }
     

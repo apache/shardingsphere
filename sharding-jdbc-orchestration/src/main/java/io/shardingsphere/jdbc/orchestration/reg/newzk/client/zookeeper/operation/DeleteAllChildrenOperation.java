@@ -22,12 +22,12 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.Base
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.UsualStrategy;
 import org.apache.zookeeper.KeeperException;
 
-/*
- * Async retry operation which DeleteAllChildren action.
+/**
+ * Async retry operation which delete all children action.
  *
  * @author lidongbo
  */
-public class DeleteAllChildrenOperation extends BaseOperation {
+public final class DeleteAllChildrenOperation extends BaseOperation {
     
     private final String key;
     
@@ -43,6 +43,6 @@ public class DeleteAllChildrenOperation extends BaseOperation {
     
     @Override
     public String toString() {
-        return String.format("DeleteAllChildrenOperation key:%s", key);
+        return String.format("DeleteAllChildrenOperation key: %s", key);
     }
 }

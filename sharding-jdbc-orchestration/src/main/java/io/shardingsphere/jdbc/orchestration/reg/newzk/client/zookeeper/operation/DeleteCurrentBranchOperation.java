@@ -22,12 +22,12 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.Base
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.UsualStrategy;
 import org.apache.zookeeper.KeeperException;
 
-/*
- * Async retry operation which DeleteCurrentBranch action.
+/**
+ * Async retry operation which delete current branch action.
  *
  * @author lidongbo
  */
-public class DeleteCurrentBranchOperation extends BaseOperation {
+public final class DeleteCurrentBranchOperation extends BaseOperation {
     
     private final String key;
     
@@ -43,6 +43,6 @@ public class DeleteCurrentBranchOperation extends BaseOperation {
     
     @Override
     public String toString() {
-        return String.format("DeleteCurrentBranchOperation key:%s", key);
+        return String.format("DeleteCurrentBranchOperation key: %s", key);
     }
 }

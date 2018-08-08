@@ -22,12 +22,12 @@ import org.apache.zookeeper.KeeperException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/*
+/**
  * Zookeeper connection check.
  *
  * @author lidongbo
  */
-public class Connection {
+public final class Connection {
     
     //is need reset
     private static final Map<Integer, Boolean> EXCEPTION_RESETS = new ConcurrentHashMap<>();

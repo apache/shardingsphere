@@ -30,20 +30,20 @@ import org.apache.zookeeper.Watcher;
 
 import java.util.List;
 
-/*
+/**
  * Sync retry strategy.
  *
  * @author lidongbo
  */
+@Getter(value = AccessLevel.PROTECTED)
 @Slf4j
 public class SyncRetryStrategy extends UsualStrategy {
     
-    @Getter(value = AccessLevel.PROTECTED)
     private final DelayRetryPolicy delayRetryPolicy;
     
     public SyncRetryStrategy(final IProvider provider, final DelayRetryPolicy delayRetryPolicy) {
         super(provider);
-        if (delayRetryPolicy == null) {
+        if (null == delayRetryPolicy) {
             log.info("RetryCallable constructor context's delayRetryPolicy is null");
             this.delayRetryPolicy = DelayRetryPolicy.defaultDelayPolicy();
         } else {

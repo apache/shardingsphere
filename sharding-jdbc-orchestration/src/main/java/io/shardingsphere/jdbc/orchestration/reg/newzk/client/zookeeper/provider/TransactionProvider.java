@@ -21,18 +21,18 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.ITransaction
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.Holder;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.ZKTransaction;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.ZooKeeperTransaction;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.data.ACL;
 
 import java.util.List;
 
-/*
+/**
  * Provider with transaction.
  *
  * @author lidongbo
  */
-public class TransactionProvider extends BaseProvider implements ITransactionProvider {
+public final class TransactionProvider extends BaseProvider implements ITransactionProvider {
     
     public TransactionProvider(final String rootNode, final Holder holder, final boolean watched, final List<ACL> authorities) {
         super(rootNode, holder, watched, authorities);
@@ -45,6 +45,6 @@ public class TransactionProvider extends BaseProvider implements ITransactionPro
     
     @Override
     public BaseTransaction transaction() {
-        return new ZKTransaction(getRootNode(), getHolder());
+        return new ZooKeeperTransaction(getRootNode(), getHolder());
     }
 }

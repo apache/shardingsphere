@@ -20,9 +20,12 @@ package io.shardingsphere.core.jdbc.core.statement;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
+import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.type.batch.BatchPreparedStatementExecutor;
 import io.shardingsphere.core.executor.type.batch.BatchPreparedStatementUnit;
+import io.shardingsphere.core.executor.type.connection.MemoryQueryResult;
+import io.shardingsphere.core.executor.type.memory.StreamQueryResult;
 import io.shardingsphere.core.executor.type.prepared.PreparedStatementExecutor;
 import io.shardingsphere.core.executor.type.prepared.PreparedStatementUnit;
 import io.shardingsphere.core.jdbc.adapter.AbstractShardingPreparedStatementAdapter;
@@ -31,7 +34,6 @@ import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.jdbc.core.resultset.GeneratedKeysResultSet;
 import io.shardingsphere.core.jdbc.core.resultset.ShardingResultSet;
 import io.shardingsphere.core.jdbc.metadata.ShardingConnectionTableMetaDataConnectionManager;
-import io.shardingsphere.core.merger.JDBCQueryResult;
 import io.shardingsphere.core.merger.MergeEngine;
 import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.MergedResult;
@@ -60,8 +62,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -136,17 +140,25 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             Collection<PreparedStatementUnit> preparedStatementUnits = route();
             List<ResultSet> resultSets = new PreparedStatementExecutor(
                     connection.getShardingContext().getExecutorEngine(), routeResult.getSqlStatement().getType(), preparedStatementUnits).executeQuery();
-            List<QueryResult> queryResults = new ArrayList<>(resultSets.size());
-            for (ResultSet each : resultSets) {
-                queryResults.add(new JDBCQueryResult(each));
-            }
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(
-                    connection.getShardingContext().getShardingRule(), queryResults, routeResult.getSqlStatement(), connection.getShardingContext().getMetaData().getTable());
+                    connection.getShardingContext().getShardingRule(), getQueryResults(resultSets), routeResult.getSqlStatement(), connection.getShardingContext().getMetaData().getTable());
             result = new ShardingResultSet(resultSets, merge(mergeEngine), this);
         } finally {
             clearBatch();
         }
         currentResultSet = result;
+        return result;
+    }
+    
+    private List<QueryResult> getQueryResults(final List<ResultSet> resultSets) throws SQLException {
+        List<QueryResult> result = new ArrayList<>(resultSets.size());
+        for (ResultSet each : resultSets) {
+            if (ConnectionMode.MEMORY_STRICTLY == connection.getShardingContext().getConnectionMode()) {
+                result.add(new StreamQueryResult(each));
+            } else {
+                result.add(new MemoryQueryResult(each));
+            }
+        }
         return result;
     }
     
@@ -177,10 +189,22 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     }
     
     private Collection<PreparedStatementUnit> route() throws SQLException {
-        Collection<PreparedStatementUnit> result = new LinkedList<>();
         sqlRoute();
+        if (ConnectionMode.MEMORY_STRICTLY == connection.getShardingContext().getConnectionMode()) {
+            return getPreparedStatementUnitsForMemoryStrictly();
+        }
+        return getPreparedStatementUnitsForConnectionStrictly();
+    }
+    
+    private Collection<PreparedStatementUnit> getPreparedStatementUnitsForConnectionStrictly() throws SQLException {
+        Collection<PreparedStatementUnit> result = new LinkedList<>();
+        Map<String, Connection> connectionMap = new LinkedHashMap<>();
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
-            PreparedStatement preparedStatement = generatePreparedStatement(each);
+            String dataSourceName = each.getDataSource();
+            if (null == connectionMap.get(dataSourceName)) {
+                connectionMap.put(dataSourceName, connection.getConnection(each.getDataSource()));
+            }
+            PreparedStatement preparedStatement = generatePreparedStatement(connectionMap.get(dataSourceName), each.getSqlUnit().getSql());
             routedStatements.add(preparedStatement);
             replaySetParameter(preparedStatement, each.getSqlUnit().getParameterSets().get(0));
             result.add(new PreparedStatementUnit(each, preparedStatement));
@@ -188,10 +212,20 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         return result;
     }
     
-    private PreparedStatement generatePreparedStatement(final SQLExecutionUnit sqlExecutionUnit) throws SQLException {
-        Connection connection = this.connection.getConnection(sqlExecutionUnit.getDataSource());
-        return returnGeneratedKeys ? connection.prepareStatement(sqlExecutionUnit.getSqlUnit().getSql(), Statement.RETURN_GENERATED_KEYS)
-                : connection.prepareStatement(sqlExecutionUnit.getSqlUnit().getSql(), resultSetType, resultSetConcurrency, resultSetHoldability);
+    private Collection<PreparedStatementUnit> getPreparedStatementUnitsForMemoryStrictly() throws SQLException {
+        Collection<PreparedStatementUnit> result = new LinkedList<>();
+        for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
+            PreparedStatement preparedStatement = generatePreparedStatement(connection.getConnection(each.getDataSource()), each.getSqlUnit().getSql());
+            routedStatements.add(preparedStatement);
+            replaySetParameter(preparedStatement, each.getSqlUnit().getParameterSets().get(0));
+            result.add(new PreparedStatementUnit(each, preparedStatement));
+        }
+        return result;
+    }
+    
+    private PreparedStatement generatePreparedStatement(final Connection connection, final String sql) throws SQLException {
+        return returnGeneratedKeys ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+                : connection.prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
     }
     
     private void sqlRoute() {
@@ -265,7 +299,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             preparedBatchStatement.get().getSqlExecutionUnit().getSqlUnit().getParameterSets().add(sqlExecutionUnit.getSqlUnit().getParameterSets().get(0));
             return preparedBatchStatement.get();
         }
-        BatchPreparedStatementUnit result = new BatchPreparedStatementUnit(sqlExecutionUnit, generatePreparedStatement(sqlExecutionUnit));
+        BatchPreparedStatementUnit result = new BatchPreparedStatementUnit(sqlExecutionUnit, generatePreparedStatement(connection.getConnection(sqlExecutionUnit.getDataSource()), sqlExecutionUnit.getSqlUnit().getSql()));
         batchStatementUnits.add(result);
         return result;
     }
@@ -313,7 +347,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         for (PreparedStatement each : routedStatements) {
             ResultSet resultSet = each.getResultSet();
             resultSets.add(resultSet);
-            queryResults.add(new JDBCQueryResult(resultSet));
+            queryResults.add(new StreamQueryResult(resultSet));
         }
         if (routeResult.getSqlStatement() instanceof SelectStatement || routeResult.getSqlStatement() instanceof DALStatement) {
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(

@@ -30,9 +30,9 @@ public class TestClient extends UsualClient {
     }
     
     @Override
-    public synchronized boolean start(final int wait, final TimeUnit units) throws InterruptedException, IOException {
+    public synchronized boolean start(final int waitingTime, final TimeUnit timeUnit) throws InterruptedException, IOException {
         setHolder(new TestHolder(getContext()));
-        getHolder().start(wait, units);
+        getHolder().start(waitingTime, timeUnit);
         return getHolder().isConnected();
     }
     

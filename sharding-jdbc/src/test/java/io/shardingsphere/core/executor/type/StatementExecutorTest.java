@@ -93,9 +93,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         assertThat(actualResultSets, hasItem(resultSet1));
         assertThat(actualResultSets, hasItem(resultSet2));
         verify(statement1).executeQuery(DQL_SQL);
-        verify(statement1).getConnection();
         verify(statement2).executeQuery(DQL_SQL);
-        verify(statement2).getConnection();
         verify(getEventCaller(), times(2)).verifySQLType(SQLType.DQL);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
@@ -138,8 +136,6 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         assertThat(actualResultSets, is(Arrays.asList((ResultSet) null, null)));
         verify(statement1).executeQuery(DQL_SQL);
         verify(statement2).executeQuery(DQL_SQL);
-        verify(statement1).getConnection();
-        verify(statement2).getConnection();
         verify(getEventCaller(), times(2)).verifySQLType(SQLType.DQL);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
@@ -179,8 +175,6 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         assertThat(actual.executeUpdate(), is(30));
         verify(statement1).executeUpdate(DML_SQL);
         verify(statement2).executeUpdate(DML_SQL);
-        verify(statement1).getConnection();
-        verify(statement2).getConnection();
         verify(getEventCaller(), times(2)).verifySQLType(SQLType.DML);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
@@ -222,8 +216,6 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         assertThat(actual.executeUpdate(), is(0));
         verify(statement1).executeUpdate(DML_SQL);
         verify(statement2).executeUpdate(DML_SQL);
-        verify(statement1).getConnection();
-        verify(statement2).getConnection();
         verify(getEventCaller(), times(2)).verifySQLType(SQLType.DML);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
@@ -314,8 +306,6 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         assertFalse(actual.execute());
         verify(statement1).execute(DML_SQL);
         verify(statement2).execute(DML_SQL);
-        verify(statement1).getConnection();
-        verify(statement2).getConnection();
         verify(getEventCaller(), times(2)).verifySQLType(SQLType.DML);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
@@ -357,8 +347,6 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         assertFalse(actual.execute());
         verify(statement1).execute(DML_SQL);
         verify(statement2).execute(DML_SQL);
-        verify(statement1).getConnection();
-        verify(statement2).getConnection();
         verify(getEventCaller(), times(2)).verifySQLType(SQLType.DML);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
@@ -398,8 +386,6 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         assertTrue(actual.execute());
         verify(statement1).execute(DQL_SQL);
         verify(statement2).execute(DQL_SQL);
-        verify(statement1).getConnection();
-        verify(statement2).getConnection();
         verify(getEventCaller(), times(2)).verifySQLType(SQLType.DQL);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifyDataSource("ds_1");

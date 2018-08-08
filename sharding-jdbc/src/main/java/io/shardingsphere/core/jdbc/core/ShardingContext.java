@@ -18,6 +18,7 @@
 package io.shardingsphere.core.jdbc.core;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.executor.ExecutorEngine;
 import io.shardingsphere.core.metadata.ShardingMetaData;
@@ -54,15 +55,18 @@ public final class ShardingContext {
     
     private final boolean showSQL;
     
+    private final ConnectionMode connectionMode;
+    
     private final ShardingMetaData metaData;
     
     public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule,
-                           final DatabaseType databaseType, final ExecutorEngine executorEngine, final ShardingTableMetaData shardingTableMetaData, final boolean showSQL) {
+                           final DatabaseType databaseType, final ExecutorEngine executorEngine, final ShardingTableMetaData shardingTableMetaData, final boolean showSQL, final ConnectionMode connectionMode) {
         this.dataSourceMap = dataSourceMap;
         this.shardingRule = shardingRule;
         this.databaseType = databaseType;
         this.executorEngine = executorEngine;
         this.showSQL = showSQL;
+        this.connectionMode = connectionMode;
         metaData = new ShardingMetaData(new ShardingDataSourceMetaData(getDataSourceURLs(dataSourceMap), shardingRule, databaseType), shardingTableMetaData);
     }
     

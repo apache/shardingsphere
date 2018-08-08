@@ -56,7 +56,7 @@ public class SpringBootShardingTest {
         field.setAccessible(true);
         ShardingContext shardingContext = (ShardingContext) field.get(dataSource);
         for (DataSource each : shardingContext.getDataSourceMap().values()) {
-            assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
+            assertThat(((BasicDataSource) each).getMaxTotal(), is(100));
         }
         assertTrue(shardingContext.isShowSQL());
         Map<String, Object> configMap = new ConcurrentHashMap<>();

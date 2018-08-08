@@ -24,8 +24,8 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transacti
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-/*
- * Client api.
+/**
+ * Client API.
  *
  * @author lidongbo
  */
@@ -34,42 +34,37 @@ public interface IClient extends IAction, IGroupAction {
     /**
      * Start.
      *
-     * @throws IOException IO Exception
-     * @throws InterruptedException InterruptedException
+     * @throws IOException IO exception
+     * @throws InterruptedException interrupted exception
      */
     void start() throws IOException, InterruptedException;
     
     /**
      * Start until out.
      *
-     * @param wait wait
-     * @param units units
-     * @return connected
-     * @throws IOException IO Exception
-     * @throws InterruptedException InterruptedException
+     * @param waitingTime waiting time
+     * @param timeUnit time unit
+     * @return connected or not
+     * @throws IOException IO exception
+     * @throws InterruptedException interrupted exception
      */
-    boolean start(int wait, TimeUnit units) throws IOException, InterruptedException;
+    boolean start(int waitingTime, TimeUnit timeUnit) throws IOException, InterruptedException;
     
     /**
      * Block until connected.
      *
-     * @param wait wait
-     * @param units units
-     * @return connected
-     * @throws InterruptedException InterruptedException
+     * @param waitingTime waiting time
+     * @param timeUnit time unit
+     * @return connected or not
+     * @throws InterruptedException interrupted exception
      */
-    boolean blockUntilConnected(int wait, TimeUnit units) throws InterruptedException;
-    
-    /**
-     * Close.
-     */
-    void close();
+    boolean blockUntilConnected(int waitingTime, TimeUnit timeUnit) throws InterruptedException;
     
     /**
      * Register watcher.
      *
      * @param key key
-     * @param zookeeperEventListener listener
+     * @param zookeeperEventListener zookeeper event listener
      */
     void registerWatch(String key, ZookeeperEventListener zookeeperEventListener);
     
@@ -88,9 +83,14 @@ public interface IClient extends IAction, IGroupAction {
     void useExecStrategy(StrategyType strategyType);
     
     /**
-     * Create transaction.
+     * Create zookeeper transaction.
      *
-     * @return ZKTransaction
+     * @return zookeeper transaction
      */
     BaseTransaction transaction();
+    
+    /**
+     * Close.
+     */
+    void close();
 }
