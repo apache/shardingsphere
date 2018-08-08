@@ -26,7 +26,7 @@
 1. [ISSUE #610](https://github.com/sharding-sphere/sharding-sphere/issues/610) 无表名称的DQL采用单播路由
 1. [ISSUE #701](https://github.com/sharding-sphere/sharding-sphere/issues/701) 缓存SQL解析结果以提升性能
 1. [ISSUE #773](https://github.com/sharding-sphere/sharding-sphere/issues/773) 支持不包含列名的INSERT语句的分片与自增主键
-1. [ISSUE #935](https://github.com/sharding-sphere/sharding-sphere/issues/935) 取代JSON格式，而将Yaml格式的配置文件存储在注册中心
+1. [ISSUE #935](https://github.com/sharding-sphere/sharding-sphere/issues/935) 取代`JSON`格式，而将`YAML`格式的配置文件存储在注册中心
 1. [ISSUE #1004](https://github.com/sharding-sphere/sharding-sphere/issues/1004) props属性可在分片和读写分离规则配置时独立使用
 
 #### Sharding-JDBC
@@ -57,15 +57,22 @@
 
 ## 2.0.3
 
-### 功能提升
+### 新功能
+
+#### 内核
 
 1. [ISSUE #600](https://github.com/sharding-sphere/sharding-sphere/issues/600) 支持TCL
 
 ### 缺陷修正
 
-1. [ISSUE #522](https://github.com/sharding-sphere/sharding-sphere/issues/522) 读写分离Slave库不需要执行DDL语句
+#### 内核
+
 1. [ISSUE #540](https://github.com/sharding-sphere/sharding-sphere/issues/540) 梳理并支持别名为关键字SQL
-1. [ISSUE #577](https://github.com/sharding-sphere/sharding-sphere/issues/577) 支持YAML配置换行
+1. [ISSUE #577](https://github.com/sharding-sphere/sharding-sphere/issues/577) 支持`YAML`配置换行
+
+#### Sharding-JDBC
+
+1. [ISSUE #522](https://github.com/sharding-sphere/sharding-sphere/issues/522) 读写分离的从库不需要执行DDL语句
 
 ## 2.0.2
 

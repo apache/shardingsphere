@@ -25,7 +25,7 @@
 1. [ISSUE #610](https://github.com/sharding-sphere/sharding-sphere/issues/610) Route unicast for DQL without table
 1. [ISSUE #701](https://github.com/sharding-sphere/sharding-sphere/issues/701) Caching parsed results to improve performance
 1. [ISSUE #773](https://github.com/sharding-sphere/sharding-sphere/issues/773) Support sharding and autoincrement key of INSERT without column names
-1. [ISSUE #935](https://github.com/sharding-sphere/sharding-sphere/issues/935) Use YAML instead of JSON to store configurations in registry center
+1. [ISSUE #935](https://github.com/sharding-sphere/sharding-sphere/issues/935) Use `YAML` instead of `JSON` to store configurations in registry center
 1. [ISSUE #1004](https://github.com/sharding-sphere/sharding-sphere/issues/1004) Properties can configure for Sharding and Master-slave independent
 
 #### Sharding-JDBC
@@ -56,15 +56,22 @@
 
 ## 2.0.3
 
-### Enhancements
+### New Features
+
+#### Core
 
 1. [ISSUE #600](https://github.com/sharding-sphere/sharding-sphere/issues/600) Support TCL
 
 ### Bug Fixes
 
-1. [ISSUE #522](https://github.com/sharding-sphere/sharding-sphere/issues/522) The slave database does not need to execute the DDL statement for read-write separation 
-1. [ISSUE #540](https://github.com/sharding-sphere/sharding-sphere/issues/540) Support SQLs that the alias is the keyword
-1. [ISSUE #577](https://github.com/sharding-sphere/sharding-sphere/issues/577) Support newline for YAML configuration
+#### Core
+
+1. [ISSUE #540](https://github.com/sharding-sphere/sharding-sphere/issues/540) Support SQL that alias is the keyword
+1. [ISSUE #577](https://github.com/sharding-sphere/sharding-sphere/issues/577) Support new line for `YAML` configuration
+
+#### Sharding-JDBC
+
+1. [ISSUE #522](https://github.com/sharding-sphere/sharding-sphere/issues/522) Slave database does not need to execute the DDL for read-write splitting
 
 ## 2.0.2
 
