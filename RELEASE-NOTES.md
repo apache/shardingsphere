@@ -18,43 +18,41 @@
 1. [ISSUE #916](https://github.com/sharding-sphere/sharding-sphere/issues/916) Support authorization
 1. [ISSUE #936](https://github.com/sharding-sphere/sharding-sphere/issues/936) Support registry center
 
-
 ### Enhancements
 
 #### Core
 
 1. [ISSUE #610](https://github.com/sharding-sphere/sharding-sphere/issues/610) Route unicast for DQL without table
-1. [ISSUE #701](https://github.com/sharding-sphere/sharding-sphere/issues/701) Support caching parsing results of SQL to improve performance
-1. [ISSUE #773](https://github.com/sharding-sphere/sharding-sphere/issues/773) Support sharding and autoincrement primary key of INSERT statements without column names
-1. [ISSUE #935](https://github.com/sharding-sphere/sharding-sphere/issues/935) Support to store configuration by using Yaml instead of JSON in registry center
-1. [ISSUE #1004](https://github.com/sharding-sphere/sharding-sphere/issues/1004) Support props configuration for MasterSlave rule
+1. [ISSUE #701](https://github.com/sharding-sphere/sharding-sphere/issues/701) Caching parsed results to improve performance
+1. [ISSUE #773](https://github.com/sharding-sphere/sharding-sphere/issues/773) Support sharding and autoincrement key of INSERT without column names
+1. [ISSUE #935](https://github.com/sharding-sphere/sharding-sphere/issues/935) Use YAML instead of JSON to store configurations in registry center
+1. [ISSUE #1004](https://github.com/sharding-sphere/sharding-sphere/issues/1004) Properties can configure for Sharding and Master-slave independent
 
 #### Sharding-JDBC
 
-1. [ISSUE #652](https://github.com/sharding-sphere/sharding-sphere/issues/652) Support Spring Boot Starter 2.x
-1. [ISSUE #702](https://github.com/sharding-sphere/sharding-sphere/issues/702) Support $->{..} as mark for inline expression 
-1. [ISSUE #719](https://github.com/sharding-sphere/sharding-sphere/issues/719) Support Spring bean namespace to inject key generator objects
-1. [ISSUE #720](https://github.com/sharding-sphere/sharding-sphere/issues/720) Support Spring bean namespace to inject sharding algorithm objects
-
+1. [ISSUE #652](https://github.com/sharding-sphere/sharding-sphere/issues/652) Support `Spring Boot Starter` 2.X
+1. [ISSUE #702](https://github.com/sharding-sphere/sharding-sphere/issues/702) Support `$->{..}` for inline expression 
+1. [ISSUE #719](https://github.com/sharding-sphere/sharding-sphere/issues/719) Support inject key generator objects by spring namespace
+1. [ISSUE #720](https://github.com/sharding-sphere/sharding-sphere/issues/720) Support inject sharding algorithm objects by spring namespace
 
 ### Bug Fixes
 
 #### Core
 
 1. [ISSUE #628](https://github.com/sharding-sphere/sharding-sphere/issues/628) Support data type jsonb for PostgreSQL
-1. [ISSUE #646](https://github.com/sharding-sphere/sharding-sphere/issues/646) When aliases in SELECT ITEMS correspond to the real column names of GROUP BY or ORDER BY, there is no need to add columns
-1. [ISSUE #806](https://github.com/sharding-sphere/sharding-sphere/issues/806) SQL parse error with `NOT IN`
-1. [ISSUE #827](https://github.com/sharding-sphere/sharding-sphere/issues/827) Fix endless loop for bad SQL like `SELECT * FROM table WHERE id IN ()`
-1. [ISSUE #919](https://github.com/sharding-sphere/sharding-sphere/issues/919) Use groovy to parse inline expression may cause memory leak
+1. [ISSUE #646](https://github.com/sharding-sphere/sharding-sphere/issues/646) When aliases in `SELECT ITEMS` correspond to the real column names of `GROUP BY` or `ORDER BY`, there is no need to generate derived columns
+1. [ISSUE #806](https://github.com/sharding-sphere/sharding-sphere/issues/806) `NOT IN` parse exception
+1. [ISSUE #827](https://github.com/sharding-sphere/sharding-sphere/issues/827) Endless loop for bad SQL like `SELECT * FROM table WHERE id IN ()`
+1. [ISSUE #919](https://github.com/sharding-sphere/sharding-sphere/issues/919) Inline expression with groovy may cause memory leak
 1. [ISSUE #993](https://github.com/sharding-sphere/sharding-sphere/issues/993) Fail to parsing PostgreSQL due to the quotation
-1. [ISSUE #1015](https://github.com/sharding-sphere/sharding-sphere/issues/1015) Support the statement of `SELECT id, COUNT(*) FROM table GROUP BY 1,2`
+1. [ISSUE #1015](https://github.com/sharding-sphere/sharding-sphere/issues/1015) Support SQL like `SELECT id, COUNT(*) FROM table GROUP BY 1,2`
 
 #### Sharding-JDBC
 
 1. [ISSUE #372](https://github.com/sharding-sphere/sharding-sphere/issues/372) Reuse PreparedStatement cause cache of route result do not clean
 1. [ISSUE #629](https://github.com/sharding-sphere/sharding-sphere/issues/629) Support transaction isolation on JDBC
-1. [ISSUE #735](https://github.com/sharding-sphere/sharding-sphere/issues/735) Unexpected slave datasource routing result when using Round-robin load-balance algorithm in Mybatis
-1. [ISSUE #1011](https://github.com/sharding-sphere/sharding-sphere/issues/1011) Can't resolve placeholder in spring boot configuration yaml
+1. [ISSUE #735](https://github.com/sharding-sphere/sharding-sphere/issues/735) Unexpected slave datasource routing result when using `Round-robin` load-balance algorithm in Mybatis
+1. [ISSUE #1011](https://github.com/sharding-sphere/sharding-sphere/issues/1011) Can't resolve placeholder in `Spring Boot YAML` configuration
 
 ## 2.0.3
 
