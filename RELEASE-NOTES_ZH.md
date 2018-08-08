@@ -104,14 +104,18 @@
 
 ### 功能提升
 
-1. [ISSUE #489](https://github.com/sharding-sphere/sharding-sphere/issues/489) SpringName使用RuntimeBeanReference防止创建InnerBean
+#### Core
+
+1. [ISSUE #490](https://github.com/sharding-sphere/sharding-sphere/issues/490) Oracle使用`rownum`大于等于或小于等于分页结果不正确
 1. [ISSUE #496](https://github.com/sharding-sphere/sharding-sphere/issues/496) 分片配置中逻辑表名可以大小写不敏感
 1. [ISSUE #497](https://github.com/sharding-sphere/sharding-sphere/issues/497) 注册中心优雅关闭
 
 ### 缺陷修正
 
-1. [ISSUE #490](https://github.com/sharding-sphere/sharding-sphere/issues/490) Oracle使用rownum大于等于或小于等于分页结果不正确
-1. [ISSUE #491](https://github.com/sharding-sphere/sharding-sphere/issues/491) 通过ResultSet.getStatement().getConnection().close()无法释放连接
+#### Sharding-JDBC
+
+1. [ISSUE #489](https://github.com/sharding-sphere/sharding-sphere/issues/489) 在Spring namespace中使用`RuntimeBeanReference`防止创建`InnerBean`
+1. [ISSUE #491](https://github.com/sharding-sphere/sharding-sphere/issues/491) 通过`ResultSet.getStatement().getConnection().close()`无法释放连接
 
 ## 2.0.0
 

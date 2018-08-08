@@ -104,14 +104,18 @@
 
 ### Enhancements
 
-1. [ISSUE #489](https://github.com/sharding-sphere/sharding-sphere/issues/489) SpringName uses RuntimeBeanReference to prevent the creation of InnerBean
+#### Core
+
+1. [ISSUE #490](https://github.com/sharding-sphere/sharding-sphere/issues/490) Using `rownum` greater than or equal to or less than or equal to the result of paging is incorrect in Oracle
 1. [ISSUE #496](https://github.com/sharding-sphere/sharding-sphere/issues/496) Logical table names in sharding configuration can be case sensitive
-1. [ISSUE #497](https://github.com/sharding-sphere/sharding-sphere/issues/497) The registry center closes gracefully
+1. [ISSUE #497](https://github.com/sharding-sphere/sharding-sphere/issues/497) Close registry center gracefully
 
 ### Bug Fixes
 
-1. [ISSUE #490](https://github.com/sharding-sphere/sharding-sphere/issues/490) Oracle using rownum greater than or equal to or less than or equal to the result of paging is incorrect
-1. [ISSUE #491](https://github.com/sharding-sphere/sharding-sphere/issues/491) Can't close connection by ResultSet.getStatement().getConnection().close()
+#### Sharding-JDBC
+
+1. [ISSUE #489](https://github.com/sharding-sphere/sharding-sphere/issues/489) Uses `RuntimeBeanReference` to prevent the creation of `InnerBean` on spring namespace
+1. [ISSUE #491](https://github.com/sharding-sphere/sharding-sphere/issues/491) Can't close connection by `ResultSet.getStatement().getConnection().close()`
 
 
 ## 2.0.0
