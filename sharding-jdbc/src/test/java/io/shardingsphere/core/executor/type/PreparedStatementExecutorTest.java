@@ -307,7 +307,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
                 getExecutorEngine(), SQLType.DML, createPreparedStatementUnits(DML_SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1"));
         assertFalse(actual.execute());
         verify(preparedStatement1).execute();
-        verify(preparedStatement2).execute();;
+        verify(preparedStatement2).execute();
         verify(getEventCaller(), times(2)).verifySQLType(SQLType.DML);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
