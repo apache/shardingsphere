@@ -47,14 +47,14 @@ public class ContentionStrategy extends UsualStrategy {
     */
     @Override
     public void getData(final String key, final AsyncCallback.DataCallback callback, final Object ctx) throws KeeperException, InterruptedException {
-        LeaderElection election = new LeaderElection() {
+        getProvider().executeContention(new LeaderElection() {
+            
             @Override
             public void action() throws KeeperException, InterruptedException {
                 getProvider().getData(getProvider().getRealPath(key), callback, ctx);
                 log.debug("ContentionStrategy getData action: {}", key);
             }
-        };
-        getProvider().executeContention(election);
+        });
         log.debug("ContentionStrategy getData executeContention");
     }
 
@@ -93,6 +93,7 @@ public class ContentionStrategy extends UsualStrategy {
     
     private LeaderElection buildUpdateElection(final String key, final String value, final ContentionCallback contentionCallback) {
         return new LeaderElection() {
+            
             @Override
             public void action() throws KeeperException, InterruptedException {
                 getProvider().update(getProvider().getRealPath(key), value);
