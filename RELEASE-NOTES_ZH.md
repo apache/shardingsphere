@@ -55,6 +55,7 @@
 1. [ISSUE #735](https://github.com/sharding-sphere/sharding-sphere/issues/735) 在Mybatis中使用`Round-robin`的读写分离算法路由存在问题
 1. [ISSUE #1011](https://github.com/sharding-sphere/sharding-sphere/issues/1011) 无法在`Spring Boot`的`YAML`中处理占位符
 
+
 ## 2.0.3
 
 ### 新功能
@@ -74,22 +75,30 @@
 
 1. [ISSUE #522](https://github.com/sharding-sphere/sharding-sphere/issues/522) 读写分离的从库不需要执行DDL语句
 
+
 ## 2.0.2
 
 ### 功能提升
 
-1. [ISSUE #475](https://github.com/sharding-sphere/sharding-sphere/issues/475) 支持CREATE INDEX
-1. [ISSUE #525](https://github.com/sharding-sphere/sharding-sphere/issues/525) 支持DROP INDEX
+#### 内核
+1. [ISSUE #475](https://github.com/sharding-sphere/sharding-sphere/issues/475) 支持`CREATE INDEX`
+1. [ISSUE #525](https://github.com/sharding-sphere/sharding-sphere/issues/525) 支持`DROP INDEX`
 
 ### 缺陷修正
 
-1. [ISSUE #520](https://github.com/sharding-sphere/sharding-sphere/issues/520) 引入分表后，唯一键冲突时异常类型不再是DuplicateKeyException
-1. [ISSUE #521](https://github.com/sharding-sphere/sharding-sphere/issues/521) YAML文件中ShardingProperties设置无效
+#### 内核
+
+1. [ISSUE #521](https://github.com/sharding-sphere/sharding-sphere/issues/521) `YAML`文件中`ShardingProperties`设置无效
 1. [ISSUE #529](https://github.com/sharding-sphere/sharding-sphere/issues/529) 表名大写无法查询
-1. [ISSUE #541](https://github.com/sharding-sphere/sharding-sphere/issues/541) 无法解析IS NOT NULL
-1. [ISSUE #557](https://github.com/sharding-sphere/sharding-sphere/issues/557) GroupBy和OrderBy仅别名不一致问题应使用流式归并
-1. [ISSUE #559](https://github.com/sharding-sphere/sharding-sphere/issues/559) 支持解析以负号和小数点开头的数字(如:-.12)
+1. [ISSUE #541](https://github.com/sharding-sphere/sharding-sphere/issues/541) 无法解析`IS NOT NULL`
+1. [ISSUE #557](https://github.com/sharding-sphere/sharding-sphere/issues/557) `GROUP BY`和`ORDER BY`仅别名不一致问题应使用流式归并
+1. [ISSUE #559](https://github.com/sharding-sphere/sharding-sphere/issues/559) 支持解析以负号和小数点开头的数字(如: `-.12`)
 1. [ISSUE #567](https://github.com/sharding-sphere/sharding-sphere/issues/567) MySQL补列时增加转义符以防止使用关键字作为列名或别名导致错误
+
+#### Sharding-JDBC
+
+1. [ISSUE #520](https://github.com/sharding-sphere/sharding-sphere/issues/520) 唯一键冲突时异常类型不是`DuplicateKeyException`
+
 
 ## 2.0.1
 

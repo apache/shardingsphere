@@ -54,6 +54,7 @@
 1. [ISSUE #735](https://github.com/sharding-sphere/sharding-sphere/issues/735) Unexpected slave datasource routing result when using `Round-robin` load-balance algorithm in Mybatis
 1. [ISSUE #1011](https://github.com/sharding-sphere/sharding-sphere/issues/1011) Can't resolve placeholder in `Spring Boot YAML` configuration
 
+
 ## 2.0.3
 
 ### New Features
@@ -73,22 +74,31 @@
 
 1. [ISSUE #522](https://github.com/sharding-sphere/sharding-sphere/issues/522) Slave database does not need to execute the DDL for read-write splitting
 
+
 ## 2.0.2
 
 ### Enhancements
 
-1. [ISSUE #475](https://github.com/sharding-sphere/sharding-sphere/issues/475) Support CREATE INDEX
-1. [ISSUE #525](https://github.com/sharding-sphere/sharding-sphere/issues/525) Support DROP INDEX
+#### Core
+
+1. [ISSUE #475](https://github.com/sharding-sphere/sharding-sphere/issues/475) Support `CREATE INDEX`
+1. [ISSUE #525](https://github.com/sharding-sphere/sharding-sphere/issues/525) Support `DROP INDEX`
 
 ### Bug Fixes
 
-1. [ISSUE #520](https://github.com/sharding-sphere/sharding-sphere/issues/520) When the partition table is introduced, the exception type is no longer DuplicateKeyException when the unique key conflict occurs
-1. [ISSUE #521](https://github.com/sharding-sphere/sharding-sphere/issues/521) ShardingProperties is invalid in YAML configuration
+#### Core
+
+1. [ISSUE #521](https://github.com/sharding-sphere/sharding-sphere/issues/521) `ShardingProperties` is invalid in `YAML` configuration
 1. [ISSUE #529](https://github.com/sharding-sphere/sharding-sphere/issues/529) Table name capitalization cannot be queried
-1. [ISSUE #541](https://github.com/sharding-sphere/sharding-sphere/issues/541) Can't parse IS NOT NULL
-1. [ISSUE #557](https://github.com/sharding-sphere/sharding-sphere/issues/557) When GroupBy and OrderBy aliases are inconsistent, stream merging should be used
-1. [ISSUE #559](https://github.com/sharding-sphere/sharding-sphere/issues/559) Support parsing numbers beginning with minus and decimal (e.g. -.12).
-1. [ISSUE #567](https://github.com/sharding-sphere/sharding-sphere/issues/567) MySQL adds an escape character when columns are added to prevent errors caused by using keywords as column names or aliases
+1. [ISSUE #541](https://github.com/sharding-sphere/sharding-sphere/issues/541) `IS NOT NULL` parse error
+1. [ISSUE #557](https://github.com/sharding-sphere/sharding-sphere/issues/557) When `GROUP BY` and `ORDER BY` aliases are inconsistent, stream merging should be used
+1. [ISSUE #559](https://github.com/sharding-sphere/sharding-sphere/issues/559) Support parsing numbers beginning with minus and decimal (e.g. `-.12`)
+1. [ISSUE #567](https://github.com/sharding-sphere/sharding-sphere/issues/567) Add escape char for derived columns or alias when using MySQL
+
+#### Sharding-JDBC
+
+1. [ISSUE #520](https://github.com/sharding-sphere/sharding-sphere/issues/520) Exception is no longer `DuplicateKeyException` when the unique key conflict
+
 
 ## 2.0.1
 
@@ -102,6 +112,7 @@
 
 1. [ISSUE #490](https://github.com/sharding-sphere/sharding-sphere/issues/490) Oracle using rownum greater than or equal to or less than or equal to the result of paging is incorrect
 1. [ISSUE #491](https://github.com/sharding-sphere/sharding-sphere/issues/491) Can't close connection by ResultSet.getStatement().getConnection().close()
+
 
 ## 2.0.0
 
