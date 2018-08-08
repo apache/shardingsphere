@@ -122,30 +122,39 @@
 
 ### Milestones
 
-1. API adjust. Brand new Maven coordinate name, package name and spring namespace name. Simplify and enhance API configuration, inline expression full configuration support
-1. Support spring-boot-starter of sharding-jdbc
-1. Dynamic configuration. Zookeeper and etcd can be used as registry to dynamically modify data sources and sharding configurations
-1. Data governance. Fusing database access procedures to access databases and disable access to slave databases
+1. API adjust. Brand new groupId and artifactId for `Maven`, package name and spring namespace name. Simplify and enhance API configuration, inline expression fully configuration support
+1. Support `spring-boot-starter` of `Sharding-JDBC`
+1. Dynamic configuration. `ZooKeeper` and `etcd` can be used as registry to dynamically modify data sources and sharding configurations
+1. Database orchestration. Fusing database access procedures to access databases and disable access to slave databases
 1. ConfigMap support. Predefined metadata can be obtained in the sharding and read-write separation strategy
-1. Tracking system support. You can view the invocation chain of sharding-jdbc through sky-walking and other Opentracing based APM systems
+1. Tracking system support. You can view the invocation chain of `Sharding-JDBC` through `sky-walking` and other `Opentracing` based APM systems
 
 ### Enhancements
 
-1. [ISSUE #386](https://github.com/sharding-sphere/sharding-sphere/issues/386) Support for SELECT 1, a SQL that does not contain table names
-1. [ISSUE #407](https://github.com/sharding-sphere/sharding-sphere/issues/407) Sharding-jdbc's spring-boot-starter compatibility uses two ways of attribute configuration: minus sign and hump
+#### Core
+
+1. [ISSUE #386](https://github.com/sharding-sphere/sharding-sphere/issues/386) Support SQL that does not contain table names, such as `SELECT 1`
+
+#### Sharding-JDBC
+
+1. [ISSUE #407](https://github.com/sharding-sphere/sharding-sphere/issues/407) Support Hyphen properties for `sharding-jdbc-spring-boot-starter`
 1. [ISSUE #424](https://github.com/sharding-sphere/sharding-sphere/issues/424) Providing SQL overall execution events
 
 ### Bug Fixes
 
+#### Core
+
 1. [ISSUE #387](https://github.com/sharding-sphere/sharding-sphere/issues/387) Prevent errors from keywords process when '`' exists in function + column name
+1. [ISSUE #419](https://github.com/sharding-sphere/sharding-sphere/issues/419) When SQL is rewritten, it does not determine whether alias is a keyword without the escape character, which results in SQL exception
+1. [ISSUE #464](https://github.com/sharding-sphere/sharding-sphere/issues/464) SQL if the varchar type is not closed due to the absence of matching single quotes, and the next varchar in SQL is the wrong SQL of Chinese characters, it will lead to higher use of CPU
+
+#### Sharding-JDBC
+
 1. [ISSUE #394](https://github.com/sharding-sphere/sharding-sphere/issues/394) Can't only close statement
 1. [ISSUE #398](https://github.com/sharding-sphere/sharding-sphere/issues/398) Use Hint routing to shield case sensitivity 
 1. [ISSUE #404](https://github.com/sharding-sphere/sharding-sphere/issues/404) Sharding-jdbc's spring-boot-starter does not support HikariDataSource
-1. [ISSUE #419](https://github.com/sharding-sphere/sharding-sphere/issues/419) When SQL is rewritten, it does not determine whether alias is a keyword without the escape character, which results in SQL exception
-1. [ISSUE #436](https://github.com/sharding-sphere/sharding-sphere/issues/436) Read-write separation, when the RoundRobin algorithm is configured from the database and MyBatis is used, it can only be routed to the same slave library
+1. [ISSUE #436](https://github.com/sharding-sphere/sharding-sphere/issues/436) Read-write splitting, when the RoundRobin algorithm is configured from the database and MyBatis is used, it can only be routed to the same slave library
 1. [ISSUE #452](https://github.com/sharding-sphere/sharding-sphere/issues/452) Sharding of DDL statements to more than one table causes a connection leak
-1. [ISSUE #453](https://github.com/sharding-sphere/sharding-sphere/issues/453) Orchestration datasource name is conflict with Druid datasource name
-1. [ISSUE #464](https://github.com/sharding-sphere/sharding-sphere/issues/464) SQL if the varchar type is not closed due to the absence of matching single quotes, and the next varchar in SQL is the wrong SQL of Chinese characters, it will lead to higher use of CPU
 1. [ISSUE #472](https://github.com/sharding-sphere/sharding-sphere/issues/472) Before Connection executes createStatement, it calls getMetaData first and then setAutoCommit can not take effective connection to the database that was created later
 
 ## 1.5.4.1

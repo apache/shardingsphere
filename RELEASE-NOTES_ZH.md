@@ -104,7 +104,7 @@
 
 ### 功能提升
 
-#### Core
+#### 内核
 
 1. [ISSUE #490](https://github.com/sharding-sphere/sharding-sphere/issues/490) Oracle使用`rownum`大于等于或小于等于分页结果不正确
 1. [ISSUE #496](https://github.com/sharding-sphere/sharding-sphere/issues/496) 分片配置中逻辑表名可以大小写不敏感
@@ -121,30 +121,39 @@
 
 ### 里程碑
 
-1. API调整. 全新的Maven坐标名称, 包名称和spring命名空间名称. 简化和提升API配置, inline表达式全配置支持
-1. 提供sharding-jdbc的spring-boot-starter
-1. 配置动态化. 可以通过zookeeper和etcd作为注册中心动态修改数据源以及分片配置
-1. 数据治理. 熔断数据库访问程序对数据库的访问和禁用从库的访问
+1. API调整. 全新的`Maven`坐标名称, 包名称和spring命名空间名称. 简化和提升API配置, 行表达式全配置支持
+1. 提供`Sharding-JDBC`的`spring-boot-starter`
+1. 配置动态化. 可以通过`ZooKeeper`和`etcd`作为注册中心动态修改数据源以及分片配置
+1. 数据库治理. 熔断数据库访问程序对数据库的访问和禁用从库的访问
 1. ConfigMap支持. 可以在分片和读写分离策略中获取预定义的元数据
-1. 跟踪系统支持. 可以通过sky-walking等基于Opentracing协议的APM系统中查看sharding-jdbc的调用链
+1. 追踪系统支持. 可以通过`sky-walking`等基于`Opentracing`协议的APM系统中查看`Sharding-JDBC`的调用链
 
 ### 功能提升
 
-1. [ISSUE #386](https://github.com/sharding-sphere/sharding-sphere/issues/386) 支持SELECT 1这种不包含表名称的SQL
-1. [ISSUE #407](https://github.com/sharding-sphere/sharding-sphere/issues/407) sharding-jdbc的spring-boot-starter兼容使用减号和驼峰两种方式进行属性配置
+#### 内核
+
+1. [ISSUE #386](https://github.com/sharding-sphere/sharding-sphere/issues/386) 支持不包含表名称的SQL, 例如: `SELECT 1`
+
+#### Sharding-JDBC
+
+1. [ISSUE #407](https://github.com/sharding-sphere/sharding-sphere/issues/407) `sharding-jdbc-spring-boot-starter`兼容使用减号和驼峰两种方式进行属性配置
 1. [ISSUE #424](https://github.com/sharding-sphere/sharding-sphere/issues/424) 提供SQL总体执行情况事件
 
 ### 缺陷修正
 
+#### 内核
+
 1. [ISSUE #387](https://github.com/sharding-sphere/sharding-sphere/issues/387) 当函数 + 列名中存在'`'防止关键字时处理出错
+1. [ISSUE #419](https://github.com/sharding-sphere/sharding-sphere/issues/419) SQL改写时, 未判断别名是否为关键字未加转义符导致了SQL异常
+1. [ISSUE #464](https://github.com/sharding-sphere/sharding-sphere/issues/464) SQL如果varchar类型由于没有匹配单引号并未关闭, 而恰好sql中的下一个varchar又是汉字的错误SQL, 将导致CPU使用增高
+
+#### Sharding-JDBC
+
 1. [ISSUE #394](https://github.com/sharding-sphere/sharding-sphere/issues/394) 无法单独close statement
 1. [ISSUE #398](https://github.com/sharding-sphere/sharding-sphere/issues/398) 使用Hint路由屏蔽表和列名称的大小写区别
 1. [ISSUE #404](https://github.com/sharding-sphere/sharding-sphere/issues/404) sharding-jdbc的spring-boot-starter不支持HikariDataSource
-1. [ISSUE #419](https://github.com/sharding-sphere/sharding-sphere/issues/419) SQL改写时, 未判断别名是否为关键字未加转义符导致了SQL异常
 1. [ISSUE #436](https://github.com/sharding-sphere/sharding-sphere/issues/436) 读写分离当从库配置RoundRobin算法并使用MyBatis时，只能路由到同一从库
 1. [ISSUE #452](https://github.com/sharding-sphere/sharding-sphere/issues/452) DDL语句分片至多个表会造成连接泄漏的问题
-1. [ISSUE #453](https://github.com/sharding-sphere/sharding-sphere/issues/453) 编排治理数据源配置name与Druid数据源name冲突
-1. [ISSUE #464](https://github.com/sharding-sphere/sharding-sphere/issues/464) SQL如果varchar类型由于没有匹配单引号并未关闭, 而恰好sql中的下一个varchar又是汉字的错误SQL, 将导致CPU使用增高
 1. [ISSUE #472](https://github.com/sharding-sphere/sharding-sphere/issues/472) Connection执行createStatement之前, 先调用getMetaData再setAutoCommit无法对之后创建的数据库真实连接生效
 
 ## 1.5.4.1
