@@ -94,8 +94,7 @@ dataSources:
     maxLifetime: 1800000
     maximumPoolSize: 65 
     
-  ds_slave1: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
+  ds_slave1:
     url: jdbc:mysql://localhost:3306/ds_slave1
     username: root
     password:
@@ -127,8 +126,7 @@ proxyAuthority:
 
 ```yaml
 dataSources:
-  ds0: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
+  ds0:
     url: jdbc:mysql://localhost:3306/ds0
     username: root
     password:
@@ -138,8 +136,7 @@ dataSources:
     maxLifetime: 1800000
     maximumPoolSize: 65 
     
-  ds0_slave0: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
+  ds0_slave0:
     url: jdbc:mysql://localhost:3306/ds0_slave0
     username: root
     password: 
@@ -149,8 +146,7 @@ dataSources:
     maxLifetime: 1800000
     maximumPoolSize: 65
           
-  ds0_slave1: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
+  ds0_slave1:
     url: jdbc:mysql://localhost:3306/ds0_slave1
     username: root
     password:
@@ -160,8 +156,7 @@ dataSources:
     maxLifetime: 1800000
     maximumPoolSize: 65
            
-  ds1: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
+  ds1:
     url: jdbc:mysql://localhost:3306/ds1
     username: root
     password: 
@@ -171,8 +166,7 @@ dataSources:
     maxLifetime: 1800000
     maximumPoolSize: 65
       
-  ds1_slave0: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
+  ds1_slave0:
     url: jdbc:mysql://localhost:3306/ds1_slave0
     username: root
     password: 
@@ -182,8 +176,7 @@ dataSources:
     maxLifetime: 1800000
     maximumPoolSize: 65
             
-  ds1_slave1: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
+  ds1_slave1:
     url: jdbc:mysql://localhost:3306/ds1_slave1
     username: root
     password:
@@ -244,11 +237,12 @@ shardingRule:
     proxy.transaction.mode: NONE
     proxy.max.working.threads: 16
     sql.show: false
-    
+
 proxyAuthority:
   username: root
   password:
 ```
+
 
 ### Orchestration by Zookeeper
 
