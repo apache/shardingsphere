@@ -17,35 +17,27 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Random;
 
-/*
+/**
  * Delay policy executor.
  *
  * @author lidongbo
  */
+@RequiredArgsConstructor
 @Slf4j
-public class DelayPolicyExecutor {
+public final class DelayPolicyExecutor {
     
     private final DelayRetryPolicy delayRetryPolicy;
     
-    private final Random random;
+    private final Random random = new Random();
     
     private int executeCount;
     
-    private long executeTick;
-    
-    public DelayPolicyExecutor() {
-        this(DelayRetryPolicy.defaultDelayPolicy());
-    }
-    
-    public DelayPolicyExecutor(final DelayRetryPolicy delayRetryPolicy) {
-        this.delayRetryPolicy = delayRetryPolicy;
-        this.executeTick = System.currentTimeMillis();
-        this.random = new Random();
-    }
+    private long executeTick = System.currentTimeMillis();
     
     /**
      * Has next.
@@ -57,9 +49,9 @@ public class DelayPolicyExecutor {
     }
     
     /**
-     * Next exec tick.
+     * Next execute tick.
      *
-     * @return next exec tick
+     * @return next execute tick
      */
     public long getNextTick() {
         return executeTick;

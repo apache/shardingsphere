@@ -27,8 +27,8 @@ import org.apache.zookeeper.Watcher;
 import java.util.List;
 import java.util.Stack;
 
-/*
- * Provider api.
+/**
+ * Provider API.
  *
  * @author lidongbo
  */
@@ -39,8 +39,8 @@ public interface IProvider {
      *
      * @param key key
      * @return data String
-     * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
+     * @throws KeeperException zookeeper exception
+     * @throws InterruptedException interrupted exception
      */
     String getDataString(String key) throws KeeperException, InterruptedException;
     
@@ -49,8 +49,8 @@ public interface IProvider {
      *
      * @param key key
      * @return data
-     * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
+     * @throws KeeperException zookeeper exception
+     * @throws InterruptedException interrupted exception
      */
     byte[] getData(String key) throws KeeperException, InterruptedException;
     
@@ -60,8 +60,8 @@ public interface IProvider {
      * @param key key
      * @param callback callback
      * @param ctx ctx
-     * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
+     * @throws KeeperException zookeeper exception
+     * @throws InterruptedException interrupted exception
      */
     void getData(String key, AsyncCallback.DataCallback callback, Object ctx) throws KeeperException, InterruptedException;
     
@@ -70,8 +70,8 @@ public interface IProvider {
      *
      * @param key key
      * @return exist
-     * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
+     * @throws KeeperException zookeeper exception
+     * @throws InterruptedException interrupted exception
      */
     boolean exists(String key) throws KeeperException, InterruptedException;
     
@@ -81,8 +81,8 @@ public interface IProvider {
      * @param key key
      * @param watcher watcher
      * @return exist
-     * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
+     * @throws KeeperException zookeeper exception
+     * @throws InterruptedException interrupted exception
      */
     boolean exists(String key, Watcher watcher) throws KeeperException, InterruptedException;
     
@@ -91,8 +91,8 @@ public interface IProvider {
      *
      * @param key key
      * @return exist
-     * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
+     * @throws KeeperException zookeeper exception
+     * @throws InterruptedException interrupted exception
      */
     List<String> getChildren(String key) throws KeeperException, InterruptedException;
     
@@ -101,9 +101,9 @@ public interface IProvider {
      *
      * @param key key
      * @param value value
-     * @param createMode createMode
-     * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
+     * @param createMode create mode
+     * @throws KeeperException zookeeper exception
+     * @throws InterruptedException interrupted exception
      */
     void create(String key, String value, CreateMode createMode) throws KeeperException, InterruptedException;
     
@@ -113,8 +113,8 @@ public interface IProvider {
      * @param key key
      * @param value value
      * @return is success
-     * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
+     * @throws KeeperException zookeeper exception
+     * @throws InterruptedException interrupted exception
      */
     boolean update(String key, String value) throws KeeperException, InterruptedException;
     
@@ -122,19 +122,19 @@ public interface IProvider {
      * Only delete target node..
      *
      * @param key key
-     * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
+     * @throws KeeperException zookeeper exception
+     * @throws InterruptedException interrupted exception
      */
     void delete(String key) throws KeeperException, InterruptedException;
     
     /**
-     * Only delete target node..
+     * Only delete target node.
      *
      * @param key key
      * @param callback callback
      * @param ctx ctx
-     * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
+     * @throws KeeperException zookeeper exception
+     * @throws InterruptedException interrupted exception
      */
     void delete(String key, AsyncCallback.VoidCallback callback, Object ctx) throws KeeperException, InterruptedException;
     
@@ -166,7 +166,7 @@ public interface IProvider {
      * Contention exec.
      *
      * @param election election
-     * @throws KeeperException Zookeeper Exception
+     * @throws KeeperException zookeeper exception
      * @throws InterruptedException InterruptedException
      */
     void executeContention(LeaderElection election) throws KeeperException, InterruptedException;
@@ -177,9 +177,9 @@ public interface IProvider {
     void resetConnection();
     
     /**
-     * Create transaction.
+     * Create zookeeper transaction.
      *
-     * @return BaseTransaction
+     * @return zookeeper transaction
      */
     BaseTransaction transaction();
 }

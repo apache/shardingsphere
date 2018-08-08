@@ -21,14 +21,14 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-/*
+/**
  * Path hierarchy resolve.
  *
  * @author lidongbo
  */
 @Slf4j
 @RequiredArgsConstructor
-class PathResolve {
+final class PathResolve {
     
     @Getter
     private final String path;

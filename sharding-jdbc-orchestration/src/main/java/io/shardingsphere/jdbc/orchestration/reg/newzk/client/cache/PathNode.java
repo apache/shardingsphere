@@ -19,31 +19,29 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-/*
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+/**
  * Zookeeper node cache.
  *
  * @author lidongbo
  */
+@Getter
+@Setter
 @Slf4j
 public final class PathNode {
     
     private final Map<String, PathNode> children = new ConcurrentHashMap<>();
-
+    
     private final String nodeKey;
     
-    @Getter(value = AccessLevel.PACKAGE)
-    @Setter(value = AccessLevel.PACKAGE)
     private String path;
-
-    @Getter(value = AccessLevel.PACKAGE)
-    @Setter(value = AccessLevel.PACKAGE)
+    
     private byte[] value;
     
     PathNode(final String key) {
@@ -56,32 +54,9 @@ public final class PathNode {
         this.path = key;
     }
     
-    /**
-     * Get children.
-     *
-     * @return children
-     */
-    public Map<String, PathNode> getChildren() {
-        return children;
-    }
-    
-    /**
-     * Get key.
-     *
-     * @return node key
-     */
-    public String getKey() {
-        return this.nodeKey;
-    }
-    
-    /**
-     * Attach child node.
-     *
-     * @param node node
-     */
-    public void attachChild(final PathNode node) {
-        this.children.put(node.nodeKey, node);
-        node.setPath(PathUtil.getRealPath(path, node.getKey()));
+    void attachChild(final PathNode node) {
+        children.put(node.nodeKey, node);
+        node.setPath(PathUtil.getRealPath(path, node.getNodeKey()));
     }
     
     PathNode set(final PathResolve pathResolve, final String value) {
@@ -90,7 +65,7 @@ public final class PathNode {
             return this;
         }
         pathResolve.next();
-        log.debug("PathNode set:{},value:{}", pathResolve.getCurrent(), value);
+        log.debug("PathNode set: {}, value: {}", pathResolve.getCurrent(), value);
         if (children.containsKey(pathResolve.getCurrent())) {
             return children.get(pathResolve.getCurrent()).set(pathResolve, value);
         }

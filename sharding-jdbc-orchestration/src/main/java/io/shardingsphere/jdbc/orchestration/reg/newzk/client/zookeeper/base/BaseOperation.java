@@ -21,6 +21,7 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayPolicyExecutor;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Connection;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.KeeperException;
@@ -28,11 +29,12 @@ import org.apache.zookeeper.KeeperException;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
-/*
+/**
  * Base async retry operation.
  *
  * @author lidongbo
  */
+@RequiredArgsConstructor
 @Slf4j
 public abstract class BaseOperation implements Delayed {
     
@@ -42,20 +44,13 @@ public abstract class BaseOperation implements Delayed {
     @Setter
     private DelayPolicyExecutor delayPolicyExecutor;
     
-    protected BaseOperation(final IProvider provider) {
-        this.provider = provider;
-    }
-    
     @Override
-    public long getDelay(final TimeUnit unit) {
+    public long getDelay(final TimeUnit timeUnit) {
         long absoluteBlock = this.delayPolicyExecutor.getNextTick() - System.currentTimeMillis();
-        log.debug("queue getDelay block:{}", absoluteBlock);
-        return unit.convert(absoluteBlock, TimeUnit.MILLISECONDS);
+        log.debug("queue getDelay block: {}", absoluteBlock);
+        return timeUnit.convert(absoluteBlock, TimeUnit.MILLISECONDS);
     }
     
-    /**
-     * Queue precedence.
-     */
     @Override
     public int compareTo(final Delayed delayed) {
         return (int) (this.getDelay(TimeUnit.MILLISECONDS) - delayed.getDelay(TimeUnit.MILLISECONDS));
@@ -67,8 +62,8 @@ public abstract class BaseOperation implements Delayed {
      * Queue precedence.
      *
      * @return whether or not continue enqueue
-     * @throws KeeperException Keeper Exception
-     * @throws InterruptedException InterruptedException
+     * @throws KeeperException keeper exception
+     * @throws InterruptedException interrupted exception
      */
     public boolean executeOperation() throws KeeperException, InterruptedException {
         boolean result;

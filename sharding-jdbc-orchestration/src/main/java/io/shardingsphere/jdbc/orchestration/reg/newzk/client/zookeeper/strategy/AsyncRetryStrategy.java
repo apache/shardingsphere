@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 
-/*
+/**
  * Async retry strategy.
  *
  * @author lidongbo

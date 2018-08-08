@@ -24,9 +24,6 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperCo
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.WatcherCreator;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,7 +33,11 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.data.ACL;
 
-/*
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+/**
  * Base client.
  *
  * @author lidongbo
@@ -75,10 +76,10 @@ public abstract class BaseClient implements IClient {
     }
     
     @Override
-    public synchronized boolean start(final int wait, final TimeUnit units) throws InterruptedException, IOException {
-        log.debug("start wait:{}, units:{}", wait, units);
+    public synchronized boolean start(final int waitingTime, final TimeUnit timeUnit) throws InterruptedException, IOException {
+        log.debug("start wait:{}, units:{}", waitingTime, timeUnit);
         prepareStart();
-        holder.start(wait, units);
+        holder.start(waitingTime, timeUnit);
         return holder.isConnected();
     }
     
@@ -88,8 +89,8 @@ public abstract class BaseClient implements IClient {
     }
     
     @Override
-    public synchronized boolean blockUntilConnected(final int wait, final TimeUnit units) throws InterruptedException {
-        long maxWait = units != null ? TimeUnit.MILLISECONDS.convert(wait, units) : 0;
+    public synchronized boolean blockUntilConnected(final int waitingTime, final TimeUnit timeUnit) throws InterruptedException {
+        long maxWait = timeUnit != null ? TimeUnit.MILLISECONDS.convert(waitingTime, timeUnit) : 0;
         while (!holder.isConnected()) {
             long waitTime = maxWait - CIRCLE_WAIT;
             if (waitTime <= 0) {

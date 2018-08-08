@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 
-/*
+/**
  * Build public watcher.
  *
  * @author lidongbo
@@ -42,7 +42,7 @@ public class WatcherCreator {
             public void process(final WatchedEvent event) {
                 if (zookeeperEventListener.getPath().equals(event.getPath()) && Event.EventType.NodeDeleted.equals(event.getType())) {
                     zookeeperEventListener.process(event);
-                    log.debug("delete node event:{}", event.toString());
+                    log.debug("delete node event: {}", event.toString());
                 }
             }
         };

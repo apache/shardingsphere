@@ -19,16 +19,20 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-/*
+/**
  * Path util.
  *
  * @author lidongbo
  */
-public class PathUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class PathUtil {
     
     /**
      * Get real path.
