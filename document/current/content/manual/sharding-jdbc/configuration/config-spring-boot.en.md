@@ -152,14 +152,14 @@ sharding.jdbc.datasource.ds1.password=
 
 sharding.jdbc.config.sharding.default-data-source-name=ds
 sharding.jdbc.config.sharding.default-database-strategy.inline.sharding-column=user_id
-sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-inline-expression=ds$->{user_id % 2}
+sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-expression=ds$->{user_id % 2}
 sharding.jdbc.config.sharding.tables.t-order.actual-data-nodes=ds$->{0..1}.t_order$->{0..1}
 sharding.jdbc.config.sharding.tables.t-order.table-strategy.inline.sharding-column=order_id
-sharding.jdbc.config.sharding.tables.t-order.table-strategy.inline.algorithm-inline-expression=t_order$->{order_id % 2}
+sharding.jdbc.config.sharding.tables.t-order.table-strategy.inline.algorithm-expression=t_order$->{order_id % 2}
 sharding.jdbc.config.sharding.tables.t-order.key-generator-column-name=order_id
 sharding.jdbc.config.sharding.tables.t-order-item.actual-data-nodes=ds$->{0..1}.t_order_item$->{0..1}
 sharding.jdbc.config.sharding.tables.t-order-item.table-strategy.inline.sharding-column=order_id
-sharding.jdbc.config.sharding.tables.t-order-item.table-strategy.inline.algorithm-inline-expression=t_order_item$->{order_id % 2}
+sharding.jdbc.config.sharding.tables.t-order-item.table-strategy.inline.algorithm-expression=t_order_item$->{order_id % 2}
 sharding.jdbc.config.sharding.tables.t-order-item.key-generator-column-name=order_item_id
 
 sharding.jdbc.config.orchestration.name=spring_boot_ds_sharding
@@ -192,14 +192,14 @@ sharding.jdbc.datasource.ds1.password=
 
 sharding.jdbc.config.sharding.default-data-source-name=ds
 sharding.jdbc.config.sharding.default-database-strategy.inline.sharding-column=user_id
-sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-inline-expression=ds$->{user_id % 2}
+sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-expression=ds$->{user_id % 2}
 sharding.jdbc.config.sharding.tables.t-order.actual-data-nodes=ds$->{0..1}.t_order$->{0..1}
 sharding.jdbc.config.sharding.tables.t-order.table-strategy.inline.sharding-column=order_id
-sharding.jdbc.config.sharding.tables.t-order.table-strategy.inline.algorithm-inline-expression=t_order$->{order_id % 2}
+sharding.jdbc.config.sharding.tables.t-order.table-strategy.inline.algorithm-expression=t_order$->{order_id % 2}
 sharding.jdbc.config.sharding.tables.t-order.key-generator-column-name=order_id
 sharding.jdbc.config.sharding.tables.t-order-item.actual-data-nodes=ds$->{0..1}.t_order_item$->{0..1}
 sharding.jdbc.config.sharding.tables.t-order-item.table-strategy.inline.sharding-column=order_id
-sharding.jdbc.config.sharding.tables.t-order-item.table-strategy.inline.algorithm-inline-expression=t_order_item$->{order_id % 2}
+sharding.jdbc.config.sharding.tables.t-order-item.table-strategy.inline.algorithm-expression=t_order_item$->{order_id % 2}
 sharding.jdbc.config.sharding.tables.t-order-item.key-generator-column-name=order_item_id
 
 sharding.jdbc.config.orchestration.name=spring_boot_ds_sharding
@@ -236,7 +236,7 @@ sharding.jdbc.config.sharding.tables.<logic-table-name>.database-strategy.comple
 
 #Inline expression sharding scenario for si-gle s-arding column
 sharding.jdbc.config.sharding.tables.<logic-table-name>.database-strategy.inline.sharding-column= #Name of sharding column
-sharding.jdbc.config.sharding.tables.<logic-table-name>.database-strategy.inline.algorithm-inline-expression= #Inline expression for sharding algorithm
+sharding.jdbc.config.sharding.tables.<logic-table-name>.database-strategy.inline.algorithm-expression= #Inline expression for sharding algorithm
 
 #Hint sharding strategy
 sharding.jdbc.config.sharding.tables.<logic-table-name>.database-strategy.hint.algorithm-class-name= #Hint sharding algorithm class name. This class need to implements HintShardingAlgorithm, and require a no argument constructor
