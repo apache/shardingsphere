@@ -83,9 +83,9 @@ public interface IClient extends IAction, IGroupAction {
     void useExecStrategy(StrategyType strategyType);
     
     /**
-     * Get provider.
+     * Get execution strategy.
      *
-     * @return execute strategy
+     * @return execution strategy
      */
     IExecStrategy getExecStrategy();
     
