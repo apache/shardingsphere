@@ -145,9 +145,9 @@ public abstract class AbstractSelectParser implements SQLParser {
                 continue;
             }
             AggregationSelectItem avgItem = (AggregationSelectItem) each;
-            String countAlias = DerivedColumn.getDerivedAvgCountAlias(derivedColumnOffset);
+            String countAlias = DerivedColumn.AVG_COUNT_ALIAS.getDerivedColumnAlias(derivedColumnOffset);
             AggregationSelectItem countItem = new AggregationSelectItem(AggregationType.COUNT, avgItem.getInnerExpression(), Optional.of(countAlias));
-            String sumAlias = DerivedColumn.getDerivedAvgSumAlias(derivedColumnOffset);
+            String sumAlias = DerivedColumn.AVG_SUM_ALIAS.getDerivedColumnAlias(derivedColumnOffset);
             AggregationSelectItem sumItem = new AggregationSelectItem(AggregationType.SUM, avgItem.getInnerExpression(), Optional.of(sumAlias));
             avgItem.getDerivedAggregationSelectItems().add(countItem);
             avgItem.getDerivedAggregationSelectItems().add(sumItem);
@@ -162,7 +162,7 @@ public abstract class AbstractSelectParser implements SQLParser {
         int derivedColumnOffset = 0;
         for (OrderItem each : orderItems) {
             if (!containsItem(selectStatement, each)) {
-                String alias = DerivedColumn.getDerivedOrderByAlias(derivedColumnOffset++);
+                String alias = DerivedColumn.ORDER_BY_ALIAS.getDerivedColumnAlias(derivedColumnOffset++);
                 each.setAlias(Optional.of(alias));
                 itemsToken.getItems().add(each.getQualifiedName().get() + " AS " + alias + " ");
             }
@@ -173,7 +173,7 @@ public abstract class AbstractSelectParser implements SQLParser {
         int derivedColumnOffset = 0;
         for (OrderItem each : orderItems) {
             if (!containsItem(selectStatement, each)) {
-                String alias = DerivedColumn.getDerivedGroupByAlias(derivedColumnOffset++);
+                String alias = DerivedColumn.GROUP_BY_ALIAS.getDerivedColumnAlias(derivedColumnOffset++);
                 each.setAlias(Optional.of(alias));
                 itemsToken.getItems().add(each.getQualifiedName().get() + " AS " + alias + " ");
             }

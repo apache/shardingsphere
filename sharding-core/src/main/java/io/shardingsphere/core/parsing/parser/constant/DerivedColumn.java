@@ -18,62 +18,31 @@
 package io.shardingsphere.core.parsing.parser.constant;
 
 import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Derived column alias.
  *
  * @author zhangliang
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DerivedColumn {
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public enum DerivedColumn {
     
-    private static final String AVG_COUNT_ALIAS = "AVG_DERIVED_COUNT_";
+    AVG_COUNT_ALIAS("AVG_DERIVED_COUNT_"), 
+    AVG_SUM_ALIAS("AVG_DERIVED_SUM_"), 
+    ORDER_BY_ALIAS("ORDER_BY_DERIVED_"), 
+    GROUP_BY_ALIAS("GROUP_BY_DERIVED_");
     
-    private static final String AVG_SUM_ALIAS = "AVG_DERIVED_SUM_";
-    
-    private static final String ORDER_BY_ALIAS = "ORDER_BY_DERIVED_";
-    
-    private static final String GROUP_BY_ALIAS = "GROUP_BY_DERIVED_";
-    
-    /**
-     * Get alias of avg derived count column.
-     * 
-     * @param derivedColumnCount derived column count
-     * @return alias of avg derived count column
-     */
-    public static String getDerivedAvgCountAlias(final int derivedColumnCount) {
-        return String.format(AVG_COUNT_ALIAS + "%s", derivedColumnCount);
-    }
+    private final String pattern;
     
     /**
-     * Get alias of avg derived sum column.
+     * Get alias of derived column.
      *
      * @param derivedColumnCount derived column count
-     * @return alias of avg derived sum column
+     * @return alias of derived column
      */
-    public static String getDerivedAvgSumAlias(final int derivedColumnCount) {
-        return String.format(AVG_SUM_ALIAS + "%s", derivedColumnCount);
-    }
-    
-    /**
-     * Get alias of order by derived column.
-     *
-     * @param derivedColumnCount derived column count
-     * @return alias of order by derived column
-     */
-    public static String getDerivedOrderByAlias(final int derivedColumnCount) {
-        return String.format(ORDER_BY_ALIAS + "%s", derivedColumnCount);
-    }
-    
-    /**
-     * Get alias of group by derived column.
-     *
-     * @param derivedColumnCount derived column count
-     * @return alias of group by derived column
-     */
-    public static String getDerivedGroupByAlias(final int derivedColumnCount) {
-        return String.format(GROUP_BY_ALIAS + "%s", derivedColumnCount);
+    public String getDerivedColumnAlias(final int derivedColumnCount) {
+        return String.format(pattern + "%s", derivedColumnCount);
     }
     
     /**
@@ -83,7 +52,11 @@ public final class DerivedColumn {
      * @return is derived column or not
      */
     public static boolean isDerivedColumn(final String columnName) {
-        return columnName.startsWith(DerivedColumn.AVG_COUNT_ALIAS) || columnName.startsWith(DerivedColumn.AVG_SUM_ALIAS)
-                || columnName.startsWith(DerivedColumn.ORDER_BY_ALIAS) || columnName.startsWith(DerivedColumn.GROUP_BY_ALIAS);
+        for (DerivedColumn each : DerivedColumn.values()) {
+            if (columnName.startsWith(each.pattern)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
