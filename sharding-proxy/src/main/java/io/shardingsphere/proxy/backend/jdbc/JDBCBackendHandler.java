@@ -117,8 +117,7 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
         Collection<ColumnDefinition41Packet> columnDefinition41Packets = new ArrayList<>(queryResponsePackets.getColumnCount());
         int columnCount = 0;
         for (ColumnDefinition41Packet each : queryResponsePackets.getColumnDefinition41Packets()) {
-            if (!each.getName().startsWith(DerivedColumn.AVG_COUNT_ALIAS) && !each.getName().startsWith(DerivedColumn.AVG_SUM_ALIAS)
-                    && !each.getName().startsWith(DerivedColumn.ORDER_BY_ALIAS) && !each.getName().startsWith(DerivedColumn.GROUP_BY_ALIAS)) {
+            if (!DerivedColumn.isDerivedColumn(each.getName())) {
                 columnDefinition41Packets.add(each);
                 columnCount++;
             }
