@@ -23,11 +23,9 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.Holder;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
-import java.io.IOException;
-import java.util.List;
-import java.util.Stack;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
@@ -35,32 +33,30 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.data.ACL;
 
-/*
+import java.io.IOException;
+import java.util.List;
+import java.util.Stack;
+
+/**
  * Base provider.
  *
  * @author lidongbo
  */
+@RequiredArgsConstructor
 @Slf4j
 public class BaseProvider implements IProvider {
     
     @Getter
-    private final Holder holder;
+    private final String rootNode;
     
     @Getter
-    private final String rootNode;
+    private final Holder holder;
     
     @Getter(value = AccessLevel.PROTECTED)
     private final boolean watched;
     
     @Getter(value = AccessLevel.PROTECTED)
     private final List<ACL> authorities;
-    
-    public BaseProvider(final String rootNode, final Holder holder, final boolean watched, final List<ACL> authorities) {
-        this.rootNode = rootNode;
-        this.holder = holder;
-        this.watched = watched;
-        this.authorities = authorities;
-    }
     
     @Override
     public String getDataString(final String key) throws KeeperException, InterruptedException {
@@ -95,11 +91,11 @@ public class BaseProvider implements IProvider {
     @Override
     public void create(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
         if (exists(key)) {
-            log.debug("node exist:{}", key);
+            log.debug("node exist: {}", key);
             return;
         }
         holder.getZooKeeper().create(key, value.getBytes(ZookeeperConstants.UTF_8), authorities, createMode);
-        log.debug("BaseProvider createCurrentOnly:{}", key);
+        log.debug("BaseProvider createCurrentOnly: {}", key);
     }
 
     @Override
@@ -114,13 +110,13 @@ public class BaseProvider implements IProvider {
     @Override
     public void delete(final String key) throws KeeperException, InterruptedException {
         holder.getZooKeeper().delete(key, ZookeeperConstants.VERSION);
-        log.debug("BaseProvider deleteOnlyCurrent:{}", key);
+        log.debug("BaseProvider deleteOnlyCurrent: {}", key);
     }
     
     @Override
     public void delete(final String key, final AsyncCallback.VoidCallback callback, final Object ctx) {
         holder.getZooKeeper().delete(key, ZookeeperConstants.VERSION, callback, ctx);
-        log.debug("BaseProvider deleteOnlyCurrent:{},ctx:{}", key, ctx);
+        log.debug("BaseProvider deleteOnlyCurrent: {}, ctx: {}", key, ctx);
     }
 
     @Override
@@ -154,7 +150,7 @@ public class BaseProvider implements IProvider {
         try {
             holder.reset();
         } catch (final InterruptedException | IOException ex) {
-            log.error("resetConnection Exception:{}", ex.getMessage(), ex);
+            log.error("resetConnection Exception: {}", ex.getMessage(), ex);
         }
     }
     

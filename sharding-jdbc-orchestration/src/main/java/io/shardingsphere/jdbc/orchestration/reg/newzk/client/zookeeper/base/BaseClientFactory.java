@@ -30,7 +30,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-/*
+/**
  * Base client factory.
  *
  * @author lidongbo
@@ -69,16 +69,16 @@ public abstract class BaseClientFactory {
     /**
      * Start until Timeout.
      *
-     * @param wait wait
-     * @param units units
-     * @return connected
+     * @param waitingTime waiting time
+     * @param timeUnit time unit
+     * @return connected or not
      * @throws IOException IO Exception
-     * @throws InterruptedException InterruptedException
-     * @throws KeeperException OperationTimeoutException
+     * @throws InterruptedException interrupted exception
+     * @throws KeeperException operation timeout exception
      */
-    public IClient start(final int wait, final TimeUnit units) throws IOException, InterruptedException, KeeperException {
+    public IClient start(final int waitingTime, final TimeUnit timeUnit) throws IOException, InterruptedException, KeeperException {
         prepareClient();
-        if (!client.start(wait, units)) {
+        if (!client.start(waitingTime, timeUnit)) {
             client.close();
             throw new KeeperException.OperationTimeoutException();
         }
@@ -87,11 +87,11 @@ public abstract class BaseClientFactory {
     
     private void prepareClient() {
         client.setRootNode(namespace);
-        if (scheme == null) {
+        if (null == scheme) {
             authorities = ZooDefs.Ids.OPEN_ACL_UNSAFE;
         }
         client.setAuthorities(scheme, auth, authorities);
-        if (globalZookeeperEventListener != null) {
+        if (null != globalZookeeperEventListener) {
             client.registerWatch(globalZookeeperEventListener);
         }
     }

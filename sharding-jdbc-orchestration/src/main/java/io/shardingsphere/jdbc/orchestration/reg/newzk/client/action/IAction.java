@@ -24,7 +24,7 @@ import org.apache.zookeeper.Watcher;
 
 import java.util.List;
 
-/*
+/**
  * The basic actions of the client.
  *
  * @author lidongbo
@@ -36,8 +36,8 @@ public interface IAction {
      *
      * @param key key
      * @return data String
-     * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
+     * @throws KeeperException zookeeper exception
+     * @throws InterruptedException interrupted exception
      */
     String getDataString(String key) throws KeeperException, InterruptedException;
     
@@ -46,8 +46,8 @@ public interface IAction {
      *
      * @param key key
      * @return data
-     * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
+     * @throws KeeperException zookeeper exception
+     * @throws InterruptedException interrupted exception
      */
     byte[] getData(String key) throws KeeperException, InterruptedException;
     
@@ -56,9 +56,9 @@ public interface IAction {
      *
      * @param key key
      * @param callback callback
-     * @param ctx ctx
-     * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
+     * @param ctx context
+     * @throws KeeperException zookeeper exception
+     * @throws InterruptedException interrupted exception
      */
     void getData(String key, AsyncCallback.DataCallback callback, Object ctx) throws KeeperException, InterruptedException;
     
@@ -66,9 +66,9 @@ public interface IAction {
      * Check exist.
      *
      * @param key key
-     * @return exist
-     * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
+     * @return exist or not
+     * @throws KeeperException zookeeper exception
+     * @throws InterruptedException interrupted exception
      */
     boolean checkExists(String key) throws KeeperException, InterruptedException;
     
@@ -77,9 +77,9 @@ public interface IAction {
      *
      * @param key key
      * @param watcher watcher
-     * @return exist
-     * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
+     * @return exist or not
+     * @throws KeeperException zookeeper exception
+     * @throws InterruptedException interrupted exception
      */
     boolean checkExists(String key, Watcher watcher) throws KeeperException, InterruptedException;
     
@@ -88,8 +88,8 @@ public interface IAction {
      *
      * @param key key
      * @return children keys
-     * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
+     * @throws KeeperException zookeeper exception
+     * @throws InterruptedException interrupted exception
      */
     List<String> getChildren(String key) throws KeeperException, InterruptedException;
     
@@ -99,8 +99,8 @@ public interface IAction {
      * @param key key
      * @param value value
      * @param createMode createMode
-     * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
+     * @throws KeeperException zookeeper exception
+     * @throws InterruptedException interrupted exception
      */
     void createCurrentOnly(String key, String value, CreateMode createMode) throws KeeperException, InterruptedException;
     
@@ -109,8 +109,8 @@ public interface IAction {
      *
      * @param key key
      * @param value value
-     * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
+     * @throws KeeperException zookeeper exception
+     * @throws InterruptedException interrupted exception
      */
     void update(String key, String value) throws KeeperException, InterruptedException;
     
@@ -118,8 +118,8 @@ public interface IAction {
      * Only delete target node..
      *
      * @param key key
-     * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
+     * @throws KeeperException zookeeper exception
+     * @throws InterruptedException interrupted exception
      */
     void deleteOnlyCurrent(String key) throws KeeperException, InterruptedException;
     
@@ -128,9 +128,9 @@ public interface IAction {
      *
      * @param key key
      * @param callback callback
-     * @param ctx ctx
-     * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
+     * @param ctx context
+     * @throws KeeperException zookeeper exception
+     * @throws InterruptedException interrupted exception
      */
     void deleteOnlyCurrent(String key, AsyncCallback.VoidCallback callback, Object ctx) throws KeeperException, InterruptedException;
 }

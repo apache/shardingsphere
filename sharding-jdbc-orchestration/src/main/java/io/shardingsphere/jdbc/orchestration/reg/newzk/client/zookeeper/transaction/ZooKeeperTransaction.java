@@ -29,64 +29,64 @@ import org.apache.zookeeper.data.ACL;
 
 import java.util.List;
 
-/*
+/**
  * Zookeeper transaction support.
  *
  * @author lidongbo
  * @since zookeeper 3.4.0
  */
 @Slf4j
-public class ZKTransaction extends BaseTransaction {
-    
-    private final Transaction transaction;
+public final class ZooKeeperTransaction extends BaseTransaction {
     
     private final String rootNode;
+    
+    private final Transaction transaction;
 
-    public ZKTransaction(final String root, final Holder holder) {
-        transaction = holder.getZooKeeper().transaction();
+    public ZooKeeperTransaction(final String root, final Holder holder) {
         rootNode = root;
-        log.debug("ZKTransaction root:{}", rootNode);
+        transaction = holder.getZooKeeper().transaction();
+        log.debug("ZKTransaction root: {}", rootNode);
     }
     
     @Override
-    public ZKTransaction create(final String path, final byte[] data, final List<ACL> acl, final CreateMode createMode) {
-        this.transaction.create(PathUtil.getRealPath(rootNode, path), data, acl, createMode);
+    public ZooKeeperTransaction create(final String path, final byte[] data, final List<ACL> acl, final CreateMode createMode) {
+        transaction.create(PathUtil.getRealPath(rootNode, path), data, acl, createMode);
         log.debug("wait create:{},data:{},acl:{},createMode:{}", path, data, acl, createMode);
         return this;
     }
     
     @Override
-    public ZKTransaction delete(final String path) {
+    public ZooKeeperTransaction delete(final String path) {
         return delete(path, ZookeeperConstants.VERSION);
     }
     
     @Override
-    public ZKTransaction delete(final String path, final int version) {
-        this.transaction.delete(PathUtil.getRealPath(rootNode, path), version);
+    public ZooKeeperTransaction delete(final String path, final int version) {
+        transaction.delete(PathUtil.getRealPath(rootNode, path), version);
         log.debug("wait delete:{}", path);
         return this;
     }
     
     @Override
-    public ZKTransaction check(final String path) {
+    public ZooKeeperTransaction check(final String path) {
         return check(path, ZookeeperConstants.VERSION);
     }
     
     @Override
-    public ZKTransaction check(final String path, final int version) {
-        this.transaction.check(PathUtil.getRealPath(rootNode, path), version);
+    public ZooKeeperTransaction check(final String path, final int version) {
+        transaction.check(PathUtil.getRealPath(rootNode, path), version);
         log.debug("wait check:{}", path);
         return this;
     }
     
     @Override
-    public ZKTransaction setData(final String path, final byte[] data) {
+    public ZooKeeperTransaction setData(final String path, final byte[] data) {
         return setData(path, data, ZookeeperConstants.VERSION);
     }
     
     @Override
-    public ZKTransaction setData(final String path, final byte[] data, final int version) {
-        this.transaction.setData(PathUtil.getRealPath(rootNode, path), data, version);
+    public ZooKeeperTransaction setData(final String path, final byte[] data, final int version) {
+        transaction.setData(PathUtil.getRealPath(rootNode, path), data, version);
         log.debug("wait setData:{},data:{}", path, data);
         return this;
     }
@@ -94,6 +94,6 @@ public class ZKTransaction extends BaseTransaction {
     @Override
     public List<OpResult> commit() throws InterruptedException, KeeperException {
         log.debug("ZKTransaction commit");
-        return this.transaction.commit();
+        return transaction.commit();
     }
 }

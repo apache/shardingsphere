@@ -96,7 +96,7 @@ public abstract class AbstractSQLTest {
         result.setUrl(dbEnv.getURL(dbName));
         result.setUsername(dbEnv.getUsername());
         result.setPassword(dbEnv.getPassword());
-        result.setMaxTotal(1);
+        result.setMaxTotal(50);
         return result;
     }
     

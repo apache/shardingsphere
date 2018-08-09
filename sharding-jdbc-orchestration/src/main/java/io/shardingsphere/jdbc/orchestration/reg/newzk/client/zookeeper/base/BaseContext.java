@@ -18,13 +18,14 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
-/*
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+/**
  * Base context.
  *
  * @author lidongbo
@@ -49,6 +50,6 @@ public abstract class BaseContext {
      * Close.
      */
     public void close() {
-        this.watchers.clear();
+        watchers.clear();
     }
 }

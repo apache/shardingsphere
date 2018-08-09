@@ -23,7 +23,7 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.election.LeaderElec
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.provider.BaseProvider;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.ZKTransaction;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.ZooKeeperTransaction;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -31,14 +31,14 @@ import org.apache.zookeeper.KeeperException;
 import java.util.List;
 import java.util.Stack;
 
-/*
+/**
  * ContentionStrategy with transaction.
  *
  * @author lidongbo
  * @since zookeeper 3.4.0
  */
 @Slf4j
-public class TransactionContendStrategy extends ContentionStrategy {
+public final class TransactionContendStrategy extends ContentionStrategy {
     
     public TransactionContendStrategy(final ITransactionProvider provider) {
         super(provider);
@@ -57,8 +57,8 @@ public class TransactionContendStrategy extends ContentionStrategy {
             
             @Override
             public void action() throws KeeperException, InterruptedException {
-                log.debug("ContentionStrategy createAllNeedPath action:{}", key);
-                ZKTransaction transaction = new ZKTransaction(((BaseProvider) getProvider()).getRootNode(), ((BaseProvider) getProvider()).getHolder());
+                log.debug("ContentionStrategy createAllNeedPath action: {}", key);
+                ZooKeeperTransaction transaction = new ZooKeeperTransaction(((BaseProvider) getProvider()).getRootNode(), ((BaseProvider) getProvider()).getHolder());
                 createBegin(key, value, createMode, transaction);
                 transaction.commit();
             }
@@ -72,7 +72,7 @@ public class TransactionContendStrategy extends ContentionStrategy {
         };
     }
 
-    private void createBegin(final String key, final String value, final CreateMode createMode, final ZKTransaction transaction) throws KeeperException, InterruptedException {
+    private void createBegin(final String key, final String value, final CreateMode createMode, final ZooKeeperTransaction transaction) throws KeeperException, InterruptedException {
         if (!key.contains(ZookeeperConstants.PATH_SEPARATOR)) {
             ((ITransactionProvider) getProvider()).createInTransaction(key, value, createMode, transaction);
             return;
@@ -80,10 +80,10 @@ public class TransactionContendStrategy extends ContentionStrategy {
         List<String> nodes = getProvider().getNecessaryPaths(key);
         for (int i = 0; i < nodes.size(); i++) {
             if (getProvider().exists(nodes.get(i))) {
-                log.info("create node exist:{}", nodes.get(i));
+                log.info("create node exist: {}", nodes.get(i));
                 continue;
             }
-            log.debug("node not exist and create:", nodes.get(i));
+            log.debug("node not exist and create: {}", nodes.get(i));
             if (i == nodes.size() - 1) {
                 ((ITransactionProvider) getProvider()).createInTransaction(nodes.get(i), value, createMode, transaction);
             } else {
@@ -98,7 +98,7 @@ public class TransactionContendStrategy extends ContentionStrategy {
             
             @Override
             public void action() throws KeeperException, InterruptedException {
-                ZKTransaction transaction = new ZKTransaction(((BaseProvider) getProvider()).getRootNode(), ((BaseProvider) getProvider()).getHolder());
+                ZooKeeperTransaction transaction = new ZooKeeperTransaction(((BaseProvider) getProvider()).getRootNode(), ((BaseProvider) getProvider()).getHolder());
                 deleteChildren(getProvider().getRealPath(key), true, transaction);
                 transaction.commit();
             }
@@ -106,15 +106,15 @@ public class TransactionContendStrategy extends ContentionStrategy {
         log.debug("ContentionStrategy deleteAllChildren executeContention");
     }
     
-    private void deleteChildren(final String key, final boolean deleteCurrentNode, final ZKTransaction transaction) throws KeeperException, InterruptedException {
+    private void deleteChildren(final String key, final boolean deleteCurrentNode, final ZooKeeperTransaction transaction) throws KeeperException, InterruptedException {
         List<String> children = getProvider().getChildren(key);
-        for (int i = 0; i < children.size(); i++) {
-            String child = PathUtil.getRealPath(key, children.get(i));
+        for (String each : children) {
+            String child = PathUtil.getRealPath(key, each);
             if (!getProvider().exists(child)) {
-                log.info("delete not exist:{}", child);
+                log.info("delete not exist: {}", child);
                 continue;
             }
-            log.debug("deleteChildren:{}", child);
+            log.debug("deleteChildren: {}", child);
             deleteChildren(child, true, transaction);
         }
         if (deleteCurrentNode) {
@@ -128,7 +128,7 @@ public class TransactionContendStrategy extends ContentionStrategy {
             
             @Override
             public void action() throws KeeperException, InterruptedException {
-                ZKTransaction transaction = new ZKTransaction(((BaseProvider) getProvider()).getRootNode(), ((BaseProvider) getProvider()).getHolder());
+                ZooKeeperTransaction transaction = new ZooKeeperTransaction(((BaseProvider) getProvider()).getRootNode(), ((BaseProvider) getProvider()).getHolder());
                 deleteBranch(getProvider().getRealPath(key), transaction);
                 transaction.commit();
             }
@@ -136,7 +136,7 @@ public class TransactionContendStrategy extends ContentionStrategy {
         log.debug("ContentionStrategy deleteCurrentBranch executeContention");
     }
 
-    private void deleteBranch(final String key, final ZKTransaction transaction) throws KeeperException, InterruptedException {
+    private void deleteBranch(final String key, final ZooKeeperTransaction transaction) throws KeeperException, InterruptedException {
         deleteChildren(key, false, transaction);
         Stack<String> pathStack = getProvider().getDeletingPaths(key);
         String prePath = key;
@@ -145,8 +145,8 @@ public class TransactionContendStrategy extends ContentionStrategy {
             // contrast cache
             // Performance needs testing
             List<String> children = getProvider().getChildren(node);
-            boolean canDelete = children.size() == 0 || children.size() == 1;
-            if (children.size() == 1) {
+            boolean canDelete = children.isEmpty() || 1 == children.size();
+            if (1 == children.size()) {
                 if (!PathUtil.getRealPath(node, children.get(0)).equals(prePath)) {
                     canDelete = false;
                 }

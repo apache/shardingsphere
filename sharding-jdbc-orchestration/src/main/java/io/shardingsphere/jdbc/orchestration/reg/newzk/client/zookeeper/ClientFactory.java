@@ -30,13 +30,13 @@ import org.apache.zookeeper.data.ACL;
 import java.io.IOException;
 import java.util.List;
 
-/*
+/**
  * Client factory.
  *
  * @author lidongbo
  */
 @Slf4j
-public class ClientFactory extends BaseClientFactory {
+public final class ClientFactory extends BaseClientFactory {
     
     private DelayRetryPolicy delayRetryPolicy;
     
@@ -44,7 +44,7 @@ public class ClientFactory extends BaseClientFactory {
      * Create a new client.
      *
      * @param servers servers
-     * @param sessionTimeoutMilliseconds sessionTimeoutMilliseconds
+     * @param sessionTimeoutMilliseconds session timeout milliseconds
      * @return ClientFactory this
      */
     public ClientFactory newClient(final String servers, final int sessionTimeoutMilliseconds) {
@@ -82,8 +82,8 @@ public class ClientFactory extends BaseClientFactory {
     /**
      * Wait to register global listener.
      *
-     * @param globalZookeeperEventListener globalListener
-     * @return ClientFactory this
+     * @param globalZookeeperEventListener global listener
+     * @return client factory
      */
     public ClientFactory watch(final ZookeeperEventListener globalZookeeperEventListener) {
         setGlobalZookeeperEventListener(globalZookeeperEventListener);
@@ -94,7 +94,7 @@ public class ClientFactory extends BaseClientFactory {
      * Set client namespace.
      *
      * @param namespace namespace
-     * @return ClientFactory this
+     * @return client factory
      */
     public ClientFactory setClientNamespace(final String namespace) {
         setNamespace(PathUtil.checkPath(namespace));
@@ -107,7 +107,7 @@ public class ClientFactory extends BaseClientFactory {
      * @param scheme scheme
      * @param auth auth
      * @param authorities authorities
-     * @return ClientFactory this
+     * @return client factory
      */
     public ClientFactory authorization(final String scheme, final byte[] auth, final List<ACL> authorities) {
         setScheme(scheme);
@@ -119,8 +119,8 @@ public class ClientFactory extends BaseClientFactory {
     /**
      * Set delay retry policy.
      *
-     * @param delayRetryPolicy delayRetryPolicy
-     * @return ClientFactory this
+     * @param delayRetryPolicy delay retry policy
+     * @return client factory
      */
     public ClientFactory setRetryPolicy(final DelayRetryPolicy delayRetryPolicy) {
         this.delayRetryPolicy = delayRetryPolicy;

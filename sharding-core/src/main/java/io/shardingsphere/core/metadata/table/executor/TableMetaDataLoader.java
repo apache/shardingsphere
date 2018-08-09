@@ -50,7 +50,7 @@ public final class TableMetaDataLoader {
     
     private final ListeningExecutorService executorService;
     
-    private final TableMetaDataConnectionManager executorAdapter;
+    private final TableMetaDataConnectionManager connectionManager;
     
     /**
      * Load table meta data.
@@ -70,12 +70,12 @@ public final class TableMetaDataLoader {
     }
     
     private TableMetaData load(final DataNode dataNode) throws SQLException {
-        if (executorAdapter.isAutoClose()) {
-            try (Connection connection = executorAdapter.getConnection(dataNode.getDataSourceName())) {
+        if (connectionManager.isAutoClose()) {
+            try (Connection connection = connectionManager.getConnection(dataNode.getDataSourceName())) {
                 return load(connection, dataNode);
             }
         }
-        return load(executorAdapter.getConnection(dataNode.getDataSourceName()), dataNode);
+        return load(connectionManager.getConnection(dataNode.getDataSourceName()), dataNode);
     }
     
     private TableMetaData load(final Connection connection, final DataNode dataNode) throws SQLException {

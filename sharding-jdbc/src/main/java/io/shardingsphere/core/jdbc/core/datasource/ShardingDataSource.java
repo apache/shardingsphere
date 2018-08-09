@@ -20,9 +20,12 @@ package io.shardingsphere.core.jdbc.core.datasource;
 import io.shardingsphere.core.api.ConfigMapContext;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.ShardingProperties;
 import io.shardingsphere.core.constant.ShardingPropertiesConstant;
 import io.shardingsphere.core.executor.ExecutorEngine;
+import io.shardingsphere.core.executor.type.connection.ConnectionStrictlyExecutorEngine;
+import io.shardingsphere.core.executor.type.memory.MemoryStrictlyExecutorEngine;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
@@ -47,6 +50,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author zhangliang
  * @author zhaojun
+ * @author panjuan
  */
 public class ShardingDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
     
@@ -68,11 +72,12 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         }
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
-        executorEngine = new ExecutorEngine(executorSize);
+        ConnectionMode connectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
+        executorEngine = ConnectionMode.MEMORY_STRICTLY == connectionMode ? new MemoryStrictlyExecutorEngine(executorSize) : new ConnectionStrictlyExecutorEngine(executorSize);
         ShardingTableMetaData shardingTableMetaData = new ShardingTableMetaData(
                 new TableMetaDataInitializer(executorEngine.getExecutorService(), new DataSourceMapTableMetaDataConnectionManager(dataSourceMap)).load(shardingRule));
         boolean showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
-        shardingContext = new ShardingContext(dataSourceMap, shardingRule, getDatabaseType(), executorEngine, shardingTableMetaData, showSQL);
+        shardingContext = new ShardingContext(dataSourceMap, shardingRule, getDatabaseType(), executorEngine, shardingTableMetaData, showSQL, connectionMode);
     }
     
     /**
@@ -86,16 +91,18 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         ShardingProperties newShardingProperties = new ShardingProperties(null == newProps ? new Properties() : newProps);
         int originalExecutorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         int newExecutorSize = newShardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
-        if (originalExecutorSize != newExecutorSize) {
+        ConnectionMode originalConnectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
+        ConnectionMode newConnectionMode = ConnectionMode.valueOf(newShardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
+        if (originalExecutorSize != newExecutorSize || originalConnectionMode != newConnectionMode) {
             ExecutorEngine originalExecutorEngine = executorEngine;
-            executorEngine = new ExecutorEngine(newExecutorSize);
+            executorEngine = ConnectionMode.MEMORY_STRICTLY == newConnectionMode ? new MemoryStrictlyExecutorEngine(newExecutorSize) : new ConnectionStrictlyExecutorEngine(newExecutorSize);
             originalExecutorEngine.close();
         }
         boolean newShowSQL = newShardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         ShardingTableMetaData shardingMetaData = new ShardingTableMetaData(
                 new TableMetaDataInitializer(executorEngine.getExecutorService(), new DataSourceMapTableMetaDataConnectionManager(newDataSourceMap)).load(newShardingRule));
         shardingProperties = newShardingProperties;
-        shardingContext = new ShardingContext(newDataSourceMap, newShardingRule, getDatabaseType(), executorEngine, shardingMetaData, newShowSQL);
+        shardingContext = new ShardingContext(newDataSourceMap, newShardingRule, getDatabaseType(), executorEngine, shardingMetaData, newShowSQL, newConnectionMode);
     }
     
     @Override

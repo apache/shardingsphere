@@ -23,12 +23,12 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 
-/*
- * Async retry operation which CreateAllNeed action.
+/**
+ * Async retry operation which create all need action.
  *
  * @author lidongbo
  */
-public class CreateAllNeedOperation extends BaseOperation {
+public final class CreateAllNeedOperation extends BaseOperation {
     
     private final String key;
     
@@ -50,6 +50,6 @@ public class CreateAllNeedOperation extends BaseOperation {
     
     @Override
     public String toString() {
-        return String.format("CreateAllNeedOperation key:%s,value:%s,createMode:%s", key, value, createMode.name());
+        return String.format("CreateAllNeedOperation key: %s,value: %s, createMode: %s", key, value, createMode.name());
     }
 }

@@ -26,6 +26,7 @@ import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowCreateT
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowIndexStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowOtherStatement;
+import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTableStatusStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTablesStatement;
 import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingsphere.core.parsing.parser.sql.dal.show.AbstractShowParser;
@@ -56,43 +57,70 @@ public final class MySQLShowParser extends AbstractShowParser {
         lexerEngine.nextToken();
         lexerEngine.skipIfEqual(DefaultKeyword.FULL);
         if (lexerEngine.equalAny(MySQLKeyword.DATABASES)) {
-            return new ShowDatabasesStatement();
+            return showDatabases();
+        }
+        if (lexerEngine.skipIfEqual(DefaultKeyword.TABLE, MySQLKeyword.STATUS)) {
+            return parseShowTableStatus();
         }
         if (lexerEngine.skipIfEqual(MySQLKeyword.TABLES)) {
-            DALStatement result = new ShowTablesStatement();
-            if (lexerEngine.equalAny(DefaultKeyword.FROM, DefaultKeyword.IN)) {
-                int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
-                lexerEngine.nextToken();
-                lexerEngine.nextToken();
-                result.getSqlTokens().add(new RemoveToken(beginPosition, lexerEngine.getCurrentToken().getEndPosition()));
-            }
-            return result;
+            return parseShowTables();
         }
         if (lexerEngine.skipIfEqual(MySQLKeyword.COLUMNS, MySQLKeyword.FIELDS)) {
-            DALStatement result = new ShowColumnsStatement();
-            lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN);
-            tableReferencesClauseParser.parseSingleTableWithoutAlias(result);
-            if (lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN)) {
-                int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
-                result.getSqlTokens().add(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getLiterals(), result.getTables().getSingleTableName()));
-            }
-            return result;
+            return parseShowColumnsFields();
         }
         if (lexerEngine.skipIfEqual(DefaultKeyword.CREATE) && lexerEngine.skipIfEqual(DefaultKeyword.TABLE)) {
-            DALStatement result = new ShowCreateTableStatement();
-            tableReferencesClauseParser.parseSingleTableWithoutAlias(result);
-            return result;
+            return parseShowCreateTable();
         }
         if (lexerEngine.skipIfEqual(DefaultKeyword.INDEX, MySQLKeyword.INDEXES, MySQLKeyword.KEYS)) {
-            DALStatement result = new ShowIndexStatement();
-            lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN);
-            tableReferencesClauseParser.parseSingleTableWithoutAlias(result);
-            if (lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN)) {
-                int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
-                result.getSqlTokens().add(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getLiterals(), result.getTables().getSingleTableName()));
-            }
-            return result;
+            return parseShowIndex();
         }
         return new ShowOtherStatement();
+    }
+    
+    private DALStatement showDatabases() {
+        return new ShowDatabasesStatement();
+    }
+    
+    private DALStatement parseShowTableStatus() {
+        return new ShowTableStatusStatement();
+    }
+    
+    private DALStatement parseShowTables() {
+        DALStatement result = new ShowTablesStatement();
+        if (lexerEngine.equalAny(DefaultKeyword.FROM, DefaultKeyword.IN)) {
+            int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
+            lexerEngine.nextToken();
+            lexerEngine.nextToken();
+            result.getSqlTokens().add(new RemoveToken(beginPosition, lexerEngine.getCurrentToken().getEndPosition()));
+        }
+        return result;
+    }
+    
+    private DALStatement parseShowColumnsFields() {
+        DALStatement result = new ShowColumnsStatement();
+        lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN);
+        tableReferencesClauseParser.parseSingleTableWithoutAlias(result);
+        if (lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN)) {
+            int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
+            result.getSqlTokens().add(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getLiterals(), result.getTables().getSingleTableName()));
+        }
+        return result;
+    }
+    
+    private DALStatement parseShowCreateTable() {
+        DALStatement result = new ShowCreateTableStatement();
+        tableReferencesClauseParser.parseSingleTableWithoutAlias(result);
+        return result;
+    }
+    
+    private DALStatement parseShowIndex() {
+        DALStatement result = new ShowIndexStatement();
+        lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN);
+        tableReferencesClauseParser.parseSingleTableWithoutAlias(result);
+        if (lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN)) {
+            int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
+            result.getSqlTokens().add(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getLiterals(), result.getTables().getSingleTableName()));
+        }
+        return result;
     }
 }
