@@ -23,6 +23,7 @@ import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.metadata.table.executor.TableMetaDataLoader;
+import io.shardingsphere.core.parsing.parser.constant.DerivedColumn;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.routing.SQLRouteResult;
@@ -116,8 +117,8 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
         Collection<ColumnDefinition41Packet> columnDefinition41Packets = new ArrayList<>(queryResponsePackets.getColumnCount());
         int columnCount = 0;
         for (ColumnDefinition41Packet each : queryResponsePackets.getColumnDefinition41Packets()) {
-            if (!each.getName().startsWith("AVG_DERIVED_COUNT_") && !each.getName().startsWith("AVG_DERIVED_SUM_")
-                    && !each.getName().startsWith("ORDER_BY_DERIVED_") && !each.getName().startsWith("GROUP_BY_DERIVED_")) {
+            if (!each.getName().startsWith(DerivedColumn.AVG_COUNT_ALIAS) && !each.getName().startsWith(DerivedColumn.AVG_SUM_ALIAS)
+                    && !each.getName().startsWith(DerivedColumn.ORDER_BY_ALIAS) && !each.getName().startsWith(DerivedColumn.GROUP_BY_ALIAS)) {
                 columnDefinition41Packets.add(each);
                 columnCount++;
             }
