@@ -73,6 +73,7 @@ public final class ConnectionStrictlyExecutorEngine extends ExecutorEngine {
         for (Map.Entry<String, Collection<BaseStatementUnit>> entry : baseStatementUnitGroups.entrySet()) {
             final Collection<BaseStatementUnit> baseStatementUnits = entry.getValue();
             result.add(getExecutorService().submit(new Callable<Collection<T>>() {
+                
                 @Override
                 public Collection<T> call() throws Exception {
                     Collection<T> result = new LinkedList<>();
