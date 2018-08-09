@@ -26,6 +26,7 @@ import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowCreateT
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowIndexStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowOtherStatement;
+import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTableStatusStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTablesStatement;
 import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingsphere.core.parsing.parser.sql.dal.show.AbstractShowParser;
@@ -57,6 +58,9 @@ public final class MySQLShowParser extends AbstractShowParser {
         lexerEngine.skipIfEqual(DefaultKeyword.FULL);
         if (lexerEngine.equalAny(MySQLKeyword.DATABASES)) {
             return new ShowDatabasesStatement();
+        }
+        if (lexerEngine.skipIfEqual(DefaultKeyword.TABLE, MySQLKeyword.STATUS)) {
+            return new ShowTableStatusStatement();
         }
         if (lexerEngine.skipIfEqual(MySQLKeyword.TABLES)) {
             DALStatement result = new ShowTablesStatement();

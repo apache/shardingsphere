@@ -98,5 +98,6 @@ public enum MySQLKeyword implements Keyword {
     STRAIGHT_JOIN, 
     REGEXP,
     INDEXES,
-    KEYS
+    KEYS,
+    STATUS
 }
