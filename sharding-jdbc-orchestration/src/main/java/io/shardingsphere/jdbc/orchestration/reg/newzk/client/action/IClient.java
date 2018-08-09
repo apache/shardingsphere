@@ -83,6 +83,13 @@ public interface IClient extends IAction, IGroupAction {
     void useExecStrategy(StrategyType strategyType);
     
     /**
+     * Get provider.
+     *
+     * @return execute strategy
+     */
+    IExecStrategy getExecStrategy();
+    
+    /**
      * Create zookeeper transaction.
      *
      * @return zookeeper transaction

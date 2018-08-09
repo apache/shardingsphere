@@ -36,8 +36,8 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
 import org.junit.Test;
 
-import static junit.framework.TestCase.assertFalse;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -53,7 +53,7 @@ public class SyncRetryStrategyTest extends UsualClientTest {
         final IClient client = creator.setClientNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes(), ZooDefs.Ids.CREATOR_ALL_ACL)
                 .newClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).watch(TestSupport.buildListener()).start();
         client.useExecStrategy(StrategyType.SYNC_RETRY);
-        provider = ((UsualClient) client).getStrategy().getProvider();
+        provider = client.getExecStrategy().getProvider();
         return client;
     }
     
