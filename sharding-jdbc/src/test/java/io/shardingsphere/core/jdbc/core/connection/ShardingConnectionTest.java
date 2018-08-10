@@ -41,7 +41,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertThat;
 
 public final class ShardingConnectionTest {
     
@@ -86,7 +88,7 @@ public final class ShardingConnectionTest {
     
     @Test
     public void assertGetConnectionFromCache() throws SQLException {
-        assertNotSame(connection.getConnection(DS_NAME), connection.getConnection(DS_NAME));
+        assertThat(connection.getConnection(DS_NAME), is(connection.getConnection(DS_NAME)));
     }
     
     @Test(expected = IllegalStateException.class)

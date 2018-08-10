@@ -60,35 +60,35 @@ import java.util.concurrent.ExecutorService;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public final class RuleRegistry {
-
+    
     private static final RuleRegistry INSTANCE = new RuleRegistry();
-
+    
     private ShardingRule shardingRule;
-
+    
     private MasterSlaveRule masterSlaveRule;
-
+    
     private JDBCBackendDataSource backendDataSource;
-
+    
     private Map<String, DataSourceParameter> dataSourceConfigurationMap;
-
+    
     private boolean showSQL;
-
+    
     private ConnectionMode connectionMode;
-
+    
     private int acceptorSize;
-
+    
     private int executorSize;
-
+    
     private BackendNIOConfiguration backendNIOConfig;
-
+    
     private TransactionType transactionType;
-
+    
     private TransactionManager transactionManager;
-
+    
     private ProxyAuthority proxyAuthority;
-
+    
     private ShardingMetaData metaData;
-
+    
     /**
      * Get instance of sharding rule registry.
      *
@@ -97,7 +97,7 @@ public final class RuleRegistry {
     public static RuleRegistry getInstance() {
         return INSTANCE;
     }
-
+    
     /**
      * Initialize rule registry.
      *
@@ -129,7 +129,7 @@ public final class RuleRegistry {
         dataSourceConfigurationMap = config.getDataSources();
         proxyAuthority = config.getProxyAuthority();
     }
-
+    
     /**
      * Initialize rule registry.
      *
@@ -141,7 +141,7 @@ public final class RuleRegistry {
                 new TableMetaDataInitializer(MoreExecutors.listeningDecorator(executorService), new ProxyTableMetaDataConnectionManager(backendDataSource)).load(shardingRule));
         metaData = new ShardingMetaData(shardingDataSourceMetaData, shardingTableMetaData);
     }
-
+    
     private static Map<String, String> getDataSourceURLs(final Map<String, DataSourceParameter> dataSourceParameters) {
         Map<String, String> result = new LinkedHashMap<>(dataSourceParameters.size(), 1);
         for (Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
@@ -149,7 +149,7 @@ public final class RuleRegistry {
         }
         return result;
     }
-
+    
     /**
      * Judge is master slave only.
      *
@@ -158,7 +158,7 @@ public final class RuleRegistry {
     public boolean isMasterSlaveOnly() {
         return shardingRule.getTableRules().isEmpty() && null != masterSlaveRule;
     }
-
+    
     /**
      * Renew rule registry.
      *

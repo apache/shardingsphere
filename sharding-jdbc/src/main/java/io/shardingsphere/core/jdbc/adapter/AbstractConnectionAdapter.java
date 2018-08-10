@@ -181,7 +181,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         TransactionEvent result = TransactionEventFactory.create(tclType);
         if (result instanceof WeakXaTransactionEvent) {
             WeakXaTransactionEvent weakXaTransactionEvent = (WeakXaTransactionEvent) result;
-            weakXaTransactionEvent.setCachedConnections(cachedConnections);
+            weakXaTransactionEvent.setCachedConnections(cachedConnections.values());
             weakXaTransactionEvent.setAutoCommit(autoCommit);
         }
         return result;
