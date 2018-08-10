@@ -122,23 +122,6 @@ public final class ShardingRule {
     }
     
     /**
-     * Find table rule though actual table name.
-     *
-     * @param actualTableName actual table name
-     * @return table rule
-     */
-    public TableRule getTableRuleByActualTableName(final String actualTableName) {
-        Optional<TableRule> tableRule = tryFindTableRuleByActualTable(actualTableName.toLowerCase());
-        if (tableRule.isPresent()) {
-            return tableRule.get();
-        }
-        if (!Strings.isNullOrEmpty(shardingDataSourceNames.getDefaultDataSourceName())) {
-            return createTableRuleWithDefaultDataSource(actualTableName.toLowerCase());
-        }
-        throw new ShardingConfigurationException("Cannot find table rule and default data source with actual table: '%s'", actualTableName);
-    }
-    
-    /**
      * Find table rule though logic table name.
      *
      * @param logicTableName logic table name

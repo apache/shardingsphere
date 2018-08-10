@@ -26,7 +26,6 @@ import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.rule.ShardingDataSourceNames;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.rule.TableRule;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.Connection;
@@ -60,13 +59,28 @@ public final class TableMetaDataLoader {
      * @return table meta data
      */
     public TableMetaData load(final String logicTableName, final ShardingRule shardingRule) {
-        return load(shardingRule.getTableRuleByLogicTableName(logicTableName), shardingRule.getShardingDataSourceNames());
+        List<TableMetaData> actualTableMetaDataList = load(
+                shardingRule.getTableRuleByLogicTableName(logicTableName).getActualDataNodes(), shardingRule.getShardingDataSourceNames());
+        checkUniformed(logicTableName, actualTableMetaDataList);
+        return actualTableMetaDataList.iterator().next();
     }
     
-    private TableMetaData load(final TableRule tableRule, final ShardingDataSourceNames shardingDataSourceNames) {
-        List<TableMetaData> actualTableMetaDataList = loadActualTableMetaDataList(tableRule.getActualDataNodes(), shardingDataSourceNames);
-        checkUniformed(tableRule.getLogicTable(), actualTableMetaDataList);
-        return actualTableMetaDataList.iterator().next();
+    private List<TableMetaData> load(final List<DataNode> actualDataNodes, final ShardingDataSourceNames shardingDataSourceNames) {
+        List<ListenableFuture<TableMetaData>> result = new LinkedList<>();
+        for (final DataNode each : actualDataNodes) {
+            result.add(executorService.submit(new Callable<TableMetaData>() {
+                
+                @Override
+                public TableMetaData call() throws SQLException {
+                    return load(new DataNode(shardingDataSourceNames.getRawMasterDataSourceName(each.getDataSourceName()), each.getTableName()));
+                }
+            }));
+        }
+        try {
+            return Futures.allAsList(result).get();
+        } catch (final InterruptedException | ExecutionException ex) {
+            throw new ShardingException(ex);
+        }
     }
     
     private TableMetaData load(final DataNode dataNode) throws SQLException {
@@ -109,24 +123,6 @@ public final class TableMetaDataLoader {
             }
         }
         return result;
-    }
-    
-    private List<TableMetaData> loadActualTableMetaDataList(final List<DataNode> actualDataNodes, final ShardingDataSourceNames shardingDataSourceNames) {
-        List<ListenableFuture<TableMetaData>> result = new LinkedList<>();
-        for (final DataNode each : actualDataNodes) {
-            result.add(executorService.submit(new Callable<TableMetaData>() {
-                
-                @Override
-                public TableMetaData call() throws SQLException {
-                    return load(new DataNode(shardingDataSourceNames.getRawMasterDataSourceName(each.getDataSourceName()), each.getTableName()));
-                }
-            }));
-        }
-        try {
-            return Futures.allAsList(result).get();
-        } catch (final InterruptedException | ExecutionException ex) {
-            throw new ShardingException(ex);
-        }
     }
     
     private void checkUniformed(final String logicTableName, final List<TableMetaData> actualTableMetaDataList) {
