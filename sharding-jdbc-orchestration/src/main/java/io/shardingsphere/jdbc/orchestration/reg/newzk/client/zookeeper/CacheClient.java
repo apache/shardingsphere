@@ -117,18 +117,18 @@ public final class CacheClient extends UsualClient {
             return data;
         }
         log.debug("getData cache not hit: {}", key);
-        return getStrategy().getData(key);
+        return getExecStrategy().getData(key);
     }
     
     @Override
     public List<String> getChildren(final String key) throws KeeperException, InterruptedException {
         String path = PathUtil.getRealPath(getRootNode(), key);
         List<String> keys = pathTree.getChildren(path);
-        if (!keys.isEmpty()) {
+        if (keys != null && !keys.isEmpty()) {
             log.debug("getChildren cache hit: {}", keys);
             return keys;
         }
         log.debug("getChildren cache not hit: {}", keys);
-        return getStrategy().getChildren(PathUtil.getRealPath(getRootNode(), key));
+        return getExecStrategy().getChildren(PathUtil.getRealPath(getRootNode(), key));
     }
 }

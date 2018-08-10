@@ -53,7 +53,7 @@ public class UsualClient extends BaseClient {
     private final Map<StrategyType, IExecStrategy> strategies = new ConcurrentHashMap<>();
     
     @Getter
-    private IExecStrategy strategy;
+    private IExecStrategy execStrategy;
     
     protected UsualClient(final BaseContext context) {
         super(context);
@@ -69,63 +69,63 @@ public class UsualClient extends BaseClient {
     public synchronized void useExecStrategy(final StrategyType strategyType) {
         log.debug("useExecStrategy:{}", strategyType);
         if (strategies.containsKey(strategyType)) {
-            strategy = strategies.get(strategyType);
+            execStrategy = strategies.get(strategyType);
             return;
         }
         
         ITransactionProvider provider = new TransactionProvider(getRootNode(), getHolder(), ZookeeperConstants.WATCHED, getAuthorities());
         switch (strategyType) {
             case USUAL:
-                strategy = new UsualStrategy(provider);
+                execStrategy = new UsualStrategy(provider);
                 break;
             case CONTEND:
-                strategy = new ContentionStrategy(provider);
+                execStrategy = new ContentionStrategy(provider);
                 break;
             case TRANSACTION_CONTEND:
-                strategy = new TransactionContendStrategy(provider);
+                execStrategy = new TransactionContendStrategy(provider);
                 break;
             case SYNC_RETRY:
-                strategy = new SyncRetryStrategy(provider, ((ClientContext) getContext()).getDelayRetryPolicy());
+                execStrategy = new SyncRetryStrategy(provider, ((ClientContext) getContext()).getDelayRetryPolicy());
                 break;
             case ASYNC_RETRY:
-                strategy = new AsyncRetryStrategy(provider, ((ClientContext) getContext()).getDelayRetryPolicy());
+                execStrategy = new AsyncRetryStrategy(provider, ((ClientContext) getContext()).getDelayRetryPolicy());
                 break;
             default:
-                strategy = new UsualStrategy(provider);
+                execStrategy = new UsualStrategy(provider);
                 break;
         }
         
-        strategies.put(strategyType, strategy);
+        strategies.put(strategyType, execStrategy);
     }
     
     @Override
     public String getDataString(final String key) throws KeeperException, InterruptedException {
-        return strategy.getDataString(key);
+        return execStrategy.getDataString(key);
     }
     
     @Override
     public byte[] getData(final String key) throws KeeperException, InterruptedException {
-        return strategy.getData(key);
+        return execStrategy.getData(key);
     }
     
     @Override
     public void getData(final String key, final AsyncCallback.DataCallback callback, final Object ctx) throws KeeperException, InterruptedException {
-        strategy.getData(key, callback, ctx);
+        execStrategy.getData(key, callback, ctx);
     }
     
     @Override
     public boolean checkExists(final String key) throws KeeperException, InterruptedException {
-        return strategy.checkExists(key);
+        return execStrategy.checkExists(key);
     }
     
     @Override
     public boolean checkExists(final String key, final Watcher watcher) throws KeeperException, InterruptedException {
-        return strategy.checkExists(key, watcher);
+        return execStrategy.checkExists(key, watcher);
     }
     
     @Override
     public List<String> getChildren(final String key) throws KeeperException, InterruptedException {
-        return strategy.getChildren(key);
+        return execStrategy.getChildren(key);
     }
     
     @Override
@@ -134,7 +134,7 @@ public class UsualClient extends BaseClient {
         if (getRootNode().equals(key)) {
             return;
         }
-        strategy.createCurrentOnly(key, value, createMode);
+        execStrategy.createCurrentOnly(key, value, createMode);
     }
     
     @Override
@@ -143,12 +143,12 @@ public class UsualClient extends BaseClient {
         if (getRootNode().equals(key)) {
             return;
         }
-        strategy.createAllNeedPath(key, value, createMode);
+        execStrategy.createAllNeedPath(key, value, createMode);
     }
     
     @Override
     public void update(final String key, final String value) throws KeeperException, InterruptedException {
-        strategy.update(key, value);
+        execStrategy.update(key, value);
     }
     
     @Override
@@ -157,7 +157,7 @@ public class UsualClient extends BaseClient {
             deleteNamespace();
             return;
         }
-        strategy.deleteOnlyCurrent(key);
+        execStrategy.deleteOnlyCurrent(key);
     }
     
     @Override
@@ -166,12 +166,12 @@ public class UsualClient extends BaseClient {
             deleteNamespace();
             return;
         }
-        strategy.deleteOnlyCurrent(key, callback, ctx);
+        execStrategy.deleteOnlyCurrent(key, callback, ctx);
     }
     
     @Override
     public void deleteAllChildren(final String key) throws KeeperException, InterruptedException {
-        strategy.deleteAllChildren(key);
+        execStrategy.deleteAllChildren(key);
         if (getRootNode().equals(key)) {
             setRootExist(false);
             log.debug("deleteAllChildren delete root: {}", getRootNode());
@@ -180,8 +180,8 @@ public class UsualClient extends BaseClient {
     
     @Override
     public void deleteCurrentBranch(final String key) throws KeeperException, InterruptedException {
-        strategy.deleteCurrentBranch(key);
-        if (!strategy.checkExists(getRootNode())) {
+        execStrategy.deleteCurrentBranch(key);
+        if (!execStrategy.checkExists(getRootNode())) {
             setRootExist(false);
             log.debug("deleteCurrentBranch delete root: {}", getRootNode());
         }
@@ -189,6 +189,6 @@ public class UsualClient extends BaseClient {
     
     @Override
     public BaseTransaction transaction() {
-        return strategy.transaction();
+        return execStrategy.transaction();
     }
 }
