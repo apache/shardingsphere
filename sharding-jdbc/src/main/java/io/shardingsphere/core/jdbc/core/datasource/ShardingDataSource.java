@@ -29,7 +29,7 @@ import io.shardingsphere.core.executor.type.memory.MemoryStrictlyExecutorEngine;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
-import io.shardingsphere.core.jdbc.metadata.DataSourceMapTableMetaDataConnectionManager;
+import io.shardingsphere.core.jdbc.metadata.JDBCTableMetaDataConnectionManager;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.executor.TableMetaDataInitializer;
 import io.shardingsphere.core.rule.MasterSlaveRule;
@@ -75,7 +75,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         ConnectionMode connectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
         executorEngine = ConnectionMode.MEMORY_STRICTLY == connectionMode ? new MemoryStrictlyExecutorEngine(executorSize) : new ConnectionStrictlyExecutorEngine(executorSize);
         ShardingTableMetaData shardingTableMetaData = new ShardingTableMetaData(
-                new TableMetaDataInitializer(executorEngine.getExecutorService(), new DataSourceMapTableMetaDataConnectionManager(dataSourceMap)).load(shardingRule));
+                new TableMetaDataInitializer(executorEngine.getExecutorService(), new JDBCTableMetaDataConnectionManager(dataSourceMap)).load(shardingRule));
         boolean showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         shardingContext = new ShardingContext(dataSourceMap, shardingRule, getDatabaseType(), executorEngine, shardingTableMetaData, showSQL, connectionMode);
     }
@@ -100,7 +100,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         }
         boolean newShowSQL = newShardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         ShardingTableMetaData shardingMetaData = new ShardingTableMetaData(
-                new TableMetaDataInitializer(executorEngine.getExecutorService(), new DataSourceMapTableMetaDataConnectionManager(newDataSourceMap)).load(newShardingRule));
+                new TableMetaDataInitializer(executorEngine.getExecutorService(), new JDBCTableMetaDataConnectionManager(newDataSourceMap)).load(newShardingRule));
         shardingProperties = newShardingProperties;
         shardingContext = new ShardingContext(newDataSourceMap, newShardingRule, getDatabaseType(), executorEngine, shardingMetaData, newShowSQL, newConnectionMode);
     }

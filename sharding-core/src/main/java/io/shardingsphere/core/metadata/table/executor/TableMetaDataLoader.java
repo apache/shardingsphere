@@ -88,18 +88,11 @@ public final class TableMetaDataLoader {
     }
     
     private Collection<TableMetaData> load(final String dataSourceName, final Collection<String> actualTableNames) throws SQLException {
-        if (connectionManager.isAutoClose()) {
-            try (Connection connection = connectionManager.getConnection(dataSourceName)) {
-                return load(connection, actualTableNames);
-            }
-        }
-        return load(connectionManager.getConnection(dataSourceName), actualTableNames);
-    }
-    
-    private Collection<TableMetaData> load(final Connection connection, final Collection<String> actualTableNames) throws SQLException {
         Collection<TableMetaData> result = new LinkedList<>();
-        for (String each : actualTableNames) {
-            result.add(new TableMetaData(isTableExist(connection, each) ? getColumnMetaDataList(connection, each) : Collections.<ColumnMetaData>emptyList()));
+        try (Connection connection = connectionManager.getConnection(dataSourceName)) {
+            for (String each : actualTableNames) {
+                result.add(new TableMetaData(isTableExist(connection, each) ? getColumnMetaDataList(connection, each) : Collections.<ColumnMetaData>emptyList()));
+            }
         }
         return result;
     }
