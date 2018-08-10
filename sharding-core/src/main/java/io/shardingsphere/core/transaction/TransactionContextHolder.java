@@ -25,6 +25,7 @@ package io.shardingsphere.core.transaction;
 public final class TransactionContextHolder {
     
     private static final ThreadLocal<TransactionContext> CONTEXT = new ThreadLocal<TransactionContext>() {
+        
         @Override
         protected TransactionContext initialValue() {
             return new TransactionContext();
