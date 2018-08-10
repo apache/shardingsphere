@@ -39,6 +39,7 @@
         <property name="url" value="jdbc:mysql://localhost:3306/demo_ds"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
+        <property name="maxActive" value="16"/>
     </bean>
     
     <bean id="preciseModuloTableShardingAlgorithm" class="io.shardingsphere.example.spring.namespace.jpa.fixture.algorithm.PreciseModuloTableShardingAlgorithm" />

@@ -39,6 +39,7 @@
         <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_0"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
+        <property name="maxActive" value="16"/>
     </bean>
     
     <bean id="demo_ds_1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
@@ -46,6 +47,7 @@
         <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_1"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
+        <property name="maxActive" value="16"/>
     </bean>
     
     <bean id="preciseModuloDatabaseShardingAlgorithm" class="io.shardingsphere.example.spring.namespace.jpa.fixture.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
