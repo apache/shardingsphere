@@ -19,9 +19,13 @@ package io.shardingsphere.core.jdbc.adapter;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.TCLType;
+import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.hint.HintManagerHolder;
+import io.shardingsphere.core.jdbc.core.transaction.WeakXaTransactionManager;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
+import io.shardingsphere.core.transaction.TransactionContext;
+import io.shardingsphere.core.transaction.TransactionContextHolder;
 import io.shardingsphere.core.transaction.event.TransactionEvent;
 import io.shardingsphere.core.transaction.event.TransactionEventFactory;
 import io.shardingsphere.core.transaction.event.WeakXaTransactionEvent;
@@ -62,6 +66,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
      * @throws SQLException SQL exception
      */
     public final Connection getConnection(final String dataSourceName) throws SQLException {
+        TransactionContextHolder.set(new TransactionContext(new WeakXaTransactionManager(), TransactionType.XA, WeakXaTransactionEvent.class));
         DataSource dataSource = getDataSourceMap().get(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);
         Connection result = dataSource.getConnection();
