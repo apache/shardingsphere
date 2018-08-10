@@ -23,7 +23,6 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
-import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.rule.ShardingDataSourceNames;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +35,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
@@ -59,41 +60,48 @@ public final class TableMetaDataLoader {
      * @return table meta data
      */
     public TableMetaData load(final String logicTableName, final ShardingRule shardingRule) {
-        List<TableMetaData> actualTableMetaDataList = load(
-                shardingRule.getTableRuleByLogicTableName(logicTableName).getActualDataNodes(), shardingRule.getShardingDataSourceNames());
+        List<TableMetaData> actualTableMetaDataList = load(shardingRule.getTableRuleByLogicTableName(logicTableName).getDataNodeGroups(), shardingRule.getShardingDataSourceNames());
         checkUniformed(logicTableName, actualTableMetaDataList);
         return actualTableMetaDataList.iterator().next();
     }
     
-    private List<TableMetaData> load(final List<DataNode> actualDataNodes, final ShardingDataSourceNames shardingDataSourceNames) {
-        List<ListenableFuture<TableMetaData>> result = new LinkedList<>();
-        for (final DataNode each : actualDataNodes) {
-            result.add(executorService.submit(new Callable<TableMetaData>() {
+    private List<TableMetaData> load(final Map<String, Collection<String>> dataNodeGroups, final ShardingDataSourceNames shardingDataSourceNames) {
+        List<ListenableFuture<Collection<TableMetaData>>> futures = new LinkedList<>();
+        for (final Entry<String, Collection<String>> entry : dataNodeGroups.entrySet()) {
+            futures.add(executorService.submit(new Callable<Collection<TableMetaData>>() {
                 
                 @Override
-                public TableMetaData call() throws SQLException {
-                    return load(new DataNode(shardingDataSourceNames.getRawMasterDataSourceName(each.getDataSourceName()), each.getTableName()));
+                public Collection<TableMetaData> call() throws SQLException {
+                    return load(shardingDataSourceNames.getRawMasterDataSourceName(entry.getKey()), entry.getValue());
                 }
             }));
         }
+        List<TableMetaData> result = new LinkedList<>();
         try {
-            return Futures.allAsList(result).get();
+            for (Collection<TableMetaData> each : Futures.allAsList(futures).get()) {
+                result.addAll(each);
+            }
+            return result;
         } catch (final InterruptedException | ExecutionException ex) {
             throw new ShardingException(ex);
         }
     }
     
-    private TableMetaData load(final DataNode dataNode) throws SQLException {
+    private Collection<TableMetaData> load(final String dataSourceName, final Collection<String> actualTableNames) throws SQLException {
         if (connectionManager.isAutoClose()) {
-            try (Connection connection = connectionManager.getConnection(dataNode.getDataSourceName())) {
-                return load(connection, dataNode);
+            try (Connection connection = connectionManager.getConnection(dataSourceName)) {
+                return load(connection, actualTableNames);
             }
         }
-        return load(connectionManager.getConnection(dataNode.getDataSourceName()), dataNode);
+        return load(connectionManager.getConnection(dataSourceName), actualTableNames);
     }
     
-    private TableMetaData load(final Connection connection, final DataNode dataNode) throws SQLException {
-        return new TableMetaData(isTableExist(connection, dataNode.getTableName()) ? getColumnMetaDataList(connection, dataNode.getTableName()) : Collections.<ColumnMetaData>emptyList());
+    private Collection<TableMetaData> load(final Connection connection, final Collection<String> actualTableNames) throws SQLException {
+        Collection<TableMetaData> result = new LinkedList<>();
+        for (String each : actualTableNames) {
+            result.add(new TableMetaData(isTableExist(connection, each) ? getColumnMetaDataList(connection, each) : Collections.<ColumnMetaData>emptyList()));
+        }
+        return result;
     }
     
     private boolean isTableExist(final Connection connection, final String actualTableName) throws SQLException {
