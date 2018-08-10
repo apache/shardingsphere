@@ -91,6 +91,7 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
         executeResponse = executeEngine.execute(routeResult, isReturnGeneratedKeys);
         if (!RULE_REGISTRY.isMasterSlaveOnly() && SQLType.DDL == sqlStatement.getType() && !sqlStatement.getTables().isEmpty()) {
             String logicTableName = sqlStatement.getTables().getSingleTableName();
+            // TODO refresh table meta data by SQL parse result
             TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(
                     BackendExecutorContext.getInstance().getExecutorService(), new ProxyTableMetaDataConnectionManager(RULE_REGISTRY.getBackendDataSource()));
             RULE_REGISTRY.getMetaData().getTable().put(logicTableName, tableMetaDataLoader.load(logicTableName, RULE_REGISTRY.getShardingRule()));
