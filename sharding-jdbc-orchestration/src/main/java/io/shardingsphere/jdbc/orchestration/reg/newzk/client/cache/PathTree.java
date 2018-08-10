@@ -24,6 +24,12 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.WatchedEvent;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -31,11 +37,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.WatchedEvent;
 
 /**
  * Zookeeper cache tree.
