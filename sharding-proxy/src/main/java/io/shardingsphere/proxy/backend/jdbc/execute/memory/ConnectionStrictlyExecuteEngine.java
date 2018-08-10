@@ -67,15 +67,17 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
         return getExecuteQueryResponse(firstExecuteResponseUnits, futureList);
     }
     
-    private List<Future<Collection<ExecuteResponseUnit>>> asyncExecute(final boolean isReturnGeneratedKeys, final Map<String, Collection<SQLUnit>> sqlUnitGroups) throws SQLException {
+    private List<Future<Collection<ExecuteResponseUnit>>> asyncExecute(final boolean isReturnGeneratedKeys, final Map<String, Collection<SQLUnit>> sqlUnitGroups) {
         List<Future<Collection<ExecuteResponseUnit>>> result = new LinkedList<>();
         for (Entry<String, Collection<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
-            final Map<SQLUnit, Statement> sqlUnitStatementMap = createSQLUnitStatement(entry.getKey(), entry.getValue(), isReturnGeneratedKeys);
+            final String dataSourceName = entry.getKey();
+            final Collection<SQLUnit> sqlUnits = entry.getValue();
             result.add(getExecutorService().submit(new Callable<Collection<ExecuteResponseUnit>>() {
                 
                 @Override
                 public Collection<ExecuteResponseUnit> call() throws SQLException {
                     Collection<ExecuteResponseUnit> result = new LinkedList<>();
+                    final Map<SQLUnit, Statement> sqlUnitStatementMap = createSQLUnitStatement(dataSourceName, sqlUnits, isReturnGeneratedKeys);
                     for (Entry<SQLUnit, Statement> each : sqlUnitStatementMap.entrySet()) {
                         result.add(executeWithoutMetadata(each.getValue(), each.getKey().getSql(), isReturnGeneratedKeys));
                     }
