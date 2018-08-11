@@ -66,15 +66,15 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
         sqlExecutionUnits.remove(firstEntry.getKey());
         List<Future<Collection<ExecuteResponseUnit>>> futureList;
         if (TransactionType.XA == RuleRegistry.getInstance().getTransactionType()) {
-            futureList = asyncExecuteWithAtomikosCP(isReturnGeneratedKeys, sqlExecutionUnits);
+            futureList = asyncExecuteWithXA(isReturnGeneratedKeys, sqlExecutionUnits);
         } else {
-            futureList = asyncExecuteWithHikariCP(isReturnGeneratedKeys, sqlExecutionUnits);
+            futureList = asyncExecuteWithoutXA(isReturnGeneratedKeys, sqlExecutionUnits);
         }
         Collection<ExecuteResponseUnit> firstExecuteResponseUnits = syncExecute(isReturnGeneratedKeys, firstEntry.getKey(), firstEntry.getValue());
         return getExecuteQueryResponse(firstExecuteResponseUnits, futureList);
     }
     
-    private List<Future<Collection<ExecuteResponseUnit>>> asyncExecuteWithAtomikosCP(final boolean isReturnGeneratedKeys, final Map<String, Collection<SQLUnit>> sqlUnitGroups) throws SQLException {
+    private List<Future<Collection<ExecuteResponseUnit>>> asyncExecuteWithXA(final boolean isReturnGeneratedKeys, final Map<String, Collection<SQLUnit>> sqlUnitGroups) throws SQLException {
         List<Future<Collection<ExecuteResponseUnit>>> result = new LinkedList<>();
         for (Entry<String, Collection<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
             final Map<SQLUnit, Statement> sqlUnitStatementMap = createSQLUnitStatement(entry.getKey(), entry.getValue(), isReturnGeneratedKeys);
@@ -93,7 +93,7 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
         return result;
     }
     
-    private List<Future<Collection<ExecuteResponseUnit>>> asyncExecuteWithHikariCP(final boolean isReturnGeneratedKeys, final Map<String, Collection<SQLUnit>> sqlUnitGroups) {
+    private List<Future<Collection<ExecuteResponseUnit>>> asyncExecuteWithoutXA(final boolean isReturnGeneratedKeys, final Map<String, Collection<SQLUnit>> sqlUnitGroups) {
         List<Future<Collection<ExecuteResponseUnit>>> result = new LinkedList<>();
         for (Entry<String, Collection<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
             final String dataSourceName = entry.getKey();
@@ -103,7 +103,7 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
                 @Override
                 public Collection<ExecuteResponseUnit> call() throws SQLException {
                     Collection<ExecuteResponseUnit> result = new LinkedList<>();
-                    final Map<SQLUnit, Statement> sqlUnitStatementMap = createSQLUnitStatement(dataSourceName, sqlUnits, isReturnGeneratedKeys);
+                    Map<SQLUnit, Statement> sqlUnitStatementMap = createSQLUnitStatement(dataSourceName, sqlUnits, isReturnGeneratedKeys);
                     for (Entry<SQLUnit, Statement> each : sqlUnitStatementMap.entrySet()) {
                         result.add(executeWithoutMetadata(each.getValue(), each.getKey().getSql(), isReturnGeneratedKeys));
                     }
