@@ -22,11 +22,13 @@ import io.shardingsphere.core.parsing.integrate.asserts.groupby.GroupByAssert;
 import io.shardingsphere.core.parsing.integrate.asserts.index.IndexAssert;
 import io.shardingsphere.core.parsing.integrate.asserts.item.ItemAssert;
 import io.shardingsphere.core.parsing.integrate.asserts.limit.LimitAssert;
+import io.shardingsphere.core.parsing.integrate.asserts.meta.TableMetaDataAssert;
 import io.shardingsphere.core.parsing.integrate.asserts.orderby.OrderByAssert;
 import io.shardingsphere.core.parsing.integrate.asserts.table.TableAssert;
 import io.shardingsphere.core.parsing.integrate.asserts.token.TokenAssert;
 import io.shardingsphere.core.parsing.integrate.jaxb.root.ParserResult;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.test.sql.SQLCaseType;
 
@@ -57,6 +59,8 @@ public final class SQLStatementAssert {
     
     private final LimitAssert limitAssert;
     
+    private final TableMetaDataAssert metaAssert;
+    
     public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType) {
         SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlCaseId, sqlCaseType);
         this.actual = actual;
@@ -70,6 +74,7 @@ public final class SQLStatementAssert {
         groupByAssert = new GroupByAssert(assertMessage);
         orderByAssert = new OrderByAssert(assertMessage);
         limitAssert = new LimitAssert(sqlCaseType, assertMessage);
+        metaAssert = new TableMetaDataAssert(assertMessage);
     }
     
     /**
@@ -83,6 +88,9 @@ public final class SQLStatementAssert {
         if (actual instanceof SelectStatement) {
             assertSelectStatement((SelectStatement) actual);
         }
+        if (actual instanceof CreateTableStatement) {
+            assertCreateTableStatement((CreateTableStatement) actual);
+        }
     }
     
     private void assertSelectStatement(final SelectStatement actual) {
@@ -90,5 +98,9 @@ public final class SQLStatementAssert {
         groupByAssert.assertGroupByItems(actual.getGroupByItems(), expected.getGroupByColumns());
         orderByAssert.assertOrderByItems(actual.getOrderByItems(), expected.getOrderByColumns());
         limitAssert.assertLimit(actual.getLimit(), expected.getLimit());
+    }
+    
+    private void assertCreateTableStatement(final CreateTableStatement actual) {
+        metaAssert.assertMeta(actual.getColumnNames(), actual.getColumnTypes(), actual.getPrimaryKeyColumns(), expected.getMeta());
     }
 }

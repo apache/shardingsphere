@@ -20,6 +20,7 @@ package io.shardingsphere.core.parsing.parser.sql.ddl.create.table;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
+import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.parser.clause.TableReferencesClauseParser;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingException;
 import io.shardingsphere.core.parsing.parser.sql.SQLParser;
@@ -27,6 +28,9 @@ import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.Getter;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Create parser.
@@ -53,13 +57,18 @@ public abstract class AbstractCreateTableParser implements SQLParser {
     public DDLStatement parse() {
         lexerEngine.skipAll(getSkippedKeywordsBetweenCreateIndexAndKeyword());
         lexerEngine.skipAll(getSkippedKeywordsBetweenCreateAndKeyword());
-        DDLStatement result = new DDLStatement();
+        CreateTableStatement result = new CreateTableStatement();
         if (lexerEngine.skipIfEqual(DefaultKeyword.TABLE)) {
             lexerEngine.skipAll(getSkippedKeywordsBetweenCreateTableAndTableName());
         } else {
             throw new SQLParsingException("Can't support other CREATE grammar unless CREATE TABLE.");
         }
         tableReferencesClauseParser.parseSingleTableWithoutAlias(result);
+        lexerEngine.accept(Symbol.LEFT_PAREN);
+        do {
+            parseCreateDefinition(result);
+        } while (lexerEngine.skipIfEqual(Symbol.COMMA));
+        lexerEngine.accept(Symbol.RIGHT_PAREN);
         return result;
     }
     
@@ -68,4 +77,55 @@ public abstract class AbstractCreateTableParser implements SQLParser {
     protected abstract Keyword[] getSkippedKeywordsBetweenCreateAndKeyword();
     
     protected abstract Keyword[] getSkippedKeywordsBetweenCreateTableAndTableName();
+    
+    private void parseCreateDefinition(final CreateTableStatement statement) {
+        String columnName = parseColumnName(statement);
+        parseColumnDefinition(columnName, statement);
+    }
+    
+    private String parseColumnName(final CreateTableStatement statement) {
+        String result = getLexerEngine().getCurrentToken().getLiterals();
+        statement.getColumnNames().add(result);
+        return result;
+    }
+    
+    private void parseColumnDefinition(final String columnName, final CreateTableStatement statement) {
+        parseDataType(statement);
+        getLexerEngine().skipUntil(DefaultKeyword.PRIMARY, Symbol.COMMA, Symbol.RIGHT_PAREN);
+        if (getLexerEngine().skipIfEqual(DefaultKeyword.PRIMARY)) {
+            getLexerEngine().accept(DefaultKeyword.KEY);
+            getLexerEngine().skipAll(getSkippedKeywordsBeforeTableConstraint());
+            if (getLexerEngine().skipIfEqual(Symbol.LEFT_PAREN)) {
+                parseTableConstraint(statement);
+            } else {
+                parseInlineConstraint(columnName, statement);
+            }
+        }
+    }
+    
+    private void parseDataType(final CreateTableStatement statement) {
+        getLexerEngine().nextToken();
+        statement.getColumnTypes().add(getLexerEngine().getCurrentToken().getLiterals());
+        getLexerEngine().skipParentheses(statement);
+    }
+    
+    protected Keyword[] getSkippedKeywordsBeforeTableConstraint() {
+        return new Keyword[0];
+    }
+    
+    private void parseTableConstraint(final CreateTableStatement statement) {
+        Collection<String> columnNames = new LinkedList<>();
+        do {
+            columnNames.add(getLexerEngine().getCurrentToken().getLiterals());
+            getLexerEngine().nextToken();
+            getLexerEngine().skipParentheses(statement);
+            getLexerEngine().skipUntil(Symbol.COMMA, Symbol.RIGHT_PAREN);
+        } while (getLexerEngine().skipIfEqual(Symbol.COMMA));
+        statement.getPrimaryKeyColumns().addAll(columnNames);
+    }
+    
+    private void parseInlineConstraint(final String columnName, final CreateTableStatement statement) {
+        statement.getPrimaryKeyColumns().add(columnName);
+        getLexerEngine().skipUntil(Symbol.COMMA, Symbol.RIGHT_PAREN);
+    }
 }
