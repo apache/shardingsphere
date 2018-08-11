@@ -52,7 +52,7 @@ public abstract class AbstractDropTableParser implements SQLParser {
     @Override
     public DDLStatement parse() {
         lexerEngine.skipAll(getSkippedKeywordsBetweenDropAndTable());
-        DDLStatement result = new DDLStatement();
+        DropTableStatement result = new DropTableStatement();
         if (lexerEngine.skipIfEqual(DefaultKeyword.TABLE)) {
             lexerEngine.skipAll(getSkippedKeywordsBetweenDropTableAndTableName());
             tableReferencesClauseParser.parseSingleTableWithoutAlias(result);
