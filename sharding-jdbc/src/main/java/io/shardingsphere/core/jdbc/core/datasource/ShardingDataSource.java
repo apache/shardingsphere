@@ -32,9 +32,6 @@ import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.jdbc.metadata.JDBCTableMetaDataConnectionManager;
 import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
-import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.metadata.table.executor.TableMetaDataInitializer;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.Getter;
@@ -78,12 +75,10 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         ConnectionMode connectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
         executorEngine = ConnectionMode.MEMORY_STRICTLY == connectionMode ? new MemoryStrictlyExecutorEngine(executorSize) : new ConnectionStrictlyExecutorEngine(executorSize);
-        ShardingDataSourceMetaData shardingDataSourceMetaData = new ShardingDataSourceMetaData(getDataSourceURLs(dataSourceMap), shardingRule, getDatabaseType());
-        ShardingTableMetaData shardingTableMetaData = new ShardingTableMetaData(
-                new TableMetaDataInitializer(shardingDataSourceMetaData, executorEngine.getExecutorService(), new JDBCTableMetaDataConnectionManager(dataSourceMap)).load(shardingRule));
+        ShardingMetaData shardingMetaData = new ShardingMetaData(
+                getDataSourceURLs(dataSourceMap), shardingRule, getDatabaseType(), executorEngine.getExecutorService(), new JDBCTableMetaDataConnectionManager(dataSourceMap));
         boolean showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
-        shardingContext = new ShardingContext(
-                dataSourceMap, shardingRule, getDatabaseType(), executorEngine, new ShardingMetaData(shardingDataSourceMetaData, shardingTableMetaData), connectionMode, showSQL);
+        shardingContext = new ShardingContext(dataSourceMap, shardingRule, getDatabaseType(), executorEngine, shardingMetaData, connectionMode, showSQL);
     }
     
     private static Map<String, String> getDataSourceURLs(final Map<String, DataSource> dataSourceMap) {
@@ -120,13 +115,11 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
             executorEngine = ConnectionMode.MEMORY_STRICTLY == newConnectionMode ? new MemoryStrictlyExecutorEngine(newExecutorSize) : new ConnectionStrictlyExecutorEngine(newExecutorSize);
             originalExecutorEngine.close();
         }
-        boolean newShowSQL = newShardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
-        ShardingDataSourceMetaData shardingDataSourceMetaData = new ShardingDataSourceMetaData(getDataSourceURLs(newDataSourceMap), newShardingRule, getDatabaseType());
-        ShardingTableMetaData shardingTableMetaData = new ShardingTableMetaData(
-                new TableMetaDataInitializer(shardingDataSourceMetaData, executorEngine.getExecutorService(), new JDBCTableMetaDataConnectionManager(newDataSourceMap)).load(newShardingRule));
         shardingProperties = newShardingProperties;
-        shardingContext = new ShardingContext(
-                newDataSourceMap, newShardingRule, getDatabaseType(), executorEngine, new ShardingMetaData(shardingDataSourceMetaData, shardingTableMetaData), newConnectionMode, newShowSQL);
+        ShardingMetaData shardingMetaData = new ShardingMetaData(
+                getDataSourceURLs(newDataSourceMap), newShardingRule, getDatabaseType(), executorEngine.getExecutorService(), new JDBCTableMetaDataConnectionManager(newDataSourceMap));
+        boolean newShowSQL = newShardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
+        shardingContext = new ShardingContext(newDataSourceMap, newShardingRule, getDatabaseType(), executorEngine, shardingMetaData, newConnectionMode, newShowSQL);
     }
     
     @Override
