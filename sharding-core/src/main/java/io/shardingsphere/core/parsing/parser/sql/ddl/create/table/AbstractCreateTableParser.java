@@ -84,18 +84,18 @@ public abstract class AbstractCreateTableParser implements SQLParser {
     }
     
     private String parseColumnName(final CreateTableStatement statement) {
-        String result = getLexerEngine().getCurrentToken().getLiterals();
+        String result = lexerEngine.getCurrentToken().getLiterals();
         statement.getColumnNames().add(result);
         return result;
     }
     
     private void parseColumnDefinition(final String columnName, final CreateTableStatement statement) {
         parseDataType(statement);
-        getLexerEngine().skipUntil(DefaultKeyword.PRIMARY, Symbol.COMMA, Symbol.RIGHT_PAREN);
-        if (getLexerEngine().skipIfEqual(DefaultKeyword.PRIMARY)) {
-            getLexerEngine().accept(DefaultKeyword.KEY);
-            getLexerEngine().skipAll(getSkippedKeywordsBeforeTableConstraint());
-            if (getLexerEngine().skipIfEqual(Symbol.LEFT_PAREN)) {
+        lexerEngine.skipUntil(DefaultKeyword.PRIMARY, Symbol.COMMA, Symbol.RIGHT_PAREN);
+        if (lexerEngine.skipIfEqual(DefaultKeyword.PRIMARY)) {
+            lexerEngine.accept(DefaultKeyword.KEY);
+            lexerEngine.skipAll(getSkippedKeywordsBeforeTableConstraint());
+            if (lexerEngine.skipIfEqual(Symbol.LEFT_PAREN)) {
                 parseTableConstraint(statement);
             } else {
                 parseInlineConstraint(columnName, statement);
@@ -104,9 +104,9 @@ public abstract class AbstractCreateTableParser implements SQLParser {
     }
     
     private void parseDataType(final CreateTableStatement statement) {
-        getLexerEngine().nextToken();
-        statement.getColumnTypes().add(getLexerEngine().getCurrentToken().getLiterals());
-        getLexerEngine().skipParentheses(statement);
+        lexerEngine.nextToken();
+        statement.getColumnTypes().add(lexerEngine.getCurrentToken().getLiterals());
+        lexerEngine.skipParentheses(statement);
     }
     
     protected Keyword[] getSkippedKeywordsBeforeTableConstraint() {
@@ -116,16 +116,16 @@ public abstract class AbstractCreateTableParser implements SQLParser {
     private void parseTableConstraint(final CreateTableStatement statement) {
         Collection<String> columnNames = new LinkedList<>();
         do {
-            columnNames.add(getLexerEngine().getCurrentToken().getLiterals());
-            getLexerEngine().nextToken();
-            getLexerEngine().skipParentheses(statement);
-            getLexerEngine().skipUntil(Symbol.COMMA, Symbol.RIGHT_PAREN);
-        } while (getLexerEngine().skipIfEqual(Symbol.COMMA));
+            columnNames.add(lexerEngine.getCurrentToken().getLiterals());
+            lexerEngine.nextToken();
+            lexerEngine.skipParentheses(statement);
+            lexerEngine.skipUntil(Symbol.COMMA, Symbol.RIGHT_PAREN);
+        } while (lexerEngine.skipIfEqual(Symbol.COMMA));
         statement.getPrimaryKeyColumns().addAll(columnNames);
     }
     
     private void parseInlineConstraint(final String columnName, final CreateTableStatement statement) {
         statement.getPrimaryKeyColumns().add(columnName);
-        getLexerEngine().skipUntil(Symbol.COMMA, Symbol.RIGHT_PAREN);
+        lexerEngine.skipUntil(Symbol.COMMA, Symbol.RIGHT_PAREN);
     }
 }
