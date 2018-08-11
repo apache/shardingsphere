@@ -35,7 +35,7 @@ import java.util.concurrent.ExecutorService;
  * @author zhangliang
  */
 @Getter
-public class ShardingMetaData {
+public final class ShardingMetaData {
     
     private final ShardingDataSourceMetaData dataSource;
     
