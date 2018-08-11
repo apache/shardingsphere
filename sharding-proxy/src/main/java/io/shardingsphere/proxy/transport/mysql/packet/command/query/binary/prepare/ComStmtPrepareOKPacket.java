@@ -41,7 +41,7 @@ public final class ComStmtPrepareOKPacket implements MySQLPacket {
     
     private final int columnsCount;
     
-    private final int ParametersCount;
+    private final int parametersCount;
     
     private final int warningCount;
     
@@ -52,7 +52,7 @@ public final class ComStmtPrepareOKPacket implements MySQLPacket {
         // TODO Set columnsCount=0 is a workaround to escape jdbc check for now, there's no issues found during a few tests.
         // TODO Column Definition Block should be added in future when the metadata of the columns is cached.
         payload.writeInt2(0);
-        payload.writeInt2(ParametersCount);
+        payload.writeInt2(parametersCount);
         payload.writeReserved(1);
         payload.writeInt2(warningCount);
     }

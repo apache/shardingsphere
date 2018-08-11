@@ -17,25 +17,29 @@
 
 package io.shardingsphere.proxy.transport.mysql.constant;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * Sharding-Proxy's information.
  * 
  * @author zhangliang 
  */
-public interface ServerInfo {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ServerInfo {
     
     /**
      * Protocol version is always 0x0A.
      */
-    int PROTOCOL_VERSION = 0x0A;
+    public static final int PROTOCOL_VERSION = 0x0A;
     
     /**
      * Server version.
      */
-    String SERVER_VERSION = "5.6.0-Sharding-Proxy 3.0.0.M3";
+    public static final String SERVER_VERSION = "5.6.0-Sharding-Proxy 3.0.0.M3";
     
     /**
      * Charset code 0x21 is utf8_general_ci.
      */
-    int CHARSET = 0x21;
+    public static final int CHARSET = 0x21;
 }

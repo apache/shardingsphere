@@ -97,7 +97,7 @@ public abstract class BatchIntegrateTest extends BaseIntegrateTest {
     }
     
     @AfterClass
-    public static void destroyDatabasesAndTables(){
+    public static void destroyDatabasesAndTables() {
         dropDatabases();
     }
     
