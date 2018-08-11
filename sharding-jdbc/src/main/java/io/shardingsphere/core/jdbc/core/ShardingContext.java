@@ -46,20 +46,9 @@ public final class ShardingContext {
     
     private final ExecutorEngine executorEngine;
     
-    private final boolean showSQL;
+    private final ShardingMetaData metaData;
     
     private final ConnectionMode connectionMode;
     
-    private final ShardingMetaData metaData;
-    
-    public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule,
-                           final DatabaseType databaseType, final ExecutorEngine executorEngine, final ShardingMetaData metaData, final boolean showSQL, final ConnectionMode connectionMode) {
-        this.dataSourceMap = dataSourceMap;
-        this.shardingRule = shardingRule;
-        this.databaseType = databaseType;
-        this.executorEngine = executorEngine;
-        this.showSQL = showSQL;
-        this.connectionMode = connectionMode;
-        this.metaData = metaData;
-    }
+    private final boolean showSQL;
 }

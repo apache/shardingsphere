@@ -73,7 +73,7 @@ public final class ShardingConnectionTest {
         dataSourceMap.put(DS_NAME, masterSlaveDataSource);
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, dataSourceMap.keySet());
         ShardingMetaData shardingMetaData = mock(ShardingMetaData.class);
-        ShardingContext shardingContext = new ShardingContext(dataSourceMap, shardingRule, DatabaseType.H2, null, shardingMetaData, false, ConnectionMode.MEMORY_STRICTLY);
+        ShardingContext shardingContext = new ShardingContext(dataSourceMap, shardingRule, DatabaseType.H2, null, shardingMetaData, ConnectionMode.MEMORY_STRICTLY, false);
         connection = new ShardingConnection(shardingContext);
     }
     

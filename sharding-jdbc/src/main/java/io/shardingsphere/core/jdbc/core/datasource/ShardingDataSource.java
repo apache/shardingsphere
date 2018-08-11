@@ -83,7 +83,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
                 new TableMetaDataInitializer(shardingDataSourceMetaData, executorEngine.getExecutorService(), new JDBCTableMetaDataConnectionManager(dataSourceMap)).load(shardingRule));
         boolean showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         shardingContext = new ShardingContext(
-                dataSourceMap, shardingRule, getDatabaseType(), executorEngine, new ShardingMetaData(shardingDataSourceMetaData, shardingTableMetaData), showSQL, connectionMode);
+                dataSourceMap, shardingRule, getDatabaseType(), executorEngine, new ShardingMetaData(shardingDataSourceMetaData, shardingTableMetaData), connectionMode, showSQL);
     }
     
     private static Map<String, String> getDataSourceURLs(final Map<String, DataSource> dataSourceMap) {
@@ -126,7 +126,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
                 new TableMetaDataInitializer(shardingDataSourceMetaData, executorEngine.getExecutorService(), new JDBCTableMetaDataConnectionManager(newDataSourceMap)).load(newShardingRule));
         shardingProperties = newShardingProperties;
         shardingContext = new ShardingContext(
-                newDataSourceMap, newShardingRule, getDatabaseType(), executorEngine, new ShardingMetaData(shardingDataSourceMetaData, shardingTableMetaData), newShowSQL, newConnectionMode);
+                newDataSourceMap, newShardingRule, getDatabaseType(), executorEngine, new ShardingMetaData(shardingDataSourceMetaData, shardingTableMetaData), newConnectionMode, newShowSQL);
     }
     
     @Override

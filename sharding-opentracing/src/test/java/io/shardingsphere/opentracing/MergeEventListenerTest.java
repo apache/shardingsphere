@@ -90,7 +90,7 @@ public final class MergeEventListenerTest {
         dataSourceMap.put("ds_1", mockDataSource());
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, dataSourceMap.keySet());
         ShardingMetaData shardingMetaData = mock(ShardingMetaData.class);
-        shardingContext = new ShardingContext(dataSourceMap, shardingRule, DatabaseType.MySQL, null, shardingMetaData, true, ConnectionMode.MEMORY_STRICTLY);
+        shardingContext = new ShardingContext(dataSourceMap, shardingRule, DatabaseType.MySQL, null, shardingMetaData, ConnectionMode.MEMORY_STRICTLY, true);
         mergeEngine = new DALMergeEngine(null, null, new ShowDatabasesStatement(), null);
     }
     
