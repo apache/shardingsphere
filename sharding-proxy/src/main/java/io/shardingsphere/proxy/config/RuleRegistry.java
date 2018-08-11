@@ -138,8 +138,8 @@ public final class RuleRegistry {
      */
     public void initShardingMetaData(final ExecutorService executorService) {
         ShardingDataSourceMetaData shardingDataSourceMetaData = new ShardingDataSourceMetaData(getDataSourceURLs(dataSourceConfigurationMap), shardingRule, DatabaseType.MySQL);
-        ShardingTableMetaData shardingTableMetaData = new ShardingTableMetaData(
-                new TableMetaDataInitializer(MoreExecutors.listeningDecorator(executorService), new ProxyTableMetaDataConnectionManager(backendDataSource)).load(shardingRule));
+        ShardingTableMetaData shardingTableMetaData = new ShardingTableMetaData(new TableMetaDataInitializer(
+                shardingDataSourceMetaData, MoreExecutors.listeningDecorator(executorService), new ProxyTableMetaDataConnectionManager(backendDataSource)).load(shardingRule));
         metaData = new ShardingMetaData(shardingDataSourceMetaData, shardingTableMetaData);
     }
     

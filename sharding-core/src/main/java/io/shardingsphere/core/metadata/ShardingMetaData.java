@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShardingMetaData {
+public class ShardingMetaData {
     
     private final ShardingDataSourceMetaData dataSource;
     
