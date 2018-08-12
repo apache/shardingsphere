@@ -18,6 +18,7 @@
 package io.shardingsphere.core.parsing.parser.dialect.oracle.sql;
 
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
+import io.shardingsphere.core.parsing.lexer.token.Keyword;
 import io.shardingsphere.core.parsing.parser.sql.ddl.truncate.table.AbstractTruncateTableParser;
 import io.shardingsphere.core.rule.ShardingRule;
 
@@ -31,5 +32,10 @@ public final class OracleTruncateTableParser extends AbstractTruncateTableParser
     
     public OracleTruncateTableParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine);
+    }
+    
+    @Override
+    protected Keyword[] getSkippedKeywordsBetweenTruncateTableAndTableName() {
+        return new Keyword[0];
     }
 }

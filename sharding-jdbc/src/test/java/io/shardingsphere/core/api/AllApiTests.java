@@ -25,5 +25,5 @@ import org.junit.runners.Suite;
         ShardingDataSourceFactoryTest.class, 
         MasterSlaveDataSourceFactoryTest.class
     })
-public class AllApiTests {
+public final class AllApiTests {
 }

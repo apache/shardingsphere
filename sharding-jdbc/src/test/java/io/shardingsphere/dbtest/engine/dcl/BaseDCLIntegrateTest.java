@@ -51,7 +51,7 @@ public abstract class BaseDCLIntegrateTest extends SingleIntegrateTest {
     }
 
     @AfterClass
-    public static void destroyDatabasesAndTables(){
+    public static void destroyDatabasesAndTables() {
         dropDatabases();
     }
 

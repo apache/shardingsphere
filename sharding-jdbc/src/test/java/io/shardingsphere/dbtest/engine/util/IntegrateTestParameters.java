@@ -27,6 +27,8 @@ import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.IntegrateTestEnvironment;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -39,6 +41,7 @@ import java.util.LinkedList;
  * @author zhangliang
  * @author panjuan
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class IntegrateTestParameters {
     
     private static SQLCasesLoader sqlCasesLoader = SQLCasesLoader.getInstance();

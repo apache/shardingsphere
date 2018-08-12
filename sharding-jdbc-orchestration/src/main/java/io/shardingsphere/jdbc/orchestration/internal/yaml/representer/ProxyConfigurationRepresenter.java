@@ -35,7 +35,7 @@ import java.util.Set;
  *
  * @author panjuan
  */
-public class ProxyConfigurationRepresenter extends Representer {
+public final class ProxyConfigurationRepresenter extends Representer {
     
     private static Collection<String> eliminatedPropertyNames = new HashSet<>();
     

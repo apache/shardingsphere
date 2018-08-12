@@ -35,11 +35,4 @@ public interface TableMetaDataConnectionManager {
      * @throws SQLException SQL exception
      */
     Connection getConnection(String dataSourceName) throws SQLException;
-    
-    /**
-     * Is auto close created connection or not.
-     * 
-     * @return auto close or not
-     */
-    boolean isAutoClose();
 }

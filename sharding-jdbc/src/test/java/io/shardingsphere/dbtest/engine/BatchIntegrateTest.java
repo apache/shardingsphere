@@ -97,7 +97,7 @@ public abstract class BatchIntegrateTest extends BaseIntegrateTest {
     }
     
     @AfterClass
-    public static void destroyDatabasesAndTables(){
+    public static void destroyDatabasesAndTables() {
         dropDatabases();
     }
     
@@ -115,7 +115,7 @@ public abstract class BatchIntegrateTest extends BaseIntegrateTest {
         }
     }
     
-    protected void assertDataSet(final int[] actualUpdateCounts) throws SQLException, IOException, JAXBException {
+    protected final void assertDataSet(final int[] actualUpdateCounts) throws SQLException, IOException, JAXBException {
         Collection<DataSet> expectedList = new LinkedList<>();
         assertThat(actualUpdateCounts.length, is(getExpectedDataFiles().size()));
         int count = 0;

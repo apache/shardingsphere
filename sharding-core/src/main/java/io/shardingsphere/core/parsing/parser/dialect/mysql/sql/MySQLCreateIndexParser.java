@@ -45,4 +45,9 @@ public final class MySQLCreateIndexParser extends AbstractCreateIndexParser {
     protected Keyword[] getSkippedKeywordsBetweenCreateIndexAndKeyword() {
         return new Keyword[] {DefaultKeyword.UNIQUE, DefaultKeyword.FULLTEXT, MySQLKeyword.SPATIAL};
     }
+    
+    @Override
+    protected Keyword[] getSkippedKeywordsBetweenCreateIndexAndIndexName() {
+        return new Keyword[0];
+    }
 }

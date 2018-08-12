@@ -32,5 +32,5 @@ import org.junit.runners.Suite.SuiteClasses;
         AllDDLTests.class,
         AllDCLTests.class
 })
-public class AllIntegrateTests {
+public final class AllIntegrateTests {
 }

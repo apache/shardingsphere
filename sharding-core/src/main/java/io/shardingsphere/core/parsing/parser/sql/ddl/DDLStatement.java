@@ -33,7 +33,7 @@ import java.util.Collection;
  * @author zhangliang
  */
 @ToString(callSuper = true)
-public final class DDLStatement extends AbstractSQLStatement {
+public class DDLStatement extends AbstractSQLStatement {
     
     private static final Collection<Keyword> PRIMARY_STATEMENT_PREFIX = Arrays.<Keyword>asList(DefaultKeyword.CREATE, DefaultKeyword.ALTER, DefaultKeyword.DROP, DefaultKeyword.TRUNCATE);
     

@@ -29,5 +29,5 @@ import org.junit.runners.Suite;
         BindingTableRuleTest.class,
         MasterSlaveRuleTest.class
     })
-public class AllRuleTests {
+public final class AllRuleTests {
 }

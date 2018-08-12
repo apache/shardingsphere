@@ -36,5 +36,5 @@ import org.junit.runners.Suite;
         DerivedColumnTest.class, 
         AllParsingIntegrateTests.class
     })
-public class AllParsingTests {
+public final class AllParsingTests {
 }

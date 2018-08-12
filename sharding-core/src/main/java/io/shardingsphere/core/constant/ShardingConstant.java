@@ -17,12 +17,16 @@
 
 package io.shardingsphere.core.constant;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * Sharding constant.
  * 
  * @author zhangliang
  */
-public interface ShardingConstant {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShardingConstant {
     
     /**
      * Logic database schema name.
@@ -32,5 +36,5 @@ public interface ShardingConstant {
      * Default: sharding_db
      * </p>
      */
-    String LOGIC_SCHEMA_NAME = "sharding_db";
+    public static final String LOGIC_SCHEMA_NAME = "sharding_db";
 }

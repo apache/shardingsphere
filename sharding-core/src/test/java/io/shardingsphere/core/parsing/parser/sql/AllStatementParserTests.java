@@ -27,5 +27,5 @@ import org.junit.runners.Suite;
         UpdateStatementParserTest.class,
         DeleteStatementParserTest.class
     })
-public class AllStatementParserTests {
+public final class AllStatementParserTests {
 }

@@ -38,9 +38,4 @@ public final class ProxyTableMetaDataConnectionManager implements TableMetaDataC
     public Connection getConnection(final String dataSourceName) throws SQLException {
         return backendDataSource.getDataSource(dataSourceName).getConnection();
     }
-    
-    @Override
-    public boolean isAutoClose() {
-        return true;
-    }
 }

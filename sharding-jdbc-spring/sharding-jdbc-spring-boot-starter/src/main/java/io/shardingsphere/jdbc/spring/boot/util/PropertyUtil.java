@@ -17,6 +17,13 @@
 
 package io.shardingsphere.jdbc.spring.boot.util;
 
+import io.shardingsphere.core.exception.ShardingException;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.config.PlaceholderConfigurerSupport;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertyResolver;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -24,13 +31,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.beans.factory.config.PlaceholderConfigurerSupport;
-import org.springframework.core.env.Environment;
-import org.springframework.core.env.PropertyResolver;
-
-import io.shardingsphere.core.exception.ShardingException;
-
-public class PropertyUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class PropertyUtil {
     
     private static int springBootVersion = 1;
     

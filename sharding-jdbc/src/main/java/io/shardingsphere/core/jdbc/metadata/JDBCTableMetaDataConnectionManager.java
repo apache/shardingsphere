@@ -17,32 +17,26 @@
 
 package io.shardingsphere.core.jdbc.metadata;
 
-import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.metadata.table.executor.TableMetaDataConnectionManager;
 import lombok.RequiredArgsConstructor;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Map;
 
 /**
- * Manager of connection which for table meta data loader of sharding connection.
+ * Manager of connection which for table meta data loader of JDBC.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class ShardingConnectionTableMetaDataConnectionManager implements TableMetaDataConnectionManager {
+public final class JDBCTableMetaDataConnectionManager implements TableMetaDataConnectionManager {
     
-    private final String logicTableName;
-    
-    private final ShardingConnection shardingConnection;
+    private final Map<String, DataSource> dataSourceMap;
     
     @Override
     public Connection getConnection(final String dataSourceName) throws SQLException {
-        return shardingConnection.getConnections(logicTableName).get(dataSourceName);
-    }
-    
-    @Override
-    public boolean isAutoClose() {
-        return false;
+        return dataSourceMap.get(dataSourceName).getConnection();
     }
 }

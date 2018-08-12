@@ -22,7 +22,7 @@ import io.shardingsphere.core.api.algorithm.sharding.complex.ComplexKeysSharding
 
 import java.util.Collection;
 
-public class MultiAlgorithm implements ComplexKeysShardingAlgorithm {
+public final class MultiAlgorithm implements ComplexKeysShardingAlgorithm {
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {

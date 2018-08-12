@@ -46,7 +46,7 @@ public class ContentionStrategy extends UsualStrategy {
     * Don't use this if you don't have to use it.
     */
     @Override
-    public void getData(final String key, final AsyncCallback.DataCallback callback, final Object ctx) throws KeeperException, InterruptedException {
+    public final void getData(final String key, final AsyncCallback.DataCallback callback, final Object ctx) throws KeeperException, InterruptedException {
         getProvider().executeContention(new LeaderElection() {
             
             @Override
@@ -59,7 +59,7 @@ public class ContentionStrategy extends UsualStrategy {
     }
 
     @Override
-    public void createCurrentOnly(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
+    public final void createCurrentOnly(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
         LeaderElection election = buildCreateElection(key, value, createMode, null);
         getProvider().executeContention(election);
         log.debug("ContentionStrategy createCurrentOnly executeContention");
@@ -84,7 +84,7 @@ public class ContentionStrategy extends UsualStrategy {
     }
     
     @Override
-    public void update(final String key, final String value) throws KeeperException, InterruptedException {
+    public final void update(final String key, final String value) throws KeeperException, InterruptedException {
         LeaderElection election = buildUpdateElection(key, value, null);
         getProvider().executeContention(election);
         log.debug("ContentionStrategy update executeContention");
@@ -110,7 +110,7 @@ public class ContentionStrategy extends UsualStrategy {
     }
     
     @Override
-    public void deleteOnlyCurrent(final String key) throws KeeperException, InterruptedException {
+    public final void deleteOnlyCurrent(final String key) throws KeeperException, InterruptedException {
         LeaderElection election = buildDeleteElection(key, null);
         getProvider().executeContention(election);
         log.debug("ContentionStrategy deleteOnlyCurrent executeContention");
@@ -118,7 +118,7 @@ public class ContentionStrategy extends UsualStrategy {
     }
     
     @Override
-    public void deleteOnlyCurrent(final String key, final AsyncCallback.VoidCallback callback, final Object ctx) throws KeeperException, InterruptedException {
+    public final void deleteOnlyCurrent(final String key, final AsyncCallback.VoidCallback callback, final Object ctx) throws KeeperException, InterruptedException {
         getProvider().executeContention(new LeaderElection() {
             
             @Override

@@ -36,5 +36,5 @@ import org.junit.runners.Suite.SuiteClasses;
         HandshakeResponse41PacketTest.class,
         RandomGeneratorTest.class
 })
-public class AllTests {
+public final class AllTests {
 }

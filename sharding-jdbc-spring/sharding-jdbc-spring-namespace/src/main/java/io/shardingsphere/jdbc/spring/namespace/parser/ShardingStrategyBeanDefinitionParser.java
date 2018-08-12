@@ -27,7 +27,7 @@ import org.w3c.dom.Element;
  *®
  * @author caohao
  */
-public class ShardingStrategyBeanDefinitionParser extends AbstractBeanDefinitionParser {
+public final class ShardingStrategyBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {

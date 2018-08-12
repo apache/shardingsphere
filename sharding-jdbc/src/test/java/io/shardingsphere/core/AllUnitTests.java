@@ -32,5 +32,5 @@ import org.junit.runners.Suite.SuiteClasses;
         AllJDBCTests.class,
         AllUtilTests.class
     })
-public class AllUnitTests {
+public final class AllUnitTests {
 }

@@ -32,6 +32,7 @@ import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.jdbc.core.statement.ShardingPreparedStatement;
 import io.shardingsphere.core.jdbc.core.statement.ShardingStatement;
+import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.util.EventBusInstance;
 import org.junit.AfterClass;
@@ -82,7 +83,8 @@ public final class SqlRoutingEventListenerTest {
         dataSourceMap.put("ds_0", mockDataSource());
         dataSourceMap.put("ds_1", mockDataSource());
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, dataSourceMap.keySet());
-        shardingContext = new ShardingContext(dataSourceMap, shardingRule, DatabaseType.MySQL, null, null, true, ConnectionMode.MEMORY_STRICTLY);
+        ShardingMetaData shardingMetaData = mock(ShardingMetaData.class);
+        shardingContext = new ShardingContext(dataSourceMap, shardingRule, DatabaseType.MySQL, null, shardingMetaData, ConnectionMode.MEMORY_STRICTLY, true);
     }
     
     private DataSource mockDataSource() throws SQLException {

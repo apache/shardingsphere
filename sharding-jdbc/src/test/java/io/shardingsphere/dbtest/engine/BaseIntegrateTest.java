@@ -86,7 +86,7 @@ public abstract class BaseIntegrateTest {
         }
     }
     
-    protected String getExpectedDataFile(final String path, final String shardingRuleType, final DatabaseType databaseType, final String expectedDataFile) {
+    protected final String getExpectedDataFile(final String path, final String shardingRuleType, final DatabaseType databaseType, final String expectedDataFile) {
         if (null == expectedDataFile) {
             return null;
         }

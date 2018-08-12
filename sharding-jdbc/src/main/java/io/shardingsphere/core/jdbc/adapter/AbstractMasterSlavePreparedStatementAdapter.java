@@ -213,27 +213,27 @@ public abstract class AbstractMasterSlavePreparedStatementAdapter extends Abstra
     }
     
     @Override
-    public void setSQLXML(final int parameterIndex, final SQLXML x) throws SQLException {
+    public final void setSQLXML(final int parameterIndex, final SQLXML x) throws SQLException {
         getTargetPreparedStatement().setSQLXML(parameterIndex, x);
     }
     
     @Override
-    public void setURL(final int parameterIndex, final URL x) throws SQLException {
+    public final void setURL(final int parameterIndex, final URL x) throws SQLException {
         getTargetPreparedStatement().setURL(parameterIndex, x);
     }
     
     @Override
-    public void setObject(final int parameterIndex, final Object x) throws SQLException {
+    public final void setObject(final int parameterIndex, final Object x) throws SQLException {
         getTargetPreparedStatement().setObject(parameterIndex, x);
     }
     
     @Override
-    public void setObject(final int parameterIndex, final Object x, final int targetSqlType) throws SQLException {
+    public final void setObject(final int parameterIndex, final Object x, final int targetSqlType) throws SQLException {
         getTargetPreparedStatement().setObject(parameterIndex, x, targetSqlType);
     }
     
     @Override
-    public void setObject(final int parameterIndex, final Object x, final int targetSqlType, final int scaleOrLength) throws SQLException {
+    public final void setObject(final int parameterIndex, final Object x, final int targetSqlType, final int scaleOrLength) throws SQLException {
         getTargetPreparedStatement().setObject(parameterIndex, x, targetSqlType, scaleOrLength);
     }
     

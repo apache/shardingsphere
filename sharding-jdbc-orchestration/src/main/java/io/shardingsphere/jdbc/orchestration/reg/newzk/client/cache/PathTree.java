@@ -23,7 +23,6 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.UsualClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
 import lombok.Getter;
 import lombok.Setter;
@@ -70,9 +69,9 @@ public final class PathTree implements AutoCloseable {
     public PathTree(final String root, final IClient client) {
         rootNode.set(new PathNode(root));
         status = PathStatus.RELEASE;
+        // TODO consider whether to use a new client alternative to the current
         this.client = client;
-        // TODO It looks unpleasant
-        provider = ((UsualClient) client).getStrategy().getProvider();
+        provider = client.getExecStrategy().getProvider();
     }
     
     /**

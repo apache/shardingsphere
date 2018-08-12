@@ -7,6 +7,7 @@
         <tokens>
             <table-token begin-position="13" original-literals="t_log" />
         </tokens>
+        <meta column-names="id,status" column-types="int,varchar" primary-key-columns="id" />
     </parser-result>
     
     <parser-result sql-case-id="create_table_if_not_exists">
@@ -16,6 +17,7 @@
         <tokens>
             <table-token begin-position="27" original-literals="t_log" />
         </tokens>
+        <meta column-names="id,status" column-types="int,varchar" />
     </parser-result>
     
     <parser-result sql-case-id="create_temporary_table_if_not_exists">
@@ -25,6 +27,7 @@
         <tokens>
             <table-token begin-position="37" original-literals="t_temp_log" />
         </tokens>
+        <meta column-names="id,status" column-types="int,varchar" />
     </parser-result>
     
     <parser-result sql-case-id="create_global_temporary_table">
@@ -34,6 +37,7 @@
         <tokens>
             <table-token begin-position="30" original-literals="t_temp_log" />
         </tokens>
+        <meta column-names="id,status" column-types="int,varchar" />
     </parser-result>
     
     <parser-result sql-case-id="create_local_temp_table">
@@ -43,6 +47,7 @@
         <tokens>
             <table-token begin-position="24" original-literals="t_temp_log" />
         </tokens>
+        <meta column-names="id,status" column-types="int,varchar" />
     </parser-result>
     
     <parser-result sql-case-id="create_unlogged_table">
@@ -52,6 +57,7 @@
         <tokens>
             <table-token begin-position="22" original-literals="t_log" />
         </tokens>
+        <meta column-names="id,status" column-types="int,varchar" />
     </parser-result>
     
     <parser-result sql-case-id="create_index">

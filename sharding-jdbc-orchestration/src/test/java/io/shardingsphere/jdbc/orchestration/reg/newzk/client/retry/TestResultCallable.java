@@ -30,7 +30,7 @@ public abstract class TestResultCallable<T> extends RetryResultCallable<T> {
     }
     
     @Override
-    public void call() throws KeeperException, InterruptedException {
+    public final void call() throws KeeperException, InterruptedException {
         if (count < 2) {
             count++;
 

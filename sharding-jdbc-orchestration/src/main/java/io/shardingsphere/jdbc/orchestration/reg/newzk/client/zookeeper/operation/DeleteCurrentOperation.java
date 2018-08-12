@@ -26,7 +26,7 @@ import org.apache.zookeeper.KeeperException;
  *
  * @author lidongbo
  */
-public class DeleteCurrentOperation extends BaseOperation {
+public final class DeleteCurrentOperation extends BaseOperation {
     
     private final String key;
     

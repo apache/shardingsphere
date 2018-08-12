@@ -35,7 +35,7 @@ import java.util.Set;
  *
  * @author panjuan
  */
-public class MasterSlaveConfigurationRepresenter extends Representer {
+public final class MasterSlaveConfigurationRepresenter extends Representer {
     
     private static Collection<String> eliminatedPropertyNames = new HashSet<>();
     
@@ -67,6 +67,8 @@ public class MasterSlaveConfigurationRepresenter extends Representer {
     }
     
     private class NullRepresent implements Represent {
+        
+        @Override
         public Node representData(final Object data) {
             return representScalar(Tag.NULL, "");
         }

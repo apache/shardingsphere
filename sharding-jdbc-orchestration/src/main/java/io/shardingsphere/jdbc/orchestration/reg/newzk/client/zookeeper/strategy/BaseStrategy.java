@@ -36,12 +36,12 @@ public abstract class BaseStrategy implements IExecStrategy {
     private final IProvider provider;
     
     @Override
-    public String getDataString(final String key) throws KeeperException, InterruptedException {
+    public final String getDataString(final String key) throws KeeperException, InterruptedException {
         return new String(getData(key));
     }
     
     @Override
-    public BaseTransaction transaction() {
+    public final BaseTransaction transaction() {
         return provider.transaction();
     }
 }

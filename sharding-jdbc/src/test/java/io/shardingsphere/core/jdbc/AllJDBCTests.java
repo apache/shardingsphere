@@ -29,5 +29,5 @@ import org.junit.runners.Suite;
         AllAdapterTests.class,
         AllCoreTests.class
     })
-public class AllJDBCTests {
+public final class AllJDBCTests {
 }

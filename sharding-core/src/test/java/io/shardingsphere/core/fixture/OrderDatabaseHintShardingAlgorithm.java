@@ -24,7 +24,7 @@ import io.shardingsphere.core.api.algorithm.sharding.hint.HintShardingAlgorithm;
 import java.util.Collection;
 import java.util.Collections;
 
-public class OrderDatabaseHintShardingAlgorithm implements HintShardingAlgorithm {
+public final class OrderDatabaseHintShardingAlgorithm implements HintShardingAlgorithm {
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final ShardingValue shardingValue) {

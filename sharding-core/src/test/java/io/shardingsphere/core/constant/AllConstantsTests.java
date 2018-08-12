@@ -26,5 +26,5 @@ import org.junit.runners.Suite;
         ShardingPropertiesConstantTest.class,
         ShardingPropertiesTest.class
     })
-public class AllConstantsTests {
+public final class AllConstantsTests {
 }

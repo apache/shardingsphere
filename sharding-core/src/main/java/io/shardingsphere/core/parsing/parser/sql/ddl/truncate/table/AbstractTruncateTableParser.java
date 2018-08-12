@@ -49,7 +49,7 @@ public abstract class AbstractTruncateTableParser implements SQLParser {
     }
     
     @Override
-    public DDLStatement parse() {
+    public final DDLStatement parse() {
         lexerEngine.skipIfEqual(DefaultKeyword.TABLE);
         lexerEngine.skipAll(getSkippedKeywordsBetweenTruncateTableAndTableName());
         DDLStatement result = new DDLStatement();
@@ -57,7 +57,5 @@ public abstract class AbstractTruncateTableParser implements SQLParser {
         return result;
     }
     
-    protected Keyword[] getSkippedKeywordsBetweenTruncateTableAndTableName() {
-        return new Keyword[0];
-    }
+    protected abstract Keyword[] getSkippedKeywordsBetweenTruncateTableAndTableName();
 }

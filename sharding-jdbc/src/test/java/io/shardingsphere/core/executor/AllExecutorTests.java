@@ -31,5 +31,5 @@ import org.junit.runners.Suite;
         PreparedStatementExecutorTest.class,
         BatchPreparedStatementExecutorTest.class
     })
-public class AllExecutorTests {
+public final class AllExecutorTests {
 }

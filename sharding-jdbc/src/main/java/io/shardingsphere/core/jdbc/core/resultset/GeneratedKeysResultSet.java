@@ -33,7 +33,7 @@ import java.util.Iterator;
  * @author gaohongtao
  */
 @RequiredArgsConstructor
-public class GeneratedKeysResultSet extends AbstractUnsupportedGeneratedKeysResultSet {
+public final class GeneratedKeysResultSet extends AbstractUnsupportedGeneratedKeysResultSet {
     
     private final Iterator<Number> generatedKeys;
     

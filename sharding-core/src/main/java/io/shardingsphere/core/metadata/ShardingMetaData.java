@@ -17,21 +17,33 @@
 
 package io.shardingsphere.core.metadata;
 
+import com.google.common.util.concurrent.MoreExecutors;
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import io.shardingsphere.core.metadata.table.executor.TableMetaDataConnectionManager;
+import io.shardingsphere.core.metadata.table.executor.TableMetaDataInitializer;
+import io.shardingsphere.core.rule.ShardingRule;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Sharding meta data.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
 public final class ShardingMetaData {
     
     private final ShardingDataSourceMetaData dataSource;
     
     private final ShardingTableMetaData table;
+    
+    public ShardingMetaData(final Map<String, String> dataSourceURLs, final ShardingRule shardingRule, 
+                            final DatabaseType databaseType, final ExecutorService executorService, final TableMetaDataConnectionManager connectionManager) {
+        dataSource = new ShardingDataSourceMetaData(dataSourceURLs, shardingRule, databaseType);
+        table = new ShardingTableMetaData(new TableMetaDataInitializer(dataSource, MoreExecutors.listeningDecorator(executorService), connectionManager).load(shardingRule));
+    }
 }
