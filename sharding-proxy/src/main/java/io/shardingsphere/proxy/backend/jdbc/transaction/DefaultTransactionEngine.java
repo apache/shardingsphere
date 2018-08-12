@@ -22,7 +22,7 @@ package io.shardingsphere.proxy.backend.jdbc.transaction;
  *
  * @author zhaojun
  */
-public class DefaultTransactionEngine extends TransactionEngine {
+public final class DefaultTransactionEngine extends TransactionEngine {
     
     public DefaultTransactionEngine(final String sql) {
         super(sql);

@@ -45,14 +45,14 @@ public abstract class BaseOperation implements Delayed {
     private DelayPolicyExecutor delayPolicyExecutor;
     
     @Override
-    public long getDelay(final TimeUnit timeUnit) {
+    public final long getDelay(final TimeUnit timeUnit) {
         long absoluteBlock = this.delayPolicyExecutor.getNextTick() - System.currentTimeMillis();
         log.debug("queue getDelay block: {}", absoluteBlock);
         return timeUnit.convert(absoluteBlock, TimeUnit.MILLISECONDS);
     }
     
     @Override
-    public int compareTo(final Delayed delayed) {
+    public final int compareTo(final Delayed delayed) {
         return (int) (this.getDelay(TimeUnit.MILLISECONDS) - delayed.getDelay(TimeUnit.MILLISECONDS));
     }
 

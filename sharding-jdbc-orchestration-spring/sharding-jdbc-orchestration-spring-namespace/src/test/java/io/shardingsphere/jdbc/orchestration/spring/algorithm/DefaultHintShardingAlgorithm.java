@@ -22,7 +22,7 @@ import io.shardingsphere.core.api.algorithm.sharding.hint.HintShardingAlgorithm;
 
 import java.util.Collection;
 
-public class DefaultHintShardingAlgorithm implements HintShardingAlgorithm {
+public final class DefaultHintShardingAlgorithm implements HintShardingAlgorithm {
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final ShardingValue shardingValue) {

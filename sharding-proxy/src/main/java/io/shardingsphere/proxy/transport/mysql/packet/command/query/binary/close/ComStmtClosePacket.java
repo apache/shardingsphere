@@ -45,11 +45,11 @@ public class ComStmtClosePacket implements CommandPacket {
     }
     
     @Override
-    public void write(final MySQLPacketPayload payload) {
+    public final void write(final MySQLPacketPayload payload) {
     }
     
     @Override
-    public Optional<CommandResponsePackets> execute() {
+    public final Optional<CommandResponsePackets> execute() {
         log.debug("COM_STMT_CLOSE received for Sharding-Proxy: {}", statementId);
         // TODO :yonglun need to clean PreparedStatementRegistry?
         return Optional.absent();

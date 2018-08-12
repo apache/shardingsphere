@@ -35,7 +35,7 @@ public class CreateUserParser implements SQLParser {
     private final LexerEngine lexerEngine;
     
     @Override
-    public DCLStatement parse() {
+    public final DCLStatement parse() {
         if (lexerEngine.skipIfEqual(DefaultKeyword.USER) || lexerEngine.skipIfEqual(DefaultKeyword.ROLE) || lexerEngine.skipIfEqual(DefaultKeyword.LOGIN)) {
             return new DCLStatement();
         } else {
