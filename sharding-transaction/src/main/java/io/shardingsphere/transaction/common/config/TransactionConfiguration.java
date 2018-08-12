@@ -28,10 +28,10 @@ import io.shardingsphere.transaction.api.TransactionManager;
 public interface TransactionConfiguration {
     
     /**
-     * Config transaction context, then binding to current thread.
+     * Get transaction manager.
      *
      * @param transactionType transaction type
      * @return transaction manager
      */
-    TransactionManager configTransactionContext(TransactionType transactionType);
+    TransactionManager getTransactionManager(TransactionType transactionType);
 }

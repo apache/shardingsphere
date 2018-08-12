@@ -67,7 +67,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
      * @throws SQLException SQL exception
      */
     public final Connection getConnection(final String dataSourceName) throws SQLException {
-        JDBCTransactionConfiguration.getInstance().configTransactionContext(TransactionContextHolder.get().getTransactionType());
+        JDBCTransactionConfiguration.getInstance().getTransactionManager(TransactionContextHolder.get().getTransactionType());
         if (cachedConnections.containsKey(dataSourceName)) {
             return cachedConnections.get(dataSourceName);
         }
@@ -81,7 +81,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     protected abstract Map<String, DataSource> getDataSourceMap();
     
-    protected void removeCache(final Connection connection) {
+    protected final void removeCache(final Connection connection) {
         cachedConnections.values().remove(connection);
     }
     

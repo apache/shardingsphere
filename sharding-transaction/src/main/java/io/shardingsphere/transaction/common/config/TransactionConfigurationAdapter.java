@@ -36,35 +36,31 @@ import java.util.ServiceLoader;
 @Slf4j
 public abstract class TransactionConfigurationAdapter implements TransactionConfiguration {
     
-    private static final Map<TransactionType, Optional<TransactionManager>> SPI_RESOURCE = new HashMap<>();
+    private static final Map<TransactionType, Optional<TransactionManager>> SPI_RESOURCES = new HashMap<>();
     
     @Override
-    public final TransactionManager configTransactionContext(final TransactionType transactionType) {
-        TransactionManager result = null;
+    public final TransactionManager getTransactionManager(final TransactionType transactionType) {
         switch (transactionType) {
             case XA:
-                result = doXaTransactionConfiguration(transactionType);
-                break;
-            case BASE:
-                break;
+                return getXATransactionManager(transactionType);
             default:
+                return null;
         }
-        return result;
     }
     
-    protected abstract TransactionManager doXaTransactionConfiguration(TransactionType transactionType);
+    protected abstract TransactionManager getXATransactionManager(TransactionType transactionType);
     
-    protected final Optional<TransactionManager> doSPIConfiguration(final TransactionType transactionType) {
-        if (SPI_RESOURCE.containsKey(transactionType)) {
-            return SPI_RESOURCE.get(transactionType);
+    protected final Optional<TransactionManager> getXATransactionManagerFromSPI(final TransactionType transactionType) {
+        if (SPI_RESOURCES.containsKey(transactionType)) {
+            return SPI_RESOURCES.get(transactionType);
         }
-        synchronized (SPI_RESOURCE) {
+        synchronized (SPI_RESOURCES) {
             List<TransactionManager> transactionManagerList = Lists.newArrayList(ServiceLoader.load(TransactionManager.class).iterator());
             if (transactionManagerList.size() > 1) {
                 log.info("there is more than one transaction manger existing, chosen first one default.");
             }
             Optional<TransactionManager> transactionManager = transactionManagerList.isEmpty() ? Optional.<TransactionManager>absent() : Optional.of(transactionManagerList.get(0));
-            SPI_RESOURCE.put(transactionType, transactionManager);
+            SPI_RESOURCES.put(transactionType, transactionManager);
             return transactionManager;
         }
     }

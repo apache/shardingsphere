@@ -40,7 +40,7 @@ import java.util.logging.Logger;
 public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOperationDataSource {
     
     static {
-        JDBCTransactionConfiguration.getInstance().configTransactionContext(TransactionContextHolder.get().getTransactionType());
+        JDBCTransactionConfiguration.getInstance().getTransactionManager(TransactionContextHolder.get().getTransactionType());
         JDBCListenerRegister.register();
     }
     

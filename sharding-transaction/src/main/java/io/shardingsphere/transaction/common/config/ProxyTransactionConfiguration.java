@@ -46,8 +46,8 @@ public final class ProxyTransactionConfiguration extends TransactionConfiguratio
     }
     
     @Override
-    protected TransactionManager doXaTransactionConfiguration(final TransactionType transactionType) {
-        Optional<TransactionManager> transactionManager = doSPIConfiguration(transactionType);
+    protected TransactionManager getXATransactionManager(final TransactionType transactionType) {
+        Optional<TransactionManager> transactionManager = getXATransactionManagerFromSPI(transactionType);
         Preconditions.checkState(transactionManager.isPresent(), "there is no XA transaction manager existing, please prepare exactly one(Atomikos or Narayana) using SPI.");
         TransactionContextHolder.set(TransactionContextFactory.newXAContext(transactionManager.get()));
         return transactionManager.get();

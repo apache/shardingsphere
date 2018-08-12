@@ -46,8 +46,8 @@ public final class JDBCTransactionConfiguration extends TransactionConfiguration
     }
     
     @Override
-    protected TransactionManager doXaTransactionConfiguration(final TransactionType transactionType) {
-        Optional<TransactionManager> transactionManager = doSPIConfiguration(transactionType);
+    protected TransactionManager getXATransactionManager(final TransactionType transactionType) {
+        Optional<TransactionManager> transactionManager = getXATransactionManagerFromSPI(transactionType);
         TransactionContext transactionContext = transactionManager.isPresent()
                 ? TransactionContextFactory.newXAContext(transactionManager.get()) : TransactionContextFactory.newLocalTransactionContext();
         TransactionContextHolder.set(transactionContext);
