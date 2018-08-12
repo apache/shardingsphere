@@ -32,9 +32,9 @@ import lombok.NoArgsConstructor;
  * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ProxyTransactionConfiguration extends TransactionConfigurationAdapter {
+public final class ProxyTransactionConfiguration extends TransactionConfigurationAdapter {
     
-    private static final ProxyTransactionConfiguration CONFIG = new ProxyTransactionConfiguration();
+    private static final ProxyTransactionConfiguration INSTANCE = new ProxyTransactionConfiguration();
     
     /**
      * Get singleton instance of {@code ProxyTransactionConfiguration}.
@@ -42,7 +42,7 @@ public class ProxyTransactionConfiguration extends TransactionConfigurationAdapt
      * @return proxy transaction configuration
      */
     public static ProxyTransactionConfiguration getInstance() {
-        return CONFIG;
+        return INSTANCE;
     }
     
     @Override

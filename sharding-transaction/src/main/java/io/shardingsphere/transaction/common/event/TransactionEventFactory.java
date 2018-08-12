@@ -23,7 +23,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Create TransactionEvent for current thread.
+ * Transaction event factory.
  *
  * @author zhaojun
  */

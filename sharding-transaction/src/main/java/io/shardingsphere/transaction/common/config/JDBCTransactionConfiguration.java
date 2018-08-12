@@ -32,9 +32,9 @@ import lombok.NoArgsConstructor;
  * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class JDBCTransactionConfiguration extends TransactionConfigurationAdapter {
+public final class JDBCTransactionConfiguration extends TransactionConfigurationAdapter {
     
-    private static final JDBCTransactionConfiguration CONFIG = new JDBCTransactionConfiguration();
+    private static final JDBCTransactionConfiguration INSTANCE = new JDBCTransactionConfiguration();
     
     /**
      * Get singleton instance of {@code JDBCTransactionConfiguration}.
@@ -42,7 +42,7 @@ public class JDBCTransactionConfiguration extends TransactionConfigurationAdapte
      * @return JDBC transaction configuration
      */
     public static JDBCTransactionConfiguration getInstance() {
-        return CONFIG;
+        return INSTANCE;
     }
     
     @Override
