@@ -19,7 +19,7 @@ package io.shardingsphere.transaction.api.local;
 
 import io.shardingsphere.transaction.api.TransactionManager;
 import io.shardingsphere.transaction.common.event.TransactionEvent;
-import io.shardingsphere.transaction.common.event.WeakXaTransactionEvent;
+import io.shardingsphere.transaction.common.event.LocalTransactionEvent;
 
 import javax.transaction.Status;
 import java.sql.Connection;
@@ -36,11 +36,11 @@ public final class LocalTransactionManager implements TransactionManager {
     
     @Override
     public void begin(final TransactionEvent transactionEvent) throws SQLException {
-        WeakXaTransactionEvent weakXaTransactionEvent = (WeakXaTransactionEvent) transactionEvent;
+        LocalTransactionEvent localTransactionEvent = (LocalTransactionEvent) transactionEvent;
         Collection<SQLException> exceptions = new LinkedList<>();
-        for (Connection each : weakXaTransactionEvent.getCachedConnections()) {
+        for (Connection each : localTransactionEvent.getCachedConnections()) {
             try {
-                each.setAutoCommit(weakXaTransactionEvent.isAutoCommit());
+                each.setAutoCommit(localTransactionEvent.isAutoCommit());
             } catch (final SQLException ex) {
                 exceptions.add(ex);
             }
@@ -50,9 +50,9 @@ public final class LocalTransactionManager implements TransactionManager {
     
     @Override
     public void commit(final TransactionEvent transactionEvent) throws SQLException {
-        WeakXaTransactionEvent weakXaTransactionEvent = (WeakXaTransactionEvent) transactionEvent;
+        LocalTransactionEvent localTransactionEvent = (LocalTransactionEvent) transactionEvent;
         Collection<SQLException> exceptions = new LinkedList<>();
-        for (Connection each : weakXaTransactionEvent.getCachedConnections()) {
+        for (Connection each : localTransactionEvent.getCachedConnections()) {
             try {
                 each.commit();
             } catch (final SQLException ex) {
@@ -64,9 +64,9 @@ public final class LocalTransactionManager implements TransactionManager {
     
     @Override
     public void rollback(final TransactionEvent transactionEvent) throws SQLException {
-        WeakXaTransactionEvent weakXaTransactionEvent = (WeakXaTransactionEvent) transactionEvent;
+        LocalTransactionEvent localTransactionEvent = (LocalTransactionEvent) transactionEvent;
         Collection<SQLException> exceptions = new LinkedList<>();
-        for (Connection each : weakXaTransactionEvent.getCachedConnections()) {
+        for (Connection each : localTransactionEvent.getCachedConnections()) {
             try {
                 each.rollback();
             } catch (final SQLException ex) {

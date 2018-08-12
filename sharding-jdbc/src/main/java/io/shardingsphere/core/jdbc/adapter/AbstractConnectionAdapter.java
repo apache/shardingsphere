@@ -30,7 +30,7 @@ import io.shardingsphere.transaction.common.TransactionContextHolder;
 import io.shardingsphere.transaction.common.config.JDBCTransactionConfiguration;
 import io.shardingsphere.transaction.common.event.TransactionEvent;
 import io.shardingsphere.transaction.common.event.TransactionEventFactory;
-import io.shardingsphere.transaction.common.event.WeakXaTransactionEvent;
+import io.shardingsphere.transaction.common.event.LocalTransactionEvent;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -93,7 +93,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     @Override
     public final void setAutoCommit(final boolean autoCommit) {
         this.autoCommit = autoCommit;
-        TransactionContextHolder.set(new TransactionContext(new LocalTransactionManager(), TransactionType.XA, WeakXaTransactionEvent.class));
+        TransactionContextHolder.set(new TransactionContext(new LocalTransactionManager(), TransactionType.XA, LocalTransactionEvent.class));
         recordMethodInvocation(Connection.class, "setAutoCommit", new Class[] {boolean.class}, new Object[] {autoCommit});
         EventBusInstance.getInstance().post(buildTransactionEvent(TCLType.BEGIN));
     }
@@ -183,10 +183,10 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     private TransactionEvent buildTransactionEvent(final TCLType tclType) {
         TransactionEvent result = TransactionEventFactory.create(tclType);
-        if (result instanceof WeakXaTransactionEvent) {
-            WeakXaTransactionEvent weakXaTransactionEvent = (WeakXaTransactionEvent) result;
-            weakXaTransactionEvent.setCachedConnections(cachedConnections.values());
-            weakXaTransactionEvent.setAutoCommit(autoCommit);
+        if (result instanceof LocalTransactionEvent) {
+            LocalTransactionEvent localTransactionEvent = (LocalTransactionEvent) result;
+            localTransactionEvent.setCachedConnections(cachedConnections.values());
+            localTransactionEvent.setAutoCommit(autoCommit);
         }
         return result;
     }

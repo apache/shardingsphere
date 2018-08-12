@@ -20,7 +20,7 @@ package io.shardingsphere.transaction.common;
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.transaction.api.TransactionManager;
 import io.shardingsphere.transaction.common.event.TransactionEvent;
-import io.shardingsphere.transaction.common.event.WeakXaTransactionEvent;
+import io.shardingsphere.transaction.common.event.LocalTransactionEvent;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -37,7 +37,7 @@ public final class TransactionContext {
     
     private TransactionType transactionType = TransactionType.XA;
     
-    private Class<? extends TransactionEvent> transactionEventClazz = WeakXaTransactionEvent.class;
+    private Class<? extends TransactionEvent> transactionEventClazz = LocalTransactionEvent.class;
 
     public TransactionContext(final TransactionManager transactionManager, final TransactionType transactionType, final Class<? extends TransactionEvent> clazz) {
         this.transactionManager = transactionManager;

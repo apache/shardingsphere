@@ -19,7 +19,7 @@ package io.shardingsphere.transaction.common;
 
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.transaction.api.TransactionManager;
-import io.shardingsphere.transaction.common.event.WeakXaTransactionEvent;
+import io.shardingsphere.transaction.common.event.LocalTransactionEvent;
 import io.shardingsphere.transaction.common.event.XaTransactionEvent;
 import io.shardingsphere.transaction.api.local.LocalTransactionManager;
 import lombok.AccessLevel;
@@ -44,11 +44,11 @@ public class TransactionContextFactory {
     }
     
     /**
-     * Create transaction context of weak XA.
+     * Create local transaction context.
      *
-     * @return weak XA transaction context
+     * @return local transaction context
      */
-    public static TransactionContext newWeakXAContext() {
-        return new TransactionContext(new LocalTransactionManager(), TransactionType.XA, WeakXaTransactionEvent.class);
+    public static TransactionContext newLocalTransactionContext() {
+        return new TransactionContext(new LocalTransactionManager(), TransactionType.XA, LocalTransactionEvent.class);
     }
 }

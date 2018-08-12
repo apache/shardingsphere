@@ -40,7 +40,7 @@ public final class TransactionEventFactory {
         switch (TransactionContextHolder.get().getTransactionType()) {
             case XA:
                 return TransactionContextHolder.get().getTransactionEventClazz().isAssignableFrom(XaTransactionEvent.class)
-                        ? new XaTransactionEvent(tclType, "") : new WeakXaTransactionEvent(tclType);
+                        ? new XaTransactionEvent(tclType, "") : new LocalTransactionEvent(tclType);
             case BASE:
             default:
                 return null;

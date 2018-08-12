@@ -27,19 +27,19 @@ import java.sql.Connection;
 import java.util.Collection;
 
 /**
- * Weak XA transaction event.
+ * Local transaction event.
  *
  * @author zhaojun
  */
 @Getter
 @Setter
-public final class WeakXaTransactionEvent extends TransactionEvent {
+public final class LocalTransactionEvent extends TransactionEvent {
     
     private Collection<Connection> cachedConnections;
     
     private boolean autoCommit = true;
     
-    public WeakXaTransactionEvent(final TCLType tclType) {
+    public LocalTransactionEvent(final TCLType tclType) {
         super(tclType);
     }
     
