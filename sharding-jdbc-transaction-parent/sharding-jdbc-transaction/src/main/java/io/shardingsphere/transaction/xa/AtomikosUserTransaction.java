@@ -18,12 +18,15 @@
 package io.shardingsphere.transaction.xa;
 
 import com.atomikos.icatch.jta.UserTransactionManager;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * Hold singleton atomikos userTransaction.
  *
  * @author zhaojun
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AtomikosUserTransaction {
     
     // TODO why not new here?

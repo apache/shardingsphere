@@ -17,6 +17,8 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.zookeeper.KeeperException;
 
 import java.util.Map;
@@ -27,6 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author lidongbo
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Connection {
     
     //is need reset

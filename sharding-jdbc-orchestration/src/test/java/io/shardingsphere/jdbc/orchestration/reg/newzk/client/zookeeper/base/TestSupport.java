@@ -18,11 +18,14 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.WatchedEvent;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
-public class TestSupport {
+public final class TestSupport {
     
     public static final String AUTH = "digest";
     

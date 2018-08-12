@@ -17,6 +17,8 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
@@ -26,8 +28,9 @@ import org.apache.zookeeper.Watcher;
  *
  * @author lidongbo
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
-public class WatcherCreator {
+public final class WatcherCreator {
     
     /**
      * Get string type data.
