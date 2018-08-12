@@ -18,6 +18,7 @@
 package io.shardingsphere.transaction.api.xa;
 
 import com.atomikos.icatch.jta.UserTransactionManager;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.transaction.api.TransactionManager;
 import io.shardingsphere.transaction.common.event.TransactionEvent;
 
@@ -35,20 +36,20 @@ import java.sql.SQLException;
  */
 public final class AtomikosTransactionManager implements TransactionManager {
     
-    private static UserTransactionManager transactionManager = AtomikosUserTransaction.getInstance();
+    private final static UserTransactionManager TRANSACTION_MANAGER = AtomikosUserTransaction.getInstance();
     
     static {
         try {
-            transactionManager.init();
+            TRANSACTION_MANAGER.init();
         } catch (final SystemException ex) {
-            ex.printStackTrace();
+            throw new ShardingException(ex);
         }
     }
     
     @Override
     public void begin(final TransactionEvent transactionEvent) throws SQLException {
         try {
-            transactionManager.begin();
+            TRANSACTION_MANAGER.begin();
         } catch (final SystemException | NotSupportedException ex) {
             throw new SQLException(ex);
         }
@@ -57,8 +58,8 @@ public final class AtomikosTransactionManager implements TransactionManager {
     @Override
     public void commit(final TransactionEvent transactionEvent) throws SQLException {
         try {
-            transactionManager.commit();
-        } catch (final RollbackException | HeuristicMixedException | SystemException | HeuristicRollbackException ex) {
+            TRANSACTION_MANAGER.commit();
+        } catch (final RollbackException | HeuristicMixedException |HeuristicRollbackException | SystemException ex) {
             throw new SQLException(ex);
         }
     }
@@ -66,7 +67,7 @@ public final class AtomikosTransactionManager implements TransactionManager {
     @Override
     public void rollback(final TransactionEvent transactionEvent) throws SQLException {
         try {
-            transactionManager.rollback();
+            TRANSACTION_MANAGER.rollback();
         } catch (final SystemException ex) {
             throw new SQLException(ex);
         }
@@ -75,7 +76,7 @@ public final class AtomikosTransactionManager implements TransactionManager {
     @Override
     public int getStatus() throws SQLException {
         try {
-            return transactionManager.getStatus();
+            return TRANSACTION_MANAGER.getStatus();
         } catch (final SystemException ex) {
             throw new SQLException(ex);
         }

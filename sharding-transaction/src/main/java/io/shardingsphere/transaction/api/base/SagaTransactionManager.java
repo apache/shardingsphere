@@ -20,32 +20,30 @@ package io.shardingsphere.transaction.api.base;
 import io.shardingsphere.transaction.api.TransactionManager;
 import io.shardingsphere.transaction.common.event.TransactionEvent;
 
-import java.sql.SQLException;
+import javax.transaction.Status;
 
 /**
- * Saga transaction manager for sharding-sphere.
+ * Saga transaction manager.
  *
  * @author zhaojun
  */
-public class SagaTransactionManager implements TransactionManager {
+public final class SagaTransactionManager implements TransactionManager {
     
     @Override
-    public void begin(final TransactionEvent transactionEvent) throws SQLException {
-    
+    public void begin(final TransactionEvent transactionEvent) {
     }
     
     @Override
-    public void commit(final TransactionEvent transactionEvent) throws SQLException {
-    
+    public void commit(final TransactionEvent transactionEvent) {
     }
     
     @Override
-    public void rollback(final TransactionEvent transactionEvent) throws SQLException {
-    
+    public void rollback(final TransactionEvent transactionEvent) {
     }
     
     @Override
-    public int getStatus() throws SQLException {
-        return 0;
+    public int getStatus() {
+        // TODO :zhaojun need confirm, return Status.STATUS_NO_TRANSACTION or zero? 
+        return Status.STATUS_NO_TRANSACTION;
     }
 }

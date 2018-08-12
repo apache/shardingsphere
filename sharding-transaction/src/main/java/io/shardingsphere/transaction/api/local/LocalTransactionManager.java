@@ -15,44 +15,37 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.api.xa;
+package io.shardingsphere.transaction.api.local;
 
 import io.shardingsphere.transaction.api.TransactionManager;
 import io.shardingsphere.transaction.common.event.TransactionEvent;
 import io.shardingsphere.transaction.common.event.WeakXaTransactionEvent;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 
+import javax.transaction.Status;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Weak XA transaction manager.
+ * Local transaction manager.
  *
  * @author zhaojun
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class WeakXaTransactionManager implements TransactionManager {
-    
-    private static final WeakXaTransactionManager TRANSACTION_MANAGER = new WeakXaTransactionManager();
-    
-    /**
-     * Get singleton instance of {@code WeakXaTransactionManager}.
-     *
-     * @return weak XA transaction manager
-     */
-    public static WeakXaTransactionManager getInstance() {
-        return TRANSACTION_MANAGER;
-    }
+public final class LocalTransactionManager implements TransactionManager {
     
     @Override
     public void begin(final TransactionEvent transactionEvent) throws SQLException {
         WeakXaTransactionEvent weakXaTransactionEvent = (WeakXaTransactionEvent) transactionEvent;
+        Collection<SQLException> exceptions = new LinkedList<>();
         for (Connection each : weakXaTransactionEvent.getCachedConnections()) {
-            each.setAutoCommit(weakXaTransactionEvent.isAutoCommit());
+            try {
+                each.setAutoCommit(weakXaTransactionEvent.isAutoCommit());
+            } catch (final SQLException ex) {
+                exceptions.add(ex);
+            }
         }
+        throwSQLExceptionIfNecessary(exceptions);
     }
     
     @Override
@@ -83,11 +76,6 @@ public final class WeakXaTransactionManager implements TransactionManager {
         throwSQLExceptionIfNecessary(exceptions);
     }
     
-    @Override
-    public int getStatus() {
-        return 0;
-    }
-    
     private void throwSQLExceptionIfNecessary(final Collection<SQLException> exceptions) throws SQLException {
         if (exceptions.isEmpty()) {
             return;
@@ -97,5 +85,11 @@ public final class WeakXaTransactionManager implements TransactionManager {
             sqlException.setNextException(each);
         }
         throw sqlException;
+    }
+    
+    @Override
+    public int getStatus() {
+        // TODO :zhaojun need confirm, return Status.STATUS_NO_TRANSACTION or zero? 
+        return Status.STATUS_NO_TRANSACTION;
     }
 }

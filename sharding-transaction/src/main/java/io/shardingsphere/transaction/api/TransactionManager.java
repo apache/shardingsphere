@@ -54,11 +54,7 @@ public interface TransactionManager {
     /**
      * Obtain the status of the transaction associated with the current thread.
      *
-     * @return The transaction status.
-     *  <p>
-     *  If no transaction is associated with the current thread, this method returns the Status.NoTransaction value
-     * </p>
-     *
+     * @return Transaction status. Returns {@code Status.NoTransaction} if no transaction is associated with current thread.
      * @throws SQLException SQL exception
      */
     int getStatus() throws SQLException;

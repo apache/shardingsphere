@@ -22,12 +22,14 @@ import io.shardingsphere.transaction.api.TransactionManager;
 import io.shardingsphere.transaction.common.event.TransactionEvent;
 import io.shardingsphere.transaction.common.event.WeakXaTransactionEvent;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * Hold Transaction Context.
  *
  * @author zhaojun
  */
+@NoArgsConstructor
 @Getter
 public final class TransactionContext {
     
@@ -36,9 +38,6 @@ public final class TransactionContext {
     private TransactionType transactionType = TransactionType.XA;
     
     private Class<? extends TransactionEvent> transactionEventClazz = WeakXaTransactionEvent.class;
-    
-    public TransactionContext() {
-    }
 
     public TransactionContext(final TransactionManager transactionManager, final TransactionType transactionType, final Class<? extends TransactionEvent> clazz) {
         this.transactionManager = transactionManager;

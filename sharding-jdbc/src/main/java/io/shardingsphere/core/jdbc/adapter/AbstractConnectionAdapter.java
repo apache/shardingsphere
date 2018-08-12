@@ -24,7 +24,7 @@ import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.core.util.EventBusInstance;
-import io.shardingsphere.transaction.api.xa.WeakXaTransactionManager;
+import io.shardingsphere.transaction.api.local.LocalTransactionManager;
 import io.shardingsphere.transaction.common.TransactionContext;
 import io.shardingsphere.transaction.common.TransactionContextHolder;
 import io.shardingsphere.transaction.common.config.JDBCTransactionConfiguration;
@@ -93,7 +93,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     @Override
     public final void setAutoCommit(final boolean autoCommit) {
         this.autoCommit = autoCommit;
-        TransactionContextHolder.set(new TransactionContext(WeakXaTransactionManager.getInstance(), TransactionType.XA, WeakXaTransactionEvent.class));
+        TransactionContextHolder.set(new TransactionContext(new LocalTransactionManager(), TransactionType.XA, WeakXaTransactionEvent.class));
         recordMethodInvocation(Connection.class, "setAutoCommit", new Class[] {boolean.class}, new Object[] {autoCommit});
         EventBusInstance.getInstance().post(buildTransactionEvent(TCLType.BEGIN));
     }
