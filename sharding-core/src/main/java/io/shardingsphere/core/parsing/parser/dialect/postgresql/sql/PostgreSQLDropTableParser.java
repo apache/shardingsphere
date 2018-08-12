@@ -34,7 +34,12 @@ public final class PostgreSQLDropTableParser extends AbstractDropTableParser {
     public PostgreSQLDropTableParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine);
     }
-  
+    
+    @Override
+    protected Keyword[] getSkippedKeywordsBetweenDropAndTable() {
+        return new Keyword[0];
+    }
+    
     @Override
     protected Keyword[] getSkippedKeywordsBetweenDropTableAndTableName() {
         return new Keyword[] {DefaultKeyword.IF, DefaultKeyword.EXISTS};

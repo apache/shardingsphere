@@ -57,7 +57,5 @@ public abstract class AbstractAlterTableParser implements SQLParser {
         return result;
     }
     
-    protected Keyword[] getSkippedKeywordsBetweenAlterTableAndTableName() {
-        return new Keyword[0];
-    }
+    protected abstract Keyword[] getSkippedKeywordsBetweenAlterTableAndTableName();
 }

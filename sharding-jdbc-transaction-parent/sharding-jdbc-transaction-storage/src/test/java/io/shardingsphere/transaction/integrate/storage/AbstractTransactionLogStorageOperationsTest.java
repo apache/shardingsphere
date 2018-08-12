@@ -29,7 +29,7 @@ import static org.junit.Assert.assertThat;
 
 public abstract class AbstractTransactionLogStorageOperationsTest {
     
-    protected void assertTransactionLogStorageOperations(final TransactionLogStorage storage) {
+    protected final void assertTransactionLogStorageOperations(final TransactionLogStorage storage) {
         String id = UUID.randomUUID().toString();
         String transactionId = UUID.randomUUID().toString();
         TransactionLog transactionLog = new TransactionLog(id, transactionId, SoftTransactionType.BestEffortsDelivery, 

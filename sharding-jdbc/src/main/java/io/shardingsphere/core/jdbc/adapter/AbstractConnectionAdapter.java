@@ -77,7 +77,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     protected abstract Map<String, DataSource> getDataSourceMap();
     
-    protected void removeCache(final Connection connection) {
+    protected final void removeCache(final Connection connection) {
         cachedConnections.remove(connection);
     }
     
@@ -105,7 +105,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     }
     
     @Override
-    public void close() throws SQLException {
+    public final void close() throws SQLException {
         closed = true;
         HintManagerHolder.clear();
         MasterVisitedManager.clear();
@@ -159,7 +159,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     // ------- Consist with MySQL driver implementation -------
     
     @Override
-    public SQLWarning getWarnings() {
+    public final SQLWarning getWarnings() {
         return null;
     }
     

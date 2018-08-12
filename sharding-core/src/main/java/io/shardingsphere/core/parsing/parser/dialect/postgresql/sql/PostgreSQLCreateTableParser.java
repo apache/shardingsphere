@@ -50,4 +50,9 @@ public final class PostgreSQLCreateTableParser extends AbstractCreateTableParser
     protected Keyword[] getSkippedKeywordsBetweenCreateIndexAndKeyword() {
         return new Keyword[] {DefaultKeyword.UNIQUE};
     }
+    
+    @Override
+    protected Keyword[] getSkippedKeywordsBeforeTableConstraint() {
+        return new Keyword[0];
+    }
 }

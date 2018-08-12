@@ -54,7 +54,7 @@ public abstract class AbstractCreateTableParser implements SQLParser {
     }
     
     @Override
-    public DDLStatement parse() {
+    public final DDLStatement parse() {
         lexerEngine.skipAll(getSkippedKeywordsBetweenCreateIndexAndKeyword());
         lexerEngine.skipAll(getSkippedKeywordsBetweenCreateAndKeyword());
         CreateTableStatement result = new CreateTableStatement();
@@ -109,9 +109,7 @@ public abstract class AbstractCreateTableParser implements SQLParser {
         lexerEngine.skipParentheses(statement);
     }
     
-    protected Keyword[] getSkippedKeywordsBeforeTableConstraint() {
-        return new Keyword[0];
-    }
+    protected abstract Keyword[] getSkippedKeywordsBeforeTableConstraint();
     
     private void parseTableConstraint(final CreateTableStatement statement) {
         Collection<String> columnNames = new LinkedList<>();
