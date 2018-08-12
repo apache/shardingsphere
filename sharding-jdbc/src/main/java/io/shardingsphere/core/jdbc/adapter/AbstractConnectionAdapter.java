@@ -19,10 +19,13 @@ package io.shardingsphere.core.jdbc.adapter;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.TCLType;
+import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.core.util.EventBusInstance;
+import io.shardingsphere.transaction.api.xa.WeakXaTransactionManager;
+import io.shardingsphere.transaction.common.TransactionContext;
 import io.shardingsphere.transaction.common.TransactionContextHolder;
 import io.shardingsphere.transaction.common.config.JDBCTransactionConfiguration;
 import io.shardingsphere.transaction.common.event.TransactionEvent;
@@ -41,7 +44,7 @@ import java.util.Map;
 
 /**
  * Adapter for {@code Connection}.
- * 
+ *
  * @author zhangliang
  */
 public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOperationConnection {
@@ -90,6 +93,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     @Override
     public final void setAutoCommit(final boolean autoCommit) {
         this.autoCommit = autoCommit;
+        TransactionContextHolder.set(new TransactionContext(WeakXaTransactionManager.getInstance(), TransactionType.XA, WeakXaTransactionEvent.class));
         recordMethodInvocation(Connection.class, "setAutoCommit", new Class[] {boolean.class}, new Object[] {autoCommit});
         EventBusInstance.getInstance().post(buildTransactionEvent(TCLType.BEGIN));
     }
@@ -105,7 +109,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     }
     
     @Override
-    public void close() throws SQLException {
+    public final void close() throws SQLException {
         closed = true;
         HintManagerHolder.clear();
         MasterVisitedManager.clear();
@@ -160,7 +164,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     // ------- Consist with MySQL driver implementation -------
     
     @Override
-    public SQLWarning getWarnings() {
+    public final SQLWarning getWarnings() {
         return null;
     }
     
