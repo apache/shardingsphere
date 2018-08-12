@@ -72,7 +72,7 @@ import java.util.Map;
  * @author panjuan
  */
 @Getter
-public class ShardingStatement extends AbstractStatementAdapter {
+public final class ShardingStatement extends AbstractStatementAdapter {
     
     private final ShardingConnection connection;
     

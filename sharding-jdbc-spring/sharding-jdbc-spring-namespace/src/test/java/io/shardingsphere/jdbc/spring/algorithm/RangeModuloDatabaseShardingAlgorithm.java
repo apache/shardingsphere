@@ -24,7 +24,7 @@ import io.shardingsphere.core.api.algorithm.sharding.standard.RangeShardingAlgor
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
-public class RangeModuloDatabaseShardingAlgorithm implements RangeShardingAlgorithm<Integer> {
+public final class RangeModuloDatabaseShardingAlgorithm implements RangeShardingAlgorithm<Integer> {
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Integer> shardingValue) {

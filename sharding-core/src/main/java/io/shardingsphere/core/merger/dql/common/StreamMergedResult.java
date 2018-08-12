@@ -37,7 +37,7 @@ public abstract class StreamMergedResult implements MergedResult {
     
     private boolean wasNull;
     
-    protected QueryResult getCurrentQueryResult() throws SQLException {
+    protected final QueryResult getCurrentQueryResult() throws SQLException {
         if (null == currentQueryResult) {
             throw new SQLException("Current ResultSet is null, ResultSet perhaps end of next.");
         }
@@ -74,7 +74,7 @@ public abstract class StreamMergedResult implements MergedResult {
     
     @SuppressWarnings("deprecation")
     @Override
-    public InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
+    public final InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
         InputStream result = getCurrentQueryResult().getInputStream(columnIndex, type);
         wasNull = getCurrentQueryResult().wasNull();
         return result;
@@ -82,14 +82,14 @@ public abstract class StreamMergedResult implements MergedResult {
     
     @SuppressWarnings("deprecation")
     @Override
-    public InputStream getInputStream(final String columnLabel, final String type) throws SQLException {
+    public final InputStream getInputStream(final String columnLabel, final String type) throws SQLException {
         InputStream result = getCurrentQueryResult().getInputStream(columnLabel, type);
         wasNull = getCurrentQueryResult().wasNull();
         return result;
     }
     
     @Override
-    public boolean wasNull() {
+    public final boolean wasNull() {
         return wasNull;
     }
 }

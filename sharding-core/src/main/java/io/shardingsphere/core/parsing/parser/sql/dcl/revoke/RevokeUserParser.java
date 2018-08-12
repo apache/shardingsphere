@@ -29,7 +29,7 @@ import io.shardingsphere.core.rule.ShardingRule;
  *
  * @author panjuan
  */
-public class RevokeUserParser implements SQLParser {
+public final class RevokeUserParser implements SQLParser {
     
     private final LexerEngine lexerEngine;
     

@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
  * @author panjuan
  */
 @RequiredArgsConstructor
-public class RenameUserParser implements SQLParser {
+public final class RenameUserParser implements SQLParser {
     
     private final LexerEngine lexerEngine;
     

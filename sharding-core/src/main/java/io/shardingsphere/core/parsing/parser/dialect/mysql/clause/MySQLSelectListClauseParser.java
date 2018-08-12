@@ -15,32 +15,24 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.dialect.sqlserver.clause;
+package io.shardingsphere.core.parsing.parser.dialect.mysql.clause;
 
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
-import io.shardingsphere.core.parsing.lexer.dialect.sqlserver.SQLServerKeyword;
-import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
-import io.shardingsphere.core.parsing.lexer.token.Symbol;
-import io.shardingsphere.core.parsing.parser.clause.OrderByClauseParser;
 import io.shardingsphere.core.parsing.parser.clause.SelectListClauseParser;
-import io.shardingsphere.core.parsing.parser.context.selectitem.CommonSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.SelectItem;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Select list clause parser for SQLServer.
+ * Select list clause parser for MySQL.
  *
  * @author zhangliang
  */
-public final class SQLServerSelectListClauseParser extends SelectListClauseParser {
+public final class MySQLSelectListClauseParser extends SelectListClauseParser {
     
-    private final OrderByClauseParser orderByClauseParser;
-    
-    public SQLServerSelectListClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public MySQLSelectListClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine);
-        orderByClauseParser = new SQLServerOrderByClauseParser(lexerEngine);
     }
     
     @Override
@@ -50,17 +42,11 @@ public final class SQLServerSelectListClauseParser extends SelectListClauseParse
     
     @Override
     protected boolean isRowNumberSelectItem() {
-        return getLexerEngine().skipIfEqual(SQLServerKeyword.ROW_NUMBER);
+        return false;
     }
     
     @Override
     protected SelectItem parseRowNumberSelectItem(final SelectStatement selectStatement) {
-        getLexerEngine().skipParentheses(selectStatement);
-        getLexerEngine().accept(DefaultKeyword.OVER);
-        getLexerEngine().accept(Symbol.LEFT_PAREN);
-        getLexerEngine().unsupportedIfEqual(SQLServerKeyword.PARTITION);
-        orderByClauseParser.parse(selectStatement);
-        getLexerEngine().accept(Symbol.RIGHT_PAREN);
-        return new CommonSelectItem(SQLServerKeyword.ROW_NUMBER.name(), getAliasExpressionParser().parseSelectItemAlias());
+        throw new UnsupportedOperationException("Cannot support special select item.");
     }
 }

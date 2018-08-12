@@ -33,7 +33,7 @@ import java.util.Properties;
  * @author caohao
  */
 @Slf4j
-public class OrchestrationShardingDataSource extends ShardingDataSource {
+public final class OrchestrationShardingDataSource extends ShardingDataSource {
     
     private final OrchestrationFacade orchestrationFacade;
     

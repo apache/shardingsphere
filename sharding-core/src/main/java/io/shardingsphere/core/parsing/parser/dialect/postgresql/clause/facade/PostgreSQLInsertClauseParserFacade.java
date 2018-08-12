@@ -19,11 +19,11 @@ package io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.facade;
 
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.parser.clause.InsertColumnsClauseParser;
-import io.shardingsphere.core.parsing.parser.clause.InsertValuesClauseParser;
 import io.shardingsphere.core.parsing.parser.clause.facade.AbstractInsertClauseParserFacade;
 import io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.PostgreSQLInsertDuplicateKeyUpdateClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.PostgreSQLInsertIntoClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.PostgreSQLInsertSetClauseParser;
+import io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.PostgreSQLInsertValuesClauseParser;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -34,7 +34,8 @@ import io.shardingsphere.core.rule.ShardingRule;
 public final class PostgreSQLInsertClauseParserFacade extends AbstractInsertClauseParserFacade {
     
     public PostgreSQLInsertClauseParserFacade(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(new PostgreSQLInsertIntoClauseParser(shardingRule, lexerEngine), new InsertColumnsClauseParser(shardingRule, lexerEngine), new InsertValuesClauseParser(shardingRule, lexerEngine), 
-                new PostgreSQLInsertSetClauseParser(shardingRule, lexerEngine), new PostgreSQLInsertDuplicateKeyUpdateClauseParser(shardingRule, lexerEngine));
+        super(new PostgreSQLInsertIntoClauseParser(shardingRule, lexerEngine), new InsertColumnsClauseParser(shardingRule, lexerEngine), 
+                new PostgreSQLInsertValuesClauseParser(shardingRule, lexerEngine), new PostgreSQLInsertSetClauseParser(shardingRule, lexerEngine), 
+                new PostgreSQLInsertDuplicateKeyUpdateClauseParser(shardingRule, lexerEngine));
     }
 }

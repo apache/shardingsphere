@@ -15,26 +15,34 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.dialect.mysql.clause;
+package io.shardingsphere.core.parsing.parser.dialect.postgresql.clause;
 
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
-import io.shardingsphere.core.parsing.lexer.dialect.mysql.MySQLKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
-import io.shardingsphere.core.parsing.parser.clause.DistinctClauseParser;
+import io.shardingsphere.core.parsing.parser.clause.WhereClauseParser;
+import io.shardingsphere.core.parsing.parser.context.selectitem.SelectItem;
+
+import java.util.List;
 
 /**
- * Distinct clause parser for MySQL.
+ * Where clause parser for PostgreSQL.
  *
  * @author zhangliang
  */
-public final class MySQLDistinctClauseParser extends DistinctClauseParser {
+public final class PostgreSQLWhereClauseParser extends WhereClauseParser {
     
-    public MySQLDistinctClauseParser(final LexerEngine lexerEngine) {
-        super(lexerEngine);
+    public PostgreSQLWhereClauseParser(final LexerEngine lexerEngine) {
+        super(DatabaseType.PostgreSQL, lexerEngine);
     }
     
     @Override
-    protected Keyword[] getSynonymousKeywordsForDistinct() {
-        return new Keyword[] {MySQLKeyword.DISTINCTROW};
+    protected boolean isRowNumberCondition(final List<SelectItem> items, final String columnLabel) {
+        return false;
+    }
+    
+    @Override
+    protected Keyword[] getCustomizedOtherConditionOperators() {
+        return new Keyword[0];
     }
 }

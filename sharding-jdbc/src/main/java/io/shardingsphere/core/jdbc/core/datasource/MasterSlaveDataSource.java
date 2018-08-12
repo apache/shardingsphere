@@ -94,7 +94,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     }
     
     @Override
-    public MasterSlaveConnection getConnection() {
+    public final MasterSlaveConnection getConnection() {
         return new MasterSlaveConnection(this);
     }
     

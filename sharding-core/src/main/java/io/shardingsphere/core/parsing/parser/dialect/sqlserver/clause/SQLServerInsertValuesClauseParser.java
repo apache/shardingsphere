@@ -15,26 +15,26 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.dialect.mysql.clause;
+package io.shardingsphere.core.parsing.parser.dialect.sqlserver.clause;
 
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
-import io.shardingsphere.core.parsing.lexer.dialect.mysql.MySQLKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
-import io.shardingsphere.core.parsing.parser.clause.DistinctClauseParser;
+import io.shardingsphere.core.parsing.parser.clause.InsertValuesClauseParser;
+import io.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Distinct clause parser for MySQL.
+ * Insert values clause parser for SQLServer.
  *
  * @author zhangliang
  */
-public final class MySQLDistinctClauseParser extends DistinctClauseParser {
+public class SQLServerInsertValuesClauseParser extends InsertValuesClauseParser {
     
-    public MySQLDistinctClauseParser(final LexerEngine lexerEngine) {
-        super(lexerEngine);
+    public SQLServerInsertValuesClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        super(shardingRule, lexerEngine);
     }
     
     @Override
-    protected Keyword[] getSynonymousKeywordsForDistinct() {
-        return new Keyword[] {MySQLKeyword.DISTINCTROW};
+    protected Keyword[] getSynonymousKeywordsForValues() {
+        return new Keyword[0];
     }
 }

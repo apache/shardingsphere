@@ -32,7 +32,7 @@ public abstract class ResponseHandler extends ChannelInboundHandlerAdapter {
     private boolean authorized;
     
     @Override
-    public void channelRead(final ChannelHandlerContext context, final Object message) {
+    public final void channelRead(final ChannelHandlerContext context, final Object message) {
         ByteBuf byteBuf = (ByteBuf) message;
         int header = getHeader(byteBuf);
         
@@ -51,7 +51,7 @@ public abstract class ResponseHandler extends ChannelInboundHandlerAdapter {
     protected abstract void executeCommand(ChannelHandlerContext context, ByteBuf byteBuf, int header);
     
     @Override
-    public void channelInactive(final ChannelHandlerContext ctx) throws Exception {
+    public final void channelInactive(final ChannelHandlerContext ctx) throws Exception {
         //TODO delete connection map
         super.channelInactive(ctx);
     }

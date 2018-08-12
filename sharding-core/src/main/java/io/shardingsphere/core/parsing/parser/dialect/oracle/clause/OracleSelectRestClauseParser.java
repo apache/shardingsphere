@@ -15,28 +15,25 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.datasource.impl;
+package io.shardingsphere.core.parsing.parser.dialect.oracle.clause;
 
-import io.shardingsphere.transaction.constants.TransactionLogDataSourceType;
-import io.shardingsphere.transaction.datasource.TransactionLogDataSource;
-
-import javax.sql.DataSource;
+import io.shardingsphere.core.parsing.lexer.LexerEngine;
+import io.shardingsphere.core.parsing.lexer.token.Keyword;
+import io.shardingsphere.core.parsing.parser.clause.SelectRestClauseParser;
 
 /**
- * Transaction log data source in memory.
- * 
- * @author caohao
+ * Select rest clause parser for Oracle.
+ *
+ * @author zhangliang
  */
-public final class MemoryTransactionLogDataSource implements TransactionLogDataSource {
+public final class OracleSelectRestClauseParser extends SelectRestClauseParser {
     
-    @Override
-    public TransactionLogDataSourceType getType() {
-        return TransactionLogDataSourceType.MEMORY;
+    public OracleSelectRestClauseParser(final LexerEngine lexerEngine) {
+        super(lexerEngine);
     }
     
-    //TODO return memory's map
     @Override
-    public DataSource getDataSource() {
-        throw new UnsupportedOperationException();
+    protected Keyword[] getUnsupportedKeywordsRest() {
+        return new Keyword[0];
     }
 }

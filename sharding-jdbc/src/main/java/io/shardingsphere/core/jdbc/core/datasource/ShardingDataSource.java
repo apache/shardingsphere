@@ -123,7 +123,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     }
     
     @Override
-    public ShardingConnection getConnection() {
+    public final ShardingConnection getConnection() {
         return new ShardingConnection(shardingContext);
     }
     

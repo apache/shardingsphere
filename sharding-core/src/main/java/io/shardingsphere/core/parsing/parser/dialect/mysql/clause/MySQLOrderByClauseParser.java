@@ -15,28 +15,25 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.datasource.impl;
+package io.shardingsphere.core.parsing.parser.dialect.mysql.clause;
 
-import io.shardingsphere.transaction.constants.TransactionLogDataSourceType;
-import io.shardingsphere.transaction.datasource.TransactionLogDataSource;
-
-import javax.sql.DataSource;
+import io.shardingsphere.core.constant.OrderDirection;
+import io.shardingsphere.core.parsing.lexer.LexerEngine;
+import io.shardingsphere.core.parsing.parser.clause.OrderByClauseParser;
 
 /**
- * Transaction log data source in memory.
- * 
- * @author caohao
+ * Order by clause parser for MySQL.
+ *
+ * @author zhangliang
  */
-public final class MemoryTransactionLogDataSource implements TransactionLogDataSource {
+public final class MySQLOrderByClauseParser extends OrderByClauseParser {
     
-    @Override
-    public TransactionLogDataSourceType getType() {
-        return TransactionLogDataSourceType.MEMORY;
+    public MySQLOrderByClauseParser(final LexerEngine lexerEngine) {
+        super(lexerEngine);
     }
     
-    //TODO return memory's map
     @Override
-    public DataSource getDataSource() {
-        throw new UnsupportedOperationException();
+    protected OrderDirection getNullOrderDirection() {
+        return OrderDirection.ASC;
     }
 }
