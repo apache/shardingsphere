@@ -17,52 +17,12 @@
 
 package io.shardingsphere.core.constant;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 /**
- * TransactionType Enum.
+ * Transaction type.
  *
  * @author zhaojun
  */
-@RequiredArgsConstructor
-@Getter
 public enum TransactionType {
     
-    /**
-     * Default local transaction.
-     */
-    NONE(""),
-    
-    /**
-     * XA distribute transaction provided by RDBMS vendor.
-     */
-    XA("XA"),
-    
-    /**
-     * B.A.S.E distribute transaction.
-     */
-    BASE("BASE"),
-    
-    /**
-     * TCC (Try-Confirm-Cancel) distribute transaction mode.
-     */
-    TCC("TCC");
-    
-    private final String type;
-    
-    /**
-     * Find enum by type value.
-     *
-     * @param type property type
-     * @return value enum, return {@code NONE} if not found
-     */
-    public static TransactionType findByValue(final String type) {
-        for (TransactionType each : TransactionType.values()) {
-            if (each.getType().equals(type)) {
-                return each;
-            }
-        }
-        return NONE;
-    }
+    LOCAL, XA, BASE
 }
