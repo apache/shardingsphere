@@ -19,8 +19,6 @@ package io.shardingsphere.transaction.common;
 
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.transaction.api.TransactionManager;
-import io.shardingsphere.transaction.common.event.LocalTransactionEvent;
-import io.shardingsphere.transaction.common.event.XaTransactionEvent;
 import io.shardingsphere.transaction.api.local.LocalTransactionManager;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -40,7 +38,7 @@ public class TransactionContextFactory {
      * @return XA transaction context
      */
     public static TransactionContext newXAContext(final TransactionManager transactionManager) {
-        return new TransactionContext(transactionManager, TransactionType.XA, XaTransactionEvent.class);
+        return new TransactionContext(transactionManager, TransactionType.XA);
     }
     
     /**
@@ -49,6 +47,6 @@ public class TransactionContextFactory {
      * @return local transaction context
      */
     public static TransactionContext newLocalTransactionContext() {
-        return new TransactionContext(new LocalTransactionManager(), TransactionType.LOCAL, LocalTransactionEvent.class);
+        return new TransactionContext(new LocalTransactionManager(), TransactionType.LOCAL);
     }
 }
