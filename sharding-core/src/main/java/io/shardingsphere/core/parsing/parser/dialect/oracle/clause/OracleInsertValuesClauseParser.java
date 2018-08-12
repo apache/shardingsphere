@@ -27,7 +27,7 @@ import io.shardingsphere.core.rule.ShardingRule;
  *
  * @author zhangliang
  */
-public class OracleInsertValuesClauseParser extends InsertValuesClauseParser {
+public final class OracleInsertValuesClauseParser extends InsertValuesClauseParser {
     
     public OracleInsertValuesClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine);

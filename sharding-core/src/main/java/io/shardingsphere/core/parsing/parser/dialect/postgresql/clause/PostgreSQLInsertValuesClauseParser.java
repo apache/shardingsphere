@@ -27,7 +27,7 @@ import io.shardingsphere.core.rule.ShardingRule;
  *
  * @author zhangliang
  */
-public class PostgreSQLInsertValuesClauseParser extends InsertValuesClauseParser {
+public final class PostgreSQLInsertValuesClauseParser extends InsertValuesClauseParser {
     
     public PostgreSQLInsertValuesClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine);
