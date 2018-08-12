@@ -27,7 +27,7 @@ import io.shardingsphere.core.rule.ShardingRule;
  *
  * @author zhangliang
  */
-public class SQLServerInsertValuesClauseParser extends InsertValuesClauseParser {
+public final class SQLServerInsertValuesClauseParser extends InsertValuesClauseParser {
     
     public SQLServerInsertValuesClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine);
