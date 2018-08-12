@@ -21,11 +21,12 @@ import io.shardingsphere.transaction.common.event.TransactionEvent;
 import java.sql.SQLException;
 
 /**
- * Transaction manager.
+ * Sharding transaction manager.
  *
  * @author zhaojun
+ * @author zhangliang
  */
-public interface TransactionManager {
+public interface ShardingTransactionManager {
     
     /**
      * Begin transaction.

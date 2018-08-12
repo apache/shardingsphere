@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.api.local;
 
-import io.shardingsphere.transaction.api.TransactionManager;
+import io.shardingsphere.transaction.api.ShardingTransactionManager;
 import io.shardingsphere.transaction.common.event.TransactionEvent;
 import io.shardingsphere.transaction.common.event.LocalTransactionEvent;
 
@@ -32,7 +32,7 @@ import java.util.LinkedList;
  *
  * @author zhaojun
  */
-public final class LocalTransactionManager implements TransactionManager {
+public final class LocalTransactionManager implements ShardingTransactionManager {
     
     @Override
     public void begin(final TransactionEvent transactionEvent) throws SQLException {

@@ -33,7 +33,7 @@ import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusEvent;
 import io.shardingsphere.proxy.backend.jdbc.datasource.JDBCBackendDataSource;
-import io.shardingsphere.transaction.api.TransactionManager;
+import io.shardingsphere.transaction.api.ShardingTransactionManager;
 import io.shardingsphere.transaction.common.config.ProxyTransactionConfiguration;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -80,7 +80,7 @@ public final class RuleRegistry {
     
     private TransactionType transactionType;
     
-    private TransactionManager transactionManager;
+    private ShardingTransactionManager transactionManager;
     
     private ProxyAuthority proxyAuthority;
     

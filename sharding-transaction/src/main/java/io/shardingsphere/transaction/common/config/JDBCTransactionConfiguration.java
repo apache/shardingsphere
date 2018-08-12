@@ -17,12 +17,6 @@
 
 package io.shardingsphere.transaction.common.config;
 
-import com.google.common.base.Optional;
-import io.shardingsphere.core.constant.TransactionType;
-import io.shardingsphere.transaction.api.TransactionManager;
-import io.shardingsphere.transaction.common.TransactionContext;
-import io.shardingsphere.transaction.common.TransactionContextFactory;
-import io.shardingsphere.transaction.common.TransactionContextHolder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -43,14 +37,5 @@ public final class JDBCTransactionConfiguration extends TransactionConfiguration
      */
     public static JDBCTransactionConfiguration getInstance() {
         return INSTANCE;
-    }
-    
-    @Override
-    protected TransactionManager getXATransactionManager(final TransactionType transactionType) {
-        Optional<TransactionManager> transactionManager = getXATransactionManagerFromSPI(transactionType);
-        TransactionContext transactionContext = transactionManager.isPresent()
-                ? TransactionContextFactory.newXAContext(transactionManager.get()) : TransactionContextFactory.newLocalTransactionContext();
-        TransactionContextHolder.set(transactionContext);
-        return transactionContext.getTransactionManager();
     }
 }

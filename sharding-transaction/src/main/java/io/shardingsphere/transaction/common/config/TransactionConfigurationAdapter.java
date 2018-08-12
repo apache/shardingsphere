@@ -17,16 +17,13 @@
 
 package io.shardingsphere.transaction.common.config;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.TransactionType;
-import io.shardingsphere.transaction.api.TransactionManager;
+import io.shardingsphere.transaction.api.ShardingTransactionManager;
+import io.shardingsphere.transaction.api.local.LocalTransactionManager;
+import io.shardingsphere.transaction.api.xa.XATransactionManagerSPILoader;
+import io.shardingsphere.transaction.common.TransactionContext;
+import io.shardingsphere.transaction.common.TransactionContextHolder;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ServiceLoader;
 
 /**
  * Abstract transaction manager configuration.
@@ -36,32 +33,20 @@ import java.util.ServiceLoader;
 @Slf4j
 public abstract class TransactionConfigurationAdapter implements TransactionConfiguration {
     
-    private static final Map<TransactionType, Optional<TransactionManager>> SPI_RESOURCES = new HashMap<>();
-    
     @Override
-    public final TransactionManager getTransactionManager(final TransactionType transactionType) {
+    public final ShardingTransactionManager getTransactionManager(final TransactionType transactionType) {
+        ShardingTransactionManager result;
         switch (transactionType) {
+            case LOCAL:
+                result = new LocalTransactionManager();
+                break;
             case XA:
-                return getXATransactionManager(transactionType);
-            default:
+                result = XATransactionManagerSPILoader.getInstance().getTransactionManager();
+                break;
+            default: 
                 return null;
         }
-    }
-    
-    protected abstract TransactionManager getXATransactionManager(TransactionType transactionType);
-    
-    protected final Optional<TransactionManager> getXATransactionManagerFromSPI(final TransactionType transactionType) {
-        if (SPI_RESOURCES.containsKey(transactionType)) {
-            return SPI_RESOURCES.get(transactionType);
-        }
-        synchronized (SPI_RESOURCES) {
-            List<TransactionManager> transactionManagerList = Lists.newArrayList(ServiceLoader.load(TransactionManager.class).iterator());
-            if (transactionManagerList.size() > 1) {
-                log.info("there is more than one transaction manger existing, chosen first one default.");
-            }
-            Optional<TransactionManager> transactionManager = transactionManagerList.isEmpty() ? Optional.<TransactionManager>absent() : Optional.of(transactionManagerList.get(0));
-            SPI_RESOURCES.put(transactionType, transactionManager);
-            return transactionManager;
-        }
+        TransactionContextHolder.set(new TransactionContext(result, transactionType));
+        return result;
     }
 }

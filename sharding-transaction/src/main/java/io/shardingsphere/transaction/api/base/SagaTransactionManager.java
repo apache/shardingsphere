@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.api.base;
 
-import io.shardingsphere.transaction.api.TransactionManager;
+import io.shardingsphere.transaction.api.ShardingTransactionManager;
 import io.shardingsphere.transaction.common.event.TransactionEvent;
 
 import javax.transaction.Status;
@@ -27,7 +27,7 @@ import javax.transaction.Status;
  *
  * @author zhaojun
  */
-public final class SagaTransactionManager implements TransactionManager {
+public final class SagaTransactionManager implements ShardingTransactionManager {
     
     @Override
     public void begin(final TransactionEvent transactionEvent) {

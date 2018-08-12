@@ -15,23 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.common.config;
+package io.shardingsphere.transaction.api.xa;
 
-import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.transaction.api.ShardingTransactionManager;
 
 /**
- * Execute transaction manager configuration.
+ * XA transaction manager.
  *
- * @author zhaojun
+ * @author zhangliang
  */
-public interface TransactionConfiguration {
-    
-    /**
-     * Get transaction manager.
-     *
-     * @param transactionType transaction type
-     * @return transaction manager
-     */
-    ShardingTransactionManager getTransactionManager(TransactionType transactionType);
+public interface XATransactionManager extends ShardingTransactionManager {
 }

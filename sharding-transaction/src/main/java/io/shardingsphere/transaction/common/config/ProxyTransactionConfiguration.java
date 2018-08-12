@@ -17,12 +17,6 @@
 
 package io.shardingsphere.transaction.common.config;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import io.shardingsphere.core.constant.TransactionType;
-import io.shardingsphere.transaction.api.TransactionManager;
-import io.shardingsphere.transaction.common.TransactionContextFactory;
-import io.shardingsphere.transaction.common.TransactionContextHolder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -43,13 +37,5 @@ public final class ProxyTransactionConfiguration extends TransactionConfiguratio
      */
     public static ProxyTransactionConfiguration getInstance() {
         return INSTANCE;
-    }
-    
-    @Override
-    protected TransactionManager getXATransactionManager(final TransactionType transactionType) {
-        Optional<TransactionManager> transactionManager = getXATransactionManagerFromSPI(transactionType);
-        Preconditions.checkState(transactionManager.isPresent(), "there is no XA transaction manager existing, please prepare exactly one(Atomikos or Narayana) using SPI.");
-        TransactionContextHolder.set(TransactionContextFactory.newXAContext(transactionManager.get()));
-        return transactionManager.get();
     }
 }

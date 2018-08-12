@@ -18,7 +18,7 @@
 package io.shardingsphere.transaction.common;
 
 import io.shardingsphere.core.constant.TransactionType;
-import io.shardingsphere.transaction.api.TransactionManager;
+import io.shardingsphere.transaction.api.ShardingTransactionManager;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -31,11 +31,11 @@ import lombok.NoArgsConstructor;
 @Getter
 public final class TransactionContext {
     
-    private TransactionManager transactionManager;
+    private ShardingTransactionManager transactionManager;
     
     private TransactionType transactionType = TransactionType.LOCAL;
     
-    public TransactionContext(final TransactionManager transactionManager, final TransactionType transactionType) {
+    public TransactionContext(final ShardingTransactionManager transactionManager, final TransactionType transactionType) {
         this.transactionManager = transactionManager;
         this.transactionType = transactionType;
     }
