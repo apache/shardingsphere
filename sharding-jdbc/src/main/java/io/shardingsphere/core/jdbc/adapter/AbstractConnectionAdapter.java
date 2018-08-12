@@ -27,10 +27,10 @@ import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.transaction.api.local.LocalTransactionManager;
 import io.shardingsphere.transaction.common.TransactionContext;
 import io.shardingsphere.transaction.common.TransactionContextHolder;
-import io.shardingsphere.transaction.common.config.JDBCTransactionConfiguration;
+import io.shardingsphere.transaction.api.ShardingTransactionManagerFactory;
+import io.shardingsphere.transaction.common.event.LocalTransactionEvent;
 import io.shardingsphere.transaction.common.event.TransactionEvent;
 import io.shardingsphere.transaction.common.event.TransactionEventFactory;
-import io.shardingsphere.transaction.common.event.LocalTransactionEvent;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -67,7 +67,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
      * @throws SQLException SQL exception
      */
     public final Connection getConnection(final String dataSourceName) throws SQLException {
-        JDBCTransactionConfiguration.getInstance().getTransactionManager(TransactionContextHolder.get().getTransactionType());
+        ShardingTransactionManagerFactory.getTransactionManager(TransactionContextHolder.get().getTransactionType());
         if (cachedConnections.containsKey(dataSourceName)) {
             return cachedConnections.get(dataSourceName);
         }

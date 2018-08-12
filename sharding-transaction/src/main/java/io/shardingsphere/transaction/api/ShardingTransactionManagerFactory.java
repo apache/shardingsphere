@@ -15,26 +15,31 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.common.config;
+package io.shardingsphere.transaction.api;
 
 import io.shardingsphere.core.constant.TransactionType;
-import io.shardingsphere.transaction.api.ShardingTransactionManager;
 import io.shardingsphere.transaction.api.local.LocalTransactionManager;
 import io.shardingsphere.transaction.api.xa.XATransactionManagerSPILoader;
 import io.shardingsphere.transaction.common.TransactionContext;
 import io.shardingsphere.transaction.common.TransactionContextHolder;
-import lombok.extern.slf4j.Slf4j;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Abstract transaction manager configuration.
+ * Sharding transaction manager factory.
  *
- * @author zhaojun
+ * @author zhangliang
  */
-@Slf4j
-public abstract class TransactionConfigurationAdapter implements TransactionConfiguration {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShardingTransactionManagerFactory {
     
-    @Override
-    public final ShardingTransactionManager getTransactionManager(final TransactionType transactionType) {
+    /**
+     * Get sharding transaction manager.
+     *
+     * @param transactionType transaction type
+     * @return sharding transaction manager
+     */
+    public static ShardingTransactionManager getTransactionManager(final TransactionType transactionType) {
         ShardingTransactionManager result;
         switch (transactionType) {
             case LOCAL:
@@ -43,6 +48,7 @@ public abstract class TransactionConfigurationAdapter implements TransactionConf
             case XA:
                 result = XATransactionManagerSPILoader.getInstance().getTransactionManager();
                 break;
+            case BASE:
             default: 
                 return null;
         }
