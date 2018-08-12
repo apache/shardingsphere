@@ -35,7 +35,7 @@ public final class TransactionContext {
     
     private TransactionManager transactionManager;
     
-    private TransactionType transactionType = TransactionType.XA;
+    private TransactionType transactionType = TransactionType.LOCAL;
     
     private Class<? extends TransactionEvent> transactionEventClazz = LocalTransactionEvent.class;
 

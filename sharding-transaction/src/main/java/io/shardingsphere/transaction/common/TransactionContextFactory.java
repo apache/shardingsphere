@@ -49,6 +49,6 @@ public class TransactionContextFactory {
      * @return local transaction context
      */
     public static TransactionContext newLocalTransactionContext() {
-        return new TransactionContext(new LocalTransactionManager(), TransactionType.XA, LocalTransactionEvent.class);
+        return new TransactionContext(new LocalTransactionManager(), TransactionType.LOCAL, LocalTransactionEvent.class);
     }
 }

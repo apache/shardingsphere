@@ -38,9 +38,10 @@ public final class TransactionEventFactory {
      */
     public static TransactionEvent create(final TCLType tclType) {
         switch (TransactionContextHolder.get().getTransactionType()) {
+            case LOCAL:
+                return new LocalTransactionEvent(tclType);
             case XA:
-                return TransactionContextHolder.get().getTransactionEventClazz().isAssignableFrom(XaTransactionEvent.class)
-                        ? new XaTransactionEvent(tclType, "") : new LocalTransactionEvent(tclType);
+                return new XaTransactionEvent(tclType, "");
             case BASE:
             default:
                 return null;

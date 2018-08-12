@@ -93,7 +93,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     @Override
     public final void setAutoCommit(final boolean autoCommit) {
         this.autoCommit = autoCommit;
-        TransactionContextHolder.set(new TransactionContext(new LocalTransactionManager(), TransactionType.XA, LocalTransactionEvent.class));
+        TransactionContextHolder.set(new TransactionContext(new LocalTransactionManager(), TransactionType.LOCAL, LocalTransactionEvent.class));
         recordMethodInvocation(Connection.class, "setAutoCommit", new Class[] {boolean.class}, new Object[] {autoCommit});
         EventBusInstance.getInstance().post(buildTransactionEvent(TCLType.BEGIN));
     }
