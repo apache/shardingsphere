@@ -30,7 +30,6 @@ import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.Map;
 
 /**
  * Unsupported {@code ResultSet} methods for generated keys.
@@ -90,7 +89,7 @@ public abstract class AbstractUnsupportedGeneratedKeysResultSet extends Abstract
     }
     
     @Override
-    public Timestamp getTimestamp(final int columnIndex) throws SQLException {
+    public final Timestamp getTimestamp(final int columnIndex) throws SQLException {
         throw new SQLFeatureNotSupportedException("getTimestamp");
     }
     
@@ -177,16 +176,6 @@ public abstract class AbstractUnsupportedGeneratedKeysResultSet extends Abstract
     @Override
     public final int getFetchSize() throws SQLException {
         throw new SQLFeatureNotSupportedException("getFetchSize");
-    }
-    
-    @Override
-    public Object getObject(final int columnIndex, final Map<String, Class<?>> map) throws SQLException {
-        throw new SQLFeatureNotSupportedException("getObject");
-    }
-    
-    @Override
-    public Object getObject(final String columnLabel, final Map<String, Class<?>> map) throws SQLException {
-        throw new SQLFeatureNotSupportedException("getObject");
     }
     
     @Override

@@ -19,27 +19,22 @@ package io.shardingsphere.core.parsing.parser.dialect.sqlserver.clause;
 
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
-import io.shardingsphere.core.parsing.parser.clause.InsertIntoClauseParser;
+import io.shardingsphere.core.parsing.parser.clause.InsertDuplicateKeyUpdateClauseParser;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Insert into clause parser for SQLServer.
+ * Insert duplicate key update clause parser for PostgreSQL.
  *
- * @author zhangliang
+ * @author maxiaoguang
  */
-public final class SQLServerInsertIntoClauseParser extends InsertIntoClauseParser {
+public final class SQLServerInsertDuplicateKeyUpdateClauseParser extends InsertDuplicateKeyUpdateClauseParser {
     
-    public SQLServerInsertIntoClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(lexerEngine, new SQLServerTableReferencesClauseParser(shardingRule, lexerEngine));
+    public SQLServerInsertDuplicateKeyUpdateClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        super(shardingRule, lexerEngine);
     }
     
     @Override
-    protected Keyword[] getUnsupportedKeywordsBeforeInto() {
-        return new Keyword[0];
-    }
-    
-    @Override
-    protected Keyword[] getSkippedKeywordsBetweenTableAndValues() {
+    protected Keyword[] getCustomizedInsertKeywords() {
         return new Keyword[0];
     }
 }

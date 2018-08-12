@@ -37,4 +37,9 @@ public final class OracleGroupByClauseParser extends GroupByClauseParser {
     protected Keyword[] getUnsupportedKeywordBeforeGroupByItem() {
         return new Keyword[] {OracleKeyword.ROLLUP, OracleKeyword.CUBE, OracleKeyword.GROUPING};
     }
+    
+    @Override
+    protected Keyword[] getSkippedKeywordAfterGroupBy() {
+        return new Keyword[0];
+    }
 }

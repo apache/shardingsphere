@@ -224,12 +224,12 @@ public abstract class AbstractUnsupportedOperationResultSet extends AbstractUnsu
     }
     
     @Override
-    public Object getObject(final String columnLabel, final Map<String, Class<?>> map) throws SQLException {
+    public final Object getObject(final String columnLabel, final Map<String, Class<?>> map) throws SQLException {
         throw new SQLFeatureNotSupportedException("getObject with map");
     }
     
     @Override
-    public Object getObject(final int columnIndex, final Map<String, Class<?>> map) throws SQLException {
+    public final Object getObject(final int columnIndex, final Map<String, Class<?>> map) throws SQLException {
         throw new SQLFeatureNotSupportedException("getObject with map");
     }
 }

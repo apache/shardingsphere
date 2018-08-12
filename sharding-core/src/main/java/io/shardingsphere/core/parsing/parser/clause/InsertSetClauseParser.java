@@ -51,7 +51,7 @@ import java.util.Iterator;
  * @author zhangliang
  * @author maxiaoguang
  */
-public class InsertSetClauseParser implements SQLClauseParser {
+public abstract class InsertSetClauseParser implements SQLClauseParser {
     
     private final ShardingRule shardingRule;
     
@@ -120,7 +120,5 @@ public class InsertSetClauseParser implements SQLClauseParser {
         }
     }
     
-    protected Keyword[] getCustomizedInsertKeywords() {
-        return new Keyword[0];
-    }
+    protected abstract Keyword[] getCustomizedInsertKeywords();
 }

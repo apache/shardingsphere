@@ -15,31 +15,26 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.dialect.sqlserver.clause;
+package io.shardingsphere.core.parsing.parser.dialect.oracle.clause;
 
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
-import io.shardingsphere.core.parsing.parser.clause.InsertIntoClauseParser;
+import io.shardingsphere.core.parsing.parser.clause.InsertSetClauseParser;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Insert into clause parser for SQLServer.
+ * Insert set clause parser for Oracle.
  *
  * @author zhangliang
  */
-public final class SQLServerInsertIntoClauseParser extends InsertIntoClauseParser {
+public final class OracleInsertSetClauseParser extends InsertSetClauseParser {
     
-    public SQLServerInsertIntoClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(lexerEngine, new SQLServerTableReferencesClauseParser(shardingRule, lexerEngine));
+    public OracleInsertSetClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        super(shardingRule, lexerEngine);
     }
     
     @Override
-    protected Keyword[] getUnsupportedKeywordsBeforeInto() {
-        return new Keyword[0];
-    }
-    
-    @Override
-    protected Keyword[] getSkippedKeywordsBetweenTableAndValues() {
+    protected Keyword[] getCustomizedInsertKeywords() {
         return new Keyword[0];
     }
 }

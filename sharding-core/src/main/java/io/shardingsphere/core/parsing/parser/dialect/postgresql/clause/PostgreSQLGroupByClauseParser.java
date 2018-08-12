@@ -15,31 +15,30 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.dialect.sqlserver.clause;
+package io.shardingsphere.core.parsing.parser.dialect.postgresql.clause;
 
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
-import io.shardingsphere.core.parsing.parser.clause.InsertIntoClauseParser;
-import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.core.parsing.parser.clause.GroupByClauseParser;
 
 /**
- * Insert into clause parser for SQLServer.
+ * Group by clause parser for PostgreSQL.
  *
  * @author zhangliang
  */
-public final class SQLServerInsertIntoClauseParser extends InsertIntoClauseParser {
+public final class PostgreSQLGroupByClauseParser extends GroupByClauseParser {
     
-    public SQLServerInsertIntoClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(lexerEngine, new SQLServerTableReferencesClauseParser(shardingRule, lexerEngine));
+    public PostgreSQLGroupByClauseParser(final LexerEngine lexerEngine) {
+        super(lexerEngine);
     }
     
     @Override
-    protected Keyword[] getUnsupportedKeywordsBeforeInto() {
+    protected Keyword[] getUnsupportedKeywordBeforeGroupByItem() {
         return new Keyword[0];
     }
     
     @Override
-    protected Keyword[] getSkippedKeywordsBetweenTableAndValues() {
+    protected Keyword[] getSkippedKeywordAfterGroupBy() {
         return new Keyword[0];
     }
 }
