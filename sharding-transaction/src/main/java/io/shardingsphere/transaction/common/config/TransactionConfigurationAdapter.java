@@ -20,9 +20,7 @@ package io.shardingsphere.transaction.common.config;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.TransactionType;
-import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.transaction.api.TransactionManager;
-import io.shardingsphere.transaction.common.listener.TransactionListener;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
@@ -41,7 +39,7 @@ public abstract class TransactionConfigurationAdapter implements TransactionConf
     private static final Map<TransactionType, Optional<TransactionManager>> SPI_RESOURCE = new HashMap<>();
     
     @Override
-    public TransactionManager configTransactionContext(final TransactionType transactionType) {
+    public final TransactionManager configTransactionContext(final TransactionType transactionType) {
         TransactionManager result = null;
         switch (transactionType) {
             case XA:
@@ -54,14 +52,9 @@ public abstract class TransactionConfigurationAdapter implements TransactionConf
         return result;
     }
     
-    @Override
-    public void registerListener() {
-        EventBusInstance.getInstance().register(TransactionListener.getInstance());
-    }
-    
     protected abstract TransactionManager doXaTransactionConfiguration(TransactionType transactionType);
     
-    protected Optional<TransactionManager> doSPIConfiguration(final TransactionType transactionType) {
+    protected final Optional<TransactionManager> doSPIConfiguration(final TransactionType transactionType) {
         if (SPI_RESOURCE.containsKey(transactionType)) {
             return SPI_RESOURCE.get(transactionType);
         }

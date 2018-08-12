@@ -15,23 +15,24 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.common.config;
+package io.shardingsphere.core.listener;
 
-import io.shardingsphere.core.constant.TransactionType;
-import io.shardingsphere.transaction.api.TransactionManager;
+import io.shardingsphere.transaction.common.listener.TransactionListener;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Execute transaction manager configuration.
+ * Listener register for JDBC.
  *
- * @author zhaojun
+ * @author zhangliang
  */
-public interface TransactionConfiguration {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class JDBCListenerRegister {
     
     /**
-     * Config transaction context, then binding to current thread.
-     *
-     * @param transactionType transaction type
-     * @return transaction manager
+     * Register all listeners.
      */
-    TransactionManager configTransactionContext(TransactionType transactionType);
+    public static void register() {
+        new TransactionListener().register();
+    }
 }

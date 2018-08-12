@@ -19,11 +19,10 @@ package io.shardingsphere.transaction.common.listener;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
+import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.transaction.api.TransactionManager;
 import io.shardingsphere.transaction.common.TransactionContextHolder;
 import io.shardingsphere.transaction.common.event.TransactionEvent;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 
 import java.sql.SQLException;
 
@@ -32,18 +31,13 @@ import java.sql.SQLException;
  *
  * @author zhaojun
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TransactionListener {
     
-    private static final TransactionListener INSTANCE = new TransactionListener();
-    
     /**
-     * Get instance of transaction listener.
-     * 
-     * @return instance of transaction listener
+     * Register transaction listener into event bus.
      */
-    public static TransactionListener getInstance() {
-        return INSTANCE;
+    public void register() {
+        EventBusInstance.getInstance().register(this);
     }
     
     /**
