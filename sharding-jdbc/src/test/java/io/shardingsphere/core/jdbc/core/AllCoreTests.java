@@ -41,5 +41,5 @@ import org.junit.runners.Suite;
         GeneratedKeysResultSetTest.class, 
         GeneratedKeysResultSetMetaDataTest.class 
     })
-public class AllCoreTests {
+public final class AllCoreTests {
 }

@@ -33,5 +33,5 @@ import org.junit.runners.Suite;
         JdbcMethodInvocationTest.class,
         SetParameterMethodInvocationTest.class
     })
-public class AllAdapterTests {
+public final class AllAdapterTests {
 }

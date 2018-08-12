@@ -27,5 +27,5 @@ import org.junit.runners.Suite;
         InlineExpressionParserTest.class,
         SQLUtilTest.class
     })
-public class AllUtilTests {
+public final class AllUtilTests {
 }

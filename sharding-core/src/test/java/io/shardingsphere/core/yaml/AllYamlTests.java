@@ -36,5 +36,5 @@ import org.junit.runners.Suite.SuiteClasses;
         YamlMasterSlaveConfigurationTest.class, 
         YamlMasterSlaveRuleConfigurationTest.class
 })
-public class AllYamlTests {
+public final class AllYamlTests {
 }

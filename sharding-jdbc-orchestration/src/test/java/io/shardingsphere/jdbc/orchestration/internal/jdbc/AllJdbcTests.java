@@ -29,5 +29,5 @@ import org.junit.runners.Suite;
         CircuitBreakerDataSourceTest.class,
         CircuitBreakerDatabaseMetaDataTest.class
     })
-public class AllJdbcTests {
+public final class AllJdbcTests {
 }
