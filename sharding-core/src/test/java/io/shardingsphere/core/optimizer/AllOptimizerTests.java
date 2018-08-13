@@ -25,5 +25,5 @@ import org.junit.runners.Suite;
         InsertOptimizeEngineTest.class, 
         QueryOptimizeEngineTest.class
     })
-public class AllOptimizerTests {
+public final class AllOptimizerTests {
 }

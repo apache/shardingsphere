@@ -35,7 +35,7 @@ import java.util.Properties;
  */
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ShardingConfigurationConverter {
+public final class ShardingConfigurationConverter {
     
     private static final Yaml YAML = new Yaml(new DefaultConfigurationRepresenter());
     

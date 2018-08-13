@@ -201,9 +201,10 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
     }
     
     // TODO :jiaqi use sql packet to refresh meta data
+    // TODO refresh table meta data by SQL parse result
     private void refreshTableMetaData(final String logicTableName) {
         TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(
-                BackendExecutorContext.getInstance().getExecutorService(), new ProxyTableMetaDataConnectionManager(RULE_REGISTRY.getBackendDataSource()));
+                RULE_REGISTRY.getMetaData().getDataSource(), BackendExecutorContext.getInstance().getExecutorService(), new ProxyTableMetaDataConnectionManager(RULE_REGISTRY.getBackendDataSource()));
         RULE_REGISTRY.getMetaData().getTable().put(logicTableName, tableMetaDataLoader.load(logicTableName, RULE_REGISTRY.getShardingRule()));
     }
     

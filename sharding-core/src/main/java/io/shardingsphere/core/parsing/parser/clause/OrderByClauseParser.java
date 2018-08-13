@@ -43,7 +43,7 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public class OrderByClauseParser implements SQLClauseParser {
+public abstract class OrderByClauseParser implements SQLClauseParser {
     
     @Getter
     private final LexerEngine lexerEngine;
@@ -100,7 +100,5 @@ public class OrderByClauseParser implements SQLClauseParser {
         throw new SQLParsingException(lexerEngine);
     }
     
-    protected OrderDirection getNullOrderDirection() {
-        return OrderDirection.ASC;
-    }
+    protected abstract OrderDirection getNullOrderDirection();
 }

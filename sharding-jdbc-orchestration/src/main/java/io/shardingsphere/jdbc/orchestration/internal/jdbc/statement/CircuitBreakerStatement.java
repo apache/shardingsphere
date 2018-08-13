@@ -31,11 +31,10 @@ import java.sql.SQLWarning;
  * @author caohao
  */
 @Getter
-public class CircuitBreakerStatement extends AbstractUnsupportedOperationStatement {
+public final class CircuitBreakerStatement extends AbstractUnsupportedOperationStatement {
     
     @Override
     public void close() {
-        
     }
     
     @Override
@@ -45,7 +44,6 @@ public class CircuitBreakerStatement extends AbstractUnsupportedOperationStateme
     
     @Override
     public void setMaxFieldSize(final int max) {
-        
     }
     
     @Override
@@ -55,12 +53,10 @@ public class CircuitBreakerStatement extends AbstractUnsupportedOperationStateme
     
     @Override
     public void setMaxRows(final int max) {
-        
     }
     
     @Override
     public void setEscapeProcessing(final boolean enable) {
-        
     }
     
     @Override
@@ -70,12 +66,10 @@ public class CircuitBreakerStatement extends AbstractUnsupportedOperationStateme
     
     @Override
     public void setQueryTimeout(final int seconds) {
-        
     }
     
     @Override
     public void cancel() {
-        
     }
     
     @Override
@@ -85,7 +79,6 @@ public class CircuitBreakerStatement extends AbstractUnsupportedOperationStateme
     
     @Override
     public void clearWarnings() {
-        
     }
     
     @Override
@@ -100,7 +93,6 @@ public class CircuitBreakerStatement extends AbstractUnsupportedOperationStateme
     
     @Override
     public void setFetchSize(final int rows) {
-        
     }
     
     @Override
@@ -195,7 +187,6 @@ public class CircuitBreakerStatement extends AbstractUnsupportedOperationStateme
     
     @Override
     public void setPoolable(final boolean poolable) {
-        
     }
     
     @Override

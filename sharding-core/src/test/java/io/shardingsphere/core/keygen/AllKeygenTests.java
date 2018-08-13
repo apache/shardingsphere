@@ -25,5 +25,5 @@ import org.junit.runners.Suite;
         DefaultKeyGeneratorTest.class, 
         KeyGeneratorFactoryTest.class
     })
-public class AllKeygenTests {
+public final class AllKeygenTests {
 }

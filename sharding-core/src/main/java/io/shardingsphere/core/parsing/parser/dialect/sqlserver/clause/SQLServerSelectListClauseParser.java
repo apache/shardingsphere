@@ -20,6 +20,7 @@ package io.shardingsphere.core.parsing.parser.dialect.sqlserver.clause;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.dialect.sqlserver.SQLServerKeyword;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
+import io.shardingsphere.core.parsing.lexer.token.Keyword;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.parser.clause.OrderByClauseParser;
 import io.shardingsphere.core.parsing.parser.clause.SelectListClauseParser;
@@ -40,6 +41,11 @@ public final class SQLServerSelectListClauseParser extends SelectListClauseParse
     public SQLServerSelectListClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine);
         orderByClauseParser = new SQLServerOrderByClauseParser(lexerEngine);
+    }
+    
+    @Override
+    protected Keyword[] getSkippedKeywordsBeforeSelectItem() {
+        return new Keyword[0];
     }
     
     @Override

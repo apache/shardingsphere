@@ -20,13 +20,12 @@ package io.shardingsphere.core.jdbc.core.connection;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.ConnectionMode;
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.fixture.TestDataSource;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.metadata.table.TableMetaData;
+import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.After;
 import org.junit.Before;
@@ -41,7 +40,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class ShardingConnectionTest {
     
@@ -72,7 +74,8 @@ public final class ShardingConnectionTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put(DS_NAME, masterSlaveDataSource);
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, dataSourceMap.keySet());
-        ShardingContext shardingContext = new ShardingContext(dataSourceMap, shardingRule, DatabaseType.H2, null, new ShardingTableMetaData(Collections.<String, TableMetaData>emptyMap()), false, ConnectionMode.MEMORY_STRICTLY);
+        ShardingMetaData shardingMetaData = mock(ShardingMetaData.class);
+        ShardingContext shardingContext = new ShardingContext(dataSourceMap, shardingRule, DatabaseType.H2, null, shardingMetaData, ConnectionMode.MEMORY_STRICTLY, false);
         connection = new ShardingConnection(shardingContext);
     }
     
@@ -86,7 +89,7 @@ public final class ShardingConnectionTest {
     
     @Test
     public void assertGetConnectionFromCache() throws SQLException {
-        assertNotSame(connection.getConnection(DS_NAME), connection.getConnection(DS_NAME));
+        assertThat(connection.getConnection(DS_NAME), is(connection.getConnection(DS_NAME)));
     }
     
     @Test(expected = IllegalStateException.class)

@@ -44,5 +44,5 @@ import org.junit.runners.Suite.SuiteClasses;
         MasterSlaveNamespaceTest.class,
         ShardingNamespaceTest.class
     })
-public class AllTests {
+public final class AllTests {
 }

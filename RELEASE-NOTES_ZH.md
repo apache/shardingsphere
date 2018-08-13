@@ -54,7 +54,7 @@
 1. [ISSUE #629](https://github.com/sharding-sphere/sharding-sphere/issues/629) 支持JDBC中设置事务隔离级别
 1. [ISSUE #735](https://github.com/sharding-sphere/sharding-sphere/issues/735) 在Mybatis中使用`Round-robin`的读写分离算法路由存在问题
 1. [ISSUE #1011](https://github.com/sharding-sphere/sharding-sphere/issues/1011) 无法在`Spring Boot`的`YAML`中处理占位符
-
+1. [ISSUE #1020](https://github.com/sharding-sphere/sharding-sphere/issues/1020) `GROUP BY / ORDER BY`产生的补列不应展现在查询结果中
 
 ## 2.0.3
 

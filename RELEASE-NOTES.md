@@ -53,7 +53,7 @@
 1. [ISSUE #629](https://github.com/sharding-sphere/sharding-sphere/issues/629) Support transaction isolation on JDBC
 1. [ISSUE #735](https://github.com/sharding-sphere/sharding-sphere/issues/735) Unexpected slave datasource routing result when using `Round-robin` load-balance algorithm in Mybatis
 1. [ISSUE #1011](https://github.com/sharding-sphere/sharding-sphere/issues/1011) Can't resolve placeholder in `Spring Boot YAML` configuration
-
+1. [ISSUE #1020](https://github.com/sharding-sphere/sharding-sphere/issues/1020) Derived columns of `GROUP BY / ORDER BY` appear in query result
 
 ## 2.0.3
 

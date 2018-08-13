@@ -45,7 +45,7 @@ import java.util.Properties;
  * 
  * @author zhangliang
  */
-public class MasterSlaveDataSourceBeanDefinitionParser extends AbstractBeanDefinitionParser {
+public final class MasterSlaveDataSourceBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {

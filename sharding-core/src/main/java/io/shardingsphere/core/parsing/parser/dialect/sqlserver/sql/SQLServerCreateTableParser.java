@@ -49,4 +49,9 @@ public final class SQLServerCreateTableParser extends AbstractCreateTableParser 
     protected Keyword[] getSkippedKeywordsBetweenCreateIndexAndKeyword() {
         return new Keyword[] {DefaultKeyword.UNIQUE, DefaultKeyword.FULLTEXT};
     }
+    
+    @Override
+    protected Keyword[] getSkippedKeywordsBeforeTableConstraint() {
+        return new Keyword[0];
+    }
 }

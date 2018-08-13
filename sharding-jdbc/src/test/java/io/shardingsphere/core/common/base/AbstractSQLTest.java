@@ -69,7 +69,7 @@ public abstract class AbstractSQLTest {
             Connection conn;
             for (int i = 0; i < 2; i++) {
                 conn = initialConnection("jdbc_" + i, dbType);
-                RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/jdbc/jdbc_init.sql")));
+                RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/cases/jdbc/jdbc_init.sql")));
                 conn.close();
             }
         } catch (final SQLException ex) {
@@ -158,7 +158,7 @@ public abstract class AbstractSQLTest {
     protected final void importDataSet() {
         try {
             ShardingConnection conn = shardingDataSource.getConnection();
-            RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/jdbc/jdbc_data.sql")));
+            RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/cases/jdbc/jdbc_data.sql")));
             conn.close();
         } catch (final SQLException ex) {
             ex.printStackTrace();

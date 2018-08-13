@@ -27,5 +27,5 @@ import org.junit.runners.Suite.SuiteClasses;
         BatchDMLIntegrateTest.class, 
         AdditionalDMLIntegrateTest.class
     })
-public class AllDMLTests {
+public final class AllDMLTests {
 }

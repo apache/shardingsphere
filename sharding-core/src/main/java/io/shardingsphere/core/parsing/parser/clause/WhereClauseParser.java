@@ -59,7 +59,7 @@ import java.util.List;
  * @author zhangliang
  * @author maxiaoguang
  */
-public class WhereClauseParser implements SQLClauseParser {
+public abstract class WhereClauseParser implements SQLClauseParser {
     
     private final DatabaseType databaseType;
     
@@ -257,9 +257,7 @@ public class WhereClauseParser implements SQLClauseParser {
         return null != columnLabel && isRowNumberCondition(items, columnLabel);
     }
     
-    protected boolean isRowNumberCondition(final List<SelectItem> items, final String columnLabel) {
-        return false;
-    }
+    protected abstract boolean isRowNumberCondition(List<SelectItem> items, String columnLabel);
     
     private void parseRowCountCondition(final SelectStatement selectStatement, final boolean includeRowCount) {
         SQLExpression sqlExpression = basicExpressionParser.parse(selectStatement);
@@ -291,9 +289,7 @@ public class WhereClauseParser implements SQLClauseParser {
         }
     }
     
-    protected Keyword[] getCustomizedOtherConditionOperators() {
-        return new Keyword[0];
-    }
+    protected abstract Keyword[] getCustomizedOtherConditionOperators();
     
     private void parseOtherCondition(final SQLStatement sqlStatement) {
         basicExpressionParser.parse(sqlStatement);

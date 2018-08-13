@@ -37,7 +37,7 @@ import org.w3c.dom.Element;
  * @author caohao
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ShardingStrategyBeanDefinition {
+public final class ShardingStrategyBeanDefinition {
     
     static AbstractBeanDefinition getBeanDefinitionByElement(final Element element) {
         String type = element.getLocalName();

@@ -38,7 +38,7 @@ public abstract class TransactionEngine {
     private final String sql;
     
     // TODO :yonglun move to TCLParser
-    protected Optional<TCLType> parseSQL() {
+    protected final Optional<TCLType> parseSQL() {
         switch (sql.toUpperCase()) {
             case "BEGIN": 
             case "START TRANSACTION":

@@ -47,7 +47,7 @@ import java.util.Properties;
  * @author caohao
  * @author zhangliang
  */
-public class OrchestrationShardingDataSourceBeanDefinitionParser extends AbstractOrchestrationBeanDefinitionParser {
+public final class OrchestrationShardingDataSourceBeanDefinitionParser extends AbstractOrchestrationBeanDefinitionParser {
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {

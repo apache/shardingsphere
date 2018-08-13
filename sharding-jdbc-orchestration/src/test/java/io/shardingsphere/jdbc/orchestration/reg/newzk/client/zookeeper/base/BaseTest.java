@@ -22,15 +22,15 @@ import org.apache.zookeeper.KeeperException;
 
 public class BaseTest {
     
-    protected void createRootOnly(final IClient client) throws KeeperException, InterruptedException {
+    protected final void createRootOnly(final IClient client) throws KeeperException, InterruptedException {
         ((BaseClient) client).createNamespace();
     }
     
-    protected void deleteRoot(final IClient client) throws KeeperException, InterruptedException {
+    protected final void deleteRoot(final IClient client) throws KeeperException, InterruptedException {
         ((BaseClient) client).deleteNamespace();
     }
     
-    protected void sleep(final long tick) {
+    protected final void sleep(final long tick) {
         try {
             Thread.sleep(tick);
         } catch (final InterruptedException ignore) {

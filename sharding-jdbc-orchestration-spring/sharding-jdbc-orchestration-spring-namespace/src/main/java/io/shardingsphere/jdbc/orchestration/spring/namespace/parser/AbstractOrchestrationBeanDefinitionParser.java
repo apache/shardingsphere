@@ -31,11 +31,11 @@ import org.w3c.dom.Element;
  */
 public abstract class AbstractOrchestrationBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
-    protected String parseRegistryCenterRef(final Element element) {
+    protected final String parseRegistryCenterRef(final Element element) {
         return element.getAttribute("registry-center-ref");
     }
     
-    protected BeanDefinition parseOrchestrationConfiguration(final Element element, final OrchestrationType type) {
+    protected final BeanDefinition parseOrchestrationConfiguration(final Element element, final OrchestrationType type) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute("id"));
         factory.addConstructorArgReference(element.getAttribute("registry-center-ref"));

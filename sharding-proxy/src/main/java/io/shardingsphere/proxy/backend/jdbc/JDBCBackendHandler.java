@@ -23,10 +23,12 @@ import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.metadata.table.executor.TableMetaDataLoader;
+import io.shardingsphere.core.parsing.parser.constant.DerivedColumn;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.proxy.backend.AbstractBackendHandler;
+import io.shardingsphere.proxy.backend.BackendExecutorContext;
 import io.shardingsphere.proxy.backend.ResultPacket;
 import io.shardingsphere.proxy.backend.jdbc.execute.JDBCExecuteEngine;
 import io.shardingsphere.proxy.backend.jdbc.execute.response.ExecuteQueryResponse;
@@ -36,15 +38,19 @@ import io.shardingsphere.proxy.config.ProxyTableMetaDataConnectionManager;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.FieldCountPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
-import io.shardingsphere.proxy.backend.BackendExecutorContext;
+import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
 import lombok.RequiredArgsConstructor;
 
 import javax.transaction.Status;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -86,7 +92,8 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
         executeResponse = executeEngine.execute(routeResult, isReturnGeneratedKeys);
         if (!RULE_REGISTRY.isMasterSlaveOnly() && SQLType.DDL == sqlStatement.getType() && !sqlStatement.getTables().isEmpty()) {
             String logicTableName = sqlStatement.getTables().getSingleTableName();
-            TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(
+            // TODO refresh table meta data by SQL parse result
+            TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(RULE_REGISTRY.getMetaData().getDataSource(), 
                     BackendExecutorContext.getInstance().getExecutorService(), new ProxyTableMetaDataConnectionManager(RULE_REGISTRY.getBackendDataSource()));
             RULE_REGISTRY.getMetaData().getTable().put(logicTableName, tableMetaDataLoader.load(logicTableName, RULE_REGISTRY.getShardingRule()));
         }
@@ -94,7 +101,8 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
     }
     
     private boolean isUnsupportedXA(final SQLType sqlType) throws SQLException {
-        return TransactionType.XA == RULE_REGISTRY.getTransactionType() && SQLType.DDL == sqlType && Status.STATUS_NO_TRANSACTION != RULE_REGISTRY.getTransactionManager().getStatus();
+        return TransactionType.XA == RULE_REGISTRY.getTransactionType() && SQLType.DDL == sqlType
+                && Status.STATUS_NO_TRANSACTION != ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.XA).getStatus();
     }
     
     private CommandResponsePackets merge(final SQLStatement sqlStatement) throws SQLException {
@@ -103,9 +111,22 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
         }
         mergedResult = MergeEngineFactory.newInstance(
                 RULE_REGISTRY.getShardingRule(), ((ExecuteQueryResponse) executeResponse).getQueryResults(), sqlStatement, RULE_REGISTRY.getMetaData().getTable()).merge();
-        QueryResponsePackets result = ((ExecuteQueryResponse) executeResponse).getQueryResponsePackets();
+        QueryResponsePackets result = getQueryResponsePacketsWithoutDerivedColumns(((ExecuteQueryResponse) executeResponse).getQueryResponsePackets());
         currentSequenceId = result.getPackets().size();
         return result;
+    }
+    
+    private QueryResponsePackets getQueryResponsePacketsWithoutDerivedColumns(final QueryResponsePackets queryResponsePackets) {
+        Collection<ColumnDefinition41Packet> columnDefinition41Packets = new ArrayList<>(queryResponsePackets.getColumnCount());
+        int columnCount = 0;
+        for (ColumnDefinition41Packet each : queryResponsePackets.getColumnDefinition41Packets()) {
+            if (!DerivedColumn.isDerivedColumn(each.getName())) {
+                columnDefinition41Packets.add(each);
+                columnCount++;
+            }
+        }
+        FieldCountPacket fieldCountPacket = new FieldCountPacket(1, columnCount);
+        return new QueryResponsePackets(fieldCountPacket, columnDefinition41Packets, new EofPacket(columnCount + 2));
     }
     
     @Override

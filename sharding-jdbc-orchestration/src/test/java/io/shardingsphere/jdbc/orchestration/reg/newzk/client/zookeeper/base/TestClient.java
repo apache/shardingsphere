@@ -23,7 +23,7 @@ import org.apache.zookeeper.ZooKeeper;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-public class TestClient extends UsualClient {
+public final class TestClient extends UsualClient {
     
     TestClient(final BaseContext context) {
         super(context);

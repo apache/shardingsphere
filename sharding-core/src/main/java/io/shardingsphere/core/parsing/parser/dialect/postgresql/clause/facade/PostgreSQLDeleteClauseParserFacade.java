@@ -17,11 +17,10 @@
 
 package io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.facade;
 
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
-import io.shardingsphere.core.parsing.parser.clause.WhereClauseParser;
 import io.shardingsphere.core.parsing.parser.clause.facade.AbstractDeleteClauseParserFacade;
 import io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.PostgreSQLTableReferencesClauseParser;
+import io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.PostgreSQLWhereClauseParser;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -32,6 +31,6 @@ import io.shardingsphere.core.rule.ShardingRule;
 public final class PostgreSQLDeleteClauseParserFacade extends AbstractDeleteClauseParserFacade {
     
     public PostgreSQLDeleteClauseParserFacade(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(new PostgreSQLTableReferencesClauseParser(shardingRule, lexerEngine), new WhereClauseParser(DatabaseType.PostgreSQL, lexerEngine));
+        super(new PostgreSQLTableReferencesClauseParser(shardingRule, lexerEngine), new PostgreSQLWhereClauseParser(lexerEngine));
     }
 }

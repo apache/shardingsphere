@@ -32,7 +32,7 @@ import lombok.RequiredArgsConstructor;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public class AliasExpressionParser {
+public abstract class AliasExpressionParser {
     
     private final LexerEngine lexerEngine;
     
@@ -73,9 +73,7 @@ public class AliasExpressionParser {
         };
     }
     
-    protected TokenType[] getCustomizedAvailableKeywordsForSelectItemAlias() {
-        return new TokenType[0];
-    }
+    protected abstract TokenType[] getCustomizedAvailableKeywordsForSelectItemAlias();
     
     /**
      * Parse alias for table.
@@ -103,7 +101,5 @@ public class AliasExpressionParser {
         };
     }
     
-    protected TokenType[] getCustomizedAvailableKeywordsForTableAlias() {
-        return new TokenType[0];
-    }
+    protected abstract TokenType[] getCustomizedAvailableKeywordsForTableAlias();
 }

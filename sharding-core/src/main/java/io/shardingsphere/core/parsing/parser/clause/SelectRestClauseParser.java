@@ -32,7 +32,7 @@ import java.util.LinkedList;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public class SelectRestClauseParser implements SQLClauseParser {
+public abstract class SelectRestClauseParser implements SQLClauseParser {
     
     private final LexerEngine lexerEngine;
     
@@ -46,7 +46,5 @@ public class SelectRestClauseParser implements SQLClauseParser {
         lexerEngine.unsupportedIfEqual(unsupportedRestKeywords.toArray(new Keyword[unsupportedRestKeywords.size()]));
     }
     
-    protected Keyword[] getUnsupportedKeywordsRest() {
-        return new Keyword[0];
-    }
+    protected abstract Keyword[] getUnsupportedKeywordsRest();
 }

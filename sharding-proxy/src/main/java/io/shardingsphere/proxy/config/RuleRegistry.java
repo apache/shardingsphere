@@ -26,18 +26,14 @@ import io.shardingsphere.core.constant.ShardingProperties;
 import io.shardingsphere.core.constant.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
-import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.metadata.table.executor.TableMetaDataInitializer;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ProxyAuthority;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.transaction.spi.TransactionManager;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusEvent;
 import io.shardingsphere.proxy.backend.jdbc.datasource.JDBCBackendDataSource;
-import io.shardingsphere.proxy.util.ProxyTransactionLoader;
+import io.shardingsphere.transaction.common.TransactionTypeHolder;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -83,8 +79,6 @@ public final class RuleRegistry {
     
     private TransactionType transactionType;
     
-    private TransactionManager transactionManager;
-    
     private ProxyAuthority proxyAuthority;
     
     private ShardingMetaData metaData;
@@ -108,15 +102,13 @@ public final class RuleRegistry {
         ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
         showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         connectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
-        // TODO :zhaojun add distribute transaction for 3.1.x 
-        transactionType = TransactionType.NONE;
-//        transactionType = TransactionType.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_MODE));
-        transactionManager = ProxyTransactionLoader.load(transactionType);
+        transactionType = TransactionType.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_MODE));
+        TransactionTypeHolder.set(transactionType);
         acceptorSize = shardingProperties.getValue(ShardingPropertiesConstant.ACCEPTOR_SIZE);
         executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         // TODO :jiaqi force off use NIO for backend, this feature is not complete yet
         boolean useNIO = false;
-//        boolean proxyBackendUseNio = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO);
+        //        boolean proxyBackendUseNio = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO);
         int databaseConnectionCount = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_MAX_CONNECTIONS);
         int connectionTimeoutSeconds = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS);
         backendNIOConfig = new BackendNIOConfiguration(useNIO, databaseConnectionCount, connectionTimeoutSeconds);
@@ -137,10 +129,8 @@ public final class RuleRegistry {
      * @param executorService executor service
      */
     public void initShardingMetaData(final ExecutorService executorService) {
-        ShardingDataSourceMetaData shardingDataSourceMetaData = new ShardingDataSourceMetaData(getDataSourceURLs(dataSourceConfigurationMap), shardingRule, DatabaseType.MySQL);
-        ShardingTableMetaData shardingTableMetaData = new ShardingTableMetaData(
-                new TableMetaDataInitializer(MoreExecutors.listeningDecorator(executorService), new ProxyTableMetaDataConnectionManager(backendDataSource)).load(shardingRule));
-        metaData = new ShardingMetaData(shardingDataSourceMetaData, shardingTableMetaData);
+        metaData = new ShardingMetaData(getDataSourceURLs(dataSourceConfigurationMap), shardingRule, DatabaseType.MySQL, 
+                MoreExecutors.listeningDecorator(executorService), new ProxyTableMetaDataConnectionManager(backendDataSource));
     }
     
     private static Map<String, String> getDataSourceURLs(final Map<String, DataSourceParameter> dataSourceParameters) {
@@ -153,7 +143,7 @@ public final class RuleRegistry {
     
     /**
      * Judge is master slave only.
-     * 
+     *
      * @return is master slave only
      */
     public boolean isMasterSlaveOnly() {

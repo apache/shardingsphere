@@ -19,13 +19,15 @@ package io.shardingsphere.core.jdbc.adapter;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.TCLType;
+import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
-import io.shardingsphere.core.transaction.event.TransactionEvent;
-import io.shardingsphere.core.transaction.event.TransactionEventFactory;
-import io.shardingsphere.core.transaction.event.WeakXaTransactionEvent;
 import io.shardingsphere.core.util.EventBusInstance;
+import io.shardingsphere.transaction.common.TransactionTypeHolder;
+import io.shardingsphere.transaction.common.event.LocalTransactionEvent;
+import io.shardingsphere.transaction.common.event.TransactionEvent;
+import io.shardingsphere.transaction.common.event.TransactionEventFactory;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -33,18 +35,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Adapter for {@code Connection}.
- * 
+ *
  * @author zhangliang
  */
 public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOperationConnection {
     
-    private final Collection<Connection> cachedConnections = new CopyOnWriteArrayList<>();
+    private final Map<String, Connection> cachedConnections = new HashMap<>();
     
     private boolean autoCommit = true;
     
@@ -62,18 +64,21 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
      * @throws SQLException SQL exception
      */
     public final Connection getConnection(final String dataSourceName) throws SQLException {
+        if (cachedConnections.containsKey(dataSourceName)) {
+            return cachedConnections.get(dataSourceName);
+        }
         DataSource dataSource = getDataSourceMap().get(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);
         Connection result = dataSource.getConnection();
-        cachedConnections.add(result);
+        cachedConnections.put(dataSourceName, result);
         replayMethodsInvocation(result);
         return result;
     }
     
     protected abstract Map<String, DataSource> getDataSourceMap();
     
-    protected void removeCache(final Connection connection) {
-        cachedConnections.remove(connection);
+    protected final void removeCache(final Connection connection) {
+        cachedConnections.values().remove(connection);
     }
     
     @Override
@@ -84,6 +89,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     @Override
     public final void setAutoCommit(final boolean autoCommit) {
         this.autoCommit = autoCommit;
+        TransactionTypeHolder.set(TransactionType.LOCAL);
         recordMethodInvocation(Connection.class, "setAutoCommit", new Class[] {boolean.class}, new Object[] {autoCommit});
         EventBusInstance.getInstance().post(buildTransactionEvent(TCLType.BEGIN));
     }
@@ -99,12 +105,13 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     }
     
     @Override
-    public void close() throws SQLException {
+    public final void close() throws SQLException {
         closed = true;
         HintManagerHolder.clear();
         MasterVisitedManager.clear();
+        TransactionTypeHolder.clear();
         Collection<SQLException> exceptions = new LinkedList<>();
-        for (Connection each : cachedConnections) {
+        for (Connection each : cachedConnections.values()) {
             try {
                 each.close();
             } catch (final SQLException ex) {
@@ -128,24 +135,24 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     public final void setReadOnly(final boolean readOnly) throws SQLException {
         this.readOnly = readOnly;
         recordMethodInvocation(Connection.class, "setReadOnly", new Class[] {boolean.class}, new Object[] {readOnly});
-        for (Connection each : cachedConnections) {
+        for (Connection each : cachedConnections.values()) {
             each.setReadOnly(readOnly);
         }
     }
     
     @Override
     public final int getTransactionIsolation() throws SQLException {
-        if (cachedConnections.isEmpty()) {
+        if (cachedConnections.values().isEmpty()) {
             return transactionIsolation;
         }
-        return cachedConnections.iterator().next().getTransactionIsolation();
+        return cachedConnections.values().iterator().next().getTransactionIsolation();
     }
     
     @Override
     public final void setTransactionIsolation(final int level) throws SQLException {
         transactionIsolation = level;
         recordMethodInvocation(Connection.class, "setTransactionIsolation", new Class[] {int.class}, new Object[] {level});
-        for (Connection each : cachedConnections) {
+        for (Connection each : cachedConnections.values()) {
             each.setTransactionIsolation(level);
         }
     }
@@ -153,7 +160,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     // ------- Consist with MySQL driver implementation -------
     
     @Override
-    public SQLWarning getWarnings() {
+    public final SQLWarning getWarnings() {
         return null;
     }
     
@@ -172,10 +179,10 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     private TransactionEvent buildTransactionEvent(final TCLType tclType) {
         TransactionEvent result = TransactionEventFactory.create(tclType);
-        if (result instanceof WeakXaTransactionEvent) {
-            WeakXaTransactionEvent weakXaTransactionEvent = (WeakXaTransactionEvent) result;
-            weakXaTransactionEvent.setCachedConnections(cachedConnections);
-            weakXaTransactionEvent.setAutoCommit(autoCommit);
+        if (result instanceof LocalTransactionEvent) {
+            LocalTransactionEvent localTransactionEvent = (LocalTransactionEvent) result;
+            localTransactionEvent.setCachedConnections(cachedConnections.values());
+            localTransactionEvent.setAutoCommit(autoCommit);
         }
         return result;
     }

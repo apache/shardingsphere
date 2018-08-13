@@ -9,7 +9,7 @@
         <appender-ref ref="console"/>
     </logger>
     <logger name="io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler" level="off" />
-    
+
     <root>
         <level value="info" />
         <appender-ref ref="console" />

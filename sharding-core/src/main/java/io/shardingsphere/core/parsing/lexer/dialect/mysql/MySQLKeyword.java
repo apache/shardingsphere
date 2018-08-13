@@ -99,5 +99,9 @@ public enum MySQLKeyword implements Keyword {
     REGEXP,
     INDEXES,
     KEYS,
-    STATUS
+    STATUS,
+    GENERATED,
+    ALWAYS,
+    BTREE,
+    HASH
 }

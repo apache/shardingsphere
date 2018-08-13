@@ -34,5 +34,5 @@ import org.junit.runners.Suite;
         RandomMasterSlaveLoadBalanceAlgorithmTest.class, 
         HintManagerTest.class
     })
-public class AllApiTests {
+public final class AllApiTests {
 }

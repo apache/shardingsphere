@@ -19,11 +19,11 @@ package io.shardingsphere.proxy.backend.jdbc.transaction;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.TCLType;
-import io.shardingsphere.core.transaction.TransactionContext;
-import io.shardingsphere.core.transaction.TransactionContextHolder;
-import io.shardingsphere.core.transaction.event.XaTransactionEvent;
+import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.util.EventBusInstance;
-import io.shardingsphere.proxy.config.RuleRegistry;
+import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
+import io.shardingsphere.transaction.common.TransactionTypeHolder;
+import io.shardingsphere.transaction.common.event.XaTransactionEvent;
 
 import javax.transaction.Status;
 import java.sql.SQLException;
@@ -35,8 +35,6 @@ import java.sql.SQLException;
  */
 public final class XaTransactionEngine extends TransactionEngine {
     
-    private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
-    
     public XaTransactionEngine(final String sql) {
         super(sql);
     }
@@ -45,7 +43,7 @@ public final class XaTransactionEngine extends TransactionEngine {
     public boolean execute() throws SQLException {
         Optional<TCLType> tclType = parseSQL();
         if (tclType.isPresent() && isInTransaction(tclType.get())) {
-            TransactionContextHolder.set(new TransactionContext(RULE_REGISTRY.getTransactionManager(), RULE_REGISTRY.getTransactionType(), XaTransactionEvent.class));
+            TransactionTypeHolder.set(TransactionType.XA);
             EventBusInstance.getInstance().post(new XaTransactionEvent(tclType.get(), getSql()));
             return true;
         }
@@ -53,6 +51,6 @@ public final class XaTransactionEngine extends TransactionEngine {
     }
     
     private boolean isInTransaction(final TCLType tclType) throws SQLException {
-        return TCLType.ROLLBACK != tclType || Status.STATUS_NO_TRANSACTION != RULE_REGISTRY.getTransactionManager().getStatus();
+        return TCLType.ROLLBACK != tclType || Status.STATUS_NO_TRANSACTION != ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.XA).getStatus();
     }
 }

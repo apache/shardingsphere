@@ -128,7 +128,8 @@ public final class BackendNettyClient {
             @Override
             protected SimpleChannelPool newPool(final String dataSourceName) {
                 DataSourceMetaData dataSourceMetaData = RULE_REGISTRY.getMetaData().getDataSource().getActualDataSourceMetaData(dataSourceName);
-                return new FixedChannelPool(bootstrap.remoteAddress(dataSourceMetaData.getHostName(), dataSourceMetaData.getPort()), new BackendNettyClientChannelPoolHandler(dataSourceName), MAX_CONNECTIONS);
+                return new FixedChannelPool(
+                        bootstrap.remoteAddress(dataSourceMetaData.getHostName(), dataSourceMetaData.getPort()), new BackendNettyClientChannelPoolHandler(dataSourceName), MAX_CONNECTIONS);
             }
         };
         for (String each : RULE_REGISTRY.getDataSourceConfigurationMap().keySet()) {

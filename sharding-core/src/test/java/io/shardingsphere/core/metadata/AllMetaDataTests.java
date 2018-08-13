@@ -37,5 +37,5 @@ import org.junit.runners.Suite;
         DataSourceMetaDataFactoryTest.class,
         ShardingDataSourceMetaDataTest.class
     })
-public class AllMetaDataTests {
+public final class AllMetaDataTests {
 }
