@@ -91,17 +91,29 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         this.autoCommit = autoCommit;
         TransactionTypeHolder.set(TransactionType.LOCAL);
         recordMethodInvocation(Connection.class, "setAutoCommit", new Class[] {boolean.class}, new Object[] {autoCommit});
-        EventBusInstance.getInstance().post(buildTransactionEvent(TCLType.BEGIN));
+        EventBusInstance.getInstance().post(createTransactionEvent(TCLType.BEGIN));
     }
     
     @Override
     public final void commit() {
-        EventBusInstance.getInstance().post(buildTransactionEvent(TCLType.COMMIT));
+        EventBusInstance.getInstance().post(createTransactionEvent(TCLType.COMMIT));
     }
     
     @Override
     public final void rollback() {
-        EventBusInstance.getInstance().post(buildTransactionEvent(TCLType.ROLLBACK));
+        EventBusInstance.getInstance().post(createTransactionEvent(TCLType.ROLLBACK));
+    }
+    
+    private TransactionEvent createTransactionEvent(final TCLType tclType) {
+        switch (TransactionTypeHolder.get()) {
+            case LOCAL:
+                return new LocalTransactionEvent(tclType, cachedConnections.values(), autoCommit);
+            case XA:
+                return new XATransactionEvent(tclType, "");
+            case BASE:
+            default:
+                throw new UnsupportedOperationException(TransactionTypeHolder.get().name());
+        }
     }
     
     @Override
@@ -175,17 +187,5 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     @Override
     public final void setHoldability(final int holdability) {
-    }
-    
-    private TransactionEvent buildTransactionEvent(final TCLType tclType) {
-        switch (TransactionTypeHolder.get()) {
-            case LOCAL:
-                return new LocalTransactionEvent(tclType, cachedConnections.values(), autoCommit);
-            case XA:
-                return new XATransactionEvent(tclType, "");
-            case BASE:
-            default:
-                throw new UnsupportedOperationException(TransactionTypeHolder.get().name());
-        }
     }
 }

@@ -21,8 +21,6 @@ import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.util.EventBusInstance;
-import io.shardingsphere.transaction.event.LocalTransactionEvent;
-import io.shardingsphere.transaction.event.TransactionEvent;
 import io.shardingsphere.transaction.event.XATransactionEvent;
 import io.shardingsphere.transaction.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
@@ -30,11 +28,11 @@ import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
 import java.sql.SQLException;
 
 /**
- * Transaction Listener.
+ * XA transaction listener.
  *
- * @author zhaojun
+ * @author zhangliang
  */
-public final class TransactionListener {
+public final class XATransactionListener {
     
     /**
      * Register transaction listener into event bus.
@@ -46,34 +44,24 @@ public final class TransactionListener {
     /**
      * Listen event.
      *
-     * @param transactionEvent transaction event
+     * @param xaTransactionEvent XA transaction event
      * @throws SQLException SQL exception
      */
     @Subscribe
     @AllowConcurrentEvents
-    public void listen(final TransactionEvent transactionEvent) throws SQLException {
-        ShardingTransactionManager shardingTransactionManager = ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(getTransactionType(transactionEvent));
-        switch (transactionEvent.getTclType()) {
+    public void listen(final XATransactionEvent xaTransactionEvent) throws SQLException {
+        ShardingTransactionManager shardingTransactionManager = ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.XA);
+        switch (xaTransactionEvent.getTclType()) {
             case BEGIN:
-                shardingTransactionManager.begin(transactionEvent);
+                shardingTransactionManager.begin(xaTransactionEvent);
                 break;
             case COMMIT:
-                shardingTransactionManager.commit(transactionEvent);
+                shardingTransactionManager.commit(xaTransactionEvent);
                 break;
             case ROLLBACK:
-                shardingTransactionManager.rollback(transactionEvent);
+                shardingTransactionManager.rollback(xaTransactionEvent);
                 break;
             default:
         }
-    }
-    
-    private TransactionType getTransactionType(final TransactionEvent transactionEvent) {
-        if (transactionEvent instanceof LocalTransactionEvent) {
-            return TransactionType.LOCAL;
-        }
-        if (transactionEvent instanceof XATransactionEvent) {
-            return TransactionType.XA;
-        }
-        throw new UnsupportedOperationException(transactionEvent.getClass().getName());
     }
 }
