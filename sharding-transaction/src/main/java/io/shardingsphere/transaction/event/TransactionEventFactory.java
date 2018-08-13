@@ -15,10 +15,10 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.common.event;
+package io.shardingsphere.transaction.event;
 
 import io.shardingsphere.core.constant.TCLType;
-import io.shardingsphere.transaction.common.TransactionTypeHolder;
+import io.shardingsphere.core.constant.TransactionType;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -33,11 +33,12 @@ public final class TransactionEventFactory {
     /**
      * Create transaction event.
      *
+     * @param transactionType transaction type
      * @param tclType TCL type
      * @return transaction event
      */
-    public static TransactionEvent create(final TCLType tclType) {
-        switch (TransactionTypeHolder.get()) {
+    public static TransactionEvent create(final TransactionType transactionType, final TCLType tclType) {
+        switch (transactionType) {
             case LOCAL:
                 return new LocalTransactionEvent(tclType);
             case XA:

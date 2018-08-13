@@ -18,8 +18,8 @@
 package io.shardingsphere.transaction.manager.local;
 
 import io.shardingsphere.transaction.manager.ShardingTransactionManager;
-import io.shardingsphere.transaction.common.event.TransactionEvent;
-import io.shardingsphere.transaction.common.event.LocalTransactionEvent;
+import io.shardingsphere.transaction.event.TransactionEvent;
+import io.shardingsphere.transaction.event.LocalTransactionEvent;
 
 import javax.transaction.Status;
 import java.sql.Connection;

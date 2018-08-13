@@ -24,10 +24,10 @@ import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.core.util.EventBusInstance;
-import io.shardingsphere.transaction.common.TransactionTypeHolder;
-import io.shardingsphere.transaction.common.event.LocalTransactionEvent;
-import io.shardingsphere.transaction.common.event.TransactionEvent;
-import io.shardingsphere.transaction.common.event.TransactionEventFactory;
+import io.shardingsphere.transaction.TransactionTypeHolder;
+import io.shardingsphere.transaction.event.LocalTransactionEvent;
+import io.shardingsphere.transaction.event.TransactionEvent;
+import io.shardingsphere.transaction.event.TransactionEventFactory;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -178,7 +178,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     }
     
     private TransactionEvent buildTransactionEvent(final TCLType tclType) {
-        TransactionEvent result = TransactionEventFactory.create(tclType);
+        TransactionEvent result = TransactionEventFactory.create(TransactionTypeHolder.get(), tclType);
         if (result instanceof LocalTransactionEvent) {
             LocalTransactionEvent localTransactionEvent = (LocalTransactionEvent) result;
             localTransactionEvent.setCachedConnections(cachedConnections.values());

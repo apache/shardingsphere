@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.listener;
 
-import io.shardingsphere.transaction.common.listener.TransactionListener;
+import io.shardingsphere.transaction.listener.TransactionListener;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

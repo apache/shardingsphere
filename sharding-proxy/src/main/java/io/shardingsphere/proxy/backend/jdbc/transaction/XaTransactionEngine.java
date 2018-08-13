@@ -22,8 +22,8 @@ import io.shardingsphere.core.constant.TCLType;
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
-import io.shardingsphere.transaction.common.TransactionTypeHolder;
-import io.shardingsphere.transaction.common.event.XaTransactionEvent;
+import io.shardingsphere.transaction.TransactionTypeHolder;
+import io.shardingsphere.transaction.event.XaTransactionEvent;
 
 import javax.transaction.Status;
 import java.sql.SQLException;
