@@ -27,7 +27,7 @@ import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.transaction.TransactionTypeHolder;
 import io.shardingsphere.transaction.event.LocalTransactionEvent;
 import io.shardingsphere.transaction.event.TransactionEvent;
-import io.shardingsphere.transaction.event.XaTransactionEvent;
+import io.shardingsphere.transaction.event.XATransactionEvent;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -182,7 +182,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
             case LOCAL:
                 return new LocalTransactionEvent(tclType, cachedConnections.values(), autoCommit);
             case XA:
-                return new XaTransactionEvent(tclType, "");
+                return new XATransactionEvent(tclType, "");
             case BASE:
             default:
                 throw new UnsupportedOperationException(TransactionTypeHolder.get().name());

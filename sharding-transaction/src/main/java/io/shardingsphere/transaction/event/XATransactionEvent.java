@@ -28,11 +28,11 @@ import lombok.Getter;
  * @author zhaojun
  */
 @Getter
-public final class XaTransactionEvent extends TransactionEvent {
+public final class XATransactionEvent extends TransactionEvent {
     
     private final String sql;
     
-    public XaTransactionEvent(final TCLType tclType, final String sql) {
+    public XATransactionEvent(final TCLType tclType, final String sql) {
         super(tclType);
         this.sql = sql;
     }

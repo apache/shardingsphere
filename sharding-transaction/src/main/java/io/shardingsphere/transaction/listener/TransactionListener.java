@@ -23,7 +23,7 @@ import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.transaction.event.LocalTransactionEvent;
 import io.shardingsphere.transaction.event.TransactionEvent;
-import io.shardingsphere.transaction.event.XaTransactionEvent;
+import io.shardingsphere.transaction.event.XATransactionEvent;
 import io.shardingsphere.transaction.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
 
@@ -71,7 +71,7 @@ public final class TransactionListener {
         if (transactionEvent instanceof LocalTransactionEvent) {
             return TransactionType.LOCAL;
         }
-        if (transactionEvent instanceof XaTransactionEvent) {
+        if (transactionEvent instanceof XATransactionEvent) {
             return TransactionType.XA;
         }
         throw new UnsupportedOperationException(transactionEvent.getClass().getName());
