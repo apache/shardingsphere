@@ -25,9 +25,9 @@ import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConne
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.transaction.TransactionTypeHolder;
-import io.shardingsphere.transaction.event.LocalTransactionEvent;
-import io.shardingsphere.transaction.event.TransactionEvent;
-import io.shardingsphere.transaction.event.XATransactionEvent;
+import io.shardingsphere.transaction.event.local.LocalTransactionEvent;
+import io.shardingsphere.transaction.event.ShardingTransactionEvent;
+import io.shardingsphere.transaction.event.xa.XATransactionEvent;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -104,7 +104,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         EventBusInstance.getInstance().post(createTransactionEvent(TCLType.ROLLBACK));
     }
     
-    private TransactionEvent createTransactionEvent(final TCLType tclType) {
+    private ShardingTransactionEvent createTransactionEvent(final TCLType tclType) {
         switch (TransactionTypeHolder.get()) {
             case LOCAL:
                 return new LocalTransactionEvent(tclType, cachedConnections.values(), autoCommit);

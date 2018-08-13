@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.manager;
 
-import io.shardingsphere.transaction.event.TransactionEvent;
+import io.shardingsphere.transaction.event.ShardingTransactionEvent;
 import java.sql.SQLException;
 
 /**
@@ -28,7 +28,7 @@ import java.sql.SQLException;
  * 
  * @param <T> transaction event type
  */
-public interface ShardingTransactionManager<T extends TransactionEvent> {
+public interface ShardingTransactionManager<T extends ShardingTransactionEvent> {
     
     /**
      * Begin transaction.

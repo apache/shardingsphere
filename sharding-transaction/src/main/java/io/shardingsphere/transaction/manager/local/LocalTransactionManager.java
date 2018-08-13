@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.manager.local;
 
-import io.shardingsphere.transaction.event.LocalTransactionEvent;
+import io.shardingsphere.transaction.event.local.LocalTransactionEvent;
 import io.shardingsphere.transaction.manager.ShardingTransactionManager;
 
 import javax.transaction.Status;

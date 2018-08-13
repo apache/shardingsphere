@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.listener;
 
-import io.shardingsphere.transaction.event.TransactionEvent;
+import io.shardingsphere.transaction.event.ShardingTransactionEvent;
 
 import java.sql.SQLException;
 
@@ -28,7 +28,7 @@ import java.sql.SQLException;
  * 
  * @param <T> transaction event type
  */
-public interface ShardingTransactionListener<T extends TransactionEvent> {
+public interface ShardingTransactionListener<T extends ShardingTransactionEvent> {
     
     /**
      * Register sharding transaction listener into event bus.

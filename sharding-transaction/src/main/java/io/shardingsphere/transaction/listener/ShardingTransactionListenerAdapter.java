@@ -18,7 +18,7 @@
 package io.shardingsphere.transaction.listener;
 
 import io.shardingsphere.core.util.EventBusInstance;
-import io.shardingsphere.transaction.event.TransactionEvent;
+import io.shardingsphere.transaction.event.ShardingTransactionEvent;
 import io.shardingsphere.transaction.manager.ShardingTransactionManager;
 
 import java.sql.SQLException;
@@ -30,7 +30,7 @@ import java.sql.SQLException;
  * 
  * @param <T> transaction event type
  */
-public abstract class ShardingTransactionListenerAdapter<T extends TransactionEvent> implements ShardingTransactionListener<T> {
+public abstract class ShardingTransactionListenerAdapter<T extends ShardingTransactionEvent> implements ShardingTransactionListener<T> {
     
     @Override
     public final void register() {
@@ -39,7 +39,7 @@ public abstract class ShardingTransactionListenerAdapter<T extends TransactionEv
     
     @SuppressWarnings("unchecked")
     protected final void doTransaction(final ShardingTransactionManager shardingTransactionManager, final T transactionEvent) throws SQLException {
-        switch (transactionEvent.getTclType()) {
+        switch (transactionEvent.getOperationType()) {
             case BEGIN:
                 shardingTransactionManager.begin(transactionEvent);
                 break;
