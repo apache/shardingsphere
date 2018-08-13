@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.TCLType;
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.util.EventBusInstance;
-import io.shardingsphere.proxy.config.RuleRegistry;
+import io.shardingsphere.transaction.api.ShardingTransactionManagerRegistry;
 import io.shardingsphere.transaction.common.TransactionTypeHolder;
 import io.shardingsphere.transaction.common.event.XaTransactionEvent;
 
@@ -34,8 +34,6 @@ import java.sql.SQLException;
  * @author zhaojun
  */
 public final class XaTransactionEngine extends TransactionEngine {
-    
-    private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
     
     public XaTransactionEngine(final String sql) {
         super(sql);
@@ -53,6 +51,6 @@ public final class XaTransactionEngine extends TransactionEngine {
     }
     
     private boolean isInTransaction(final TCLType tclType) throws SQLException {
-        return TCLType.ROLLBACK != tclType || Status.STATUS_NO_TRANSACTION != RULE_REGISTRY.getTransactionManager().getStatus();
+        return TCLType.ROLLBACK != tclType || Status.STATUS_NO_TRANSACTION != ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.XA).getStatus();
     }
 }

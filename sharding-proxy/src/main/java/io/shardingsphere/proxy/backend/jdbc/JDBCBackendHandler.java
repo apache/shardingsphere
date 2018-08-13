@@ -44,6 +44,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryRespons
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
+import io.shardingsphere.transaction.api.ShardingTransactionManagerRegistry;
 import lombok.RequiredArgsConstructor;
 
 import javax.transaction.Status;
@@ -100,7 +101,8 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
     }
     
     private boolean isUnsupportedXA(final SQLType sqlType) throws SQLException {
-        return TransactionType.XA == RULE_REGISTRY.getTransactionType() && SQLType.DDL == sqlType && Status.STATUS_NO_TRANSACTION != RULE_REGISTRY.getTransactionManager().getStatus();
+        return TransactionType.XA == RULE_REGISTRY.getTransactionType() && SQLType.DDL == sqlType
+                && Status.STATUS_NO_TRANSACTION != ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.XA).getStatus();
     }
     
     private CommandResponsePackets merge(final SQLStatement sqlStatement) throws SQLException {

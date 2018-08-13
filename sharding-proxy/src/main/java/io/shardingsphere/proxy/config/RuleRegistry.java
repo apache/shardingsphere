@@ -33,8 +33,6 @@ import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusEvent;
 import io.shardingsphere.proxy.backend.jdbc.datasource.JDBCBackendDataSource;
-import io.shardingsphere.transaction.api.ShardingTransactionManager;
-import io.shardingsphere.transaction.api.ShardingTransactionManagerRegistry;
 import io.shardingsphere.transaction.common.TransactionTypeHolder;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -81,8 +79,6 @@ public final class RuleRegistry {
     
     private TransactionType transactionType;
     
-    private ShardingTransactionManager transactionManager;
-    
     private ProxyAuthority proxyAuthority;
     
     private ShardingMetaData metaData;
@@ -107,7 +103,6 @@ public final class RuleRegistry {
         showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         connectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
         transactionType = TransactionType.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_MODE));
-        transactionManager = ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(transactionType);
         TransactionTypeHolder.set(transactionType);
         acceptorSize = shardingProperties.getValue(ShardingPropertiesConstant.ACCEPTOR_SIZE);
         executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
