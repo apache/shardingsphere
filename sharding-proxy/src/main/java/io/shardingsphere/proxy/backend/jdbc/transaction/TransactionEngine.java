@@ -19,9 +19,7 @@ package io.shardingsphere.proxy.backend.jdbc.transaction;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 import java.sql.SQLException;
 
@@ -31,8 +29,6 @@ import java.sql.SQLException;
  * @author zhaojun
  */
 @RequiredArgsConstructor
-@Getter
-@Setter
 public abstract class TransactionEngine {
     
     private final String sql;

@@ -44,7 +44,7 @@ public final class XATransactionEngine extends TransactionEngine {
         Optional<TransactionOperationType> operationType = parseSQL();
         if (operationType.isPresent() && isInTransaction(operationType.get())) {
             TransactionTypeHolder.set(TransactionType.XA);
-            EventBusInstance.getInstance().post(new XATransactionEvent(operationType.get(), getSql()));
+            EventBusInstance.getInstance().post(new XATransactionEvent(operationType.get()));
             return true;
         }
         return false;

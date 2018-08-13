@@ -109,7 +109,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
             case LOCAL:
                 return new LocalTransactionEvent(operationType, cachedConnections.values(), autoCommit);
             case XA:
-                return new XATransactionEvent(operationType, "");
+                return new XATransactionEvent(operationType);
             case BASE:
             default:
                 throw new UnsupportedOperationException(TransactionTypeHolder.get().name());

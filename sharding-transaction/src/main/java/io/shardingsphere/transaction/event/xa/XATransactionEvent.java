@@ -32,6 +32,4 @@ import lombok.RequiredArgsConstructor;
 public final class XATransactionEvent implements ShardingTransactionEvent {
     
     private final TransactionOperationType operationType;
-    
-    private final String sql;
 }
