@@ -20,11 +20,20 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseClientTest;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.TestSupport;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.AsyncRetryStrategy;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.ContentionStrategy;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.SyncRetryStrategy;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.TransactionContendStrategy;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.UsualStrategy;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
 import org.junit.Test;
 
 import java.io.IOException;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class UsualClientTest extends BaseClientTest {
     
@@ -32,6 +41,21 @@ public class UsualClientTest extends BaseClientTest {
     protected IClient createClient(final ClientFactory creator) throws IOException, InterruptedException {
         return creator.setClientNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes(), ZooDefs.Ids.CREATOR_ALL_ACL)
                 .newClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).start();
+    }
+    
+    @Test
+    public void assertUseExecStrategy() {
+        assertThat(getTestClient().getExecStrategy().getClass().getName(), is(UsualStrategy.class.getName()));
+        getTestClient().useExecStrategy(StrategyType.CONTEND);
+        assertThat(getTestClient().getExecStrategy().getClass().getName(), is(ContentionStrategy.class.getName()));
+        getTestClient().useExecStrategy(StrategyType.TRANSACTION_CONTEND);
+        assertThat(getTestClient().getExecStrategy().getClass().getName(), is(TransactionContendStrategy.class.getName()));
+        getTestClient().useExecStrategy(StrategyType.SYNC_RETRY);
+        assertThat(getTestClient().getExecStrategy().getClass().getName(), is(SyncRetryStrategy.class.getName()));
+        getTestClient().useExecStrategy(StrategyType.ASYNC_RETRY);
+        assertThat(getTestClient().getExecStrategy().getClass().getName(), is(AsyncRetryStrategy.class.getName()));
+        getTestClient().useExecStrategy(StrategyType.USUAL);
+        assertThat(getTestClient().getExecStrategy().getClass().getName(), is(UsualStrategy.class.getName()));
     }
     
     @Test
