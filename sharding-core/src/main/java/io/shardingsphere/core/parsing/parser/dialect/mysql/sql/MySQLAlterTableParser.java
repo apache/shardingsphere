@@ -18,6 +18,7 @@
 package io.shardingsphere.core.parsing.parser.dialect.mysql.sql;
 
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
+import io.shardingsphere.core.parsing.lexer.token.Keyword;
 import io.shardingsphere.core.parsing.parser.sql.ddl.alter.table.AbstractAlterTableParser;
 import io.shardingsphere.core.rule.ShardingRule;
 
@@ -31,5 +32,10 @@ public final class MySQLAlterTableParser extends AbstractAlterTableParser {
     
     public MySQLAlterTableParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine);
+    }
+    
+    @Override
+    protected Keyword[] getSkippedKeywordsBetweenAlterTableAndTableName() {
+        return new Keyword[0];
     }
 }

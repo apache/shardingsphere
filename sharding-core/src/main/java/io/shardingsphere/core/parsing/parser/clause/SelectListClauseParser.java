@@ -43,7 +43,7 @@ import java.util.List;
  * @author zhangliang
  */
 @Getter
-public class SelectListClauseParser implements SQLClauseParser {
+public abstract class SelectListClauseParser implements SQLClauseParser {
     
     private final ShardingRule shardingRule;
     
@@ -88,17 +88,11 @@ public class SelectListClauseParser implements SQLClauseParser {
         return result;
     }
     
-    protected Keyword[] getSkippedKeywordsBeforeSelectItem() {
-        return new Keyword[0];
-    }
+    protected abstract Keyword[] getSkippedKeywordsBeforeSelectItem();
     
-    protected boolean isRowNumberSelectItem() {
-        return false;
-    }
+    protected abstract boolean isRowNumberSelectItem();
     
-    protected SelectItem parseRowNumberSelectItem(final SelectStatement selectStatement) {
-        throw new UnsupportedOperationException("Cannot support special select item.");
-    }
+    protected abstract SelectItem parseRowNumberSelectItem(SelectStatement selectStatement);
     
     private boolean isStarSelectItem() {
         return Symbol.STAR.getLiterals().equals(SQLUtil.getExactlyValue(lexerEngine.getCurrentToken().getLiterals()));

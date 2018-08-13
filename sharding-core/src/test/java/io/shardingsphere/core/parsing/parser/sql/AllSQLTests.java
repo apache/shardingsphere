@@ -35,5 +35,5 @@ import org.junit.runners.Suite;
         TCLStatementTest.class, 
         DALStatementTest.class
     })
-public class AllSQLTests {
+public final class AllSQLTests {
 }

@@ -45,7 +45,7 @@ import java.util.Properties;
  * 
  * @author caohao
  */
-public class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDefinitionParser {
+public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {

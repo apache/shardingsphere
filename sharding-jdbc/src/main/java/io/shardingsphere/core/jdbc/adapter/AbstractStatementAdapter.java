@@ -123,12 +123,12 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     }
     
     @Override
-    public SQLWarning getWarnings() {
+    public final SQLWarning getWarnings() {
         return null;
     }
     
     @Override
-    public void clearWarnings() {
+    public final void clearWarnings() {
     }
     
     @Override

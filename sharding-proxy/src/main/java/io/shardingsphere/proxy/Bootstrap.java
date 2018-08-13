@@ -25,6 +25,9 @@ import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusInstance;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.frontend.ShardingProxy;
+import io.shardingsphere.proxy.listener.ProxyListenerRegister;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
@@ -32,7 +35,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 
 /**
  * Sharding-Proxy Bootstrap.
@@ -41,6 +43,7 @@ import java.net.MalformedURLException;
  * @author wangkai
  * @author panjuan
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Bootstrap {
     
     private static final int DEFAULT_PORT = 3307;
@@ -59,6 +62,7 @@ public final class Bootstrap {
      * @throws IOException IO exception
      */
     public static void main(final String[] args) throws InterruptedException, IOException {
+        ProxyListenerRegister.register();
         OrchestrationProxyConfiguration localConfig = loadLocalConfiguration(new File(Bootstrap.class.getResource(getConfig(args)).getFile()));
         int port = getPort(args);
         if (null == localConfig.getOrchestration()) {
@@ -101,12 +105,12 @@ public final class Bootstrap {
         return DEFAULT_CONFIG_PATH + args[1];
     }
     
-    private static void startWithoutRegistryCenter(final OrchestrationProxyConfiguration config, final int port) throws InterruptedException, MalformedURLException {
+    private static void startWithoutRegistryCenter(final OrchestrationProxyConfiguration config, final int port) throws InterruptedException {
         RULE_REGISTRY.init(config);
         new ShardingProxy().start(port);
     }
     
-    private static void startWithRegistryCenter(final OrchestrationProxyConfiguration localConfig, final int port) throws InterruptedException, MalformedURLException {
+    private static void startWithRegistryCenter(final OrchestrationProxyConfiguration localConfig, final int port) throws InterruptedException {
         try (OrchestrationFacade orchestrationFacade = new OrchestrationFacade(localConfig.getOrchestration().getOrchestrationConfiguration())) {
             if (null != localConfig.getShardingRule() || null != localConfig.getMasterSlaveRule()) {
                 orchestrationFacade.init(localConfig);

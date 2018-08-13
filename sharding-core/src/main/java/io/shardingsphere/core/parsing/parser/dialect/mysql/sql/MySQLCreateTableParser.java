@@ -50,4 +50,9 @@ public final class MySQLCreateTableParser extends AbstractCreateTableParser {
     protected Keyword[] getSkippedKeywordsBetweenCreateIndexAndKeyword() {
         return new Keyword[] {DefaultKeyword.UNIQUE, DefaultKeyword.FULLTEXT, MySQLKeyword.SPATIAL};
     }
+    
+    @Override
+    protected Keyword[] getSkippedKeywordsBeforeTableConstraint() {
+        return new Keyword[] {DefaultKeyword.USING, MySQLKeyword.BTREE, MySQLKeyword.HASH};
+    }
 }

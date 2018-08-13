@@ -27,5 +27,5 @@ import org.junit.runners.Suite.SuiteClasses;
         OrchestrationShardingNamespaceTest.class,
         OrchestrationShardingMasterSlaveNamespaceTest.class
     })
-public class AllTests {
+public final class AllTests {
 }

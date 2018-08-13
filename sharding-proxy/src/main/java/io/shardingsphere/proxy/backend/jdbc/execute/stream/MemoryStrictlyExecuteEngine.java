@@ -65,16 +65,16 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
         SQLExecutionUnit firstSQLExecutionUnit = executionUnits.next();
         List<Future<ExecuteResponseUnit>> futureList;
         if (TransactionType.XA == RuleRegistry.getInstance().getTransactionType()) {
-            futureList = asyncExecuteWithAtomikosCP(isReturnGeneratedKeys, Lists.newArrayList(executionUnits));
+            futureList = asyncExecuteWithXA(isReturnGeneratedKeys, Lists.newArrayList(executionUnits));
         } else {
-            futureList = asyncExecuteWithHikariCP(isReturnGeneratedKeys, Lists.newArrayList(executionUnits));
+            futureList = asyncExecuteWithoutXA(isReturnGeneratedKeys, Lists.newArrayList(executionUnits));
         }
         ExecuteResponseUnit firstResponseUnit = syncExecute(isReturnGeneratedKeys, firstSQLExecutionUnit);
         return firstResponseUnit instanceof ExecuteQueryResponseUnit
                 ? getExecuteQueryResponse((ExecuteQueryResponseUnit) firstResponseUnit, futureList) : getExecuteUpdateResponse((ExecuteUpdateResponseUnit) firstResponseUnit, futureList);
     }
     
-    private List<Future<ExecuteResponseUnit>> asyncExecuteWithAtomikosCP(final boolean isReturnGeneratedKeys, final Collection<SQLExecutionUnit> sqlExecutionUnits) throws SQLException {
+    private List<Future<ExecuteResponseUnit>> asyncExecuteWithXA(final boolean isReturnGeneratedKeys, final Collection<SQLExecutionUnit> sqlExecutionUnits) throws SQLException {
         List<Future<ExecuteResponseUnit>> result = new LinkedList<>();
         for (SQLExecutionUnit each : sqlExecutionUnits) {
             final String actualSQL = each.getSqlUnit().getSql();
@@ -90,7 +90,7 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
         return result;
     }
     
-    private List<Future<ExecuteResponseUnit>> asyncExecuteWithHikariCP(final boolean isReturnGeneratedKeys, final Collection<SQLExecutionUnit> sqlExecutionUnits) {
+    private List<Future<ExecuteResponseUnit>> asyncExecuteWithoutXA(final boolean isReturnGeneratedKeys, final Collection<SQLExecutionUnit> sqlExecutionUnits) {
         List<Future<ExecuteResponseUnit>> result = new LinkedList<>();
         for (SQLExecutionUnit each : sqlExecutionUnits) {
             final SQLExecutionUnit sqlExecutionUnit = each;
@@ -98,8 +98,8 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
                 
                 @Override
                 public ExecuteResponseUnit call() throws SQLException {
-                    final String actualSQL = sqlExecutionUnit.getSqlUnit().getSql();
-                    final Statement statement = getJdbcExecutorWrapper().createStatement(getBackendConnection().getConnection(sqlExecutionUnit.getDataSource()), actualSQL, isReturnGeneratedKeys);
+                    String actualSQL = sqlExecutionUnit.getSqlUnit().getSql();
+                    Statement statement = getJdbcExecutorWrapper().createStatement(getBackendConnection().getConnection(sqlExecutionUnit.getDataSource()), actualSQL, isReturnGeneratedKeys);
                     return executeWithoutMetadata(statement, actualSQL, isReturnGeneratedKeys);
                 }
             }));

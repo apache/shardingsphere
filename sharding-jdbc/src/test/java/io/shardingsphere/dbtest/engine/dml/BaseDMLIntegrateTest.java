@@ -67,7 +67,7 @@ public abstract class BaseDMLIntegrateTest extends SingleIntegrateTest {
     }
 
     @AfterClass
-    public static void destroyDatabasesAndTables(){
+    public static void destroyDatabasesAndTables() {
         dropDatabases();
     }
 
@@ -85,7 +85,7 @@ public abstract class BaseDMLIntegrateTest extends SingleIntegrateTest {
         }
     }
     
-    protected void assertDataSet(final int actualUpdateCount) throws SQLException, IOException, JAXBException {
+    protected final void assertDataSet(final int actualUpdateCount) throws SQLException, IOException, JAXBException {
         DataSet expected;
         try (FileReader reader = new FileReader(getExpectedDataFile())) {
             expected = (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);

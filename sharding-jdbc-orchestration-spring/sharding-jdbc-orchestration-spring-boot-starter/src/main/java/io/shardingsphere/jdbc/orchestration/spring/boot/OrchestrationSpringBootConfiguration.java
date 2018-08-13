@@ -78,7 +78,7 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     }
     
     @Override
-    public void setEnvironment(final Environment environment) {
+    public final void setEnvironment(final Environment environment) {
         setDataSourceMap(environment);
     }
     

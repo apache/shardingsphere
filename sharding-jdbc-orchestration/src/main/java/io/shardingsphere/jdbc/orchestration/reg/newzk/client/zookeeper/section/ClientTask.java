@@ -43,7 +43,7 @@ public abstract class ClientTask implements Runnable {
     public abstract void run(IProvider provider) throws KeeperException, InterruptedException;
     
     @Override
-    public void run() {
+    public final void run() {
         try {
             run(provider);
         } catch (final KeeperException | InterruptedException ex) {

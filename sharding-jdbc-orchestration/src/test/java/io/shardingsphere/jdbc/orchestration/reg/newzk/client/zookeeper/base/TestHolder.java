@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-public class TestHolder extends Holder {
+public final class TestHolder extends Holder {
     
     private final CountDownLatch connecting = new CountDownLatch(1);
     

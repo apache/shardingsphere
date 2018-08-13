@@ -22,5 +22,5 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses(HintManagerHolderTest.class)
-public class AllHintTests {
+public final class AllHintTests {
 }

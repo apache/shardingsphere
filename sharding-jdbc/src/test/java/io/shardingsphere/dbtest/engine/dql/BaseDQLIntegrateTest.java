@@ -105,7 +105,7 @@ public abstract class BaseDQLIntegrateTest extends SingleIntegrateTest {
         return result;
     }
     
-    protected void assertResultSet(final ResultSet resultSet) throws SQLException, JAXBException, IOException {
+    protected final void assertResultSet(final ResultSet resultSet) throws SQLException, JAXBException, IOException {
         DataSet expected;
         try (FileReader reader = new FileReader(getExpectedDataFile())) {
             expected = (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);

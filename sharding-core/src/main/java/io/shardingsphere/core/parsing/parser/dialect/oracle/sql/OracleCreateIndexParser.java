@@ -44,4 +44,9 @@ public final class OracleCreateIndexParser extends AbstractCreateIndexParser {
     protected Keyword[] getSkippedKeywordsBetweenCreateIndexAndKeyword() {
         return new Keyword[] {DefaultKeyword.UNIQUE, DefaultKeyword.BITMAP};
     }
+    
+    @Override
+    protected Keyword[] getSkippedKeywordsBetweenCreateIndexAndIndexName() {
+        return new Keyword[0];
+    }
 }

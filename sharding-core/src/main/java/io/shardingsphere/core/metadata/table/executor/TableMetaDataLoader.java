@@ -21,6 +21,8 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
+import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.rule.ShardingDataSourceNames;
@@ -48,6 +50,8 @@ import java.util.concurrent.ExecutionException;
 @RequiredArgsConstructor
 public final class TableMetaDataLoader {
     
+    private final ShardingDataSourceMetaData shardingDataSourceMetaData;
+    
     private final ListeningExecutorService executorService;
     
     private final TableMetaDataConnectionManager connectionManager;
@@ -67,12 +71,16 @@ public final class TableMetaDataLoader {
     
     private List<TableMetaData> load(final Map<String, Collection<String>> dataNodeGroups, final ShardingDataSourceNames shardingDataSourceNames) {
         List<ListenableFuture<Collection<TableMetaData>>> futures = new LinkedList<>();
-        for (final Entry<String, Collection<String>> entry : dataNodeGroups.entrySet()) {
+        for (Entry<String, Collection<String>> entry : dataNodeGroups.entrySet()) {
+            final String dataSourceName = shardingDataSourceNames.getRawMasterDataSourceName(entry.getKey());
+            DataSourceMetaData dataSourceMetaData = shardingDataSourceMetaData.getActualDataSourceMetaData(entry.getKey());
+            final String catalog = null == dataSourceMetaData ? null : dataSourceMetaData.getSchemeName();
+            final Collection<String> actualTableNames = entry.getValue();
             futures.add(executorService.submit(new Callable<Collection<TableMetaData>>() {
                 
                 @Override
                 public Collection<TableMetaData> call() throws SQLException {
-                    return load(shardingDataSourceNames.getRawMasterDataSourceName(entry.getKey()), entry.getValue());
+                    return load(dataSourceName, catalog, actualTableNames);
                 }
             }));
         }
@@ -87,26 +95,26 @@ public final class TableMetaDataLoader {
         }
     }
     
-    private Collection<TableMetaData> load(final String dataSourceName, final Collection<String> actualTableNames) throws SQLException {
+    private Collection<TableMetaData> load(final String dataSourceName, final String catalog, final Collection<String> actualTableNames) throws SQLException {
         Collection<TableMetaData> result = new LinkedList<>();
         try (Connection connection = connectionManager.getConnection(dataSourceName)) {
             for (String each : actualTableNames) {
-                result.add(new TableMetaData(isTableExist(connection, each) ? getColumnMetaDataList(connection, each) : Collections.<ColumnMetaData>emptyList()));
+                result.add(new TableMetaData(isTableExist(connection, catalog, each) ? getColumnMetaDataList(connection, catalog, each) : Collections.<ColumnMetaData>emptyList()));
             }
         }
         return result;
     }
     
-    private boolean isTableExist(final Connection connection, final String actualTableName) throws SQLException {
-        try (ResultSet resultSet = connection.getMetaData().getTables(null, null, actualTableName, null)) {
+    private boolean isTableExist(final Connection connection, final String catalog, final String actualTableName) throws SQLException {
+        try (ResultSet resultSet = connection.getMetaData().getTables(catalog, null, actualTableName, null)) {
             return resultSet.next();
         }
     }
     
-    private List<ColumnMetaData> getColumnMetaDataList(final Connection connection, final String actualTableName) throws SQLException {
+    private List<ColumnMetaData> getColumnMetaDataList(final Connection connection, final String catalog, final String actualTableName) throws SQLException {
         List<ColumnMetaData> result = new LinkedList<>();
-        Collection<String> primaryKeys = getPrimaryKeys(connection, actualTableName);
-        try (ResultSet resultSet = connection.getMetaData().getColumns(null, null, actualTableName, null)) {
+        Collection<String> primaryKeys = getPrimaryKeys(connection, catalog, actualTableName);
+        try (ResultSet resultSet = connection.getMetaData().getColumns(catalog, null, actualTableName, null)) {
             while (resultSet.next()) {
                 String columnName = resultSet.getString("COLUMN_NAME");
                 String columnType = resultSet.getString("TYPE_NAME");
@@ -116,9 +124,9 @@ public final class TableMetaDataLoader {
         return result;
     }
     
-    private Collection<String> getPrimaryKeys(final Connection connection, final String actualTableName) throws SQLException {
+    private Collection<String> getPrimaryKeys(final Connection connection, final String catalog, final String actualTableName) throws SQLException {
         Collection<String> result = new HashSet<>();
-        try (ResultSet resultSet = connection.getMetaData().getPrimaryKeys(null, null, actualTableName)) {
+        try (ResultSet resultSet = connection.getMetaData().getPrimaryKeys(catalog, null, actualTableName)) {
             while (resultSet.next()) {
                 result.add(resultSet.getString("COLUMN_NAME"));
             }

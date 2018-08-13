@@ -35,6 +35,11 @@ public final class OracleDropTableParser extends AbstractDropTableParser {
     }
     
     @Override
+    protected Keyword[] getSkippedKeywordsBetweenDropAndTable() {
+        return new Keyword[0];
+    }
+    
+    @Override
     protected Keyword[] getSkippedKeywordsBetweenDropTableAndTableName() {
         return new Keyword[] {};
     }

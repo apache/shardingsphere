@@ -28,5 +28,5 @@ import org.junit.runners.Suite.SuiteClasses;
         AllStorageTest.class,
         AllIntegrateTests.class
     })
-public class AllTests {
+public final class AllTests {
 }

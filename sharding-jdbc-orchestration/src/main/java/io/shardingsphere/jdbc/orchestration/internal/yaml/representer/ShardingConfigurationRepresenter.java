@@ -35,7 +35,7 @@ import java.util.Set;
  *
  * @author panjuan
  */
-public class ShardingConfigurationRepresenter extends Representer {
+public final class ShardingConfigurationRepresenter extends Representer {
     
     private static Collection<String> eliminatedPropertyNames = new HashSet<>();
     

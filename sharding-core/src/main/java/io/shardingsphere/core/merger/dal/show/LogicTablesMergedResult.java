@@ -84,7 +84,7 @@ public abstract class LogicTablesMergedResult extends MemoryMergedResult {
     }
     
     @Override
-    public boolean next() {
+    public final boolean next() {
         if (memoryResultSetRows.hasNext()) {
             setCurrentResultSetRow(memoryResultSetRows.next());
             return true;

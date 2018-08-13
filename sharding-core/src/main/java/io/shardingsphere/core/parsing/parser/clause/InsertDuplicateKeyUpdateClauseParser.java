@@ -34,7 +34,7 @@ import io.shardingsphere.core.util.SQLUtil;
  *
  * @author maxiaoguang
  */
-public class InsertDuplicateKeyUpdateClauseParser implements SQLClauseParser {
+public abstract class InsertDuplicateKeyUpdateClauseParser implements SQLClauseParser {
     
     private final ShardingRule shardingRule;
     
@@ -78,7 +78,5 @@ public class InsertDuplicateKeyUpdateClauseParser implements SQLClauseParser {
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));
     }
     
-    protected Keyword[] getCustomizedInsertKeywords() {
-        return new Keyword[0];
-    }
+    protected abstract Keyword[] getCustomizedInsertKeywords();
 }

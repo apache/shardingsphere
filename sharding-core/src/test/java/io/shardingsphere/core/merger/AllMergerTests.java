@@ -68,5 +68,5 @@ import org.junit.runners.Suite;
         ShowTablesMergedResultTest.class,
         MergeEngineFactoryTest.class
     })
-public class AllMergerTests {
+public final class AllMergerTests {
 }

@@ -29,5 +29,5 @@ import org.junit.runners.Suite;
         BEDSoftTransactionTest.class,
         SoftTransactionTest.class
     })
-public class AllTests {
+public final class AllTests {
 }

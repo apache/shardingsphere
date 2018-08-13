@@ -124,7 +124,7 @@ public abstract class BaseClient implements IClient {
     }
     
     @Override
-    public void registerWatch(final String key, final ZookeeperEventListener zookeeperEventListener) {
+    public final void registerWatch(final String key, final ZookeeperEventListener zookeeperEventListener) {
         final String path = PathUtil.getRealPath(rootNode, key);
         zookeeperEventListener.setPath(path);
         context.getWatchers().put(zookeeperEventListener.getKey(), zookeeperEventListener);
@@ -132,7 +132,7 @@ public abstract class BaseClient implements IClient {
     }
     
     @Override
-    public void unregisterWatch(final String key) {
+    public final void unregisterWatch(final String key) {
         if (Strings.isNullOrEmpty(key)) {
             throw new IllegalArgumentException("key should not be blank");
         }
@@ -172,7 +172,7 @@ public abstract class BaseClient implements IClient {
         log.debug("created root:{}", rootNode);
     }
     
-    protected void deleteNamespace() throws KeeperException, InterruptedException {
+    protected final void deleteNamespace() throws KeeperException, InterruptedException {
         try {
             holder.getZooKeeper().delete(rootNode, ZookeeperConstants.VERSION);
         } catch (final KeeperException.NodeExistsException | KeeperException.NotEmptyException ex) {
@@ -182,7 +182,7 @@ public abstract class BaseClient implements IClient {
         log.debug("delete root:{}", rootNode);
     }
     
-    void setAuthorities(final String scheme, final byte[] auth, final List<ACL> authorities) {
+    final void setAuthorities(final String scheme, final byte[] auth, final List<ACL> authorities) {
         context.setScheme(scheme);
         context.setAuth(auth);
         this.authorities = authorities;

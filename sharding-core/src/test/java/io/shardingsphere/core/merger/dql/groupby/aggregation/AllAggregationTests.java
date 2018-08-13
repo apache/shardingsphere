@@ -27,5 +27,5 @@ import org.junit.runners.Suite;
         AccumulationAggregationUnitTest.class, 
         AverageAggregationUnitTest.class
     })
-public class AllAggregationTests {
+public final class AllAggregationTests {
 }

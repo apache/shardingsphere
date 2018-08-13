@@ -27,5 +27,5 @@ import org.junit.runners.Suite.SuiteClasses;
         AllUnitTests.class,
         AllIntegrateTests.class
     })
-public class AllTests {
+public final class AllTests {
 }

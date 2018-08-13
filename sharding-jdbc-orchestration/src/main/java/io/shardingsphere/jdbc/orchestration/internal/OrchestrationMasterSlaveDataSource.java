@@ -33,7 +33,7 @@ import java.util.Properties;
  * @author panjuan
  */
 @Slf4j
-public class OrchestrationMasterSlaveDataSource extends MasterSlaveDataSource implements AutoCloseable {
+public final class OrchestrationMasterSlaveDataSource extends MasterSlaveDataSource implements AutoCloseable {
     
     private final OrchestrationFacade orchestrationFacade;
     

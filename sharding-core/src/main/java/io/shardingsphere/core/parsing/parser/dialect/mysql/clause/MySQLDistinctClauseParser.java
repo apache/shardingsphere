@@ -27,7 +27,7 @@ import io.shardingsphere.core.parsing.parser.clause.DistinctClauseParser;
  *
  * @author zhangliang
  */
-public class MySQLDistinctClauseParser extends DistinctClauseParser {
+public final class MySQLDistinctClauseParser extends DistinctClauseParser {
     
     public MySQLDistinctClauseParser(final LexerEngine lexerEngine) {
         super(lexerEngine);

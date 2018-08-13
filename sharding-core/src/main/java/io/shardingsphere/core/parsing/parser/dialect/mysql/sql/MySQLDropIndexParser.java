@@ -39,4 +39,9 @@ public final class MySQLDropIndexParser extends AbstractDropIndexParser {
     protected Keyword[] getSkippedKeywordsBetweenDropAndTable() {
         return new Keyword[] {DefaultKeyword.TEMPORARY};
     }
+    
+    @Override
+    protected Keyword[] getSkippedKeywordsBetweenDropIndexAndIndexName() {
+        return new Keyword[0];
+    }
 }

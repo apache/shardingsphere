@@ -23,5 +23,5 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses(GeneralDCLIntegrateTest.class)
-public class AllDCLTests {
+public final class AllDCLTests {
 }

@@ -82,11 +82,11 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
     }
     
     @Override
-    protected List<String> getInitDataSetFiles() {
+    protected final List<String> getInitDataSetFiles() {
         return Arrays.asList("integrate/dataset/jdbc/jdbc_0.xml", "integrate/dataset/jdbc/jdbc_1.xml");
     }
     
-    protected ShardingDataSource getShardingDataSource() {
+    protected final ShardingDataSource getShardingDataSource() {
         return shardingDataSource;
     }
 }

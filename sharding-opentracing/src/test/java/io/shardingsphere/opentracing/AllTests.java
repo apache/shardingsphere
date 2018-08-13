@@ -31,5 +31,5 @@ import org.junit.runners.Suite;
         MergeEventListenerTest.class,
         ShardingJDBCTracerTest.class
 })
-public class AllTests {
+public final class AllTests {
 }
