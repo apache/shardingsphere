@@ -15,14 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.core.constant;
+package io.shardingsphere.core.constant.transaction;
 
 /**
- * TCL Type.
+ * Transaction operation type.
  *
  * @author zhaojun
  */
-public enum TCLType {
+public enum TransactionOperationType {
     
-    SET, BEGIN, COMMIT, ROLLBACK, SAVEPOINT
+    BEGIN, COMMIT, ROLLBACK
 }

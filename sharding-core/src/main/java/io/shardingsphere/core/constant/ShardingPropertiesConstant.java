@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.constant;
 
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

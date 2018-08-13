@@ -18,8 +18,8 @@
 package io.shardingsphere.proxy.backend.jdbc.transaction;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.constant.TCLType;
-import io.shardingsphere.core.constant.TransactionType;
+import io.shardingsphere.core.constant.transaction.TransactionOperationType;
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
 import io.shardingsphere.transaction.TransactionTypeHolder;
@@ -41,16 +41,17 @@ public final class XATransactionEngine extends TransactionEngine {
     
     @Override
     public boolean execute() throws SQLException {
-        Optional<TCLType> tclType = parseSQL();
-        if (tclType.isPresent() && isInTransaction(tclType.get())) {
+        Optional<TransactionOperationType> operationType = parseSQL();
+        if (operationType.isPresent() && isInTransaction(operationType.get())) {
             TransactionTypeHolder.set(TransactionType.XA);
-            EventBusInstance.getInstance().post(new XATransactionEvent(tclType.get(), getSql()));
+            EventBusInstance.getInstance().post(new XATransactionEvent(operationType.get(), getSql()));
             return true;
         }
         return false;
     }
     
-    private boolean isInTransaction(final TCLType tclType) throws SQLException {
-        return TCLType.ROLLBACK != tclType || Status.STATUS_NO_TRANSACTION != ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.XA).getStatus();
+    private boolean isInTransaction(final TransactionOperationType operationType) throws SQLException {
+        return TransactionOperationType.ROLLBACK != operationType
+                || Status.STATUS_NO_TRANSACTION != ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.XA).getStatus();
     }
 }

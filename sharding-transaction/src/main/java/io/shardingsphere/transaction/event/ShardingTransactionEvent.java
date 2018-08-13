@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.event;
 
-import io.shardingsphere.core.constant.TCLType;
+import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 
 /**
  * Sharding transaction event.
@@ -32,5 +32,5 @@ public interface ShardingTransactionEvent {
      * 
      * @return transaction operation type
      */
-    TCLType getOperationType();
+    TransactionOperationType getOperationType();
 }

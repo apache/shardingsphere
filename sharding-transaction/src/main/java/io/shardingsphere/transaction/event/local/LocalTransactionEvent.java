@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.event.local;
 
-import io.shardingsphere.core.constant.TCLType;
+import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.transaction.event.ShardingTransactionEvent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +34,7 @@ import java.util.Collection;
 @Getter
 public final class LocalTransactionEvent implements ShardingTransactionEvent {
     
-    private final TCLType operationType;
+    private final TransactionOperationType operationType;
             
     private final Collection<Connection> cachedConnections;
     

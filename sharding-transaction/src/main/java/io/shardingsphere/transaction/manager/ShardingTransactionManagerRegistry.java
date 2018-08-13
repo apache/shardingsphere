@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.manager;
 
-import io.shardingsphere.core.constant.TransactionType;
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.transaction.manager.local.LocalTransactionManager;
 import io.shardingsphere.transaction.manager.xa.XATransactionManagerSPILoader;
 

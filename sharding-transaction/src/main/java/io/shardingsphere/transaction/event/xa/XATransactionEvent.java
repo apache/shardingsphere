@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.event.xa;
 
-import io.shardingsphere.core.constant.TCLType;
+import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.transaction.event.ShardingTransactionEvent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class XATransactionEvent implements ShardingTransactionEvent {
     
-    private final TCLType operationType;
+    private final TransactionOperationType operationType;
     
     private final String sql;
 }

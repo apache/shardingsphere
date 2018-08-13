@@ -18,8 +18,8 @@
 package io.shardingsphere.core.jdbc.adapter;
 
 import com.google.common.base.Preconditions;
-import io.shardingsphere.core.constant.TCLType;
-import io.shardingsphere.core.constant.TransactionType;
+import io.shardingsphere.core.constant.transaction.TransactionOperationType;
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
@@ -91,25 +91,25 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         this.autoCommit = autoCommit;
         TransactionTypeHolder.set(TransactionType.LOCAL);
         recordMethodInvocation(Connection.class, "setAutoCommit", new Class[] {boolean.class}, new Object[] {autoCommit});
-        EventBusInstance.getInstance().post(createTransactionEvent(TCLType.BEGIN));
+        EventBusInstance.getInstance().post(createTransactionEvent(TransactionOperationType.BEGIN));
     }
     
     @Override
     public final void commit() {
-        EventBusInstance.getInstance().post(createTransactionEvent(TCLType.COMMIT));
+        EventBusInstance.getInstance().post(createTransactionEvent(TransactionOperationType.COMMIT));
     }
     
     @Override
     public final void rollback() {
-        EventBusInstance.getInstance().post(createTransactionEvent(TCLType.ROLLBACK));
+        EventBusInstance.getInstance().post(createTransactionEvent(TransactionOperationType.ROLLBACK));
     }
     
-    private ShardingTransactionEvent createTransactionEvent(final TCLType tclType) {
+    private ShardingTransactionEvent createTransactionEvent(final TransactionOperationType operationType) {
         switch (TransactionTypeHolder.get()) {
             case LOCAL:
-                return new LocalTransactionEvent(tclType, cachedConnections.values(), autoCommit);
+                return new LocalTransactionEvent(operationType, cachedConnections.values(), autoCommit);
             case XA:
-                return new XATransactionEvent(tclType, "");
+                return new XATransactionEvent(operationType, "");
             case BASE:
             default:
                 throw new UnsupportedOperationException(TransactionTypeHolder.get().name());

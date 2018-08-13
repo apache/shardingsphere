@@ -17,7 +17,7 @@
 
 package io.shardingsphere.proxy.backend.jdbc.datasource;
 
-import io.shardingsphere.core.constant.TransactionType;
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.proxy.backend.BackendDataSource;
 import lombok.Getter;
