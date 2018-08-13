@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.type.connection;
+package io.shardingsphere.core.executor.engine.connection;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import io.shardingsphere.core.constant.SQLType;
