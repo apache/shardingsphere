@@ -37,7 +37,8 @@ public abstract class ShardingTransactionListenerAdapter<T extends TransactionEv
         EventBusInstance.getInstance().register(this);
     }
     
-    protected final void doTransaction(final ShardingTransactionManager shardingTransactionManager, final TransactionEvent transactionEvent) throws SQLException {
+    @SuppressWarnings("unchecked")
+    protected final void doTransaction(final ShardingTransactionManager shardingTransactionManager, final T transactionEvent) throws SQLException {
         switch (transactionEvent.getTclType()) {
             case BEGIN:
                 shardingTransactionManager.begin(transactionEvent);

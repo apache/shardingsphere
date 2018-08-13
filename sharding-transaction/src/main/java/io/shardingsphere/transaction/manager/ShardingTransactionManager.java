@@ -25,8 +25,10 @@ import java.sql.SQLException;
  *
  * @author zhaojun
  * @author zhangliang
+ * 
+ * @param <T> transaction event type
  */
-public interface ShardingTransactionManager {
+public interface ShardingTransactionManager<T extends TransactionEvent> {
     
     /**
      * Begin transaction.
@@ -34,7 +36,7 @@ public interface ShardingTransactionManager {
      * @param transactionEvent transaction event
      * @throws SQLException SQL exception
      */
-    void begin(TransactionEvent transactionEvent) throws SQLException;
+    void begin(T transactionEvent) throws SQLException;
     
     /**
      * Commit transaction.
@@ -42,7 +44,7 @@ public interface ShardingTransactionManager {
      * @param transactionEvent transaction event
      * @throws SQLException SQL exception
      */
-    void commit(TransactionEvent transactionEvent) throws SQLException;
+    void commit(T transactionEvent) throws SQLException;
     
     /**
      * Rollback transaction.
@@ -50,7 +52,7 @@ public interface ShardingTransactionManager {
      * @param transactionEvent transaction event
      * @throws SQLException SQL exception
      */
-    void rollback(TransactionEvent transactionEvent) throws SQLException;
+    void rollback(T transactionEvent) throws SQLException;
     
     /**
      * Obtain the status of the transaction associated with the current thread.

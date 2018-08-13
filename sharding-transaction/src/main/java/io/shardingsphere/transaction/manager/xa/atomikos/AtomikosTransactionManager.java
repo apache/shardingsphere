@@ -19,7 +19,7 @@ package io.shardingsphere.transaction.manager.xa.atomikos;
 
 import com.atomikos.icatch.jta.UserTransactionManager;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.transaction.event.TransactionEvent;
+import io.shardingsphere.transaction.event.XATransactionEvent;
 import io.shardingsphere.transaction.manager.xa.XATransactionManager;
 
 import javax.transaction.HeuristicMixedException;
@@ -47,7 +47,7 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     }
     
     @Override
-    public void begin(final TransactionEvent transactionEvent) throws SQLException {
+    public void begin(final XATransactionEvent event) throws SQLException {
         try {
             USER_TRANSACTION_MANAGER.begin();
         } catch (final SystemException | NotSupportedException ex) {
@@ -56,7 +56,7 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     }
     
     @Override
-    public void commit(final TransactionEvent transactionEvent) throws SQLException {
+    public void commit(final XATransactionEvent event) throws SQLException {
         try {
             USER_TRANSACTION_MANAGER.commit();
         } catch (final RollbackException | HeuristicMixedException | HeuristicRollbackException | SystemException ex) {
@@ -65,7 +65,7 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     }
     
     @Override
-    public void rollback(final TransactionEvent transactionEvent) throws SQLException {
+    public void rollback(final XATransactionEvent event) throws SQLException {
         try {
             USER_TRANSACTION_MANAGER.rollback();
         } catch (final SystemException ex) {
