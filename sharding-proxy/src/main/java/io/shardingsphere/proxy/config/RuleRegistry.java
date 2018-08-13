@@ -35,8 +35,7 @@ import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusEvent
 import io.shardingsphere.proxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import io.shardingsphere.transaction.api.ShardingTransactionManager;
 import io.shardingsphere.transaction.api.ShardingTransactionManagerRegistry;
-import io.shardingsphere.transaction.common.TransactionContext;
-import io.shardingsphere.transaction.common.TransactionContextHolder;
+import io.shardingsphere.transaction.common.TransactionTypeHolder;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -109,7 +108,7 @@ public final class RuleRegistry {
         connectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
         transactionType = TransactionType.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_MODE));
         transactionManager = ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(transactionType);
-        TransactionContextHolder.set(new TransactionContext(transactionManager, transactionType));
+        TransactionTypeHolder.set(transactionType);
         acceptorSize = shardingProperties.getValue(ShardingPropertiesConstant.ACCEPTOR_SIZE);
         executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         // TODO :jiaqi force off use NIO for backend, this feature is not complete yet

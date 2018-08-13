@@ -17,41 +17,44 @@
 
 package io.shardingsphere.transaction.common;
 
+import io.shardingsphere.core.constant.TransactionType;
+
 /**
- * Hold transaction context for current thread.
+ * Hold transaction type for current thread.
  *
  * @author zhaojun
+ * @author zhangliang
  */
-public final class TransactionContextHolder {
+public final class TransactionTypeHolder {
     
-    private static final ThreadLocal<TransactionContext> CONTEXT = new ThreadLocal<TransactionContext>() {
+    private static final ThreadLocal<TransactionType> CONTEXT = new ThreadLocal<TransactionType>() {
         
         @Override
-        protected TransactionContext initialValue() {
-            return new TransactionContext();
+        protected TransactionType initialValue() {
+            return TransactionType.LOCAL;
         }
     };
     
     /**
-     * Get transaction context for current thread.
+     * Get transaction type for current thread.
      *
-     * @return TransactionContext
+     * @return transaction type
      */
-    public static TransactionContext get() {
+    public static TransactionType get() {
         return CONTEXT.get();
     }
     
     /**
-     * Set transaction context for current thread.
+     * Set transaction type for current thread.
      *
-     * @param context Transaction context
+     * @param transactionType transaction type
      */
-    public static void set(final TransactionContext context) {
-        CONTEXT.set(context);
+    public static void set(final TransactionType transactionType) {
+        CONTEXT.set(transactionType);
     }
     
     /**
-     * Clear transaction context for current thread.
+     * Clear transaction type for current thread.
      */
     public static void clear() {
         CONTEXT.remove();

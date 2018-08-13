@@ -24,10 +24,7 @@ import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.core.util.EventBusInstance;
-import io.shardingsphere.transaction.api.ShardingTransactionManagerRegistry;
-import io.shardingsphere.transaction.api.local.LocalTransactionManager;
-import io.shardingsphere.transaction.common.TransactionContext;
-import io.shardingsphere.transaction.common.TransactionContextHolder;
+import io.shardingsphere.transaction.common.TransactionTypeHolder;
 import io.shardingsphere.transaction.common.event.LocalTransactionEvent;
 import io.shardingsphere.transaction.common.event.TransactionEvent;
 import io.shardingsphere.transaction.common.event.TransactionEventFactory;
@@ -67,8 +64,6 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
      * @throws SQLException SQL exception
      */
     public final Connection getConnection(final String dataSourceName) throws SQLException {
-        TransactionType transactionType = TransactionContextHolder.get().getTransactionType();
-        TransactionContextHolder.set(new TransactionContext(ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(transactionType), transactionType));
         if (cachedConnections.containsKey(dataSourceName)) {
             return cachedConnections.get(dataSourceName);
         }
@@ -94,7 +89,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     @Override
     public final void setAutoCommit(final boolean autoCommit) {
         this.autoCommit = autoCommit;
-        TransactionContextHolder.set(new TransactionContext(new LocalTransactionManager(), TransactionType.LOCAL));
+        TransactionTypeHolder.set(TransactionType.LOCAL);
         recordMethodInvocation(Connection.class, "setAutoCommit", new Class[] {boolean.class}, new Object[] {autoCommit});
         EventBusInstance.getInstance().post(buildTransactionEvent(TCLType.BEGIN));
     }
@@ -114,7 +109,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         closed = true;
         HintManagerHolder.clear();
         MasterVisitedManager.clear();
-        TransactionContextHolder.clear();
+        TransactionTypeHolder.clear();
         Collection<SQLException> exceptions = new LinkedList<>();
         for (Connection each : cachedConnections.values()) {
             try {

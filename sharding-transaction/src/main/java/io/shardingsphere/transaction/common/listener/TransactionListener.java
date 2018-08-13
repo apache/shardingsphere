@@ -21,7 +21,8 @@ import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.transaction.api.ShardingTransactionManager;
-import io.shardingsphere.transaction.common.TransactionContextHolder;
+import io.shardingsphere.transaction.api.ShardingTransactionManagerRegistry;
+import io.shardingsphere.transaction.common.TransactionTypeHolder;
 import io.shardingsphere.transaction.common.event.TransactionEvent;
 
 import java.sql.SQLException;
@@ -49,16 +50,16 @@ public final class TransactionListener {
     @Subscribe
     @AllowConcurrentEvents
     public void listen(final TransactionEvent transactionEvent) throws SQLException {
-        ShardingTransactionManager transactionManager = TransactionContextHolder.get().getTransactionManager();
+        ShardingTransactionManager shardingTransactionManager = ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionTypeHolder.get());
         switch (transactionEvent.getTclType()) {
             case BEGIN:
-                transactionManager.begin(transactionEvent);
+                shardingTransactionManager.begin(transactionEvent);
                 break;
             case COMMIT:
-                transactionManager.commit(transactionEvent);
+                shardingTransactionManager.commit(transactionEvent);
                 break;
             case ROLLBACK:
-                transactionManager.rollback(transactionEvent);
+                shardingTransactionManager.rollback(transactionEvent);
                 break;
             default:
         }

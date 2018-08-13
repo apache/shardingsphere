@@ -22,8 +22,7 @@ import io.shardingsphere.core.constant.TCLType;
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.proxy.config.RuleRegistry;
-import io.shardingsphere.transaction.common.TransactionContext;
-import io.shardingsphere.transaction.common.TransactionContextHolder;
+import io.shardingsphere.transaction.common.TransactionTypeHolder;
 import io.shardingsphere.transaction.common.event.XaTransactionEvent;
 
 import javax.transaction.Status;
@@ -46,7 +45,7 @@ public final class XaTransactionEngine extends TransactionEngine {
     public boolean execute() throws SQLException {
         Optional<TCLType> tclType = parseSQL();
         if (tclType.isPresent() && isInTransaction(tclType.get())) {
-            TransactionContextHolder.set(new TransactionContext(RULE_REGISTRY.getTransactionManager(), TransactionType.XA));
+            TransactionTypeHolder.set(TransactionType.XA);
             EventBusInstance.getInstance().post(new XaTransactionEvent(tclType.get(), getSql()));
             return true;
         }
