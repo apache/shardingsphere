@@ -17,9 +17,7 @@
 
 package io.shardingsphere.transaction.listener;
 
-import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.transaction.event.TransactionEvent;
-import io.shardingsphere.transaction.manager.ShardingTransactionManager;
 
 import java.sql.SQLException;
 
@@ -27,28 +25,21 @@ import java.sql.SQLException;
  * Sharding transaction listener.
  *
  * @author zhangliang
+ * 
+ * @param <T> transaction event type
  */
-public abstract class ShardingTransactionListener {
+public interface ShardingTransactionListener<T extends TransactionEvent> {
     
     /**
-     * Register transaction listener into event bus.
+     * Register sharding transaction listener into event bus.
      */
-    public final void register() {
-        EventBusInstance.getInstance().register(this);
-    }
+    void register();
     
-    protected final void doTransaction(final ShardingTransactionManager shardingTransactionManager, final TransactionEvent transactionEvent) throws SQLException {
-        switch (transactionEvent.getTclType()) {
-            case BEGIN:
-                shardingTransactionManager.begin(transactionEvent);
-                break;
-            case COMMIT:
-                shardingTransactionManager.commit(transactionEvent);
-                break;
-            case ROLLBACK:
-                shardingTransactionManager.rollback(transactionEvent);
-                break;
-            default:
-        }
-    }
+    /**
+     * Listen event.
+     *
+     * @param transactionEvent transaction event
+     * @throws SQLException SQL exception
+     */
+    void listen(T transactionEvent) throws SQLException;
 }

@@ -21,7 +21,7 @@ import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.transaction.event.LocalTransactionEvent;
-import io.shardingsphere.transaction.listener.ShardingTransactionListener;
+import io.shardingsphere.transaction.listener.ShardingTransactionListenerAdapter;
 import io.shardingsphere.transaction.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
 
@@ -32,18 +32,13 @@ import java.sql.SQLException;
  *
  * @author zhangliang
  */
-public final class LocalTransactionListener extends ShardingTransactionListener {
+public final class LocalTransactionListener extends ShardingTransactionListenerAdapter<LocalTransactionEvent> {
     
     private final ShardingTransactionManager shardingTransactionManager = ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.LOCAL);
     
-    /**
-     * Listen event.
-     *
-     * @param transactionEvent local transaction event
-     * @throws SQLException SQL exception
-     */
     @Subscribe
     @AllowConcurrentEvents
+    @Override
     public void listen(final LocalTransactionEvent transactionEvent) throws SQLException {
         doTransaction(shardingTransactionManager, transactionEvent);
     }
