@@ -22,7 +22,7 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import io.shardingsphere.core.listener.JDBCListenerRegister;
-import io.shardingsphere.transaction.api.ShardingTransactionManagerFactory;
+import io.shardingsphere.transaction.api.ShardingTransactionManagerRegistry;
 import io.shardingsphere.transaction.common.TransactionContext;
 import io.shardingsphere.transaction.common.TransactionContextHolder;
 import lombok.Getter;
@@ -43,7 +43,7 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     
     static {
         TransactionType transactionType = TransactionContextHolder.get().getTransactionType();
-        TransactionContextHolder.set(new TransactionContext(ShardingTransactionManagerFactory.getShardingTransactionManager(transactionType), transactionType));
+        TransactionContextHolder.set(new TransactionContext(ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(transactionType), transactionType));
         JDBCListenerRegister.register();
     }
     
