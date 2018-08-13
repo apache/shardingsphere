@@ -40,7 +40,7 @@ public final class TransactionEngineFactory {
     public static TransactionEngine create(final String sql) {
         switch (RULE_REGISTRY.getTransactionType()) {
             case XA:
-                return new XaTransactionEngine(sql);
+                return new XATransactionEngine(sql);
             default:
                 return new DefaultTransactionEngine(sql);
         }
