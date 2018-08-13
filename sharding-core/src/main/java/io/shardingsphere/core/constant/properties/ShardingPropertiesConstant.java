@@ -15,8 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.core.constant;
+package io.shardingsphere.core.constant.properties;
 
+import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

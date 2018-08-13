@@ -22,7 +22,7 @@ import io.shardingsphere.core.api.MasterSlaveDataSourceFactory;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
-import io.shardingsphere.core.constant.ShardingPropertiesConstant;
+import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.executor.ExecutorEngine;
 import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.Test;
