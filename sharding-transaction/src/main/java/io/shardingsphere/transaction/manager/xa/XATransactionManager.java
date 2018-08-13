@@ -15,9 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.api.xa;
+package io.shardingsphere.transaction.manager.xa;
 
-import io.shardingsphere.transaction.api.ShardingTransactionManager;
+import io.shardingsphere.transaction.manager.ShardingTransactionManager;
 
 /**
  * XA transaction manager.

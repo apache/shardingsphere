@@ -15,9 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.api.base;
+package io.shardingsphere.transaction.manager.base;
 
-import io.shardingsphere.transaction.api.ShardingTransactionManager;
+import io.shardingsphere.transaction.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.common.event.TransactionEvent;
 
 import javax.transaction.Status;

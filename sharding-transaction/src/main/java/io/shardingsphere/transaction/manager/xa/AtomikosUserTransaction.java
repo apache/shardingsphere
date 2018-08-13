@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.api.xa;
+package io.shardingsphere.transaction.manager.xa;
 
 import com.atomikos.icatch.jta.UserTransactionManager;
 import lombok.AccessLevel;

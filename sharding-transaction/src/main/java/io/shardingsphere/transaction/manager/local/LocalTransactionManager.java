@@ -15,9 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.api.local;
+package io.shardingsphere.transaction.manager.local;
 
-import io.shardingsphere.transaction.api.ShardingTransactionManager;
+import io.shardingsphere.transaction.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.common.event.TransactionEvent;
 import io.shardingsphere.transaction.common.event.LocalTransactionEvent;
 

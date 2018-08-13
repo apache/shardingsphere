@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.TCLType;
 import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.util.EventBusInstance;
-import io.shardingsphere.transaction.api.ShardingTransactionManagerRegistry;
+import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
 import io.shardingsphere.transaction.common.TransactionTypeHolder;
 import io.shardingsphere.transaction.common.event.XaTransactionEvent;
 

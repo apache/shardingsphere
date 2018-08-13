@@ -15,11 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.api;
+package io.shardingsphere.transaction.manager;
 
 import io.shardingsphere.core.constant.TransactionType;
-import io.shardingsphere.transaction.api.local.LocalTransactionManager;
-import io.shardingsphere.transaction.api.xa.XATransactionManagerSPILoader;
+import io.shardingsphere.transaction.manager.local.LocalTransactionManager;
+import io.shardingsphere.transaction.manager.xa.XATransactionManagerSPILoader;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -20,8 +20,8 @@ package io.shardingsphere.transaction.common.listener;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.util.EventBusInstance;
-import io.shardingsphere.transaction.api.ShardingTransactionManager;
-import io.shardingsphere.transaction.api.ShardingTransactionManagerRegistry;
+import io.shardingsphere.transaction.manager.ShardingTransactionManager;
+import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
 import io.shardingsphere.transaction.common.TransactionTypeHolder;
 import io.shardingsphere.transaction.common.event.TransactionEvent;
 
