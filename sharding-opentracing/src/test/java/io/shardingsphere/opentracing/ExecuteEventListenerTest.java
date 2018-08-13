@@ -28,7 +28,7 @@ import io.shardingsphere.core.executor.BaseStatementUnit;
 import io.shardingsphere.core.executor.ExecuteCallback;
 import io.shardingsphere.core.executor.ExecutorEngine;
 import io.shardingsphere.core.executor.type.batch.BatchPreparedStatementUnit;
-import io.shardingsphere.core.executor.type.memory.MemoryStrictlyExecutorEngine;
+import io.shardingsphere.core.executor.engine.memory.MemoryStrictlyExecutorEngine;
 import io.shardingsphere.core.executor.type.statement.StatementUnit;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLUnit;
