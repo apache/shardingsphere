@@ -21,7 +21,6 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.TCLType;
 import io.shardingsphere.core.exception.ShardingException;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.sql.Connection;
 import java.util.Collection;
@@ -32,15 +31,16 @@ import java.util.Collection;
  * @author zhaojun
  */
 @Getter
-@Setter
 public final class LocalTransactionEvent extends TransactionEvent {
     
-    private Collection<Connection> cachedConnections;
+    private final Collection<Connection> cachedConnections;
     
-    private boolean autoCommit = true;
+    private final boolean autoCommit;
     
-    public LocalTransactionEvent(final TCLType tclType) {
+    public LocalTransactionEvent(final TCLType tclType, final Collection<Connection> cachedConnections, final boolean autoCommit) {
         super(tclType);
+        this.cachedConnections = cachedConnections;
+        this.autoCommit = autoCommit;
     }
     
     @Override

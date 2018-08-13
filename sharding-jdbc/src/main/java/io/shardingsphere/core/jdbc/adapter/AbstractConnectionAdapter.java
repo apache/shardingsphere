@@ -180,10 +180,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     private TransactionEvent buildTransactionEvent(final TCLType tclType) {
         switch (TransactionTypeHolder.get()) {
             case LOCAL:
-                LocalTransactionEvent result = new LocalTransactionEvent(tclType);
-                result.setCachedConnections(cachedConnections.values());
-                result.setAutoCommit(autoCommit);
-                return result;
+                return new LocalTransactionEvent(tclType, cachedConnections.values(), autoCommit);
             case XA:
                 return new XaTransactionEvent(tclType, "");
             case BASE:
