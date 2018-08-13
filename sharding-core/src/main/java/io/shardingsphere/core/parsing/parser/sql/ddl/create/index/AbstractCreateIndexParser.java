@@ -52,7 +52,7 @@ public abstract class AbstractCreateIndexParser implements SQLParser {
     }
     
     @Override
-    public DDLStatement parse() {
+    public final DDLStatement parse() {
         lexerEngine.skipAll(getSkippedKeywordsBetweenCreateIndexAndKeyword());
         lexerEngine.skipAll(getSkippedKeywordsBetweenCreateAndKeyword());
         DDLStatement result = new DDLStatement();
@@ -70,9 +70,7 @@ public abstract class AbstractCreateIndexParser implements SQLParser {
     
     protected abstract Keyword[] getSkippedKeywordsBetweenCreateAndKeyword();
     
-    protected Keyword[] getSkippedKeywordsBetweenCreateIndexAndIndexName() {
-        return new Keyword[] {};
-    }
+    protected abstract Keyword[] getSkippedKeywordsBetweenCreateIndexAndIndexName();
     
     private void parseIndex(final DDLStatement ddlStatement) {
         Token currentToken = lexerEngine.getCurrentToken();

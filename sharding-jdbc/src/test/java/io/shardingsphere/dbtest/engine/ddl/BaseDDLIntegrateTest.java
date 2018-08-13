@@ -72,7 +72,7 @@ public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
     }
 
     @AfterClass
-    public static void destroyDatabasesAndTables(){
+    public static void destroyDatabasesAndTables() {
         dropDatabases();
     }
 
@@ -94,7 +94,7 @@ public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
         }
     }
 
-    protected void assertMetadata(final Connection connection) throws IOException, JAXBException, SQLException {
+    protected final void assertMetadata(final Connection connection) throws IOException, JAXBException, SQLException {
         if (null == assertion.getExpectedDataFile()) {
             log.warn("Have empty expectedDataFile `{}`", super.getSql());
             return;
@@ -190,7 +190,7 @@ public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
         }
     }
 
-    protected void dropTableIfExisted(final Connection connection) {
+    protected final void dropTableIfExisted(final Connection connection) {
         try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DROP TABLE %s", assertion.getTable()))) {
             preparedStatement.executeUpdate();
         } catch (final SQLException ignored) {

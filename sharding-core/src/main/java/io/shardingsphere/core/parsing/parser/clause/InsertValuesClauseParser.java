@@ -50,7 +50,7 @@ import java.util.List;
  * @author maxiaoguang
  * @author panjuan
  */
-public class InsertValuesClauseParser implements SQLClauseParser {
+public abstract class InsertValuesClauseParser implements SQLClauseParser {
     
     private final ShardingRule shardingRule;
     
@@ -78,9 +78,7 @@ public class InsertValuesClauseParser implements SQLClauseParser {
         }
     }
     
-    protected Keyword[] getSynonymousKeywordsForValues() {
-        return new Keyword[0];
-    }
+    protected abstract Keyword[] getSynonymousKeywordsForValues();
     
     /**
      * Parse insert values.

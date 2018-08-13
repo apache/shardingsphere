@@ -38,7 +38,7 @@ import io.shardingsphere.core.util.SQLUtil;
  *
  * @author zhangliang
  */
-public class GroupByClauseParser implements SQLClauseParser {
+public abstract class GroupByClauseParser implements SQLClauseParser {
     
     private final LexerEngine lexerEngine;
     
@@ -98,11 +98,7 @@ public class GroupByClauseParser implements SQLClauseParser {
         selectStatement.getGroupByItems().add(orderItem);
     }
     
-    protected Keyword[] getUnsupportedKeywordBeforeGroupByItem() {
-        return new Keyword[0];
-    }
+    protected abstract Keyword[] getUnsupportedKeywordBeforeGroupByItem();
     
-    protected Keyword[] getSkippedKeywordAfterGroupBy() {
-        return new Keyword[0];
-    }
+    protected abstract Keyword[] getSkippedKeywordAfterGroupBy();
 }

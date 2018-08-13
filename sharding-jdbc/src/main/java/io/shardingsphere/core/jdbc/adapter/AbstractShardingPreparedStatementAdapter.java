@@ -265,7 +265,7 @@ public abstract class AbstractShardingPreparedStatementAdapter extends AbstractU
         }
     }
     
-    protected void replaySetParameter(final PreparedStatement preparedStatement, final List<Object> parameters) {
+    protected final void replaySetParameter(final PreparedStatement preparedStatement, final List<Object> parameters) {
         setParameterMethodInvocations.clear();
         addParameters(parameters);
         for (SetParameterMethodInvocation each : setParameterMethodInvocations) {

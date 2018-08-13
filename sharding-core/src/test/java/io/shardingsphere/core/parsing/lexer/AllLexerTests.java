@@ -36,5 +36,5 @@ import org.junit.runners.Suite;
         SQLServerLexerTest.class,
         PostgreSQLLexerTest.class
     })
-public class AllLexerTests {
+public final class AllLexerTests {
 }

@@ -36,7 +36,7 @@ import java.util.Set;
  *
  * @author panjuan
  */
-public class DataSourceRepresenter extends Representer {
+public final class DataSourceRepresenter extends Representer {
     
     private static Collection<Class<?>> generalClassType;
     

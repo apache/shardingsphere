@@ -35,7 +35,7 @@ import java.util.List;
 public abstract class PacketCodec<T extends DatabasePacket> extends ByteToMessageCodec<T> {
     
     @Override
-    protected void decode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
+    protected final void decode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
         int readableBytes = in.readableBytes();
         if (!isValidHeader(readableBytes)) {
             return;
@@ -51,7 +51,7 @@ public abstract class PacketCodec<T extends DatabasePacket> extends ByteToMessag
     protected abstract void doDecode(ChannelHandlerContext context, ByteBuf in, List<Object> out, int readableBytes);
     
     @Override
-    protected void encode(final ChannelHandlerContext context, final T message, final ByteBuf out) {
+    protected final void encode(final ChannelHandlerContext context, final T message, final ByteBuf out) {
         doEncode(context, message, out);
         if (log.isDebugEnabled()) {
             log.debug("Write to client {} : \n {}", context.channel().id().asShortText(), ByteBufUtil.prettyHexDump(out));

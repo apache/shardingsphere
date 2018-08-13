@@ -17,6 +17,8 @@
 
 package io.shardingsphere.transaction.job;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.quartz.SchedulerException;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -31,6 +33,7 @@ import java.io.InputStreamReader;
  * @author caohao
  * @author wangkai
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BASETransactionJobBootStrap {
     
     /**

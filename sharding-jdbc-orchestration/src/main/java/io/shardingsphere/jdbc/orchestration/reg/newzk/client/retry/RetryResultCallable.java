@@ -22,8 +22,8 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.KeeperException;
 
-/*
- * Sync retry call with Result.
+/**
+ * Sync retry call with result.
  *
  * @author lidongbo
  */
@@ -41,14 +41,14 @@ public abstract class RetryResultCallable<T> extends RetryCallable {
      * Get result.
      *
      * @return result
-     * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
+     * @throws KeeperException zookeeper exception
+     * @throws InterruptedException interrupted exception
      */
     public T getResult() throws KeeperException, InterruptedException {
-        if (result == null) {
+        if (null == result) {
             exec();
         }
-        log.debug("result:{}", result);
+        log.debug("result: {}", result);
         return result;
     }
 }

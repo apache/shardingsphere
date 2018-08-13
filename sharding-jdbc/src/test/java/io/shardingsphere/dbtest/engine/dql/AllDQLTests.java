@@ -26,5 +26,5 @@ import org.junit.runners.Suite.SuiteClasses;
         GeneralDQLIntegrateTest.class, 
         AdditionalDQLIntegrateTest.class
     })
-public class AllDQLTests {
+public final class AllDQLTests {
 }

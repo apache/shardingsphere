@@ -29,7 +29,7 @@ import javax.sql.DataSource;
  * @author caohao
  */
 @RequiredArgsConstructor
-public class RdbTransactionLogDataSource implements TransactionLogDataSource {
+public final class RdbTransactionLogDataSource implements TransactionLogDataSource {
     
     private final DataSource dataSource;
     

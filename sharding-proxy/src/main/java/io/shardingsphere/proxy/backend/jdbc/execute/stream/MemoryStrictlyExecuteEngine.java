@@ -18,6 +18,7 @@
 package io.shardingsphere.proxy.backend.jdbc.execute.stream;
 
 import com.google.common.collect.Lists;
+import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
@@ -31,6 +32,7 @@ import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteQueryRe
 import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteResponseUnit;
 import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteUpdateResponseUnit;
 import io.shardingsphere.proxy.backend.jdbc.wrapper.JDBCExecutorWrapper;
+import io.shardingsphere.proxy.config.RuleRegistry;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -61,21 +63,43 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
     public ExecuteResponse execute(final SQLRouteResult routeResult, final boolean isReturnGeneratedKeys) throws SQLException {
         Iterator<SQLExecutionUnit> executionUnits = routeResult.getExecutionUnits().iterator();
         SQLExecutionUnit firstSQLExecutionUnit = executionUnits.next();
-        List<Future<ExecuteResponseUnit>> futureList = asyncExecute(isReturnGeneratedKeys, Lists.newArrayList(executionUnits));
+        List<Future<ExecuteResponseUnit>> futureList;
+        if (TransactionType.XA == RuleRegistry.getInstance().getTransactionType()) {
+            futureList = asyncExecuteWithXA(isReturnGeneratedKeys, Lists.newArrayList(executionUnits));
+        } else {
+            futureList = asyncExecuteWithoutXA(isReturnGeneratedKeys, Lists.newArrayList(executionUnits));
+        }
         ExecuteResponseUnit firstResponseUnit = syncExecute(isReturnGeneratedKeys, firstSQLExecutionUnit);
         return firstResponseUnit instanceof ExecuteQueryResponseUnit
                 ? getExecuteQueryResponse((ExecuteQueryResponseUnit) firstResponseUnit, futureList) : getExecuteUpdateResponse((ExecuteUpdateResponseUnit) firstResponseUnit, futureList);
     }
     
-    private List<Future<ExecuteResponseUnit>> asyncExecute(final boolean isReturnGeneratedKeys, final Collection<SQLExecutionUnit> sqlExecutionUnits) throws SQLException {
+    private List<Future<ExecuteResponseUnit>> asyncExecuteWithXA(final boolean isReturnGeneratedKeys, final Collection<SQLExecutionUnit> sqlExecutionUnits) throws SQLException {
         List<Future<ExecuteResponseUnit>> result = new LinkedList<>();
         for (SQLExecutionUnit each : sqlExecutionUnits) {
             final String actualSQL = each.getSqlUnit().getSql();
             final Statement statement = getJdbcExecutorWrapper().createStatement(getBackendConnection().getConnection(each.getDataSource()), actualSQL, isReturnGeneratedKeys);
             result.add(getExecutorService().submit(new Callable<ExecuteResponseUnit>() {
+            
+                @Override
+                public ExecuteResponseUnit call() throws SQLException {
+                    return executeWithoutMetadata(statement, actualSQL, isReturnGeneratedKeys);
+                }
+            }));
+        }
+        return result;
+    }
+    
+    private List<Future<ExecuteResponseUnit>> asyncExecuteWithoutXA(final boolean isReturnGeneratedKeys, final Collection<SQLExecutionUnit> sqlExecutionUnits) {
+        List<Future<ExecuteResponseUnit>> result = new LinkedList<>();
+        for (SQLExecutionUnit each : sqlExecutionUnits) {
+            final SQLExecutionUnit sqlExecutionUnit = each;
+            result.add(getExecutorService().submit(new Callable<ExecuteResponseUnit>() {
                 
                 @Override
                 public ExecuteResponseUnit call() throws SQLException {
+                    String actualSQL = sqlExecutionUnit.getSqlUnit().getSql();
+                    Statement statement = getJdbcExecutorWrapper().createStatement(getBackendConnection().getConnection(sqlExecutionUnit.getDataSource()), actualSQL, isReturnGeneratedKeys);
                     return executeWithoutMetadata(statement, actualSQL, isReturnGeneratedKeys);
                 }
             }));

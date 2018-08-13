@@ -58,7 +58,6 @@ public class YamlTableRuleConfiguration {
         keyGeneratorColumnName = tableRuleConfiguration.getKeyGeneratorColumnName();
         keyGeneratorClassName = null == tableRuleConfiguration.getKeyGenerator()
                 ? null : tableRuleConfiguration.getKeyGenerator().getClass().getName();
-        logicTable = tableRuleConfiguration.getLogicTable();
     }
     
     /**

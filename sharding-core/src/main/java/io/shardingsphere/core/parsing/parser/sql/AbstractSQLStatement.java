@@ -56,7 +56,7 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     }
     
     @Override
-    public int increaseParametersIndex() {
+    public final int increaseParametersIndex() {
         return ++parametersIndex;
     }
 }

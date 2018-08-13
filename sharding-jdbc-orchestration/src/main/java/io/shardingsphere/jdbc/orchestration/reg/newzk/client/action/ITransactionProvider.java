@@ -20,7 +20,7 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.action;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
 import org.apache.zookeeper.CreateMode;
 
-/*
+/**
  * Provider with transaction.
  *
  * @author lidongbo
@@ -32,8 +32,8 @@ public interface ITransactionProvider extends IProvider {
      *
      * @param key key
      * @param value value
-     * @param createMode createMode
-     * @param transaction transaction
+     * @param createMode create mode
+     * @param transaction zookeeper transaction
      */
     void createInTransaction(String key, String value, CreateMode createMode, BaseTransaction transaction);
 }

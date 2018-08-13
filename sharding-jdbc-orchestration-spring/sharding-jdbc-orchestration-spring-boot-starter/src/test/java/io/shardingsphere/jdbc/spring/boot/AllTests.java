@@ -28,5 +28,5 @@ import org.junit.runners.Suite.SuiteClasses;
         OrchestrationSpringBootMasterSlaveTest.class,
         OrchestrationSpringBootShardingTest.class 
     })
-public class AllTests {
+public final class AllTests {
 }

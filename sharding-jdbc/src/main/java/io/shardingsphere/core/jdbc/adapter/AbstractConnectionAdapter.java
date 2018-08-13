@@ -19,13 +19,18 @@ package io.shardingsphere.core.jdbc.adapter;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.TCLType;
+import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
-import io.shardingsphere.core.transaction.event.TransactionEvent;
-import io.shardingsphere.core.transaction.event.TransactionEventFactory;
-import io.shardingsphere.core.transaction.event.WeakXaTransactionEvent;
 import io.shardingsphere.core.util.EventBusInstance;
+import io.shardingsphere.transaction.api.ShardingTransactionManagerFactory;
+import io.shardingsphere.transaction.api.local.LocalTransactionManager;
+import io.shardingsphere.transaction.common.TransactionContext;
+import io.shardingsphere.transaction.common.TransactionContextHolder;
+import io.shardingsphere.transaction.common.event.LocalTransactionEvent;
+import io.shardingsphere.transaction.common.event.TransactionEvent;
+import io.shardingsphere.transaction.common.event.TransactionEventFactory;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -39,7 +44,7 @@ import java.util.Map;
 
 /**
  * Adapter for {@code Connection}.
- * 
+ *
  * @author zhangliang
  */
 public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOperationConnection {
@@ -62,6 +67,8 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
      * @throws SQLException SQL exception
      */
     public final Connection getConnection(final String dataSourceName) throws SQLException {
+        TransactionType transactionType = TransactionContextHolder.get().getTransactionType();
+        TransactionContextHolder.set(new TransactionContext(ShardingTransactionManagerFactory.getShardingTransactionManager(transactionType), transactionType));
         if (cachedConnections.containsKey(dataSourceName)) {
             return cachedConnections.get(dataSourceName);
         }
@@ -75,7 +82,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     protected abstract Map<String, DataSource> getDataSourceMap();
     
-    protected void removeCache(final Connection connection) {
+    protected final void removeCache(final Connection connection) {
         cachedConnections.values().remove(connection);
     }
     
@@ -87,6 +94,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     @Override
     public final void setAutoCommit(final boolean autoCommit) {
         this.autoCommit = autoCommit;
+        TransactionContextHolder.set(new TransactionContext(new LocalTransactionManager(), TransactionType.LOCAL));
         recordMethodInvocation(Connection.class, "setAutoCommit", new Class[] {boolean.class}, new Object[] {autoCommit});
         EventBusInstance.getInstance().post(buildTransactionEvent(TCLType.BEGIN));
     }
@@ -102,10 +110,11 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     }
     
     @Override
-    public void close() throws SQLException {
+    public final void close() throws SQLException {
         closed = true;
         HintManagerHolder.clear();
         MasterVisitedManager.clear();
+        TransactionContextHolder.clear();
         Collection<SQLException> exceptions = new LinkedList<>();
         for (Connection each : cachedConnections.values()) {
             try {
@@ -156,7 +165,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     // ------- Consist with MySQL driver implementation -------
     
     @Override
-    public SQLWarning getWarnings() {
+    public final SQLWarning getWarnings() {
         return null;
     }
     
@@ -175,10 +184,10 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     private TransactionEvent buildTransactionEvent(final TCLType tclType) {
         TransactionEvent result = TransactionEventFactory.create(tclType);
-        if (result instanceof WeakXaTransactionEvent) {
-            WeakXaTransactionEvent weakXaTransactionEvent = (WeakXaTransactionEvent) result;
-            weakXaTransactionEvent.setCachedConnections(cachedConnections);
-            weakXaTransactionEvent.setAutoCommit(autoCommit);
+        if (result instanceof LocalTransactionEvent) {
+            LocalTransactionEvent localTransactionEvent = (LocalTransactionEvent) result;
+            localTransactionEvent.setCachedConnections(cachedConnections.values());
+            localTransactionEvent.setAutoCommit(autoCommit);
         }
         return result;
     }

@@ -20,14 +20,16 @@ package io.shardingsphere.proxy.transport.mysql.packet.command;
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.admin.UnsupportedCommandPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.admin.initdb.ComInitDbPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.admin.ping.ComPingPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.admin.quit.ComQuitPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.close.ComStmtClosePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute.ComStmtExecutePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.prepare.ComStmtPreparePacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.text.fieldlist.ComFieldListPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.admin.initdb.ComInitDbPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.admin.ping.ComPingPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.text.query.ComQueryPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.admin.quit.ComQuitPacket;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * Command packet factory.
@@ -35,6 +37,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.admin.quit.ComQuit
  * @author zhangliang
  * @author wangkai
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CommandPacketFactory {
     
     /**

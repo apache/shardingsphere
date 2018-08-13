@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.KeeperException;
 
-/*
+/**
  * Client task.
  *
  * @author lidongbo
@@ -37,13 +37,13 @@ public abstract class ClientTask implements Runnable {
      * Run.
      *
      * @param provider provider
-     * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
+     * @throws KeeperException zookeeper exception
+     * @throws InterruptedException interrupted exception
      */
     public abstract void run(IProvider provider) throws KeeperException, InterruptedException;
     
     @Override
-    public void run() {
+    public final void run() {
         try {
             run(provider);
         } catch (final KeeperException | InterruptedException ex) {

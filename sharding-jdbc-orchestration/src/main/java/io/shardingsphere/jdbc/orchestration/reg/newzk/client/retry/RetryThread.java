@@ -19,6 +19,7 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.zookeeper.KeeperException;
 
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.ExecutorService;
@@ -27,9 +28,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.apache.zookeeper.KeeperException;
 
-/*
+/**
  * Async retry.
  *
  * @author lidongbo
@@ -39,8 +39,6 @@ public final class RetryThread extends Thread {
     
     private final int corePoolSize = Runtime.getRuntime().availableProcessors();
     
-    private final ThreadPoolExecutor retryExecutor;
-    
     private final int maximumPoolSize = corePoolSize;
     
     private final long keepAliveTime = 0;
@@ -49,6 +47,8 @@ public final class RetryThread extends Thread {
     
     private final DelayQueue<BaseOperation> queue;
     
+    private final ThreadPoolExecutor retryExecutor;
+    
     public RetryThread(final DelayQueue<BaseOperation> queue) {
         this.queue = queue;
         retryExecutor = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(10), new ThreadFactory() {
@@ -56,11 +56,11 @@ public final class RetryThread extends Thread {
             private final AtomicInteger threadIndex = new AtomicInteger(0);
             
             @Override
-            public Thread newThread(final Runnable r) {
-                Thread thread = new Thread(r);
+            public Thread newThread(final Runnable runnable) {
+                Thread thread = new Thread(runnable);
                 thread.setDaemon(true);
                 thread.setName("zk-retry-" + threadIndex.incrementAndGet());
-                log.debug("new thread:{}", thread.getName());
+                log.debug("new thread: {}", thread.getName());
                 return thread;
             }
         });
@@ -74,9 +74,9 @@ public final class RetryThread extends Thread {
             final BaseOperation operation;
             try {
                 operation = queue.take();
-                log.debug("take operation:{}", operation.toString());
+                log.debug("take operation: {}", operation.toString());
             } catch (final InterruptedException ex) {
-                log.error("retry interrupt ex:{}", ex.getMessage());
+                log.error("retry interrupt ex: {}", ex.getMessage());
                 continue;
             }
             retryExecutor.submit(new Runnable() {
@@ -88,11 +88,11 @@ public final class RetryThread extends Thread {
                         result = operation.executeOperation();
                     } catch (final KeeperException | InterruptedException ex) {
                         result = false;
-                        log.error("retry disrupt operation:{}, ex:{}", operation.toString(), ex.getMessage());
+                        log.error("retry disrupt operation: {}, ex: {}", operation.toString(), ex.getMessage());
                     }
                     if (result) {
                         queue.offer(operation);
-                        log.debug("enqueue again operation:{}", operation.toString());
+                        log.debug("enqueue again operation: {}", operation.toString());
                     }
                 }
             });
@@ -110,7 +110,6 @@ public final class RetryThread extends Thread {
                     service.shutdown();
                     service.awaitTermination(terminationTimeout, timeUnit);
                 } catch (final InterruptedException ignored) {
-                    // shutting down anyway, just ignore.
                 }
             }
         });

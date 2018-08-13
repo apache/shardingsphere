@@ -23,5 +23,5 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses(AllJdbcTests.class)
-public class AllInternalTests {
+public final class AllInternalTests {
 }

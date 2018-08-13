@@ -25,7 +25,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.Types;
 
 /**
- * ResultSet metadata for generated keys.
+ * Result set meta data for generated keys.
  * 
  * @author gaohongtao
  */

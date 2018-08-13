@@ -17,13 +17,17 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.nio.charset.Charset;
 
-/*
+/**
  * Zookeeper client constants.
  *
  * @author lidongbo
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ZookeeperConstants {
     
     public static final int VERSION = -1;

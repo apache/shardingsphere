@@ -17,7 +17,7 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.action;
 
-/*
+/**
  * Callback on contention has not reached.
  *
  * @author lidongbo
@@ -25,7 +25,7 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.action;
 public interface ContentionCallback {
     
     /**
-    * Process callback result.
-    */
+     * Process callback result.
+     */
     void processResult();
 }

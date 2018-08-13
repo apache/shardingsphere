@@ -51,8 +51,7 @@ public final class RdbTransactionLogStorageOperationsTest extends AbstractTransa
             + "`creation_time` LONG NOT NULL, "
             + "`async_delivery_try_times` INT NOT NULL DEFAULT 0, "
             + "PRIMARY KEY (`id`));";
-        try (
-            Connection conn = dataSource.getConnection();
+        try (Connection conn = dataSource.getConnection();
             PreparedStatement preparedStatement = conn.prepareStatement(dbSchema)) {
             preparedStatement.executeUpdate();
         }

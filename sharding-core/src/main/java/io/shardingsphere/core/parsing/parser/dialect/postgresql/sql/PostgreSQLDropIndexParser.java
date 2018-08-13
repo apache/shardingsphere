@@ -39,4 +39,9 @@ public final class PostgreSQLDropIndexParser extends AbstractDropIndexParser {
     protected Keyword[] getSkippedKeywordsBetweenDropIndexAndIndexName() {
         return new Keyword[] {DefaultKeyword.IF, DefaultKeyword.EXISTS};
     }
+    
+    @Override
+    protected Keyword[] getSkippedKeywordsBetweenDropAndTable() {
+        return new Keyword[0];
+    }
 }

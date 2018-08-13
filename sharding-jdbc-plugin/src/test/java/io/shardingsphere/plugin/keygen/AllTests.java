@@ -25,5 +25,5 @@ import org.junit.runners.Suite;
         HostNameKeyGeneratorTest.class,
         IPKeyGeneratorTest.class
     })
-public class AllTests {
+public final class AllTests {
 }

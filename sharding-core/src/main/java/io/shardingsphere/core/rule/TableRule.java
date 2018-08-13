@@ -28,9 +28,11 @@ import lombok.Getter;
 import lombok.ToString;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Table rule configuration.
@@ -88,6 +90,23 @@ public final class TableRule {
                 throw new ShardingException("Cannot find data source in sharding rule, invalid actual data node is: '%s'", each);
             }
             result.add(dataNode);
+        }
+        return result;
+    }
+    
+    /**
+     * Get data node groups.
+     * 
+     * @return data node groups, key is data source name, value is tables belong to this data source 
+     */
+    public Map<String, Collection<String>> getDataNodeGroups() {
+        Map<String, Collection<String>> result = new LinkedHashMap<>(actualDataNodes.size(), 1);
+        for (DataNode each : actualDataNodes) {
+            String dataSourceName = each.getDataSourceName();
+            if (!result.containsKey(dataSourceName)) {
+                result.put(dataSourceName, new LinkedList<String>());
+            }
+            result.get(dataSourceName).add(each.getTableName());
         }
         return result;
     }

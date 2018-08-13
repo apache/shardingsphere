@@ -36,7 +36,7 @@ import java.util.Properties;
  * @author zhangliang
  * @author panjuan
  */
-public class OrchestrationMasterSlaveDataSourceFactoryBean implements FactoryBean<OrchestrationMasterSlaveDataSource>, InitializingBean, DisposableBean {
+public final class OrchestrationMasterSlaveDataSourceFactoryBean implements FactoryBean<OrchestrationMasterSlaveDataSource>, InitializingBean, DisposableBean {
     
     private OrchestrationMasterSlaveDataSource orchestrationMasterSlaveDataSource;
     

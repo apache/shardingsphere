@@ -35,7 +35,7 @@ import java.util.Properties;
  *
  * @author zhangliang
  */
-public class OrchestrationShardingDataSourceFactoryBean implements FactoryBean<OrchestrationShardingDataSource>, InitializingBean, DisposableBean {
+public final class OrchestrationShardingDataSourceFactoryBean implements FactoryBean<OrchestrationShardingDataSource>, InitializingBean, DisposableBean {
     
     private OrchestrationShardingDataSource orchestrationShardingDataSource;
     

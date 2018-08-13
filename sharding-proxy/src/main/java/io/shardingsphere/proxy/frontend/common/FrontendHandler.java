@@ -32,7 +32,7 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
     private boolean authorized;
     
     @Override
-    public void channelActive(final ChannelHandlerContext context) {
+    public final void channelActive(final ChannelHandlerContext context) {
         ChannelThreadExecutorGroup.getInstance().register(context.channel().id());
         handshake(context);
     }
@@ -40,7 +40,7 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
     protected abstract void handshake(ChannelHandlerContext context);
     
     @Override
-    public void channelRead(final ChannelHandlerContext context, final Object message) {
+    public final void channelRead(final ChannelHandlerContext context, final Object message) {
         if (!authorized) {
             auth(context, (ByteBuf) message);
             authorized = true;
@@ -54,7 +54,7 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
     protected abstract void executeCommand(ChannelHandlerContext context, ByteBuf message);
     
     @Override
-    public void channelInactive(final ChannelHandlerContext context) {
+    public final void channelInactive(final ChannelHandlerContext context) {
         context.fireChannelInactive();
         ChannelThreadExecutorGroup.getInstance().unregister(context.channel().id());
     }

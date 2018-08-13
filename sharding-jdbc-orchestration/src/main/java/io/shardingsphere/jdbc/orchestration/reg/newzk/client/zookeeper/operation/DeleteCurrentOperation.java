@@ -21,12 +21,12 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseOperation;
 import org.apache.zookeeper.KeeperException;
 
-/*
- * Async retry operation which DeleteCurrent action.
+/**
+ * Async retry operation which delete current action.
  *
  * @author lidongbo
  */
-public class DeleteCurrentOperation extends BaseOperation {
+public final class DeleteCurrentOperation extends BaseOperation {
     
     private final String key;
     
@@ -42,6 +42,6 @@ public class DeleteCurrentOperation extends BaseOperation {
     
     @Override
     public String toString() {
-        return String.format("DeleteCurrentOperation key:%s", key);
+        return String.format("DeleteCurrentOperation key: %s", key);
     }
 }

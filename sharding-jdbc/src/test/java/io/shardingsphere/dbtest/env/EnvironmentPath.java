@@ -33,13 +33,13 @@ import static org.junit.Assert.assertNotNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EnvironmentPath {
     
-    private static final String DATABASE_ENVIRONMENT_RESOURCES_PATH = "asserts/env/%s/schema.xml";
+    private static final String DATABASE_ENVIRONMENT_RESOURCES_PATH = "integrate/env/%s/schema.xml";
     
-    private static final String DATA_INITIALIZE_RESOURCES_PATH = "asserts/env/%s/dataset.xml";
+    private static final String DATA_INITIALIZE_RESOURCES_PATH = "integrate/env/%s/dataset.xml";
     
-    private static final String SHARDING_RULE_RESOURCES_PATH = "asserts/env/%s/sharding-rule.yaml";
+    private static final String SHARDING_RULE_RESOURCES_PATH = "integrate/env/%s/sharding-rule.yaml";
     
-    private static final String AUTHORITY_RESOURCES_PATH = "asserts/env/%s/authority.xml";
+    private static final String AUTHORITY_RESOURCES_PATH = "integrate/env/%s/authority.xml";
     
     /**
      * Get database environment resource File.

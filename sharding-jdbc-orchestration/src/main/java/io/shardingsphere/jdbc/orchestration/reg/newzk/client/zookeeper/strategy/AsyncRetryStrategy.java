@@ -31,13 +31,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 
-/*
+/**
  * Async retry strategy.
  *
  * @author lidongbo
  */
 @Slf4j
-public class AsyncRetryStrategy extends SyncRetryStrategy {
+public final class AsyncRetryStrategy extends SyncRetryStrategy {
     
     public AsyncRetryStrategy(final IProvider provider, final DelayRetryPolicy delayRetryPolicy) {
         super(provider, delayRetryPolicy);

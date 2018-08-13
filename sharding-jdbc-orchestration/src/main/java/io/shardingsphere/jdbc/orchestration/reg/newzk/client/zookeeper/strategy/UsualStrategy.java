@@ -28,7 +28,7 @@ import org.apache.zookeeper.Watcher;
 
 import java.util.List;
 
-/*
+/**
  * Usual strategy.
  * 
  * @author lidongbo
@@ -88,37 +88,37 @@ public class UsualStrategy extends BaseStrategy {
     @Override
     public void createAllNeedPath(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
         if (!key.contains(ZookeeperConstants.PATH_SEPARATOR)) {
-            this.createCurrentOnly(key, value, createMode);
+            createCurrentOnly(key, value, createMode);
             return;
         }
         List<String> nodes = getProvider().getNecessaryPaths(key);
         for (int i = 0; i < nodes.size(); i++) {
             try {
                 if (i == nodes.size() - 1) {
-                    this.createCurrentOnly(nodes.get(i), value, createMode);
+                    createCurrentOnly(nodes.get(i), value, createMode);
                 } else {
-                    this.createCurrentOnly(nodes.get(i), ZookeeperConstants.NOTHING_VALUE, CreateMode.PERSISTENT);
+                    createCurrentOnly(nodes.get(i), ZookeeperConstants.NOTHING_VALUE, CreateMode.PERSISTENT);
                 }
-                log.debug("node not exist and create:", nodes.get(i));
+                log.debug("node not exist and create: {}", nodes.get(i));
             } catch (final KeeperException.NodeExistsException ex) {
-                log.debug("create node exist:{}", nodes.get(i));
+                log.debug("create node exist: {}", nodes.get(i));
             }
         }
     }
     
     @Override
     public void deleteAllChildren(final String key) throws KeeperException, InterruptedException {
-        log.debug("deleteAllChildren:{}", key);
-        this.deleteChildren(getProvider().getRealPath(key), true);
+        log.debug("deleteAllChildren: {}", key);
+        deleteChildren(getProvider().getRealPath(key), true);
     }
     
     private void deleteChildren(final String path, final boolean deleteCurrentNode) throws KeeperException, InterruptedException {
-        log.debug("deleteChildren:{}", path);
+        log.debug("deleteChildren: {}", path);
         List<String> children;
         try {
             children = getProvider().getChildren(path);
         } catch (final KeeperException.NoNodeException ex) {
-            log.warn("deleteChildren node not exist:{},ex:{}", path, ex.getMessage());
+            log.warn("deleteChildren node not exist: {}, ex: {}", path, ex.getMessage());
             return;
         }
         for (String each : children) {
@@ -126,12 +126,12 @@ public class UsualStrategy extends BaseStrategy {
         }
         if (deleteCurrentNode) {
             try {
-                this.deleteOnlyCurrent(path);
+                deleteOnlyCurrent(path);
             } catch (final KeeperException.NotEmptyException ex) {
-                log.warn("deleteCurrentNode exist children:{},ex:{}", path, ex.getMessage());
+                log.warn("deleteCurrentNode exist children: {}, ex: {}", path, ex.getMessage());
                 deleteChildren(path, true);
             } catch (final KeeperException.NoNodeException ex) {
-                log.warn("deleteCurrentNode node not exist:{},ex:{}", path, ex.getMessage());
+                log.warn("deleteCurrentNode node not exist: {}, ex: {}", path, ex.getMessage());
             }
         }
     }
@@ -141,43 +141,43 @@ public class UsualStrategy extends BaseStrategy {
     */
     @Override
     public void deleteCurrentBranch(final String key) throws KeeperException, InterruptedException {
-        log.debug("deleteCurrentBranch:{}", key);
+        log.debug("deleteCurrentBranch: {}", key);
         String path = getProvider().getRealPath(key);
         try {
-            this.deleteOnlyCurrent(path);
+            deleteOnlyCurrent(path);
         } catch (final KeeperException | InterruptedException ex) {
             if (ex instanceof KeeperException.NotEmptyException) {
-                this.deleteChildren(path, true);
+                deleteChildren(path, true);
             } else if (ex instanceof KeeperException.NoNodeException) {
-                log.debug("path:{},ex:{}", path, ex.getMessage());
+                log.debug("path: {}, ex: {}", path, ex.getMessage());
             } else {
                 throw ex;
             }
         }
         String superPath = path.substring(0, path.lastIndexOf(ZookeeperConstants.PATH_SEPARATOR));
         try {
-            this.deleteRecursively(superPath);
+            deleteRecursively(superPath);
         } catch (final KeeperException.NotEmptyException ex) {
-            log.warn("deleteCurrentBranch exist children:{},ex:{}", path, ex.getMessage());
+            log.warn("deleteCurrentBranch exist children: {}, ex: {}", path, ex.getMessage());
         } catch (final KeeperException.NoNodeException ex) {
-            log.debug("deleteCurrentBranch:{},ex:{}", superPath, ex.getMessage());
+            log.debug("deleteCurrentBranch: {}, ex: {}", superPath, ex.getMessage());
         }
     }
     
     private void deleteRecursively(final String path) throws KeeperException, InterruptedException {
-        log.debug("deleteRecursively:{}", path);
+        log.debug("deleteRecursively: {}", path);
         int index = path.lastIndexOf(ZookeeperConstants.PATH_SEPARATOR);
         if (index == 0) {
-            this.deleteOnlyCurrent(path);
+            deleteOnlyCurrent(path);
             return;
         }
         String superPath = path.substring(0, index);
         try {
-            this.deleteOnlyCurrent(path);
-            this.deleteRecursively(superPath);
+            deleteOnlyCurrent(path);
+            deleteRecursively(superPath);
         } catch (final KeeperException.NotEmptyException ex) {
-            log.info("deleteRecursively exist children:{},ex:{}", path, ex.getMessage());
-            log.debug("deleteRecursively {} exist other children:{}", path, this.getChildren(path));
+            log.info("deleteRecursively exist children: {}, ex: {}", path, ex.getMessage());
+            log.debug("deleteRecursively {} exist other children: {}", path, getChildren(path));
         }
     }
 }

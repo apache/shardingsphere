@@ -44,4 +44,9 @@ public final class SQLServerCreateIndexParser extends AbstractCreateIndexParser 
     protected Keyword[] getSkippedKeywordsBetweenCreateIndexAndKeyword() {
         return new Keyword[] {DefaultKeyword.UNIQUE, DefaultKeyword.FULLTEXT};
     }
+    
+    @Override
+    protected Keyword[] getSkippedKeywordsBetweenCreateIndexAndIndexName() {
+        return new Keyword[0];
+    }
 }

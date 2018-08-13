@@ -26,25 +26,26 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.TestSupport;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.UsualStrategy;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
 import org.junit.Test;
 
-import static junit.framework.TestCase.assertFalse;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @Slf4j
-public class SyncRetryStrategyTest extends UsualClientTest {
+public final class SyncRetryStrategyTest extends UsualClientTest {
     
     private IProvider provider;
     
@@ -53,7 +54,7 @@ public class SyncRetryStrategyTest extends UsualClientTest {
         final IClient client = creator.setClientNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes(), ZooDefs.Ids.CREATOR_ALL_ACL)
                 .newClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).watch(TestSupport.buildListener()).start();
         client.useExecStrategy(StrategyType.SYNC_RETRY);
-        provider = ((UsualClient) client).getStrategy().getProvider();
+        provider = client.getExecStrategy().getProvider();
         return client;
     }
     

@@ -27,7 +27,7 @@ import javax.sql.DataSource;
  * 
  * @author caohao
  */
-public class MemoryTransactionLogDataSource implements TransactionLogDataSource {
+public final class MemoryTransactionLogDataSource implements TransactionLogDataSource {
     
     @Override
     public TransactionLogDataSourceType getType() {

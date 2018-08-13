@@ -26,6 +26,7 @@ import io.opentracing.util.GlobalTracer;
 import io.opentracing.util.ThreadLocalActiveSpanSource;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
+import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
@@ -33,6 +34,7 @@ import io.shardingsphere.core.jdbc.core.statement.ShardingPreparedStatement;
 import io.shardingsphere.core.jdbc.core.statement.ShardingStatement;
 import io.shardingsphere.core.merger.MergeEngine;
 import io.shardingsphere.core.merger.dal.DALMergeEngine;
+import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowColumnsStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
 import io.shardingsphere.core.rule.ShardingRule;
@@ -87,7 +89,8 @@ public final class MergeEventListenerTest {
         dataSourceMap.put("ds_0", mockDataSource());
         dataSourceMap.put("ds_1", mockDataSource());
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, dataSourceMap.keySet());
-        shardingContext = new ShardingContext(dataSourceMap, shardingRule, DatabaseType.MySQL, null, null, true);
+        ShardingMetaData shardingMetaData = mock(ShardingMetaData.class);
+        shardingContext = new ShardingContext(dataSourceMap, shardingRule, DatabaseType.MySQL, null, shardingMetaData, ConnectionMode.MEMORY_STRICTLY, true);
         mergeEngine = new DALMergeEngine(null, null, new ShowDatabasesStatement(), null);
     }
     

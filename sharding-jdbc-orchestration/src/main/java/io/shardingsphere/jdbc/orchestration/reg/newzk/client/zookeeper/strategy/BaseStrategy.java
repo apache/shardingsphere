@@ -21,29 +21,27 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IExecStrateg
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.zookeeper.KeeperException;
 
-/*
- * Base exec strategy.
+/**
+ * Base execute strategy.
  *
  * @author lidongbo
  */
+@RequiredArgsConstructor
 public abstract class BaseStrategy implements IExecStrategy {
     
     @Getter
     private final IProvider provider;
     
-    public BaseStrategy(final IProvider provider) {
-        this.provider = provider;
-    }
-    
     @Override
-    public String getDataString(final String key) throws KeeperException, InterruptedException {
+    public final String getDataString(final String key) throws KeeperException, InterruptedException {
         return new String(getData(key));
     }
     
     @Override
-    public BaseTransaction transaction() {
+    public final BaseTransaction transaction() {
         return provider.transaction();
     }
 }

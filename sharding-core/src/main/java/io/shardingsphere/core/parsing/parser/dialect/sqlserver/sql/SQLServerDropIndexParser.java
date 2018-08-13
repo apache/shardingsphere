@@ -18,6 +18,7 @@
 package io.shardingsphere.core.parsing.parser.dialect.sqlserver.sql;
 
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
+import io.shardingsphere.core.parsing.lexer.token.Keyword;
 import io.shardingsphere.core.parsing.parser.sql.ddl.drop.index.AbstractDropIndexParser;
 import io.shardingsphere.core.rule.ShardingRule;
 
@@ -31,5 +32,15 @@ public final class SQLServerDropIndexParser extends AbstractDropIndexParser {
     
     public SQLServerDropIndexParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine);
+    }
+    
+    @Override
+    protected Keyword[] getSkippedKeywordsBetweenDropAndTable() {
+        return new Keyword[0];
+    }
+    
+    @Override
+    protected Keyword[] getSkippedKeywordsBetweenDropIndexAndIndexName() {
+        return new Keyword[0];
     }
 }

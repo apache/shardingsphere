@@ -20,6 +20,7 @@ package io.shardingsphere.core.metadata.table.executor;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
@@ -39,13 +40,14 @@ import java.util.Map;
  */
 public final class TableMetaDataInitializer {
     
-    private final TableMetaDataConnectionManager executorAdapter;
+    private final TableMetaDataConnectionManager connectionManager;
     
     private final TableMetaDataLoader tableMetaDataLoader;
     
-    public TableMetaDataInitializer(final ListeningExecutorService executorService, final TableMetaDataConnectionManager executorAdapter) {
-        this.executorAdapter = executorAdapter;
-        tableMetaDataLoader = new TableMetaDataLoader(executorService, executorAdapter);
+    public TableMetaDataInitializer(
+            final ShardingDataSourceMetaData shardingDataSourceMetaData, final ListeningExecutorService executorService, final TableMetaDataConnectionManager connectionManager) {
+        this.connectionManager = connectionManager;
+        tableMetaDataLoader = new TableMetaDataLoader(shardingDataSourceMetaData, executorService, connectionManager);
     }
     
     /**
@@ -86,8 +88,8 @@ public final class TableMetaDataInitializer {
     
     private Collection<String> getAllTableNames(final String dataSourceName) throws SQLException {
         Collection<String> result = new LinkedList<>();
-        try (Connection connection = executorAdapter.getConnection(dataSourceName);
-             ResultSet resultSet = connection.getMetaData().getTables(null, null, null, null)) {
+        try (Connection connection = connectionManager.getConnection(dataSourceName);
+             ResultSet resultSet = connection.getMetaData().getTables(dataSourceName, null, null, null)) {
             while (resultSet.next()) {
                 result.add(resultSet.getString("TABLE_NAME"));
             }

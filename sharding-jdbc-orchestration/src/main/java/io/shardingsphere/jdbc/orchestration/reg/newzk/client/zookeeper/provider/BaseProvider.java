@@ -23,11 +23,9 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.Holder;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
-import java.io.IOException;
-import java.util.List;
-import java.util.Stack;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
@@ -35,19 +33,24 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.data.ACL;
 
-/*
+import java.io.IOException;
+import java.util.List;
+import java.util.Stack;
+
+/**
  * Base provider.
  *
  * @author lidongbo
  */
+@RequiredArgsConstructor
 @Slf4j
 public class BaseProvider implements IProvider {
     
     @Getter
-    private final Holder holder;
+    private final String rootNode;
     
     @Getter
-    private final String rootNode;
+    private final Holder holder;
     
     @Getter(value = AccessLevel.PROTECTED)
     private final boolean watched;
@@ -55,55 +58,48 @@ public class BaseProvider implements IProvider {
     @Getter(value = AccessLevel.PROTECTED)
     private final List<ACL> authorities;
     
-    public BaseProvider(final String rootNode, final Holder holder, final boolean watched, final List<ACL> authorities) {
-        this.rootNode = rootNode;
-        this.holder = holder;
-        this.watched = watched;
-        this.authorities = authorities;
-    }
-    
     @Override
-    public String getDataString(final String key) throws KeeperException, InterruptedException {
+    public final String getDataString(final String key) throws KeeperException, InterruptedException {
         return new String(getData(key));
     }
     
     @Override
-    public byte[] getData(final String key) throws KeeperException, InterruptedException {
+    public final byte[] getData(final String key) throws KeeperException, InterruptedException {
         return holder.getZooKeeper().getData(key, watched, null);
     }
     
     @Override
-    public void getData(final String key, final AsyncCallback.DataCallback callback, final Object ctx) {
+    public final void getData(final String key, final AsyncCallback.DataCallback callback, final Object ctx) {
         holder.getZooKeeper().getData(key, watched, callback, ctx);
     }
     
     @Override
-    public boolean exists(final String key) throws KeeperException, InterruptedException {
+    public final boolean exists(final String key) throws KeeperException, InterruptedException {
         return null != holder.getZooKeeper().exists(key, watched);
     }
     
     @Override
-    public boolean exists(final String key, final Watcher watcher) throws KeeperException, InterruptedException {
+    public final boolean exists(final String key, final Watcher watcher) throws KeeperException, InterruptedException {
         return null != holder.getZooKeeper().exists(key, watcher);
     }
     
     @Override
-    public List<String> getChildren(final String key) throws KeeperException, InterruptedException {
+    public final List<String> getChildren(final String key) throws KeeperException, InterruptedException {
         return holder.getZooKeeper().getChildren(key, watched);
     }
     
     @Override
-    public void create(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
+    public final void create(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
         if (exists(key)) {
-            log.debug("node exist:{}", key);
+            log.debug("node exist: {}", key);
             return;
         }
         holder.getZooKeeper().create(key, value.getBytes(ZookeeperConstants.UTF_8), authorities, createMode);
-        log.debug("BaseProvider createCurrentOnly:{}", key);
+        log.debug("BaseProvider createCurrentOnly: {}", key);
     }
 
     @Override
-    public boolean update(final String key, final String value) throws KeeperException, InterruptedException {
+    public final boolean update(final String key, final String value) throws KeeperException, InterruptedException {
         if (exists(key)) {
             holder.getZooKeeper().setData(key, value.getBytes(ZookeeperConstants.UTF_8), ZookeeperConstants.VERSION);
             return true;
@@ -112,36 +108,36 @@ public class BaseProvider implements IProvider {
     }
     
     @Override
-    public void delete(final String key) throws KeeperException, InterruptedException {
+    public final void delete(final String key) throws KeeperException, InterruptedException {
         holder.getZooKeeper().delete(key, ZookeeperConstants.VERSION);
-        log.debug("BaseProvider deleteOnlyCurrent:{}", key);
+        log.debug("BaseProvider deleteOnlyCurrent: {}", key);
     }
     
     @Override
-    public void delete(final String key, final AsyncCallback.VoidCallback callback, final Object ctx) {
+    public final void delete(final String key, final AsyncCallback.VoidCallback callback, final Object ctx) {
         holder.getZooKeeper().delete(key, ZookeeperConstants.VERSION, callback, ctx);
-        log.debug("BaseProvider deleteOnlyCurrent:{},ctx:{}", key, ctx);
+        log.debug("BaseProvider deleteOnlyCurrent: {}, ctx: {}", key, ctx);
     }
 
     @Override
-    public String getRealPath(final String path) {
+    public final String getRealPath(final String path) {
         return PathUtil.getRealPath(rootNode, path);
     }
     
     @Override
-    public List<String> getNecessaryPaths(final String key) {
+    public final List<String> getNecessaryPaths(final String key) {
         List<String> nodes = PathUtil.getPathOrderNodes(rootNode, key);
         nodes.remove(rootNode);
         return nodes;
     }
     
     @Override
-    public Stack<String> getDeletingPaths(final String key) {
+    public final Stack<String> getDeletingPaths(final String key) {
         return PathUtil.getPathReverseNodes(rootNode, key);
     }
     
     @Override
-    public void executeContention(final LeaderElection election) throws KeeperException, InterruptedException {
+    public final void executeContention(final LeaderElection election) throws KeeperException, InterruptedException {
         this.executeContention(rootNode, election);
     }
     
@@ -150,11 +146,11 @@ public class BaseProvider implements IProvider {
     }
     
     @Override
-    public void resetConnection() {
+    public final void resetConnection() {
         try {
             holder.reset();
         } catch (final InterruptedException | IOException ex) {
-            log.error("resetConnection Exception:{}", ex.getMessage(), ex);
+            log.error("resetConnection Exception: {}", ex.getMessage(), ex);
         }
     }
     
