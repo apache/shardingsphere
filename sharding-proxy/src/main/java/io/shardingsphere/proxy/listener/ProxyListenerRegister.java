@@ -17,8 +17,8 @@
 
 package io.shardingsphere.proxy.listener;
 
-import io.shardingsphere.transaction.listener.LocalTransactionListener;
-import io.shardingsphere.transaction.listener.XATransactionListener;
+import io.shardingsphere.transaction.listener.local.LocalTransactionListener;
+import io.shardingsphere.transaction.listener.xa.XATransactionListener;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

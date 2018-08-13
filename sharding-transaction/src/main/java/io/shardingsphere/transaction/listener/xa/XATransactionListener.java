@@ -15,13 +15,13 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.listener;
+package io.shardingsphere.transaction.listener.xa;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.constant.TransactionType;
-import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.transaction.event.XATransactionEvent;
+import io.shardingsphere.transaction.listener.ShardingTransactionListener;
 import io.shardingsphere.transaction.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
 
@@ -32,36 +32,19 @@ import java.sql.SQLException;
  *
  * @author zhangliang
  */
-public final class XATransactionListener {
+public final class XATransactionListener extends ShardingTransactionListener {
     
-    /**
-     * Register transaction listener into event bus.
-     */
-    public void register() {
-        EventBusInstance.getInstance().register(this);
-    }
+    private final ShardingTransactionManager shardingTransactionManager = ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.XA);
     
     /**
      * Listen event.
      *
-     * @param xaTransactionEvent XA transaction event
+     * @param transactionEvent XA transaction event
      * @throws SQLException SQL exception
      */
     @Subscribe
     @AllowConcurrentEvents
-    public void listen(final XATransactionEvent xaTransactionEvent) throws SQLException {
-        ShardingTransactionManager shardingTransactionManager = ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.XA);
-        switch (xaTransactionEvent.getTclType()) {
-            case BEGIN:
-                shardingTransactionManager.begin(xaTransactionEvent);
-                break;
-            case COMMIT:
-                shardingTransactionManager.commit(xaTransactionEvent);
-                break;
-            case ROLLBACK:
-                shardingTransactionManager.rollback(xaTransactionEvent);
-                break;
-            default:
-        }
+    public void listen(final XATransactionEvent transactionEvent) throws SQLException {
+        doTransaction(shardingTransactionManager, transactionEvent);
     }
 }

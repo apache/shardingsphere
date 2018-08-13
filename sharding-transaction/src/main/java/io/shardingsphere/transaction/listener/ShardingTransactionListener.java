@@ -17,49 +17,36 @@
 
 package io.shardingsphere.transaction.listener;
 
-import com.google.common.eventbus.AllowConcurrentEvents;
-import com.google.common.eventbus.Subscribe;
-import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.util.EventBusInstance;
-import io.shardingsphere.transaction.event.LocalTransactionEvent;
+import io.shardingsphere.transaction.event.TransactionEvent;
 import io.shardingsphere.transaction.manager.ShardingTransactionManager;
-import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
 
 import java.sql.SQLException;
 
 /**
- * Local transaction listener.
+ * Sharding transaction listener.
  *
  * @author zhangliang
  */
-public final class LocalTransactionListener {
+public abstract class ShardingTransactionListener {
     
     /**
      * Register transaction listener into event bus.
      */
-    public void register() {
+    public final void register() {
         EventBusInstance.getInstance().register(this);
     }
     
-    /**
-     * Listen event.
-     *
-     * @param localTransactionEvent local transaction event
-     * @throws SQLException SQL exception
-     */
-    @Subscribe
-    @AllowConcurrentEvents
-    public void listen(final LocalTransactionEvent localTransactionEvent) throws SQLException {
-        ShardingTransactionManager shardingTransactionManager = ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.LOCAL);
-        switch (localTransactionEvent.getTclType()) {
+    protected final void doTransaction(final ShardingTransactionManager shardingTransactionManager, final TransactionEvent transactionEvent) throws SQLException {
+        switch (transactionEvent.getTclType()) {
             case BEGIN:
-                shardingTransactionManager.begin(localTransactionEvent);
+                shardingTransactionManager.begin(transactionEvent);
                 break;
             case COMMIT:
-                shardingTransactionManager.commit(localTransactionEvent);
+                shardingTransactionManager.commit(transactionEvent);
                 break;
             case ROLLBACK:
-                shardingTransactionManager.rollback(localTransactionEvent);
+                shardingTransactionManager.rollback(transactionEvent);
                 break;
             default:
         }
