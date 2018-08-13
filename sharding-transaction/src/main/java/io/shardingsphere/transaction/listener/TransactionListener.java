@@ -19,11 +19,13 @@ package io.shardingsphere.transaction.listener;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
+import io.shardingsphere.core.constant.TransactionType;
 import io.shardingsphere.core.util.EventBusInstance;
+import io.shardingsphere.transaction.event.LocalTransactionEvent;
+import io.shardingsphere.transaction.event.TransactionEvent;
+import io.shardingsphere.transaction.event.XaTransactionEvent;
 import io.shardingsphere.transaction.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
-import io.shardingsphere.transaction.TransactionTypeHolder;
-import io.shardingsphere.transaction.event.TransactionEvent;
 
 import java.sql.SQLException;
 
@@ -50,7 +52,7 @@ public final class TransactionListener {
     @Subscribe
     @AllowConcurrentEvents
     public void listen(final TransactionEvent transactionEvent) throws SQLException {
-        ShardingTransactionManager shardingTransactionManager = ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionTypeHolder.get());
+        ShardingTransactionManager shardingTransactionManager = ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(getTransactionType(transactionEvent));
         switch (transactionEvent.getTclType()) {
             case BEGIN:
                 shardingTransactionManager.begin(transactionEvent);
@@ -63,5 +65,15 @@ public final class TransactionListener {
                 break;
             default:
         }
+    }
+    
+    private TransactionType getTransactionType(final TransactionEvent transactionEvent) {
+        if (transactionEvent instanceof LocalTransactionEvent) {
+            return TransactionType.LOCAL;
+        }
+        if (transactionEvent instanceof XaTransactionEvent) {
+            return TransactionType.XA;
+        }
+        throw new UnsupportedOperationException(transactionEvent.getClass().getName());
     }
 }
