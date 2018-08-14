@@ -17,17 +17,14 @@
 
 package io.shardingsphere.proxy.backend.jdbc.transaction;
 
-import lombok.RequiredArgsConstructor;
-
 import java.sql.SQLException;
 
 /**
- * Abstract transaction engine.
+ * Transaction engine.
  *
  * @author zhaojun
  */
-@RequiredArgsConstructor
-public abstract class TransactionEngine {
+public interface TransactionEngine {
     
     /**
      * Execute transaction with binding transaction manager.
@@ -35,5 +32,5 @@ public abstract class TransactionEngine {
      * @return skip or not skip access backend databases 
      * @throws SQLException SQL exception
      */
-    public abstract boolean execute() throws SQLException;
+    boolean execute() throws SQLException;
 }

@@ -35,7 +35,7 @@ import java.sql.SQLException;
  * @author zhaojun
  */
 @RequiredArgsConstructor
-public final class XATransactionEngine extends TransactionEngine {
+public final class XATransactionEngine implements TransactionEngine {
     
     private final String sql;
     
