@@ -38,8 +38,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -61,14 +61,16 @@ public abstract class ExecutorEngine implements AutoCloseable {
     private final ListeningExecutorService executorService;
     
     public ExecutorEngine(final int executorSize) {
-        if (0 == executorSize) {
-            executorService = MoreExecutors.listeningDecorator(new ThreadPoolExecutor(
-                0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("Sharding-JDBC-%d").build()));
-        } else {
-            executorService = MoreExecutors.listeningDecorator(new ThreadPoolExecutor(
-                executorSize, executorSize, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("Sharding-JDBC-%d").build()));
-        }
+        executorService = 0 == executorSize ? newCachedThreadPool() : newFixedThreadPool(executorSize);
         MoreExecutors.addDelayedShutdownHook(executorService, 60, TimeUnit.SECONDS);
+    }
+    
+    private ListeningExecutorService newCachedThreadPool() {
+        return MoreExecutors.listeningDecorator(Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(true).setNameFormat("Sharding-Sphere-%d").build()));
+    }
+    
+    private ListeningExecutorService newFixedThreadPool(final int poolSize) {
+        return MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(poolSize, new ThreadFactoryBuilder().setDaemon(true).setNameFormat("Sharding-Sphere-%d").build()));
     }
     
     /**
@@ -106,8 +108,8 @@ public abstract class ExecutorEngine implements AutoCloseable {
     
     protected abstract <T> List<T> getExecuteResults(SQLType sqlType, Collection<? extends BaseStatementUnit> baseStatementUnits, ExecuteCallback<T> executeCallback) throws Exception;
     
-    protected <T> T executeInternal(final SQLType sqlType, final BaseStatementUnit baseStatementUnit, final ExecuteCallback<T> executeCallback,
-                                  final boolean isExceptionThrown, final Map<String, Object> dataMap) throws Exception {
+    protected final <T> T executeInternal(final SQLType sqlType, final BaseStatementUnit baseStatementUnit, 
+                                          final ExecuteCallback<T> executeCallback, final boolean isExceptionThrown, final Map<String, Object> dataMap) throws Exception {
         T result;
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
