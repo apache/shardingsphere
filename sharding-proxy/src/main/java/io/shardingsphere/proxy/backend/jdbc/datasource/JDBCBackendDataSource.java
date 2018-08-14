@@ -18,10 +18,10 @@
 package io.shardingsphere.proxy.backend.jdbc.datasource;
 
 import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.proxy.backend.BackendDataSource;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -37,7 +37,6 @@ import java.util.Map.Entry;
  * @author zhangliang
  */
 @Getter
-@Slf4j
 public final class JDBCBackendDataSource implements BackendDataSource {
     
     private final Map<String, DataSource> dataSourceMap;
@@ -54,7 +53,7 @@ public final class JDBCBackendDataSource implements BackendDataSource {
             // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
-                log.warn("Can not build {} failed with {}", entry.getKey(), ex);
+                throw new ShardingException(String.format("Can not build data source, name is `%s`.", entry.getKey()), ex);
             }
         }
         return result;
