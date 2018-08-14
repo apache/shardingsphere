@@ -17,6 +17,7 @@
 
 package io.shardingsphere.transaction.manager.xa.atomikos;
 
+import com.atomikos.beans.PropertyUtils;
 import com.atomikos.icatch.jta.UserTransactionManager;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.google.common.base.Optional;
@@ -26,6 +27,7 @@ import io.shardingsphere.transaction.event.xa.XATransactionEvent;
 import io.shardingsphere.transaction.manager.xa.XATransactionManager;
 
 import javax.sql.DataSource;
+import javax.sql.XADataSource;
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
@@ -88,13 +90,15 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     }
     
     @Override
-    public DataSource getXADataSource(final String xaDataSourceClassName, final String dataSourceName, final DataSourceParameter dataSourceParameter) {
+    public DataSource wrapDataSource(final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter dataSourceParameter) throws Exception {
         AtomikosDataSourceBean result = new AtomikosDataSourceBean();
         result.setUniqueResourceName(dataSourceName);
         result.setMaxPoolSize(dataSourceParameter.getMaximumPoolSize());
         result.setTestQuery("SELECT 1");
-        result.setXaDataSourceClassName(xaDataSourceClassName);
-        result.setXaProperties(getXAProperties(dataSourceParameter));
+        Properties properties = getXAProperties(dataSourceParameter);
+        PropertyUtils.setProperties(xaDataSource, properties);
+        result.setXaDataSource(xaDataSource);
+        result.setXaProperties(properties);
         return result;
     }
     

@@ -34,11 +34,11 @@ public interface XATransactionManager extends ShardingTransactionManager<XATrans
     /**
      * Get specific {@link XADataSource} and enroll it with a JTA.
      *
-     * @param xaDataSourceClassName XA data source class name
+     * @param xaDataSource XA data source
      * @param dataSourceName data source name
      * @param dataSourceParameter data source parameter
      * @return XA data source
      * @throws Exception if can not wrap the data source
      */
-    DataSource getXADataSource(String xaDataSourceClassName, String dataSourceName, DataSourceParameter dataSourceParameter) throws Exception;
+    DataSource wrapDataSource(XADataSource xaDataSource, String dataSourceName, DataSourceParameter dataSourceParameter) throws Exception;
 }
