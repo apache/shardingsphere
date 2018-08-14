@@ -18,6 +18,7 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseClientTest;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.TestSupport;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
@@ -26,14 +27,17 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.SyncRetryStrategy;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.TransactionContendStrategy;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.UsualStrategy;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
+import java.io.IOException;
+import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
 import org.junit.Test;
 
-import java.io.IOException;
-
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class UsualClientTest extends BaseClientTest {
     
@@ -45,7 +49,6 @@ public class UsualClientTest extends BaseClientTest {
     
     @Test
     public void assertUseExecStrategy() {
-        assertThat(getTestClient().getExecStrategy().getClass().getName(), is(UsualStrategy.class.getName()));
         getTestClient().useExecStrategy(StrategyType.CONTEND);
         assertThat(getTestClient().getExecStrategy().getClass().getName(), is(ContentionStrategy.class.getName()));
         getTestClient().useExecStrategy(StrategyType.TRANSACTION_CONTEND);
@@ -56,6 +59,15 @@ public class UsualClientTest extends BaseClientTest {
         assertThat(getTestClient().getExecStrategy().getClass().getName(), is(AsyncRetryStrategy.class.getName()));
         getTestClient().useExecStrategy(StrategyType.USUAL);
         assertThat(getTestClient().getExecStrategy().getClass().getName(), is(UsualStrategy.class.getName()));
+    }
+    
+    @Test
+    public void assertGetData() throws KeeperException, InterruptedException {
+        String key = "a/b/bb";
+        String value = "bbb11";
+        getTestClient().createAllNeedPath(key, value, CreateMode.PERSISTENT);
+        assertThat(getTestClient().getDataString(key), is(value));
+        getTestClient().deleteCurrentBranch(key);
     }
     
     @Test
@@ -121,5 +133,30 @@ public class UsualClientTest extends BaseClientTest {
     @Test
     public void assertClose() {
         super.close(getTestClient());
+    }
+    
+    @Test
+    public void assertDeleteOnlyCurrent() throws KeeperException, InterruptedException {
+        String key = "key";
+        String value = "value";
+        getTestClient().createCurrentOnly(key, value, CreateMode.PERSISTENT);
+        assertThat(getTestClient().getDataString(key), is(value));
+        assertTrue(getTestClient().checkExists(key));
+        getTestClient().deleteOnlyCurrent(key);
+        assertFalse(getTestClient().checkExists(key));
+        deleteRoot(getTestClient());
+    }
+    
+    @Test
+    public void assertTransaction() throws KeeperException, InterruptedException {
+        String key = "key";
+        String value = "value";
+        BaseTransaction transaction = getTestClient().transaction();
+        getTestClient().createCurrentOnly(key, value, CreateMode.PERSISTENT);
+        transaction.setData(key, value.getBytes(ZookeeperConstants.UTF_8));
+        transaction.commit();
+        assertThat(getTestClient().getDataString(key), is(value));
+        getTestClient().deleteOnlyCurrent(key);
+        deleteRoot(getTestClient());
     }
 }
