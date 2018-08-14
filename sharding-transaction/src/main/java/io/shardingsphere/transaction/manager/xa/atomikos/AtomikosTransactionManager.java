@@ -95,10 +95,10 @@ public final class AtomikosTransactionManager implements XATransactionManager {
         result.setUniqueResourceName(dataSourceName);
         result.setMaxPoolSize(dataSourceParameter.getMaximumPoolSize());
         result.setTestQuery("SELECT 1");
-        Properties properties = getXAProperties(dataSourceParameter);
-        PropertyUtils.setProperties(xaDataSource, properties);
+        Properties xaProperties = getXAProperties(dataSourceParameter);
+        PropertyUtils.setProperties(xaDataSource, xaProperties);
         result.setXaDataSource(xaDataSource);
-        result.setXaProperties(properties);
+        result.setXaProperties(xaProperties);
         return result;
     }
     

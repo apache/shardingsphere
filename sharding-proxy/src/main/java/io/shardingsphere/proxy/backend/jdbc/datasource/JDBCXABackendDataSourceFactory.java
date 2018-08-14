@@ -39,18 +39,17 @@ public final class JDBCXABackendDataSourceFactory implements JDBCBackendDataSour
     public DataSource build(final String dataSourceName, final DataSourceParameter dataSourceParameter) throws Exception {
         XATransactionManager xaTransactionManager = (XATransactionManager) ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.XA);
         Class<XADataSource> xaDataSourceClass = loadClass(XA_DRIVER_CLASS_NAME);
-        XADataSource xaDataSource = xaDataSourceClass.newInstance();
-        return xaTransactionManager.wrapDataSource(xaDataSource, dataSourceName, dataSourceParameter);
+        return xaTransactionManager.wrapDataSource(xaDataSourceClass.newInstance(), dataSourceName, dataSourceParameter);
     }
 
-    private <T> Class<T> loadClass(String className) throws ClassNotFoundException {
-        Class clazz;
-
+    @SuppressWarnings("unchecked")
+    private <T> Class<T> loadClass(final String className) throws ClassNotFoundException {
+        Class result;
         try {
-            clazz = Thread.currentThread().getContextClassLoader().loadClass(className);
-        } catch (ClassNotFoundException e) {
-            clazz = Class.forName(className);
+            result = Thread.currentThread().getContextClassLoader().loadClass(className);
+        } catch (final ClassNotFoundException ignored) {
+            result = Class.forName(className);
         }
-        return clazz;
+        return result;
     }
 }
