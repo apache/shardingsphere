@@ -133,7 +133,7 @@ public final class ShardingRule {
             return tableRule.get();
         }
         if (!Strings.isNullOrEmpty(shardingDataSourceNames.getDefaultDataSourceName())) {
-            return createTableRuleWithDefaultDataSource(logicTableName.toLowerCase());
+            return createTableRuleWithDefaultDataSource(logicTableName);
         }
         throw new ShardingConfigurationException("Cannot find table rule and default data source with logic table: '%s'", logicTableName);
     }
