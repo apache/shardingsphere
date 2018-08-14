@@ -63,7 +63,7 @@
 #    connection.mode: MEMORY_STRICTLY
 #    acceptor.size: 16  # The default value is available processors count * 2.
 #    executor.size: 16  # Infinite by default.
-#    proxy.transaction.mode: XA
+#    proxy.transaction.enabled: false
 #    sql.show: false
 #
 #orchestration:

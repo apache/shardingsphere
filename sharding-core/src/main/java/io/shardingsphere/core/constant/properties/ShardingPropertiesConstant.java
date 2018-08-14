@@ -18,7 +18,6 @@
 package io.shardingsphere.core.constant.properties;
 
 import io.shardingsphere.core.constant.ConnectionMode;
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -83,7 +82,7 @@ public enum ShardingPropertiesConstant {
      */
     CONNECTION_MODE("connection.mode", ConnectionMode.MEMORY_STRICTLY.name(), String.class),
     
-    PROXY_TRANSACTION_MODE("proxy.transaction.mode", TransactionType.LOCAL.name(), String.class),
+    PROXY_TRANSACTION_ENABLED("proxy.transaction.enabled", Boolean.FALSE.toString(), boolean.class),
     
     PROXY_BACKEND_USE_NIO("proxy.backend.use.nio", Boolean.FALSE.toString(), boolean.class),
     
