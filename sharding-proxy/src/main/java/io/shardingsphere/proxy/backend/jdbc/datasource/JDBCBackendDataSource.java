@@ -62,16 +62,6 @@ public final class JDBCBackendDataSource implements BackendDataSource {
     }
     
     /**
-     * Get data source.
-     *
-     * @param dataSourceName data source name
-     * @return data source
-     */
-    public DataSource getDataSource(final String dataSourceName) {
-        return dataSourceMap.get(dataSourceName);
-    }
-    
-    /**
      * Get connection.
      *
      * @param dataSourceName data source name
@@ -80,5 +70,9 @@ public final class JDBCBackendDataSource implements BackendDataSource {
      */
     public Connection getConnection(final String dataSourceName) throws SQLException {
         return getDataSource(dataSourceName).getConnection();
+    }
+    
+    private DataSource getDataSource(final String dataSourceName) {
+        return dataSourceMap.get(dataSourceName);
     }
 }
