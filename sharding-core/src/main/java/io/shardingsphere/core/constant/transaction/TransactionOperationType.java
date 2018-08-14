@@ -17,6 +17,8 @@
 
 package io.shardingsphere.core.constant.transaction;
 
+import com.google.common.base.Optional;
+
 /**
  * Transaction operation type.
  *
@@ -24,5 +26,27 @@ package io.shardingsphere.core.constant.transaction;
  */
 public enum TransactionOperationType {
     
-    BEGIN, COMMIT, ROLLBACK
+    BEGIN, COMMIT, ROLLBACK;
+    
+    /**
+     * Get operation type.
+     * 
+     * @param sql SQL
+     * @return transaction operation type
+     */
+    // TODO :hongjun move to TCLParser, need parse comment etc
+    public static Optional<TransactionOperationType> getOperationType(final String sql) {
+        switch (sql.toUpperCase()) {
+            case "BEGIN":
+            case "START TRANSACTION":
+            case "SET AUTOCOMMIT=0":
+                return Optional.of(TransactionOperationType.BEGIN);
+            case "COMMIT":
+                return Optional.of(TransactionOperationType.COMMIT);
+            case "ROLLBACK":
+                return Optional.of(TransactionOperationType.ROLLBACK);
+            default:
+                return Optional.absent();
+        }
+    }
 }

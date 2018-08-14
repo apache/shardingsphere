@@ -62,7 +62,7 @@ public final class ComQueryPacket implements QueryCommandPacket {
         this.sequenceId = sequenceId;
         sql = payload.readStringEOF();
         backendHandler = BackendHandlerFactory.newTextProtocolInstance(connectionId, sequenceId, sql, backendConnection, DatabaseType.MySQL);
-        transactionEngine = TransactionEngineFactory.create(sql);
+        transactionEngine = TransactionEngineFactory.newInstance(sql);
     }
     
     public ComQueryPacket(final int sequenceId, final String sql) {

@@ -17,8 +17,6 @@
 
 package io.shardingsphere.proxy.backend.jdbc.transaction;
 
-import com.google.common.base.Optional;
-import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.SQLException;
@@ -30,24 +28,6 @@ import java.sql.SQLException;
  */
 @RequiredArgsConstructor
 public abstract class TransactionEngine {
-    
-    private final String sql;
-    
-    // TODO :yonglun move to TCLParser
-    protected final Optional<TransactionOperationType> parseSQL() {
-        switch (sql.toUpperCase()) {
-            case "BEGIN": 
-            case "START TRANSACTION":
-            case "SET AUTOCOMMIT=0":
-                return Optional.of(TransactionOperationType.BEGIN);
-            case "COMMIT":
-                return Optional.of(TransactionOperationType.COMMIT);
-            case "ROLLBACK":
-                return Optional.of(TransactionOperationType.ROLLBACK);
-            default:
-                return Optional.absent();
-        }
-    }
     
     /**
      * Execute transaction with binding transaction manager.

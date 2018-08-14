@@ -24,6 +24,7 @@ import io.shardingsphere.core.util.EventBusInstance;
 import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
 import io.shardingsphere.transaction.TransactionTypeHolder;
 import io.shardingsphere.transaction.event.xa.XATransactionEvent;
+import lombok.RequiredArgsConstructor;
 
 import javax.transaction.Status;
 import java.sql.SQLException;
@@ -33,15 +34,14 @@ import java.sql.SQLException;
  *
  * @author zhaojun
  */
+@RequiredArgsConstructor
 public final class XATransactionEngine extends TransactionEngine {
     
-    public XATransactionEngine(final String sql) {
-        super(sql);
-    }
+    private final String sql;
     
     @Override
     public boolean execute() throws SQLException {
-        Optional<TransactionOperationType> operationType = parseSQL();
+        Optional<TransactionOperationType> operationType = TransactionOperationType.getOperationType(sql);
         if (operationType.isPresent() && isInTransaction(operationType.get())) {
             TransactionTypeHolder.set(TransactionType.XA);
             EventBusInstance.getInstance().post(new XATransactionEvent(operationType.get()));
