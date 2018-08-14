@@ -15,28 +15,31 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.api.xa;
+package io.shardingsphere.transaction.listener;
 
-import com.atomikos.icatch.jta.UserTransactionManager;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import io.shardingsphere.transaction.event.ShardingTransactionEvent;
+
+import java.sql.SQLException;
 
 /**
- * Hold singleton atomikos userTransaction.
+ * Sharding transaction listener.
  *
- * @author zhaojun
+ * @author zhangliang
+ * 
+ * @param <T> transaction event type
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AtomikosUserTransaction {
-    
-    private static final UserTransactionManager TRANSACTION_MANAGER = new UserTransactionManager();
+public interface ShardingTransactionListener<T extends ShardingTransactionEvent> {
     
     /**
-     * Get singleton of {@code UserTransactionManager}.
-     *
-     * @return {@code UserTransactionManager}
+     * Register sharding transaction listener into event bus.
      */
-    public static UserTransactionManager getInstance() {
-        return TRANSACTION_MANAGER;
-    }
+    void register();
+    
+    /**
+     * Listen event.
+     *
+     * @param transactionEvent transaction event
+     * @throws SQLException SQL exception
+     */
+    void listen(T transactionEvent) throws SQLException;
 }

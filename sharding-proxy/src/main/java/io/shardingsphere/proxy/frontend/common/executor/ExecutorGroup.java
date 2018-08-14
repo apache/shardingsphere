@@ -19,7 +19,7 @@ package io.shardingsphere.proxy.frontend.common.executor;
 
 import io.netty.channel.ChannelId;
 import io.netty.channel.EventLoopGroup;
-import io.shardingsphere.core.constant.TransactionType;
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import lombok.RequiredArgsConstructor;
 

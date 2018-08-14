@@ -17,7 +17,8 @@
 
 package io.shardingsphere.proxy.backend.jdbc.datasource;
 
-import io.shardingsphere.core.constant.TransactionType;
+import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.proxy.backend.BackendDataSource;
 import lombok.Getter;
@@ -47,7 +48,13 @@ public final class JDBCBackendDataSource implements BackendDataSource {
     private Map<String, DataSource> createDataSourceMap(final TransactionType transactionType, final Map<String, DataSourceParameter> dataSourceParameters) {
         Map<String, DataSource> result = new LinkedHashMap<>(dataSourceParameters.size());
         for (Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
-            result.put(entry.getKey(), getBackendDataSourceFactory(transactionType).build(entry.getKey(), entry.getValue()));
+            try {
+                result.put(entry.getKey(), getBackendDataSourceFactory(transactionType).build(entry.getKey(), entry.getValue()));
+            // CHECKSTYLE:OFF
+            } catch (final Exception ex) {
+                // CHECKSTYLE:ON
+                throw new ShardingException(String.format("Can not build data source, name is `%s`.", entry.getKey()), ex);
+            }
         }
         return result;
     }
@@ -62,16 +69,6 @@ public final class JDBCBackendDataSource implements BackendDataSource {
     }
     
     /**
-     * Get data source.
-     *
-     * @param dataSourceName data source name
-     * @return data source
-     */
-    public DataSource getDataSource(final String dataSourceName) {
-        return dataSourceMap.get(dataSourceName);
-    }
-    
-    /**
      * Get connection.
      *
      * @param dataSourceName data source name
@@ -79,6 +76,6 @@ public final class JDBCBackendDataSource implements BackendDataSource {
      * @throws SQLException SQL exception
      */
     public Connection getConnection(final String dataSourceName) throws SQLException {
-        return getDataSource(dataSourceName).getConnection();
+        return dataSourceMap.get(dataSourceName).getConnection();
     }
 }

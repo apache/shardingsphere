@@ -22,14 +22,10 @@ package io.shardingsphere.proxy.backend.jdbc.transaction;
  *
  * @author zhaojun
  */
-public final class DefaultTransactionEngine extends TransactionEngine {
-    
-    public DefaultTransactionEngine(final String sql) {
-        super(sql);
-    }
+public final class DefaultTransactionEngine implements TransactionEngine {
     
     @Override
     public boolean execute() {
-        return parseSQL().isPresent();
+        return false;
     }
 }

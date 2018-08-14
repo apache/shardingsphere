@@ -15,14 +15,22 @@
  * </p>
  */
 
-package io.shardingsphere.core.constant;
+package io.shardingsphere.transaction.event;
+
+import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 
 /**
- * TCL Type.
+ * Sharding transaction event.
  *
  * @author zhaojun
+ * @author zhangliang
  */
-public enum TCLType {
+public interface ShardingTransactionEvent {
     
-    SET, BEGIN, COMMIT, ROLLBACK, SAVEPOINT
+    /**
+     * Get transaction operation type.
+     * 
+     * @return transaction operation type
+     */
+    TransactionOperationType getOperationType();
 }

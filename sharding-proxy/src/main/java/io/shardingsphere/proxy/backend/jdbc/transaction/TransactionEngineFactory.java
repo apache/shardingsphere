@@ -22,27 +22,25 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Create transaction engine based on current transaction type.
+ * Transaction engine factory.
  *
  * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TransactionEngineFactory {
     
-    private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
-    
     /**
-     * Create transaction engine from SQL.
+     * Create new instance of transaction engine.
      * 
      * @param sql SQL
-     * @return transaction engine
+     * @return new instance of transaction engine
      */
-    public static TransactionEngine create(final String sql) {
-        switch (RULE_REGISTRY.getTransactionType()) {
+    public static TransactionEngine newInstance(final String sql) {
+        switch (RuleRegistry.getInstance().getTransactionType()) {
             case XA:
-                return new XaTransactionEngine(sql);
+                return new XATransactionEngine(sql);
             default:
-                return new DefaultTransactionEngine(sql);
+                return new DefaultTransactionEngine();
         }
     }
 }

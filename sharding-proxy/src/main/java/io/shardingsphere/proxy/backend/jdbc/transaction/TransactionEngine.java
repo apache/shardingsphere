@@ -17,41 +17,14 @@
 
 package io.shardingsphere.proxy.backend.jdbc.transaction;
 
-import com.google.common.base.Optional;
-import io.shardingsphere.core.constant.TCLType;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-
 import java.sql.SQLException;
 
 /**
- * Abstract transaction engine.
+ * Transaction engine.
  *
  * @author zhaojun
  */
-@RequiredArgsConstructor
-@Getter
-@Setter
-public abstract class TransactionEngine {
-    
-    private final String sql;
-    
-    // TODO :yonglun move to TCLParser
-    protected final Optional<TCLType> parseSQL() {
-        switch (sql.toUpperCase()) {
-            case "BEGIN": 
-            case "START TRANSACTION":
-            case "SET AUTOCOMMIT=0":
-                return Optional.of(TCLType.BEGIN);
-            case "COMMIT":
-                return Optional.of(TCLType.COMMIT);
-            case "ROLLBACK":
-                return Optional.of(TCLType.ROLLBACK);
-            default:
-                return Optional.absent();
-        }
-    }
+public interface TransactionEngine {
     
     /**
      * Execute transaction with binding transaction manager.
@@ -59,5 +32,5 @@ public abstract class TransactionEngine {
      * @return skip or not skip access backend databases 
      * @throws SQLException SQL exception
      */
-    public abstract boolean execute() throws SQLException;
+    boolean execute() throws SQLException;
 }

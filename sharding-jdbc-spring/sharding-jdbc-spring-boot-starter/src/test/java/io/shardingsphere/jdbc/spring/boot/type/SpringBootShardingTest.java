@@ -18,8 +18,8 @@
 package io.shardingsphere.jdbc.spring.boot.type;
 
 import io.shardingsphere.core.api.ConfigMapContext;
-import io.shardingsphere.core.constant.ShardingProperties;
-import io.shardingsphere.core.constant.ShardingPropertiesConstant;
+import io.shardingsphere.core.constant.properties.ShardingProperties;
+import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;

@@ -15,8 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.api.xa;
+package io.shardingsphere.transaction.manager.xa;
 
+import io.shardingsphere.transaction.manager.xa.atomikos.AtomikosTransactionManager;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
