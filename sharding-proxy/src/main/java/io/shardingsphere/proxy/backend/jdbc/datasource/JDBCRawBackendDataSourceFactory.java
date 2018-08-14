@@ -43,16 +43,16 @@ public final class JDBCRawBackendDataSourceFactory implements JDBCBackendDataSou
         config.setIdleTimeout(dataSourceParameter.getIdleTimeout());
         config.setMaxLifetime(dataSourceParameter.getMaxLifetime());
         config.setMaximumPoolSize(dataSourceParameter.getMaximumPoolSize());
-        config.addDataSourceProperty("useServerPrepStmts", "true");
+        config.addDataSourceProperty("useServerPrepStmts", Boolean.TRUE.toString());
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", 250);
         config.addDataSourceProperty("prepStmtCacheSqlLimit", 2048);
-        config.addDataSourceProperty("useLocalSessionState", "true");
-        config.addDataSourceProperty("rewriteBatchedStatements", "true");
-        config.addDataSourceProperty("cacheResultSetMetadata", "true");
-        config.addDataSourceProperty("cacheServerConfiguration", "true");
-        config.addDataSourceProperty("elideSetAutoCommits", "true");
-        config.addDataSourceProperty("maintainTimeStats", "false");
+        config.addDataSourceProperty("useLocalSessionState", Boolean.TRUE.toString());
+        config.addDataSourceProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
+        config.addDataSourceProperty("cacheResultSetMetadata", Boolean.TRUE.toString());
+        config.addDataSourceProperty("cacheServerConfiguration", Boolean.TRUE.toString());
+        config.addDataSourceProperty("elideSetAutoCommits", Boolean.TRUE.toString());
+        config.addDataSourceProperty("maintainTimeStats", Boolean.FALSE.toString());
         config.addDataSourceProperty("netTimeoutForStreamingResults", 0);
         return new HikariDataSource(config);
     }
