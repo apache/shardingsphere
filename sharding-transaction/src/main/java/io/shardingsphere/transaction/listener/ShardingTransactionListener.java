@@ -15,14 +15,31 @@
  * </p>
  */
 
-package io.shardingsphere.core.constant;
+package io.shardingsphere.transaction.listener;
+
+import io.shardingsphere.transaction.event.ShardingTransactionEvent;
+
+import java.sql.SQLException;
 
 /**
- * TCL Type.
+ * Sharding transaction listener.
  *
- * @author zhaojun
+ * @author zhangliang
+ * 
+ * @param <T> transaction event type
  */
-public enum TCLType {
+public interface ShardingTransactionListener<T extends ShardingTransactionEvent> {
     
-    SET, BEGIN, COMMIT, ROLLBACK, SAVEPOINT
+    /**
+     * Register sharding transaction listener into event bus.
+     */
+    void register();
+    
+    /**
+     * Listen event.
+     *
+     * @param transactionEvent transaction event
+     * @throws SQLException SQL exception
+     */
+    void listen(T transactionEvent) throws SQLException;
 }

@@ -15,13 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.common.event;
+package io.shardingsphere.transaction.event.local;
 
-import com.google.common.base.Optional;
-import io.shardingsphere.core.constant.TCLType;
-import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.core.constant.transaction.TransactionOperationType;
+import io.shardingsphere.transaction.event.ShardingTransactionEvent;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 import java.sql.Connection;
 import java.util.Collection;
@@ -31,20 +30,13 @@ import java.util.Collection;
  *
  * @author zhaojun
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class LocalTransactionEvent extends TransactionEvent {
+public final class LocalTransactionEvent implements ShardingTransactionEvent {
     
-    private Collection<Connection> cachedConnections;
+    private final TransactionOperationType operationType;
+            
+    private final Collection<Connection> cachedConnections;
     
-    private boolean autoCommit = true;
-    
-    public LocalTransactionEvent(final TCLType tclType) {
-        super(tclType);
-    }
-    
-    @Override
-    public Optional<ShardingException> getException() {
-        return Optional.fromNullable((ShardingException) super.getException().orNull());
-    }
+    private final boolean autoCommit;
 }

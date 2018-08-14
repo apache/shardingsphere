@@ -18,7 +18,7 @@
 package io.shardingsphere.transaction.manager.base;
 
 import io.shardingsphere.transaction.manager.ShardingTransactionManager;
-import io.shardingsphere.transaction.common.event.TransactionEvent;
+import io.shardingsphere.transaction.event.ShardingTransactionEvent;
 
 import javax.transaction.Status;
 
@@ -30,15 +30,15 @@ import javax.transaction.Status;
 public final class SagaTransactionManager implements ShardingTransactionManager {
     
     @Override
-    public void begin(final TransactionEvent transactionEvent) {
+    public void begin(final ShardingTransactionEvent transactionEvent) {
     }
     
     @Override
-    public void commit(final TransactionEvent transactionEvent) {
+    public void commit(final ShardingTransactionEvent transactionEvent) {
     }
     
     @Override
-    public void rollback(final TransactionEvent transactionEvent) {
+    public void rollback(final ShardingTransactionEvent transactionEvent) {
     }
     
     @Override

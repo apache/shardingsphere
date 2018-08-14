@@ -17,12 +17,13 @@
 
 package io.shardingsphere.proxy.backend.jdbc.datasource;
 
-import com.atomikos.jdbc.AtomikosDataSourceBean;
-import com.google.common.base.Optional;
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
+import io.shardingsphere.transaction.manager.xa.XATransactionManager;
 
 import javax.sql.DataSource;
-import java.util.Properties;
+import javax.sql.XADataSource;
 
 /**
  * Backend data source factory using {@code AtomikosDataSourceBean} for JDBC and XA protocol.
@@ -32,35 +33,23 @@ import java.util.Properties;
  */
 public final class JDBCXABackendDataSourceFactory implements JDBCBackendDataSourceFactory {
     
-    @Override
-    public DataSource build(final String dataSourceName, final DataSourceParameter dataSourceParameter) {
-        AtomikosDataSourceBean result = new AtomikosDataSourceBean();
-        result.setUniqueResourceName(dataSourceName);
-        result.setXaDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource");
-        result.setMaxPoolSize(dataSourceParameter.getMaximumPoolSize());
-        result.setTestQuery("SELECT 1");
-        result.setXaProperties(getProperties(dataSourceParameter));
-        return result;
-    }
+    private static final String XA_DRIVER_CLASS_NAME = "com.mysql.jdbc.jdbc2.optional.MysqlXADataSource";
     
-    private Properties getProperties(final DataSourceParameter dataSourceParameter) {
-        Properties result = new Properties();
-        result.setProperty("user", dataSourceParameter.getUsername());
-        result.setProperty("password", Optional.fromNullable(dataSourceParameter.getPassword()).or(""));
-        result.setProperty("URL", dataSourceParameter.getUrl());
-        result.setProperty("pinGlobalTxToPhysicalConnection", Boolean.TRUE.toString());
-        result.setProperty("autoReconnect", Boolean.TRUE.toString());
-        result.setProperty("useServerPrepStmts", Boolean.TRUE.toString());
-        result.setProperty("cachePrepStmts", Boolean.TRUE.toString());
-        result.setProperty("prepStmtCacheSize", "250");
-        result.setProperty("prepStmtCacheSqlLimit", "2048");
-        result.setProperty("useLocalSessionState", Boolean.TRUE.toString());
-        result.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
-        result.setProperty("cacheResultSetMetadata", Boolean.TRUE.toString());
-        result.setProperty("cacheServerConfiguration", Boolean.TRUE.toString());
-        result.setProperty("elideSetAutoCommits", Boolean.TRUE.toString());
-        result.setProperty("maintainTimeStats", Boolean.FALSE.toString());
-        result.setProperty("netTimeoutForStreamingResults", "0");
+    @Override
+    public DataSource build(final String dataSourceName, final DataSourceParameter dataSourceParameter) throws Exception {
+        XATransactionManager xaTransactionManager = (XATransactionManager) ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.XA);
+        Class<XADataSource> xaDataSourceClass = loadClass(XA_DRIVER_CLASS_NAME);
+        return xaTransactionManager.wrapDataSource(xaDataSourceClass.newInstance(), dataSourceName, dataSourceParameter);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> Class<T> loadClass(final String className) throws ClassNotFoundException {
+        Class result;
+        try {
+            result = Thread.currentThread().getContextClassLoader().loadClass(className);
+        } catch (final ClassNotFoundException ignored) {
+            result = Class.forName(className);
+        }
         return result;
     }
 }

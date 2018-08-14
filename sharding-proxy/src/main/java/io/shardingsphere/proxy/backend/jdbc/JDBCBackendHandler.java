@@ -19,7 +19,7 @@ package io.shardingsphere.proxy.backend.jdbc;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.constant.TransactionType;
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.metadata.table.executor.TableMetaDataLoader;

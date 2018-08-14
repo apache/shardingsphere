@@ -15,49 +15,38 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.jdbc.transaction;
+package io.shardingsphere.core.constant.transaction;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.constant.TCLType;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-
-import java.sql.SQLException;
 
 /**
- * Abstract transaction engine.
+ * Transaction operation type.
  *
  * @author zhaojun
  */
-@RequiredArgsConstructor
-@Getter
-@Setter
-public abstract class TransactionEngine {
+public enum TransactionOperationType {
     
-    private final String sql;
+    BEGIN, COMMIT, ROLLBACK;
     
-    // TODO :yonglun move to TCLParser
-    protected final Optional<TCLType> parseSQL() {
+    /**
+     * Get operation type.
+     * 
+     * @param sql SQL
+     * @return transaction operation type
+     */
+    // TODO :hongjun move to TCLParser, need parse comment etc
+    public static Optional<TransactionOperationType> getOperationType(final String sql) {
         switch (sql.toUpperCase()) {
-            case "BEGIN": 
+            case "BEGIN":
             case "START TRANSACTION":
             case "SET AUTOCOMMIT=0":
-                return Optional.of(TCLType.BEGIN);
+                return Optional.of(TransactionOperationType.BEGIN);
             case "COMMIT":
-                return Optional.of(TCLType.COMMIT);
+                return Optional.of(TransactionOperationType.COMMIT);
             case "ROLLBACK":
-                return Optional.of(TCLType.ROLLBACK);
+                return Optional.of(TransactionOperationType.ROLLBACK);
             default:
                 return Optional.absent();
         }
     }
-    
-    /**
-     * Execute transaction with binding transaction manager.
-     *
-     * @return skip or not skip access backend databases 
-     * @throws SQLException SQL exception
-     */
-    public abstract boolean execute() throws SQLException;
 }

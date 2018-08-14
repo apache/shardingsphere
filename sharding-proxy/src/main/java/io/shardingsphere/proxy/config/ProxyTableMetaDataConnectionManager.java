@@ -36,6 +36,6 @@ public final class ProxyTableMetaDataConnectionManager implements TableMetaDataC
     
     @Override
     public Connection getConnection(final String dataSourceName) throws SQLException {
-        return backendDataSource.getDataSource(dataSourceName).getConnection();
+        return backendDataSource.getConnection(dataSourceName);
     }
 }

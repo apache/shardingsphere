@@ -22,9 +22,9 @@ import com.google.common.util.concurrent.MoreExecutors;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.ShardingProperties;
-import io.shardingsphere.core.constant.ShardingPropertiesConstant;
-import io.shardingsphere.core.constant.TransactionType;
+import io.shardingsphere.core.constant.properties.ShardingProperties;
+import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
@@ -33,7 +33,6 @@ import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusEvent;
 import io.shardingsphere.proxy.backend.jdbc.datasource.JDBCBackendDataSource;
-import io.shardingsphere.transaction.common.TransactionTypeHolder;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -102,8 +101,8 @@ public final class RuleRegistry {
         ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
         showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         connectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
-        transactionType = TransactionType.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_MODE));
-        TransactionTypeHolder.set(transactionType);
+        // TODO just config proxy.transaction.enable here, in future(3.1.0)
+        transactionType = shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_ENABLED) ? TransactionType.XA : TransactionType.LOCAL;
         acceptorSize = shardingProperties.getValue(ShardingPropertiesConstant.ACCEPTOR_SIZE);
         executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         // TODO :jiaqi force off use NIO for backend, this feature is not complete yet

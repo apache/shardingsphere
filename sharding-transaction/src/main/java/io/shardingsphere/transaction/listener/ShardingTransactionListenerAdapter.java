@@ -15,43 +15,31 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.common.listener;
+package io.shardingsphere.transaction.listener;
 
-import com.google.common.eventbus.AllowConcurrentEvents;
-import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.util.EventBusInstance;
+import io.shardingsphere.transaction.event.ShardingTransactionEvent;
 import io.shardingsphere.transaction.manager.ShardingTransactionManager;
-import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
-import io.shardingsphere.transaction.common.TransactionTypeHolder;
-import io.shardingsphere.transaction.common.event.TransactionEvent;
 
 import java.sql.SQLException;
 
 /**
- * Transaction Listener.
+ * Sharding transaction listener adapter.
  *
- * @author zhaojun
+ * @author zhangliang
+ * 
+ * @param <T> transaction event type
  */
-public final class TransactionListener {
+public abstract class ShardingTransactionListenerAdapter<T extends ShardingTransactionEvent> implements ShardingTransactionListener<T> {
     
-    /**
-     * Register transaction listener into event bus.
-     */
-    public void register() {
+    @Override
+    public final void register() {
         EventBusInstance.getInstance().register(this);
     }
     
-    /**
-     * Listen event.
-     *
-     * @param transactionEvent transaction event
-     * @throws SQLException SQL exception
-     */
-    @Subscribe
-    @AllowConcurrentEvents
-    public void listen(final TransactionEvent transactionEvent) throws SQLException {
-        ShardingTransactionManager shardingTransactionManager = ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionTypeHolder.get());
-        switch (transactionEvent.getTclType()) {
+    @SuppressWarnings("unchecked")
+    protected final void doTransaction(final ShardingTransactionManager shardingTransactionManager, final T transactionEvent) throws SQLException {
+        switch (transactionEvent.getOperationType()) {
             case BEGIN:
                 shardingTransactionManager.begin(transactionEvent);
                 break;

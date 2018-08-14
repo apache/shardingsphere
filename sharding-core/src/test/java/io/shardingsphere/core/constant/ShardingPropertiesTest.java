@@ -17,6 +17,8 @@
 
 package io.shardingsphere.core.constant;
 
+import io.shardingsphere.core.constant.properties.ShardingProperties;
+import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.junit.Before;
 import org.junit.Test;
 

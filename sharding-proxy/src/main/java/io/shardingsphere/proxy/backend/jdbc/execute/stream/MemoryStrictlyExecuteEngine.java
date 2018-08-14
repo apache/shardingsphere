@@ -18,7 +18,7 @@
 package io.shardingsphere.proxy.backend.jdbc.execute.stream;
 
 import com.google.common.collect.Lists;
-import io.shardingsphere.core.constant.TransactionType;
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.routing.SQLExecutionUnit;

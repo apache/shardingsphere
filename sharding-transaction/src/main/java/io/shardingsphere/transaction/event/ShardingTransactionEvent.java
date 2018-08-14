@@ -15,30 +15,22 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.common.event;
+package io.shardingsphere.transaction.event;
 
-import com.google.common.base.Optional;
-import io.shardingsphere.core.constant.TCLType;
-import io.shardingsphere.core.exception.ShardingException;
-import lombok.Getter;
+import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 
 /**
- * XA transaction event.
+ * Sharding transaction event.
  *
  * @author zhaojun
+ * @author zhangliang
  */
-@Getter
-public final class XaTransactionEvent extends TransactionEvent {
+public interface ShardingTransactionEvent {
     
-    private final String sql;
-    
-    public XaTransactionEvent(final TCLType tclType, final String sql) {
-        super(tclType);
-        this.sql = sql;
-    }
-    
-    @Override
-    public Optional<ShardingException> getException() {
-        return Optional.fromNullable((ShardingException) super.getException().orNull());
-    }
+    /**
+     * Get transaction operation type.
+     * 
+     * @return transaction operation type
+     */
+    TransactionOperationType getOperationType();
 }

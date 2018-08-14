@@ -17,7 +17,8 @@
 
 package io.shardingsphere.proxy.listener;
 
-import io.shardingsphere.transaction.common.listener.TransactionListener;
+import io.shardingsphere.transaction.listener.local.LocalTransactionListener;
+import io.shardingsphere.transaction.listener.xa.XATransactionListener;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -33,6 +34,7 @@ public final class ProxyListenerRegister {
      * Register all listeners.
      */
     public static void register() {
-        new TransactionListener().register();
+        new LocalTransactionListener().register();
+        new XATransactionListener().register();
     }
 }

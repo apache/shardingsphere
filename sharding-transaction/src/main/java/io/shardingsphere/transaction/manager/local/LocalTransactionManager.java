@@ -17,9 +17,8 @@
 
 package io.shardingsphere.transaction.manager.local;
 
+import io.shardingsphere.transaction.event.local.LocalTransactionEvent;
 import io.shardingsphere.transaction.manager.ShardingTransactionManager;
-import io.shardingsphere.transaction.common.event.TransactionEvent;
-import io.shardingsphere.transaction.common.event.LocalTransactionEvent;
 
 import javax.transaction.Status;
 import java.sql.Connection;
@@ -32,15 +31,14 @@ import java.util.LinkedList;
  *
  * @author zhaojun
  */
-public final class LocalTransactionManager implements ShardingTransactionManager {
+public final class LocalTransactionManager implements ShardingTransactionManager<LocalTransactionEvent> {
     
     @Override
-    public void begin(final TransactionEvent transactionEvent) throws SQLException {
-        LocalTransactionEvent localTransactionEvent = (LocalTransactionEvent) transactionEvent;
+    public void begin(final LocalTransactionEvent event) throws SQLException {
         Collection<SQLException> exceptions = new LinkedList<>();
-        for (Connection each : localTransactionEvent.getCachedConnections()) {
+        for (Connection each : event.getCachedConnections()) {
             try {
-                each.setAutoCommit(localTransactionEvent.isAutoCommit());
+                each.setAutoCommit(event.isAutoCommit());
             } catch (final SQLException ex) {
                 exceptions.add(ex);
             }
@@ -49,10 +47,9 @@ public final class LocalTransactionManager implements ShardingTransactionManager
     }
     
     @Override
-    public void commit(final TransactionEvent transactionEvent) throws SQLException {
-        LocalTransactionEvent localTransactionEvent = (LocalTransactionEvent) transactionEvent;
+    public void commit(final LocalTransactionEvent event) throws SQLException {
         Collection<SQLException> exceptions = new LinkedList<>();
-        for (Connection each : localTransactionEvent.getCachedConnections()) {
+        for (Connection each : event.getCachedConnections()) {
             try {
                 each.commit();
             } catch (final SQLException ex) {
@@ -63,10 +60,9 @@ public final class LocalTransactionManager implements ShardingTransactionManager
     }
     
     @Override
-    public void rollback(final TransactionEvent transactionEvent) throws SQLException {
-        LocalTransactionEvent localTransactionEvent = (LocalTransactionEvent) transactionEvent;
+    public void rollback(final LocalTransactionEvent event) throws SQLException {
         Collection<SQLException> exceptions = new LinkedList<>();
-        for (Connection each : localTransactionEvent.getCachedConnections()) {
+        for (Connection each : event.getCachedConnections()) {
             try {
                 each.rollback();
             } catch (final SQLException ex) {

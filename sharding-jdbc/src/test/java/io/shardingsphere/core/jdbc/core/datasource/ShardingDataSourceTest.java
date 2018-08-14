@@ -22,7 +22,8 @@ import io.shardingsphere.core.api.MasterSlaveDataSourceFactory;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
-import io.shardingsphere.core.constant.ShardingPropertiesConstant;
+import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.executor.ExecutorEngine;
 import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.Test;
@@ -108,7 +109,7 @@ public final class ShardingDataSourceTest {
     
     private void assertDatabaseProductName(final Map<String, DataSource> dataSourceMap, final Connection... connections) throws SQLException {
         try {
-            createShardingDataSource(dataSourceMap).getDatabaseType();
+            assertThat(createShardingDataSource(dataSourceMap).getDatabaseType(), is(DatabaseType.H2));
         } finally {
             for (Connection each : connections) {
                 verify(each, atLeast(1)).close();
