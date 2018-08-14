@@ -69,10 +69,6 @@ public final class JDBCBackendDataSource implements BackendDataSource {
      * @throws SQLException SQL exception
      */
     public Connection getConnection(final String dataSourceName) throws SQLException {
-        return getDataSource(dataSourceName).getConnection();
-    }
-    
-    private DataSource getDataSource(final String dataSourceName) {
-        return dataSourceMap.get(dataSourceName);
+        return dataSourceMap.get(dataSourceName).getConnection();
     }
 }
