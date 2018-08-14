@@ -17,16 +17,16 @@
 
 package io.shardingsphere.example.transaction;
 
-import com.atomikos.icatch.jta.UserTransactionImp;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import io.shardingsphere.core.api.ShardingDataSourceFactory;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.api.config.strategy.StandardShardingStrategyConfiguration;
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.example.transaction.algorithm.ModuloShardingAlgorithm;
+import io.shardingsphere.transaction.TransactionTypeHolder;
 
 import javax.sql.DataSource;
-import javax.transaction.UserTransaction;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -38,11 +38,10 @@ public class XaTransactionMain {
     
     public static void main(final String[] args) throws Exception {
         DataSource dataSource = getShardingDataSource();
-        UserTransaction userTransaction = new UserTransactionImp();
         dropTable(dataSource);
         createTable(dataSource);
-        insert(dataSource, userTransaction);
-        updateFailure(dataSource, userTransaction);
+        insert(dataSource);
+        updateFailure(dataSource);
     }
     
     private static void createTable(final DataSource dataSource) throws SQLException {
@@ -63,42 +62,44 @@ public class XaTransactionMain {
         }
     }
     
-    private static void insert(final DataSource dataSource, final UserTransaction userTransaction) throws Exception {
-        userTransaction.begin();
+    private static void insert(final DataSource dataSource) throws Exception {
+        TransactionTypeHolder.set(TransactionType.XA);
+        Connection connection = dataSource.getConnection();
+        connection.setAutoCommit(false);
         try {
             for (int i = 0; i < 100; i++) {
                 String sql = String.format("INSERT INTO t_order VALUES (%s, %s, 'INIT');", 1000 + i, i);
-                insert(dataSource, sql);
+                insert(connection, sql);
             }
-            userTransaction.commit();
+            connection.commit();
         } catch (SQLException ex) {
-            userTransaction.rollback();
+            connection.rollback();
         }
     }
     
-    private static void insert(final DataSource dataSource, final String sql) throws SQLException {
-        try (Connection conn = dataSource.getConnection();
-             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+    private static void insert(final Connection connection, final String sql) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.executeUpdate();
         }
     }
     
-    private static void updateFailure(final DataSource dataSource, final UserTransaction userTransaction) throws Exception {
+    private static void updateFailure(final DataSource dataSource) throws Exception {
+        TransactionTypeHolder.set(TransactionType.XA);
+        Connection connection = dataSource.getConnection();
+        connection.setAutoCommit(false);
         String sql1 = "UPDATE t_order SET status='UPDATE_1' WHERE user_id=0 AND order_id=1000";
         String sql2 = "UPDATE t_order SET not_existed_column=1 WHERE user_id=1 AND order_id=?";
         String sql3 = "UPDATE t_order SET status='UPDATE_2' WHERE user_id=0 AND order_id=1000";
-        userTransaction.begin();
-        try (Connection connection = dataSource.getConnection();
-            PreparedStatement preparedStatement1 = connection.prepareStatement(sql1);
+        try (PreparedStatement preparedStatement1 = connection.prepareStatement(sql1);
             PreparedStatement preparedStatement2 = connection.prepareStatement(sql2);
             PreparedStatement preparedStatement3 = connection.prepareStatement(sql3)) {
             preparedStatement2.setObject(1, 1000);
             preparedStatement1.executeUpdate();
             preparedStatement2.executeUpdate();
             preparedStatement3.executeUpdate();
-            userTransaction.commit();
+            connection.commit();
         } catch (SQLException ex) {
-            userTransaction.rollback();
+            connection.rollback();
         }
     }
     
@@ -141,6 +142,7 @@ public class XaTransactionMain {
         AtomikosDataSourceBean result = new AtomikosDataSourceBean();
         result.setUniqueResourceName(dataSourceName);
         result.setXaDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource");
+        result.setMaxPoolSize(65);
         Properties xaProperties = new Properties();
         xaProperties.setProperty("user", "root");
         xaProperties.setProperty("password", "");
