@@ -31,6 +31,7 @@ import io.shardingsphere.core.parsing.parser.expression.SQLIdentifierExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLIgnoreExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLPropertyExpression;
+import io.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.util.SQLUtil;
 import lombok.Getter;
@@ -80,6 +81,9 @@ public abstract class OrderByClauseParser implements SQLClauseParser {
             orderDirection = OrderDirection.ASC;
         } else if (lexerEngine.skipIfEqual(DefaultKeyword.DESC)) {
             orderDirection = OrderDirection.DESC;
+        }
+        if (sqlExpression instanceof SQLTextExpression) {
+            return new OrderItem(SQLUtil.getExactlyValue(((SQLTextExpression) sqlExpression).getText()), orderDirection, getNullOrderDirection());
         }
         if (sqlExpression instanceof SQLNumberExpression) {
             return new OrderItem(((SQLNumberExpression) sqlExpression).getNumber().intValue(), orderDirection, getNullOrderDirection());
