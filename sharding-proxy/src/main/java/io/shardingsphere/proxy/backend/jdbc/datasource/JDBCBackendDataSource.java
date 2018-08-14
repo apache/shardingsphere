@@ -21,6 +21,7 @@ import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.proxy.backend.BackendDataSource;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -36,6 +37,7 @@ import java.util.Map.Entry;
  * @author zhangliang
  */
 @Getter
+@Slf4j
 public final class JDBCBackendDataSource implements BackendDataSource {
     
     private final Map<String, DataSource> dataSourceMap;
@@ -47,7 +49,12 @@ public final class JDBCBackendDataSource implements BackendDataSource {
     private Map<String, DataSource> createDataSourceMap(final TransactionType transactionType, final Map<String, DataSourceParameter> dataSourceParameters) {
         Map<String, DataSource> result = new LinkedHashMap<>(dataSourceParameters.size());
         for (Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
-            result.put(entry.getKey(), getBackendDataSourceFactory(transactionType).build(entry.getKey(), entry.getValue()));
+            try {
+                result.put(entry.getKey(), getBackendDataSourceFactory(transactionType).build(entry.getKey(), entry.getValue()));
+            } catch (Exception e) {
+                // we just ignore the data source which can not be build.
+                log.warn("can not build " + entry.getKey() + " failed with " + e);
+            }
         }
         return result;
     }

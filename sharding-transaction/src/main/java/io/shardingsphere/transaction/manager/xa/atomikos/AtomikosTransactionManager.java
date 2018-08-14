@@ -18,16 +18,22 @@
 package io.shardingsphere.transaction.manager.xa.atomikos;
 
 import com.atomikos.icatch.jta.UserTransactionManager;
+import com.atomikos.jdbc.AtomikosDataSourceBean;
+import com.google.common.base.Optional;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.transaction.event.xa.XATransactionEvent;
+import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.manager.xa.XATransactionManager;
 
+import javax.sql.DataSource;
+import javax.sql.XADataSource;
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import java.sql.SQLException;
+import java.util.Properties;
 
 /**
  * Atomikos XA transaction manager.
@@ -80,5 +86,37 @@ public final class AtomikosTransactionManager implements XATransactionManager {
         } catch (final SystemException ex) {
             throw new SQLException(ex);
         }
+    }
+
+    @Override
+    public DataSource wrapDataSource(XADataSource dataSource, String dataSourceName, DataSourceParameter dataSourceParameter) {
+        AtomikosDataSourceBean result = new AtomikosDataSourceBean();
+        result.setUniqueResourceName(dataSourceName);
+        result.setMaxPoolSize(dataSourceParameter.getMaximumPoolSize());
+        result.setTestQuery("SELECT 1");
+        result.setXaProperties(getProperties(dataSourceParameter));
+        result.setXaDataSource(dataSource);
+        return result;
+    }
+
+    private Properties getProperties(final DataSourceParameter dataSourceParameter) {
+        Properties result = new Properties();
+        result.setProperty("user", dataSourceParameter.getUsername());
+        result.setProperty("password", Optional.fromNullable(dataSourceParameter.getPassword()).or(""));
+        result.setProperty("URL", dataSourceParameter.getUrl());
+        result.setProperty("pinGlobalTxToPhysicalConnection", Boolean.TRUE.toString());
+        result.setProperty("autoReconnect", Boolean.TRUE.toString());
+        result.setProperty("useServerPrepStmts", Boolean.TRUE.toString());
+        result.setProperty("cachePrepStmts", Boolean.TRUE.toString());
+        result.setProperty("prepStmtCacheSize", "250");
+        result.setProperty("prepStmtCacheSqlLimit", "2048");
+        result.setProperty("useLocalSessionState", Boolean.TRUE.toString());
+        result.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
+        result.setProperty("cacheResultSetMetadata", Boolean.TRUE.toString());
+        result.setProperty("cacheServerConfiguration", Boolean.TRUE.toString());
+        result.setProperty("elideSetAutoCommits", Boolean.TRUE.toString());
+        result.setProperty("maintainTimeStats", Boolean.FALSE.toString());
+        result.setProperty("netTimeoutForStreamingResults", "0");
+        return result;
     }
 }
