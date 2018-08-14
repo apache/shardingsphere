@@ -30,6 +30,7 @@ import io.shardingsphere.core.parsing.parser.expression.SQLExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLIdentifierExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLIgnoreExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
+import io.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLPropertyExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
@@ -69,7 +70,10 @@ public abstract class OrderByClauseParser implements SQLClauseParser {
         lexerEngine.skipIfEqual(OracleKeyword.SIBLINGS);
         lexerEngine.accept(DefaultKeyword.BY);
         do {
-            result.add(parseSelectOrderByItem(selectStatement));
+            OrderItem orderItem = parseSelectOrderByItem(selectStatement);
+            if (null != orderItem) {
+                result.add(orderItem);
+            }
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));
         selectStatement.getOrderByItems().addAll(result);
     }
@@ -100,6 +104,9 @@ public abstract class OrderByClauseParser implements SQLClauseParser {
         if (sqlExpression instanceof SQLIgnoreExpression) {
             SQLIgnoreExpression sqlIgnoreExpression = (SQLIgnoreExpression) sqlExpression;
             return new OrderItem(sqlIgnoreExpression.getExpression(), orderDirection, getNullOrderDirection(), selectStatement.getAlias(sqlIgnoreExpression.getExpression()));
+        }
+        if (sqlExpression instanceof SQLPlaceholderExpression) {
+            return null;
         }
         throw new SQLParsingException(lexerEngine);
     }
