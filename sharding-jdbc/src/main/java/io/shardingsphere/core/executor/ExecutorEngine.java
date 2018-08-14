@@ -19,7 +19,6 @@ package io.shardingsphere.core.executor;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.event.AbstractExecutionEvent;
 import io.shardingsphere.core.executor.event.DMLExecutionEvent;
@@ -40,7 +39,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -54,26 +52,15 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public abstract class ExecutorEngine implements AutoCloseable {
     
-    private static final String EXECUTOR_NAME_FORMAT = "Sharding-Sphere-%d";
-    
-    private static final String SHUTDOWN_EXECUTOR_NAME = "Sharding-Sphere-ExecutorEngineCloser";
-    
-    private static final ExecutorService SHUTDOWN_EXECUTOR = Executors.newSingleThreadExecutor(newThreadFactory(SHUTDOWN_EXECUTOR_NAME));
+    private static final ExecutorService SHUTDOWN_EXECUTOR = Executors.newSingleThreadExecutor(ShardingThreadFactoryBuilder.build("ExecutorEngineCloser"));
     
     @Getter
     private final ListeningExecutorService executorService;
     
     public ExecutorEngine(final int executorSize) {
-        executorService = MoreExecutors.listeningDecorator(0 == executorSize ? Executors.newCachedThreadPool(newThreadFactory()) : Executors.newFixedThreadPool(executorSize, newThreadFactory()));
+        executorService = MoreExecutors.listeningDecorator(
+                0 == executorSize ? Executors.newCachedThreadPool(ShardingThreadFactoryBuilder.build()) : Executors.newFixedThreadPool(executorSize, ShardingThreadFactoryBuilder.build()));
         MoreExecutors.addDelayedShutdownHook(executorService, 60, TimeUnit.SECONDS);
-    }
-    
-    private static ThreadFactory newThreadFactory(final String nameFormat) {
-        return new ThreadFactoryBuilder().setDaemon(true).setNameFormat(nameFormat).build();
-    }
-    
-    private static ThreadFactory newThreadFactory() {
-        return newThreadFactory(EXECUTOR_NAME_FORMAT);
     }
     
     /**
