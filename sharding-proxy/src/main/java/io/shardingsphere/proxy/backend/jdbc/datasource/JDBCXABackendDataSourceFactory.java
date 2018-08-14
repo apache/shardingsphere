@@ -23,6 +23,7 @@ import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
 import io.shardingsphere.transaction.manager.xa.XATransactionManager;
 
 import javax.sql.DataSource;
+import javax.sql.XADataSource;
 
 /**
  * Backend data source factory using {@code AtomikosDataSourceBean} for JDBC and XA protocol.
@@ -37,6 +38,19 @@ public final class JDBCXABackendDataSourceFactory implements JDBCBackendDataSour
     @Override
     public DataSource build(final String dataSourceName, final DataSourceParameter dataSourceParameter) throws Exception {
         XATransactionManager xaTransactionManager = (XATransactionManager) ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.XA);
-        return xaTransactionManager.getXADataSource(XA_DRIVER_CLASS_NAME, dataSourceName, dataSourceParameter);
+        Class<XADataSource> xaDataSourceClass = loadClass(XA_DRIVER_CLASS_NAME);
+        XADataSource xaDataSource = xaDataSourceClass.newInstance();
+        return xaTransactionManager.wrapDataSource(xaDataSource, dataSourceName, dataSourceParameter);
+    }
+
+    private <T> Class<T> loadClass(String className) throws ClassNotFoundException {
+        Class clazz;
+
+        try {
+            clazz = Thread.currentThread().getContextClassLoader().loadClass(className);
+        } catch (ClassNotFoundException e) {
+            clazz = Class.forName(className);
+        }
+        return clazz;
     }
 }
