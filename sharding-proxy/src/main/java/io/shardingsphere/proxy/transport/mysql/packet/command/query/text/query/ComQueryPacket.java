@@ -34,7 +34,6 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePac
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryCommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.text.TextResultSetRowPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
-import io.shardingsphere.transaction.TransactionTypeHolder;
 import io.shardingsphere.transaction.event.xa.XATransactionEvent;
 import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
 import lombok.Getter;
@@ -87,7 +86,6 @@ public final class ComQueryPacket implements QueryCommandPacket {
         if (TransactionType.XA != RuleRegistry.getInstance().getTransactionType()) {
             Optional<TransactionOperationType> operationType = TransactionOperationType.getOperationType(sql);
             if (operationType.isPresent() && isInTransaction(operationType.get())) {
-                TransactionTypeHolder.set(TransactionType.XA);
                 EventBusInstance.getInstance().post(new XATransactionEvent(operationType.get()));
                 return Optional.of(new CommandResponsePackets(new OKPacket(1)));
             }
@@ -96,6 +94,7 @@ public final class ComQueryPacket implements QueryCommandPacket {
     }
     
     private boolean isInTransaction(final TransactionOperationType operationType) throws SQLException {
+        // TODO zhaojun: research why rollback call twice here
         return TransactionOperationType.ROLLBACK != operationType
                 || Status.STATUS_NO_TRANSACTION != ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.XA).getStatus();
     }
