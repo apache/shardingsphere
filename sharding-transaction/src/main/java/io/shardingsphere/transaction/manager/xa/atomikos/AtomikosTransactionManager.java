@@ -87,9 +87,9 @@ public final class AtomikosTransactionManager implements XATransactionManager {
             throw new SQLException(ex);
         }
     }
-
+    
     @Override
-    public DataSource wrapDataSource(XADataSource dataSource, String dataSourceName, DataSourceParameter dataSourceParameter) {
+    public DataSource wrapDataSource(final XADataSource dataSource, final String dataSourceName, final DataSourceParameter dataSourceParameter) {
         AtomikosDataSourceBean result = new AtomikosDataSourceBean();
         result.setUniqueResourceName(dataSourceName);
         result.setMaxPoolSize(dataSourceParameter.getMaximumPoolSize());
@@ -98,7 +98,7 @@ public final class AtomikosTransactionManager implements XATransactionManager {
         result.setXaDataSource(dataSource);
         return result;
     }
-
+    
     private Properties getProperties(final DataSourceParameter dataSourceParameter) {
         Properties result = new Properties();
         result.setProperty("user", dataSourceParameter.getUsername());

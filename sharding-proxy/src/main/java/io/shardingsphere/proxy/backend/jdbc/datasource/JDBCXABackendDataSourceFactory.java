@@ -33,13 +33,12 @@ import javax.sql.XADataSource;
  */
 public final class JDBCXABackendDataSourceFactory implements JDBCBackendDataSourceFactory {
     
+    private static final String XA_DRIVER_CLASS_NAME = "com.mysql.jdbc.jdbc2.optional.MysqlXADataSource";
+    
     @Override
     public DataSource build(final String dataSourceName, final DataSourceParameter dataSourceParameter) throws Exception {
-        String xaDataSourceClassName = "com.mysql.jdbc.jdbc2.optional.MysqlXADataSource";
-        XADataSource dataSource = (XADataSource) Class.forName(xaDataSourceClassName).newInstance();
-        XATransactionManager xaTransactionManager
-                = (XATransactionManager) ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.XA);
+        XADataSource dataSource = (XADataSource) Class.forName(XA_DRIVER_CLASS_NAME).newInstance();
+        XATransactionManager xaTransactionManager = (XATransactionManager) ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.XA);
         return xaTransactionManager.wrapDataSource(dataSource, dataSourceName, dataSourceParameter);
     }
-    
 }

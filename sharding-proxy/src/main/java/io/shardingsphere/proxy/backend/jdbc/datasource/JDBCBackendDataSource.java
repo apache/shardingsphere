@@ -51,9 +51,10 @@ public final class JDBCBackendDataSource implements BackendDataSource {
         for (Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
             try {
                 result.put(entry.getKey(), getBackendDataSourceFactory(transactionType).build(entry.getKey(), entry.getValue()));
-            } catch (Exception e) {
-                // we just ignore the data source which can not be build.
-                log.warn("can not build " + entry.getKey() + " failed with " + e);
+            // CHECKSTYLE:OFF
+            } catch (final Exception ex) {
+                // CHECKSTYLE:ON
+                log.warn("Can not build {} failed with {}", entry.getKey(), ex);
             }
         }
         return result;

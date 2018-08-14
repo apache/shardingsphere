@@ -30,14 +30,15 @@ import javax.sql.XADataSource;
  * @author zhangliang
  */
 public interface XATransactionManager extends ShardingTransactionManager<XATransactionEvent> {
+    
     /**
      * Wrap the specific {@link XADataSource} and enroll it with a JTA.
      *
      * @param dataSource the data source to wrap
      * @param dataSourceName the data source name
      * @param dataSourceParameter the data source parameter
-     * @throws Exception if can not wrap the data source
      * @return the wrapped data source
+     * @throws Exception if can not wrap the data source
      */
     DataSource wrapDataSource(XADataSource dataSource, String dataSourceName, DataSourceParameter dataSourceParameter) throws Exception;
 }

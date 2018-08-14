@@ -31,10 +31,12 @@ import javax.sql.DataSource;
  */
 public final class JDBCRawBackendDataSourceFactory implements JDBCBackendDataSourceFactory {
     
+    private static final String DRIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
+    
     @Override
     public DataSource build(final String dataSourceName, final DataSourceParameter dataSourceParameter) {
         HikariConfig config = new HikariConfig();
-        config.setDriverClassName("com.mysql.jdbc.Driver");
+        config.setDriverClassName(DRIVER_CLASS_NAME);
         config.setJdbcUrl(dataSourceParameter.getUrl());
         config.setUsername(dataSourceParameter.getUsername());
         config.setPassword(dataSourceParameter.getPassword());
