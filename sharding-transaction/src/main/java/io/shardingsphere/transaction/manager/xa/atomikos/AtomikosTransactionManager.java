@@ -21,12 +21,11 @@ import com.atomikos.icatch.jta.UserTransactionManager;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.transaction.event.xa.XATransactionEvent;
 import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.transaction.event.xa.XATransactionEvent;
 import io.shardingsphere.transaction.manager.xa.XATransactionManager;
 
 import javax.sql.DataSource;
-import javax.sql.XADataSource;
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
@@ -89,17 +88,17 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     }
     
     @Override
-    public DataSource wrapDataSource(final XADataSource dataSource, final String dataSourceName, final DataSourceParameter dataSourceParameter) {
+    public DataSource getXADataSource(final String xaDataSourceClassName, final String dataSourceName, final DataSourceParameter dataSourceParameter) {
         AtomikosDataSourceBean result = new AtomikosDataSourceBean();
         result.setUniqueResourceName(dataSourceName);
         result.setMaxPoolSize(dataSourceParameter.getMaximumPoolSize());
         result.setTestQuery("SELECT 1");
-        result.setXaProperties(getProperties(dataSourceParameter));
-        result.setXaDataSource(dataSource);
+        result.setXaDataSourceClassName(xaDataSourceClassName);
+        result.setXaProperties(getXAProperties(dataSourceParameter));
         return result;
     }
     
-    private Properties getProperties(final DataSourceParameter dataSourceParameter) {
+    private Properties getXAProperties(final DataSourceParameter dataSourceParameter) {
         Properties result = new Properties();
         result.setProperty("user", dataSourceParameter.getUsername());
         result.setProperty("password", Optional.fromNullable(dataSourceParameter.getPassword()).or(""));
