@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing;
+package io.shardingsphere.opentracing.listener.merger;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.eventbus.EventBus;
@@ -39,6 +39,7 @@ import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowColumns
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.opentracing.ShardingTracer;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;

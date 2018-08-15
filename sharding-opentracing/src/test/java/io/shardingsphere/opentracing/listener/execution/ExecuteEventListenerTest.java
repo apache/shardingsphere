@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing;
+package io.shardingsphere.opentracing.listener.execution;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.eventbus.EventBus;
@@ -33,6 +33,7 @@ import io.shardingsphere.core.executor.type.statement.StatementUnit;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.opentracing.ShardingTracer;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;

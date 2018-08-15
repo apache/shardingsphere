@@ -15,16 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing;
+package io.shardingsphere.opentracing.listener;
 
-import io.shardingsphere.opentracing.listener.AllListenerTests;
+import io.shardingsphere.opentracing.listener.execution.ExecuteEventListenerTest;
+import io.shardingsphere.opentracing.listener.merger.MergeEventListenerTest;
+import io.shardingsphere.opentracing.listener.routing.RoutingEventListenerTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        ShardingTracerTest.class,
-        AllListenerTests.class
+        RoutingEventListenerTest.class,
+        ExecuteEventListenerTest.class,
+        MergeEventListenerTest.class
 })
-public final class AllTests {
+public final class AllListenerTests {
 }

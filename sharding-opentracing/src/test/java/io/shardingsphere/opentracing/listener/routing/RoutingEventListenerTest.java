@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing;
+package io.shardingsphere.opentracing.listener.routing;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.eventbus.EventBus;
@@ -35,6 +35,7 @@ import io.shardingsphere.core.jdbc.core.statement.ShardingStatement;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.opentracing.ShardingTracer;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -56,7 +57,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class SqlRoutingEventListenerTest {
+public final class RoutingEventListenerTest {
     
     private static final MockTracer TRACER = new MockTracer(new ThreadLocalActiveSpanSource(), MockTracer.Propagator.TEXT_MAP);
     

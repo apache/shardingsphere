@@ -38,7 +38,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class ShardingJDBCTracerTest {
+public final class ShardingTracerTest {
     
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
