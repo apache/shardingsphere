@@ -38,7 +38,7 @@ public final class DQLExecuteEventListener extends SQLExecuteEventListener {
     @Subscribe
     @AllowConcurrentEvents
     public void listen(final DQLExecutionEvent event) {
-        process(event);
+        tracing(event);
     }
     
     @Override

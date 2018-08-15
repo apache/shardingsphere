@@ -37,7 +37,7 @@ public abstract class TracingListener<T extends ShardingEvent> {
     
     private final SamplingService samplingService = SamplingService.getInstance();
     
-    protected final void process(final T event) {
+    protected final void tracing(final T event) {
         if (!samplingService.trySampling()) {
             return;
         }
@@ -46,10 +46,11 @@ public abstract class TracingListener<T extends ShardingEvent> {
                 beforeExecute(event);
                 break;
             case EXECUTE_SUCCESS:
-                executeSuccess(event);
+                tracingFinish();
                 break;
             case EXECUTE_FAILURE:
-                executeFailure(event);
+                tracingFailure(event);
+                tracingFinish();
                 break;
             default:
                 throw new ShardingException("Unsupported event type");
@@ -58,9 +59,9 @@ public abstract class TracingListener<T extends ShardingEvent> {
     
     protected abstract void beforeExecute(T event);
     
-    protected abstract void executeSuccess(T event);
+    protected abstract void tracingFinish();
     
-    protected abstract void executeFailure(T event);
+    protected abstract void tracingFailure(T event);
     
     protected final Map<String, ?> log(final Throwable t) {
         Map<String, String> result = new HashMap<>(3, 1);

@@ -47,9 +47,9 @@ public abstract class SQLExecuteEventListener extends TracingListener<SQLExecuti
     private final ThreadLocal<ActiveSpan> trunkInBranchContainer = new ThreadLocal<>();
     
     @Override
-    protected void beforeExecute(final SQLExecutionEvent event) {
+    protected final void beforeExecute(final SQLExecutionEvent event) {
         Tracer tracer = ShardingJDBCTracer.get();
-        if (ExecutorDataMap.getDataMap().containsKey(SNAPSHOT_DATA_KEY) && !isCurrentMainThread() && null == branchContainer.get()) {
+        if (ExecutorDataMap.getDataMap().containsKey(SNAPSHOT_DATA_KEY) && null == trunkContainer.get() && null == branchContainer.get()) {
             trunkInBranchContainer.set(((ActiveSpan.Continuation) ExecutorDataMap.getDataMap().get(SNAPSHOT_DATA_KEY)).activate());
         }
         if (null == branchContainer.get()) {
@@ -62,28 +62,7 @@ public abstract class SQLExecuteEventListener extends TracingListener<SQLExecuti
     }
     
     @Override
-    protected void executeSuccess(final SQLExecutionEvent event) {
-        finish();
-    }
-    
-    
-    @Override
-    protected void executeFailure(final SQLExecutionEvent event) {
-        Span span = branchContainer.get();
-        span.setTag(Tags.ERROR.getKey(), true);
-        if (event.getException().isPresent()) {
-            span.log(System.currentTimeMillis(), log(event.getException().get()));
-        }
-        finish();
-    }
-    
-    protected abstract String getOperation();
-    
-    private boolean isCurrentMainThread() {
-        return null != trunkContainer.get();
-    }
-    
-    private void finish() {
+    protected final void tracingFinish() {
         if (null == branchContainer.get()) {
             return;
         }
@@ -95,4 +74,15 @@ public abstract class SQLExecuteEventListener extends TracingListener<SQLExecuti
         trunkInBranchContainer.get().deactivate();
         trunkInBranchContainer.remove();
     }
+    
+    @Override
+    protected final void tracingFailure(final SQLExecutionEvent event) {
+        Span span = branchContainer.get();
+        span.setTag(Tags.ERROR.getKey(), true);
+        if (event.getException().isPresent()) {
+            span.log(System.currentTimeMillis(), log(event.getException().get()));
+        }
+    }
+    
+    protected abstract String getOperation();
 }

@@ -45,7 +45,7 @@ public final class MergeEventListener extends TracingListener<MergeEvent> {
     @Subscribe
     @AllowConcurrentEvents
     public void listen(final MergeEvent event) {
-        process(event);
+        tracing(event);
     }
     
     @Override
@@ -58,19 +58,17 @@ public final class MergeEventListener extends TracingListener<MergeEvent> {
     }
     
     @Override
-    protected void executeSuccess(final MergeEvent event) {
+    protected void tracingFinish() {
         spanContainer.get().deactivate();
         spanContainer.remove();
     }
     
     @Override
-    protected void executeFailure(final MergeEvent event) {
+    protected void tracingFailure(final MergeEvent event) {
         ActiveSpan activeSpan = spanContainer.get();
         activeSpan.setTag(Tags.ERROR.getKey(), true);
         if (event.getException().isPresent()) {
             activeSpan.log(System.currentTimeMillis(), log(event.getException().get()));
         }
-        spanContainer.get().deactivate();
-        spanContainer.remove();
     }
 }

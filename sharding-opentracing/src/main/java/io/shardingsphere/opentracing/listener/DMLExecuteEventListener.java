@@ -38,7 +38,7 @@ public final class DMLExecuteEventListener extends SQLExecuteEventListener {
     @Subscribe
     @AllowConcurrentEvents
     public void listen(final DMLExecutionEvent event) {
-        process(event);
+        tracing(event);
     }
     
     @Override

@@ -50,7 +50,7 @@ public final class ExecuteOverallEventListener extends TracingListener<OverallEx
     @Subscribe
     @AllowConcurrentEvents
     public void listen(final OverallExecutionEvent event) {
-        process(event);
+        tracing(event);
     }
     
     @Override
@@ -64,21 +64,18 @@ public final class ExecuteOverallEventListener extends TracingListener<OverallEx
     }
     
     @Override
-    protected void executeSuccess(final OverallExecutionEvent event) {
+    protected void tracingFinish() {
         trunkContainer.get().deactivate();
         trunkContainer.remove();
         getSamplingService().increaseSampling();
     }
     
     @Override
-    protected void executeFailure(final OverallExecutionEvent event) {
+    protected void tracingFailure(final OverallExecutionEvent event) {
         ActiveSpan activeSpan = trunkContainer.get();
         activeSpan.setTag(Tags.ERROR.getKey(), true);
         if (event.getException().isPresent()) {
             activeSpan.log(System.currentTimeMillis(), log(event.getException().get()));
         }
-        trunkContainer.get().deactivate();
-        trunkContainer.remove();
-        getSamplingService().increaseSampling();
     }
 }

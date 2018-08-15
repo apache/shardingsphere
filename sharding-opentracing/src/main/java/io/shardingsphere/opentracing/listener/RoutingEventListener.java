@@ -45,7 +45,7 @@ public final class RoutingEventListener extends TracingListener<RoutingEvent> {
     @Subscribe
     @AllowConcurrentEvents
     public void listen(final RoutingEvent event) {
-        process(event);
+        tracing(event);
     }
     
     @Override
@@ -59,19 +59,17 @@ public final class RoutingEventListener extends TracingListener<RoutingEvent> {
     }
     
     @Override
-    protected void executeSuccess(final RoutingEvent event) {
+    protected void tracingFinish() {
         spanContainer.get().deactivate();
         spanContainer.remove();
     }
     
     @Override
-    protected void executeFailure(final RoutingEvent event) {
+    protected void tracingFailure(final RoutingEvent event) {
         ActiveSpan activeSpan = spanContainer.get();
         activeSpan.setTag(Tags.ERROR.getKey(), true);
         if (event.getException().isPresent()) {
             activeSpan.log(System.currentTimeMillis(), log(event.getException().get()));
         }
-        spanContainer.get().deactivate();
-        spanContainer.remove();
     }
 }
