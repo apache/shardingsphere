@@ -100,9 +100,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
         for (DataSource each : this.dataSourceMap.values()) {
             try {
                 Method closeMethod = each.getClass().getDeclaredMethod("close");
-                Method shutDownMethod = each.getClass().getDeclaredMethod("shutdown");
                 closeMethod.invoke(each);
-                shutDownMethod.invoke(each);
             } catch (final NoSuchMethodException | InvocationTargetException | IllegalAccessException ignored) {
             }
         }
