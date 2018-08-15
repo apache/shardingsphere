@@ -71,6 +71,14 @@ public final class OrderItem {
         alias = Optional.absent();
     }
     
+    public OrderItem(final String name, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
+        owner = Optional.absent();
+        this.name = Optional.of(name);
+        this.orderDirection = orderDirection;
+        this.nullOrderDirection = nullOrderDirection;
+        alias = Optional.absent();
+    }
+    
     /**
      * Get column label.
      *
