@@ -18,8 +18,8 @@
 package io.shardingsphere.opentracing.listener;
 
 import io.shardingsphere.core.event.ShardingEvent;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.opentracing.sampling.SamplingService;
-import lombok.Getter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,13 +31,17 @@ import java.util.Map;
  * 
  * @param <T> type of sharding event
  */
-@Getter
 public abstract class TracingListener<T extends ShardingEvent> {
     
-    private final SamplingService samplingService = SamplingService.getInstance();
+    /**
+     * Register listener.
+     */
+    public final void register() {
+        ShardingEventBusInstance.getInstance().register(this);
+    }
     
     protected final void tracing(final T event) {
-        if (!samplingService.trySampling()) {
+        if (!SamplingService.getInstance().trySampling()) {
             return;
         }
         switch (event.getEventType()) {

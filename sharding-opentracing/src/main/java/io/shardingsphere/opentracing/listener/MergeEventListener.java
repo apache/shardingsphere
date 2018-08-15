@@ -27,7 +27,7 @@ import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.opentracing.tag.LocalTags;
 
 /**
- * Listen to the event of result set merge execution.
+ * Result set merge event listener.
  *
  * @author chenqingyang
  */

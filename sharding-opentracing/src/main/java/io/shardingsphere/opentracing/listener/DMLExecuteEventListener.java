@@ -22,7 +22,7 @@ import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.executor.event.DMLExecutionEvent;
 
 /**
- * Listen to the event of DML execution.
+ * DML execute event listener.
  * 
  * @author gaohongtao
  * @author wangkai

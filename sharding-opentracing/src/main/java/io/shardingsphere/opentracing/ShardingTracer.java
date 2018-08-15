@@ -17,15 +17,13 @@
 
 package io.shardingsphere.opentracing;
 
-import com.google.common.eventbus.EventBus;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
-import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.opentracing.config.ConfigurationLoader;
 import io.shardingsphere.opentracing.listener.DMLExecuteEventListener;
 import io.shardingsphere.opentracing.listener.DQLExecuteEventListener;
-import io.shardingsphere.opentracing.listener.ExecuteOverallEventListener;
+import io.shardingsphere.opentracing.listener.OverallExecuteEventListener;
 import io.shardingsphere.opentracing.listener.MergeEventListener;
 import io.shardingsphere.opentracing.listener.RoutingEventListener;
 import io.shardingsphere.opentracing.sampling.SamplingService;
@@ -40,8 +38,6 @@ import lombok.NoArgsConstructor;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingTracer {
-    
-    private static final EventBus SHARDING_EVENT_BUS = ShardingEventBusInstance.getInstance();
     
     /**
      * Initialize tracer.
@@ -75,11 +71,11 @@ public final class ShardingTracer {
         }
         GlobalTracer.register(tracer);
         SamplingService.getInstance().init(sampleNumPM);
-        SHARDING_EVENT_BUS.register(new ExecuteOverallEventListener());
-        SHARDING_EVENT_BUS.register(new DQLExecuteEventListener());
-        SHARDING_EVENT_BUS.register(new DMLExecuteEventListener());
-        SHARDING_EVENT_BUS.register(new RoutingEventListener());
-        SHARDING_EVENT_BUS.register(new MergeEventListener());
+        new OverallExecuteEventListener().register();
+        new DQLExecuteEventListener().register();
+        new DMLExecuteEventListener().register();
+        new RoutingEventListener().register();
+        new MergeEventListener().register();
     }
     
     /**

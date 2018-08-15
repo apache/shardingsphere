@@ -25,16 +25,17 @@ import io.opentracing.tag.Tags;
 import io.shardingsphere.core.executor.event.OverallExecutionEvent;
 import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
 import io.shardingsphere.opentracing.ShardingTracer;
+import io.shardingsphere.opentracing.sampling.SamplingService;
 import io.shardingsphere.opentracing.tag.LocalTags;
 
 /**
- * Listen to overall event of SQL execution.
+ * SQL execute overall event listener.
  * 
  * @author gaohongtao
  * @author wangkai
  * @author maxiaoguang
  */
-public final class ExecuteOverallEventListener extends TracingListener<OverallExecutionEvent> {
+public final class OverallExecuteEventListener extends TracingListener<OverallExecutionEvent> {
     
     private static final String SNAPSHOT_DATA_KEY = "OPENTRACING_SNAPSHOT_DATA";
 
@@ -67,7 +68,7 @@ public final class ExecuteOverallEventListener extends TracingListener<OverallEx
     protected void tracingFinish() {
         trunkContainer.get().deactivate();
         trunkContainer.remove();
-        getSamplingService().increaseSampling();
+        SamplingService.getInstance().increaseSampling();
     }
     
     @Override

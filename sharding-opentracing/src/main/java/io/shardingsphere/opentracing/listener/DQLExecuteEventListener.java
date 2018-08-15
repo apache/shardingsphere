@@ -22,7 +22,7 @@ import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.executor.event.DQLExecutionEvent;
 
 /**
- * Listen to the event of DQL execution.
+ * DQL execute event listener.
  * 
  * @author gaohongtao
  * @author wangkai

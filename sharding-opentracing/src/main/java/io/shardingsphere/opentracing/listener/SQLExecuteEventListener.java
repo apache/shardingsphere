@@ -28,7 +28,7 @@ import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.opentracing.tag.LocalTags;
 
 /**
- * Listen to the event of SQL execution.
+ * SQL execute event listener.
  * 
  * @author gaohongtao
  * @author wangkai
