@@ -17,12 +17,6 @@
 
 package io.shardingsphere.opentracing.listener.execution;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.eventbus.EventBus;
-import io.opentracing.NoopTracerFactory;
-import io.opentracing.mock.MockTracer;
-import io.opentracing.util.GlobalTracer;
-import io.opentracing.util.ThreadLocalActiveSpanSource;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.BaseStatementUnit;
 import io.shardingsphere.core.executor.ExecuteCallback;
@@ -32,14 +26,9 @@ import io.shardingsphere.core.executor.type.memory.MemoryStrictlyExecutorEngine;
 import io.shardingsphere.core.executor.type.statement.StatementUnit;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLUnit;
-import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.opentracing.ShardingTracer;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import io.shardingsphere.opentracing.listener.BaseEventListenerTest;
 import org.junit.Test;
 
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -54,26 +43,9 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ExecuteEventListenerTest {
-    
-    private static final MockTracer TRACER = new MockTracer(new ThreadLocalActiveSpanSource(), MockTracer.Propagator.TEXT_MAP);
+public final class ExecuteEventListenerTest extends BaseEventListenerTest {
     
     private final ExecutorEngine executorEngine = new MemoryStrictlyExecutorEngine(5);
-    
-    @BeforeClass
-    public static void init() {
-        ShardingTracer.init(TRACER);
-    }
-    
-    @AfterClass
-    public static void tearDown() throws NoSuchFieldException, IllegalAccessException {
-        releaseTracer();
-    }
-    
-    @Before
-    public void before() {
-        TRACER.reset();
-    }
     
     @Test
     public void assertSingleStatement() throws SQLException {
@@ -87,7 +59,7 @@ public final class ExecuteEventListenerTest {
                 return 0;
             }
         });
-        assertThat(TRACER.finishedSpans().size(), is(2));
+        assertThat(getTracer().finishedSpans().size(), is(2));
     }
     
     @Test
@@ -106,7 +78,7 @@ public final class ExecuteEventListenerTest {
                 return 0;
             }
         });
-        assertThat(TRACER.finishedSpans().size(), is(3));
+        assertThat(getTracer().finishedSpans().size(), is(3));
     }
 
     @Test
@@ -126,7 +98,7 @@ public final class ExecuteEventListenerTest {
                 return 0;
             }
         });
-        assertThat(TRACER.finishedSpans().size(), is(3));
+        assertThat(getTracer().finishedSpans().size(), is(3));
     }
     
     @Test(expected = SQLException.class)
@@ -141,14 +113,5 @@ public final class ExecuteEventListenerTest {
                 throw new SQLException();
             }
         });
-    }
-    
-    private static void releaseTracer() throws NoSuchFieldException, IllegalAccessException {
-        Field tracerField = GlobalTracer.class.getDeclaredField("tracer");
-        tracerField.setAccessible(true);
-        tracerField.set(GlobalTracer.class, NoopTracerFactory.create());
-        Field subscribersByTypeField = EventBus.class.getDeclaredField("subscribersByType");
-        subscribersByTypeField.setAccessible(true);
-        subscribersByTypeField.set(ShardingEventBusInstance.getInstance(), HashMultimap.create());
     }
 }

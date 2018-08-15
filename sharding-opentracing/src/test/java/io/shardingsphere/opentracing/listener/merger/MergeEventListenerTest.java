@@ -17,13 +17,7 @@
 
 package io.shardingsphere.opentracing.listener.merger;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.eventbus.EventBus;
-import io.opentracing.NoopTracerFactory;
-import io.opentracing.mock.MockTracer;
 import io.opentracing.tag.Tags;
-import io.opentracing.util.GlobalTracer;
-import io.opentracing.util.ThreadLocalActiveSpanSource;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.constant.ConnectionMode;
@@ -38,15 +32,11 @@ import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowColumnsStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.opentracing.ShardingTracer;
-import org.junit.AfterClass;
+import io.shardingsphere.opentracing.listener.BaseEventListenerTest;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -61,27 +51,14 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class MergeEventListenerTest {
-    
-    private static final MockTracer TRACER = new MockTracer(new ThreadLocalActiveSpanSource(), MockTracer.Propagator.TEXT_MAP);
+public final class MergeEventListenerTest extends BaseEventListenerTest {
     
     private ShardingContext shardingContext;
     
     private MergeEngine mergeEngine;
     
-    @BeforeClass
-    public static void init() {
-        ShardingTracer.init(TRACER);
-    }
-    
-    @AfterClass
-    public static void tearDown() throws NoSuchFieldException, IllegalAccessException {
-        releaseTracer();
-    }
-    
     @Before
     public void setUp() throws SQLException {
-        TRACER.reset();
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("t_order");
@@ -111,7 +88,7 @@ public final class MergeEventListenerTest {
         Method mergeMethod = ShardingPreparedStatement.class.getDeclaredMethod("merge", MergeEngine.class);
         mergeMethod.setAccessible(true);
         mergeMethod.invoke(statement, mergeEngine);
-        assertThat(TRACER.finishedSpans().size(), is(1));
+        assertThat(getTracer().finishedSpans().size(), is(1));
     }
     
     @Test
@@ -120,7 +97,7 @@ public final class MergeEventListenerTest {
         Method mergeMethod = ShardingStatement.class.getDeclaredMethod("merge", MergeEngine.class);
         mergeMethod.setAccessible(true);
         mergeMethod.invoke(statement, mergeEngine);
-        assertThat(TRACER.finishedSpans().size(), is(1));
+        assertThat(getTracer().finishedSpans().size(), is(1));
     }
     
     @Test
@@ -135,16 +112,7 @@ public final class MergeEventListenerTest {
         } catch (final Exception ignored) {
             // CHECKSTYLE:ON
         }
-        assertThat(TRACER.finishedSpans().size(), is(1));
-        assertTrue((Boolean) TRACER.finishedSpans().get(0).tags().get(Tags.ERROR.getKey()));
-    }
-    
-    private static void releaseTracer() throws NoSuchFieldException, IllegalAccessException {
-        Field tracerField = GlobalTracer.class.getDeclaredField("tracer");
-        tracerField.setAccessible(true);
-        tracerField.set(GlobalTracer.class, NoopTracerFactory.create());
-        Field subscribersByTypeField = EventBus.class.getDeclaredField("subscribersByType");
-        subscribersByTypeField.setAccessible(true);
-        subscribersByTypeField.set(ShardingEventBusInstance.getInstance(), HashMultimap.create());
+        assertThat(getTracer().finishedSpans().size(), is(1));
+        assertTrue((Boolean) getTracer().finishedSpans().get(0).tags().get(Tags.ERROR.getKey()));
     }
 }
