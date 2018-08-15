@@ -126,15 +126,11 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     }
     
     private void closeOriginalDataSources() {
-        Map<String, DataSource> oldDataSourceMap = shardingContext.getDataSourceMap();
-        for (DataSource each : oldDataSourceMap.values()) {
+        Map<String, DataSource> originalDataSourceMap = shardingContext.getDataSourceMap();
+        for (DataSource each : originalDataSourceMap.values()) {
             try {
-                System.err.println("begin close datasource");
-                Method closeMethod = each.getClass().getDeclaredMethod("close");
-                Method shutDownMethod = each.getClass().getDeclaredMethod("shutdown");
-                closeMethod.invoke(each);
-                shutDownMethod.invoke(each);
-                System.err.println("finish close datasource");
+                Method method = each.getClass().getDeclaredMethod("close");
+                method.invoke(each);
             } catch (final NoSuchMethodException | InvocationTargetException | IllegalAccessException ignored) {
             }
         }
