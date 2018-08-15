@@ -18,14 +18,16 @@
 package io.shardingsphere.opentracing.listener.execution;
 
 import com.google.common.base.Joiner;
+import com.google.common.eventbus.AllowConcurrentEvents;
+import com.google.common.eventbus.Subscribe;
 import io.opentracing.ActiveSpan;
 import io.opentracing.Span;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.executor.event.SQLExecutionEvent;
 import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
+import io.shardingsphere.opentracing.ShardingTags;
 import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.opentracing.listener.OpenTracingListener;
-import io.shardingsphere.opentracing.ShardingTags;
 
 /**
  * SQL execute event listener.
@@ -34,7 +36,7 @@ import io.shardingsphere.opentracing.ShardingTags;
  * @author wangkai
  * @author maxiaoguang
  */
-public abstract class ExecuteEventListener extends OpenTracingListener<SQLExecutionEvent> {
+public final class SQLExecuteEventListener extends OpenTracingListener<SQLExecutionEvent> {
     
     private static final String OPERATION_NAME_PREFIX = "/SHARDING-SPHERE/EXECUTE/";
     
@@ -46,8 +48,19 @@ public abstract class ExecuteEventListener extends OpenTracingListener<SQLExecut
     
     private final ThreadLocal<ActiveSpan> trunkInBranchSpan = new ThreadLocal<>();
     
+    /**
+     * Listen SQL execution event.
+     *
+     * @param event SQL execution event
+     */
+    @Subscribe
+    @AllowConcurrentEvents
+    public void listen(final SQLExecutionEvent event) {
+        tracing(event);
+    }
+    
     @Override
-    protected final void beforeExecute(final SQLExecutionEvent event) {
+    protected void beforeExecute(final SQLExecutionEvent event) {
         if (ExecutorDataMap.getDataMap().containsKey(SNAPSHOT_DATA_KEY) && null == trunkSpan.get() && null == branchSpan.get()) {
             trunkInBranchSpan.set(((ActiveSpan.Continuation) ExecutorDataMap.getDataMap().get(SNAPSHOT_DATA_KEY)).activate());
         }
@@ -61,7 +74,7 @@ public abstract class ExecuteEventListener extends OpenTracingListener<SQLExecut
     }
     
     @Override
-    protected final void tracingFinish() {
+    protected void tracingFinish() {
         if (null == branchSpan.get()) {
             return;
         }
@@ -75,7 +88,7 @@ public abstract class ExecuteEventListener extends OpenTracingListener<SQLExecut
     }
     
     @Override
-    protected final Span getFailureSpan() {
+    protected Span getFailureSpan() {
         return branchSpan.get();
     }
 }

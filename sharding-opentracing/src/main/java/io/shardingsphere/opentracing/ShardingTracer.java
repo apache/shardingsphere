@@ -21,8 +21,7 @@ import com.google.common.base.Preconditions;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.opentracing.listener.execution.DMLExecuteEventListener;
-import io.shardingsphere.opentracing.listener.execution.DQLExecuteEventListener;
+import io.shardingsphere.opentracing.listener.execution.SQLExecuteEventListener;
 import io.shardingsphere.opentracing.listener.execution.OverallExecuteEventListener;
 import io.shardingsphere.opentracing.listener.merger.MergeEventListener;
 import io.shardingsphere.opentracing.listener.routing.RouteEventListener;
@@ -68,8 +67,7 @@ public final class ShardingTracer {
     private static void registerListeners() {
         new RouteEventListener().register();
         new OverallExecuteEventListener().register();
-        new DQLExecuteEventListener().register();
-        new DMLExecuteEventListener().register();
+        new SQLExecuteEventListener().register();
         new MergeEventListener().register();
     }
     
