@@ -5,6 +5,27 @@ import MySQLBase,MySQLKeyword,DDLBase,SQLBase,Keyword,Symbol;
 }
 
 
+createTableOptions:
+	createTableBasic
+	|createTableSelect
+	|createTableLike
+	;
+	
+createTableBasic:
+	
+	;
+	
+createDefinition:
+	columnNameAndDefinition
+  	(constraintDefinition|indexDefinition)
+  	;	
+	
+createTableSelect:
+	;
+	
+createTableLike:
+	;	
+
 alterSpecifications:
 	alterSpecification (COMMA alterSpecification)*
 	;
@@ -12,10 +33,8 @@ alterSpecifications:
 alterSpecification:
   	tableOptions
   	| ADD COLUMN? (singleColumn | multiColumn)
-	| (ADD (INDEX|KEY) indexName? indexType? keyParts indexOption?)+
-	| (ADD (CONSTRAINT symbol?)? (primaryKeyOption | uniqueOption | foreignKeyOption))+
-	| (ADD FULLTEXT (INDEX|KEY)? indexName? indexType? keyParts indexOption?)+
-	| (ADD SPATIAL (INDEX|KEY)? indexName? indexType? keyParts indexOption?)+
+	| ADD indexDefinition
+	| ADD constraintDefinition
 	| ALGORITHM EQ_OR_ASSIGN? (DEFAULT|INPLACE|COPY)
 	| ALTER COLUMN? columnName (SET DEFAULT | DROP DEFAULT)
 	| CHANGE COLUMN? columnName columnName columnDefinition (FIRST|AFTER columnName)?
@@ -50,6 +69,19 @@ alterSpecification:
 	| REMOVE PARTITIONING
 	| UPGRADE PARTITIONING
 	;
+
+
+indexDefinition:
+	(((FULLTEXT | SPATIAL) indexAndKey?)|indexAndKey) indexDefOption
+	;
+	
+indexAndKey:
+	INDEX|KEY
+	;
+
+indexDefOption:
+	indexName? indexType? keyParts indexOption?
+	;
 	
 singleColumn:
 	columnNameAndDefinition (FIRST | AFTER columnName)?
@@ -59,6 +91,10 @@ multiColumn:
 	LEFT_PAREN columnNameAndDefinition (COMMA columnNameAndDefinition)* RIGHT_PAREN
 	;
 
+constraintDefinition:
+	(CONSTRAINT symbol?)? (primaryKeyOption | uniqueOption | foreignKeyOption)
+	;
+	
 primaryKeyOption:	
 	PRIMARY KEY indexType? keyParts indexOption?
 	;
@@ -173,6 +209,7 @@ indexName:
 indexType:
     USING (BTREE | HASH)
 	;
+	
 indexOption:
     KEY_BLOCK_SIZE EQ_OR_ASSIGN? value
   | indexType
