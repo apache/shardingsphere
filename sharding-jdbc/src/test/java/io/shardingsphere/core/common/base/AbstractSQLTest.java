@@ -22,7 +22,6 @@ import io.shardingsphere.core.common.env.DatabaseEnvironment;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
-import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.h2.tools.RunScript;
@@ -35,7 +34,6 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -122,7 +120,6 @@ public abstract class AbstractSQLTest {
             return;
         }
         shardingDataSource.close();
-        closeDataSources(getDataSourceMap(shardingDataSource).values());
         shardingDataSource = null;
     }
     
@@ -143,16 +140,6 @@ public abstract class AbstractSQLTest {
         field.setAccessible(true);
         ShardingContext shardingContext = (ShardingContext) field.get(shardingDataSource);
         return shardingContext.getDataSourceMap();
-    }
-    
-    private static void closeDataSources(final Collection<DataSource> dataSources) throws SQLException {
-        for (DataSource each : dataSources) {
-            if (each instanceof BasicDataSource) {
-                ((BasicDataSource) each).close();
-            } else if (each instanceof MasterSlaveDataSource) {
-                closeDataSources(((MasterSlaveDataSource) each).getAllDataSources().values());
-            }
-        }
     }
     
     protected final void importDataSet() {
