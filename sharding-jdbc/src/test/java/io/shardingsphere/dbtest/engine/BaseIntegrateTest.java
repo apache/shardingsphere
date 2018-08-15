@@ -72,6 +72,10 @@ public abstract class BaseIntegrateTest {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     }
     
+    protected static DataSource getDataSource() {
+        return dataSource;
+    }
+    
     public BaseIntegrateTest(final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, JAXBException, SQLException {
         this.shardingRuleType = shardingRuleType;
         this.databaseTypeEnvironment = databaseTypeEnvironment;
