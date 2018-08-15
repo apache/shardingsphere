@@ -20,7 +20,6 @@ package io.shardingsphere.opentracing.listener.execution;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import io.opentracing.ActiveSpan;
-import io.opentracing.Tracer;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.executor.event.OverallExecutionEvent;
 import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
@@ -41,7 +40,7 @@ public final class OverallExecuteEventListener extends TracingListener<OverallEx
 
     private static final String OPERATION_NAME_PREFIX = "/SHARDING-SPHERE/EXECUTE/";
 
-    private final ThreadLocal<ActiveSpan> trunkContainer = new ThreadLocal<>();
+    private final ThreadLocal<ActiveSpan> span = new ThreadLocal<>();
     
     /**
      * Listen overall sql execution event.
@@ -56,9 +55,8 @@ public final class OverallExecuteEventListener extends TracingListener<OverallEx
     
     @Override
     protected void beforeExecute(final OverallExecutionEvent event) {
-        Tracer tracer = ShardingTracer.get();
-        ActiveSpan activeSpan = tracer.buildSpan(OPERATION_NAME_PREFIX + event.getSqlType().name()).withTag(Tags.COMPONENT.getKey(), LocalTags.COMPONENT_NAME).startActive();
-        trunkContainer.set(activeSpan);
+        ActiveSpan activeSpan = ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX + event.getSqlType().name()).withTag(Tags.COMPONENT.getKey(), LocalTags.COMPONENT_NAME).startActive();
+        span.set(activeSpan);
         if (event.isParallelExecute()) {
             ExecutorDataMap.getDataMap().put(SNAPSHOT_DATA_KEY, activeSpan.capture());
         }
@@ -66,16 +64,12 @@ public final class OverallExecuteEventListener extends TracingListener<OverallEx
     
     @Override
     protected void tracingFinish() {
-        trunkContainer.get().deactivate();
-        trunkContainer.remove();
+        span.get().deactivate();
+        span.remove();
     }
     
     @Override
     protected void tracingFailure(final OverallExecutionEvent event) {
-        ActiveSpan activeSpan = trunkContainer.get();
-        activeSpan.setTag(Tags.ERROR.getKey(), true);
-        if (event.getException().isPresent()) {
-            activeSpan.log(System.currentTimeMillis(), log(event.getException().get()));
-        }
+        span.get().setTag(Tags.ERROR.getKey(), true).log(System.currentTimeMillis(), log(event.getException()));
     }
 }

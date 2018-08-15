@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.executor.fixture;
 
-import com.google.common.base.Preconditions;
 import io.shardingsphere.core.event.ShardingEventType;
 import io.shardingsphere.core.executor.event.ExecutionEvent;
 import io.shardingsphere.core.executor.event.OverallExecutionEvent;
@@ -49,9 +48,8 @@ public final class ExecutorTestUtil {
             eventCaller.verifySQLType(((OverallExecutionEvent) event).getSqlType());
             eventCaller.verifyIsParallelExecute(((OverallExecutionEvent) event).isParallelExecute());
         }
-        Preconditions.checkState((ShardingEventType.EXECUTE_FAILURE == event.getEventType()) == event.getException().isPresent());
         if (ShardingEventType.EXECUTE_FAILURE == event.getEventType()) {
-            eventCaller.verifyException(event.getException().get());
+            eventCaller.verifyException(event.getException());
         }
     }
     

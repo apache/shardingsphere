@@ -17,8 +17,6 @@
 
 package io.shardingsphere.core.event;
 
-import com.google.common.base.Optional;
-import lombok.AccessLevel;
 import lombok.Getter;
 
 import java.util.UUID;
@@ -35,7 +33,6 @@ public class ShardingEvent {
     
     private ShardingEventType eventType = ShardingEventType.BEFORE_EXECUTE;
     
-    @Getter(AccessLevel.NONE)
     private Exception exception;
     
     /**
@@ -53,14 +50,5 @@ public class ShardingEvent {
     public void setExecuteFailure(final Exception cause) {
         eventType = ShardingEventType.EXECUTE_FAILURE;
         exception = cause;
-    }
-    
-    /**
-     * Get exception.
-     * 
-     * @return exception
-     */
-    public final Optional<? extends Exception> getException() {
-        return Optional.fromNullable(exception);
     }
 }

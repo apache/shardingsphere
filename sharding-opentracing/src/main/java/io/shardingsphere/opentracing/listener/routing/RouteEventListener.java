@@ -20,7 +20,6 @@ package io.shardingsphere.opentracing.listener.routing;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import io.opentracing.ActiveSpan;
-import io.opentracing.Tracer;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.routing.event.RoutingEvent;
 import io.shardingsphere.opentracing.ShardingTracer;
@@ -36,7 +35,7 @@ public final class RouteEventListener extends TracingListener<RoutingEvent> {
     
     private static final String OPERATION_NAME_PREFIX = "/SHARDING-SPHERE/ROUTING/";
     
-    private final ThreadLocal<ActiveSpan> spanContainer = new ThreadLocal<>();
+    private final ThreadLocal<ActiveSpan> span = new ThreadLocal<>();
     
     /**
      * Listen routing event.
@@ -51,26 +50,17 @@ public final class RouteEventListener extends TracingListener<RoutingEvent> {
     
     @Override
     protected void beforeExecute(final RoutingEvent event) {
-        Tracer tracer = ShardingTracer.get();
-        ActiveSpan activeSpan = tracer.buildSpan(OPERATION_NAME_PREFIX)
-                .withTag(Tags.COMPONENT.getKey(), LocalTags.COMPONENT_NAME)
-                .withTag(Tags.DB_STATEMENT.getKey(), event.getSql())
-                .startActive();
-        spanContainer.set(activeSpan);
+        span.set(ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX).withTag(Tags.COMPONENT.getKey(), LocalTags.COMPONENT_NAME).withTag(Tags.DB_STATEMENT.getKey(), event.getSql()).startActive());
     }
     
     @Override
     protected void tracingFinish() {
-        spanContainer.get().deactivate();
-        spanContainer.remove();
+        span.get().deactivate();
+        span.remove();
     }
     
     @Override
     protected void tracingFailure(final RoutingEvent event) {
-        ActiveSpan activeSpan = spanContainer.get();
-        activeSpan.setTag(Tags.ERROR.getKey(), true);
-        if (event.getException().isPresent()) {
-            activeSpan.log(System.currentTimeMillis(), log(event.getException().get()));
-        }
+        span.get().setTag(Tags.ERROR.getKey(), true).log(System.currentTimeMillis(), log(event.getException()));
     }
 }
