@@ -37,6 +37,8 @@ import io.shardingsphere.core.rule.ShardingRule;
 import lombok.Getter;
 
 import javax.sql.DataSource;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -116,10 +118,26 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
             originalExecutorEngine.close();
         }
         shardingProperties = newShardingProperties;
+        closeOriginalDataSources();
         ShardingMetaData shardingMetaData = new ShardingMetaData(
                 getDataSourceURLs(newDataSourceMap), newShardingRule, getDatabaseType(), executorEngine.getExecutorService(), new JDBCTableMetaDataConnectionManager(newDataSourceMap));
         boolean newShowSQL = newShardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         shardingContext = new ShardingContext(newDataSourceMap, newShardingRule, getDatabaseType(), executorEngine, shardingMetaData, newConnectionMode, newShowSQL);
+    }
+    
+    private void closeOriginalDataSources() {
+        Map<String, DataSource> oldDataSourceMap = shardingContext.getDataSourceMap();
+        for (DataSource each : oldDataSourceMap.values()) {
+            try {
+                System.err.println("begin close datasource");
+                Method closeMethod = each.getClass().getDeclaredMethod("close");
+                Method shutDownMethod = each.getClass().getDeclaredMethod("shutdown");
+                closeMethod.invoke(each);
+                shutDownMethod.invoke(each);
+                System.err.println("finish close datasource");
+            } catch (final NoSuchMethodException | InvocationTargetException | IllegalAccessException ignored) {
+            }
+        }
     }
     
     @Override
