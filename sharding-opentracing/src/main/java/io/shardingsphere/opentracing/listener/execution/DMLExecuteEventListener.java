@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.listener;
+package io.shardingsphere.opentracing.listener.execution;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
@@ -28,7 +28,7 @@ import io.shardingsphere.core.executor.event.DMLExecutionEvent;
  * @author wangkai
  * @author maxiaoguang
  */
-public final class DMLExecuteEventListener extends SQLExecuteEventListener {
+public final class DMLExecuteEventListener extends ExecuteEventListener {
     
     /**
      * Listen DML execution event.

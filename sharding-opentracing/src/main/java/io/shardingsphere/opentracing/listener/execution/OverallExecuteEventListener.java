@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.listener;
+package io.shardingsphere.opentracing.listener.execution;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
@@ -25,6 +25,7 @@ import io.opentracing.tag.Tags;
 import io.shardingsphere.core.executor.event.OverallExecutionEvent;
 import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
 import io.shardingsphere.opentracing.ShardingTracer;
+import io.shardingsphere.opentracing.listener.TracingListener;
 import io.shardingsphere.opentracing.sampling.SamplingService;
 import io.shardingsphere.opentracing.tag.LocalTags;
 

@@ -21,11 +21,11 @@ import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.opentracing.config.ConfigurationLoader;
-import io.shardingsphere.opentracing.listener.DMLExecuteEventListener;
-import io.shardingsphere.opentracing.listener.DQLExecuteEventListener;
-import io.shardingsphere.opentracing.listener.OverallExecuteEventListener;
-import io.shardingsphere.opentracing.listener.MergeEventListener;
-import io.shardingsphere.opentracing.listener.RoutingEventListener;
+import io.shardingsphere.opentracing.listener.execution.DMLExecuteEventListener;
+import io.shardingsphere.opentracing.listener.execution.DQLExecuteEventListener;
+import io.shardingsphere.opentracing.listener.execution.OverallExecuteEventListener;
+import io.shardingsphere.opentracing.listener.merger.MergeEventListener;
+import io.shardingsphere.opentracing.listener.routing.RouteEventListener;
 import io.shardingsphere.opentracing.sampling.SamplingService;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -74,7 +74,7 @@ public final class ShardingTracer {
         new OverallExecuteEventListener().register();
         new DQLExecuteEventListener().register();
         new DMLExecuteEventListener().register();
-        new RoutingEventListener().register();
+        new RouteEventListener().register();
         new MergeEventListener().register();
     }
     

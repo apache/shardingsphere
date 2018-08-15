@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.listener;
+package io.shardingsphere.opentracing.listener.execution;
 
 import com.google.common.base.Joiner;
 import io.opentracing.ActiveSpan;
@@ -25,6 +25,7 @@ import io.opentracing.tag.Tags;
 import io.shardingsphere.core.executor.event.SQLExecutionEvent;
 import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
 import io.shardingsphere.opentracing.ShardingTracer;
+import io.shardingsphere.opentracing.listener.TracingListener;
 import io.shardingsphere.opentracing.tag.LocalTags;
 
 /**
@@ -34,7 +35,7 @@ import io.shardingsphere.opentracing.tag.LocalTags;
  * @author wangkai
  * @author maxiaoguang
  */
-public abstract class SQLExecuteEventListener extends TracingListener<SQLExecutionEvent> {
+public abstract class ExecuteEventListener extends TracingListener<SQLExecutionEvent> {
     
     private static final String SNAPSHOT_DATA_KEY = "OPENTRACING_SNAPSHOT_DATA";
 

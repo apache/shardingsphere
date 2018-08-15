@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.listener;
+package io.shardingsphere.opentracing.listener.routing;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
@@ -24,6 +24,7 @@ import io.opentracing.Tracer;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.routing.event.RoutingEvent;
 import io.shardingsphere.opentracing.ShardingTracer;
+import io.shardingsphere.opentracing.listener.TracingListener;
 import io.shardingsphere.opentracing.tag.LocalTags;
 
 /**
@@ -31,7 +32,7 @@ import io.shardingsphere.opentracing.tag.LocalTags;
  *
  * @author chenqingyang
  */
-public final class RoutingEventListener extends TracingListener<RoutingEvent> {
+public final class RouteEventListener extends TracingListener<RoutingEvent> {
     
     private static final String OPERATION_NAME_PREFIX = "/SHARDING-SPHERE/ROUTING/";
     
