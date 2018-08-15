@@ -15,28 +15,20 @@
  * </p>
  */
 
-package io.shardingsphere.core.merger.event;
+package io.shardingsphere.core.routing.event;
 
-import com.google.common.base.Optional;
+import io.shardingsphere.core.event.ShardingEvent;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Result set merge event.
- * 
+ * Routing event.
+ *
  * @author chenqingyang
  */
-public class ResultSetMergeEvent extends AbstractMergeEvent {
+@RequiredArgsConstructor
+@Getter
+public final class RoutingEvent extends ShardingEvent {
     
-    
-    /**
-     * Get exception.
-     *
-     * @return exception
-     */
-    public Optional<Exception> getException() {
-        Optional<? extends Exception> ex = super.getException();
-        if (ex.isPresent()) {
-            return Optional.of(ex.get());
-        }
-        return Optional.absent();
-    }
+    private final String sql;
 }

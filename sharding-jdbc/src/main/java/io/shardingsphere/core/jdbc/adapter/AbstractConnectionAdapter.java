@@ -22,7 +22,7 @@ import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
-import io.shardingsphere.core.event.EventBusInstance;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.transaction.TransactionTypeHolder;
 import io.shardingsphere.transaction.event.ShardingTransactionEvent;
 import io.shardingsphere.transaction.event.local.LocalTransactionEvent;
@@ -89,17 +89,17 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     public final void setAutoCommit(final boolean autoCommit) {
         this.autoCommit = autoCommit;
         recordMethodInvocation(Connection.class, "setAutoCommit", new Class[] {boolean.class}, new Object[] {autoCommit});
-        EventBusInstance.getInstance().post(createTransactionEvent(TransactionOperationType.BEGIN));
+        ShardingEventBusInstance.getInstance().post(createTransactionEvent(TransactionOperationType.BEGIN));
     }
     
     @Override
     public final void commit() {
-        EventBusInstance.getInstance().post(createTransactionEvent(TransactionOperationType.COMMIT));
+        ShardingEventBusInstance.getInstance().post(createTransactionEvent(TransactionOperationType.COMMIT));
     }
     
     @Override
     public final void rollback() {
-        EventBusInstance.getInstance().post(createTransactionEvent(TransactionOperationType.ROLLBACK));
+        ShardingEventBusInstance.getInstance().post(createTransactionEvent(TransactionOperationType.ROLLBACK));
     }
     
     private ShardingTransactionEvent createTransactionEvent(final TransactionOperationType operationType) {

@@ -23,7 +23,7 @@ import io.opentracing.NoopTracerFactory;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.event.EventBusInstance;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.opentracing.fixture.FooTracer;
 import org.junit.After;
 import org.junit.Before;
@@ -84,6 +84,6 @@ public final class ShardingJDBCTracerTest {
     private static void unregisterEventBus() throws NoSuchFieldException, IllegalAccessException {
         Field subscribersByTypeField = EventBus.class.getDeclaredField("subscribersByType");
         subscribersByTypeField.setAccessible(true);
-        subscribersByTypeField.set(EventBusInstance.getInstance(), HashMultimap.create());
+        subscribersByTypeField.set(ShardingEventBusInstance.getInstance(), HashMultimap.create());
     }
 }

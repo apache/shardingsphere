@@ -34,7 +34,7 @@ import io.shardingsphere.core.jdbc.core.statement.ShardingPreparedStatement;
 import io.shardingsphere.core.jdbc.core.statement.ShardingStatement;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.event.EventBusInstance;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -137,6 +137,6 @@ public final class SqlRoutingEventListenerTest {
         tracerField.set(GlobalTracer.class, NoopTracerFactory.create());
         Field subscribersByTypeField = EventBus.class.getDeclaredField("subscribersByType");
         subscribersByTypeField.setAccessible(true);
-        subscribersByTypeField.set(EventBusInstance.getInstance(), HashMultimap.create());
+        subscribersByTypeField.set(ShardingEventBusInstance.getInstance(), HashMultimap.create());
     }
 }

@@ -17,10 +17,11 @@
 
 package io.shardingsphere.opentracing;
 
+import com.google.common.eventbus.EventBus;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.event.EventBusInstance;
 import io.shardingsphere.opentracing.config.ConfigurationLoader;
 import io.shardingsphere.opentracing.listener.ExecuteEventListener;
 import io.shardingsphere.opentracing.listener.MergeEventListener;
@@ -37,6 +38,8 @@ import lombok.NoArgsConstructor;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingJDBCTracer {
+    
+    private static final EventBus SHARDING_EVENT_BUS = ShardingEventBusInstance.getInstance();
     
     /**
      * Initialize tracer.
@@ -64,21 +67,15 @@ public final class ShardingJDBCTracer {
         init(tracer, 0);
     }
     
-    /**
-     * Initialize tracer from another one.
-     *
-     * @param tracer      that is delegated
-     * @param sampleNumPM sampling num in one minutes
-     */
-    public static void init(final Tracer tracer, final int sampleNumPM) {
+    private static void init(final Tracer tracer, final int sampleNumPM) {
         if (GlobalTracer.isRegistered()) {
             return;
         }
         GlobalTracer.register(tracer);
         SamplingService.getInstance().init(sampleNumPM);
-        EventBusInstance.getInstance().register(new ExecuteEventListener());
-        EventBusInstance.getInstance().register(new RoutingEventListener());
-        EventBusInstance.getInstance().register(new MergeEventListener());
+        SHARDING_EVENT_BUS.register(new ExecuteEventListener());
+        SHARDING_EVENT_BUS.register(new RoutingEventListener());
+        SHARDING_EVENT_BUS.register(new MergeEventListener());
     }
     
     /**

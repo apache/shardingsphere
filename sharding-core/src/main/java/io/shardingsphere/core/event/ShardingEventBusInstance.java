@@ -15,19 +15,28 @@
  * </p>
  */
 
-package io.shardingsphere.core.routing.event;
+package io.shardingsphere.core.event;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import com.google.common.eventbus.EventBus;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * SQL routing event.
- *
- * @author chenqingyang
+ * Sharding event bus for singleton instance.
+ * 
+ * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class SQLRoutingEvent extends AbstractRoutingEvent {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShardingEventBusInstance {
     
-    private final String sql;
+    private static final EventBus INSTANCE = new EventBus();
+    
+    /**
+     * Get sharding event bus instance.
+     * 
+     * @return sharding event bus instance
+     */
+    public static EventBus getInstance() {
+        return INSTANCE;
+    }
 }

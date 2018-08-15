@@ -17,35 +17,12 @@
 
 package io.shardingsphere.core.merger.event;
 
-import com.google.common.base.Optional;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.UUID;
+import io.shardingsphere.core.event.ShardingEvent;
 
 /**
  * Merge event.
- *
+ * 
  * @author chenqingyang
  */
-public abstract class AbstractMergeEvent {
-
-    @Getter
-    private final String id = UUID.randomUUID().toString();
-
-    @Getter
-    @Setter
-    private EventMergeType eventMergeType = EventMergeType.BEFORE_MERGE;
-
-    @Setter
-    private Exception exception;
-
-    /**
-     * Get exception.
-     *
-     * @return exception
-     */
-    public Optional<? extends Exception> getException() {
-        return Optional.fromNullable(exception);
-    }
+public final class MergeEvent extends ShardingEvent {
 }

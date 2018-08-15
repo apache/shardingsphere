@@ -26,7 +26,7 @@ import io.shardingsphere.core.executor.event.DQLExecutionEvent;
 import io.shardingsphere.core.executor.event.OverallExecutionEvent;
 import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
-import io.shardingsphere.core.event.EventBusInstance;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -78,17 +78,17 @@ public abstract class ExecutorEngine implements AutoCloseable {
             return Collections.emptyList();
         }
         OverallExecutionEvent event = new OverallExecutionEvent(sqlType, baseStatementUnits.size() > 1);
-        EventBusInstance.getInstance().post(event);
+        ShardingEventBusInstance.getInstance().post(event);
         try {
             List<T> result = getExecuteResults(sqlType, baseStatementUnits, executeCallback);
             event.setExecuteSuccess();
-            EventBusInstance.getInstance().post(event);
+            ShardingEventBusInstance.getInstance().post(event);
             return result;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             event.setExecuteFailure(ex);
-            EventBusInstance.getInstance().post(event);
+            ShardingEventBusInstance.getInstance().post(event);
             ExecutorExceptionHandler.handleException(ex);
             return null;
         }
@@ -106,21 +106,21 @@ public abstract class ExecutorEngine implements AutoCloseable {
             events.add(getExecutionEvent(sqlType, baseStatementUnit, each));
         }
         for (ExecutionEvent event : events) {
-            EventBusInstance.getInstance().post(event);
+            ShardingEventBusInstance.getInstance().post(event);
         }
         try {
             result = executeCallback.execute(baseStatementUnit);
         } catch (final SQLException ex) {
             for (ExecutionEvent each : events) {
                 each.setExecuteFailure(ex);
-                EventBusInstance.getInstance().post(each);
+                ShardingEventBusInstance.getInstance().post(each);
                 ExecutorExceptionHandler.handleException(ex);
             }
             return null;
         }
         for (ExecutionEvent each : events) {
             each.setExecuteSuccess();
-            EventBusInstance.getInstance().post(each);
+            ShardingEventBusInstance.getInstance().post(each);
         }
         return result;
     }

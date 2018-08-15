@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.util;
 
-import io.shardingsphere.core.event.EventBusInstance;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,6 +27,6 @@ public final class EventBusInstanceTest {
     
     @Test
     public void assertGetInstance() {
-        assertThat(EventBusInstance.getInstance(), is(EventBusInstance.getInstance()));
+        assertThat(ShardingEventBusInstance.getInstance(), is(ShardingEventBusInstance.getInstance()));
     }
 }

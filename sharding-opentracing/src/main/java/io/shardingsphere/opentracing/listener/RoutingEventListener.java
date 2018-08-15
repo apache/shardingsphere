@@ -23,7 +23,7 @@ import io.opentracing.ActiveSpan;
 import io.opentracing.Tracer;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.routing.event.SQLRoutingEvent;
+import io.shardingsphere.core.routing.event.RoutingEvent;
 import io.shardingsphere.opentracing.ShardingJDBCTracer;
 import io.shardingsphere.opentracing.sampling.SamplingService;
 import io.shardingsphere.opentracing.tag.LocalTags;
@@ -49,21 +49,21 @@ public final class RoutingEventListener {
      */
     @Subscribe
     @AllowConcurrentEvents
-    public void listenSQLRoutingEvent(final SQLRoutingEvent event) {
+    public void listenSQLRoutingEvent(final RoutingEvent event) {
         if (!SamplingService.getInstance().trySampling()) {
             return;
         }
         Tracer tracer = ShardingJDBCTracer.get();
         ActiveSpan activeSpan;
-        switch (event.getEventRoutingType()) {
-            case BEFORE_ROUTE:
+        switch (event.getEventType()) {
+            case BEFORE_EXECUTE:
                 activeSpan = tracer.buildSpan(OPERATION_NAME_PREFIX)
                         .withTag(Tags.COMPONENT.getKey(), LocalTags.COMPONENT_NAME)
                         .withTag(Tags.DB_STATEMENT.getKey(), event.getSql())
                         .startActive();
                 spanContainer.set(activeSpan);
                 break;
-            case ROUTE_FAILURE:
+            case EXECUTE_FAILURE:
                 activeSpan = spanContainer.get();
                 activeSpan.setTag(Tags.ERROR.getKey(), true);
                 if (event.getException().isPresent()) {
@@ -71,7 +71,7 @@ public final class RoutingEventListener {
                 }
                 deactivate();
                 break;
-            case ROUTE_SUCCESS:
+            case EXECUTE_SUCCESS:
                 deactivate();
                 break;
             default:

@@ -18,10 +18,10 @@
 package io.shardingsphere.core.executor.fixture;
 
 import com.google.common.base.Preconditions;
+import io.shardingsphere.core.event.ShardingEventType;
 import io.shardingsphere.core.executor.event.ExecutionEvent;
-import io.shardingsphere.core.executor.event.SQLExecutionEvent;
-import io.shardingsphere.core.executor.event.EventExecutionType;
 import io.shardingsphere.core.executor.event.OverallExecutionEvent;
+import io.shardingsphere.core.executor.event.SQLExecutionEvent;
 import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -43,14 +43,14 @@ public final class ExecutorTestUtil {
             eventCaller.verifyDataSource(sqlExecutionEvent.getDataSource());
             eventCaller.verifySQL(sqlExecutionEvent.getSqlUnit().getSql());
             eventCaller.verifyParameters(sqlExecutionEvent.getParameters());
-            eventCaller.verifyEventExecutionType(sqlExecutionEvent.getEventExecutionType());
+            eventCaller.verifyEventExecutionType(sqlExecutionEvent.getEventType());
             
         } else if (event instanceof OverallExecutionEvent) {
             eventCaller.verifySQLType(((OverallExecutionEvent) event).getSqlType());
             eventCaller.verifyIsParallelExecute(((OverallExecutionEvent) event).isParallelExecute());
         }
-        Preconditions.checkState((EventExecutionType.EXECUTE_FAILURE == event.getEventExecutionType()) == event.getException().isPresent());
-        if (EventExecutionType.EXECUTE_FAILURE == event.getEventExecutionType()) {
+        Preconditions.checkState((ShardingEventType.EXECUTE_FAILURE == event.getEventType()) == event.getException().isPresent());
+        if (ShardingEventType.EXECUTE_FAILURE == event.getEventType()) {
             eventCaller.verifyException(event.getException().get());
         }
     }

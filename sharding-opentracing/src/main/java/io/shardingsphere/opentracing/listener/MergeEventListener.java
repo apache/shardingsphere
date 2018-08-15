@@ -23,7 +23,7 @@ import io.opentracing.ActiveSpan;
 import io.opentracing.Tracer;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.merger.event.ResultSetMergeEvent;
+import io.shardingsphere.core.merger.event.MergeEvent;
 import io.shardingsphere.opentracing.ShardingJDBCTracer;
 import io.shardingsphere.opentracing.sampling.SamplingService;
 import io.shardingsphere.opentracing.tag.LocalTags;
@@ -49,20 +49,20 @@ public final class MergeEventListener {
      */
     @Subscribe
     @AllowConcurrentEvents
-    public void listenResultSetMergeEvent(final ResultSetMergeEvent event) {
+    public void listenResultSetMergeEvent(final MergeEvent event) {
         if (!SamplingService.getInstance().trySampling()) {
             return;
         }
         Tracer tracer = ShardingJDBCTracer.get();
         ActiveSpan activeSpan;
-        switch (event.getEventMergeType()) {
-            case BEFORE_MERGE:
+        switch (event.getEventType()) {
+            case BEFORE_EXECUTE:
                 activeSpan = tracer.buildSpan(OPERATION_NAME_PREFIX)
                         .withTag(Tags.COMPONENT.getKey(), LocalTags.COMPONENT_NAME)
                         .startActive();
                 spanContainer.set(activeSpan);
                 break;
-            case MERGE_FAILURE:
+            case EXECUTE_FAILURE:
                 activeSpan = spanContainer.get();
                 activeSpan.setTag(Tags.ERROR.getKey(), true);
                 if (event.getException().isPresent()) {
@@ -70,7 +70,7 @@ public final class MergeEventListener {
                 }
                 deactivate();
                 break;
-            case MERGE_SUCCESS:
+            case EXECUTE_SUCCESS:
                 deactivate();
                 break;
             default:

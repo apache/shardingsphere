@@ -57,7 +57,7 @@ public final class BestEffortsDeliveryListener {
         SoftTransactionConfiguration transactionConfig = SoftTransactionManager.getCurrentTransactionConfiguration().get();
         TransactionLogStorage transactionLogStorage = TransactionLogStorageFactory.createTransactionLogStorage(transactionConfig.buildTransactionLogDataSource());
         BEDSoftTransaction bedSoftTransaction = (BEDSoftTransaction) SoftTransactionManager.getCurrentTransaction().get();
-        switch (event.getEventExecutionType()) {
+        switch (event.getEventType()) {
             case BEFORE_EXECUTE:
                 //TODO for batch SQL need split to 2-level records
                 transactionLogStorage.add(new TransactionLog(event.getId(), bedSoftTransaction.getTransactionId(), bedSoftTransaction.getTransactionType(), 
@@ -98,7 +98,7 @@ public final class BestEffortsDeliveryListener {
                 }
                 return;
             default: 
-                throw new UnsupportedOperationException(event.getEventExecutionType().toString());
+                throw new UnsupportedOperationException(event.getEventType().toString());
         }
     }
     

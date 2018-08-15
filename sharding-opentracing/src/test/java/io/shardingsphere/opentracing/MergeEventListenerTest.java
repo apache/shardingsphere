@@ -38,7 +38,7 @@ import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowColumnsStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.event.EventBusInstance;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -144,6 +144,6 @@ public final class MergeEventListenerTest {
         tracerField.set(GlobalTracer.class, NoopTracerFactory.create());
         Field subscribersByTypeField = EventBus.class.getDeclaredField("subscribersByType");
         subscribersByTypeField.setAccessible(true);
-        subscribersByTypeField.set(EventBusInstance.getInstance(), HashMultimap.create());
+        subscribersByTypeField.set(ShardingEventBusInstance.getInstance(), HashMultimap.create());
     }
 }

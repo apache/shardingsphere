@@ -18,7 +18,7 @@
 package io.shardingsphere.core.executor.type;
 
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.executor.event.EventExecutionType;
+import io.shardingsphere.core.event.ShardingEventType;
 import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.core.executor.type.statement.StatementExecutor;
 import io.shardingsphere.core.executor.type.statement.StatementUnit;
@@ -73,8 +73,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifySQL(DQL_SQL);
         verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
-        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
         verify(getEventCaller(), times(0)).verifyException(null);
     }
     
@@ -99,8 +99,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
         verify(getEventCaller(), times(4)).verifySQL(DQL_SQL);
         verify(getEventCaller(), times(4)).verifyParameters(Collections.emptyList());
-        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
         verify(getEventCaller(), times(0)).verifyException(null);
     }
     
@@ -117,8 +117,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifySQL(DQL_SQL);
         verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
-        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_FAILURE);
         verify(getEventCaller()).verifyException(exp);
     }
     
@@ -141,8 +141,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
         verify(getEventCaller(), times(4)).verifySQL(DQL_SQL);
         verify(getEventCaller(), times(4)).verifyParameters(Collections.emptyList());
-        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.EXECUTE_FAILURE);
         verify(getEventCaller(), times(2)).verifyException(exp);
     }
     
@@ -158,8 +158,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifySQL(DML_SQL);
         verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
-        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
         verify(getEventCaller(), times(0)).verifyException(null);
     }
     
@@ -180,8 +180,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
         verify(getEventCaller(), times(4)).verifySQL(DML_SQL);
         verify(getEventCaller(), times(4)).verifyParameters(Collections.emptyList());
-        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
         verify(getEventCaller(), times(0)).verifyException(null);
     }
     
@@ -198,8 +198,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifySQL(DML_SQL);
         verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
-        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_FAILURE);
         verify(getEventCaller()).verifyException(exp);
     }
     
@@ -221,8 +221,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
         verify(getEventCaller(), times(4)).verifySQL(DML_SQL);
         verify(getEventCaller(), times(4)).verifyParameters(Collections.emptyList());
-        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.EXECUTE_FAILURE);
         verify(getEventCaller(), times(2)).verifyException(exp);
     }
     
@@ -238,8 +238,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifySQL(DML_SQL);
         verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
-        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
         verify(getEventCaller(), times(0)).verifyException(null);
     }
     
@@ -255,8 +255,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifySQL(DML_SQL);
         verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
-        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
         verify(getEventCaller(), times(0)).verifyException(null);
     }
     
@@ -272,8 +272,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifySQL(DML_SQL);
         verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
-        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
         verify(getEventCaller(), times(0)).verifyException(null);
     }
     
@@ -289,8 +289,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifySQL(DML_SQL);
         verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
-        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
         verify(getEventCaller(), times(0)).verifyException(null);
     }
     
@@ -311,8 +311,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
         verify(getEventCaller(), times(4)).verifySQL(DML_SQL);
         verify(getEventCaller(), times(4)).verifyParameters(Collections.emptyList());
-        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
         verify(getEventCaller(), times(0)).verifyException(null);
     }
     
@@ -329,8 +329,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifySQL(DML_SQL);
         verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
-        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_FAILURE);
         verify(getEventCaller()).verifyException(exp);
     }
     
@@ -352,8 +352,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
         verify(getEventCaller(), times(4)).verifySQL(DML_SQL);
         verify(getEventCaller(), times(4)).verifyParameters(Collections.emptyList());
-        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.EXECUTE_FAILURE);
         verify(getEventCaller(), times(2)).verifyException(exp);
     }
     
@@ -369,8 +369,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifySQL(DQL_SQL);
         verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
-        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
         verify(getEventCaller(), times(0)).verifyException(null);
     }
     
@@ -391,8 +391,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
         verify(getEventCaller(), times(4)).verifySQL(DQL_SQL);
         verify(getEventCaller(), times(4)).verifyParameters(Collections.emptyList());
-        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
         verify(getEventCaller(), times(0)).verifyException(null);
     }
     
@@ -408,8 +408,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifySQL(DML_SQL);
         verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
-        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
         verify(getEventCaller(), times(0)).verifyException(null);
     }
     
@@ -425,8 +425,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifySQL(DML_SQL);
         verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
-        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
         verify(getEventCaller(), times(0)).verifyException(null);
     }
     
@@ -442,8 +442,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifySQL(DML_SQL);
         verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
-        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
         verify(getEventCaller(), times(0)).verifyException(null);
     }
     
@@ -460,8 +460,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         } catch (final SQLException ignore) {
         }
         verify(getEventCaller(), times(2)).verifySQLType(SQLType.DML);
-        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_FAILURE);
     }
     
     private Collection<StatementUnit> createStatementUnits(final String sql, final Statement statement, final String dataSource) {

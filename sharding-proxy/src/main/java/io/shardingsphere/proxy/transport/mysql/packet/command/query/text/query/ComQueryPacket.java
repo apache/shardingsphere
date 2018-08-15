@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.event.EventBusInstance;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.proxy.backend.BackendHandler;
 import io.shardingsphere.proxy.backend.BackendHandlerFactory;
 import io.shardingsphere.proxy.backend.ResultPacket;
@@ -88,7 +88,7 @@ public final class ComQueryPacket implements QueryCommandPacket {
             return Optional.of(backendHandler.execute());
         }
         if (TransactionType.XA == RuleRegistry.getInstance().getTransactionType() && isInTransaction(operationType.get())) {
-            EventBusInstance.getInstance().post(new XATransactionEvent(operationType.get()));
+            ShardingEventBusInstance.getInstance().post(new XATransactionEvent(operationType.get()));
         }
         // TODO :zhaojun do not send TCL to backend, send when local transaction ready 
         return Optional.of(new CommandResponsePackets(new OKPacket(1)));

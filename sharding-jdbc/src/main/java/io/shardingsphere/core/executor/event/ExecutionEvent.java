@@ -17,50 +17,12 @@
 
 package io.shardingsphere.core.executor.event;
 
-import com.google.common.base.Optional;
-import lombok.AccessLevel;
-import lombok.Getter;
-
-import java.util.UUID;
+import io.shardingsphere.core.event.ShardingEvent;
 
 /**
  * Execution event.
  *
  * @author zhangliang
  */
-@Getter
-public abstract class ExecutionEvent {
-    
-    private final String id = UUID.randomUUID().toString();
-    
-    private EventExecutionType eventExecutionType = EventExecutionType.BEFORE_EXECUTE;
-    
-    @Getter(AccessLevel.NONE)
-    private Exception exception;
-    
-    /**
-     * Set execute success.
-     */
-    public void setExecuteSuccess() {
-        eventExecutionType = EventExecutionType.EXECUTE_SUCCESS;
-    }
-    
-    /**
-     * Set execute failure.
-     * 
-     * @param cause fail cause
-     */
-    public void setExecuteFailure(final Exception cause) {
-        eventExecutionType = EventExecutionType.EXECUTE_FAILURE;
-        exception = cause;
-    }
-    
-    /**
-     * Get exception.
-     * 
-     * @return exception
-     */
-    public final Optional<? extends Exception> getException() {
-        return Optional.fromNullable(exception);
-    }
+public class ExecutionEvent extends ShardingEvent {
 }

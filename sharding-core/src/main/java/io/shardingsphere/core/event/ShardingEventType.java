@@ -15,27 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.core.merger.event;
+package io.shardingsphere.core.event;
 
 /**
- * Event merge type.
- *
- * @author chenqingyang
+ * Sharding event type.
+ * 
+ * @author zhangliang
  */
-public enum EventMergeType {
-
-    /**
-     * Before result set merge.
-     */
-    BEFORE_MERGE,
-
-    /**
-     * result set merge success.
-     */
-    MERGE_SUCCESS,
-
-    /**
-     * result set merge failure.
-     */
-    MERGE_FAILURE
+public enum ShardingEventType {
+    
+    BEFORE_EXECUTE, EXECUTE_SUCCESS, EXECUTE_FAILURE
 }

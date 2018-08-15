@@ -68,7 +68,7 @@ public final class ExecuteEventListener {
         }
         Tracer tracer = ShardingJDBCTracer.get();
         ActiveSpan activeSpan;
-        switch (event.getEventExecutionType()) {
+        switch (event.getEventType()) {
             case BEFORE_EXECUTE:
                 activeSpan = tracer.buildSpan(OPERATION_NAME_PREFIX + event.getSqlType().name()).withTag(Tags.COMPONENT.getKey(), LocalTags.COMPONENT_NAME).startActive();
                 trunkContainer.set(activeSpan);
@@ -125,7 +125,7 @@ public final class ExecuteEventListener {
             return;
         }
         Tracer tracer = ShardingJDBCTracer.get();
-        switch (event.getEventExecutionType()) {
+        switch (event.getEventType()) {
             case BEFORE_EXECUTE:
                 if (ExecutorDataMap.getDataMap().containsKey(SNAPSHOT_DATA_KEY) && !isCurrentMainThread() && null == branchContainer.get()) {
                     trunkInBranchContainer.set(((ActiveSpan.Continuation) ExecutorDataMap.getDataMap().get(SNAPSHOT_DATA_KEY)).activate());

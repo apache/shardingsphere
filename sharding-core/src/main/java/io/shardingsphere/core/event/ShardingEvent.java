@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.routing.event;
+package io.shardingsphere.core.event;
 
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
@@ -24,40 +24,40 @@ import lombok.Getter;
 import java.util.UUID;
 
 /**
- * SQL routing event.
+ * Sharding event.
  *
- * @author chenqingyang
+ * @author zhangliang
  */
 @Getter
-public abstract class AbstractRoutingEvent {
+public class ShardingEvent {
     
     private final String id = UUID.randomUUID().toString();
     
-    private EventRoutingType eventRoutingType = EventRoutingType.BEFORE_ROUTE;
+    private ShardingEventType eventType = ShardingEventType.BEFORE_EXECUTE;
     
     @Getter(AccessLevel.NONE)
     private Exception exception;
     
     /**
-     * Set route success.
+     * Set execute success.
      */
     public void setExecuteSuccess() {
-        eventRoutingType = EventRoutingType.ROUTE_SUCCESS;
+        eventType = ShardingEventType.EXECUTE_SUCCESS;
     }
     
     /**
-     * Set route failure.
-     *
+     * Set execute failure.
+     * 
      * @param cause fail cause
      */
     public void setExecuteFailure(final Exception cause) {
-        eventRoutingType = EventRoutingType.ROUTE_FAILURE;
+        eventType = ShardingEventType.EXECUTE_FAILURE;
         exception = cause;
     }
     
     /**
      * Get exception.
-     *
+     * 
      * @return exception
      */
     public final Optional<? extends Exception> getException() {
