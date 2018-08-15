@@ -36,5 +36,5 @@ public interface EventCaller {
     
     void verifySQLType(SQLType sqlType);
     
-    void verifyStatementUnitSize(int size);
+    void verifyIsParallelExecute(boolean isParallelExecute);
 }

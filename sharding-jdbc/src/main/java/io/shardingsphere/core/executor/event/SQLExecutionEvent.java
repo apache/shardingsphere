@@ -17,35 +17,25 @@
 
 package io.shardingsphere.core.executor.event;
 
-import com.google.common.base.Optional;
+import io.shardingsphere.core.routing.SQLUnit;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
-import java.util.UUID;
+import java.util.List;
 
 /**
  * SQL execution event.
- *
- * @author zhangliang
+ * 
+ * @author gaohongtao
+ * @author maxiaoguang
  */
-public abstract class AbstractExecutionEvent {
+@RequiredArgsConstructor
+@Getter
+public abstract class SQLExecutionEvent extends ExecutionEvent {
     
-    @Getter
-    private final String id = UUID.randomUUID().toString();
+    private final String dataSource;
     
-    @Getter
-    @Setter
-    private EventExecutionType eventExecutionType = EventExecutionType.BEFORE_EXECUTE;
+    private final SQLUnit sqlUnit;
     
-    @Setter
-    private Exception exception;
-    
-    /**
-     * Get exception.
-     * 
-     * @return exception
-     */
-    public Optional<? extends Exception> getException() {
-        return Optional.fromNullable(exception);
-    }
+    private final List<Object> parameters;
 }

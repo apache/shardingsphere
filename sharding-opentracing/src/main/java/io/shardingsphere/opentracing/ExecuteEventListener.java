@@ -25,7 +25,7 @@ import io.opentracing.Span;
 import io.opentracing.Tracer;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.executor.event.AbstractSQLExecutionEvent;
+import io.shardingsphere.core.executor.event.SQLExecutionEvent;
 import io.shardingsphere.core.executor.event.DMLExecutionEvent;
 import io.shardingsphere.core.executor.event.DQLExecutionEvent;
 import io.shardingsphere.core.executor.event.OverallExecutionEvent;
@@ -69,10 +69,9 @@ public final class ExecuteEventListener {
         ActiveSpan activeSpan;
         switch (event.getEventExecutionType()) {
             case BEFORE_EXECUTE:
-                activeSpan = tracer.buildSpan(OPERATION_NAME_PREFIX + event.getSqlType().name()).withTag(Tags.COMPONENT.getKey(), LocalTags.COMPONENT_NAME)
-                        .startActive();
+                activeSpan = tracer.buildSpan(OPERATION_NAME_PREFIX + event.getSqlType().name()).withTag(Tags.COMPONENT.getKey(), LocalTags.COMPONENT_NAME).startActive();
                 trunkContainer.set(activeSpan);
-                if (isParallelExecute(event)) {
+                if (event.isParallelExecute()) {
                     ExecutorDataMap.getDataMap().put(SNAPSHOT_DATA_KEY, activeSpan.capture());
                 }
                 break;
@@ -90,10 +89,6 @@ public final class ExecuteEventListener {
             default:
                 throw new ShardingException("Unsupported event type");
         }
-    }
-    
-    private boolean isParallelExecute(final OverallExecutionEvent event) {
-        return event.getStatementUnitSize() > 1;
     }
     
     private void deactivate() {
@@ -124,7 +119,7 @@ public final class ExecuteEventListener {
         handle(event, "QUERY");
     }
     
-    private void handle(final AbstractSQLExecutionEvent event, final String operation) {
+    private void handle(final SQLExecutionEvent event, final String operation) {
         if (!SamplingService.getInstance().trySampling()) {
             return;
         }
@@ -139,7 +134,7 @@ public final class ExecuteEventListener {
                 if (!event.getParameters().isEmpty()) {
                     params = Joiner.on(",").join(event.getParameters());
                 }
-                if (branchContainer.get() == null) {
+                if (null == branchContainer.get()) {
                     branchContainer.set(tracer.buildSpan(OPERATION_NAME_PREFIX + operation).withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
                             .withTag(Tags.PEER_HOSTNAME.getKey(), event.getDataSource()).withTag(Tags.COMPONENT.getKey(), LocalTags.COMPONENT_NAME)
                             .withTag(Tags.DB_INSTANCE.getKey(), event.getDataSource()).withTag(Tags.DB_TYPE.getKey(), "sql")

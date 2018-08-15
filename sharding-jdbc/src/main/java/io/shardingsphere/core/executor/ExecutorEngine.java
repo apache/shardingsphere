@@ -20,10 +20,9 @@ package io.shardingsphere.core.executor;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.executor.event.AbstractExecutionEvent;
+import io.shardingsphere.core.executor.event.ExecutionEvent;
 import io.shardingsphere.core.executor.event.DMLExecutionEvent;
 import io.shardingsphere.core.executor.event.DQLExecutionEvent;
-import io.shardingsphere.core.executor.event.EventExecutionType;
 import io.shardingsphere.core.executor.event.OverallExecutionEvent;
 import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
@@ -78,18 +77,17 @@ public abstract class ExecutorEngine implements AutoCloseable {
         if (baseStatementUnits.isEmpty()) {
             return Collections.emptyList();
         }
-        OverallExecutionEvent event = new OverallExecutionEvent(sqlType, baseStatementUnits.size());
+        OverallExecutionEvent event = new OverallExecutionEvent(sqlType, baseStatementUnits.size() > 1);
         EventBusInstance.getInstance().post(event);
         try {
             List<T> result = getExecuteResults(sqlType, baseStatementUnits, executeCallback);
-            event.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+            event.setExecuteSuccess();
             EventBusInstance.getInstance().post(event);
             return result;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            event.setException(ex);
-            event.setEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
+            event.setExecuteFailure(ex);
             EventBusInstance.getInstance().post(event);
             ExecutorExceptionHandler.handleException(ex);
             return null;
@@ -103,33 +101,32 @@ public abstract class ExecutorEngine implements AutoCloseable {
         T result;
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
-        List<AbstractExecutionEvent> events = new LinkedList<>();
+        List<ExecutionEvent> events = new LinkedList<>();
         for (List<Object> each : baseStatementUnit.getSqlExecutionUnit().getSqlUnit().getParameterSets()) {
             events.add(getExecutionEvent(sqlType, baseStatementUnit, each));
         }
-        for (AbstractExecutionEvent event : events) {
+        for (ExecutionEvent event : events) {
             EventBusInstance.getInstance().post(event);
         }
         try {
             result = executeCallback.execute(baseStatementUnit);
         } catch (final SQLException ex) {
-            for (AbstractExecutionEvent each : events) {
-                each.setEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
-                each.setException(ex);
+            for (ExecutionEvent each : events) {
+                each.setExecuteFailure(ex);
                 EventBusInstance.getInstance().post(each);
                 ExecutorExceptionHandler.handleException(ex);
             }
             return null;
         }
-        for (AbstractExecutionEvent each : events) {
-            each.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        for (ExecutionEvent each : events) {
+            each.setExecuteSuccess();
             EventBusInstance.getInstance().post(each);
         }
         return result;
     }
     
-    private AbstractExecutionEvent getExecutionEvent(final SQLType sqlType, final BaseStatementUnit baseStatementUnit, final List<Object> parameters) {
-        AbstractExecutionEvent result;
+    private ExecutionEvent getExecutionEvent(final SQLType sqlType, final BaseStatementUnit baseStatementUnit, final List<Object> parameters) {
+        ExecutionEvent result;
         if (SQLType.DQL == sqlType) {
             result = new DQLExecutionEvent(baseStatementUnit.getSqlExecutionUnit().getDataSource(), baseStatementUnit.getSqlExecutionUnit().getSqlUnit(), parameters);
         } else {
@@ -139,7 +136,7 @@ public abstract class ExecutorEngine implements AutoCloseable {
     }
     
     @Override
-    public void close() {
+    public final void close() {
         SHUTDOWN_EXECUTOR.execute(new Runnable() {
             
             @Override
