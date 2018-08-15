@@ -22,21 +22,16 @@ import com.google.common.eventbus.Subscribe;
 import io.opentracing.ActiveSpan;
 import io.opentracing.Tracer;
 import io.opentracing.tag.Tags;
-import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.merger.event.MergeEvent;
 import io.shardingsphere.opentracing.ShardingJDBCTracer;
-import io.shardingsphere.opentracing.sampling.SamplingService;
 import io.shardingsphere.opentracing.tag.LocalTags;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Listen to the event of result set merge execution.
  *
  * @author chenqingyang
  */
-public final class MergeEventListener {
+public final class MergeEventListener extends TracingListener<MergeEvent> {
     
     private static final String OPERATION_NAME_PREFIX = "/SHARDING-SPHERE/MERGE/";
     
@@ -49,45 +44,33 @@ public final class MergeEventListener {
      */
     @Subscribe
     @AllowConcurrentEvents
-    public void listenResultSetMergeEvent(final MergeEvent event) {
-        if (!SamplingService.getInstance().trySampling()) {
-            return;
-        }
-        Tracer tracer = ShardingJDBCTracer.get();
-        ActiveSpan activeSpan;
-        switch (event.getEventType()) {
-            case BEFORE_EXECUTE:
-                activeSpan = tracer.buildSpan(OPERATION_NAME_PREFIX)
-                        .withTag(Tags.COMPONENT.getKey(), LocalTags.COMPONENT_NAME)
-                        .startActive();
-                spanContainer.set(activeSpan);
-                break;
-            case EXECUTE_FAILURE:
-                activeSpan = spanContainer.get();
-                activeSpan.setTag(Tags.ERROR.getKey(), true);
-                if (event.getException().isPresent()) {
-                    activeSpan.log(System.currentTimeMillis(), log(event.getException().get()));
-                }
-                deactivate();
-                break;
-            case EXECUTE_SUCCESS:
-                deactivate();
-                break;
-            default:
-                throw new ShardingException("Unsupported event type");
-        }
+    public void listen(final MergeEvent event) {
+        process(event);
     }
     
-    private void deactivate() {
+    @Override
+    protected void beforeExecute(final MergeEvent event) {
+        Tracer tracer = ShardingJDBCTracer.get();
+        ActiveSpan activeSpan = tracer.buildSpan(OPERATION_NAME_PREFIX)
+                .withTag(Tags.COMPONENT.getKey(), LocalTags.COMPONENT_NAME)
+                .startActive();
+        spanContainer.set(activeSpan);
+    }
+    
+    @Override
+    protected void executeSuccess(final MergeEvent event) {
         spanContainer.get().deactivate();
         spanContainer.remove();
     }
     
-    private Map<String, ?> log(final Throwable t) {
-        Map<String, String> result = new HashMap<>(3, 1);
-        result.put("event", "error");
-        result.put("error.kind", t.getClass().getName());
-        result.put("message", t.getMessage());
-        return result;
+    @Override
+    protected void executeFailure(final MergeEvent event) {
+        ActiveSpan activeSpan = spanContainer.get();
+        activeSpan.setTag(Tags.ERROR.getKey(), true);
+        if (event.getException().isPresent()) {
+            activeSpan.log(System.currentTimeMillis(), log(event.getException().get()));
+        }
+        spanContainer.get().deactivate();
+        spanContainer.remove();
     }
 }

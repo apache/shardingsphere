@@ -22,73 +22,56 @@ import com.google.common.eventbus.Subscribe;
 import io.opentracing.ActiveSpan;
 import io.opentracing.Tracer;
 import io.opentracing.tag.Tags;
-import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.routing.event.RoutingEvent;
 import io.shardingsphere.opentracing.ShardingJDBCTracer;
-import io.shardingsphere.opentracing.sampling.SamplingService;
 import io.shardingsphere.opentracing.tag.LocalTags;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Listen to the event of SQL routing execution.
  *
  * @author chenqingyang
  */
-public final class RoutingEventListener {
+public final class RoutingEventListener extends TracingListener<RoutingEvent> {
     
     private static final String OPERATION_NAME_PREFIX = "/SHARDING-SPHERE/ROUTING/";
     
     private final ThreadLocal<ActiveSpan> spanContainer = new ThreadLocal<>();
     
     /**
-     * Listen SQL routing event.
+     * Listen routing event.
      *
      * @param event SQL routing event
      */
     @Subscribe
     @AllowConcurrentEvents
-    public void listenSQLRoutingEvent(final RoutingEvent event) {
-        if (!SamplingService.getInstance().trySampling()) {
-            return;
-        }
-        Tracer tracer = ShardingJDBCTracer.get();
-        ActiveSpan activeSpan;
-        switch (event.getEventType()) {
-            case BEFORE_EXECUTE:
-                activeSpan = tracer.buildSpan(OPERATION_NAME_PREFIX)
-                        .withTag(Tags.COMPONENT.getKey(), LocalTags.COMPONENT_NAME)
-                        .withTag(Tags.DB_STATEMENT.getKey(), event.getSql())
-                        .startActive();
-                spanContainer.set(activeSpan);
-                break;
-            case EXECUTE_FAILURE:
-                activeSpan = spanContainer.get();
-                activeSpan.setTag(Tags.ERROR.getKey(), true);
-                if (event.getException().isPresent()) {
-                    activeSpan.log(System.currentTimeMillis(), log(event.getException().get()));
-                }
-                deactivate();
-                break;
-            case EXECUTE_SUCCESS:
-                deactivate();
-                break;
-            default:
-                throw new ShardingException("Unsupported event type.");
-        }
+    public void listen(final RoutingEvent event) {
+        process(event);
     }
     
-    private void deactivate() {
+    @Override
+    protected void beforeExecute(final RoutingEvent event) {
+        Tracer tracer = ShardingJDBCTracer.get();
+        ActiveSpan activeSpan = tracer.buildSpan(OPERATION_NAME_PREFIX)
+                .withTag(Tags.COMPONENT.getKey(), LocalTags.COMPONENT_NAME)
+                .withTag(Tags.DB_STATEMENT.getKey(), event.getSql())
+                .startActive();
+        spanContainer.set(activeSpan);
+    }
+    
+    @Override
+    protected void executeSuccess(final RoutingEvent event) {
         spanContainer.get().deactivate();
         spanContainer.remove();
     }
     
-    private Map<String, ?> log(final Throwable t) {
-        Map<String, String> result = new HashMap<>(3, 1);
-        result.put("event", "error");
-        result.put("error.kind", t.getClass().getName());
-        result.put("message", t.getMessage());
-        return result;
+    @Override
+    protected void executeFailure(final RoutingEvent event) {
+        ActiveSpan activeSpan = spanContainer.get();
+        activeSpan.setTag(Tags.ERROR.getKey(), true);
+        if (event.getException().isPresent()) {
+            activeSpan.log(System.currentTimeMillis(), log(event.getException().get()));
+        }
+        spanContainer.get().deactivate();
+        spanContainer.remove();
     }
 }

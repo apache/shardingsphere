@@ -99,9 +99,9 @@ public final class SamplingService {
     }
     
     /**
-     * sampling count.
+     * Increase sampling count.
      */
-    public void samplingAdd() {
+    public void increaseSampling() {
         if (on) {
             samplingCount.getAndIncrement();
         }

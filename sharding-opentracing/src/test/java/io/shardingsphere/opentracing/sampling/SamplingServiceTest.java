@@ -49,8 +49,8 @@ public final class SamplingServiceTest {
     public void assertTrySampling() {
         SamplingService.getInstance().init(1);
         assertTrue(SamplingService.getInstance().trySampling());
-        SamplingService.getInstance().samplingAdd();
-        SamplingService.getInstance().samplingAdd();
+        SamplingService.getInstance().increaseSampling();
+        SamplingService.getInstance().increaseSampling();
         assertFalse(SamplingService.getInstance().trySampling());
     }
     
