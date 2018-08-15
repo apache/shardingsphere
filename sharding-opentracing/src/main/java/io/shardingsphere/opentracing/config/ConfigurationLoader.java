@@ -17,7 +17,6 @@
 
 package io.shardingsphere.opentracing.config;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 
@@ -30,12 +29,12 @@ import lombok.Getter;
 @Getter
 public final class ConfigurationLoader {
     
+    private static final String OPENTRACING_TRACER_CLASS_NAME = "shardingsphere.opentracing.tracer.class";
+    
     private final String tracerClassName;
     
     public ConfigurationLoader() {
-        ConfigurationParser configurationParser = new OpentracingConfigurationParser();
-        Optional<String> tracerClass = configurationParser.parse("tracer.class");
-        Preconditions.checkState(tracerClass.isPresent(), "Can not find opentracing tracer implementation class.");
-        this.tracerClassName = tracerClass.get();
+        tracerClassName = System.getProperty(OPENTRACING_TRACER_CLASS_NAME);
+        Preconditions.checkNotNull(tracerClassName, "Can not find opentracing tracer implementation class.");
     }
 }

@@ -47,9 +47,8 @@ public final class ShardingTracer {
         }
         ConfigurationLoader configuration = new ConfigurationLoader();
         String tracerClassName = configuration.getTracerClassName();
-        int sampleNumPM = configuration.getSampleNumPM();
         try {
-            init((Tracer) Class.forName(tracerClassName).newInstance(), sampleNumPM);
+            init((Tracer) Class.forName(tracerClassName).newInstance());
         } catch (final InstantiationException | IllegalAccessException | ClassNotFoundException ex) {
             throw new ShardingException("Parse tracer class name", ex);
         }
@@ -57,20 +56,10 @@ public final class ShardingTracer {
     
     /**
      * Initialize tracer from another one.
-     * 
+     *
      * @param tracer that is delegated
      */
     public static void init(final Tracer tracer) {
-        init(tracer, 0);
-    }
-    
-    /**
-     * Initialize tracer from another one.
-     *
-     * @param tracer that is delegated
-     * @param samplingRatePerMinute sampling rate per minute
-     */
-    public static void init(final Tracer tracer, final int samplingRatePerMinute) {
         if (GlobalTracer.isRegistered()) {
             return;
         }

@@ -29,20 +29,17 @@ public final class ConfigurationLoaderTest {
     
     @Before
     public void setUp() {
-        System.setProperty("shardingjdbc.opentracing.tracer.class", FooTracer.class.getName());
-        System.setProperty("shardingjdbc.opentracing.tracer.sampleNumPM", "40");
+        System.setProperty("shardingsphere.opentracing.tracer.class", FooTracer.class.getName());
     }
     
     @After
     public void tearDown() {
-        System.getProperties().remove("shardingjdbc.opentracing.tracer.class");
-        System.getProperties().remove("shardingjdbc.opentracing.tracer.sampleNumPM");
+        System.getProperties().remove("shardingsphere.opentracing.tracer.class");
     }
     
     @Test
     public void assertLoadConfigFromProperty() {
         assertThat(new ConfigurationLoader().getTracerClassName(), is(FooTracer.class.getName()));
-        assertThat(new ConfigurationLoader().getSampleNumPM(), is(40));
     }
     
 }

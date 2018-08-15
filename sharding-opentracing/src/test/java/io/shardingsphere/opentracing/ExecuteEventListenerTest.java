@@ -61,7 +61,7 @@ public final class ExecuteEventListenerTest {
     
     @BeforeClass
     public static void init() {
-        ShardingTracer.init(TRACER, 40);
+        ShardingTracer.init(TRACER);
     }
     
     @AfterClass

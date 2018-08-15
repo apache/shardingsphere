@@ -64,7 +64,7 @@ public final class SqlRoutingEventListenerTest {
     
     @BeforeClass
     public static void init() {
-        ShardingTracer.init(TRACER, 40);
+        ShardingTracer.init(TRACER);
     }
     
     @AfterClass

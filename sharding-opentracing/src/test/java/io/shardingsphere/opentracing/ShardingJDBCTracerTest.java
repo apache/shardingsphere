@@ -42,14 +42,14 @@ public final class ShardingJDBCTracerTest {
     
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
-        System.setProperty("shardingjdbc.opentracing.tracer.class", FooTracer.class.getName());
+        System.setProperty("shardingsphere.opentracing.tracer.class", FooTracer.class.getName());
         clearGlobalTracer();
         unregisterEventBus();
     }
     
     @After
     public void tearDown() {
-        System.getProperties().remove("shardingjdbc.opentracing.tracer.class");
+        System.getProperties().remove("shardingsphere.opentracing.tracer.class");
     }
     
     @Test
@@ -71,7 +71,7 @@ public final class ShardingJDBCTracerTest {
     
     @Test(expected = ShardingException.class)
     public void assertTracerClassError() {
-        System.setProperty("shardingjdbc.opentracing.tracer.class", "com.foo.FooTracer");
+        System.setProperty("shardingsphere.opentracing.tracer.class", "com.foo.FooTracer");
         ShardingTracer.get();
     }
     
