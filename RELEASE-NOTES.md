@@ -22,6 +22,7 @@
 
 #### Core
 
+1. [ISSUE #373](https://github.com/sharding-sphere/sharding-sphere/issues/373) Support `order by ?`
 1. [ISSUE #610](https://github.com/sharding-sphere/sharding-sphere/issues/610) Route unicast for DQL without table
 1. [ISSUE #701](https://github.com/sharding-sphere/sharding-sphere/issues/701) Caching parsed results to improve performance
 1. [ISSUE #773](https://github.com/sharding-sphere/sharding-sphere/issues/773) Support sharding and autoincrement key of INSERT without column names
