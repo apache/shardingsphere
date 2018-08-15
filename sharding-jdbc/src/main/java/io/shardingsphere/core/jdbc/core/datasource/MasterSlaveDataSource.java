@@ -42,7 +42,7 @@ import java.util.Properties;
  * @author zhangliang
  */
 @Getter
-public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
+public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
     
     private Map<String, DataSource> dataSourceMap;
     
@@ -112,6 +112,11 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     @Override
     public final MasterSlaveConnection getConnection() {
         return new MasterSlaveConnection(this);
+    }
+    
+    @Override
+    public void close() {
+        closeOriginalDataSources();
     }
     
     /**
