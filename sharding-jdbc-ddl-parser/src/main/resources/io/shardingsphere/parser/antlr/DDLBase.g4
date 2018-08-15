@@ -14,7 +14,16 @@ prefixTableName:
     ; 	
 
 alterSpecifications:
-	NONE;
+	NONE
+	;
 
 partitionOptions:
+	NONE
+	;
+
+createTable:
+	CREATE 	TEMPORARY? TABLE (IF NOT EXISTS)? tableName createTableOptions
+	; 
+	
+createTableOptions:
 	NONE;
