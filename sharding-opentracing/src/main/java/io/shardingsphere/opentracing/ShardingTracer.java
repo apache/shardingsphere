@@ -17,10 +17,10 @@
 
 package io.shardingsphere.opentracing;
 
+import com.google.common.base.Preconditions;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.opentracing.config.ConfigurationLoader;
 import io.shardingsphere.opentracing.listener.execution.DMLExecuteEventListener;
 import io.shardingsphere.opentracing.listener.execution.DQLExecuteEventListener;
 import io.shardingsphere.opentracing.listener.execution.OverallExecuteEventListener;
@@ -38,26 +38,25 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingTracer {
     
+    private static final String OPENTRACING_TRACER_CLASS_NAME = "shardingsphere.opentracing.tracer.class";
+    
     /**
-     * Initialize tracer.
+     * Initialize sharding tracer.
      */
     public static void init() {
-        if (GlobalTracer.isRegistered()) {
-            return;
-        }
-        ConfigurationLoader configuration = new ConfigurationLoader();
-        String tracerClassName = configuration.getTracerClassName();
+        String tracerClassName = System.getProperty(OPENTRACING_TRACER_CLASS_NAME);
+        Preconditions.checkNotNull(tracerClassName, "Can not find opentracing tracer implementation class.");
         try {
             init((Tracer) Class.forName(tracerClassName).newInstance());
-        } catch (final InstantiationException | IllegalAccessException | ClassNotFoundException ex) {
-            throw new ShardingException("Parse tracer class name", ex);
+        } catch (final ReflectiveOperationException ex) {
+            throw new ShardingException("Initialize opentracing tracer class failure.", ex);
         }
     }
     
     /**
-     * Initialize tracer from another one.
+     * Initialize sharding tracer.
      *
-     * @param tracer that is delegated
+     * @param tracer opentracing tracer
      */
     public static void init(final Tracer tracer) {
         if (GlobalTracer.isRegistered()) {
@@ -72,15 +71,11 @@ public final class ShardingTracer {
     }
     
     /**
-     * Get the tracer from container.
+     * Get tracer.
      *
      * @return tracer
      */
     public static Tracer get() {
-        if (GlobalTracer.isRegistered()) {
-            return GlobalTracer.get();
-        }
-        init();
         return GlobalTracer.get();
     }
 }

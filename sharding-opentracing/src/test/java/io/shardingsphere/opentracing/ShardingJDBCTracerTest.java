@@ -64,6 +64,7 @@ public final class ShardingJDBCTracerTest {
     
     @Test
     public void assertTracer() {
+        ShardingTracer.init();
         assertThat((GlobalTracer) ShardingTracer.get(), isA(GlobalTracer.class));
         assertTrue(GlobalTracer.isRegistered());
         assertThat(ShardingTracer.get(), is(ShardingTracer.get()));
@@ -72,7 +73,7 @@ public final class ShardingJDBCTracerTest {
     @Test(expected = ShardingException.class)
     public void assertTracerClassError() {
         System.setProperty("shardingsphere.opentracing.tracer.class", "com.foo.FooTracer");
-        ShardingTracer.get();
+        ShardingTracer.init();
     }
     
     private static void clearGlobalTracer() throws NoSuchFieldException, IllegalAccessException {
