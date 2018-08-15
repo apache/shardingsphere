@@ -38,7 +38,7 @@ import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowColumnsStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.util.EventBusInstance;
+import io.shardingsphere.core.event.EventBusInstance;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;

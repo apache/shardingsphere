@@ -20,7 +20,7 @@ package io.shardingsphere.transaction.api;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
-import io.shardingsphere.core.util.EventBusInstance;
+import io.shardingsphere.core.event.EventBusInstance;
 import io.shardingsphere.transaction.api.config.SoftTransactionConfiguration;
 import io.shardingsphere.transaction.bed.BEDSoftTransaction;
 import io.shardingsphere.transaction.bed.sync.BestEffortsDeliveryListener;

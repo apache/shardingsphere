@@ -44,10 +44,9 @@ import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.StatementRoutingEngine;
-import io.shardingsphere.core.routing.event.EventRoutingType;
-import io.shardingsphere.core.routing.event.SqlRoutingEvent;
+import io.shardingsphere.core.routing.event.SQLRoutingEvent;
 import io.shardingsphere.core.routing.router.sharding.GeneratedKey;
-import io.shardingsphere.core.util.EventBusInstance;
+import io.shardingsphere.core.event.EventBusInstance;
 import lombok.AccessLevel;
 import lombok.Getter;
 
@@ -266,7 +265,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     
     private void sqlRoute(final String sql) {
         ShardingContext shardingContext = connection.getShardingContext();
-        SqlRoutingEvent event = new SqlRoutingEvent(sql);
+        SQLRoutingEvent event = new SQLRoutingEvent(sql);
         EventBusInstance.getInstance().post(event);
         try {
             routeResult = new StatementRoutingEngine(shardingContext.getShardingRule(), 
@@ -274,12 +273,11 @@ public final class ShardingStatement extends AbstractStatementAdapter {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            event.setException(ex);
-            event.setEventRoutingType(EventRoutingType.ROUTE_FAILURE);
+            event.setExecuteFailure(ex);
             EventBusInstance.getInstance().post(event);
             throw ex;
         }
-        event.setEventRoutingType(EventRoutingType.ROUTE_SUCCESS);
+        event.setExecuteSuccess();
         EventBusInstance.getInstance().post(event);
     }
     

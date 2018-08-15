@@ -17,8 +17,6 @@
 
 package io.shardingsphere.core.routing.event;
 
-import com.google.common.base.Optional;
-import io.shardingsphere.core.exception.ShardingException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -29,20 +27,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class SqlRoutingEvent extends AbstractRoutingEvent {
+public final class SQLRoutingEvent extends AbstractRoutingEvent {
     
     private final String sql;
-
-    /**
-     * Get exception.
-     *
-     * @return exception
-     */
-    public Optional<ShardingException> getException() {
-        Optional<? extends Exception> ex = super.getException();
-        if (ex.isPresent()) {
-            return Optional.of((ShardingException) ex.get());
-        }
-        return Optional.absent();
-    }
 }

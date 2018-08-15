@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.util;
 
+import io.shardingsphere.core.event.EventBusInstance;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

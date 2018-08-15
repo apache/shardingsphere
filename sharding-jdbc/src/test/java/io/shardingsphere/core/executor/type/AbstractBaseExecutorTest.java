@@ -25,7 +25,7 @@ import io.shardingsphere.core.executor.fixture.TestDQLExecutionEventListener;
 import io.shardingsphere.core.executor.fixture.TestOverallExecutionEventListener;
 import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.core.executor.type.memory.MemoryStrictlyExecutorEngine;
-import io.shardingsphere.core.util.EventBusInstance;
+import io.shardingsphere.core.event.EventBusInstance;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.junit.After;

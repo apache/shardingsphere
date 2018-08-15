@@ -20,8 +20,11 @@ package io.shardingsphere.opentracing;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.util.EventBusInstance;
+import io.shardingsphere.core.event.EventBusInstance;
 import io.shardingsphere.opentracing.config.ConfigurationLoader;
+import io.shardingsphere.opentracing.listener.ExecuteEventListener;
+import io.shardingsphere.opentracing.listener.MergeEventListener;
+import io.shardingsphere.opentracing.listener.RoutingEventListener;
 import io.shardingsphere.opentracing.sampling.SamplingService;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -74,7 +77,7 @@ public final class ShardingJDBCTracer {
         GlobalTracer.register(tracer);
         SamplingService.getInstance().init(sampleNumPM);
         EventBusInstance.getInstance().register(new ExecuteEventListener());
-        EventBusInstance.getInstance().register(new SqlRoutingEventListener());
+        EventBusInstance.getInstance().register(new RoutingEventListener());
         EventBusInstance.getInstance().register(new MergeEventListener());
     }
     

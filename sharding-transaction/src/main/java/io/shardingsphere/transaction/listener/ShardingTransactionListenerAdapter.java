@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.listener;
 
-import io.shardingsphere.core.util.EventBusInstance;
+import io.shardingsphere.core.event.EventBusInstance;
 import io.shardingsphere.transaction.event.ShardingTransactionEvent;
 import io.shardingsphere.transaction.manager.ShardingTransactionManager;
 

@@ -23,7 +23,7 @@ import io.opentracing.NoopTracerFactory;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.util.EventBusInstance;
+import io.shardingsphere.core.event.EventBusInstance;
 import io.shardingsphere.opentracing.fixture.FooTracer;
 import org.junit.After;
 import org.junit.Before;

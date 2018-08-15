@@ -18,8 +18,8 @@
 package io.shardingsphere.core.routing.event;
 
 import com.google.common.base.Optional;
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.UUID;
 
@@ -28,24 +28,39 @@ import java.util.UUID;
  *
  * @author chenqingyang
  */
+@Getter
 public abstract class AbstractRoutingEvent {
-
-    @Getter
+    
     private final String id = UUID.randomUUID().toString();
-
-    @Getter
-    @Setter
+    
     private EventRoutingType eventRoutingType = EventRoutingType.BEFORE_ROUTE;
-
-    @Setter
+    
+    @Getter(AccessLevel.NONE)
     private Exception exception;
-
+    
+    /**
+     * Set route success.
+     */
+    public void setExecuteSuccess() {
+        eventRoutingType = EventRoutingType.ROUTE_SUCCESS;
+    }
+    
+    /**
+     * Set route failure.
+     *
+     * @param cause fail cause
+     */
+    public void setExecuteFailure(final Exception cause) {
+        eventRoutingType = EventRoutingType.ROUTE_FAILURE;
+        exception = cause;
+    }
+    
     /**
      * Get exception.
      *
      * @return exception
      */
-    public Optional<? extends Exception> getException() {
+    public final Optional<? extends Exception> getException() {
         return Optional.fromNullable(exception);
     }
 }

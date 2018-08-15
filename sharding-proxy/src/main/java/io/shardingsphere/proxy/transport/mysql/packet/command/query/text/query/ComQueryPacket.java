@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.util.EventBusInstance;
+import io.shardingsphere.core.event.EventBusInstance;
 import io.shardingsphere.proxy.backend.BackendHandler;
 import io.shardingsphere.proxy.backend.BackendHandlerFactory;
 import io.shardingsphere.proxy.backend.ResultPacket;

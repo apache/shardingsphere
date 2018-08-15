@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing;
+package io.shardingsphere.opentracing.listener;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
@@ -23,7 +23,8 @@ import io.opentracing.ActiveSpan;
 import io.opentracing.Tracer;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.routing.event.SqlRoutingEvent;
+import io.shardingsphere.core.routing.event.SQLRoutingEvent;
+import io.shardingsphere.opentracing.ShardingJDBCTracer;
 import io.shardingsphere.opentracing.sampling.SamplingService;
 import io.shardingsphere.opentracing.tag.LocalTags;
 
@@ -35,7 +36,7 @@ import java.util.Map;
  *
  * @author chenqingyang
  */
-public final class SqlRoutingEventListener {
+public final class RoutingEventListener {
     
     private static final String OPERATION_NAME_PREFIX = "/SHARDING-SPHERE/ROUTING/";
     
@@ -48,7 +49,7 @@ public final class SqlRoutingEventListener {
      */
     @Subscribe
     @AllowConcurrentEvents
-    public void listenSqlRoutingEvent(final SqlRoutingEvent event) {
+    public void listenSQLRoutingEvent(final SQLRoutingEvent event) {
         if (!SamplingService.getInstance().trySampling()) {
             return;
         }
@@ -84,7 +85,7 @@ public final class SqlRoutingEventListener {
     }
     
     private Map<String, ?> log(final Throwable t) {
-        Map<String, String> result = new HashMap<>(3);
+        Map<String, String> result = new HashMap<>(3, 1);
         result.put("event", "error");
         result.put("error.kind", t.getClass().getName());
         result.put("message", t.getMessage());

@@ -32,7 +32,7 @@ import io.shardingsphere.core.executor.type.memory.MemoryStrictlyExecutorEngine;
 import io.shardingsphere.core.executor.type.statement.StatementUnit;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLUnit;
-import io.shardingsphere.core.util.EventBusInstance;
+import io.shardingsphere.core.event.EventBusInstance;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;

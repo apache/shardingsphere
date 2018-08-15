@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.util;
+package io.shardingsphere.core.event;
 
 import com.google.common.eventbus.EventBus;
 import lombok.AccessLevel;

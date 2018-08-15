@@ -26,7 +26,7 @@ import io.shardingsphere.core.executor.event.DQLExecutionEvent;
 import io.shardingsphere.core.executor.event.OverallExecutionEvent;
 import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
-import io.shardingsphere.core.util.EventBusInstance;
+import io.shardingsphere.core.event.EventBusInstance;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 

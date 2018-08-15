@@ -22,7 +22,7 @@ import io.shardingsphere.core.common.base.AbstractShardingJDBCDatabaseAndTableTe
 import io.shardingsphere.core.executor.event.DMLExecutionEvent;
 import io.shardingsphere.core.executor.event.EventExecutionType;
 import io.shardingsphere.core.jdbc.JDBCTestSQL;
-import io.shardingsphere.core.util.EventBusInstance;
+import io.shardingsphere.core.event.EventBusInstance;
 import io.shardingsphere.core.util.SQLPlaceholderUtil;
 import org.junit.Test;
 

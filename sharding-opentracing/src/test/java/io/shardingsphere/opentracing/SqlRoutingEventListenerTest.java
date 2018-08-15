@@ -34,7 +34,7 @@ import io.shardingsphere.core.jdbc.core.statement.ShardingPreparedStatement;
 import io.shardingsphere.core.jdbc.core.statement.ShardingStatement;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.util.EventBusInstance;
+import io.shardingsphere.core.event.EventBusInstance;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
