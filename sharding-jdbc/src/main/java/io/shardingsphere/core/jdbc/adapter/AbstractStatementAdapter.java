@@ -111,10 +111,15 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
         long result = 0;
         boolean hasResult = false;
         for (Statement each : getRoutedStatements()) {
-            if (each.getUpdateCount() > -1) {
+            /**
+             * In oracle ojdbc driver, getUpdateCount can only be called once after a successful call.
+             * Otherwise, this method return -1 by default.
+             */
+            int updateCount = each.getUpdateCount();
+            if (updateCount > -1) {
                 hasResult = true;
             }
-            result += each.getUpdateCount();
+            result += updateCount;
         }
         if (result > Integer.MAX_VALUE) {
             result = Integer.MAX_VALUE;
