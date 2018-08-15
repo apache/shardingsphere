@@ -115,7 +115,7 @@ public abstract class AbstractSQLTest {
     }
     
     @AfterClass
-    public static void clear() throws SQLException, ReflectiveOperationException {
+    public static void clear() {
         if (shardingDataSource == null) {
             return;
         }
