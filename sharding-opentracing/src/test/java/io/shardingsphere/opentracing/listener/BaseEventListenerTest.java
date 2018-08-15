@@ -35,22 +35,17 @@ public abstract class BaseEventListenerTest {
     
     private static final MockTracer TRACER = new MockTracer(new ThreadLocalActiveSpanSource(), MockTracer.Propagator.TEXT_MAP);
     
+    protected static MockTracer getTracer() {
+        return TRACER;
+    }
+    
     @BeforeClass
-    public static void init() {
+    public static void initTracer() {
         ShardingTracer.init(TRACER);
     }
     
     @AfterClass
-    public static void tearDown() throws NoSuchFieldException, IllegalAccessException {
-        releaseTracer();
-    }
-    
-    @Before
-    public void reset() {
-        TRACER.reset();
-    }
-    
-    private static void releaseTracer() throws NoSuchFieldException, IllegalAccessException {
+    public static void releaseTracer() throws NoSuchFieldException, IllegalAccessException {
         Field tracerField = GlobalTracer.class.getDeclaredField("tracer");
         tracerField.setAccessible(true);
         tracerField.set(GlobalTracer.class, NoopTracerFactory.create());
@@ -59,7 +54,8 @@ public abstract class BaseEventListenerTest {
         subscribersByTypeField.set(ShardingEventBusInstance.getInstance(), HashMultimap.create());
     }
     
-    protected static MockTracer getTracer() {
-        return TRACER;
+    @Before
+    public void resetTracer() {
+        TRACER.reset();
     }
 }

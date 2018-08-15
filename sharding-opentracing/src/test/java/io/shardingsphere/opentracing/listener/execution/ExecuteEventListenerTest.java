@@ -53,12 +53,12 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
         when(statement.getConnection()).thenReturn(mock(Connection.class));
         executorEngine.execute(SQLType.DML, Collections.singleton(new StatementUnit(
                 new SQLExecutionUnit("ds_0", new SQLUnit("insert into ...", Collections.singletonList(Collections.<Object>singletonList(1)))), statement)), new ExecuteCallback<Integer>() {
-            
-            @Override
-            public Integer execute(final BaseStatementUnit baseStatementUnit) {
-                return 0;
-            }
-        });
+                    
+                    @Override
+                    public Integer execute(final BaseStatementUnit baseStatementUnit) {
+                        return 0;
+                    }
+                });
         assertThat(getTracer().finishedSpans().size(), is(2));
     }
     
@@ -92,7 +92,7 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
         when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
         statementUnitList.add(new BatchPreparedStatementUnit(new SQLExecutionUnit("ds_1", new SQLUnit("insert into ...", parameterSets)), preparedStatement2));
         executorEngine.execute(SQLType.DML, statementUnitList, new ExecuteCallback<Integer>() {
-
+            
             @Override
             public Integer execute(final BaseStatementUnit baseStatementUnit) {
                 return 0;
@@ -107,11 +107,11 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
         when(statement.getConnection()).thenReturn(mock(Connection.class));
         executorEngine.execute(SQLType.DQL, Collections.singleton(new StatementUnit(new SQLExecutionUnit("ds_0",
                 new SQLUnit("select ...", Collections.singletonList(Collections.<Object>singletonList(1)))), statement)), new ExecuteCallback<Integer>() {
-            
-            @Override
-            public Integer execute(final BaseStatementUnit baseStatementUnit) throws SQLException {
-                throw new SQLException();
-            }
-        });
+                    
+                    @Override
+                    public Integer execute(final BaseStatementUnit baseStatementUnit) throws SQLException {
+                        throw new SQLException();
+                    }
+                });
     }
 }

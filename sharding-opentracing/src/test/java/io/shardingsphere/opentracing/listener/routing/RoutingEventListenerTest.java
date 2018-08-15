@@ -18,61 +18,28 @@
 package io.shardingsphere.opentracing.listener.routing;
 
 import io.opentracing.tag.Tags;
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.api.config.TableRuleConfiguration;
-import io.shardingsphere.core.constant.ConnectionMode;
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.jdbc.core.statement.ShardingPreparedStatement;
 import io.shardingsphere.core.jdbc.core.statement.ShardingStatement;
-import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.opentracing.fixture.ShardingContextBuilder;
 import io.shardingsphere.opentracing.listener.BaseEventListenerTest;
-import org.junit.Before;
 import org.junit.Test;
 
-import javax.sql.DataSource;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class RoutingEventListenerTest extends BaseEventListenerTest {
     
-    private ShardingContext shardingContext;
+    private final ShardingContext shardingContext;
     
-    @Before
-    public void setUp() throws SQLException {
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
-        tableRuleConfig.setLogicTable("t_order");
-        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
-        dataSourceMap.put("ds_0", mockDataSource());
-        dataSourceMap.put("ds_1", mockDataSource());
-        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, dataSourceMap.keySet());
-        ShardingMetaData shardingMetaData = mock(ShardingMetaData.class);
-        shardingContext = new ShardingContext(dataSourceMap, shardingRule, DatabaseType.MySQL, null, shardingMetaData, ConnectionMode.MEMORY_STRICTLY, true);
-    }
-    
-    private DataSource mockDataSource() throws SQLException {
-        DataSource result = mock(DataSource.class);
-        Connection connection = mock(Connection.class);
-        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
-        when(databaseMetaData.getURL()).thenReturn("jdbc:mysql://127.0.0.1:3306/ds");
-        when(connection.getMetaData()).thenReturn(databaseMetaData);
-        when(result.getConnection()).thenReturn(connection);
-        return result;
+    public RoutingEventListenerTest() throws SQLException {
+        shardingContext = ShardingContextBuilder.build();
     }
     
     @Test
