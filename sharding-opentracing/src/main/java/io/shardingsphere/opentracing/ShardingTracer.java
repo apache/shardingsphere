@@ -65,12 +65,18 @@ public final class ShardingTracer {
         init(tracer, 0);
     }
     
-    private static void init(final Tracer tracer, final int sampleNumPM) {
+    /**
+     * Initialize tracer from another one.
+     *
+     * @param tracer that is delegated
+     * @param samplingRatePerMinute sampling rate per minute
+     */
+    public static void init(final Tracer tracer, final int samplingRatePerMinute) {
         if (GlobalTracer.isRegistered()) {
             return;
         }
         GlobalTracer.register(tracer);
-        SamplingService.getInstance().init(sampleNumPM);
+        SamplingService.getInstance().init(samplingRatePerMinute);
         new OverallExecuteEventListener().register();
         new DQLExecuteEventListener().register();
         new DMLExecuteEventListener().register();

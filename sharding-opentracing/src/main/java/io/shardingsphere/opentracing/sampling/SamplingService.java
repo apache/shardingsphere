@@ -17,15 +17,15 @@
 
 package io.shardingsphere.opentracing.sampling;
 
+import io.shardingsphere.core.executor.ShardingThreadFactoryBuilder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Sampling control service.
@@ -37,11 +37,9 @@ public final class SamplingService {
     
     private static final SamplingService INSTANCE = new SamplingService();
     
-    private int sampleNumPM;
+    private int samplingRatePerMinute;
     
-    private volatile boolean on;
-    
-    private volatile AtomicInteger samplingCount;
+    private volatile AtomicInteger samplingCount = new AtomicInteger(0);
     
     private volatile ScheduledFuture<?> scheduledFuture;
     
@@ -57,57 +55,40 @@ public final class SamplingService {
     /**
      * sampling service init.
      *
-     * @param sampleNumPM sampling num in one minutes
+     * @param samplingRatePerMinute sampling rate in one minute
      */
-    public void init(final int sampleNumPM) {
-        this.sampleNumPM = sampleNumPM;
-        if (scheduledFuture != null) {
+    public void init(final int samplingRatePerMinute) {
+        this.samplingRatePerMinute = samplingRatePerMinute;
+        if (null != scheduledFuture) {
             scheduledFuture.cancel(true);
         }
-        if (this.sampleNumPM > 0) {
-            on = true;
-            this.resetSamplingFactor();
-            ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
-                
-                private final AtomicInteger threadIndex = new AtomicInteger(0);
-                
-                @Override
-                public Thread newThread(final Runnable r) {
-                    Thread thread = new Thread(r);
-                    thread.setName("Sharding-opentracing-sampling" + threadIndex.incrementAndGet());
-                    thread.setDaemon(true);
-                    return thread;
-                }
-            });
-            scheduledFuture = service.scheduleAtFixedRate(new Runnable() {
+        if (samplingRatePerMinute > 0) {
+            ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(ShardingThreadFactoryBuilder.build("Opentracing-Sampling-Cleaner"));
+            scheduledFuture = scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
                 
                 @Override
                 public void run() {
-                    resetSamplingFactor();
+                    samplingCount.set(0);
                 }
             }, 0, 1, TimeUnit.MINUTES);
         }
     }
     
     /**
-     * Is sampling allowed.
+     * Judge sampling is allowed or not.
      *
-     * @return true, if sampling mechanism is on.
+     * @return sampling is allowed or not
      */
     public boolean trySampling() {
-        return !on || samplingCount.get() <= sampleNumPM;
+        return samplingCount.get() < samplingRatePerMinute;
     }
     
     /**
      * Increase sampling count.
      */
     public void increaseSampling() {
-        if (on) {
+        if (samplingRatePerMinute > 0) {
             samplingCount.getAndIncrement();
         }
-    }
-    
-    private void resetSamplingFactor() {
-        samplingCount = new AtomicInteger(0);
     }
 }

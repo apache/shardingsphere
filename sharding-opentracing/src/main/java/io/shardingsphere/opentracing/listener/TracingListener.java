@@ -66,11 +66,11 @@ public abstract class TracingListener<T extends ShardingEvent> {
     
     protected abstract void tracingFailure(T event);
     
-    protected final Map<String, ?> log(final Throwable t) {
+    protected final Map<String, ?> log(final Throwable cause) {
         Map<String, String> result = new HashMap<>(3, 1);
         result.put("event", "error");
-        result.put("error.kind", t.getClass().getName());
-        result.put("message", t.getMessage());
+        result.put("error.kind", cause.getClass().getName());
+        result.put("message", cause.getMessage());
         return result;
     }
 }

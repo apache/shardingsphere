@@ -31,12 +31,9 @@ public final class SamplingServiceTest {
     
     @AfterClass
     public static void tearDown() throws NoSuchFieldException, IllegalAccessException {
-        Field onField = SamplingService.class.getDeclaredField("on");
-        onField.setAccessible(true);
-        onField.set(SamplingService.getInstance(), false);
-        Field numField = SamplingService.class.getDeclaredField("sampleNumPM");
-        numField.setAccessible(true);
-        numField.set(SamplingService.getInstance(), 0);
+        Field samplingRatePerMinuteField = SamplingService.class.getDeclaredField("samplingRatePerMinute");
+        samplingRatePerMinuteField.setAccessible(true);
+        samplingRatePerMinuteField.set(SamplingService.getInstance(), 0);
         
     }
     
