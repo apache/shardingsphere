@@ -23,7 +23,7 @@ import io.opentracing.ActiveSpan;
 import io.opentracing.Tracer;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.merger.event.MergeEvent;
-import io.shardingsphere.opentracing.ShardingJDBCTracer;
+import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.opentracing.tag.LocalTags;
 
 /**
@@ -50,7 +50,7 @@ public final class MergeEventListener extends TracingListener<MergeEvent> {
     
     @Override
     protected void beforeExecute(final MergeEvent event) {
-        Tracer tracer = ShardingJDBCTracer.get();
+        Tracer tracer = ShardingTracer.get();
         ActiveSpan activeSpan = tracer.buildSpan(OPERATION_NAME_PREFIX)
                 .withTag(Tags.COMPONENT.getKey(), LocalTags.COMPONENT_NAME)
                 .startActive();

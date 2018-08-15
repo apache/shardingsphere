@@ -54,25 +54,25 @@ public final class ShardingJDBCTracerTest {
     
     @Test
     public void assertDuplicatedLoading() {
-        ShardingJDBCTracer.init(mock(Tracer.class));
-        Tracer t1 = ShardingJDBCTracer.get();
-        ShardingJDBCTracer.init();
-        assertEquals(t1, ShardingJDBCTracer.get());
-        ShardingJDBCTracer.init(mock(Tracer.class));
-        assertEquals(t1, ShardingJDBCTracer.get());
+        ShardingTracer.init(mock(Tracer.class));
+        Tracer t1 = ShardingTracer.get();
+        ShardingTracer.init();
+        assertEquals(t1, ShardingTracer.get());
+        ShardingTracer.init(mock(Tracer.class));
+        assertEquals(t1, ShardingTracer.get());
     }
     
     @Test
     public void assertTracer() {
-        assertThat((GlobalTracer) ShardingJDBCTracer.get(), isA(GlobalTracer.class));
+        assertThat((GlobalTracer) ShardingTracer.get(), isA(GlobalTracer.class));
         assertTrue(GlobalTracer.isRegistered());
-        assertThat(ShardingJDBCTracer.get(), is(ShardingJDBCTracer.get()));
+        assertThat(ShardingTracer.get(), is(ShardingTracer.get()));
     }
     
     @Test(expected = ShardingException.class)
     public void assertTracerClassError() {
         System.setProperty("shardingjdbc.opentracing.tracer.class", "com.foo.FooTracer");
-        ShardingJDBCTracer.get();
+        ShardingTracer.get();
     }
     
     private static void clearGlobalTracer() throws NoSuchFieldException, IllegalAccessException {

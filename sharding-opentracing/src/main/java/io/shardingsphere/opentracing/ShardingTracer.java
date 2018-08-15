@@ -33,13 +33,13 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * A container of tracer object.
+ * Sharding tracer object container.
  *
  * @author gaohongtao
  * @author wangkai
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingJDBCTracer {
+public final class ShardingTracer {
     
     private static final EventBus SHARDING_EVENT_BUS = ShardingEventBusInstance.getInstance();
     

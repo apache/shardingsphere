@@ -70,7 +70,7 @@ public final class MergeEventListenerTest {
     
     @BeforeClass
     public static void init() {
-        ShardingJDBCTracer.init(TRACER);
+        ShardingTracer.init(TRACER);
     }
     
     @AfterClass

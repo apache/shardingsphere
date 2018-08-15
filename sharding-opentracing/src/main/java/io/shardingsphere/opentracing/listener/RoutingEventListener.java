@@ -23,7 +23,7 @@ import io.opentracing.ActiveSpan;
 import io.opentracing.Tracer;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.routing.event.RoutingEvent;
-import io.shardingsphere.opentracing.ShardingJDBCTracer;
+import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.opentracing.tag.LocalTags;
 
 /**
@@ -50,7 +50,7 @@ public final class RoutingEventListener extends TracingListener<RoutingEvent> {
     
     @Override
     protected void beforeExecute(final RoutingEvent event) {
-        Tracer tracer = ShardingJDBCTracer.get();
+        Tracer tracer = ShardingTracer.get();
         ActiveSpan activeSpan = tracer.buildSpan(OPERATION_NAME_PREFIX)
                 .withTag(Tags.COMPONENT.getKey(), LocalTags.COMPONENT_NAME)
                 .withTag(Tags.DB_STATEMENT.getKey(), event.getSql())

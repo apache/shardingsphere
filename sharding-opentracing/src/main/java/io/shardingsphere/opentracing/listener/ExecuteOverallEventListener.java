@@ -24,7 +24,7 @@ import io.opentracing.Tracer;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.executor.event.OverallExecutionEvent;
 import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
-import io.shardingsphere.opentracing.ShardingJDBCTracer;
+import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.opentracing.tag.LocalTags;
 
 /**
@@ -55,7 +55,7 @@ public final class ExecuteOverallEventListener extends TracingListener<OverallEx
     
     @Override
     protected void beforeExecute(final OverallExecutionEvent event) {
-        Tracer tracer = ShardingJDBCTracer.get();
+        Tracer tracer = ShardingTracer.get();
         ActiveSpan activeSpan = tracer.buildSpan(OPERATION_NAME_PREFIX + event.getSqlType().name()).withTag(Tags.COMPONENT.getKey(), LocalTags.COMPONENT_NAME).startActive();
         trunkContainer.set(activeSpan);
         if (event.isParallelExecute()) {

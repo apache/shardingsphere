@@ -18,7 +18,6 @@
 package io.shardingsphere.opentracing.listener;
 
 import io.shardingsphere.core.event.ShardingEvent;
-import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.opentracing.sampling.SamplingService;
 import lombok.Getter;
 
@@ -53,7 +52,7 @@ public abstract class TracingListener<T extends ShardingEvent> {
                 tracingFinish();
                 break;
             default:
-                throw new ShardingException("Unsupported event type");
+                throw new UnsupportedOperationException(event.getEventType().name());
         }
     }
     

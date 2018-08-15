@@ -24,7 +24,7 @@ import io.opentracing.Tracer;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.executor.event.SQLExecutionEvent;
 import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
-import io.shardingsphere.opentracing.ShardingJDBCTracer;
+import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.opentracing.tag.LocalTags;
 
 /**
@@ -48,7 +48,7 @@ public abstract class SQLExecuteEventListener extends TracingListener<SQLExecuti
     
     @Override
     protected final void beforeExecute(final SQLExecutionEvent event) {
-        Tracer tracer = ShardingJDBCTracer.get();
+        Tracer tracer = ShardingTracer.get();
         if (ExecutorDataMap.getDataMap().containsKey(SNAPSHOT_DATA_KEY) && null == trunkContainer.get() && null == branchContainer.get()) {
             trunkInBranchContainer.set(((ActiveSpan.Continuation) ExecutorDataMap.getDataMap().get(SNAPSHOT_DATA_KEY)).activate());
         }
