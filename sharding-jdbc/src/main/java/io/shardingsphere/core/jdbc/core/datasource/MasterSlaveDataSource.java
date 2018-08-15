@@ -91,6 +91,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
      * @param masterSlaveRuleConfig new master-slave rule configuration
      */
     public void renew(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
+        closeOriginalDataSources();
         this.dataSourceMap = dataSourceMap;
         this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
     }
