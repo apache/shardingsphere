@@ -26,7 +26,6 @@ import io.shardingsphere.opentracing.listener.execution.DQLExecuteEventListener;
 import io.shardingsphere.opentracing.listener.execution.OverallExecuteEventListener;
 import io.shardingsphere.opentracing.listener.merger.MergeEventListener;
 import io.shardingsphere.opentracing.listener.routing.RouteEventListener;
-import io.shardingsphere.opentracing.sampling.SamplingService;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -76,7 +75,6 @@ public final class ShardingTracer {
             return;
         }
         GlobalTracer.register(tracer);
-        SamplingService.getInstance().init(samplingRatePerMinute);
         new OverallExecuteEventListener().register();
         new DQLExecuteEventListener().register();
         new DMLExecuteEventListener().register();

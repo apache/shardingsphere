@@ -19,7 +19,6 @@ package io.shardingsphere.opentracing.listener;
 
 import io.shardingsphere.core.event.ShardingEvent;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.opentracing.sampling.SamplingService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,9 +40,6 @@ public abstract class TracingListener<T extends ShardingEvent> {
     }
     
     protected final void tracing(final T event) {
-        if (!SamplingService.getInstance().trySampling()) {
-            return;
-        }
         switch (event.getEventType()) {
             case BEFORE_EXECUTE:
                 beforeExecute(event);

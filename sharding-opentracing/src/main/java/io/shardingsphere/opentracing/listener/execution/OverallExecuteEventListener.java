@@ -26,7 +26,6 @@ import io.shardingsphere.core.executor.event.OverallExecutionEvent;
 import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
 import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.opentracing.listener.TracingListener;
-import io.shardingsphere.opentracing.sampling.SamplingService;
 import io.shardingsphere.opentracing.tag.LocalTags;
 
 /**
@@ -69,7 +68,6 @@ public final class OverallExecuteEventListener extends TracingListener<OverallEx
     protected void tracingFinish() {
         trunkContainer.get().deactivate();
         trunkContainer.remove();
-        SamplingService.getInstance().increaseSampling();
     }
     
     @Override
