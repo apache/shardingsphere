@@ -30,29 +30,12 @@ import lombok.Getter;
 @Getter
 public final class ConfigurationLoader {
     
-    private static final ConfigurationParser[] PARSERS = new ConfigurationParser[]{new OpentracingConfigurationParser()};
-    
     private final String tracerClassName;
     
-    @Getter
-    private final int sampleNumPM;
-    
     public ConfigurationLoader() {
-        String tracerClassName = null;
-        int maxSampleNum = 0;
-        for (ConfigurationParser each : PARSERS) {
-            Optional<String> sampleNumPMOptional = each.parse("tracer.sampleNumPM");
-            if (sampleNumPMOptional.isPresent()) {
-                maxSampleNum = Integer.parseInt(sampleNumPMOptional.get());
-            }
-            Optional<String> tracerClassOptional = each.parse("tracer.class");
-            if (tracerClassOptional.isPresent()) {
-                tracerClassName = tracerClassOptional.get();
-                break;
-            }
-        }
-        Preconditions.checkNotNull(tracerClassName);
-        this.tracerClassName = tracerClassName;
-        this.sampleNumPM = maxSampleNum;
+        ConfigurationParser configurationParser = new OpentracingConfigurationParser();
+        Optional<String> tracerClass = configurationParser.parse("tracer.class");
+        Preconditions.checkState(tracerClass.isPresent(), "Can not find opentracing tracer implementation class.");
+        this.tracerClassName = tracerClass.get();
     }
 }
