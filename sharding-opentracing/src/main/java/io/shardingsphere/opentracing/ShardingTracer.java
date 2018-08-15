@@ -59,14 +59,17 @@ public final class ShardingTracer {
      * @param tracer opentracing tracer
      */
     public static void init(final Tracer tracer) {
-        if (GlobalTracer.isRegistered()) {
-            return;
+        if (!GlobalTracer.isRegistered()) {
+            GlobalTracer.register(tracer);
+            registerListeners();
         }
-        GlobalTracer.register(tracer);
+    }
+    
+    private static void registerListeners() {
+        new RouteEventListener().register();
         new OverallExecuteEventListener().register();
         new DQLExecuteEventListener().register();
         new DMLExecuteEventListener().register();
-        new RouteEventListener().register();
         new MergeEventListener().register();
     }
     
