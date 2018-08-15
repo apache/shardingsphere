@@ -4,7 +4,6 @@ import SQLBase, Keyword, Symbol;
 
 execute:
 	alterTable
-	
 	;
 	
 alterTable:
@@ -15,7 +14,7 @@ prefixTableName:
     ; 	
 
 alterSpecifications:
-	;
+	NONE;
 
 partitionOptions:
-	;
+	NONE;
