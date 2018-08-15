@@ -40,9 +40,4 @@ public final class DMLExecuteEventListener extends ExecuteEventListener {
     public void listen(final DMLExecutionEvent event) {
         tracing(event);
     }
-    
-    @Override
-    protected String getOperation() {
-        return "MODIFY";
-    }
 }

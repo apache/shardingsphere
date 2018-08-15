@@ -23,15 +23,15 @@ import io.opentracing.ActiveSpan;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.routing.event.RoutingEvent;
 import io.shardingsphere.opentracing.ShardingTracer;
-import io.shardingsphere.opentracing.listener.TracingListener;
-import io.shardingsphere.opentracing.tag.LocalTags;
+import io.shardingsphere.opentracing.listener.OpenTracingListener;
+import io.shardingsphere.opentracing.ShardingTags;
 
 /**
  * SQL route event listener.
  *
  * @author chenqingyang
  */
-public final class RouteEventListener extends TracingListener<RoutingEvent> {
+public final class RouteEventListener extends OpenTracingListener<RoutingEvent> {
     
     private static final String OPERATION_NAME_PREFIX = "/SHARDING-SPHERE/ROUTING/";
     
@@ -50,7 +50,7 @@ public final class RouteEventListener extends TracingListener<RoutingEvent> {
     
     @Override
     protected void beforeExecute(final RoutingEvent event) {
-        span.set(ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX).withTag(Tags.COMPONENT.getKey(), LocalTags.COMPONENT_NAME).withTag(Tags.DB_STATEMENT.getKey(), event.getSql()).startActive());
+        span.set(ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).withTag(Tags.DB_STATEMENT.getKey(), event.getSql()).startActive());
     }
     
     @Override
@@ -60,7 +60,7 @@ public final class RouteEventListener extends TracingListener<RoutingEvent> {
     }
     
     @Override
-    protected void tracingFailure(final RoutingEvent event) {
-        span.get().setTag(Tags.ERROR.getKey(), true).log(System.currentTimeMillis(), log(event.getException()));
+    protected ActiveSpan getFailureSpan() {
+        return span.get();
     }
 }

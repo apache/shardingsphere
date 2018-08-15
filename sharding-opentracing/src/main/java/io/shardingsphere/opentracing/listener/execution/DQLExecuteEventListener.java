@@ -40,9 +40,4 @@ public final class DQLExecuteEventListener extends ExecuteEventListener {
     public void listen(final DQLExecutionEvent event) {
         tracing(event);
     }
-    
-    @Override
-    protected String getOperation() {
-        return "QUERY";
-    }
 }

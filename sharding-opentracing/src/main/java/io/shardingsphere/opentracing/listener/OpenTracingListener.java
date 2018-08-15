@@ -17,6 +17,8 @@
 
 package io.shardingsphere.opentracing.listener;
 
+import io.opentracing.BaseSpan;
+import io.opentracing.tag.Tags;
 import io.shardingsphere.core.event.ShardingEvent;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 
@@ -24,13 +26,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Tracing listener.
+ * Opentracing listener.
  * 
  * @author zhangliang
  * 
  * @param <T> type of sharding event
  */
-public abstract class TracingListener<T extends ShardingEvent> {
+public abstract class OpenTracingListener<T extends ShardingEvent> {
     
     /**
      * Register listener.
@@ -39,6 +41,7 @@ public abstract class TracingListener<T extends ShardingEvent> {
         ShardingEventBusInstance.getInstance().register(this);
     }
     
+    @SuppressWarnings("unchecked")
     protected final void tracing(final T event) {
         switch (event.getEventType()) {
             case BEFORE_EXECUTE:
@@ -48,7 +51,7 @@ public abstract class TracingListener<T extends ShardingEvent> {
                 tracingFinish();
                 break;
             case EXECUTE_FAILURE:
-                tracingFailure(event);
+                getFailureSpan().setTag(Tags.ERROR.getKey(), true).log(System.currentTimeMillis(), getReason(event.getException()));
                 tracingFinish();
                 break;
             default:
@@ -60,9 +63,9 @@ public abstract class TracingListener<T extends ShardingEvent> {
     
     protected abstract void tracingFinish();
     
-    protected abstract void tracingFailure(T event);
+    protected abstract BaseSpan<?> getFailureSpan();
     
-    protected final Map<String, ?> log(final Throwable cause) {
+    private Map<String, ?> getReason(final Throwable cause) {
         Map<String, String> result = new HashMap<>(3, 1);
         result.put("event", "error");
         result.put("error.kind", cause.getClass().getName());

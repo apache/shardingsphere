@@ -23,15 +23,15 @@ import io.opentracing.ActiveSpan;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.merger.event.MergeEvent;
 import io.shardingsphere.opentracing.ShardingTracer;
-import io.shardingsphere.opentracing.listener.TracingListener;
-import io.shardingsphere.opentracing.tag.LocalTags;
+import io.shardingsphere.opentracing.listener.OpenTracingListener;
+import io.shardingsphere.opentracing.ShardingTags;
 
 /**
  * Result set merge event listener.
  *
  * @author chenqingyang
  */
-public final class MergeEventListener extends TracingListener<MergeEvent> {
+public final class MergeEventListener extends OpenTracingListener<MergeEvent> {
     
     private static final String OPERATION_NAME_PREFIX = "/SHARDING-SPHERE/MERGE/";
     
@@ -50,7 +50,7 @@ public final class MergeEventListener extends TracingListener<MergeEvent> {
     
     @Override
     protected void beforeExecute(final MergeEvent event) {
-        span.set(ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX).withTag(Tags.COMPONENT.getKey(), LocalTags.COMPONENT_NAME).startActive());
+        span.set(ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).startActive());
     }
     
     @Override
@@ -60,7 +60,7 @@ public final class MergeEventListener extends TracingListener<MergeEvent> {
     }
     
     @Override
-    protected void tracingFailure(final MergeEvent event) {
-        span.get().setTag(Tags.ERROR.getKey(), true).log(System.currentTimeMillis(), log(event.getException()));
+    protected ActiveSpan getFailureSpan() {
+        return span.get();
     }
 }

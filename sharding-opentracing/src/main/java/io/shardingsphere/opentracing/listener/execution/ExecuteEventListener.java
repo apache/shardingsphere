@@ -20,13 +20,12 @@ package io.shardingsphere.opentracing.listener.execution;
 import com.google.common.base.Joiner;
 import io.opentracing.ActiveSpan;
 import io.opentracing.Span;
-import io.opentracing.Tracer;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.executor.event.SQLExecutionEvent;
 import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
 import io.shardingsphere.opentracing.ShardingTracer;
-import io.shardingsphere.opentracing.listener.TracingListener;
-import io.shardingsphere.opentracing.tag.LocalTags;
+import io.shardingsphere.opentracing.listener.OpenTracingListener;
+import io.shardingsphere.opentracing.ShardingTags;
 
 /**
  * SQL execute event listener.
@@ -35,11 +34,11 @@ import io.shardingsphere.opentracing.tag.LocalTags;
  * @author wangkai
  * @author maxiaoguang
  */
-public abstract class ExecuteEventListener extends TracingListener<SQLExecutionEvent> {
+public abstract class ExecuteEventListener extends OpenTracingListener<SQLExecutionEvent> {
+    
+    private static final String OPERATION_NAME_PREFIX = "/SHARDING-SPHERE/EXECUTE/";
     
     private static final String SNAPSHOT_DATA_KEY = "OPENTRACING_SNAPSHOT_DATA";
-
-    private static final String OPERATION_NAME_PREFIX = "/SHARDING-SPHERE/EXECUTE/";
 
     private final ThreadLocal<ActiveSpan> trunkSpan = new ThreadLocal<>();
     
@@ -49,15 +48,14 @@ public abstract class ExecuteEventListener extends TracingListener<SQLExecutionE
     
     @Override
     protected final void beforeExecute(final SQLExecutionEvent event) {
-        Tracer tracer = ShardingTracer.get();
         if (ExecutorDataMap.getDataMap().containsKey(SNAPSHOT_DATA_KEY) && null == trunkSpan.get() && null == branchSpan.get()) {
             trunkInBranchSpan.set(((ActiveSpan.Continuation) ExecutorDataMap.getDataMap().get(SNAPSHOT_DATA_KEY)).activate());
         }
         if (null == branchSpan.get()) {
-            branchSpan.set(tracer.buildSpan(OPERATION_NAME_PREFIX + getOperation()).withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
-                    .withTag(Tags.PEER_HOSTNAME.getKey(), event.getDataSource()).withTag(Tags.COMPONENT.getKey(), LocalTags.COMPONENT_NAME)
+            branchSpan.set(ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX).withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
+                    .withTag(Tags.PEER_HOSTNAME.getKey(), event.getDataSource()).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME)
                     .withTag(Tags.DB_INSTANCE.getKey(), event.getDataSource()).withTag(Tags.DB_TYPE.getKey(), "sql")
-                    .withTag(LocalTags.DB_BIND_VARIABLES.getKey(), event.getParameters().isEmpty() ? "" : Joiner.on(",").join(event.getParameters()))
+                    .withTag(ShardingTags.DB_BIND_VARIABLES.getKey(), event.getParameters().isEmpty() ? "" : Joiner.on(",").join(event.getParameters()))
                     .withTag(Tags.DB_STATEMENT.getKey(), event.getSqlUnit().getSql()).startManual());
         }
     }
@@ -77,9 +75,7 @@ public abstract class ExecuteEventListener extends TracingListener<SQLExecutionE
     }
     
     @Override
-    protected final void tracingFailure(final SQLExecutionEvent event) {
-        branchSpan.get().setTag(Tags.ERROR.getKey(), true).log(System.currentTimeMillis(), log(event.getException()));
+    protected final Span getFailureSpan() {
+        return branchSpan.get();
     }
-    
-    protected abstract String getOperation();
 }

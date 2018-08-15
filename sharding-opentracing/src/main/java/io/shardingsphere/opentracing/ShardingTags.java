@@ -15,24 +15,24 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.tag;
+package io.shardingsphere.opentracing;
 
 import io.opentracing.tag.StringTag;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Local tags.
+ * Sharding tags.
  *
  * @author chenqingyang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class LocalTags {
+public final class ShardingTags {
     
     public static final String COMPONENT_NAME = "SHARDING-SPHERE";
     
     /**
-     * DB_BIND_VARIABLES records the bind variables of sql statement.
+     * Records the bind variables of SQL.
      */
     public static final StringTag DB_BIND_VARIABLES = new StringTag("db.bind_vars");
 }

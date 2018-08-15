@@ -24,8 +24,8 @@ import io.opentracing.tag.Tags;
 import io.shardingsphere.core.executor.event.OverallExecutionEvent;
 import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
 import io.shardingsphere.opentracing.ShardingTracer;
-import io.shardingsphere.opentracing.listener.TracingListener;
-import io.shardingsphere.opentracing.tag.LocalTags;
+import io.shardingsphere.opentracing.listener.OpenTracingListener;
+import io.shardingsphere.opentracing.ShardingTags;
 
 /**
  * SQL execute overall event listener.
@@ -34,7 +34,7 @@ import io.shardingsphere.opentracing.tag.LocalTags;
  * @author wangkai
  * @author maxiaoguang
  */
-public final class OverallExecuteEventListener extends TracingListener<OverallExecutionEvent> {
+public final class OverallExecuteEventListener extends OpenTracingListener<OverallExecutionEvent> {
     
     private static final String SNAPSHOT_DATA_KEY = "OPENTRACING_SNAPSHOT_DATA";
 
@@ -55,7 +55,7 @@ public final class OverallExecuteEventListener extends TracingListener<OverallEx
     
     @Override
     protected void beforeExecute(final OverallExecutionEvent event) {
-        ActiveSpan activeSpan = ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX + event.getSqlType().name()).withTag(Tags.COMPONENT.getKey(), LocalTags.COMPONENT_NAME).startActive();
+        ActiveSpan activeSpan = ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX + event.getSqlType().name()).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).startActive();
         span.set(activeSpan);
         if (event.isParallelExecute()) {
             ExecutorDataMap.getDataMap().put(SNAPSHOT_DATA_KEY, activeSpan.capture());
@@ -69,7 +69,7 @@ public final class OverallExecuteEventListener extends TracingListener<OverallEx
     }
     
     @Override
-    protected void tracingFailure(final OverallExecutionEvent event) {
-        span.get().setTag(Tags.ERROR.getKey(), true).log(System.currentTimeMillis(), log(event.getException()));
+    protected ActiveSpan getFailureSpan() {
+        return span.get();
     }
 }
