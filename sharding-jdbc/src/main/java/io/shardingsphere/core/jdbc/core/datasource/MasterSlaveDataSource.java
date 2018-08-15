@@ -27,6 +27,8 @@ import io.shardingsphere.core.rule.MasterSlaveRule;
 import lombok.Getter;
 
 import javax.sql.DataSource;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -91,6 +93,20 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     public void renew(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
         this.dataSourceMap = dataSourceMap;
         this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
+    }
+    
+    private void closeOriginalDataSources() {
+        for (DataSource each : this.dataSourceMap.values()) {
+            try {
+                System.err.println("ms begin close datasource");
+                Method closeMethod = each.getClass().getDeclaredMethod("close");
+                Method shutDownMethod = each.getClass().getDeclaredMethod("shutdown");
+                closeMethod.invoke(each);
+                shutDownMethod.invoke(each);
+                System.err.println("ms finish close datasource");
+            } catch (final NoSuchMethodException | InvocationTargetException | IllegalAccessException ignored) {
+            }
+        }
     }
     
     @Override
