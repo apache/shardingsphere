@@ -33,7 +33,7 @@ import io.shardingsphere.dbtest.env.datasource.DataSourceUtil;
 import io.shardingsphere.dbtest.env.schema.SchemaEnvironmentManager;
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.junit.AfterClass;
+import org.junit.After;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -54,8 +54,6 @@ import java.util.TimeZone;
 @Getter(AccessLevel.PROTECTED)
 public abstract class BaseIntegrateTest {
     
-    private static DataSource dataSource;
-    
     private static IntegrateTestEnvironment integrateTestEnvironment = IntegrateTestEnvironment.getInstance();
     
     private static IntegrateTestCasesLoader integrateTestCasesLoader = IntegrateTestCasesLoader.getInstance();
@@ -64,16 +62,14 @@ public abstract class BaseIntegrateTest {
     
     private final DatabaseTypeEnvironment databaseTypeEnvironment;
     
+    private DataSource dataSource;
+    
     private Map<String, DataSource> dataSourceMap;
     
-    private final Map<String, DataSource> instanceDataSourceMap;
+    private Map<String, DataSource> instanceDataSourceMap;
     
     static {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-    }
-    
-    protected static DataSource getDataSource() {
-        return dataSource;
     }
     
     public BaseIntegrateTest(final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, JAXBException, SQLException {
@@ -209,8 +205,8 @@ public abstract class BaseIntegrateTest {
         }
     }
 
-    @AfterClass
-    public static void tearDown() {
+    @After
+    public void tearDown() {
         if (dataSource instanceof ShardingDataSource) {
             ((ShardingDataSource) dataSource).close();
         }
