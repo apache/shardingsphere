@@ -23,7 +23,7 @@ import com.google.common.eventbus.Subscribe;
 import io.opentracing.ActiveSpan;
 import io.opentracing.Span;
 import io.opentracing.tag.Tags;
-import io.shardingsphere.core.executor.event.SQLExecutionEvent;
+import io.shardingsphere.core.executor.event.sql.SQLExecutionEvent;
 import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
 import io.shardingsphere.opentracing.ShardingTags;
 import io.shardingsphere.opentracing.ShardingTracer;
