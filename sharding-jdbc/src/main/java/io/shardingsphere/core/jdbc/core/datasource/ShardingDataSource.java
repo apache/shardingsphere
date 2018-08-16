@@ -44,6 +44,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -63,6 +64,10 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     private ExecutorEngine executorEngine;
     
     private ShardingContext shardingContext;
+    
+    private final List<String> disabledDataSourceNames = new LinkedList<>();
+    
+    private final List<String> circuitBreakerDataSourceNames = new LinkedList<>();
     
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) throws SQLException {
         this(dataSourceMap, shardingRule, new ConcurrentHashMap<String, Object>(), new Properties());
