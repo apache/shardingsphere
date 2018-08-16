@@ -15,21 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.event;
+package io.shardingsphere.core.executor.event.overall;
 
-import io.shardingsphere.core.routing.SQLUnit;
-
-import java.util.List;
+import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.event.ShardingEvent;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * DQL execution event.
+ * Overall sql execution event.
  * 
  * @author gaohongtao
- * @author maxiaoguang
  */
-public final class DQLExecutionEvent extends SQLExecutionEvent {
+@RequiredArgsConstructor
+@Getter
+public final class OverallExecutionEvent extends ShardingEvent {
     
-    public DQLExecutionEvent(final String dataSource, final SQLUnit sqlUnit, final List<Object> parameters) {
-        super(dataSource, sqlUnit, parameters);
-    }
+    private final SQLType sqlType;
+    
+    private final boolean parallelExecute;
 }

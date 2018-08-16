@@ -21,7 +21,7 @@ import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.common.base.AbstractShardingJDBCDatabaseAndTableTest;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.event.ShardingEventType;
-import io.shardingsphere.core.executor.event.DMLExecutionEvent;
+import io.shardingsphere.core.executor.event.sql.DMLExecutionEvent;
 import io.shardingsphere.core.jdbc.JDBCTestSQL;
 import io.shardingsphere.core.util.SQLPlaceholderUtil;
 import org.junit.Test;
