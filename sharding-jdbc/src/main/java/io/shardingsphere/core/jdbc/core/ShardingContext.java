@@ -67,6 +67,11 @@ public final class ShardingContext {
         disabledDataSourceNames = jdbcEventBusEvent.getDisabledDataSourceNames();
     }
     
+    /**
+     * Renew circuit breaker dataSource names.
+     *
+     * @param jdbcEventBusEvent jdbc event bus event
+     */
     @Subscribe
     public void renewCircuitBreakerDataSourceNames(final JDBCEventBusEvent jdbcEventBusEvent) {
         circuitBreakerDataSourceNames = jdbcEventBusEvent.getCircuitBreakerDataSource();
