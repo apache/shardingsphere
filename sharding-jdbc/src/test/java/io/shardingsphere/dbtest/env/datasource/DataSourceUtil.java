@@ -23,7 +23,6 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.dbtest.env.IntegrateTestEnvironment;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -43,7 +42,6 @@ public final class DataSourceUtil {
     
     private static DataSourcePoolType dataSourcePoolType = DataSourcePoolType.HikariCP;
     
-    @Getter
     private static Map<DataSourceCacheKey, DataSource> cache = new HashMap<>();
     
     /**
