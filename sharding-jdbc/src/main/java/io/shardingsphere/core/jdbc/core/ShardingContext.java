@@ -20,6 +20,7 @@ package io.shardingsphere.core.jdbc.core;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.executor.ExecutorEngine;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
@@ -29,6 +30,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -80,6 +83,22 @@ public final class ShardingContext {
     @Subscribe
     public void renewCircuitBreakerDataSourceNames(final JDBCEventBusEvent jdbcEventBusEvent) {
         circuitBreakerDataSourceNames = jdbcEventBusEvent.getCircuitBreakerDataSource();
+    }
+    
+    private static Map<String, String> getDataSourceURLs(final Map<String, DataSource> dataSourceMap) {
+        Map<String, String> result = new LinkedHashMap<>(dataSourceMap.size(), 1);
+        for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            result.put(entry.getKey(), getDataSourceURL(entry.getValue()));
+        }
+        return result;
+    }
+    
+    private static String getDataSourceURL(final DataSource dataSource) {
+        try (Connection connection = dataSource.getConnection()) {
+            return connection.getMetaData().getURL();
+        } catch (final SQLException ex) {
+            throw new ShardingException(ex);
+        }
     }
     
     /**
