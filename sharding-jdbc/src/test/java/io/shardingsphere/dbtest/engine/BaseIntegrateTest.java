@@ -21,7 +21,6 @@ import com.google.common.base.Joiner;
 import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
 import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataFactory;
@@ -216,10 +215,9 @@ public abstract class BaseIntegrateTest {
     public void tearDown() {
         if (dataSource instanceof ShardingDataSource) {
             ((ShardingDataSource) dataSource).close();
-        } else if (dataSource instanceof MasterSlaveDataSource) {
-            ((MasterSlaveDataSource) dataSource).close();
         }
         DataSourceUtil.getCache().clear();
         ParsingResultCache.getInstance().clear();
     }
 }
+
