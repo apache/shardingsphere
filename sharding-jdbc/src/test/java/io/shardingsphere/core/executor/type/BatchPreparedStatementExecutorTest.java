@@ -19,7 +19,7 @@ package io.shardingsphere.core.executor.type;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.executor.event.EventExecutionType;
+import io.shardingsphere.core.event.ShardingEventType;
 import io.shardingsphere.core.executor.type.batch.BatchPreparedStatementExecutor;
 import io.shardingsphere.core.executor.type.batch.BatchPreparedStatementUnit;
 import io.shardingsphere.core.rewrite.SQLBuilder;
@@ -66,8 +66,8 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         verify(getEventCaller(), times(4)).verifySQL(SQL);
         verify(getEventCaller(), times(2)).verifyParameters(Collections.<Object>singletonList(1));
         verify(getEventCaller(), times(2)).verifyParameters(Collections.<Object>singletonList(2));
-        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
         verify(getEventCaller(), times(0)).verifyException(null);
     }
     
@@ -90,8 +90,8 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         verify(getEventCaller(), times(8)).verifySQL(SQL);
         verify(getEventCaller(), times(4)).verifyParameters(Collections.<Object>singletonList(1));
         verify(getEventCaller(), times(4)).verifyParameters(Collections.<Object>singletonList(2));
-        verify(getEventCaller(), times(4)).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(getEventCaller(), times(4)).verifyEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        verify(getEventCaller(), times(4)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller(), times(4)).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
         verify(getEventCaller(), times(0)).verifyException(null);
     }
     
@@ -110,8 +110,8 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         verify(getEventCaller(), times(4)).verifySQL(SQL);
         verify(getEventCaller(), times(2)).verifyParameters(Collections.<Object>singletonList(1));
         verify(getEventCaller(), times(2)).verifyParameters(Collections.<Object>singletonList(2));
-        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.EXECUTE_FAILURE);
         verify(getEventCaller(), times(2)).verifyException(exp);
     }
     
@@ -135,8 +135,8 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         verify(getEventCaller(), times(8)).verifySQL(SQL);
         verify(getEventCaller(), times(4)).verifyParameters(Collections.<Object>singletonList(1));
         verify(getEventCaller(), times(4)).verifyParameters(Collections.<Object>singletonList(2));
-        verify(getEventCaller(), times(4)).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(getEventCaller(), times(4)).verifyEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
+        verify(getEventCaller(), times(4)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller(), times(4)).verifyEventExecutionType(ShardingEventType.EXECUTE_FAILURE);
         verify(getEventCaller(), times(4)).verifyException(exp);
     }
     

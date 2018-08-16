@@ -243,27 +243,32 @@
     <dql-test-case sql-case-id="select_order_by_for_nulls_last">
         <assertion expected-data-file="select_order_by_with_ordered_column.xml" />
     </dql-test-case>
-
+    
     <dql-test-case sql-case-id="select_order_by_with_multiple_stars">
         <assertion expected-data-file="select_order_by_with_multiple_stars.xml" />
     </dql-test-case>
-
+    
     <dql-test-case sql-case-id="select_order_by_with_alias_star_alias_name">
         <assertion expected-data-file="select_order_by_with_alias_star_alias_name.xml" />
     </dql-test-case>
-
+    
     <dql-test-case sql-case-id="select_order_by_with_alias_star_alias_name">
         <assertion expected-data-file="select_order_by_with_alias_star_alias_name.xml" />
     </dql-test-case>
-
+    
     <dql-test-case sql-case-id="select_order_by_with_star_table_alias">
         <assertion expected-data-file="select_order_by_with_star_table_alias.xml" />
     </dql-test-case>
-
+    
     <dql-test-case sql-case-id="select_order_by_with_table_star_table_name">
         <assertion expected-data-file="select_order_by_with_table_star_table_name.xml" />
     </dql-test-case>
-
+    
+    <!--TODO need to add later-->
+    <!--<dql-test-case sql-case-id="select_order_by_with_parameter">-->
+        <!--<assertion parameters="order_id:String" expected-data-file="select_order_by_with_star_table_alias.xml" />-->
+    <!--</dql-test-case>-->
+    
     <dql-test-case sql-case-id="select_order_by_with_star_no_table_alias">
         <assertion expected-data-file="select_order_by_with_star_no_table_alias.xml" />
     </dql-test-case>

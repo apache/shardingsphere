@@ -27,7 +27,7 @@ import java.util.List;
  * @author zhangliang
  * @author maxiaoguang
  */
-public final class DMLExecutionEvent extends AbstractSQLExecutionEvent {
+public final class DMLExecutionEvent extends SQLExecutionEvent {
     
     public DMLExecutionEvent(final String dataSource, final SQLUnit sqlUnit, final List<Object> parameters) {
         super(dataSource, sqlUnit, parameters);

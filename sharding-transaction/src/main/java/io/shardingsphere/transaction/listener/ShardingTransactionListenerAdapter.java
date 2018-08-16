@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.listener;
 
-import io.shardingsphere.core.util.EventBusInstance;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.transaction.event.ShardingTransactionEvent;
 import io.shardingsphere.transaction.manager.ShardingTransactionManager;
 
@@ -34,7 +34,7 @@ public abstract class ShardingTransactionListenerAdapter<T extends ShardingTrans
     
     @Override
     public final void register() {
-        EventBusInstance.getInstance().register(this);
+        ShardingEventBusInstance.getInstance().register(this);
     }
     
     @SuppressWarnings("unchecked")

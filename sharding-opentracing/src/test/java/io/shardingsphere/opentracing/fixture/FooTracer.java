@@ -26,16 +26,16 @@ import io.opentracing.propagation.Format;
 public final class FooTracer implements Tracer {
     
     @Override
-    public SpanBuilder buildSpan(final String s) {
+    public SpanBuilder buildSpan(final String operationName) {
         return null;
     }
     
     @Override
-    public <C> void inject(final SpanContext spanContext, final Format<C> format, final C c) {
+    public <C> void inject(final SpanContext spanContext, final Format<C> format, final C carrier) {
     }
     
     @Override
-    public <C> SpanContext extract(final Format<C> format, final C c) {
+    public <C> SpanContext extract(final Format<C> format, final C carrier) {
         return null;
     }
     

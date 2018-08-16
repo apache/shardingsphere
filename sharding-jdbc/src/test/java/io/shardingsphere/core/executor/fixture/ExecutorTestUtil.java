@@ -17,11 +17,10 @@
 
 package io.shardingsphere.core.executor.fixture;
 
-import com.google.common.base.Preconditions;
-import io.shardingsphere.core.executor.event.AbstractExecutionEvent;
-import io.shardingsphere.core.executor.event.AbstractSQLExecutionEvent;
-import io.shardingsphere.core.executor.event.EventExecutionType;
+import io.shardingsphere.core.event.ShardingEventType;
+import io.shardingsphere.core.executor.event.ExecutionEvent;
 import io.shardingsphere.core.executor.event.OverallExecutionEvent;
+import io.shardingsphere.core.executor.event.SQLExecutionEvent;
 import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -37,21 +36,20 @@ public final class ExecutorTestUtil {
      * @param eventCaller event caller
      * @param event execution event
      */
-    public static void listen(final EventCaller eventCaller, final AbstractExecutionEvent event) {
-        if (event instanceof AbstractSQLExecutionEvent) {
-            AbstractSQLExecutionEvent sqlExecutionEvent = (AbstractSQLExecutionEvent) event;
+    public static void listen(final EventCaller eventCaller, final ExecutionEvent event) {
+        if (event instanceof SQLExecutionEvent) {
+            SQLExecutionEvent sqlExecutionEvent = (SQLExecutionEvent) event;
             eventCaller.verifyDataSource(sqlExecutionEvent.getDataSource());
             eventCaller.verifySQL(sqlExecutionEvent.getSqlUnit().getSql());
             eventCaller.verifyParameters(sqlExecutionEvent.getParameters());
-            eventCaller.verifyEventExecutionType(sqlExecutionEvent.getEventExecutionType());
+            eventCaller.verifyEventExecutionType(sqlExecutionEvent.getEventType());
             
         } else if (event instanceof OverallExecutionEvent) {
             eventCaller.verifySQLType(((OverallExecutionEvent) event).getSqlType());
-            eventCaller.verifyStatementUnitSize(((OverallExecutionEvent) event).getStatementUnitSize());
+            eventCaller.verifyIsParallelExecute(((OverallExecutionEvent) event).isParallelExecute());
         }
-        Preconditions.checkState((EventExecutionType.EXECUTE_FAILURE == event.getEventExecutionType()) == event.getException().isPresent());
-        if (EventExecutionType.EXECUTE_FAILURE == event.getEventExecutionType()) {
-            eventCaller.verifyException(event.getException().get());
+        if (ShardingEventType.EXECUTE_FAILURE == event.getEventType()) {
+            eventCaller.verifyException(event.getException());
         }
     }
     

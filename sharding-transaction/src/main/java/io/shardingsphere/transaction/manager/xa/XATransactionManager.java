@@ -17,8 +17,8 @@
 
 package io.shardingsphere.transaction.manager.xa;
 
-import io.shardingsphere.transaction.event.xa.XATransactionEvent;
 import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.transaction.event.xa.XATransactionEvent;
 import io.shardingsphere.transaction.manager.ShardingTransactionManager;
 
 import javax.sql.DataSource;
@@ -32,13 +32,13 @@ import javax.sql.XADataSource;
 public interface XATransactionManager extends ShardingTransactionManager<XATransactionEvent> {
     
     /**
-     * Wrap the specific {@link XADataSource} and enroll it with a JTA.
+     * Get specific {@link XADataSource} and enroll it with a JTA.
      *
-     * @param dataSource the data source to wrap
-     * @param dataSourceName the data source name
-     * @param dataSourceParameter the data source parameter
-     * @return the wrapped data source
+     * @param xaDataSource XA data source
+     * @param dataSourceName data source name
+     * @param dataSourceParameter data source parameter
+     * @return XA data source
      * @throws Exception if can not wrap the data source
      */
-    DataSource wrapDataSource(XADataSource dataSource, String dataSourceName, DataSourceParameter dataSourceParameter) throws Exception;
+    DataSource wrapDataSource(XADataSource xaDataSource, String dataSourceName, DataSourceParameter dataSourceParameter) throws Exception;
 }

@@ -34,8 +34,7 @@ import io.shardingsphere.core.merger.MergeEngine;
 import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.QueryResult;
-import io.shardingsphere.core.merger.event.EventMergeType;
-import io.shardingsphere.core.merger.event.ResultSetMergeEvent;
+import io.shardingsphere.core.merger.event.MergeEvent;
 import io.shardingsphere.core.metadata.table.executor.TableMetaDataLoader;
 import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
@@ -44,10 +43,9 @@ import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.StatementRoutingEngine;
-import io.shardingsphere.core.routing.event.EventRoutingType;
-import io.shardingsphere.core.routing.event.SqlRoutingEvent;
+import io.shardingsphere.core.routing.event.RoutingEvent;
 import io.shardingsphere.core.routing.router.sharding.GeneratedKey;
-import io.shardingsphere.core.util.EventBusInstance;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
 import lombok.AccessLevel;
 import lombok.Getter;
 
@@ -266,21 +264,20 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     
     private void sqlRoute(final String sql) {
         ShardingContext shardingContext = connection.getShardingContext();
-        SqlRoutingEvent event = new SqlRoutingEvent(sql);
-        EventBusInstance.getInstance().post(event);
+        RoutingEvent event = new RoutingEvent(sql);
+        ShardingEventBusInstance.getInstance().post(event);
         try {
             routeResult = new StatementRoutingEngine(shardingContext.getShardingRule(), 
                     shardingContext.getMetaData().getTable(), shardingContext.getDatabaseType(), shardingContext.isShowSQL(), shardingContext.getMetaData().getDataSource()).route(sql);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            event.setException(ex);
-            event.setEventRoutingType(EventRoutingType.ROUTE_FAILURE);
-            EventBusInstance.getInstance().post(event);
+            event.setExecuteFailure(ex);
+            ShardingEventBusInstance.getInstance().post(event);
             throw ex;
         }
-        event.setEventRoutingType(EventRoutingType.ROUTE_SUCCESS);
-        EventBusInstance.getInstance().post(event);
+        event.setExecuteSuccess();
+        ShardingEventBusInstance.getInstance().post(event);
     }
     
     // TODO refresh table meta data by SQL parse result
@@ -337,19 +334,18 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     }
     
     private MergedResult merge(final MergeEngine mergeEngine) throws SQLException {
-        ResultSetMergeEvent event = new ResultSetMergeEvent();
+        MergeEvent event = new MergeEvent();
         try {
-            EventBusInstance.getInstance().post(event);
+            ShardingEventBusInstance.getInstance().post(event);
             MergedResult result = mergeEngine.merge();
-            event.setEventMergeType(EventMergeType.MERGE_SUCCESS);
-            EventBusInstance.getInstance().post(event);
+            event.setExecuteSuccess();
+            ShardingEventBusInstance.getInstance().post(event);
             return result;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            event.setException(ex);
-            event.setEventMergeType(EventMergeType.MERGE_FAILURE);
-            EventBusInstance.getInstance().post(event);
+            event.setExecuteFailure(ex);
+            ShardingEventBusInstance.getInstance().post(event);
             throw ex;
         }
     }
