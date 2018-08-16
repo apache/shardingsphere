@@ -90,8 +90,6 @@ public final class ShardingContext {
                 getDataSourceURLs(getDataSourceMap()), shardingRule, getDatabaseType(), executorEngine.getExecutorService(), new JDBCTableMetaDataConnectionManager(getDataSourceMap()));
     }
     
-    
-    
     private static Map<String, String> getDataSourceURLs(final Map<String, DataSource> dataSourceMap) {
         Map<String, String> result = new LinkedHashMap<>(dataSourceMap.size(), 1);
         for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
