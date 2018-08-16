@@ -33,9 +33,9 @@ import lombok.RequiredArgsConstructor;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -62,9 +62,9 @@ public final class ShardingContext {
     
     private final boolean showSQL;
     
-    private List<String> disabledDataSourceNames = new LinkedList<>();
+    private Collection<String> disabledDataSourceNames = new LinkedList<>();
     
-    private List<String> circuitBreakerDataSourceNames = new LinkedList<>();
+    private Collection<String> circuitBreakerDataSourceNames = new LinkedList<>();
     
     /**
      * Renew disable dataSource names.
