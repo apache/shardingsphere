@@ -17,15 +17,14 @@
 
 package io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc;
 
-import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Proxy event bus event.
+ * JDBC event bus event.
  *
  * @author panjuan
  */
@@ -33,7 +32,7 @@ import java.util.Map;
 @Getter
 public final class JDBCEventBusEvent {
     
-    private final Map<String, DataSourceParameter> dataSources;
+    private final List<String> disabledDataSourceNames = new LinkedList<>();
     
-    private final OrchestrationProxyConfiguration orchestrationConfig;
+    private final List<String> circuitBreakerDataSource = new LinkedList<>();
 }

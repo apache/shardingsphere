@@ -22,7 +22,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Proxy event bus instance.
+ * JDBC event bus instance.
  *
  * @author panjuan
  */
