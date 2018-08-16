@@ -20,8 +20,7 @@ package io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * JDBC event bus event.
@@ -32,7 +31,7 @@ import java.util.List;
 @Getter
 public final class JDBCEventBusEvent {
     
-    private final List<String> disabledDataSourceNames = new LinkedList<>();
+    private final Collection<String> disabledDataSourceNames;
     
-    private final List<String> circuitBreakerDataSource = new LinkedList<>();
+    private final Collection<String> circuitBreakerDataSource;
 }
