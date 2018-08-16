@@ -210,7 +210,6 @@ public abstract class BaseIntegrateTest {
         if (dataSource instanceof ShardingDataSource) {
             ((ShardingDataSource) dataSource).close();
         }
-        DataSourceUtil.getCache().clear();
         ParsingResultCache.getInstance().clear();
     }
 }
