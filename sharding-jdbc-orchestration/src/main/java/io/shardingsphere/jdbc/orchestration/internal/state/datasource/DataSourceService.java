@@ -140,7 +140,12 @@ public final class DataSourceService {
         }
     }
     
-    private Collection<String> getDisabledDataSourceNames() {
+    /**
+     * Get disabled data source names.
+     *
+     * @return disabled data source names
+     */
+    public Collection<String> getDisabledDataSourceNames() {
         Collection<String> result = new HashSet<>();
         String dataSourcesNodePath = stateNode.getDataSourcesNodeFullPath();
         List<String> dataSources = regCenter.getChildrenKeys(dataSourcesNodePath);
