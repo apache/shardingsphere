@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.executor.event;
 
+import io.shardingsphere.core.event.ShardingEvent;
 import io.shardingsphere.core.routing.SQLUnit;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
-public abstract class SQLExecutionEvent extends ExecutionEvent {
+public abstract class SQLExecutionEvent extends ShardingEvent {
     
     private final String dataSource;
     

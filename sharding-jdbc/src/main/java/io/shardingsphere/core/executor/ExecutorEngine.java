@@ -20,13 +20,13 @@ package io.shardingsphere.core.executor;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.executor.event.ExecutionEvent;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.executor.event.DMLExecutionEvent;
 import io.shardingsphere.core.executor.event.DQLExecutionEvent;
 import io.shardingsphere.core.executor.event.OverallExecutionEvent;
+import io.shardingsphere.core.executor.event.SQLExecutionEvent;
 import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
-import io.shardingsphere.core.event.ShardingEventBusInstance;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -101,32 +101,32 @@ public abstract class ExecutorEngine implements AutoCloseable {
         T result;
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
-        List<ExecutionEvent> events = new LinkedList<>();
+        List<SQLExecutionEvent> events = new LinkedList<>();
         for (List<Object> each : baseStatementUnit.getSqlExecutionUnit().getSqlUnit().getParameterSets()) {
-            events.add(getExecutionEvent(sqlType, baseStatementUnit, each));
+            events.add(getSQLExecutionEvent(sqlType, baseStatementUnit, each));
         }
-        for (ExecutionEvent event : events) {
+        for (SQLExecutionEvent event : events) {
             ShardingEventBusInstance.getInstance().post(event);
         }
         try {
             result = executeCallback.execute(baseStatementUnit);
         } catch (final SQLException ex) {
-            for (ExecutionEvent each : events) {
+            for (SQLExecutionEvent each : events) {
                 each.setExecuteFailure(ex);
                 ShardingEventBusInstance.getInstance().post(each);
                 ExecutorExceptionHandler.handleException(ex);
             }
             return null;
         }
-        for (ExecutionEvent each : events) {
+        for (SQLExecutionEvent each : events) {
             each.setExecuteSuccess();
             ShardingEventBusInstance.getInstance().post(each);
         }
         return result;
     }
     
-    private ExecutionEvent getExecutionEvent(final SQLType sqlType, final BaseStatementUnit baseStatementUnit, final List<Object> parameters) {
-        ExecutionEvent result;
+    private SQLExecutionEvent getSQLExecutionEvent(final SQLType sqlType, final BaseStatementUnit baseStatementUnit, final List<Object> parameters) {
+        SQLExecutionEvent result;
         if (SQLType.DQL == sqlType) {
             result = new DQLExecutionEvent(baseStatementUnit.getSqlExecutionUnit().getDataSource(), baseStatementUnit.getSqlExecutionUnit().getSqlUnit(), parameters);
         } else {

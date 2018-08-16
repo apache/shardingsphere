@@ -18,6 +18,7 @@
 package io.shardingsphere.core.executor.event;
 
 import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.event.ShardingEvent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -28,7 +29,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class OverallExecutionEvent extends ExecutionEvent {
+public final class OverallExecutionEvent extends ShardingEvent {
     
     private final SQLType sqlType;
     
