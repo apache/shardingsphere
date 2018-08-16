@@ -40,6 +40,7 @@ import java.util.Properties;
  * Database that support master-slave.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @Getter
 public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
