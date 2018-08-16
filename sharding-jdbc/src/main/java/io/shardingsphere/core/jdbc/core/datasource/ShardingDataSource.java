@@ -141,6 +141,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         return new ShardingConnection(shardingContext);
     }
     
+    // TODO To close data sources in dataSourceMap
     @Override
     public void close() {
         executorEngine.close();
