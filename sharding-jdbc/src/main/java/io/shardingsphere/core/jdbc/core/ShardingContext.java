@@ -22,6 +22,7 @@ import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.executor.ExecutorEngine;
+import io.shardingsphere.core.jdbc.metadata.JDBCTableMetaDataConnectionManager;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.JDBCEventBusEvent;
@@ -55,7 +56,7 @@ public final class ShardingContext {
     
     private final ExecutorEngine executorEngine;
     
-    private final ShardingMetaData metaData;
+    private ShardingMetaData metaData;
     
     private final ConnectionMode connectionMode;
     
@@ -73,6 +74,8 @@ public final class ShardingContext {
     @Subscribe
     public void renewDisabledDataSourceNames(final JDBCEventBusEvent jdbcEventBusEvent) {
         disabledDataSourceNames = jdbcEventBusEvent.getDisabledDataSourceNames();
+        metaData = new ShardingMetaData(
+                getDataSourceURLs(getDataSourceMap()), shardingRule, getDatabaseType(), executorEngine.getExecutorService(), new JDBCTableMetaDataConnectionManager(getDataSourceMap()));
     }
     
     /**
@@ -83,7 +86,11 @@ public final class ShardingContext {
     @Subscribe
     public void renewCircuitBreakerDataSourceNames(final JDBCEventBusEvent jdbcEventBusEvent) {
         circuitBreakerDataSourceNames = jdbcEventBusEvent.getCircuitBreakerDataSource();
+        metaData = new ShardingMetaData(
+                getDataSourceURLs(getDataSourceMap()), shardingRule, getDatabaseType(), executorEngine.getExecutorService(), new JDBCTableMetaDataConnectionManager(getDataSourceMap()));
     }
+    
+    
     
     private static Map<String, String> getDataSourceURLs(final Map<String, DataSource> dataSourceMap) {
         Map<String, String> result = new LinkedHashMap<>(dataSourceMap.size(), 1);
