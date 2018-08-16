@@ -17,15 +17,19 @@
 
 package io.shardingsphere.core.jdbc.core;
 
+import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.executor.ExecutorEngine;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.JDBCEventBusEvent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -51,4 +55,13 @@ public final class ShardingContext {
     private final ConnectionMode connectionMode;
     
     private final boolean showSQL;
+    
+    private List<String> disabledDataSourceNames = new LinkedList<>();
+    
+    private List<String> circuitBreakerDataSourceNames = new LinkedList<>();
+    
+    @Subscribe
+    public void renewDisabledDataSourceNames(final JDBCEventBusEvent jdbcEventBusEvent) {
+        disabledDataSourceNames = jdbcEventBusEvent.getDisabledDataSourceNames();
+    }
 }
