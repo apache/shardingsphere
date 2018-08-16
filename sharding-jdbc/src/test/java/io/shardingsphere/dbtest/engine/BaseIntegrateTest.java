@@ -21,6 +21,7 @@ import com.google.common.base.Joiner;
 import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
 import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataFactory;
@@ -34,6 +35,7 @@ import io.shardingsphere.dbtest.env.schema.SchemaEnvironmentManager;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -75,6 +77,11 @@ public abstract class BaseIntegrateTest {
     public BaseIntegrateTest(final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, JAXBException, SQLException {
         this.shardingRuleType = shardingRuleType;
         this.databaseTypeEnvironment = databaseTypeEnvironment;
+        startUp();
+    }
+    
+    @Before
+    public void startUp() throws IOException, JAXBException, SQLException {
         if (databaseTypeEnvironment.isEnabled()) {
             dataSourceMap = createDataSourceMap(shardingRuleType);
             dataSource = createDataSource(dataSourceMap);
@@ -209,6 +216,8 @@ public abstract class BaseIntegrateTest {
     public void tearDown() {
         if (dataSource instanceof ShardingDataSource) {
             ((ShardingDataSource) dataSource).close();
+        } else if (dataSource instanceof MasterSlaveDataSource) {
+            ((MasterSlaveDataSource) dataSource).close();
         }
         DataSourceUtil.getCache().clear();
         ParsingResultCache.getInstance().clear();
