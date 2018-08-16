@@ -135,29 +135,29 @@ try (
 ### 基于Spring boot的规则配置
 
 ```properties
-sharding.jdbc.datasource.names=ds_master,ds_slave0,ds_slave1
+sharding.jdbc.datasource.names=master,slave0,slave1
 
-sharding.jdbc.datasource.ds-master.type=org.apache.commons.dbcp.BasicDataSource
-sharding.jdbc.datasource.ds-master.driver-class-name=com.mysql.jdbc.Driver
-sharding.jdbc.datasource.ds-master.url=jdbc:mysql://localhost:3306/ds_master
-sharding.jdbc.datasource.ds-master.username=root
-sharding.jdbc.datasource.ds-master.password=
+sharding.jdbc.datasource.master.type=org.apache.commons.dbcp.BasicDataSource
+sharding.jdbc.datasource.master.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.master.url=jdbc:mysql://localhost:3306/master
+sharding.jdbc.datasource.master.username=root
+sharding.jdbc.datasource.master.password=
 
-sharding.jdbc.datasource.ds-slave0.type=org.apache.commons.dbcp.BasicDataSource
-sharding.jdbc.datasource.ds-slave0.driver-class-name=com.mysql.jdbc.Driver
-sharding.jdbc.datasource.ds-slave0.url=jdbc:mysql://localhost:3306/ds_slave0
-sharding.jdbc.datasource.ds-slave0.username=root
-sharding.jdbc.datasource.ds-slave0.password=
+sharding.jdbc.datasource.slave0.type=org.apache.commons.dbcp.BasicDataSource
+sharding.jdbc.datasource.slave0.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.slave0.url=jdbc:mysql://localhost:3306/slave0
+sharding.jdbc.datasource.slave0.username=root
+sharding.jdbc.datasource.slave0.password=
 
-sharding.jdbc.datasource.ds-slave1.type=org.apache.commons.dbcp.BasicDataSource
-sharding.jdbc.datasource.ds-slave1.driver-class-name=com.mysql.jdbc.Driver
-sharding.jdbc.datasource.ds-slave1.url=jdbc:mysql://localhost:3306/ds_slave1
-sharding.jdbc.datasource.ds-slave1.username=root
-sharding.jdbc.datasource.ds-slave1.password=
+sharding.jdbc.datasource.slave1.type=org.apache.commons.dbcp.BasicDataSource
+sharding.jdbc.datasource.slave1.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.slave1.url=jdbc:mysql://localhost:3306/slave1
+sharding.jdbc.datasource.slave1.username=root
+sharding.jdbc.datasource.slave1.password=
 
-sharding.jdbc.config.masterslave.name=ds_ms
-sharding.jdbc.config.masterslave.master-data-source-name=ds_master
-sharding.jdbc.config.masterslave.slave-data-source-names=ds_slave0,ds_slave1
+sharding.jdbc.config.masterslave.name=ms
+sharding.jdbc.config.masterslave.master-data-source-name=master
+sharding.jdbc.config.masterslave.slave-data-source-names=slave0,slave1
 
 sharding.jdbc.config.masterslave.props.sql.show=true
 ```

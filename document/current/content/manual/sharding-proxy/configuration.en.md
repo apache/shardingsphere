@@ -60,7 +60,8 @@ shardingRule:
   defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
   
   props:
-    proxy.mode: CONNECTION_STRICTLY
+    connection.mode: MEMORY_STRICTLY
+    executor.size: 16
     sql.show: false
     
 proxyAuthority:
@@ -92,8 +93,7 @@ dataSources:
     maxLifetime: 1800000
     maximumPoolSize: 65 
     
-  ds_slave1: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
+  ds_slave1:
     url: jdbc:mysql://localhost:3306/ds_slave1
     username: root
     password:
@@ -111,7 +111,8 @@ masterSlaveRule:
     - ds_slave1
     
   props:
-    proxy.mode: CONNECTION_STRICTLY
+    connection.mode: MEMORY_STRICTLY
+    executor.size: 16
     sql.show: false
        
 proxyAuthority:
@@ -123,8 +124,7 @@ proxyAuthority:
 
 ```yaml
 dataSources:
-  ds0: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
+  ds0:
     url: jdbc:mysql://localhost:3306/ds0
     username: root
     password:
@@ -134,8 +134,7 @@ dataSources:
     maxLifetime: 1800000
     maximumPoolSize: 65 
     
-  ds0_slave0: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
+  ds0_slave0:
     url: jdbc:mysql://localhost:3306/ds0_slave0
     username: root
     password: 
@@ -145,8 +144,7 @@ dataSources:
     maxLifetime: 1800000
     maximumPoolSize: 65
           
-  ds0_slave1: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
+  ds0_slave1:
     url: jdbc:mysql://localhost:3306/ds0_slave1
     username: root
     password:
@@ -156,8 +154,7 @@ dataSources:
     maxLifetime: 1800000
     maximumPoolSize: 65
            
-  ds1: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
+  ds1:
     url: jdbc:mysql://localhost:3306/ds1
     username: root
     password: 
@@ -167,8 +164,7 @@ dataSources:
     maxLifetime: 1800000
     maximumPoolSize: 65
       
-  ds1_slave0: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
+  ds1_slave0:
     url: jdbc:mysql://localhost:3306/ds1_slave0
     username: root
     password: 
@@ -178,8 +174,7 @@ dataSources:
     maxLifetime: 1800000
     maximumPoolSize: 65
             
-  ds1_slave1: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
+  ds1_slave1:
     url: jdbc:mysql://localhost:3306/ds1_slave1
     username: root
     password:
@@ -236,13 +231,15 @@ shardingRule:
           master-slave-key1: master-slave-value1
 
   props:
-    proxy.mode: CONNECTION_STRICTLY
+    connection.mode: MEMORY_STRICTLY
+    executor.size: 16
     sql.show: false
-    
+
 proxyAuthority:
   username: root
   password:
 ```
+
 
 ### Orchestration by Zookeeper
 
@@ -296,7 +293,7 @@ dataSources: #Ignore data source configuration, same as sharding
 masterSlaveRule: #Ignore read-write splitting rule configuration, same as Sharding-JDBC
 ```
 
-### Proxy Mode
+### Proxy Properties
 
 ```yaml
   props:
@@ -304,7 +301,9 @@ masterSlaveRule: #Ignore read-write splitting rule configuration, same as Shardi
     #                  The benefit of this approach is saving memory for Proxy by Stream ResultSet.
     # CONNECTION_STRICTLY: Proxy will release connections after get the overall rows from the ResultSet.
     #                      Meanwhile, the cost of the memory will be increased.
-    proxy.mode: 
+    connection.mode: 
+    executor.size: # Max threads will connect to databases.The default value is available processors count.
+    sql.show: false
 ```
 
 ### Authorization for Proxy
@@ -315,15 +314,6 @@ To perform Authorization for Sharding Proxy when login in. After configuring the
 proxyAuthority:
    username: root
    password:
-```
-
-### ThreadPool
-
-To config the number of workding threads in thread pool.
-
-```yaml
-maxWorkingThreads: 200
-
 ```
 
 ### Orchestration by Zookeeper

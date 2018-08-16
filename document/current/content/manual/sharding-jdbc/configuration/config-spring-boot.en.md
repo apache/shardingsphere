@@ -43,87 +43,89 @@ sharding.jdbc.config.sharding.tables.t-order-item.key-generator-column-name=orde
 ### Read-write splitting
 
 ```properties
-sharding.jdbc.datasource.names=ds_master,ds_slave0,ds_slave1
+sharding.jdbc.datasource.names=master,slave0,slave1
 
-sharding.jdbc.datasource.ds-master.type=org.apache.commons.dbcp.BasicDataSource
-sharding.jdbc.datasource.ds-master.driver-class-name=com.mysql.jdbc.Driver
-sharding.jdbc.datasource.ds-master.url=jdbc:mysql://localhost:3306/ds_master
-sharding.jdbc.datasource.ds-master.username=root
-sharding.jdbc.datasource.ds-master.password=
+sharding.jdbc.datasource.master.type=org.apache.commons.dbcp.BasicDataSource
+sharding.jdbc.datasource.master.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.master.url=jdbc:mysql://localhost:3306/master
+sharding.jdbc.datasource.master.username=root
+sharding.jdbc.datasource.master.password=
 
-sharding.jdbc.datasource.ds-slave0.type=org.apache.commons.dbcp.BasicDataSource
-sharding.jdbc.datasource.ds-slave0.driver-class-name=com.mysql.jdbc.Driver
-sharding.jdbc.datasource.ds-slave0.url=jdbc:mysql://localhost:3306/ds_slave0
-sharding.jdbc.datasource.ds-slave0.username=root
-sharding.jdbc.datasource.ds-slave0.password=
+sharding.jdbc.datasource.slave0.type=org.apache.commons.dbcp.BasicDataSource
+sharding.jdbc.datasource.slave0.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.slave0.url=jdbc:mysql://localhost:3306/slave0
+sharding.jdbc.datasource.slave0.username=root
+sharding.jdbc.datasource.slave0.password=
 
-sharding.jdbc.datasource.ds-slave1.type=org.apache.commons.dbcp.BasicDataSource
-sharding.jdbc.datasource.ds-slave1.driver-class-name=com.mysql.jdbc.Driver
-sharding.jdbc.datasource.ds-slave1.url=jdbc:mysql://localhost:3306/ds_slave1
-sharding.jdbc.datasource.ds-slave1.username=root
-sharding.jdbc.datasource.ds-slave1.password=
+sharding.jdbc.datasource.slave1.type=org.apache.commons.dbcp.BasicDataSource
+sharding.jdbc.datasource.slave1.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.slave1.url=jdbc:mysql://localhost:3306/slave1
+sharding.jdbc.datasource.slave1.username=root
+sharding.jdbc.datasource.slave1.password=
 
 sharding.jdbc.config.masterslave.load-balance-algorithm-type=round_robin
-sharding.jdbc.config.masterslave.name=ds_ms
-sharding.jdbc.config.masterslave.master-data-source-name=ds_master
-sharding.jdbc.config.masterslave.slave-data-source-names=ds_slave0,ds_slave1
+sharding.jdbc.config.masterslave.name=ms
+sharding.jdbc.config.masterslave.master-data-source-name=master
+sharding.jdbc.config.masterslave.slave-data-source-names=slave0,slave1
+
+sharding.jdbc.config.masterslave.props.sql.show=true
 ```
 
 ### Sharding + Read-write splitting
 
 ```properties
-sharding.jdbc.datasource.names=ds_master0,ds_master1,ds_master0_slave0,ds_master0_slave1,ds_master1_slave0,ds_master1_slave1
+sharding.jdbc.datasource.names=master0,master1,master0slave0,master0slave1,master1slave0,master1slave1
 
-sharding.jdbc.datasource.d-master0.type=org.apache.commons.dbcp.BasicDataSource
-sharding.jdbc.datasource.d-master0.driver-class-name=com.mysql.jdbc.Driver
-sharding.jdbc.datasource.d-master0.url=jdbc:mysql://localhost:3306/ds_master0
-sharding.jdbc.datasource.d-master0.username=root
-sharding.jdbc.datasource.d-master0.password=
+sharding.jdbc.datasource.master0.type=org.apache.commons.dbcp.BasicDataSource
+sharding.jdbc.datasource.master0.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.master0.url=jdbc:mysql://localhost:3306/master0
+sharding.jdbc.datasource.master0.username=root
+sharding.jdbc.datasource.master0.password=
 
-sharding.jdbc.datasource.d-master0-slave0.type=org.apache.commons.dbcp.BasicDataSource
-sharding.jdbc.datasource.d-master0-slave0.driver-class-name=com.mysql.jdbc.Driver
-sharding.jdbc.datasource.d-master0-slave0.url=jdbc:mysql://localhost:3306/ds_master0_slave0
-sharding.jdbc.datasource.d-master0-slave0.username=root
-sharding.jdbc.datasource.d-master0-slave0.password=
-sharding.jdbc.datasource.d-master0-slave1.type=org.apache.commons.dbcp.BasicDataSource
-sharding.jdbc.datasource.d-master0-slave1.driver-class-name=com.mysql.jdbc.Driver
-sharding.jdbc.datasource.d-master0-slave1.url=jdbc:mysql://localhost:3306/ds_master0_slave1
-sharding.jdbc.datasource.d-master0-slave1.username=root
-sharding.jdbc.datasource.d-master0-slave1.password=
+sharding.jdbc.datasource.master0slave0.type=org.apache.commons.dbcp.BasicDataSource
+sharding.jdbc.datasource.master0slave0.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.master0slave0.url=jdbc:mysql://localhost:3306/master0slave0
+sharding.jdbc.datasource.master0slave0.username=root
+sharding.jdbc.datasource.master0slave0.password=
+sharding.jdbc.datasource.master0slave1.type=org.apache.commons.dbcp.BasicDataSource
+sharding.jdbc.datasource.master0slave1.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.master0slave1.url=jdbc:mysql://localhost:3306/master0slave1
+sharding.jdbc.datasource.master0slave1.username=root
+sharding.jdbc.datasource.master0slave1.password=
 
-sharding.jdbc.datasource.d-master1.type=org.apache.commons.dbcp.BasicDataSource
-sharding.jdbc.datasource.d-master1.driver-class-name=com.mysql.jdbc.Driver
-sharding.jdbc.datasource.d-master1.url=jdbc:mysql://localhost:3306/ds_master1
-sharding.jdbc.datasource.d-master1.username=root
-sharding.jdbc.datasource.d-master1.password=
+sharding.jdbc.datasource.master1.type=org.apache.commons.dbcp.BasicDataSource
+sharding.jdbc.datasource.master1.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.master1.url=jdbc:mysql://localhost:3306/master1
+sharding.jdbc.datasource.master1.username=root
+sharding.jdbc.datasource.master1.password=
 
-sharding.jdbc.datasource.d-master1-slave0.type=org.apache.commons.dbcp.BasicDataSource
-sharding.jdbc.datasource.d-master1-slave0.driver-class-name=com.mysql.jdbc.Driver
-sharding.jdbc.datasource.d-master1-slave0.url=jdbc:mysql://localhost:3306/ds_master1_slave0
-sharding.jdbc.datasource.d-master1-slave0.username=root
-sharding.jdbc.datasource.d-master1-slave0.password=
-sharding.jdbc.datasource.d-master1-slave1.type=org.apache.commons.dbcp.BasicDataSource
-sharding.jdbc.datasource.d-master1-slave1.driver-class-name=com.mysql.jdbc.Driver
-sharding.jdbc.datasource.d-master1-slave1.url=jdbc:mysql://localhost:3306/ds_master1_slave1
-sharding.jdbc.datasource.d-master1-slave1.username=root
-sharding.jdbc.datasource.d-master1-slave1.password=
+sharding.jdbc.datasource.master1slave0.type=org.apache.commons.dbcp.BasicDataSource
+sharding.jdbc.datasource.master1slave0.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.master1slave0.url=jdbc:mysql://localhost:3306/master1slave0
+sharding.jdbc.datasource.master1slave0.username=root
+sharding.jdbc.datasource.master1slave0.password=
+sharding.jdbc.datasource.master1slave1.type=org.apache.commons.dbcp.BasicDataSource
+sharding.jdbc.datasource.master1slave1.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.master1slave1.url=jdbc:mysql://localhost:3306/master1slave1
+sharding.jdbc.datasource.master1slave1.username=root
+sharding.jdbc.datasource.master1slave1.password=
 
 sharding.jdbc.config.sharding.default-database-strategy.inline.sharding-column=user_id
-sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-expression=ds$->{user_id % 2}
+sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-expression=master$->{user_id % 2}
 
-sharding.jdbc.config.sharding.tables.t-order.actual-data-nodes=ds$->{0..1}.t_order$->{0..1}
+sharding.jdbc.config.sharding.tables.t-order.actual-data-nodes=master$->{0..1}.t_order$->{0..1}
 sharding.jdbc.config.sharding.tables.t-order.table-strategy.inline.sharding-column=order_id
 sharding.jdbc.config.sharding.tables.t-order.table-strategy.inline.algorithm-expression=t_order$->{order_id % 2}
 sharding.jdbc.config.sharding.tables.t-order.key-generator-column-name=order_id
-sharding.jdbc.config.sharding.tables.t-order-item.actual-data-nodes=ds$->{0..1}.t_order_item$->{0..1}
+sharding.jdbc.config.sharding.tables.t-order-item.actual-data-nodes=master$->{0..1}.t_order_item$->{0..1}
 sharding.jdbc.config.sharding.tables.t-order-item.table-strategy.inline.sharding-column=order_id
 sharding.jdbc.config.sharding.tables.t-order-item.table-strategy.inline.algorithm-expression=t_order_item$->{order_id % 2}
 sharding.jdbc.config.sharding.tables.t-order-item.key-generator-column-name=order_item_id
 
-sharding.jdbc.config.sharding.master-slave-rules.ds0.master-data-source-name=ds_master0
-sharding.jdbc.config.sharding.master-slave-rules.ds0.slave-data-source-names=ds_master0_slave0, ds_master0_slave1
-sharding.jdbc.config.sharding.master-slave-rules.ds1.master-data-source-name=ds_master1
-sharding.jdbc.config.sharding.master-slave-rules.ds1.slave-data-source-names=ds_master1_slave0, ds_master1_slave1
+sharding.jdbc.config.sharding.master-slave-rules.ds0.master-data-source-name=master0
+sharding.jdbc.config.sharding.master-slave-rules.ds0.slave-data-source-names=master0slave0, master0slave1
+sharding.jdbc.config.sharding.master-slave-rules.ds1.master-data-source-name=master1
+sharding.jdbc.config.sharding.master-slave-rules.ds1.slave-data-source-names=master1slave0, master1slave1
 ```
 
 ### Orchestration by Zookeeper
@@ -150,14 +152,14 @@ sharding.jdbc.datasource.ds1.password=
 
 sharding.jdbc.config.sharding.default-data-source-name=ds
 sharding.jdbc.config.sharding.default-database-strategy.inline.sharding-column=user_id
-sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-inline-expression=ds$->{user_id % 2}
+sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-expression=ds$->{user_id % 2}
 sharding.jdbc.config.sharding.tables.t-order.actual-data-nodes=ds$->{0..1}.t_order$->{0..1}
 sharding.jdbc.config.sharding.tables.t-order.table-strategy.inline.sharding-column=order_id
-sharding.jdbc.config.sharding.tables.t-order.table-strategy.inline.algorithm-inline-expression=t_order$->{order_id % 2}
+sharding.jdbc.config.sharding.tables.t-order.table-strategy.inline.algorithm-expression=t_order$->{order_id % 2}
 sharding.jdbc.config.sharding.tables.t-order.key-generator-column-name=order_id
 sharding.jdbc.config.sharding.tables.t-order-item.actual-data-nodes=ds$->{0..1}.t_order_item$->{0..1}
 sharding.jdbc.config.sharding.tables.t-order-item.table-strategy.inline.sharding-column=order_id
-sharding.jdbc.config.sharding.tables.t-order-item.table-strategy.inline.algorithm-inline-expression=t_order_item$->{order_id % 2}
+sharding.jdbc.config.sharding.tables.t-order-item.table-strategy.inline.algorithm-expression=t_order_item$->{order_id % 2}
 sharding.jdbc.config.sharding.tables.t-order-item.key-generator-column-name=order_item_id
 
 sharding.jdbc.config.orchestration.name=spring_boot_ds_sharding
@@ -190,14 +192,14 @@ sharding.jdbc.datasource.ds1.password=
 
 sharding.jdbc.config.sharding.default-data-source-name=ds
 sharding.jdbc.config.sharding.default-database-strategy.inline.sharding-column=user_id
-sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-inline-expression=ds$->{user_id % 2}
+sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-expression=ds$->{user_id % 2}
 sharding.jdbc.config.sharding.tables.t-order.actual-data-nodes=ds$->{0..1}.t_order$->{0..1}
 sharding.jdbc.config.sharding.tables.t-order.table-strategy.inline.sharding-column=order_id
-sharding.jdbc.config.sharding.tables.t-order.table-strategy.inline.algorithm-inline-expression=t_order$->{order_id % 2}
+sharding.jdbc.config.sharding.tables.t-order.table-strategy.inline.algorithm-expression=t_order$->{order_id % 2}
 sharding.jdbc.config.sharding.tables.t-order.key-generator-column-name=order_id
 sharding.jdbc.config.sharding.tables.t-order-item.actual-data-nodes=ds$->{0..1}.t_order_item$->{0..1}
 sharding.jdbc.config.sharding.tables.t-order-item.table-strategy.inline.sharding-column=order_id
-sharding.jdbc.config.sharding.tables.t-order-item.table-strategy.inline.algorithm-inline-expression=t_order_item$->{order_id % 2}
+sharding.jdbc.config.sharding.tables.t-order-item.table-strategy.inline.algorithm-expression=t_order_item$->{order_id % 2}
 sharding.jdbc.config.sharding.tables.t-order-item.key-generator-column-name=order_item_id
 
 sharding.jdbc.config.orchestration.name=spring_boot_ds_sharding
@@ -234,7 +236,7 @@ sharding.jdbc.config.sharding.tables.<logic-table-name>.database-strategy.comple
 
 #Inline expression sharding scenario for si-gle s-arding column
 sharding.jdbc.config.sharding.tables.<logic-table-name>.database-strategy.inline.sharding-column= #Name of sharding column
-sharding.jdbc.config.sharding.tables.<logic-table-name>.database-strategy.inline.algorithm-inline-expression= #Inline expression for sharding algorithm
+sharding.jdbc.config.sharding.tables.<logic-table-name>.database-strategy.inline.algorithm-expression= #Inline expression for sharding algorithm
 
 #Hint sharding strategy
 sharding.jdbc.config.sharding.tables.<logic-table-name>.database-strategy.hint.algorithm-class-name= #Hint sharding algorithm class name. This class need to implements HintShardingAlgorithm, and require a no argument constructor

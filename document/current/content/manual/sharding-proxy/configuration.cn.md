@@ -9,6 +9,8 @@ weight = 2
 
 ### 数据分片
 
+dataSources:
+
 ```yaml
 dataSources:
   ds0: 
@@ -60,10 +62,9 @@ shardingRule:
   defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
   
   props:
-    proxy.mode: CONNECTION_STRICTLY
+    connection.mode: MEMORY_STRICTLY
+    executor.size: 16
     sql.show: false
-    
-maxWorkingThreads: 200
 
 proxyAuthority:
   username: root
@@ -94,8 +95,7 @@ dataSources:
     maxLifetime: 1800000
     maximumPoolSize: 65 
     
-  ds_slave1: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
+  ds_slave1:
     url: jdbc:mysql://localhost:3306/ds_slave1
     username: root
     password:
@@ -113,10 +113,9 @@ masterSlaveRule:
     - ds_slave1
     
   props:
-    proxy.mode: CONNECTION_STRICTLY
+    connection.mode: MEMORY_STRICTLY
+    executor.size: 16
     sql.show: false
-
-maxWorkingThreads: 200
 
 proxyAuthority:
   username: root
@@ -127,8 +126,7 @@ proxyAuthority:
 
 ```yaml
 dataSources:
-  ds0: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
+  ds0:
     url: jdbc:mysql://localhost:3306/ds0
     username: root
     password:
@@ -138,8 +136,7 @@ dataSources:
     maxLifetime: 1800000
     maximumPoolSize: 65 
     
-  ds0_slave0: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
+  ds0_slave0:
     url: jdbc:mysql://localhost:3306/ds0_slave0
     username: root
     password: 
@@ -149,8 +146,7 @@ dataSources:
     maxLifetime: 1800000
     maximumPoolSize: 65
           
-  ds0_slave1: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
+  ds0_slave1:
     url: jdbc:mysql://localhost:3306/ds0_slave1
     username: root
     password:
@@ -160,8 +156,7 @@ dataSources:
     maxLifetime: 1800000
     maximumPoolSize: 65
            
-  ds1: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
+  ds1:
     url: jdbc:mysql://localhost:3306/ds1
     username: root
     password: 
@@ -171,8 +166,7 @@ dataSources:
     maxLifetime: 1800000
     maximumPoolSize: 65
       
-  ds1_slave0: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
+  ds1_slave0:
     url: jdbc:mysql://localhost:3306/ds1_slave0
     username: root
     password: 
@@ -182,8 +176,7 @@ dataSources:
     maxLifetime: 1800000
     maximumPoolSize: 65
             
-  ds1_slave1: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
+  ds1_slave1:
     url: jdbc:mysql://localhost:3306/ds1_slave1
     username: root
     password:
@@ -240,11 +233,10 @@ shardingRule:
           master-slave-key1: master-slave-value1
 
   props:
-    proxy.mode: CONNECTION_STRICTLY
+    connection.mode: MEMORY_STRICTLY
+    executor.size: 16
     sql.show: false
-    
-maxWorkingThreads: 200
-   
+
 proxyAuthority:
   username: root
   password:
@@ -303,7 +295,7 @@ dataSources: #省略数据源配置，与数据分片一致
 masterSlaveRule: #省略读写分离配置，与Sharding-JDBC配置一致
 ```
 
-### 代理模式
+### Proxy属性
 
 ```yaml
   props:
@@ -311,7 +303,9 @@ masterSlaveRule: #省略读写分离配置，与Sharding-JDBC配置一致
     #                  这种方式的好处是利用流式ResultSet来节省内存.
     # CONNECTION_STRICTLY: 代理在取出ResultSet中的所有数据后会释放连接.
     #                      同时，内存的消耗将会增加.
-    proxy.mode: 
+    connection.mode: 
+    executor.size: 用于设置连接池工作线程个数，默认为CPU核数
+    sql.show: false
 ```
 
 ### 权限验证
@@ -322,15 +316,6 @@ masterSlaveRule: #省略读写分离配置，与Sharding-JDBC配置一致
 proxyAuthority:
    username: root
    password:
-```
-
-### 连接池设置
-
-用于设置连接池工作线程个数。
-
-```yaml
-maxWorkingThreads: 200
-
 ```
 
 ### 使用Zookeeper的数据治理
