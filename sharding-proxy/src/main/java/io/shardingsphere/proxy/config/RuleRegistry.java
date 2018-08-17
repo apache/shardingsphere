@@ -131,7 +131,7 @@ public final class RuleRegistry {
     }
     
     /**
-     * Initialize rule registry.
+     * Initialize sharding meta data.
      *
      * @param executorService executor service
      */
