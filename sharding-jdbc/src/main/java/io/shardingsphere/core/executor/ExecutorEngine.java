@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.executor;
 
+import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.executor.event.overall.OverallExecutionEvent;
 import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
@@ -25,8 +26,10 @@ import lombok.Getter;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * SQL execute engine.
@@ -36,32 +39,33 @@ import java.util.List;
  * @author maxiaoguang
  * @author panjuan
  */
-public abstract class ExecutorEngine implements AutoCloseable {
+public final class ExecutorEngine implements AutoCloseable {
     
     @Getter
     private final ShardingExecuteEngine shardingExecuteEngine;
     
-    public ExecutorEngine(final int executorSize) {
+    private final ConnectionMode connectionMode;
+    
+    public ExecutorEngine(final int executorSize, final ConnectionMode connectionMode) {
         shardingExecuteEngine = new ShardingExecuteEngine(executorSize);
+        this.connectionMode = connectionMode;
     }
     
     /**
      * Execute.
      *
-     * @param baseStatementUnits statement execute unitS
+     * @param baseStatementUnits statement execute units
      * @param executeCallback prepared statement execute callback
      * @param <T> class type of return value
      * @return execute result
      * @throws SQLException SQL exception
      */
     public <T> List<T> execute(final Collection<? extends BaseStatementUnit> baseStatementUnits, final ExecuteCallback<T> executeCallback) throws SQLException {
-        if (baseStatementUnits.isEmpty()) {
-            return Collections.emptyList();
-        }
         OverallExecutionEvent event = new OverallExecutionEvent(executeCallback.getSqlType(), baseStatementUnits.size() > 1);
         ShardingEventBusInstance.getInstance().post(event);
         try {
-            List<T> result = getExecuteResults(new LinkedList<>(baseStatementUnits), executeCallback);
+            List<T> result = ConnectionMode.MEMORY_STRICTLY == connectionMode ? shardingExecuteEngine.execute(new LinkedList<>(baseStatementUnits), executeCallback)
+                    : shardingExecuteEngine.groupExecute(getBaseStatementUnitGroups(baseStatementUnits), executeCallback);
             event.setExecuteSuccess();
             return result;
             // CHECKSTYLE:OFF
@@ -75,10 +79,20 @@ public abstract class ExecutorEngine implements AutoCloseable {
         }
     }
     
-    protected abstract <T> List<T> getExecuteResults(Collection<BaseStatementUnit> baseStatementUnits, ExecuteCallback<T> executeCallback) throws Exception;
+    private Map<String, Collection<BaseStatementUnit>> getBaseStatementUnitGroups(final Collection<? extends BaseStatementUnit> baseStatementUnits) {
+        Map<String, Collection<BaseStatementUnit>> result = new LinkedHashMap<>(baseStatementUnits.size(), 1);
+        for (BaseStatementUnit each : baseStatementUnits) {
+            String dataSourceName = each.getSqlExecutionUnit().getDataSource();
+            if (!result.keySet().contains(dataSourceName)) {
+                result.put(dataSourceName, new LinkedList<BaseStatementUnit>());
+            }
+            result.get(dataSourceName).add(each);
+        }
+        return result;
+    }
     
     @Override
-    public final void close() {
+    public void close() {
         shardingExecuteEngine.close();
     }
 }

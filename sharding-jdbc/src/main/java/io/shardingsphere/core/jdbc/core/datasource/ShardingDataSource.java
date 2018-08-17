@@ -25,8 +25,6 @@ import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.executor.ExecutorEngine;
-import io.shardingsphere.core.executor.type.connection.ConnectionStrictlyExecutorEngine;
-import io.shardingsphere.core.executor.type.memory.MemoryStrictlyExecutorEngine;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
@@ -74,7 +72,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         ConnectionMode connectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
-        executorEngine = ConnectionMode.MEMORY_STRICTLY == connectionMode ? new MemoryStrictlyExecutorEngine(executorSize) : new ConnectionStrictlyExecutorEngine(executorSize);
+        executorEngine = new ExecutorEngine(executorSize, connectionMode);
         ShardingMetaData shardingMetaData = new ShardingMetaData(getDataSourceURLs(dataSourceMap), shardingRule, getDatabaseType(), 
                 executorEngine.getShardingExecuteEngine().getExecutorService(), new JDBCTableMetaDataConnectionManager(dataSourceMap));
         boolean showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
@@ -112,7 +110,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         ConnectionMode newConnectionMode = ConnectionMode.valueOf(newShardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
         if (originalExecutorSize != newExecutorSize || originalConnectionMode != newConnectionMode) {
             ExecutorEngine originalExecutorEngine = executorEngine;
-            executorEngine = ConnectionMode.MEMORY_STRICTLY == newConnectionMode ? new MemoryStrictlyExecutorEngine(newExecutorSize) : new ConnectionStrictlyExecutorEngine(newExecutorSize);
+            executorEngine = new ExecutorEngine(newExecutorSize, newConnectionMode);
             originalExecutorEngine.close();
         }
         shardingProperties = newShardingProperties;

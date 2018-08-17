@@ -17,6 +17,7 @@
 
 package io.shardingsphere.opentracing.listener.execution;
 
+import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.BaseStatementUnit;
 import io.shardingsphere.core.executor.ExecuteCallback;
@@ -25,7 +26,6 @@ import io.shardingsphere.core.executor.JDBCExecuteCallback;
 import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.core.executor.type.batch.BatchPreparedStatementUnit;
-import io.shardingsphere.core.executor.type.memory.MemoryStrictlyExecutorEngine;
 import io.shardingsphere.core.executor.type.statement.StatementUnit;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLUnit;
@@ -49,7 +49,7 @@ import static org.mockito.Mockito.when;
 
 public final class ExecuteEventListenerTest extends BaseEventListenerTest {
     
-    private final ExecutorEngine executorEngine = new MemoryStrictlyExecutorEngine(5);
+    private final ExecutorEngine executorEngine = new ExecutorEngine(5, ConnectionMode.MEMORY_STRICTLY);
     
     @Test
     public void assertSingleStatement() throws SQLException {
