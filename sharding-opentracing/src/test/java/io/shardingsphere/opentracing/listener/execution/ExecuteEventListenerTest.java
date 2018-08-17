@@ -22,7 +22,6 @@ import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.BaseStatementUnit;
 import io.shardingsphere.core.executor.SQLExecuteCallback;
 import io.shardingsphere.core.executor.SQLExecutorEngine;
-import io.shardingsphere.core.executor.JDBCExecutor;
 import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.core.executor.type.batch.BatchPreparedStatementUnit;
@@ -57,13 +56,13 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
         when(statement.getConnection()).thenReturn(mock(Connection.class));
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<>(SQLType.DML, isExceptionThrown, dataMap, new JDBCExecutor<Integer>() {
-        
+        SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(SQLType.DML, isExceptionThrown, dataMap) {
+            
             @Override
-            public Integer execute(final BaseStatementUnit baseStatementUnit) {
+            protected Integer executeSQL(final BaseStatementUnit baseStatementUnit) {
                 return 0;
             }
-        });
+        };
         executorEngine.execute(Collections.singleton(
                 new StatementUnit(new SQLExecutionUnit("ds_0", new SQLUnit("insert into ...", Collections.singletonList(Collections.<Object>singletonList(1)))), statement)), executeCallback);
         assertThat(getTracer().finishedSpans().size(), is(2));
@@ -80,13 +79,13 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
         statementUnitList.add(new StatementUnit(new SQLExecutionUnit("ds_0", new SQLUnit("insert into ...", Collections.singletonList(Collections.<Object>singletonList(1)))), stm2));
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<>(SQLType.DML, isExceptionThrown, dataMap, new JDBCExecutor<Integer>() {
-        
+        SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(SQLType.DML, isExceptionThrown, dataMap) {
+            
             @Override
-            public Integer execute(final BaseStatementUnit baseStatementUnit) {
+            protected Integer executeSQL(final BaseStatementUnit baseStatementUnit) {
                 return 0;
             }
-        });
+        };
         executorEngine.execute(statementUnitList, executeCallback);
         assertThat(getTracer().finishedSpans().size(), is(3));
     }
@@ -103,13 +102,13 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
         statementUnitList.add(new BatchPreparedStatementUnit(new SQLExecutionUnit("ds_1", new SQLUnit("insert into ...", parameterSets)), preparedStatement2));
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<>(SQLType.DML, isExceptionThrown, dataMap, new JDBCExecutor<Integer>() {
-        
+        SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(SQLType.DML, isExceptionThrown, dataMap) {
+            
             @Override
-            public Integer execute(final BaseStatementUnit baseStatementUnit) {
+            protected Integer executeSQL(final BaseStatementUnit baseStatementUnit) {
                 return 0;
             }
-        });
+        };
         executorEngine.execute(statementUnitList, executeCallback);
         assertThat(getTracer().finishedSpans().size(), is(3));
     }
@@ -120,13 +119,13 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
         when(statement.getConnection()).thenReturn(mock(Connection.class));
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<>(SQLType.DQL, isExceptionThrown, dataMap, new JDBCExecutor<Integer>() {
-        
+        SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(SQLType.DQL, isExceptionThrown, dataMap) {
+            
             @Override
-            public Integer execute(final BaseStatementUnit baseStatementUnit) throws SQLException {
+            protected Integer executeSQL(final BaseStatementUnit baseStatementUnit) throws SQLException {
                 throw new SQLException();
             }
-        });
+        };
         executorEngine.execute(Collections.singleton(
                 new StatementUnit(new SQLExecutionUnit("ds_0", new SQLUnit("select ...", Collections.singletonList(Collections.<Object>singletonList(1)))), statement)), executeCallback);
     }

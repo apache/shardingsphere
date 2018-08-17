@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.executor.fixture;
 
-import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.event.ShardingEventType;
 
 import java.util.List;
@@ -33,8 +32,6 @@ public interface EventCaller {
     void verifyEventExecutionType(ShardingEventType eventType);
     
     void verifyException(Exception exp);
-    
-    void verifySQLType(SQLType sqlType);
     
     void verifyIsParallelExecute(boolean isParallelExecute);
 }
