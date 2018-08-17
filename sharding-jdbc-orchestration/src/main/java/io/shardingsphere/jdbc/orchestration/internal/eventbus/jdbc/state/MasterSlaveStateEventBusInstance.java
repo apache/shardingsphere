@@ -22,7 +22,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Master slave event bus instance.
+ * Master slave state event bus instance.
  *
  * @author panjuan
  */

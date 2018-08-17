@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * JDBC event bus event.
+ * JDBC state event bus event.
  *
  * @author panjuan
  */

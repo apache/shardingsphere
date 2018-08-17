@@ -22,7 +22,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Sharding event bus instance.
+ * Sharding state event bus instance.
  *
  * @author panjuan
  */
