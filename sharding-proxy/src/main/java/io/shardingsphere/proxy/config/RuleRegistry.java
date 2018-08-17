@@ -187,4 +187,23 @@ public final class RuleRegistry {
         circuitBreakerDataSourceNames = jdbcCircuitEventBusEvent.getCircuitBreakerDataSourceNames();
     }
     
+    /**
+     * Get available data source map.
+     *
+     * @return available data source map
+     */
+    public Map<String, DataSourceParameter> getDataSourceConfigurationMap() {
+        if (!getDisabledDataSourceNames().isEmpty()) {
+            return getAvailableDataSourceConfigurationMap();
+        }
+        return dataSourceConfigurationMap;
+    }
+    
+    private Map<String, DataSourceParameter> getAvailableDataSourceConfigurationMap() {
+        Map<String, DataSourceParameter> result = new LinkedHashMap<>(dataSourceConfigurationMap);
+        for (String each : disabledDataSourceNames) {
+            result.remove(each);
+        }
+        return result;
+    }
 }
