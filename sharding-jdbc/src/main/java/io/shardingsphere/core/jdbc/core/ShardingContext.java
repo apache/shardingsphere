@@ -29,8 +29,6 @@ import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.circuit
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.disabled.JdbcDisabledEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
 import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -46,28 +44,59 @@ import java.util.Map;
  * @author gaohongtao
  * @author panjuan
  */
-@RequiredArgsConstructor
 @Getter
 public final class ShardingContext {
     
-    private final Map<String, DataSource> dataSourceMap;
+    private Map<String, DataSource> dataSourceMap;
     
-    private final ShardingRule shardingRule;
+    private ShardingRule shardingRule;
     
-    private final DatabaseType databaseType;
+    private DatabaseType databaseType;
     
-    private final ExecutorEngine executorEngine;
+    private ExecutorEngine executorEngine;
     
-    @NonNull
     private ShardingMetaData metaData;
     
-    private final ConnectionMode connectionMode;
+    private ConnectionMode connectionMode;
     
-    private final boolean showSQL;
+    private boolean showSQL;
     
     private Collection<String> disabledDataSourceNames = new LinkedList<>();
     
     private Collection<String> circuitBreakerDataSourceNames = new LinkedList<>();
+    
+    public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ExecutorEngine executorEngine,
+                           final ConnectionMode connectionMode, final boolean showSQL) {
+        init(dataSourceMap, shardingRule, databaseType, executorEngine, connectionMode, showSQL);
+    }
+    
+    private void init(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ExecutorEngine executorEngine,
+                      final ConnectionMode connectionMode, final boolean showSQL) {
+        this.dataSourceMap = dataSourceMap;
+        this.shardingRule = shardingRule;
+        this.executorEngine = executorEngine;
+        this.databaseType = databaseType;
+        this.connectionMode = connectionMode;
+        this.showSQL = showSQL;
+        metaData = new ShardingMetaData(
+                getDataSourceURLs(getDataSourceMap()), shardingRule, getDatabaseType(), executorEngine.getExecutorService(), new JDBCTableMetaDataConnectionManager(getDataSourceMap()));
+    }
+    
+    /**
+     * Renew sharding context.
+     *
+     * @param dataSourceMap data source map
+     * @param shardingRule sharding rule
+     * @param databaseType data type
+     * @param executorEngine executor engine
+     * @param connectionMode connection mode
+     * @param showSQL show sql
+     */
+    @Subscribe
+    public void renew(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ExecutorEngine executorEngine,
+                      final ConnectionMode connectionMode, final boolean showSQL) {
+        init(dataSourceMap, shardingRule, databaseType, executorEngine, connectionMode, showSQL);
+    }
     
     /**
      * Renew disable dataSource names.
