@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.jdbc.core.datasource;
 
+import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.api.ConfigMapContext;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
@@ -24,6 +25,8 @@ import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.connection.MasterSlaveConnection;
 import io.shardingsphere.core.rule.MasterSlaveRule;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.JDBCEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.JDBCEventBusInstance;
 import lombok.Getter;
 
 import javax.sql.DataSource;
@@ -51,6 +54,10 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
     
     private ShardingProperties shardingProperties;
     
+    private Collection<String> disabledDataSourceNames = new LinkedList<>();
+    
+    private Collection<String> circuitBreakerDataSourceNames = new LinkedList<>();
+    
     public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
                                  final Map<String, Object> configMap, final Properties props) throws SQLException {
         super(getAllDataSources(dataSourceMap, masterSlaveRuleConfig.getMasterDataSourceName(), masterSlaveRuleConfig.getSlaveDataSourceNames()));
@@ -60,6 +67,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
             ConfigMapContext.getInstance().getMasterSlaveConfig().putAll(configMap);
         }
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
+        JDBCEventBusInstance.getInstance().register(this);
     }
     
     private static Collection<DataSource> getAllDataSources(final Map<String, DataSource> dataSourceMap, final String masterDataSourceName, final Collection<String> slaveDataSourceNames) {
@@ -124,5 +132,25 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
      */
     public boolean showSQL() {
         return shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
+    }
+    
+    /**
+     * Renew disable dataSource names.
+     *
+     * @param jdbcEventBusEvent jdbc event bus event
+     */
+    @Subscribe
+    public void renewDisabledDataSourceNames(final JDBCEventBusEvent jdbcEventBusEvent) {
+        disabledDataSourceNames = jdbcEventBusEvent.getDisabledDataSourceNames();
+    }
+    
+    /**
+     * Renew circuit breaker dataSource names.
+     *
+     * @param jdbcEventBusEvent jdbc event bus event
+     */
+    @Subscribe
+    public void renewCircuitBreakerDataSourceNames(final JDBCEventBusEvent jdbcEventBusEvent) {
+        circuitBreakerDataSourceNames = jdbcEventBusEvent.getCircuitBreakerDataSource();
     }
 }
