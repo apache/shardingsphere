@@ -30,7 +30,7 @@ import java.util.LinkedList;
  */
 @RequiredArgsConstructor
 @Getter
-public final class JDBCEventBusEvent {
+public final class ShardingEventBusEvent {
     
     private final Collection<String> disabledDataSourceNames = new LinkedList<>();
     

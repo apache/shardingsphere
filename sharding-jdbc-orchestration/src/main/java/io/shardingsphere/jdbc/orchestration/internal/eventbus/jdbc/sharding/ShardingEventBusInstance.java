@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JDBCEventBusInstance {
+public final class ShardingEventBusInstance {
     
     private static final EventBus INSTANCE = new EventBus();
     
