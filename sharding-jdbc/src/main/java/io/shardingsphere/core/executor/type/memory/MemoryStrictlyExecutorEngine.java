@@ -57,7 +57,7 @@ public final class MemoryStrictlyExecutorEngine extends ExecutorEngine {
                 
                 @Override
                 public T call() throws Exception {
-                    return executeInternal(each, executeCallback);
+                    return executeCallback.execute(each);
                 }
             }));
         }
@@ -65,7 +65,7 @@ public final class MemoryStrictlyExecutorEngine extends ExecutorEngine {
     }
     
     private <T> T syncExecute(final BaseStatementUnit baseStatementUnit, final ExecuteCallback<T> executeCallback) throws Exception {
-        return executeInternal(baseStatementUnit, executeCallback);
+        return executeCallback.execute(baseStatementUnit);
     }
     
     private <T> List<T> getResultList(final T firstOutput, final Collection<ListenableFuture<T>> restResultFutures) throws ExecutionException, InterruptedException {

@@ -22,9 +22,6 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.executor.event.overall.OverallExecutionEvent;
-import io.shardingsphere.core.executor.event.sql.SQLExecutionEvent;
-import io.shardingsphere.core.executor.event.sql.SQLExecutionEventFactory;
-import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +29,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -76,7 +72,7 @@ public abstract class ExecutorEngine implements AutoCloseable {
         if (baseStatementUnits.isEmpty()) {
             return Collections.emptyList();
         }
-        OverallExecutionEvent event = new OverallExecutionEvent(executeCallback.getSQLType(), baseStatementUnits.size() > 1);
+        OverallExecutionEvent event = new OverallExecutionEvent(executeCallback.getSqlType(), baseStatementUnits.size() > 1);
         shardingEventBus.post(event);
         try {
             List<T> result = getExecuteResults(baseStatementUnits, executeCallback);
@@ -94,34 +90,6 @@ public abstract class ExecutorEngine implements AutoCloseable {
     }
     
     protected abstract <T> List<T> getExecuteResults(Collection<? extends BaseStatementUnit> baseStatementUnits, ExecuteCallback<T> executeCallback) throws Exception;
-    
-    protected final <T> T executeInternal(
-            final BaseStatementUnit baseStatementUnit, final ExecuteCallback<T> executeCallback) throws Exception {
-        T result;
-        ExecutorExceptionHandler.setExceptionThrown(executeCallback.isExceptionThrown());
-        ExecutorDataMap.setDataMap(executeCallback.getDataMap());
-        List<SQLExecutionEvent> events = new LinkedList<>();
-        for (List<Object> each : baseStatementUnit.getSqlExecutionUnit().getSqlUnit().getParameterSets()) {
-            SQLExecutionEvent event = SQLExecutionEventFactory.createEvent(executeCallback.getSQLType(), baseStatementUnit, each);
-            events.add(event);
-            shardingEventBus.post(event);
-        }
-        try {
-            result = executeCallback.execute(baseStatementUnit);
-            for (SQLExecutionEvent each : events) {
-                each.setExecuteSuccess();
-                shardingEventBus.post(each);
-            }
-            return result;
-        } catch (final SQLException ex) {
-            for (SQLExecutionEvent each : events) {
-                each.setExecuteFailure(ex);
-                shardingEventBus.post(each);
-                ExecutorExceptionHandler.handleException(ex);
-            }
-            return null;
-        }
-    }
     
     @Override
     public final void close() {

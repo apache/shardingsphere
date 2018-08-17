@@ -21,6 +21,7 @@ import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.BaseStatementUnit;
 import io.shardingsphere.core.executor.ExecuteCallback;
 import io.shardingsphere.core.executor.ExecutorEngine;
+import io.shardingsphere.core.executor.JDBCExecuteCallback;
 import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
 import lombok.RequiredArgsConstructor;
@@ -58,28 +59,14 @@ public final class StatementExecutor {
     public List<ResultSet> executeQuery() throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        return executorEngine.execute(statementUnits, new ExecuteCallback<ResultSet>() {
-            
+        ExecuteCallback<ResultSet> executeCallback = new ExecuteCallback<>(sqlType, isExceptionThrown, dataMap, new JDBCExecuteCallback<ResultSet>() {
+        
             @Override
-            public ResultSet execute(final BaseStatementUnit baseStatementUnit) throws Exception {
+            public ResultSet execute(final BaseStatementUnit baseStatementUnit) throws SQLException {
                 return baseStatementUnit.getStatement().executeQuery(baseStatementUnit.getSqlExecutionUnit().getSqlUnit().getSql());
             }
-            
-            @Override
-            public SQLType getSQLType() {
-                return sqlType;
-            }
-            
-            @Override
-            public boolean isExceptionThrown() {
-                return isExceptionThrown;
-            }
-            
-            @Override
-            public Map<String, Object> getDataMap() {
-                return dataMap;
-            }
         });
+        return executorEngine.execute(statementUnits, executeCallback);
     }
     
     /**
@@ -152,28 +139,14 @@ public final class StatementExecutor {
     private int executeUpdate(final Updater updater) throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        List<Integer> results = executorEngine.execute(statementUnits, new ExecuteCallback<Integer>() {
-            
+        ExecuteCallback<Integer> executeCallback = new ExecuteCallback<>(sqlType, isExceptionThrown, dataMap, new JDBCExecuteCallback<Integer>() {
+        
             @Override
-            public Integer execute(final BaseStatementUnit baseStatementUnit) throws Exception {
+            public Integer execute(final BaseStatementUnit baseStatementUnit) throws SQLException {
                 return updater.executeUpdate(baseStatementUnit.getStatement(), baseStatementUnit.getSqlExecutionUnit().getSqlUnit().getSql());
             }
-            
-            @Override
-            public SQLType getSQLType() {
-                return sqlType;
-            }
-            
-            @Override
-            public boolean isExceptionThrown() {
-                return isExceptionThrown;
-            }
-            
-            @Override
-            public Map<String, Object> getDataMap() {
-                return dataMap;
-            }
         });
+        List<Integer> results = executorEngine.execute(statementUnits, executeCallback);
         return accumulate(results);
     }
     
@@ -255,28 +228,14 @@ public final class StatementExecutor {
     private boolean execute(final Executor executor) throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        List<Boolean> result = executorEngine.execute(statementUnits, new ExecuteCallback<Boolean>() {
-            
+        ExecuteCallback<Boolean> executeCallback = new ExecuteCallback<>(sqlType, isExceptionThrown, dataMap, new JDBCExecuteCallback<Boolean>() {
+        
             @Override
             public Boolean execute(final BaseStatementUnit baseStatementUnit) throws SQLException {
                 return executor.execute(baseStatementUnit.getStatement(), baseStatementUnit.getSqlExecutionUnit().getSqlUnit().getSql());
             }
-            
-            @Override
-            public SQLType getSQLType() {
-                return sqlType;
-            }
-            
-            @Override
-            public boolean isExceptionThrown() {
-                return isExceptionThrown;
-            }
-            
-            @Override
-            public Map<String, Object> getDataMap() {
-                return dataMap;
-            }
         });
+        List<Boolean> result = executorEngine.execute(statementUnits, executeCallback);
         if (null == result || result.isEmpty() || null == result.get(0)) {
             return false;
         }
