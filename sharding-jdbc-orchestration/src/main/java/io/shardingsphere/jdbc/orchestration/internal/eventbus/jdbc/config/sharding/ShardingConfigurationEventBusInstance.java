@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.config;
+package io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.config.sharding;
 
 import com.google.common.eventbus.EventBus;
 import lombok.AccessLevel;

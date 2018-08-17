@@ -15,28 +15,28 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.config;
+package io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.config.sharding;
 
-import com.google.common.eventbus.EventBus;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import io.shardingsphere.core.rule.ShardingRule;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import javax.sql.DataSource;
+import java.util.Map;
+import java.util.Properties;
 
 /**
- * Master slave config event bus instance.
+ * Sharding config event bus event.
  *
  * @author panjuan
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MasterSlaveConfigurationEventBusInstance {
+@RequiredArgsConstructor
+@Getter
+public final class ShardingConfigurationEventBusEvent {
     
-    private static final EventBus INSTANCE = new EventBus();
+    private final Map<String, DataSource> dataSourceMap;
     
-    /**
-     * Get event bus instance.
-     *
-     * @return event bus instance
-     */
-    public static EventBus getInstance() {
-        return INSTANCE;
-    }
+    private final ShardingRule shardingRule;
+    
+    private final Properties props;
 }
