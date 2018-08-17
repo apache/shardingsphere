@@ -40,7 +40,7 @@ public final class OverallExecuteEventListener extends OpenTracingListener<Overa
 
     private static final String OPERATION_NAME_PREFIX = "/SHARDING-SPHERE/EXECUTE/";
 
-    private static final ThreadLocal<ActiveSpan> span = new ThreadLocal<>();
+    private static final ThreadLocal<ActiveSpan> SPAN = new ThreadLocal<>();
     
     /**
      * Listen overall sql execution event.
@@ -56,7 +56,7 @@ public final class OverallExecuteEventListener extends OpenTracingListener<Overa
     @Override
     protected void beforeExecute(final OverallExecutionEvent event) {
         ActiveSpan activeSpan = ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX + event.getSqlType().name()).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).startActive();
-        span.set(activeSpan);
+        SPAN.set(activeSpan);
         if (event.isParallelExecute()) {
             ExecutorDataMap.getDataMap().put(SNAPSHOT_DATA_KEY, activeSpan.capture());
         }
@@ -64,13 +64,13 @@ public final class OverallExecuteEventListener extends OpenTracingListener<Overa
     
     @Override
     protected void tracingFinish() {
-        span.get().deactivate();
-        span.remove();
+        SPAN.get().deactivate();
+        SPAN.remove();
     }
     
     @Override
     protected ActiveSpan getFailureSpan() {
-        return span.get();
+        return SPAN.get();
     }
     
     /**
@@ -79,6 +79,6 @@ public final class OverallExecuteEventListener extends OpenTracingListener<Overa
      * @return sql execute event in this overall event thread or not.
      */
     public static boolean isTrunkThread() {
-        return span.get() != null;
+        return null != SPAN.get();
     }
 }
