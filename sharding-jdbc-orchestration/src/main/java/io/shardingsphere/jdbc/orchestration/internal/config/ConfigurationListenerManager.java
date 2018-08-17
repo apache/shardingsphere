@@ -18,10 +18,9 @@
 package io.shardingsphere.jdbc.orchestration.internal.config;
 
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.config.masterslave.MasterSlaveConfigurationEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.config.masterslave.MasterSlaveConfigurationEventBusInstance;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.config.sharding.ShardingConfigurationEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.config.sharding.ShardingConfigurationEventBusInstance;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.config.JdbcConfigurationEventBusInstance;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.config.MasterSlaveConfigurationEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.config.ShardingConfigurationEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.proxy.ProxyEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.proxy.ProxyEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.listener.ListenerManager;
@@ -73,7 +72,7 @@ public final class ConfigurationListenerManager implements ListenerManager {
                     Map<String, DataSource> dataSourceMap = dataSourceService.getAvailableDataSources();
                     ShardingConfigurationEventBusEvent shardingEvent = new ShardingConfigurationEventBusEvent(dataSourceMap,
                             new ShardingRule(dataSourceService.getAvailableShardingRuleConfiguration(), dataSourceMap.keySet()), configService.loadShardingProperties());
-                    ShardingConfigurationEventBusInstance.getInstance().post(shardingEvent);
+                    JdbcConfigurationEventBusInstance.getInstance().post(shardingEvent);
                 }
             }
         });
@@ -94,7 +93,7 @@ public final class ConfigurationListenerManager implements ListenerManager {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
                     MasterSlaveConfigurationEventBusEvent masterSlaveEvent = new MasterSlaveConfigurationEventBusEvent(dataSourceService.getAvailableDataSources(),
                             dataSourceService.getAvailableMasterSlaveRuleConfiguration());
-                    MasterSlaveConfigurationEventBusInstance.getInstance().post(masterSlaveEvent);
+                    JdbcConfigurationEventBusInstance.getInstance().post(masterSlaveEvent);
                 }
             }
         });
