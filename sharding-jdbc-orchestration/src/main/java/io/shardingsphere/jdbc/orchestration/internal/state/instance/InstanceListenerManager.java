@@ -17,8 +17,6 @@
 
 package io.shardingsphere.jdbc.orchestration.internal.state.instance;
 
-import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.JDBCStateEventBusEvent;
@@ -56,7 +54,7 @@ public final class InstanceListenerManager implements ListenerManager {
     }
     
     @Override
-    public void start(final ShardingDataSource shardingDataSource) {
+    public void shardingStart() {
         regCenter.watch(stateNode.getInstancesNodeFullPath(OrchestrationInstance.getInstance().getInstanceId()), new EventListener() {
             
             @Override
@@ -71,7 +69,7 @@ public final class InstanceListenerManager implements ListenerManager {
     }
     
     @Override
-    public void start(final MasterSlaveDataSource masterSlaveDataSource) {
+    public void masterSlaveStart() {
         regCenter.watch(stateNode.getInstancesNodeFullPath(OrchestrationInstance.getInstance().getInstanceId()), new EventListener() {
             
             @Override
@@ -86,7 +84,7 @@ public final class InstanceListenerManager implements ListenerManager {
     }
     
     @Override
-    public void start() {
+    public void proxyStart() {
         regCenter.watch(stateNode.getInstancesNodeFullPath(OrchestrationInstance.getInstance().getInstanceId()), new EventListener() {
             
             @Override
