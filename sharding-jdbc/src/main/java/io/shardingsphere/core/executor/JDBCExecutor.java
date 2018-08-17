@@ -26,7 +26,7 @@ import java.sql.SQLException;
  * 
  * @param <T> class type of return value
  */
-public interface JDBCExecuteCallback<T> {
+public interface JDBCExecutor<T> {
     
     /**
      * execute JDBC.

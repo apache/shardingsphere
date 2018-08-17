@@ -39,14 +39,14 @@ import java.util.Map;
  * @author maxiaoguang
  * @author panjuan
  */
-public final class ExecutorEngine implements AutoCloseable {
+public final class SQLExecutorEngine implements AutoCloseable {
     
     @Getter
     private final ShardingExecuteEngine shardingExecuteEngine;
     
     private final ConnectionMode connectionMode;
     
-    public ExecutorEngine(final int executorSize, final ConnectionMode connectionMode) {
+    public SQLExecutorEngine(final int executorSize, final ConnectionMode connectionMode) {
         shardingExecuteEngine = new ShardingExecuteEngine(executorSize);
         this.connectionMode = connectionMode;
     }
@@ -60,7 +60,7 @@ public final class ExecutorEngine implements AutoCloseable {
      * @return execute result
      * @throws SQLException SQL exception
      */
-    public <T> List<T> execute(final Collection<? extends BaseStatementUnit> baseStatementUnits, final ExecuteCallback<T> executeCallback) throws SQLException {
+    public <T> List<T> execute(final Collection<? extends BaseStatementUnit> baseStatementUnits, final SQLExecuteCallback<T> executeCallback) throws SQLException {
         OverallExecutionEvent event = new OverallExecutionEvent(executeCallback.getSqlType(), baseStatementUnits.size() > 1);
         ShardingEventBusInstance.getInstance().post(event);
         try {

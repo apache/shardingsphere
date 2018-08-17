@@ -20,9 +20,9 @@ package io.shardingsphere.core.executor.type.batch;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.BaseStatementUnit;
-import io.shardingsphere.core.executor.ExecuteCallback;
-import io.shardingsphere.core.executor.ExecutorEngine;
-import io.shardingsphere.core.executor.JDBCExecuteCallback;
+import io.shardingsphere.core.executor.SQLExecuteCallback;
+import io.shardingsphere.core.executor.SQLExecutorEngine;
+import io.shardingsphere.core.executor.JDBCExecutor;
 import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +41,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class BatchPreparedStatementExecutor {
     
-    private final ExecutorEngine executorEngine;
+    private final SQLExecutorEngine executorEngine;
     
     private final DatabaseType dbType;
     
@@ -60,7 +60,7 @@ public final class BatchPreparedStatementExecutor {
     public int[] executeBatch() throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        ExecuteCallback<int[]> executeCallback = new ExecuteCallback<>(sqlType, isExceptionThrown, dataMap, new JDBCExecuteCallback<int[]>() {
+        SQLExecuteCallback<int[]> executeCallback = new SQLExecuteCallback<>(sqlType, isExceptionThrown, dataMap, new JDBCExecutor<int[]>() {
         
             @Override
             public int[] execute(final BaseStatementUnit baseStatementUnit) throws SQLException {

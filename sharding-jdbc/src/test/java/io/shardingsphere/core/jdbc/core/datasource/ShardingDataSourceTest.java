@@ -24,7 +24,7 @@ import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import io.shardingsphere.core.executor.ExecutorEngine;
+import io.shardingsphere.core.executor.SQLExecutorEngine;
 import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -151,7 +151,7 @@ public final class ShardingDataSourceTest {
         Map<String, DataSource> originalDataSourceMap = new HashMap<>(1, 1);
         originalDataSourceMap.put("ds", originalDataSource);
         ShardingDataSource shardingDataSource = createShardingDataSource(originalDataSourceMap);
-        ExecutorEngine originExecutorEngine = getExecutorEngine(shardingDataSource);
+        SQLExecutorEngine originExecutorEngine = getExecutorEngine(shardingDataSource);
         DataSource newDataSource = mockDataSource("H2");
         Map<String, DataSource> newDataSourceMap = new HashMap<>(1, 1);
         newDataSourceMap.put("ds", newDataSource);
@@ -165,7 +165,7 @@ public final class ShardingDataSourceTest {
         Map<String, DataSource> originalDataSourceMap = new HashMap<>(1, 1);
         originalDataSourceMap.put("ds", originalDataSource);
         ShardingDataSource shardingDataSource = createShardingDataSource(originalDataSourceMap);
-        final ExecutorEngine originExecutorEngine = getExecutorEngine(shardingDataSource);
+        final SQLExecutorEngine originExecutorEngine = getExecutorEngine(shardingDataSource);
         DataSource newDataSource = mockDataSource("H2");
         Map<String, DataSource> newDataSourceMap = new HashMap<>(1, 1);
         newDataSourceMap.put("ds", newDataSource);
@@ -206,9 +206,9 @@ public final class ShardingDataSourceTest {
         return result;
     }
     
-    private ExecutorEngine getExecutorEngine(final ShardingDataSource shardingDataSource) throws NoSuchFieldException, IllegalAccessException {
+    private SQLExecutorEngine getExecutorEngine(final ShardingDataSource shardingDataSource) throws NoSuchFieldException, IllegalAccessException {
         Field field = ShardingDataSource.class.getDeclaredField("executorEngine");
         field.setAccessible(true);
-        return (ExecutorEngine) field.get(shardingDataSource);
+        return (SQLExecutorEngine) field.get(shardingDataSource);
     }
 }

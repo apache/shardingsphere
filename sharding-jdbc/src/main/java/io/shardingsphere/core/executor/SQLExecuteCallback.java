@@ -41,7 +41,7 @@ import java.util.Map;
  * @param <T> class type of return value
  */
 @RequiredArgsConstructor
-public final class ExecuteCallback<T> implements ShardingExecuteCallback<BaseStatementUnit, T> {
+public final class SQLExecuteCallback<T> implements ShardingExecuteCallback<BaseStatementUnit, T> {
     
     @Getter
     private final SQLType sqlType;
@@ -50,7 +50,7 @@ public final class ExecuteCallback<T> implements ShardingExecuteCallback<BaseSta
     
     private final Map<String, Object> dataMap;
     
-    private final JDBCExecuteCallback<T> jdbcCallback;
+    private final JDBCExecutor<T> jdbcCallback;
     
     private final EventBus shardingEventBus = ShardingEventBusInstance.getInstance();
     

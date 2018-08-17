@@ -24,7 +24,7 @@ import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.executor.ExecutorEngine;
+import io.shardingsphere.core.executor.SQLExecutorEngine;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
@@ -56,7 +56,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     @Getter
     private ShardingProperties shardingProperties;
     
-    private ExecutorEngine executorEngine;
+    private SQLExecutorEngine executorEngine;
     
     private ShardingContext shardingContext;
     
@@ -72,7 +72,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         ConnectionMode connectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
-        executorEngine = new ExecutorEngine(executorSize, connectionMode);
+        executorEngine = new SQLExecutorEngine(executorSize, connectionMode);
         ShardingMetaData shardingMetaData = new ShardingMetaData(getDataSourceURLs(dataSourceMap), shardingRule, getDatabaseType(), 
                 executorEngine.getShardingExecuteEngine().getExecutorService(), new JDBCTableMetaDataConnectionManager(dataSourceMap));
         boolean showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
@@ -109,8 +109,8 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         ConnectionMode originalConnectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
         ConnectionMode newConnectionMode = ConnectionMode.valueOf(newShardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
         if (originalExecutorSize != newExecutorSize || originalConnectionMode != newConnectionMode) {
-            ExecutorEngine originalExecutorEngine = executorEngine;
-            executorEngine = new ExecutorEngine(newExecutorSize, newConnectionMode);
+            SQLExecutorEngine originalExecutorEngine = executorEngine;
+            executorEngine = new SQLExecutorEngine(newExecutorSize, newConnectionMode);
             originalExecutorEngine.close();
         }
         shardingProperties = newShardingProperties;
