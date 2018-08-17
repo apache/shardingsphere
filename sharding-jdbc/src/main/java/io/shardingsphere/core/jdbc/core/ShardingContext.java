@@ -25,7 +25,8 @@ import io.shardingsphere.core.executor.ExecutorEngine;
 import io.shardingsphere.core.jdbc.metadata.JDBCTableMetaDataConnectionManager;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.JdbcStateEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.circuit.JdbcCircuitEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.disabled.JdbcDisabledEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
 import lombok.Getter;
 import lombok.NonNull;
@@ -71,11 +72,11 @@ public final class ShardingContext {
     /**
      * Renew disable dataSource names.
      *
-     * @param jdbcStateEventBusEvent jdbc event bus event
+     * @param jdbcDisabledEventBusEvent jdbc disabled event bus event
      */
     @Subscribe
-    public void renewDisabledDataSourceNames(final JdbcStateEventBusEvent jdbcStateEventBusEvent) {
-        disabledDataSourceNames = jdbcStateEventBusEvent.getDisabledDataSourceNames();
+    public void renewDisabledDataSourceNames(final JdbcDisabledEventBusEvent jdbcDisabledEventBusEvent) {
+        disabledDataSourceNames = jdbcDisabledEventBusEvent.getDisabledDataSourceNames();
         metaData = new ShardingMetaData(
                 getDataSourceURLs(getDataSourceMap()), shardingRule, getDatabaseType(), executorEngine.getExecutorService(), new JDBCTableMetaDataConnectionManager(getDataSourceMap()));
     }
@@ -83,11 +84,11 @@ public final class ShardingContext {
     /**
      * Renew circuit breaker dataSource names.
      *
-     * @param jdbcStateEventBusEvent jdbc event bus event
+     * @param jdbcCircuitEventBusEvent jdbc disabled event bus event
      */
     @Subscribe
-    public void renewCircuitBreakerDataSourceNames(final JdbcStateEventBusEvent jdbcStateEventBusEvent) {
-        circuitBreakerDataSourceNames = jdbcStateEventBusEvent.getCircuitBreakerDataSource();
+    public void renewCircuitBreakerDataSourceNames(final JdbcCircuitEventBusEvent jdbcCircuitEventBusEvent) {
+        circuitBreakerDataSourceNames = jdbcCircuitEventBusEvent.getCircuitBreakerDataSourceNames();
         metaData = new ShardingMetaData(
                 getDataSourceURLs(getDataSourceMap()), shardingRule, getDatabaseType(), executorEngine.getExecutorService(), new JDBCTableMetaDataConnectionManager(getDataSourceMap()));
     }
