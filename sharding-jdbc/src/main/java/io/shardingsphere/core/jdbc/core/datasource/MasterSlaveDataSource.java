@@ -26,8 +26,10 @@ import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.connection.MasterSlaveConnection;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.config.JdbcConfigurationEventBusInstance;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.JdbcStateEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.JdbcStateEventBusInstance;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.circuit.JdbcCircuitEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.circuit.JdbcCircuitEventBusInstance;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.disabled.JdbcDisabledEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.disabled.JdbcDisabledEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
 import lombok.Getter;
 
@@ -74,7 +76,8 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
     private void init(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
         this.dataSourceMap = dataSourceMap;
         this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
-        JdbcStateEventBusInstance.getInstance().register(this);
+        JdbcDisabledEventBusInstance.getInstance().register(this);
+        JdbcCircuitEventBusInstance.getInstance().register(this);
         JdbcConfigurationEventBusInstance.getInstance().register(this);
     }
     
@@ -178,20 +181,21 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
     /**
      * Renew disable dataSource names.
      *
-     * @param jdbcStateEventBusEvent jdbc event bus event
+     * @param jdbcDisabledEventBusEvent jdbc disabled event bus event
      */
     @Subscribe
-    public void renewDisabledDataSourceNames(final JdbcStateEventBusEvent jdbcStateEventBusEvent) {
-        disabledDataSourceNames = jdbcStateEventBusEvent.getDisabledDataSourceNames();
+    public void renewDisabledDataSourceNames(final JdbcDisabledEventBusEvent jdbcDisabledEventBusEvent) {
+        disabledDataSourceNames = jdbcDisabledEventBusEvent.getDisabledDataSourceNames();
     }
     
     /**
      * Renew circuit breaker dataSource names.
      *
-     * @param jdbcStateEventBusEvent jdbc event bus event
+     * @param jdbcCircuitEventBusEvent jdbc circuit event bus event
      */
     @Subscribe
-    public void renewCircuitBreakerDataSourceNames(final JdbcStateEventBusEvent jdbcStateEventBusEvent) {
-        circuitBreakerDataSourceNames = jdbcStateEventBusEvent.getCircuitBreakerDataSource();
+    public void renewCircuitBreakerDataSourceNames(final JdbcCircuitEventBusEvent jdbcCircuitEventBusEvent) {
+        circuitBreakerDataSourceNames = jdbcCircuitEventBusEvent.getCircuitBreakerDataSourceNames();
     }
 }
+
