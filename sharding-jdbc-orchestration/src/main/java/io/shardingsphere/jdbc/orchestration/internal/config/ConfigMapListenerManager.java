@@ -18,8 +18,6 @@
 package io.shardingsphere.jdbc.orchestration.internal.config;
 
 import io.shardingsphere.core.api.ConfigMapContext;
-import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.jdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.jdbc.orchestration.reg.listener.DataChangedEvent;
@@ -46,7 +44,7 @@ public final class ConfigMapListenerManager implements ListenerManager {
     }
     
     @Override
-    public void start(final ShardingDataSource shardingDataSource) {
+    public void shardingStart() {
         String cachePath = configNode.getFullPath(ConfigurationNode.SHARDING_CONFIG_MAP_NODE_PATH);
         regCenter.watch(cachePath, new EventListener() {
             
@@ -61,7 +59,7 @@ public final class ConfigMapListenerManager implements ListenerManager {
     }
     
     @Override
-    public void start(final MasterSlaveDataSource masterSlaveDataSource) {
+    public void masterSlaveStart() {
         String cachePath = configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_CONFIG_MAP_NODE_PATH);
         regCenter.watch(cachePath, new EventListener() {
             
@@ -76,6 +74,6 @@ public final class ConfigMapListenerManager implements ListenerManager {
     }
     
     @Override
-    public void start() {
+    public void proxyStart() {
     }
 }
