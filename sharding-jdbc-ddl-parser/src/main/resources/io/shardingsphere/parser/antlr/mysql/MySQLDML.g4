@@ -1,8 +1,6 @@
 grammar MySQLDML;
 import MySQLBase,MySQLKeyword,DMLBase,SQLBase,Keyword,Symbol;
-@header{
-	package io.shardingsphere.parser.antlr.mysql;
-}
+
 
 selectSpec: 
 	(ALL | DISTINCT | DISTINCTROW)? 
