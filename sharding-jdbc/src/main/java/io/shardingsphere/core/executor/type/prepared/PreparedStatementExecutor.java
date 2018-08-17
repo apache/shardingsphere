@@ -52,11 +52,16 @@ public final class PreparedStatementExecutor {
      * @throws SQLException SQL exception
      */
     public List<ResultSet> executeQuery() throws SQLException {
-        return executorEngine.execute(sqlType, preparedStatementUnits, new ExecuteCallback<ResultSet>() {
+        return executorEngine.execute(preparedStatementUnits, new ExecuteCallback<ResultSet>() {
             
             @Override
             public ResultSet execute(final BaseStatementUnit baseStatementUnit) throws Exception {
                 return ((PreparedStatement) baseStatementUnit.getStatement()).executeQuery();
+            }
+            
+            @Override
+            public SQLType getSQLType() {
+                return sqlType;
             }
         });
     }
@@ -68,11 +73,16 @@ public final class PreparedStatementExecutor {
      * @throws SQLException SQL exception
      */
     public int executeUpdate() throws SQLException {
-        List<Integer> results = executorEngine.execute(sqlType, preparedStatementUnits, new ExecuteCallback<Integer>() {
+        List<Integer> results = executorEngine.execute(preparedStatementUnits, new ExecuteCallback<Integer>() {
             
             @Override
             public Integer execute(final BaseStatementUnit baseStatementUnit) throws Exception {
                 return ((PreparedStatement) baseStatementUnit.getStatement()).executeUpdate();
+            }
+            
+            @Override
+            public SQLType getSQLType() {
+                return sqlType;
             }
         });
         return accumulate(results);
@@ -93,11 +103,16 @@ public final class PreparedStatementExecutor {
      * @throws SQLException SQL exception
      */
     public boolean execute() throws SQLException {
-        List<Boolean> result = executorEngine.execute(sqlType, preparedStatementUnits, new ExecuteCallback<Boolean>() {
+        List<Boolean> result = executorEngine.execute(preparedStatementUnits, new ExecuteCallback<Boolean>() {
             
             @Override
             public Boolean execute(final BaseStatementUnit baseStatementUnit) throws Exception {
                 return ((PreparedStatement) baseStatementUnit.getStatement()).execute();
+            }
+            
+            @Override
+            public SQLType getSQLType() {
+                return sqlType;
             }
         });
         if (null == result || result.isEmpty() || null == result.get(0)) {

@@ -53,11 +53,16 @@ public final class StatementExecutor {
      * @throws SQLException SQL exception
      */
     public List<ResultSet> executeQuery() throws SQLException {
-        return executorEngine.execute(sqlType, statementUnits, new ExecuteCallback<ResultSet>() {
+        return executorEngine.execute(statementUnits, new ExecuteCallback<ResultSet>() {
             
             @Override
             public ResultSet execute(final BaseStatementUnit baseStatementUnit) throws Exception {
                 return baseStatementUnit.getStatement().executeQuery(baseStatementUnit.getSqlExecutionUnit().getSqlUnit().getSql());
+            }
+            
+            @Override
+            public SQLType getSQLType() {
+                return sqlType;
             }
         });
     }
@@ -130,11 +135,16 @@ public final class StatementExecutor {
     }
     
     private int executeUpdate(final Updater updater) throws SQLException {
-        List<Integer> results = executorEngine.execute(sqlType, statementUnits, new ExecuteCallback<Integer>() {
+        List<Integer> results = executorEngine.execute(statementUnits, new ExecuteCallback<Integer>() {
             
             @Override
             public Integer execute(final BaseStatementUnit baseStatementUnit) throws Exception {
                 return updater.executeUpdate(baseStatementUnit.getStatement(), baseStatementUnit.getSqlExecutionUnit().getSqlUnit().getSql());
+            }
+            
+            @Override
+            public SQLType getSQLType() {
+                return sqlType;
             }
         });
         return accumulate(results);
@@ -216,11 +226,16 @@ public final class StatementExecutor {
     }
     
     private boolean execute(final Executor executor) throws SQLException {
-        List<Boolean> result = executorEngine.execute(sqlType, statementUnits, new ExecuteCallback<Boolean>() {
+        List<Boolean> result = executorEngine.execute(statementUnits, new ExecuteCallback<Boolean>() {
             
             @Override
             public Boolean execute(final BaseStatementUnit baseStatementUnit) throws SQLException {
                 return executor.execute(baseStatementUnit.getStatement(), baseStatementUnit.getSqlExecutionUnit().getSqlUnit().getSql());
+            }
+            
+            @Override
+            public SQLType getSQLType() {
+                return sqlType;
             }
         });
         if (null == result || result.isEmpty() || null == result.get(0)) {

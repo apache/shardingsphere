@@ -51,12 +51,17 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
     public void assertSingleStatement() throws SQLException {
         Statement statement = mock(Statement.class);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        executorEngine.execute(SQLType.DML, Collections.singleton(new StatementUnit(
+        executorEngine.execute(Collections.singleton(new StatementUnit(
                 new SQLExecutionUnit("ds_0", new SQLUnit("insert into ...", Collections.singletonList(Collections.<Object>singletonList(1)))), statement)), new ExecuteCallback<Integer>() {
                     
                     @Override
                     public Integer execute(final BaseStatementUnit baseStatementUnit) {
                         return 0;
+                    }
+                    
+                    @Override
+                    public SQLType getSQLType() {
+                        return SQLType.DML;
                     }
                 });
         assertThat(getTracer().finishedSpans().size(), is(2));
@@ -71,11 +76,16 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
         Statement stm2 = mock(Statement.class);
         when(stm2.getConnection()).thenReturn(mock(Connection.class));
         statementUnitList.add(new StatementUnit(new SQLExecutionUnit("ds_0", new SQLUnit("insert into ...", Collections.singletonList(Collections.<Object>singletonList(1)))), stm2));
-        executorEngine.execute(SQLType.DML, statementUnitList, new ExecuteCallback<Integer>() {
-
+        executorEngine.execute(statementUnitList, new ExecuteCallback<Integer>() {
+            
             @Override
             public Integer execute(final BaseStatementUnit baseStatementUnit) {
                 return 0;
+            }
+            
+            @Override
+            public SQLType getSQLType() {
+                return SQLType.DML;
             }
         });
         assertThat(getTracer().finishedSpans().size(), is(3));
@@ -91,11 +101,16 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
         PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
         when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
         statementUnitList.add(new BatchPreparedStatementUnit(new SQLExecutionUnit("ds_1", new SQLUnit("insert into ...", parameterSets)), preparedStatement2));
-        executorEngine.execute(SQLType.DML, statementUnitList, new ExecuteCallback<Integer>() {
+        executorEngine.execute(statementUnitList, new ExecuteCallback<Integer>() {
             
             @Override
             public Integer execute(final BaseStatementUnit baseStatementUnit) {
                 return 0;
+            }
+            
+            @Override
+            public SQLType getSQLType() {
+                return SQLType.DML;
             }
         });
         assertThat(getTracer().finishedSpans().size(), is(3));
@@ -105,12 +120,17 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
     public void assertSQLException() throws SQLException {
         Statement statement = mock(Statement.class);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        executorEngine.execute(SQLType.DQL, Collections.singleton(new StatementUnit(new SQLExecutionUnit("ds_0",
+        executorEngine.execute(Collections.singleton(new StatementUnit(new SQLExecutionUnit("ds_0",
                 new SQLUnit("select ...", Collections.singletonList(Collections.<Object>singletonList(1)))), statement)), new ExecuteCallback<Integer>() {
                     
                     @Override
                     public Integer execute(final BaseStatementUnit baseStatementUnit) throws SQLException {
                         throw new SQLException();
+                    }
+                    
+                    @Override
+                    public SQLType getSQLType() {
+                        return SQLType.DQL;
                     }
                 });
     }

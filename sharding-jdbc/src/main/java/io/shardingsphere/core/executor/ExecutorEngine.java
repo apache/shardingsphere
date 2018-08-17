@@ -20,7 +20,6 @@ package io.shardingsphere.core.executor;
 import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
-import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.executor.event.overall.OverallExecutionEvent;
 import io.shardingsphere.core.executor.event.sql.SQLExecutionEvent;
@@ -68,22 +67,20 @@ public abstract class ExecutorEngine implements AutoCloseable {
     /**
      * Execute.
      *
-     * @param sqlType SQL type
      * @param baseStatementUnits statement execute unitS
      * @param executeCallback prepared statement execute callback
      * @param <T> class type of return value
      * @return execute result
      * @throws SQLException SQL exception
      */
-    public <T> List<T> execute(
-            final SQLType sqlType, final Collection<? extends BaseStatementUnit> baseStatementUnits, final ExecuteCallback<T> executeCallback) throws SQLException {
+    public <T> List<T> execute(final Collection<? extends BaseStatementUnit> baseStatementUnits, final ExecuteCallback<T> executeCallback) throws SQLException {
         if (baseStatementUnits.isEmpty()) {
             return Collections.emptyList();
         }
-        OverallExecutionEvent event = new OverallExecutionEvent(sqlType, baseStatementUnits.size() > 1);
+        OverallExecutionEvent event = new OverallExecutionEvent(executeCallback.getSQLType(), baseStatementUnits.size() > 1);
         shardingEventBus.post(event);
         try {
-            List<T> result = getExecuteResults(sqlType, baseStatementUnits, executeCallback);
+            List<T> result = getExecuteResults(baseStatementUnits, executeCallback);
             event.setExecuteSuccess();
             return result;
             // CHECKSTYLE:OFF
@@ -97,16 +94,16 @@ public abstract class ExecutorEngine implements AutoCloseable {
         }
     }
     
-    protected abstract <T> List<T> getExecuteResults(SQLType sqlType, Collection<? extends BaseStatementUnit> baseStatementUnits, ExecuteCallback<T> executeCallback) throws Exception;
+    protected abstract <T> List<T> getExecuteResults(Collection<? extends BaseStatementUnit> baseStatementUnits, ExecuteCallback<T> executeCallback) throws Exception;
     
-    protected final <T> T executeInternal(final SQLType sqlType, final BaseStatementUnit baseStatementUnit, 
-                                          final ExecuteCallback<T> executeCallback, final boolean isExceptionThrown, final Map<String, Object> dataMap) throws Exception {
+    protected final <T> T executeInternal(
+            final BaseStatementUnit baseStatementUnit, final ExecuteCallback<T> executeCallback, final boolean isExceptionThrown, final Map<String, Object> dataMap) throws Exception {
         T result;
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
         List<SQLExecutionEvent> events = new LinkedList<>();
         for (List<Object> each : baseStatementUnit.getSqlExecutionUnit().getSqlUnit().getParameterSets()) {
-            SQLExecutionEvent event = SQLExecutionEventFactory.createEvent(sqlType, baseStatementUnit, each);
+            SQLExecutionEvent event = SQLExecutionEventFactory.createEvent(executeCallback.getSQLType(), baseStatementUnit, each);
             events.add(event);
             shardingEventBus.post(event);
         }

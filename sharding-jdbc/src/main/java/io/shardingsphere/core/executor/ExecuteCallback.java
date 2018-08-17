@@ -17,6 +17,8 @@
 
 package io.shardingsphere.core.executor;
 
+import io.shardingsphere.core.constant.SQLType;
+
 /**
  * Statement execute callback interface.
  *
@@ -25,14 +27,12 @@ package io.shardingsphere.core.executor;
  * 
  * @param <T> class type of return value
  */
-public interface ExecuteCallback<T> {
+public interface ExecuteCallback<T> extends ShardingExecuteCallback<BaseStatementUnit, T> {
     
     /**
-     * Execute task.
+     * Get SQL type.
      * 
-     * @param baseStatementUnit statement execute unit
-     * @return execute result
-     * @throws Exception execute exception
+     * @return SQL type
      */
-    T execute(BaseStatementUnit baseStatementUnit) throws Exception;
+    SQLType getSQLType();
 }

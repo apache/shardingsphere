@@ -55,11 +55,16 @@ public final class BatchPreparedStatementExecutor {
      * @throws SQLException SQL exception
      */
     public int[] executeBatch() throws SQLException {
-        return accumulate(executorEngine.execute(sqlType, batchPreparedStatementUnits, new ExecuteCallback<int[]>() {
+        return accumulate(executorEngine.execute(batchPreparedStatementUnits, new ExecuteCallback<int[]>() {
             
             @Override
             public int[] execute(final BaseStatementUnit baseStatementUnit) throws Exception {
                 return baseStatementUnit.getStatement().executeBatch();
+            }
+            
+            @Override
+            public SQLType getSQLType() {
+                return sqlType;
             }
         }));
     }

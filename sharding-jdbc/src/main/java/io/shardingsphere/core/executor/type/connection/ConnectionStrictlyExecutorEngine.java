@@ -18,7 +18,6 @@
 package io.shardingsphere.core.executor.type.connection;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.BaseStatementUnit;
 import io.shardingsphere.core.executor.ExecuteCallback;
 import io.shardingsphere.core.executor.ExecutorEngine;
@@ -46,10 +45,10 @@ public final class ConnectionStrictlyExecutorEngine extends ExecutorEngine {
     }
     
     @Override
-    protected <T> List<T> getExecuteResults(final SQLType sqlType, final Collection<? extends BaseStatementUnit> baseStatementUnits, final ExecuteCallback<T> executeCallback) throws Exception {
+    protected <T> List<T> getExecuteResults(final Collection<? extends BaseStatementUnit> baseStatementUnits, final ExecuteCallback<T> executeCallback) throws Exception {
         Map<String, Collection<BaseStatementUnit>> baseStatementUnitGroups = getBaseStatementUnitGroups(baseStatementUnits);
-        Collection<T> firstOutputs = syncExecute(sqlType, baseStatementUnitGroups.remove(baseStatementUnitGroups.keySet().iterator().next()), executeCallback);
-        Collection<ListenableFuture<Collection<T>>> restResultFutures = asyncExecute(sqlType, baseStatementUnitGroups, executeCallback);
+        Collection<T> firstOutputs = syncExecute(baseStatementUnitGroups.remove(baseStatementUnitGroups.keySet().iterator().next()), executeCallback);
+        Collection<ListenableFuture<Collection<T>>> restResultFutures = asyncExecute(baseStatementUnitGroups, executeCallback);
         return getResultList(firstOutputs, restResultFutures);
     }
     
@@ -65,8 +64,7 @@ public final class ConnectionStrictlyExecutorEngine extends ExecutorEngine {
         return result;
     }
     
-    private <T> Collection<ListenableFuture<Collection<T>>> asyncExecute(
-            final SQLType sqlType, final Map<String, Collection<BaseStatementUnit>> baseStatementUnitGroups, final ExecuteCallback<T> executeCallback) {
+    private <T> Collection<ListenableFuture<Collection<T>>> asyncExecute(final Map<String, Collection<BaseStatementUnit>> baseStatementUnitGroups, final ExecuteCallback<T> executeCallback) {
         Collection<ListenableFuture<Collection<T>>> result = new ArrayList<>(baseStatementUnitGroups.size());
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
@@ -77,7 +75,7 @@ public final class ConnectionStrictlyExecutorEngine extends ExecutorEngine {
                 public Collection<T> call() throws Exception {
                     Collection<T> result = new LinkedList<>();
                     for (BaseStatementUnit each : baseStatementUnits) {
-                        result.add(executeInternal(sqlType, each, executeCallback, isExceptionThrown, dataMap));
+                        result.add(executeInternal(each, executeCallback, isExceptionThrown, dataMap));
                     }
                     return result;
                 }
@@ -86,10 +84,10 @@ public final class ConnectionStrictlyExecutorEngine extends ExecutorEngine {
         return result;
     }
     
-    private <T> Collection<T> syncExecute(final SQLType sqlType, final Collection<? extends BaseStatementUnit> baseStatementUnits, final ExecuteCallback<T> executeCallback) throws Exception {
+    private <T> Collection<T> syncExecute(final Collection<? extends BaseStatementUnit> baseStatementUnits, final ExecuteCallback<T> executeCallback) throws Exception {
         Collection<T> result = new LinkedList<>();
         for (BaseStatementUnit each : baseStatementUnits) {
-            result.add(executeInternal(sqlType, each, executeCallback, ExecutorExceptionHandler.isExceptionThrown(), ExecutorDataMap.getDataMap()));
+            result.add(executeInternal(each, executeCallback, ExecutorExceptionHandler.isExceptionThrown(), ExecutorDataMap.getDataMap()));
         }
         return result;
     }
