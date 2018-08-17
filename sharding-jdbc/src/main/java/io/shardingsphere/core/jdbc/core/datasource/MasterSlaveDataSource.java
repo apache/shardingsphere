@@ -63,12 +63,16 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
     public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
                                  final Map<String, Object> configMap, final Properties props) throws SQLException {
         super(getAllDataSources(dataSourceMap, masterSlaveRuleConfig.getMasterDataSourceName(), masterSlaveRuleConfig.getSlaveDataSourceNames()));
-        this.dataSourceMap = dataSourceMap;
-        this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getMasterSlaveConfig().putAll(configMap);
         }
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
+        init(dataSourceMap, masterSlaveRuleConfig);
+    }
+    
+    private void init(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
+        this.dataSourceMap = dataSourceMap;
+        this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
         MasterSlaveEventBusInstance.getInstance().register(this);
     }
     
@@ -105,8 +109,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
     public void renew(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) throws SQLException {
         closeOriginalDataSources();
         super.renew(getAllDataSources(dataSourceMap, masterSlaveRuleConfig.getMasterDataSourceName(), masterSlaveRuleConfig.getSlaveDataSourceNames()));
-        this.dataSourceMap = dataSourceMap;
-        this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
+        init(dataSourceMap, masterSlaveRuleConfig);
     }
     
     private void closeOriginalDataSources() {
