@@ -31,8 +31,8 @@ import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ProxyAuthority;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.state.circuit.JdbcCircuitEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.state.disabled.JdbcDisabledEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.state.circuit.CircuitStateEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.state.disabled.DisabledStateEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.config.proxy.ProxyConfigurationEventBusEvent;
 import io.shardingsphere.proxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import lombok.AccessLevel;
@@ -170,21 +170,21 @@ public final class RuleRegistry {
     /**
      * Renew disable dataSource names.
      *
-     * @param jdbcDisabledEventBusEvent jdbc disabled event bus event
+     * @param disabledStateEventBusEvent jdbc disabled event bus event
      */
     @Subscribe
-    public void renewDisabledDataSourceNames(final JdbcDisabledEventBusEvent jdbcDisabledEventBusEvent) {
-        disabledDataSourceNames = jdbcDisabledEventBusEvent.getDisabledDataSourceNames();
+    public void renewDisabledDataSourceNames(final DisabledStateEventBusEvent disabledStateEventBusEvent) {
+        disabledDataSourceNames = disabledStateEventBusEvent.getDisabledDataSourceNames();
     }
     
     /**
      * Renew circuit breaker dataSource names.
      *
-     * @param jdbcCircuitEventBusEvent jdbc circuit event bus event
+     * @param circuitStateEventBusEvent jdbc circuit event bus event
      */
     @Subscribe
-    public void renewCircuitBreakerDataSourceNames(final JdbcCircuitEventBusEvent jdbcCircuitEventBusEvent) {
-        circuitBreakerDataSourceNames = jdbcCircuitEventBusEvent.getCircuitBreakerDataSourceNames();
+    public void renewCircuitBreakerDataSourceNames(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
+        circuitBreakerDataSourceNames = circuitStateEventBusEvent.getCircuitBreakerDataSourceNames();
     }
     
     /**

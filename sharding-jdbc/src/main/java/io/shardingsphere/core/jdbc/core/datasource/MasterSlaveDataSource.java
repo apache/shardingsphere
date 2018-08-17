@@ -26,10 +26,10 @@ import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.connection.MasterSlaveConnection;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.config.jdbc.JdbcConfigurationEventBusInstance;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.state.circuit.JdbcCircuitEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.state.circuit.JdbcCircuitEventBusInstance;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.state.disabled.JdbcDisabledEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.state.disabled.JdbcDisabledEventBusInstance;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.state.circuit.CircuitStateEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.state.circuit.CircuitStateEventBusInstance;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.state.disabled.DisabledStateEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.state.disabled.DisabledStateEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
 import lombok.Getter;
 
@@ -76,8 +76,8 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
     private void init(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
         this.dataSourceMap = dataSourceMap;
         this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
-        JdbcDisabledEventBusInstance.getInstance().register(this);
-        JdbcCircuitEventBusInstance.getInstance().register(this);
+        DisabledStateEventBusInstance.getInstance().register(this);
+        CircuitStateEventBusInstance.getInstance().register(this);
         JdbcConfigurationEventBusInstance.getInstance().register(this);
     }
     
@@ -181,21 +181,21 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
     /**
      * Renew disable dataSource names.
      *
-     * @param jdbcDisabledEventBusEvent jdbc disabled event bus event
+     * @param disabledStateEventBusEvent jdbc disabled event bus event
      */
     @Subscribe
-    public void renewDisabledDataSourceNames(final JdbcDisabledEventBusEvent jdbcDisabledEventBusEvent) {
-        disabledDataSourceNames = jdbcDisabledEventBusEvent.getDisabledDataSourceNames();
+    public void renewDisabledDataSourceNames(final DisabledStateEventBusEvent disabledStateEventBusEvent) {
+        disabledDataSourceNames = disabledStateEventBusEvent.getDisabledDataSourceNames();
     }
     
     /**
      * Renew circuit breaker dataSource names.
      *
-     * @param jdbcCircuitEventBusEvent jdbc circuit event bus event
+     * @param circuitStateEventBusEvent jdbc circuit event bus event
      */
     @Subscribe
-    public void renewCircuitBreakerDataSourceNames(final JdbcCircuitEventBusEvent jdbcCircuitEventBusEvent) {
-        circuitBreakerDataSourceNames = jdbcCircuitEventBusEvent.getCircuitBreakerDataSourceNames();
+    public void renewCircuitBreakerDataSourceNames(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
+        circuitBreakerDataSourceNames = circuitStateEventBusEvent.getCircuitBreakerDataSourceNames();
     }
 }
 
