@@ -27,6 +27,7 @@ import io.shardingsphere.core.jdbc.core.connection.MasterSlaveConnection;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.JDBCEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.JDBCEventBusInstance;
+import io.shardingsphere.jdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
 import lombok.Getter;
 
 import javax.sql.DataSource;
@@ -35,6 +36,7 @@ import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
@@ -132,6 +134,38 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
      */
     public boolean showSQL() {
         return shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
+    }
+    
+    /**
+     * Get available data source map.
+     *
+     * @return available data source map
+     */
+    public Map<String, DataSource> getDataSourceMap() {
+        if (!getCircuitBreakerDataSourceNames().isEmpty()) {
+            return getCircuitBreakerDataSourceMap();
+        }
+        
+        if (!getDisabledDataSourceNames().isEmpty()) {
+            return getAvailableDataSourceMap();
+        }
+        return dataSourceMap;
+    }
+    
+    private Map<String, DataSource> getAvailableDataSourceMap() {
+        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
+        for (String each : disabledDataSourceNames) {
+            result.remove(each);
+        }
+        return result;
+    }
+    
+    private Map<String, DataSource> getCircuitBreakerDataSourceMap() {
+        Map<String, DataSource> result = new LinkedHashMap<>();
+        for (String each : dataSourceMap.keySet()) {
+            result.put(each, new CircuitBreakerDataSource());
+        }
+        return result;
     }
     
     /**
