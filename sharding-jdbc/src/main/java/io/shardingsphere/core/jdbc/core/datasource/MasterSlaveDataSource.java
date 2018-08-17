@@ -26,7 +26,7 @@ import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.connection.MasterSlaveConnection;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.JDBCEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.masterslave.MasterSlaveEventBusInstance;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.MasterSlaveEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
 import lombok.Getter;
 
@@ -107,8 +107,8 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
      * @throws SQLException sql exception
      */
     public void renew(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) throws SQLException {
-        closeOriginalDataSources();
         super.renew(getAllDataSources(dataSourceMap, masterSlaveRuleConfig.getMasterDataSourceName(), masterSlaveRuleConfig.getSlaveDataSourceNames()));
+        closeOriginalDataSources();
         init(dataSourceMap, masterSlaveRuleConfig);
     }
     

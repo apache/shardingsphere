@@ -34,7 +34,7 @@ import io.shardingsphere.core.jdbc.metadata.JDBCTableMetaDataConnectionManager;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.sharding.ShardingEventBusInstance;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.ShardingEventBusInstance;
 import lombok.Getter;
 
 import javax.sql.DataSource;
