@@ -18,10 +18,10 @@
 package io.shardingsphere.jdbc.orchestration.internal.config;
 
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.config.MasterSlaveConfigurationEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.config.MasterSlaveConfigurationEventBusInstance;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.config.ShardingConfigurationEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.config.ShardingConfigurationEventBusInstance;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.config.masterslave.MasterSlaveConfigurationEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.config.masterslave.MasterSlaveConfigurationEventBusInstance;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.config.sharding.ShardingConfigurationEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.config.sharding.ShardingConfigurationEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.proxy.ProxyEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.proxy.ProxyEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.listener.ListenerManager;
