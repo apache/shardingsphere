@@ -21,7 +21,19 @@ weight = 4
 
 如果想使用其他的APM系统，且该系统支持[OpenTracing](http://opentracing.io)。可以使用Sharding-Sphere提供的API配合该APM系统使用。
 
+* 通过读取系统参数注入APM系统提供的Tracer实现类
+```
+    启动时添加参数：-Dshardingsphere.opentracing.tracer.class=org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer
+    调用初始化方法：ShardingTracer.init()                          
+```
+
+* 通过参数注入APM系统提供的Tracer实现类 
+```
+    shardingTracer.init(new SkywalkingTracer())   
+```
+
 *注意:使用SkyWalking的OpenTracing探针时，应将原Sharding-Sphere探针插件禁用，以防止两种插件互相冲突*
+
 
 ## 效果展示
 
@@ -49,7 +61,7 @@ weight = 4
 
 ![逻辑执行节点](http://ovfotjrsi.bkt.clouddn.com/apm/apm-execute-overall-span.png)
 
-`/SHARDING-SPHERE/EXECUTE/{operation}` : 表示具体执行的实际SQL的性能。
+`/SHARDING-SPHERE/EXECUTE/` : 表示具体执行的实际SQL的性能。
 
 ![实际访问节点](http://ovfotjrsi.bkt.clouddn.com/apm/apm-execute-span.png)
 

@@ -21,6 +21,17 @@ Please refer to [SkyWalking Manual](https://github.com/OpenSkywalking/skywalking
 
 If user want to use other APM systems which support [OpenTracing] (http://opentracing.io), just use sharding-sphere API to work with those APM systems.
 
+* Inject the Tracer implementation class through System.properties
+```
+    System.Properties：-Dshardingsphere.opentracing.tracer.class=org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer
+    mehtod：ShardingTracer.init()                          
+```
+
+* Inject the Tracer implementation class through method parameter
+```
+    shardingTracer.init(new SkywalkingTracer())   
+```
+
 *Notices: When using SkyWalking's OpenTracing monitor agent, disabling the original Sharding-Sphere monitor agent plugin is necessary to avoid conflicting with each other.*
 
 ## UI
@@ -49,7 +60,7 @@ You can see SQL routing, execution and final result set merge in this figure.
 
 ![The logical execution node](http://ovfotjrsi.bkt.clouddn.com/apm/apm-execute-overall-span.png)
 
-`/SHARDING-SPHERE/EXECUTE/{operation}`: Represents the performance of the actual SQL.
+`/SHARDING-SPHERE/EXECUTE/`: Represents the performance of the actual SQL.
 
 ![The actual access node](http://ovfotjrsi.bkt.clouddn.com/apm/apm-execute-span.png)
 
