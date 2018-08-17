@@ -20,12 +20,15 @@ package io.shardingsphere.proxy.backend.jdbc.datasource;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.jdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
 import io.shardingsphere.proxy.backend.BackendDataSource;
+import io.shardingsphere.proxy.config.RuleRegistry;
 import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -35,17 +38,28 @@ import java.util.Map.Entry;
  *
  * @author zhaojun
  * @author zhangliang
+ * @author panjuan
  */
 @Getter
 public final class JDBCBackendDataSource implements BackendDataSource {
     
     private final Map<String, DataSource> dataSourceMap;
     
-    public JDBCBackendDataSource(final TransactionType transactionType, final Map<String, DataSourceParameter> dataSourceParameters) {
-        dataSourceMap = createDataSourceMap(transactionType, dataSourceParameters);
+    public JDBCBackendDataSource() {
+        dataSourceMap = createDataSourceMap();
     }
     
-    private Map<String, DataSource> createDataSourceMap(final TransactionType transactionType, final Map<String, DataSourceParameter> dataSourceParameters) {
+    private Map<String, DataSource> createDataSourceMap() {
+        TransactionType transactionType = RuleRegistry.getInstance().getTransactionType();
+        Map<String, DataSourceParameter> dataSourceParameters = RuleRegistry.getInstance().getDataSourceConfigurationMap();
+        Collection<String> circuitBreakerDataSourceNames = RuleRegistry.getInstance().getCircuitBreakerDataSourceNames();
+        if (!circuitBreakerDataSourceNames.isEmpty()) {
+            return getCircuitBreakerDataSourceMap(circuitBreakerDataSourceNames);
+        }
+        return getNormalDataSourceMap(transactionType, dataSourceParameters);
+    }
+    
+    private Map<String, DataSource> getNormalDataSourceMap(final TransactionType transactionType, final Map<String, DataSourceParameter> dataSourceParameters) {
         Map<String, DataSource> result = new LinkedHashMap<>(dataSourceParameters.size());
         for (Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
             try {
@@ -55,6 +69,14 @@ public final class JDBCBackendDataSource implements BackendDataSource {
                 // CHECKSTYLE:ON
                 throw new ShardingException(String.format("Can not build data source, name is `%s`.", entry.getKey()), ex);
             }
+        }
+        return result;
+    }
+    
+    private Map<String, DataSource> getCircuitBreakerDataSourceMap(final Collection<String> circuitBreakerDataSourceNames) {
+        Map<String, DataSource> result = new LinkedHashMap<>();
+        for (String each : circuitBreakerDataSourceNames) {
+            result.put(each, new CircuitBreakerDataSource());
         }
         return result;
     }
