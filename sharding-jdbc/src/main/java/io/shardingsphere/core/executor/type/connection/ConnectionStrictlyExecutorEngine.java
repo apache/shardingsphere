@@ -21,8 +21,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import io.shardingsphere.core.executor.BaseStatementUnit;
 import io.shardingsphere.core.executor.ExecuteCallback;
 import io.shardingsphere.core.executor.ExecutorEngine;
-import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
-import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -66,8 +64,6 @@ public final class ConnectionStrictlyExecutorEngine extends ExecutorEngine {
     
     private <T> Collection<ListenableFuture<Collection<T>>> asyncExecute(final Map<String, Collection<BaseStatementUnit>> baseStatementUnitGroups, final ExecuteCallback<T> executeCallback) {
         Collection<ListenableFuture<Collection<T>>> result = new ArrayList<>(baseStatementUnitGroups.size());
-        final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         for (Map.Entry<String, Collection<BaseStatementUnit>> entry : baseStatementUnitGroups.entrySet()) {
             final Collection<BaseStatementUnit> baseStatementUnits = entry.getValue();
             result.add(getExecutorService().submit(new Callable<Collection<T>>() {
