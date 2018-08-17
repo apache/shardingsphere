@@ -34,6 +34,7 @@ import java.util.logging.Logger;
  * Adapter for {@code Datasource}.
  * 
  * @author zhangliang
+ * @author panjuan
  */
 public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOperationDataSource {
     
@@ -42,7 +43,7 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     }
     
     @Getter
-    private final DatabaseType databaseType;
+    private DatabaseType databaseType;
     
     private PrintWriter logWriter = new PrintWriter(System.out);
     
@@ -67,6 +68,16 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
         try (Connection connection = dataSource.getConnection()) {
             return DatabaseType.valueFrom(connection.getMetaData().getDatabaseProductName());
         }
+    }
+    
+    /**
+     * Renew abstract data source adapter.
+     *
+     * @param dataSources data sources
+     * @throws SQLException sql exception
+     */
+    public void renew(final Collection<DataSource> dataSources) throws SQLException {
+        databaseType = getDatabaseType(dataSources);
     }
     
     @Override
