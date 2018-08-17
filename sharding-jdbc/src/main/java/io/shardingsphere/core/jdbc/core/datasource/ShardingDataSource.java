@@ -34,7 +34,9 @@ import io.shardingsphere.core.jdbc.metadata.JDBCTableMetaDataConnectionManager;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.JdbcStateEventBusInstance;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.config.JdbcConfigurationEventBusInstance;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.circuit.JdbcCircuitEventBusInstance;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.disabled.JdbcDisabledEventBusInstance;
 import lombok.Getter;
 
 import javax.sql.DataSource;
@@ -86,7 +88,9 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
                 getDataSourceURLs(dataSourceMap), shardingRule, getDatabaseType(), executorEngine.getExecutorService(), new JDBCTableMetaDataConnectionManager(dataSourceMap));
         boolean showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         ShardingContext result = new ShardingContext(dataSourceMap, shardingRule, getDatabaseType(), executorEngine, shardingMetaData, connectionMode, showSQL);
-        JdbcStateEventBusInstance.getInstance().register(result);
+        JdbcDisabledEventBusInstance.getInstance().register(result);
+        JdbcCircuitEventBusInstance.getInstance().register(result);
+        JdbcConfigurationEventBusInstance.getInstance().register(result);
         return result;
     }
     
