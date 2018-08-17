@@ -22,6 +22,8 @@ import com.google.common.base.Strings;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.circuit.JdbcCircuitEventBusInstance;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.disabled.JdbcDisabledEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.proxy.config.ProxyConfigurationEventBusInstance;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.frontend.ShardingProxy;
@@ -123,5 +125,7 @@ public final class Bootstrap {
     private static void initRuleRegistry(final ConfigurationService configService) {
         RULE_REGISTRY.init(new OrchestrationProxyConfiguration(configService.loadDataSources(), configService.loadProxyConfiguration()));
         ProxyConfigurationEventBusInstance.getInstance().register(RULE_REGISTRY);
+        JdbcDisabledEventBusInstance.getInstance().register(RULE_REGISTRY);
+        JdbcCircuitEventBusInstance.getInstance().register(RULE_REGISTRY);
     }
 }
