@@ -22,7 +22,7 @@ import com.google.common.base.Strings;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.proxy.ProxyEventBusInstance;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.proxy.config.ProxyConfigurationEventBusInstance;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.frontend.ShardingProxy;
 import io.shardingsphere.proxy.listener.ProxyListenerRegister;
@@ -122,6 +122,6 @@ public final class Bootstrap {
     
     private static void initRuleRegistry(final ConfigurationService configService) {
         RULE_REGISTRY.init(new OrchestrationProxyConfiguration(configService.loadDataSources(), configService.loadProxyConfiguration()));
-        ProxyEventBusInstance.getInstance().register(RULE_REGISTRY);
+        ProxyConfigurationEventBusInstance.getInstance().register(RULE_REGISTRY);
     }
 }
