@@ -23,8 +23,8 @@ import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.sharding.ShardingEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.sharding.ShardingEventBusInstance;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.JDBCEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.JDBCEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.proxy.ProxyEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.proxy.ProxyEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.listener.ListenerManager;
@@ -63,9 +63,9 @@ public final class DataSourceListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
-                    ShardingEventBusEvent shardingEventBusEvent = new ShardingEventBusEvent();
-                    shardingEventBusEvent.getDisabledDataSourceNames().addAll(dataSourceService.getDisabledDataSourceNames());
-                    ShardingEventBusInstance.getInstance().post(shardingEventBusEvent);
+                    JDBCEventBusEvent JDBCEventBusEvent = new JDBCEventBusEvent();
+                    JDBCEventBusEvent.getDisabledDataSourceNames().addAll(dataSourceService.getDisabledDataSourceNames());
+                    JDBCEventBusInstance.getInstance().post(JDBCEventBusEvent);
                 }
             }
         });
