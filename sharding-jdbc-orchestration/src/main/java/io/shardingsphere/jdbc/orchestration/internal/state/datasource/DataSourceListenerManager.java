@@ -17,8 +17,8 @@
 
 package io.shardingsphere.jdbc.orchestration.internal.state.datasource;
 
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.state.disabled.JdbcDisabledEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.state.disabled.JdbcDisabledEventBusInstance;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.state.disabled.DisabledStateEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.state.disabled.DisabledStateEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingsphere.jdbc.orchestration.internal.state.StateNode;
 import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
@@ -52,7 +52,7 @@ public final class DataSourceListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
-                    JdbcDisabledEventBusInstance.getInstance().post(new JdbcDisabledEventBusEvent(dataSourceService.getDisabledDataSourceNames()));
+                    DisabledStateEventBusInstance.getInstance().post(new DisabledStateEventBusEvent(dataSourceService.getDisabledDataSourceNames()));
                 }
             }
         });
@@ -65,7 +65,7 @@ public final class DataSourceListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
-                    JdbcDisabledEventBusInstance.getInstance().post(new JdbcDisabledEventBusEvent(dataSourceService.getDisabledDataSourceNames()));
+                    DisabledStateEventBusInstance.getInstance().post(new DisabledStateEventBusEvent(dataSourceService.getDisabledDataSourceNames()));
                 }
             }
         });
@@ -78,7 +78,7 @@ public final class DataSourceListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
-                    JdbcDisabledEventBusInstance.getInstance().post(new JdbcDisabledEventBusEvent(dataSourceService.getDisabledDataSourceNames()));
+                    DisabledStateEventBusInstance.getInstance().post(new DisabledStateEventBusEvent(dataSourceService.getDisabledDataSourceNames()));
                 }
             }
         });

@@ -18,8 +18,8 @@
 package io.shardingsphere.jdbc.orchestration.internal.state.instance;
 
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.state.circuit.JdbcCircuitEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.state.circuit.JdbcCircuitEventBusInstance;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.state.circuit.CircuitStateEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.state.circuit.CircuitStateEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingsphere.jdbc.orchestration.internal.state.StateNode;
 import io.shardingsphere.jdbc.orchestration.internal.state.StateNodeStatus;
@@ -57,9 +57,9 @@ public final class InstanceListenerManager implements ListenerManager {
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
                     if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey()))) {
-                        JdbcCircuitEventBusInstance.getInstance().post(new JdbcCircuitEventBusEvent(configService.loadDataSourceMap().keySet()));
+                        CircuitStateEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(configService.loadDataSourceMap().keySet()));
                     } else {
-                        JdbcCircuitEventBusInstance.getInstance().post(new JdbcCircuitEventBusEvent(new LinkedList<String>()));
+                        CircuitStateEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(new LinkedList<String>()));
                     }
                 }
             }
@@ -74,9 +74,9 @@ public final class InstanceListenerManager implements ListenerManager {
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
                     if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey()))) {
-                        JdbcCircuitEventBusInstance.getInstance().post(new JdbcCircuitEventBusEvent(configService.loadDataSourceMap().keySet()));
+                        CircuitStateEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(configService.loadDataSourceMap().keySet()));
                     } else {
-                        JdbcCircuitEventBusInstance.getInstance().post(new JdbcCircuitEventBusEvent(new LinkedList<String>()));
+                        CircuitStateEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(new LinkedList<String>()));
                     }
                 }
             }
@@ -91,9 +91,9 @@ public final class InstanceListenerManager implements ListenerManager {
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
                     if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey()))) {
-                        JdbcCircuitEventBusInstance.getInstance().post(new JdbcCircuitEventBusEvent(configService.loadDataSources().keySet()));
+                        CircuitStateEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(configService.loadDataSources().keySet()));
                     } else {
-                        JdbcCircuitEventBusInstance.getInstance().post(new JdbcCircuitEventBusEvent(new LinkedList<String>()));
+                        CircuitStateEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(new LinkedList<String>()));
                     }
                 }
             }

@@ -22,8 +22,8 @@ import com.google.common.base.Strings;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.state.circuit.JdbcCircuitEventBusInstance;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.state.disabled.JdbcDisabledEventBusInstance;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.state.circuit.CircuitStateEventBusInstance;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.state.disabled.DisabledStateEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.config.proxy.ProxyConfigurationEventBusInstance;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.frontend.ShardingProxy;
@@ -125,7 +125,7 @@ public final class Bootstrap {
     private static void initRuleRegistry(final ConfigurationService configService) {
         RULE_REGISTRY.init(new OrchestrationProxyConfiguration(configService.loadDataSources(), configService.loadProxyConfiguration()));
         ProxyConfigurationEventBusInstance.getInstance().register(RULE_REGISTRY);
-        JdbcDisabledEventBusInstance.getInstance().register(RULE_REGISTRY);
-        JdbcCircuitEventBusInstance.getInstance().register(RULE_REGISTRY);
+        DisabledStateEventBusInstance.getInstance().register(RULE_REGISTRY);
+        CircuitStateEventBusInstance.getInstance().register(RULE_REGISTRY);
     }
 }
